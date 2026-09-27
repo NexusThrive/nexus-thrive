@@ -38,6 +38,8 @@ async function main() {
       naturaleza: "CAPA", // horizontal: sirve a cualquier negocio con efectivo
       icono: "wallet",
       porDefecto: false,
+      // CAPA suelto → vive bajo /modulos/<slug>
+      rutaBase: "/modulos/caja-menor",
       sugeridoPara: ["museo", "comercio", "restaurante", "tienda", "cafe"],
       orden: 2,
     },
@@ -49,6 +51,7 @@ async function main() {
       naturaleza: "CAPA",
       icono: "wallet",
       porDefecto: false,
+      rutaBase: "/modulos/caja-menor",
       sugeridoPara: ["museo", "comercio", "restaurante", "tienda", "cafe"],
       orden: 2,
     },
@@ -79,6 +82,8 @@ async function main() {
       campo: "SERVICES",
       rubro: "gimnasio",
       icono: "dumbbell",
+      // Los módulos MIEMBROS heredan esta ruta: se navega a /plantillas/gym.
+      rutaBase: "/plantillas/gym",
     },
     create: {
       slug: "gym",
@@ -87,6 +92,7 @@ async function main() {
       campo: "SERVICES",
       rubro: "gimnasio",
       icono: "dumbbell",
+      rutaBase: "/plantillas/gym",
     },
   });
 
