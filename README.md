@@ -16,13 +16,12 @@ Monorepo del ecosistema Nexus: soluciones simples y precisas, construidas de a m
 ```
 Nexus/
 ├── apps/
-│   └── nexus-finance/
-│       ├── caja-menor/     ← app Next.js (primer módulo: caja menor para negocios)
-│       └── shared/         ← código compartido del campo Finance (próximamente)
+│   └── nexus-core/
+│       └── portal/          ← Portal único de Nexus (Next.js): registro, onboarding, panel, plantillas y módulos
 ├── packages/
 │   ├── config/             ← presets compartidos (eslint, tailwind, tsconfig)
-│   ├── prisma/             ← schema + cliente Prisma singleton
-│   ├── ui/                 ← componentes UI compartidos (futuro hogar de Storybook)
+│   ├── prisma/             ← schema modular + cliente Prisma (núcleo + módulos)
+│   ├── ui/                 ← componentes UI compartidos
 │   └── utils/              ← helpers tipados (validación Zod, schemas base)
 ├── tooling/
 │   ├── eslint-config/      ← config base de ESLint
@@ -30,6 +29,11 @@ Nexus/
 ├── docker-compose.yml      ← PostgreSQL 16 local
 └── .env.example            ← DATABASE_URL de referencia
 ```
+
+> La base es un único portal (REGISTRO → ONBOARDING → PANEL → MÓDULOS según el
+> negocio). Las apps verticales antiguas (`nexus-finance`, `nexus-services`)
+> fueron eliminadas — referencia histórica en el commit PR #23/#27. Detalle:
+> `docs/BASE-NEXUS.md` y `docs/GLOSARIO.md`.
 
 ## Comandos
 

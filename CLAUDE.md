@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## 📋 Overview
-Nexus es el **núcleo** de la base del ecosistema: un portal (Next.js) con la estructura REGISTRO → ONBOARDING → PANEL PRINCIPAL → PLANTILLAS Y MÓDULOS SEGÚN EL ONBOARDING. Las apps verticales (`nexus-finance`, `nexus-services`) quedaron fuera de la base — referencia histórica en `main`. Ver `docs/BASE-NEXUS.md`.
+Nexus es el **núcleo** de la base del ecosistema: un portal (Next.js) con la estructura REGISTRO → ONBOARDING → PANEL PRINCIPAL → PLANTILLAS Y MÓDULOS SEGÚN EL ONBOARDING. Las apps verticales antiguas (`nexus-finance`, `nexus-services`) fueron eliminadas del monorepo. Ver `docs/BASE-NEXUS.md`.
 
 ## 🏗️ Arquitectura (rama `core/base`)
 - **apps/nexus-core/portal/**: Portal único de Nexus
