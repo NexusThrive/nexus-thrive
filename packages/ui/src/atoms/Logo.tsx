@@ -54,6 +54,8 @@ export function Logo({
         style={{
           fontFamily:
             'var(--font-public-stunt, "Public Stunt"), "Space Grotesk", sans-serif',
+          fontWeight: 400,
+          letterSpacing: "0.02em",
         }}
       >
         Nexus

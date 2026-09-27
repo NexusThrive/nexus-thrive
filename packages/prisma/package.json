@@ -17,15 +17,18 @@
     "type-check": "tsc --noEmit"
   },
   "prisma": {
-    "schema": "schema"
+    "schema": "schema",
+    "seed": "tsx src/seed.ts"
   },
   "dependencies": {
-    "@prisma/client": "^5.19.0"
+    "@prisma/client": "^5.19.0",
+    "bcryptjs": "^3.0.3"
   },
   "devDependencies": {
     "@nexus/config": "workspace:*",
     "@types/node": "^20.14.0",
     "prisma": "^5.19.0",
+    "tsx": "^4.23.13",
     "typescript": "^5.5.0"
   }
 }

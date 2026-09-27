@@ -34,3 +34,5 @@ prisma/*.db-journal
 /conversations
 
 *storybook.log
+
+packages/prisma/schema-backup

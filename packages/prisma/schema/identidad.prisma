@@ -1,34 +1,36 @@
 // ============================================================
 // MÓDULO IDENTIDAD — GLOBAL a nivel de datos (multitenancy real)
 //
-// La estructura sigue la tabla multi-nivel del vault:
-//   Organization = el "negocio" — la caja del profe.
-//   Member       = UNA persona dentro de la org (el user/login).
+// El NÚCLEO de NEXUS. No conoce módulos verticales: cada módulo
+// (ej: gym.prisma) cuelga de Organization desde su propio archivo.
 //
-// DECISIÓN CLAVE (no negociable, vault: arquitectura-multi-app-sesion-theme):
-//   User/Organization/Member son GLOBALES en los DATOS.
-//   La separación "por app" (caja vs futuro módulo) es SOLO de UI.
-//   Un futuro campo "Services" NO re-registra usuarios: reutiliza esto.
+// DECISIÓN CLAVE (PLAN-BASE-NEXUS 2026-09-12):
+//   Member = la persona (email global). Organization = el negocio.
+//   Una persona puede ser miembro de VARIAS orgs.
+//   La separación "por módulo" es SOLO de UI: nada se re-registra.
 //
-// POR QUÉ login va ACÁ (y no en la app):
-//   El schema es La Fuente. Si el login vive en la UI de app-shell
-//   y la identidad SOLO en la tabla de caja, el 2º módulo financiero
-//   tendría que re-inventar usuarios. Multitenancy desde el día 1.
+// POR QUÉ el catálogo (Module) vive ACÁ:
+//   El módulo es un PRODUCTO reutilizable → el catálogo es global.
+//   La organización lo ACTIVA (OrganizationModule) cuando le sirve.
 // ============================================================
 
 model Organization {
-  id      String   @id @default(cuid())
-  nombre  String
-  slug    String   @unique // identidad amigable para URL (ej: "profe-caja")
-  rolDefault Rol    @default(OPERADOR)
-  caja    Caja?    // 1:1 — el paquete de config de la caja
-  members Member[]
-  movimientos       Movimiento[]
-  categorias        Categoria[]
-  solicitudes       SolicitudFondo[]
-  arqueos           Arqueo[]
-  adjuntos          Adjunto[]
-  auditLogs         AuditLog[]
+  id          String   @id @default(cuid())
+  nombre      String
+  slug        String   @unique // identidad amigable para URL (ej: "zonarosa")
+  // Perfil del negocio (onboarding) — alimenta recomendación de módulos
+  tipoNegocio String?  /// "gimnasio" | "comercio" | "restaurante" | ...
+  moneda      String   @default("COP")
+  pais        String?  /// código ISO (ej: "CO")
+  // Onboarding (base NEXUS 2026-09-12): respuestas del dueño + flag de fin.
+  // onboardingCompletadoAt = null → el dueño aún no arma su negocio.
+  equipo      String?  /// "solo-yo" | "equipo"
+  dolor       String?  /// "cobrar" | "no-perder" | "saber-flujo"
+  onboardingCompletadoAt DateTime?
+  logoUrl     String?
+  rolDefault  Rol      @default(OPERADOR)
+  members     Member[]
+  modules     OrganizationModule[] // módulos habilitados para este negocio
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -36,35 +38,77 @@ model Organization {
 }
 
 model Member {
-  id        String  @id @default(cuid())
-  orgId     String
-  org       Organization @relation(fields: [orgId], references: [id])
-  nombre    String
-  email     String  @unique // base del login → Future campo passwordHash va aquí
-  rol       Rol     @default(OPERADOR)
-  activo    Boolean @default(true) // desactivar ≠ borrar (decisión: nunca se borra identidad)
-  movimientos Movimiento[]        @relation("responsable")
-  solicitudesCreadas  SolicitudFondo[] @relation("solicitante")
-  solicitudesValidadas SolicitudFondo[] @relation("validador")
-  arqueos     Arqueo[]    @relation("arqueador")
-  adjuntos    Adjunto[]   @relation("adjuntadoPor")
-  auditLogs   AuditLog[]  @relation("auditor")
+  id           String    @id @default(cuid())
+  orgId        String
+  org          Organization @relation(fields: [orgId], references: [id])
+  nombre       String
+  email        String   // identidad de login: una persona puede pertenecer a varias orgs
+  passwordHash String?  // login real (bcrypt). null = pendiente invitación
+  rol          Rol       @default(OPERADOR)
+  scope        UserScope @default(USER) // USER | CEO — consola global (futuro)
+  activo       Boolean   @default(true) // desactivar ≠ borrar (decisión: nunca se borra identidad)
+  // Onboarding POR PERSONA (base NEXUS 2026-09-12): cada usuario nuevo ve la
+  // guía hasta completarla. Null = todavía no armó su acceso al negocio.
+  onboardingCompletadoAt DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([orgId])
+  @@unique([email, orgId]) // una persona por org (permite multi-org)
   @@map("members")
 }
 
-/// 1:1 por org — configuración de la caja (saldo mínimo, categorías por defecto)
-model Caja {
-  id              String   @id @default(cuid())
-  orgId           String   @unique
-  org             Organization @relation(fields: [orgId], references: [id])
-  saldoMinimo     Decimal  @default(0) @db.Decimal(12,2)
-  permiteSaldoNegativo Boolean @default(false) // F3/C → impedir, no avisar nomás
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+// ============================================================
+// MÓDULOS — catálogo GLOBAL de NEXUS (nivel 1 del producto).
+// El cliente solo ve esto + las secciones de cada módulo.
+// `campo` es taxonomía INTERNA (Finance/Services/...): invisible al cliente.
+// `naturaleza` separa CAPA (horizontal, cualquier negocio) de VERTICAL
+//   (plantilla de un rubro: se activa por rubro, ej. Gym → gimnasio).
+//   La personalización del onboarding ofrece SOLO capas; los verticales
+//   entran como plantilla cuando el rubro coincide.
+// ============================================================
 
-  @@map("cajas")
+enum NaturalezaModulo {
+  CAPA
+  VERTICAL
+}
+
+model Module {
+  id          String            @id @default(cuid())
+  slug        String            @unique // "clientes" | "caja-menor" | "facturacion" | ...
+  nombre      String
+  descripcion String
+  campo       CampoModulo               // taxonomía INTERNA (invisible al cliente)
+  naturaleza  NaturalezaModulo @default(CAPA)
+  icono       String?                   // slug del ícono lucide ("dumbbell", "wallet", ...)
+  /// Módulo BASE: se activa automáticamente en toda organización al crearla
+  /// (ej: "clientes"). No es contratable ni se puede desactivar.
+  porDefecto  Boolean           @default(false)
+  /// Tipos de negocio para los que se recomienda este módulo
+  /// (ej: "gimnasio" → presupuestos para control de gastos de máquinas).
+  sugeridoPara String[]          @default([])
+  activo      Boolean           @default(true)
+  orden       Int               @default(0)
+  organizaciones OrganizationModule[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@map("modules")
+}
+
+/// Habilitación de un módulo en un negocio: ACTIVO (se usa) o SOLICITADO (pedido).
+model OrganizationModule {
+  id         String          @id @default(cuid())
+  orgId      String
+  org        Organization    @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  moduleId   String
+  module     Module          @relation(fields: [moduleId], references: [id])
+  estado     EstadoModuloOrg @default(SOLICITADO)
+  activadoAt DateTime?
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@unique([orgId, moduleId])
+  @@index([orgId])
+  @@map("organization_modules")
 }
