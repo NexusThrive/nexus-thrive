@@ -1,0 +1,114 @@
+// ============================================================
+// MÓDULO GYM — demo real de un gimnasio (Zona Rosa, rama core/base).
+//
+// Regla de la base NEXUS: el NÚCLEO no conoce este archivo. Este
+// módulo cuelga de Organization (identidad.prisma) desde acá, y se
+// ACTIVA por organización vía OrganizationModule (catálogo global).
+//
+// Reglas de negocio:
+//  - Un pago NUNCA se borra: se anula con motivo (igual que caja).
+//  - El estado del cliente se deriva: ACTIVO mientras su periodoFin esté al día.
+//  - Futuro: PSE/Stripe como pasarela de pago (roadmap en ROADMAP.md).
+// ============================================================
+
+/// Plan de membresía (ej: Mensual $120.000, Trimestral, Anual)
+model Plan {
+  id           String  @id @default(cuid())
+  orgId        String
+  nombre       String // "Mensual", "Trimestral", "Anual"
+  precio       Decimal @db.Decimal(12, 2) // COP por período
+  duracionDias Int     @default(30)
+  activo       Boolean @default(true)
+  clientes     Cliente[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([orgId])
+  @@map("planes")
+}
+
+enum EstadoCliente {
+  ACTIVO
+  CONGELADO // el socio pidió pausa (ej: viaje)
+  VENCIDO   // sin pago al día (se calcula/actualiza al cobrar)
+}
+
+/// Cliente del gym (socio) con su perfil completo
+model Cliente {
+  id           String         @id @default(cuid())
+  orgId        String
+  nombre       String
+  documento    String?        // cédula (búsqueda rápida)
+  telefono     String?
+  email        String?
+  fechaNacimiento DateTime?
+  planId       String?
+  plan         Plan?          @relation(fields: [planId], references: [id])
+  estado       EstadoCliente  @default(ACTIVO)
+  periodoFin   DateTime?      // vencimiento de la membresía actual (activo si >= hoy)
+  fechaIngreso DateTime       @default(now())
+  nota         String?        // alergias, lesiones, preferencias
+  pagos        Pago[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([orgId, estado])
+  @@index([orgId, nombre])
+  @@map("clientes")
+}
+
+enum MetodoPago {
+  EFECTIVO
+  TARJETA
+  TRANSFERENCIA
+  NEQUI
+  OTRO
+}
+
+/// Pago de membresía — registra el cobro y el período que cubre
+model Pago {
+  id           String     @id @default(cuid())
+  orgId        String
+  clienteId    String
+  cliente      Cliente    @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  monto        Decimal    @db.Decimal(12, 2)
+  metodo       MetodoPago @default(EFECTIVO)
+  concepto     String     // "Mensualidad septiembre", "Plan trimestral"
+  periodoInicio DateTime  @default(now())
+  periodoFin   DateTime   // vencimiento cubierto por el pago
+  anulado      Boolean    @default(false)
+  motivoAnulacion String?
+  pagadoEl     DateTime   @default(now())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([clienteId])
+  @@index([orgId, pagadoEl])
+  @@map("pagos")
+}
+
+enum CategoriaGasto {
+  ARRIENDO
+  NOMINA
+  SERVICIOS
+  MANTENIMIENTO
+  PUBLICIDAD
+  OTROS
+}
+
+/// Gasto del negocio (arriendo, nómina, servicios, mantenimiento...)
+model Gasto {
+  id          String         @id @default(cuid())
+  orgId       String
+  categoria   CategoriaGasto
+  monto       Decimal        @db.Decimal(12, 2)
+  fecha       DateTime       @default(now())
+  descripcion String?
+  anulado     Boolean        @default(false)
+  motivoAnulacion String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([orgId, fecha])
+  @@map("gastos")
+}

@@ -10,13 +10,21 @@ export interface SeccionModulo {
   label: string;
 }
 
+/** Secciones de la PLANTILLA Gym — compartidas por sus módulos. */
+const SECCIONES_GYM: SeccionModulo[] = [
+  { href: "/plantillas/gym", label: "Dashboard" },
+  { href: "/plantillas/gym/clientes", label: "Clientes" },
+  { href: "/plantillas/gym/pagos", label: "Pagos" },
+  { href: "/plantillas/gym/gastos", label: "Gastos" },
+];
+
 export const SECCIONES_MODULOS: Record<string, SeccionModulo[]> = {
-  gym: [
-    { href: "/plantillas/gym", label: "Dashboard" },
-    { href: "/plantillas/gym/clientes", label: "Clientes" },
-    { href: "/plantillas/gym/pagos", label: "Pagos" },
-    { href: "/plantillas/gym/gastos", label: "Gastos" },
-  ],
+  // Cada módulo de la plantilla gym comparte las secciones de la plantilla.
+  gym: SECCIONES_GYM,
+  clientes: SECCIONES_GYM,
+  planes: SECCIONES_GYM,
+  pagos: SECCIONES_GYM,
+  gastos: SECCIONES_GYM,
   "caja-menor": [
     { href: "/modulos/caja-menor", label: "Dashboard" },
     { href: "/modulos/caja-menor/movimientos", label: "Movimientos" },
@@ -32,9 +40,13 @@ export function getSeccionesModulo(slug: string): SeccionModulo[] {
  * Base de ruta por slug, según el NIVEL del catálogo:
  * las PLANTILLAS viven bajo /plantillas/<slug>/ y los MÓDULOS sueltos
  * bajo /modulos/<slug>/ (orden mental: NEXUS → CAPA → PLANTILLA → MÓDULO → COMPONENTE).
- * Cuando exista Plantilla en el catálogo, este mapa sale de la DB.
+ * Los módulos MIEMBROS de una plantilla comparten su ruta base.
  */
 export const RUTA_POR_SLUG: Record<string, string> = {
   gym: "/plantillas/gym",
+  clientes: "/plantillas/gym",
+  planes: "/plantillas/gym",
+  pagos: "/plantillas/gym",
+  gastos: "/plantillas/gym",
   "caja-menor": "/modulos/caja-menor",
 };

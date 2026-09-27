@@ -1,0 +1,123 @@
+import { Users } from "lucide-react";
+import { prisma } from "@/lib/core/prisma";
+import { getOrgActiva } from "@/lib/core/org";
+import { formatDate } from "@/lib/shared/format";
+import { crearCliente } from "@/lib/modulos/clientes/acciones";
+import { ListaClientes } from "@/components/modulos/clientes/ListaClientes";
+
+export const dynamic = "force-dynamic";
+
+const ESTADO_CLASES: Record<string, string> = {
+  ACTIVO: "bg-nexus-green-soft text-nexus-green-text",
+  CONGELADO: "bg-nexus-surface-alt text-nexus-muted",
+  VENCIDO: "bg-nexus-red-soft text-nexus-red-text",
+};
+const ESTADO_LABEL: Record<string, string> = {
+  ACTIVO: "Activo",
+  CONGELADO: "Congelado",
+  VENCIDO: "Vencido",
+};
+
+export default async function ClientesPage() {
+  const { org } = await getOrgActiva();
+
+  const [clientes, planes] = await Promise.all([
+    prisma.cliente.findMany({
+      where: { orgId: org.id },
+      include: { plan: true, pagos: { where: { anulado: false }, orderBy: { pagadoEl: "desc" }, take: 1 } },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.plan.findMany({ where: { orgId: org.id, activo: true }, orderBy: { precio: "asc" } }),
+  ]);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-nexus-ink">Clientes</h1>
+          <p className="text-sm text-nexus-muted">{clientes.length} socios registrados</p>
+        </div>
+      </div>
+
+      {/* Alta de cliente */}
+      <form
+        action={crearCliente}
+        className="rounded-xl border border-nexus-border bg-nexus-surface p-5"
+      >
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-nexus-ink">
+          <Users className="h-4 w-4" /> Registrar socio
+        </h2>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <input
+            name="nombre"
+            required
+            placeholder="Nombre completo"
+            className="rounded-lg border border-nexus-border bg-nexus-bg px-3 py-2 text-sm text-nexus-ink outline-none focus:border-nexus-gold"
+          />
+          <input
+            name="documento"
+            placeholder="Cédula (opcional)"
+            className="rounded-lg border border-nexus-border bg-nexus-bg px-3 py-2 text-sm text-nexus-ink outline-none focus:border-nexus-gold"
+          />
+          <input
+            name="telefono"
+            placeholder="Teléfono (opcional)"
+            className="rounded-lg border border-nexus-border bg-nexus-bg px-3 py-2 text-sm text-nexus-ink outline-none focus:border-nexus-gold"
+          />
+          <input
+            name="email"
+            type="email"
+            placeholder="Correo (opcional)"
+            className="rounded-lg border border-nexus-border bg-nexus-bg px-3 py-2 text-sm text-nexus-ink outline-none focus:border-nexus-gold"
+          />
+          <select
+            name="planId"
+            className="rounded-lg border border-nexus-border bg-nexus-bg px-3 py-2 text-sm text-nexus-ink outline-none focus:border-nexus-gold"
+          >
+            <option value="">Sin membresía</option>
+            {planes.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.nombre}
+              </option>
+            ))}
+          </select>
+          <input
+            name="fechaNacimiento"
+            type="date"
+            className="rounded-lg border border-nexus-border bg-nexus-bg px-3 py-2 text-sm text-nexus-ink outline-none focus:border-nexus-gold"
+          />
+          <textarea
+            name="nota"
+            placeholder="Nota (lesiones, alergias, preferencias…)"
+            rows={1}
+            className="rounded-lg border border-nexus-border bg-nexus-bg px-3 py-2 text-sm text-nexus-ink outline-none focus:border-nexus-gold sm:col-span-2"
+          />
+        </div>
+        <div className="mt-4 flex justify-end">
+          <button
+            type="submit"
+            className="rounded-lg bg-nexus-ink px-4 py-2 text-sm font-medium text-nexus-surface transition hover:opacity-85"
+          >
+            Registrar socio
+          </button>
+        </div>
+      </form>
+
+      {/* Listado con búsqueda (cliente) */}
+      <ListaClientes
+        clientes={clientes.map((c) => ({
+          id: c.id,
+          nombre: c.nombre,
+          documento: c.documento,
+          telefono: c.telefono,
+          estado: c.estado,
+          plan: c.plan?.nombre ?? null,
+          vence: c.periodoFin ? formatDate(c.periodoFin) : null,
+          estadoClase: ESTADO_CLASES[c.estado] ?? "bg-nexus-surface-alt text-nexus-muted",
+          estadoLabel: ESTADO_LABEL[c.estado] ?? c.estado,
+          ultimoPago: c.pagos[0] ? formatDate(c.pagos[0].pagadoEl) : null,
+        }))}
+      />
+    </div>
+  );
+}

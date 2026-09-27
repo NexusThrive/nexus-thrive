@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/core/prisma";
 import { getOrgActiva, getMisOrgs } from "@/lib/core/org";
-import { getModulosActivos } from "@/lib/core/modulos";
+import { getModulosActivosAgrupados } from "@/lib/core/modulos";
 import { Navbar } from "@/components/core/Navbar";
 import { NavModulos } from "@/components/core/NavModulos";
 
@@ -16,6 +16,7 @@ import { NavModulos } from "@/components/core/NavModulos";
  *     con sus secciones (CAJA MENOR → Dashboard · Movimientos · Categorías)
  *     · Agregar módulo.
  * La base no conoce clientes/pagos/gastos: eso vive dentro de cada módulo.
+ * Los módulos de una plantilla se agrupan en UNA entrada (getModulosActivosAgrupados).
  */
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const { member, org } = await getOrgActiva();
@@ -28,7 +29,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   if (!miembro?.onboardingCompletadoAt) redirect("/onboarding");
 
   const [modulos, misOrgs] = await Promise.all([
-    getModulosActivos(org.id),
+    getModulosActivosAgrupados(org.id),
     getMisOrgs(member.email),
   ]);
 
@@ -42,13 +43,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
 
       <div className="flex flex-1">
         <aside className="flex w-60 shrink-0 flex-col border-r border-nexus-border bg-nexus-surface">
-          <NavModulos
-            modulos={modulos.map((om) => ({
-              slug: om.module.slug,
-              nombre: om.module.nombre,
-              icono: om.module.icono,
-            }))}
-          />
+          <NavModulos modulos={modulos} />
         </aside>
 
         <main className="flex-1 overflow-x-hidden">

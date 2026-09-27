@@ -134,6 +134,7 @@ export async function guardarOnboarding(input: FormData) {
   revalidatePath("/");
 
   // Al terminar la guía, el usuario cae en SU módulo activo (no hardcodeado).
+  // Si el módulo pertenece a una plantilla, va a la base de la plantilla.
   if (conModulo) {
     const activo = await prisma.module.findFirst({
       where: {
@@ -142,7 +143,14 @@ export async function guardarOnboarding(input: FormData) {
       },
       orderBy: { orden: "asc" },
     });
-    if (activo) redirect(`/${activo.slug}?tour=1`);
+    if (activo) {
+      const enPlantilla = await prisma.plantillaModulo.findFirst({
+        where: { moduleId: activo.id },
+        include: { plantilla: true },
+      });
+      const base = enPlantilla ? `/plantillas/${enPlantilla.plantilla.slug}` : `/${activo.slug}`;
+      redirect(`${base}?tour=1`);
+    }
   }
   redirect("/");
 }

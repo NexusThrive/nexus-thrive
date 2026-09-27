@@ -11,14 +11,18 @@ const HASH = bcrypt.hashSync("Admin123", 10);
  * Corre DESPUÉS del seed estructural (catálogo/plantillas ya existen).
  * Crea negocios reales con datos de ejemplo:
  *   - Casa Museo Pozón (museo real del profe) → Caja Menor ACTIVA
+ *   - Zona Rosa Gym (cliente real, demo) → plantilla Gym ACTIVA
  *
  * DEMO:
  *   profe@casamuseopozon.com / Admin123 (Casa Museo Pozón → Caja Menor)
- *
- * (Zona Rosa → Gym llega en el PR de plantillas verticales, feat/plantillas-verticales.)
+ *   yoli@zonarosa.com       / Admin123 (Zona Rosa → Gym)
  */
 async function main() {
   const cajamenor = await prisma.module.findUniqueOrThrow({ where: { slug: "caja-menor" } });
+  const gym = await prisma.plantilla.findUniqueOrThrow({
+    where: { slug: "gym" },
+    include: { modulos: true },
+  });
 
   // ---------- Casa Museo Pozón (museo real del profe → Caja Menor) ----------
   const museo = await prisma.organization.upsert({
@@ -62,9 +66,44 @@ async function main() {
     });
   }
 
+  // ---------- Zona Rosa Gym (cliente real, demo → plantilla Gym) ----------
+  const zonaRosa = await prisma.organization.upsert({
+    where: { slug: "zonarosa" },
+    update: { nombre: "Zona Rosa Gym", tipoNegocio: "gimnasio", moneda: "COP", pais: "CO" },
+    create: {
+      nombre: "Zona Rosa Gym",
+      slug: "zonarosa",
+      tipoNegocio: "gimnasio",
+      moneda: "COP",
+      pais: "CO",
+    },
+  });
+
+  await prisma.member.upsert({
+    where: { email_orgId: { email: "yoli@zonarosa.com", orgId: zonaRosa.id } },
+    update: { nombre: "Yoli Ortiz", rol: "ADMIN", passwordHash: HASH, activo: true },
+    create: {
+      orgId: zonaRosa.id,
+      nombre: "Yoli Ortiz",
+      email: "yoli@zonarosa.com",
+      passwordHash: HASH,
+      rol: "ADMIN",
+    },
+  });
+
+  // Plantilla Gym ACTIVA = todos sus módulos juntos (la plantilla se activa completa).
+  for (const pm of gym.modulos) {
+    await prisma.organizationModule.upsert({
+      where: { orgId_moduleId: { orgId: zonaRosa.id, moduleId: pm.moduleId } },
+      update: { estado: "ACTIVO", activadoAt: new Date() },
+      create: { orgId: zonaRosa.id, moduleId: pm.moduleId, estado: "ACTIVO", activadoAt: new Date() },
+    });
+  }
+
   console.log("🌌 Seed demo listo:");
   console.log("  Casa Museo Pozón → Caja Menor ACTIVA");
-  console.log("  DEMO → profe@casamuseopozon.com / Admin123 (profe, PENDIENTE confirmar)");
+  console.log("  Zona Rosa Gym    → plantilla Gym ACTIVA (clientes, planes, pagos, gastos)");
+  console.log("  DEMO → profe@casamuseopozon.com / Admin123 · yoli@zonarosa.com / Admin123");
 }
 
 main()

@@ -6,7 +6,7 @@
 //   schema.prisma     → datasource, generator, enums compartidos
 //   identidad.prisma  → Organization, Member, Module, Plantilla (núcleo global)
 //   cajamenor.prisma  → MÓDULO Caja Menor (CAPA: cualquier negocio con efectivo)
-//   gym.prisma        → PLANTILLA Gym (VERTICAL: rubro gimnasio) — entra en PR3
+//   gym.prisma        → PLANTILLA Gym (VERTICAL: rubro gimnasio)
 //
 // DECISIÓN (PLAN-BASE-NEXUS 2026-09-12): NEXUS es la marca, el Campo
 // es taxonomía interna y el Módulo es el producto reutilizable. La

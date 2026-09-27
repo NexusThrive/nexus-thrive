@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight, CheckCircle2, Compass, Rocket } from "lucide-react";
 import { Button } from "@nexus/ui";
 import { getOrgActiva } from "@/lib/core/org";
-import { getModulosActivos, getModulosSugeridos } from "@/lib/core/modulos";
+import { getModulosActivosAgrupados, getModulosSugeridos } from "@/lib/core/modulos";
 import { iconoModulo } from "@/lib/core/iconos-modulos";
 import { RUTA_POR_SLUG } from "@/lib/core/navegacion";
 import { activarModulo } from "@/lib/core/acciones";
@@ -11,15 +11,16 @@ export const dynamic = "force-dynamic";
 
 /**
  * PANEL PRINCIPAL — el hogar del negocio en Nexus.
- * Muestra los módulos ACTIVOS de la org y SUGIERE los que encajan con su
- * rubro (definido en el onboarding). La estructura de la base, en orden:
- * REGISTRO → ONBOARDING → PANEL → MÓDULOS según el negocio.
+ * Muestra los módulos ACTIVOS de la org (agrupados por plantilla) y SUGIERE
+ * los que encajan con su rubro (definido en el onboarding). La estructura
+ * de la base, en orden: REGISTRO → ONBOARDING → PANEL → MÓDULOS según el
+ * negocio.
  */
 export default async function PanelPrincipalPage() {
   const { member, org } = await getOrgActiva();
 
   const [activos, sugeridos] = await Promise.all([
-    getModulosActivos(org.id),
+    getModulosActivosAgrupados(org.id),
     getModulosSugeridos(org.id, org.tipoNegocio),
   ]);
 
@@ -42,23 +43,23 @@ export default async function PanelPrincipalPage() {
         <section>
           <h2 className="text-sm font-semibold text-nexus-ink">Tus módulos activos</h2>
           <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {activos.map((om) => (
+            {activos.map((m) => (
               <Link
-                key={om.moduleId}
-                href={RUTA_POR_SLUG[om.module.slug] ?? `/${om.module.slug}`}
+                key={m.slug}
+                href={RUTA_POR_SLUG[m.slug] ?? `/${m.slug}`}
                 className="group rounded-xl border border-nexus-border bg-nexus-surface p-5 transition hover:border-nexus-gold/60"
               >
                 <div className="flex items-start justify-between">
                   <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-nexus-gold/10">
                     {(() => {
-                      const Icono = iconoModulo(om.module.icono);
+                      const Icono = iconoModulo(m.icono);
                       return <Icono className="h-5 w-5 text-nexus-gold" aria-hidden />;
                     })()}
                   </span>
                   <ArrowUpRight className="h-4 w-4 text-nexus-muted transition group-hover:text-nexus-gold" />
                 </div>
-                <h3 className="mt-3 text-sm font-semibold text-nexus-ink">{om.module.nombre}</h3>
-                <p className="mt-1 text-xs leading-relaxed text-nexus-muted">{om.module.descripcion}</p>
+                <h3 className="mt-3 text-sm font-semibold text-nexus-ink">{m.nombre}</h3>
+                <p className="mt-1 text-xs leading-relaxed text-nexus-muted">{m.descripcion}</p>
               </Link>
             ))}
           </div>
@@ -125,7 +126,7 @@ export default async function PanelPrincipalPage() {
           </h2>
           <ol className="mt-3 grid gap-2 text-sm text-nexus-muted sm:grid-cols-3">
             <li className="rounded-lg border border-dashed border-nexus-border bg-nexus-surface/50 px-4 py-3">
-              1. Entrá a tu módulo: <span className="font-medium text-nexus-ink">{activos[0]?.module.nombre}</span>
+              1. Entrá a tu módulo: <span className="font-medium text-nexus-ink">{activos[0]?.nombre}</span>
             </li>
             <li className="rounded-lg border border-dashed border-nexus-border bg-nexus-surface/50 px-4 py-3">
               2. Cargá tu primer dato real (el panel empieza a hablar solo)
