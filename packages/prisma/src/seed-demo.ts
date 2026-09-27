@@ -25,27 +25,34 @@ async function main() {
   });
 
   // ---------- Casa Museo Pozón (museo real del profe → Caja Menor) ----------
+  // `now` marca el onboarding como YA TERMINADO. Sin esto, el layout (protected)
+  // redirige para siempre a /onboarding y el demo no se puede ni mostrar:
+  // el gate es POR PERSONA (member.onboardingCompletadoAt), no solo de la org.
+  const now = new Date();
+
   const museo = await prisma.organization.upsert({
     where: { slug: "casamuseopozon" },
-    update: { nombre: "Casa Museo Pozón", tipoNegocio: "museo", moneda: "COP", pais: "CO" },
+    update: { nombre: "Casa Museo Pozón", tipoNegocio: "museo", moneda: "COP", pais: "CO", onboardingCompletadoAt: now },
     create: {
       nombre: "Casa Museo Pozón",
       slug: "casamuseopozon",
       tipoNegocio: "museo",
       moneda: "COP",
       pais: "CO",
+      onboardingCompletadoAt: now,
     },
   });
 
   await prisma.member.upsert({
     where: { email_orgId: { email: "profe@casamuseopozon.com", orgId: museo.id } },
-    update: { nombre: "Profe (pendiente nombre)", rol: "ADMIN", passwordHash: HASH, activo: true },
+    update: { nombre: "Profe (pendiente nombre)", rol: "ADMIN", passwordHash: HASH, activo: true, onboardingCompletadoAt: now },
     create: {
       orgId: museo.id,
       nombre: "Profe (pendiente nombre)",
       email: "profe@casamuseopozon.com",
       passwordHash: HASH,
       rol: "ADMIN",
+      onboardingCompletadoAt: now,
     },
   });
 
@@ -69,25 +76,27 @@ async function main() {
   // ---------- Zona Rosa Gym (cliente real, demo → plantilla Gym) ----------
   const zonaRosa = await prisma.organization.upsert({
     where: { slug: "zonarosa" },
-    update: { nombre: "Zona Rosa Gym", tipoNegocio: "gimnasio", moneda: "COP", pais: "CO" },
+    update: { nombre: "Zona Rosa Gym", tipoNegocio: "gimnasio", moneda: "COP", pais: "CO", onboardingCompletadoAt: now },
     create: {
       nombre: "Zona Rosa Gym",
       slug: "zonarosa",
       tipoNegocio: "gimnasio",
       moneda: "COP",
       pais: "CO",
+      onboardingCompletadoAt: now,
     },
   });
 
   await prisma.member.upsert({
     where: { email_orgId: { email: "yoli@zonarosa.com", orgId: zonaRosa.id } },
-    update: { nombre: "Yoli Ortiz", rol: "ADMIN", passwordHash: HASH, activo: true },
+    update: { nombre: "Yoli Ortiz", rol: "ADMIN", passwordHash: HASH, activo: true, onboardingCompletadoAt: now },
     create: {
       orgId: zonaRosa.id,
       nombre: "Yoli Ortiz",
       email: "yoli@zonarosa.com",
       passwordHash: HASH,
       rol: "ADMIN",
+      onboardingCompletadoAt: now,
     },
   });
 
