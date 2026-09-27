@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { seedGym } from "./seed-demo-gym";
 
 const prisma = new PrismaClient();
 
@@ -109,9 +110,15 @@ async function main() {
     });
   }
 
+  // Datos de negocio: sin esto la plantilla Gym se activa pero queda vacía
+  // (0 clientes, 0 pagos, 0 gastos) y no hay producto que mostrar.
+  const datos = await seedGym(prisma, zonaRosa.id);
+
   console.log("🌌 Seed demo listo:");
   console.log("  Casa Museo Pozón → Caja Menor ACTIVA");
-  console.log("  Zona Rosa Gym    → plantilla Gym ACTIVA (clientes, planes, pagos, gastos)");
+  console.log(
+    `  Zona Rosa Gym    → plantilla Gym ACTIVA · ${datos.clientes} socios · ${datos.pagos} pagos · ${datos.gastos} gastos`,
+  );
   console.log("  DEMO → profe@casamuseopozon.com / Admin123 · yoli@zonarosa.com / Admin123");
 }
 
