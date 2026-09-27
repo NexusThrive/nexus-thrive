@@ -126,9 +126,17 @@ function LoginInner() {
           </p>
         </div>
 
-        <p className="mt-6 text-center text-xs text-nexus-muted">
-          Demo · laura@zonarosa.com / Admin123
-        </p>
+        {/* Cuentas demo: las que `pnpm db:seed:demo` crea y mantiene. Antes
+            apuntaba a laura@zonarosa.com, residuo de un seed viejo que ya no
+            existe en el repo (mismo email en dos orgs) — con una base nueva
+            ese hint no autenticaba nada. */}
+        <div className="mt-6 text-center text-xs text-nexus-muted">
+          <p>Demo · Admin123</p>
+          <p className="mt-1">
+            <span className="text-nexus-ink">yoli@zonarosa.com</span> (plantilla Gym) ·{" "}
+            <span className="text-nexus-ink">profe@casamuseopozon.com</span> (Caja Menor)
+          </p>
+        </div>
       </div>
     </main>
   );

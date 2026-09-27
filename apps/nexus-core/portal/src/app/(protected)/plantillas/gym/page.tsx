@@ -89,7 +89,13 @@ export default async function DashboardPage({
           <ul className="mt-4 divide-y divide-nexus-border/70">
             {data.porVencer.map((p) => (
               <li key={p.id} className="flex items-center justify-between py-2.5">
-                <Link href={`/clientes/${p.id}`} className="font-medium text-nexus-ink hover:underline">
+                {/* Ruta RELATIVA a propósito: esta página vive en
+                    /plantillas/gym, así que `clientes/${id}` resuelve a
+                    /plantillas/gym/clientes/${id}. La versión anterior
+                    hardcodeaba `/clientes/${id}` → 404 en el link más usado
+                    del dashboard ("Renovaciones próximas"). Relativa, no se
+                    rompe si la plantilla cambia de base. */}
+                <Link href={`clientes/${p.id}`} className="font-medium text-nexus-ink hover:underline">
                   {p.nombre}
                 </Link>
                 <span className="text-sm text-nexus-muted">{formatDate(p.vence)}</span>

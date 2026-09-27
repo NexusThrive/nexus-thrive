@@ -1,14 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import { signOut } from "next-auth/react";
 import { LogOut } from "lucide-react";
 
 /**
  * NAVBAR — menú de cuenta (acción GLOBAL): email + cerrar sesión.
  * Aquí crecerán configuración y soporte sin invadir el sidebar.
+ *
+ * LOGOUT: va por `signOut()` de next-auth, NO por un <form method="post">
+ * contra /api/auth/signout. Ese form sin `csrfToken` hacía que next-auth
+ * respondiera con un redirect a /api/auth/signout?csrf=true: el botón
+ * "Cerrar sesión" NO cerraba la sesión y mandaba al usuario a una página
+ * de next-auth sin estilo. signOut() pide el token y lo manda solo.
  */
 export function MenuCuenta({ nombre, email }: { nombre: string; email: string }) {
   const [abierto, setAbierto] = useState(false);
+  const [saliendo, setSaliendo] = useState(false);
   const iniciales = (nombre || email)
     .split(/\s+/)
     .map((p) => p[0])
@@ -45,16 +53,18 @@ export function MenuCuenta({ nombre, email }: { nombre: string; email: string })
               <p className="truncate text-sm font-medium text-nexus-ink">{nombre}</p>
               <p className="truncate text-xs text-nexus-muted">{email}</p>
             </div>
-            <form action="/api/auth/signout" method="post">
-              <input type="hidden" name="callbackUrl" value="/login" />
-              <button
-                type="submit"
-                className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-nexus-muted transition hover:bg-nexus-surface-alt hover:text-nexus-red-text"
-              >
-                <LogOut className="h-4 w-4" />
-                Cerrar sesión
-              </button>
-            </form>
+            <button
+              type="button"
+              disabled={saliendo}
+              onClick={async () => {
+                setSaliendo(true);
+                await signOut({ callbackUrl: "/login" });
+              }}
+              className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-nexus-muted transition hover:bg-nexus-surface-alt hover:text-nexus-red-text disabled:opacity-60"
+            >
+              <LogOut className="h-4 w-4" />
+              {saliendo ? "Cerrando…" : "Cerrar sesión"}
+            </button>
           </div>
         </>
       )}
