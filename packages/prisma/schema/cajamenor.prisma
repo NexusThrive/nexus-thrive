@@ -1,0 +1,57 @@
+// ============================================================
+// MÓDULO CAJA MENOR — el efectivo del negocio, claro (Casa Museo
+// Pozón, rama core/base).
+//
+// Regla de la base NEXUS: el NÚCLEO no conoce este archivo. Este
+// módulo cuelga de Organization (identidad.prisma) desde acá, y se
+// ACTIVA por organización vía OrganizationModule (catálogo global).
+//
+// Reglas de negocio:
+//  - Un movimiento NUNCA se borra: se anula con motivo (igual que gym).
+//  - El saldo se DERIVA: sumatoria de movimientos no anulados. Un
+//    EGRESO no puede dejar el saldo en negativo (validado en server
+//    action, no en schema).
+//  - Las categorías son CONFIGURABLES por org (el rubro decide cuáles
+//    usa: mercado, transporte, papelería...), no un enum fijo.
+// ============================================================
+
+enum TipoMovimientoCaja {
+  INGRESO // plata que entra a la caja (ventas, reposición, fondo inicial)
+  EGRESO // plata que sale (pago, gasto, retiro)
+}
+
+/// Categoría configurable por organización (ej: Mercado, Transporte…)
+model CajaCategoria {
+  id          String            @id @default(cuid())
+  orgId       String
+  nombre      String
+  activo      Boolean           @default(true)
+  movimientos MovimientoCaja[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([orgId, activo])
+  @@unique([orgId, nombre])
+  @@map("caja_categorias")
+}
+
+/// Movimiento de caja: entrada o salida de efectivo.
+/// El monto es siempre positivo; el signo lo da `tipo`.
+model MovimientoCaja {
+  id               String              @id @default(cuid())
+  orgId            String
+  tipo             TipoMovimientoCaja
+  monto            Decimal             @db.Decimal(12, 2)
+  categoriaId      String?
+  categoria        CajaCategoria?      @relation(fields: [categoriaId], references: [id])
+  fecha            DateTime            @default(now())
+  descripcion      String?
+  anulado          Boolean             @default(false)
+  motivoAnulacion  String?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  @@index([orgId, fecha])
+  @@index([orgId, anulado])
+  @@map("movimientos_caja")
+}

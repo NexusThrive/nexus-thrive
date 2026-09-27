@@ -90,6 +90,7 @@ model Module {
   activo      Boolean           @default(true)
   orden       Int               @default(0)
   organizaciones OrganizationModule[]
+  plantillas  PlantillaModulo[] // plantillas que agrupan este módulo
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
 
@@ -111,4 +112,46 @@ model OrganizationModule {
   @@unique([orgId, moduleId])
   @@index([orgId])
   @@map("organization_modules")
+}
+
+// ============================================================
+// PLANTILLAS — conjuntos de módulos que resuelven un rubro completo
+// (ej: Gym = clientes + planes + pagos + gastos).
+// Resuelve la ambigüedad módulo ↔ plantilla (análisis 2026-09-22):
+//   - MODULE es el producto reutilizable (se activa suelto o en plantilla).
+//   - PLANTILLA es un conjunto de módulos armado para un rubro.
+// El cliente "compra" la plantilla según su rubro; los módulos que la
+// componen se activan juntos (OrganizationModule por cada uno).
+// ============================================================
+
+/// Plantilla de un rubro: arma de módulos listos para activar juntos.
+model Plantilla {
+  id          String            @id @default(cuid())
+  slug        String            @unique // "gym"
+  nombre      String                    // "Gym"
+  descripcion String?
+  campo       CampoModulo               // taxonomía INTERNA (Services…)
+  /// Rubro al que sirve esta plantilla (ej: "gimnasio").
+  rubro       String
+  icono       String?
+  activo      Boolean           @default(true)
+  orden       Int               @default(0)
+  modulos     PlantillaModulo[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@map("plantillas")
+}
+
+/// Módulo MIEMBRO de una plantilla (ej: clientes → Gym).
+model PlantillaModulo {
+  id          String    @id @default(cuid())
+  plantillaId String
+  plantilla   Plantilla @relation(fields: [plantillaId], references: [id], onDelete: Cascade)
+  moduleId    String
+  module      Module    @relation(fields: [moduleId], references: [id])
+  orden       Int       @default(0)
+
+  @@unique([plantillaId, moduleId])
+  @@map("plantilla_modulos")
 }

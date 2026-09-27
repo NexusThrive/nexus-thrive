@@ -3,9 +3,10 @@
 //
 // El núcleo de NEXUS NO conoce ningún módulo vertical (gym, caja...).
 // Cada módulo vive en su propio archivo y cuelga de Organization:
-//   schema.prisma    → datasource, generator, enums compartidos
-//   identidad.prisma → Organization, Member, Module (núcleo global)
-//   gym.prisma       → MÓDULO Gym (demo Zona Rosa, rama core/base)
+//   schema.prisma     → datasource, generator, enums compartidos
+//   identidad.prisma  → Organization, Member, Module, Plantilla (núcleo global)
+//   cajamenor.prisma  → MÓDULO Caja Menor (CAPA: cualquier negocio con efectivo)
+//   gym.prisma        → PLANTILLA Gym (VERTICAL: rubro gimnasio) — entra en PR3
 //
 // DECISIÓN (PLAN-BASE-NEXUS 2026-09-12): NEXUS es la marca, el Campo
 // es taxonomía interna y el Módulo es el producto reutilizable. La
