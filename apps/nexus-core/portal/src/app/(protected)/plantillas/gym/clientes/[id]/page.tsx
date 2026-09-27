@@ -6,6 +6,7 @@ import { getOrgActiva } from "@/lib/core/org";
 import { formatDate, formatMoney } from "@/lib/shared/format";
 import { cobrarPago, anularPago } from "@/lib/modulos/pagos/acciones";
 import { congelarCliente, reactivarCliente } from "@/lib/modulos/clientes/acciones";
+import { getClienteDeOrg } from "@/lib/modulos/clientes/consultas";
 
 export const dynamic = "force-dynamic";
 
@@ -13,13 +14,10 @@ export default async function ClientePage({ params }: { params: Promise<{ id: st
   const { org } = await getOrgActiva();
   const { id } = await params;
 
-  const cliente = await prisma.cliente.findFirst({
-    where: { id, orgId: org.id },
-    include: {
-      plan: true,
-      pagos: { orderBy: { pagadoEl: "desc" } },
-    },
-  });
+  // getClienteDeOrg acota el cliente Y su plan a la org. Con
+  // `include: { plan: true }` un planId envenenado mostraba el nombre y el
+  // precio de un plan de otro negocio. Ver lib/modulos/clientes/consultas.ts.
+  const cliente = await getClienteDeOrg(id, org.id);
   if (!cliente) notFound();
 
   const planes = await prisma.plan.findMany({ where: { orgId: org.id, activo: true }, orderBy: { precio: "asc" } });
