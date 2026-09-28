@@ -5,17 +5,18 @@
  * El saldo se DERIVA (suma de movimientos no anulados) — nunca se guarda.
  */
 import { prisma } from "@/lib/core/prisma";
+import { moduloActivoEnOrg } from "@/lib/core/requiere-modulo";
 import type { MonthlyFlow, CategoryExpense } from "@/lib/shared/tipos";
 import { rangoFechas, buckets, inRange, type RangoKey } from "@/lib/shared/rango";
 
-/** ¿La org tiene el módulo Caja Menor ACTIVO? (lo usa el layout del módulo). */
+/**
+ * ¿La org tiene el módulo Caja Menor ACTIVO? (lo usa el layout del módulo).
+ *
+ * DELGADO: la decisión vive en `lib/core/requiere-modulo.ts` — el mismo gate
+ * que usan las server actions. Acá solo se adapta al nombre del dominio.
+ */
 export async function cajamenorHabilitado(orgId: string) {
-  const mod = await prisma.module.findUnique({ where: { slug: "caja-menor" } });
-  if (!mod) return false;
-  const om = await prisma.organizationModule.findUnique({
-    where: { orgId_moduleId: { orgId, moduleId: mod.id } },
-  });
-  return om?.estado === "ACTIVO";
+  return moduloActivoEnOrg("caja-menor", orgId);
 }
 
 /** Saldo actual: INGRESOS − EGRESOS de movimientos NO anulados (todas las fechas). */

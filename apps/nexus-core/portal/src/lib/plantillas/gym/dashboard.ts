@@ -9,6 +9,7 @@
  * habilitada si tiene ACTIVO al menos un módulo miembro de la plantilla.
  */
 import { prisma } from "@/lib/core/prisma";
+import { moduloActivoEnOrg } from "@/lib/core/requiere-modulo";
 import type { MonthlyFlow, CategoryExpense } from "@/lib/shared/tipos";
 import { rangoFechas, buckets, inRange, type RangoKey } from "@/lib/shared/rango";
 
@@ -16,22 +17,14 @@ import { rangoFechas, buckets, inRange, type RangoKey } from "@/lib/shared/rango
 export { RANGOS, isRango, rangoFechas, buckets } from "@/lib/shared/rango";
 export type { RangoKey } from "@/lib/shared/rango";
 
-/** ¿La org tiene la plantilla Gym habilitada? (lo usa el layout del módulo). */
+/**
+ * ¿La org tiene la plantilla Gym habilitada? (lo usa el layout del módulo).
+ *
+ * DELGADO: la decisión vive en `lib/core/requiere-modulo.ts` — es el mismo
+ * gate que usan las server actions. Acá solo se adapta al nombre del dominio.
+ */
 export async function gymHabilitado(orgId: string) {
-  const plantilla = await prisma.plantilla.findUnique({
-    where: { slug: "gym" },
-    include: { modulos: { select: { moduleId: true } } },
-  });
-  if (!plantilla || plantilla.modulos.length === 0) return false;
-  const om = await prisma.organizationModule.findFirst({
-    where: {
-      orgId,
-      estado: "ACTIVO",
-      moduleId: { in: plantilla.modulos.map((m) => m.moduleId) },
-    },
-    take: 1,
-  });
-  return om !== null;
+  return moduloActivoEnOrg("gym", orgId);
 }
 
 /**
