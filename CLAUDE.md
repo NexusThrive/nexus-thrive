@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## 📋 Overview
-Nexus es el **núcleo** de la base del ecosistema: un portal (Next.js) con la estructura REGISTRO → ONBOARDING → PANEL PRINCIPAL → PLANTILLAS Y MÓDULOS SEGÚN EL ONBOARDING. Las apps verticales antiguas (`nexus-finance`, `nexus-services`) fueron eliminadas del monorepo. Mapa del repo: `docs/ARQUITECTURA.md`. Nomenclatura: `docs/GLOSARIO.md`.
+Nexus es el **núcleo** de la base del ecosistema: un portal (Next.js) con la estructura REGISTRO → ONBOARDING → PANEL PRINCIPAL → PLANTILLAS Y MÓDULOS SEGÚN EL ONBOARDING. Las apps verticales antiguas (`nexus-finance`, `nexus-services`) fueron eliminadas del monorepo. Mapa del repo: `docs/ARQUITECTURA.md`. Nomenclatura: `docs/GLOSARIO.md`. Base de datos: `docs/MODELO-DATOS.md`.
 
 ## 🏗️ Arquitectura
 - **apps/nexus-core/portal/**: Portal único de Nexus
@@ -11,7 +11,7 @@ Nexus es el **núcleo** de la base del ecosistema: un portal (Next.js) con la es
   - `src/lib/`: `core/` (núcleo: acciones, org, modulos, navegacion con RUTA_POR_SLUG, requiere-modulo) · `shared/` (rango, format, tipos, form) · `plantillas/gym/dashboard.ts` · `modulos/` (clientes, planes, pagos, gastos, caja-menor)
   - `src/components/`: `core/` (Navbar, NavModulos, MenuCuenta, SelectorNegocio, TourInicial) · `shared/` (FiltroRango, charts/) · `modulos/clientes/` (ListaClientes)
 - **packages/**:
-  - `@nexus/prisma`: Schema modular — `identidad.prisma` (NÚCLEO: Organization/Member/Module/OrganizationModule) + `gym.prisma` (MÓDULO). El núcleo no conoce módulos verticales. `Plantilla`/`PlantillaModulo` NO existen aún en la DB (pendiente rediseño del catálogo).
+  - `@nexus/prisma`: Schema modular — `identidad.prisma` (NÚCLEO: Organization/Member/Module/OrganizationModule/Plantilla/PlantillaModulo) + `cajamenor.prisma` (CAPA) + `gym.prisma` (VERTICAL). El núcleo no conoce módulos verticales. Un rubro completo (`Plantilla`) es un conjunto de `Module` activados juntos. Diccionario completo: `docs/MODELO-DATOS.md`.
   - `@nexus/ui`, `@nexus/utils`, `@nexus/config`: compartidos (UI, helpers, presets)
 - **tooling/**: ESLint y TypeScript base
 - **infraestructura**: `docker-compose.yml` (PostgreSQL 16 local), `.env.example`

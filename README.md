@@ -37,6 +37,7 @@ Nexus/
 > negocio). Las apps verticales antiguas (`nexus-finance`, `nexus-services`)
 > fueron eliminadas — referencia histórica en los PR #23 y #27.
 > **Para entender el repo, entrá por `docs/ARQUITECTURA.md`.**
+> **Para entender la base de datos, entrá por `docs/MODELO-DATOS.md`.**
 
 ## Comandos
 
