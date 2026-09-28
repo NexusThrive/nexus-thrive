@@ -5,6 +5,8 @@ import { getOrgActiva } from "@/lib/core/org";
 import { crearFormatos } from "@/lib/shared/format";
 import { cobrarPago } from "@/lib/modulos/pagos/acciones";
 import { crearPlan } from "@/lib/modulos/planes/acciones";
+import { getPlanesDeOrg } from "@/lib/modulos/planes/consultas";
+import { getClientesPorVencer, getNombresClientes } from "@/lib/modulos/clientes/consultas";
 
 export const dynamic = "force-dynamic";
 
@@ -23,24 +25,19 @@ export default async function PagosPage() {
   const desdeMes = new Date(hoy);
   desdeMes.setMonth(hoy.getMonth() - 1);
 
+  // Los clientes y los planes vienen del servicio de su módulo, no de un
+  // `prisma.*` suelto: la página no debe poder saltarse el scope por org
+  // (ver lib/modulos/clientes/consultas.ts).
   const [clientes, planes, pagosRecientes, porVencer] = await Promise.all([
-    prisma.cliente.findMany({
-      where: { orgId: org.id },
-      select: { id: true, nombre: true },
-      orderBy: { nombre: "asc" },
-    }),
-    prisma.plan.findMany({ where: { orgId: org.id, activo: true }, orderBy: { precio: "asc" } }),
+    getNombresClientes(org.id),
+    getPlanesDeOrg(org.id),
     prisma.pago.findMany({
       where: { orgId: org.id, anulado: false, pagadoEl: { gte: desdeMes } },
       include: { cliente: { select: { nombre: true } } },
       orderBy: { pagadoEl: "desc" },
       take: 20,
     }),
-    prisma.cliente.findMany({
-      where: { orgId: org.id, estado: "ACTIVO", periodoFin: { gte: hoy, lte: en7d } },
-      select: { id: true, nombre: true, periodoFin: true, plan: { select: { nombre: true } } },
-      orderBy: { periodoFin: "asc" },
-    }),
+    getClientesPorVencer(org.id, { desde: hoy, hasta: en7d }),
   ]);
 
   const totalRecibidoMes = pagosRecientes.reduce((acc, p) => acc + Number(p.monto), 0);
@@ -126,11 +123,11 @@ export default async function PagosPage() {
             <ul className="mt-3 divide-y divide-nexus-border/70">
               {porVencer.map((c) => (
                 <li key={c.id} className="flex items-center justify-between py-2.5">
-                  <Link href={`/plantillas/gym/clientes/${c.id}`} className="font-medium text-nexus-ink hover:underline">
+                  <Link href={`/modulos/clientes/${c.id}`} className="font-medium text-nexus-ink hover:underline">
                     {c.nombre}
                   </Link>
                   <span className="text-sm text-nexus-muted">
-                    {c.plan?.nombre ?? "—"} · {formatDate(c.periodoFin!)}
+                    {c.plan ?? "—"} · {formatDate(c.periodoFin!)}
                   </span>
                 </li>
               ))}

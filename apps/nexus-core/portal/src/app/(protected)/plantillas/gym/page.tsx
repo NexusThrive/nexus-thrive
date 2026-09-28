@@ -87,7 +87,7 @@ export default async function DashboardPage({
       <div className="rounded-xl border border-nexus-border bg-nexus-surface p-5">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-nexus-ink">Renovaciones próximas (7 días)</h2>
-          <Link href="/plantillas/gym/pagos" className="flex items-center gap-1 text-sm font-medium text-nexus-gold-text hover:underline">
+          <Link href="/modulos/pagos" className="flex items-center gap-1 text-sm font-medium text-nexus-gold-text hover:underline">
             Cobrar <ArrowUpRight className="h-3.5 w-3.5" />
           </Link>
         </div>
@@ -99,13 +99,12 @@ export default async function DashboardPage({
           <ul className="mt-4 divide-y divide-nexus-border/70">
             {data.porVencer.map((p) => (
               <li key={p.id} className="flex items-center justify-between py-2.5">
-                {/* Ruta RELATIVA a propósito: esta página vive en
-                    /plantillas/gym, así que `clientes/${id}` resuelve a
-                    /plantillas/gym/clientes/${id}. La versión anterior
-                    hardcodeaba `/clientes/${id}` → 404 en el link más usado
-                    del dashboard ("Renovaciones próximas"). Relativa, no se
-                    rompe si la plantilla cambia de base. */}
-                <Link href={`clientes/${p.id}`} className="font-medium text-nexus-ink hover:underline">
+                {/* Ruta ABSOLUTA a propósito: los módulos ya no cuelgan de
+                    la plantilla, viven en /modulos/<slug>. La versión
+                    anterior era relativa (`clientes/${id}`) y resolvía a
+                    /plantillas/gym/clientes/${id}, que ya no existe → 404 en
+                    el link más usado del dashboard ("Renovaciones próximas"). */}
+                <Link href={`/modulos/clientes/${p.id}`} className="font-medium text-nexus-ink hover:underline">
                   {p.nombre}
                 </Link>
                 <span className="text-sm text-nexus-muted">{formatDate(p.vence)}</span>
@@ -122,7 +121,7 @@ export default async function DashboardPage({
           <div>
             <h3 className="text-sm font-semibold text-nexus-ink">Arrancá con lo básico</h3>
             <p className="mt-1 text-sm text-nexus-muted">
-              <Link href="/plantillas/gym/clientes" className="font-medium text-nexus-gold-text hover:underline">
+              <Link href="/modulos/clientes" className="font-medium text-nexus-gold-text hover:underline">
                 Registrá tu primer cliente
               </Link>{" "}
               y cobrale su membresía: el dashboard empieza a contar solo, sin digitar nada a mano.

@@ -14,6 +14,7 @@ import type { TipoMovimientoCaja } from "@prisma/client";
 import { prisma } from "@/lib/core/prisma";
 import { requiereModuloActivo } from "@/lib/core/requiere-modulo";
 import { saldoCaja } from "@/lib/modulos/caja-menor/datos";
+import { str, din } from "@/lib/shared/form";
 
 /**
  * DELGADO: el gate real (sesión + org activa + módulo ACTIVO) vive en
@@ -22,15 +23,6 @@ import { saldoCaja } from "@/lib/modulos/caja-menor/datos";
  */
 async function requireModuloCajaMenor() {
   return requiereModuloActivo("caja-menor");
-}
-
-function str(input: FormData, key: string): string {
-  return String(input.get(key) || "").trim();
-}
-
-function din(input: FormData, key: string): number {
-  const v = Number(String(input.get(key) || "").replace(/[^0-9.-]/g, ""));
-  return Number.isFinite(v) ? v : 0;
 }
 
 // ---------------------------------------------------------------

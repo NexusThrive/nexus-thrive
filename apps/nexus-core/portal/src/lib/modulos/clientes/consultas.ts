@@ -93,3 +93,48 @@ export async function getClienteDeOrg(id: string, orgId: string): Promise<Client
 
   return { ...cliente, plan };
 }
+
+/** Listado mínimo para poblar un `<select>` de cobro (id + nombre). */
+export async function getNombresClientes(orgId: string) {
+  return prisma.cliente.findMany({
+    where: { orgId },
+    select: { id: true, nombre: true },
+    orderBy: { nombre: "asc" },
+  });
+}
+
+/**
+ * Clientes cuya membresía vence dentro de la ventana dada, con el nombre del
+ * plan resuelto DENTRO de la org.
+ *
+ * POR QUÉ EXISTE: la página de pagos hacía esto con
+ * `select: { plan: { select: { nombre: true } } }`. Como en Prisma las
+ * relaciones to-one no admiten `where`, ese include no lleva `orgId`: una fila
+ * ya envenenada (cliente de la org A con `planId` de un plan de la org B)
+ * filtraba el NOMBRE del plan ajeno. Esta función resuelve el plan con el
+ * mismo criterio que el listado, así que un plan ajeno nunca se muestra.
+ */
+export async function getClientesPorVencer(
+  orgId: string,
+  { desde, hasta }: { desde: Date; hasta: Date },
+) {
+  const clientes = await prisma.cliente.findMany({
+    where: { orgId, estado: "ACTIVO", periodoFin: { gte: desde, lte: hasta } },
+    select: { id: true, nombre: true, periodoFin: true, planId: true },
+    orderBy: { periodoFin: "asc" },
+  });
+  if (clientes.length === 0) return [];
+
+  const planIds = clientes.map((c) => c.planId).filter((id): id is string => id !== null);
+  const planes = planIds.length
+    ? await prisma.plan.findMany({ where: { orgId, id: { in: planIds } }, select: { id: true, nombre: true } })
+    : [];
+  const nombrePorPlan = new Map(planes.map((p) => [p.id, p.nombre]));
+
+  return clientes.map((c) => ({
+    id: c.id,
+    nombre: c.nombre,
+    periodoFin: c.periodoFin,
+    plan: c.planId ? (nombrePorPlan.get(c.planId) ?? null) : null,
+  }));
+}

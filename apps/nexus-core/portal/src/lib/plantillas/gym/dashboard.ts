@@ -9,7 +9,7 @@
  * habilitada si tiene ACTIVO al menos un módulo miembro de la plantilla.
  */
 import { prisma } from "@/lib/core/prisma";
-import { moduloActivoEnOrg } from "@/lib/core/requiere-modulo";
+import { derivarEstadosClientes } from "@/lib/modulos/clientes/estado";
 import type { MonthlyFlow, CategoryExpense } from "@/lib/shared/tipos";
 import { rangoFechas, buckets, inRange, type RangoKey } from "@/lib/shared/rango";
 
@@ -18,32 +18,21 @@ export { RANGOS, isRango, rangoFechas, buckets } from "@/lib/shared/rango";
 export type { RangoKey } from "@/lib/shared/rango";
 
 /**
- * ¿La org tiene la plantilla Gym habilitada? (lo usa el layout del módulo).
- *
- * DELGADO: la decisión vive en `lib/core/requiere-modulo.ts` — es el mismo
- * gate que usan las server actions. Acá solo se adapta al nombre del dominio.
+ * La derivación de estado del cliente es del MÓDULO CLIENTES, no de esta
+ * plantilla. Antes vivía acá y el dashboard hacía `updateMany` sobre la tabla
+ * de otro módulo; ahora se llama a su dueño. Re-exportado para no romper los
+ * imports de las páginas.
  */
-export async function gymHabilitado(orgId: string) {
-  return moduloActivoEnOrg("gym", orgId);
-}
+export { derivarEstadosClientes };
 
 /**
- * Deriva el estado real de cada cliente: si su membresía ya venció, pasa a
- * VENCIDO; si está al día (porque cobraron), vuelve a ACTIVO.
- * Se llama en cada lectura del dashboard: el estado SIEMPRE refleja los pagos.
+ * EL GATE SOLO VIVE EN `lib/core/requiere-modulo.ts`.
+ * Hasta el Eje A este archivo exportaba `gymHabilitado()` y el layout de la
+ * plantilla lo llamaba. Con `moduloActivoEnOrg("gym")` + `GuardModulo` el
+ * acceso se decidió en UN solo lado; la envoltura se borró y el layout llama
+ * a `requiereModuloActivo` directo.
+ * Si el criterio de "tiene la plantilla" cambia, cambia en ese archivo.
  */
-export async function derivaEstadosClientes(orgId: string) {
-  const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0);
-  await prisma.cliente.updateMany({
-    where: { orgId, estado: "ACTIVO", periodoFin: { not: null, lt: hoy } },
-    data: { estado: "VENCIDO" },
-  });
-  await prisma.cliente.updateMany({
-    where: { orgId, estado: "VENCIDO", periodoFin: { gte: hoy } },
-    data: { estado: "ACTIVO" },
-  });
-}
 
 export interface GymDashboard {
   orgId: string;
@@ -60,57 +49,87 @@ export interface GymDashboard {
   pagosPorMetodo: CategoryExpense[];
 }
 
-/** Datos del dashboard del gym en el rango pedido — TODO real. */
-export async function getGymDashboard(rango: RangoKey, orgId: string, orgNombre: string): Promise<GymDashboard> {
-  const { desde, hasta } = rangoFechas(rango);
-  await derivaEstadosClientes(orgId);
+/** Cuántos clientes se listan en "Vencen esta semana" como máximo. */
+const MAX_POR_VENCER = 10;
 
-  const [pagos, gastos, clientes] = await Promise.all([
-    prisma.pago.findMany({ where: { orgId, anulado: false, pagadoEl: { gte: desde, lte: hasta } } }),
-    prisma.gasto.findMany({ where: { orgId, anulado: false, fecha: { gte: desde, lte: hasta } } }),
-    prisma.cliente.findMany({ where: { orgId }, select: { id: true, nombre: true, estado: true, periodoFin: true } }),
-  ]);
+/** Datos del dashboard del gym en el rango pedido — TODO real. */
+export async function getGymDashboard(
+  rango: RangoKey,
+  orgId: string,
+  orgNombre: string,
+): Promise<GymDashboard> {
+  const { desde, hasta } = rangoFechas(rango);
+  await derivarEstadosClientes(orgId);
 
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
   const en7d = new Date(hoy);
   en7d.setDate(hoy.getDate() + 7);
 
-  let ingresos = 0;
-  let gastosTotal = 0;
-  for (const p of pagos) ingresos += Number(p.monto);
-  for (const g of gastos) gastosTotal += Number(g.monto);
+  // Los totales, los conteos y los agrupamientos se resuelven EN SQL.
+  // Antes esta función traía TODAS las filas de pagos, gastos y clientes del
+  // negocio y las sumaba en JavaScript: el costo crecía con el tamaño del
+  // negocio en cada lectura, para producir cuatro números y dos gráficas.
+  const [sumPagos, sumGastos, activos, vencidos, porVencer, pagosFlujo, gastosFlujo, porCategoria, porMetodo] =
+    await Promise.all([
+      prisma.pago.aggregate({
+        where: { orgId, anulado: false, pagadoEl: { gte: desde, lte: hasta } },
+        _sum: { monto: true },
+      }),
+      prisma.gasto.aggregate({
+        where: { orgId, anulado: false, fecha: { gte: desde, lte: hasta } },
+        _sum: { monto: true },
+      }),
+      prisma.cliente.count({ where: { orgId, estado: "ACTIVO" } }),
+      prisma.cliente.count({ where: { orgId, estado: "VENCIDO" } }),
+      prisma.cliente.findMany({
+        where: { orgId, estado: "ACTIVO", periodoFin: { gte: hoy, lte: en7d } },
+        select: { id: true, nombre: true, periodoFin: true },
+        orderBy: { periodoFin: "asc" },
+        take: MAX_POR_VENCER,
+      }),
+      // `flujo` sí necesita filas: los buckets son ventanas calendario
+      // irregulares (7 días, 5 semanas, 12 meses), no `date_trunc`, así que no
+      // se pueden agrupar en SQL sin N predicados. Pero solo se piden las dos
+      // columnas que la gráfica usa, no la fila completa.
+      prisma.pago.findMany({
+        where: { orgId, anulado: false, pagadoEl: { gte: desde, lte: hasta } },
+        select: { monto: true, pagadoEl: true },
+      }),
+      prisma.gasto.findMany({
+        where: { orgId, anulado: false, fecha: { gte: desde, lte: hasta } },
+        select: { monto: true, fecha: true },
+      }),
+      prisma.gasto.groupBy({
+        by: ["categoria"],
+        where: { orgId, anulado: false, fecha: { gte: desde, lte: hasta } },
+        _sum: { monto: true },
+      }),
+      prisma.pago.groupBy({
+        by: ["metodo"],
+        where: { orgId, anulado: false, pagadoEl: { gte: desde, lte: hasta } },
+        _sum: { monto: true },
+      }),
+    ]);
+
+  const ingresos = Number(sumPagos._sum.monto ?? 0);
+  const gastosTotal = Number(sumGastos._sum.monto ?? 0);
 
   const flujo: MonthlyFlow[] = buckets(rango, desde, hasta).map((b) => {
     let income = 0;
     let expenses = 0;
-    for (const p of pagos) if (inRange(p.pagadoEl, b)) income += Number(p.monto);
-    for (const g of gastos) if (inRange(g.fecha, b)) expenses += Number(g.monto);
+    for (const p of pagosFlujo) if (inRange(p.pagadoEl, b)) income += Number(p.monto);
+    for (const g of gastosFlujo) if (inRange(g.fecha, b)) expenses += Number(g.monto);
     return { month: b.label, income, expenses };
   });
 
-  const byCat = new Map<string, number>();
-  for (const g of gastos) {
-    byCat.set(g.categoria, (byCat.get(g.categoria) ?? 0) + Number(g.monto));
-  }
-  const egresosPorCategoria: CategoryExpense[] = [...byCat.entries()]
-    .map(([category, amount]) => ({ category: category.toLowerCase(), amount }))
+  const egresosPorCategoria: CategoryExpense[] = porCategoria
+    .map((g) => ({ category: g.categoria.toLowerCase(), amount: Number(g._sum.monto ?? 0) }))
     .sort((a, b) => b.amount - a.amount);
 
-  const byMetodo = new Map<string, number>();
-  for (const p of pagos) {
-    byMetodo.set(p.metodo, (byMetodo.get(p.metodo) ?? 0) + Number(p.monto));
-  }
-  const pagosPorMetodo: CategoryExpense[] = [...byMetodo.entries()]
-    .map(([category, amount]) => ({ category: category.toLowerCase(), amount }))
+  const pagosPorMetodo: CategoryExpense[] = porMetodo
+    .map((p) => ({ category: p.metodo.toLowerCase(), amount: Number(p._sum.monto ?? 0) }))
     .sort((a, b) => b.amount - a.amount);
-
-  const sociosActivos = clientes.filter((c) => c.estado === "ACTIVO").length;
-  const sociosVencidos = clientes.filter((c) => c.estado === "VENCIDO").length;
-  const porVencer = clientes
-    .filter((c) => c.estado === "ACTIVO" && c.periodoFin && c.periodoFin >= hoy && c.periodoFin <= en7d)
-    .sort((a, b) => (a.periodoFin! > b.periodoFin! ? 1 : -1))
-    .map((c) => ({ id: c.id, nombre: c.nombre, vence: c.periodoFin! }));
 
   return {
     orgId,
@@ -119,9 +138,9 @@ export async function getGymDashboard(rango: RangoKey, orgId: string, orgNombre:
     ingresos,
     gastos: gastosTotal,
     balance: ingresos - gastosTotal,
-    sociosActivos,
-    sociosVencidos,
-    porVencer,
+    sociosActivos: activos,
+    sociosVencidos: vencidos,
+    porVencer: porVencer.map((c) => ({ id: c.id, nombre: c.nombre, vence: c.periodoFin! })),
     flujo,
     egresosPorCategoria,
     pagosPorMetodo,

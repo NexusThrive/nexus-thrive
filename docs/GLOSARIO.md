@@ -19,8 +19,8 @@
 
 | Término | Qué es | Ejemplo |
 |---|---|---|
-| **CAPA** | Módulo horizontal: sirve a cualquier negocio, se activa suelto | `caja-menor` |
-| **VERTICAL** | Módulo de rubro específico; entra como plantilla cuando el rubro coincide | clientes/planes/pagos/gastos (Gym) |
+| **CAPA** | Módulo horizontal: sirve a cualquier negocio, se activa suelto | `clientes` (Eje A, 2026-09-28), `caja-menor` |
+| **VERTICAL** | Módulo de rubro específico; entra como plantilla cuando el rubro coincide | planes/pagos/gastos (Gym) |
 
 ## Identidad y multitenancy
 

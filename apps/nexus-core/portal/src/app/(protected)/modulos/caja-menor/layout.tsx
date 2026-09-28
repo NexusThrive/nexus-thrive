@@ -1,6 +1,4 @@
-import { redirect } from "next/navigation";
-import { getOrgActiva } from "@/lib/core/org";
-import { cajamenorHabilitado } from "@/lib/modulos/caja-menor/datos";
+import { GuardModulo } from "@/components/core/GuardModulo";
 
 export const dynamic = "force-dynamic";
 
@@ -10,8 +8,5 @@ export const dynamic = "force-dynamic";
  * la NAVBAR (lib/navegacion.ts); el layout solo cuida el acceso.
  */
 export default async function CajaMenorModuleLayout({ children }: { children: React.ReactNode }) {
-  const { org } = await getOrgActiva();
-  if (!(await cajamenorHabilitado(org.id))) redirect("/");
-
-  return <div className="space-y-6">{children}</div>;
+  return <GuardModulo slug="caja-menor">{children}</GuardModulo>;
 }

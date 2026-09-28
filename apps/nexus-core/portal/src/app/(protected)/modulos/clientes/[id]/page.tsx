@@ -36,7 +36,7 @@ export default async function ClientePage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="space-y-6">
-      <Link href="/plantillas/gym/clientes" className="flex items-center gap-1 text-sm text-nexus-muted hover:text-nexus-ink">
+      <Link href="/modulos/clientes" className="flex items-center gap-1 text-sm text-nexus-muted hover:text-nexus-ink">
         <ArrowLeft className="h-4 w-4" /> Volver a clientes
       </Link>
 

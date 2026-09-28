@@ -64,7 +64,7 @@ export function ListaClientes({ clientes }: { clientes: ClienteRow[] }) {
               {filtrados.map((c) => (
                 <tr key={c.id} className="transition hover:bg-nexus-surface-alt/60">
                   <td className="px-4 py-3">
-                    <Link href={`/plantillas/gym/clientes/${c.id}`} className="font-medium text-nexus-ink hover:underline">
+                    <Link href={`/modulos/clientes/${c.id}`} className="font-medium text-nexus-ink hover:underline">
                       {c.nombre}
                     </Link>
                     <span className="mt-0.5 block text-xs text-nexus-muted">

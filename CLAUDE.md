@@ -7,11 +7,11 @@ Nexus es el **núcleo** de la base del ecosistema: un portal (Next.js) con la es
 
 ## 🏗️ Arquitectura
 - **apps/nexus-core/portal/**: Portal único de Nexus
-  - `src/app/`: `(auth)` registro/login · `(onboarding)` perfil del negocio · `(protected)` shell + panel principal + `plantillas/gym/` (PLANTILLA armada de módulos) + `modulos/caja-menor/` (módulo suelto)
-  - `src/lib/`: `core/` (núcleo: acciones, org, modulos, navegacion con RUTA_POR_SLUG, requiere-modulo) · `shared/` (rango, format, tipos, form) · `plantillas/gym/dashboard.ts` · `modulos/` (clientes, planes, pagos, gastos, caja-menor)
-  - `src/components/`: `core/` (Navbar, NavModulos, MenuCuenta, SelectorNegocio, TourInicial) · `shared/` (FiltroRango, charts/) · `modulos/clientes/` (ListaClientes)
+  - `src/app/`: `(auth)` registro/login · `(onboarding)` perfil del negocio · `(protected)` shell + panel principal + `plantillas/gym/` (solo el dashboard de la PLANTILLA) + `modulos/<slug>/` (cada MÓDULO vive en su propia ruta: clientes, pagos, gastos, caja-menor)
+  - `src/lib/`: `core/` (núcleo: acciones, org, modulos, navegacion, requiere-modulo) · `shared/` (rango, format, tipos, form) · `plantillas/gym/dashboard.ts` · `modulos/` (clientes, planes, pagos, gastos, caja-menor)
+  - `src/components/`: `core/` (Navbar, NavModulos, GuardModulo, MenuCuenta, SelectorNegocio, TourInicial) · `shared/` (FiltroRango, charts/) · `modulos/clientes/` (ListaClientes)
 - **packages/**:
-  - `@nexus/prisma`: Schema modular en **dos niveles** — `core/identidad.prisma` (NÚCLEO: Organization/Member/Module/OrganizationModule/Plantilla/PlantillaModulo) y `modulos/<slug>.prisma` (un archivo POR MÓDULO del catálogo, nombre = `modules.slug`; hoy clientes, planes, pagos, gastos, caja-menor). El núcleo no conoce ningún módulo. **Un módulo NO es de un rubro**: es un producto que una Organization activa (`OrganizationModule`); lo "de un rubro" vive en `Plantilla.rubro` + `plantilla_modulos`, nunca en el schema. Un rubro completo (`Plantilla`) es un conjunto de `Module` activados juntos. Diccionario completo: `docs/MODELO-DATOS.md`.
+  - `@nexus/prisma`: Schema modular en **dos niveles** — `core/identidad.prisma` (NÚCLEO: Organization/Member/Module/OrganizationModule/Plantilla/PlantillaModulo) y `modulos/<slug>.prisma` (un archivo POR MÓDULO del catálogo, nombre = `modules.slug`; hoy clientes, planes, pagos, gastos, caja-menor). El núcleo no conoce ningún módulo. **Un módulo NO es de un rubro**: es un producto que una Organization activa (`OrganizationModule`); lo "de un rubro" vive en `Plantilla.rubro` + `plantilla_modulos`, nunca en el schema. Un rubro completo (`Plantilla`) es un conjunto de `Module` activados juntos. **Eje A aplicado (2026-09-28)**: `clientes` es `CAPA` + `porDefecto` (se activa solo en toda org nueva; backfill para las existentes); los módulos base se activan en `registrar()` con `activarModulosPorDefecto`. Diccionario completo: `docs/MODELO-DATOS.md`.
   - `@nexus/ui`, `@nexus/utils`, `@nexus/config`: compartidos (UI, helpers, presets)
 - **tooling/**: ESLint y TypeScript base
 - **infraestructura**: `docker-compose.yml` (PostgreSQL 16 local), `.env.example`
@@ -65,9 +65,9 @@ pnpm --filter nexus-portal test:watch
 ```
 
 Los tests son unitarios y viven junto al código (`*.test.ts`), con Vitest y el
-alias `@/`. Hoy cubren el formateo de dinero, el gate de módulos y el
-aislamiento multi-tenant de las consultas de Clientes. **No hay E2E ni CI todavía**
-(issues #19 y #20).
+alias `@/`. Hoy cubren el formateo de dinero, el gate de módulos, el catálogo
+(rubros, sugerencias, rutas) y el aislamiento multi-tenant de las consultas de
+Clientes. **No hay E2E ni CI todavía** (issues #19 y #20).
 
 ## 🔧 Notas de desarrollo
 - El monorepo usa pnpm como gestor de paquetes
@@ -79,6 +79,9 @@ aislamiento multi-tenant de las consultas de Clientes. **No hay E2E ni CI todav�
 
 ## 📚 Convenciones
 - Un módulo **no** es una app: es un módulo (pantallas + datos) dentro de `apps/nexus-core/portal`. Solo hay un portal.
+- Cada módulo del catálogo vive en `/modulos/<slug>` (ruta en `Module.rutaBase`); la `Plantilla` solo tiene su dashboard (`/plantillas/<slug>`).
+- Los dashboards resuelven totales/conteos/agrupaciones **en SQL** (aggregate/count/groupBy); `flujo` trae filas a propósito porque sus buckets son irregulares.
+- El gate de módulos es ÚNICO: `lib/core/requiere-modulo.ts` + `GuardModulo`. No crear checks duplicados.
 - Sigue la estructura `apps/<campo>/<módulo>/` para nuevas aplicaciones
 - El código reutilizable entre apps va en `packages/`
 - La configuración compartida vive en `packages/config` y `tooling/`

@@ -17,7 +17,7 @@ import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/core/prisma";
 import { requiereSesion } from "@/lib/core/org";
-import { activarModuloPorRubro, activarModuloEnOrg, getModulosActivosAgrupados } from "@/lib/core/modulos";
+import { activarModuloPorRubro, activarModuloEnOrg, activarModulosPorDefecto, esRubroDelCatalogo, getModulosActivosAgrupados, getRutaBase } from "@/lib/core/modulos";
 
 function str(input: FormData, key: string): string {
   return String(input.get(key) || "").trim();
@@ -60,6 +60,10 @@ export async function registrar(input: FormData) {
     data: { nombre: "Mi negocio", slug: await slugUnico(slugBase) },
   });
 
+  // Los módulos BASE del catálogo entran desde el primer momento: son la base
+  // del producto, no una sugerencia. `clientes` es el caso de hoy.
+  await activarModulosPorDefecto(org.id);
+
   await prisma.member.create({
     data: { orgId: org.id, nombre, email, passwordHash, rol: "ADMIN" },
   });
@@ -77,7 +81,6 @@ export async function guardarOnboarding(input: FormData) {
   const { email } = await requiereSesion();
 
   const nombreNegocio = str(input, "nombre") || "Mi negocio";
-  const rubro = (str(input, "rubro") || "otro").toLowerCase();
   const pais = (str(input, "pais") || "CO").toUpperCase();
   const moneda = (str(input, "moneda") || "COP").toUpperCase();
   const equipo = str(input, "equipo") === "equipo" ? "equipo" : "solo-yo";
@@ -86,6 +89,17 @@ export async function guardarOnboarding(input: FormData) {
     : null;
   // Módulos elegidos en "Otro negocio" (personalización del catálogo).
   const modulosIds = (input.getAll("modulos") as string[]).filter(Boolean);
+
+  /**
+   * El `rubro` se VALIDA contra el catálogo en vez de guardarse como texto
+   * libre. `Organization.tipoNegocio` alimenta la recomendación de módulos
+   * (`Module.sugeridoPara` y `Plantilla.rubro`): si guarda un rubro que nadie
+   * maneja ("gimnasioo", un invento del formulario), la org queda con un
+   * perfil que no sugiere nada y no hay forma de corregirlo desde la UI.
+   */
+  const rubroCrudo = (str(input, "rubro") || "").toLowerCase();
+  const rubroValido = await esRubroDelCatalogo(rubroCrudo);
+  const rubro = rubroValido ? rubroCrudo : "otro";
 
   const miembro = await prisma.member.findFirst({
     where: { email, activo: true },
@@ -182,9 +196,17 @@ export async function activarModulo(input: FormData) {
   await activarModuloEnOrg(miembro.orgId, moduleId, miembro.rol);
 
   revalidatePath("/");
-  const org = await prisma.organization.findUnique({ where: { id: miembro.orgId } });
   // NO se llama `module`: `module` es un global de CommonJS y Next lo
   // reescribe; asignarle rompe el bundle del server (`@next/next/no-assign-module-variable`).
   const modulo = await prisma.module.findUnique({ where: { id: moduleId } });
-  if (org && modulo) revalidatePath(`/${modulo.slug}`);
+  if (!modulo) return;
+
+  // La ruta sale del CATÁLOGO, no de armarla con el slug. Antes era
+  // `revalidatePath(`/${modulo.slug}`)`, que apunta a `/caja-menor`: una ruta
+  // que no existe, porque caja-menor vive en `/modulos/caja-menor`. La
+  // revalidación no fallaba en voz alta, solo no invalidaba nada.
+  // `getRutaBase` resuelve también el caso de un módulo miembro de plantilla
+  // (que hereda la base de su plantilla).
+  const rutaBase = await getRutaBase(modulo.slug);
+  if (rutaBase) revalidatePath(rutaBase);
 }

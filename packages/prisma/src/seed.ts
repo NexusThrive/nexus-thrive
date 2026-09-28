@@ -57,14 +57,43 @@ async function main() {
     },
   });
 
-  // ---------- Plantilla GYM (vertical: rubro gimnasio) ----------
+  // ---------- Plantilla GYM (rubro gimnasio) ----------
   // Los módulos de la plantilla se activan JUNTOS (OrganizationModule).
-  const gymModules = [
-    { slug: "clientes", nombre: "Clientes", descripcion: "Socios, membresías y cobros: el gimnasio al día sin planillas.", campo: "SERVICES" as const, icono: "users" },
+  //
+  // EJE A — `clientes` es CAPA, no VERTICAL. El registro de personas no es de
+  // un rubro: un museo tiene visitantes y un salón tiene clientes. Por eso va
+  // `porDefecto: true` (se activa en toda organización al crearla) y NO
+  // depende del rubro. Sigue siendo MIEMBRO de Gym: un gimnasio lo recibe
+  // también con la plantilla, y el nombre que muestra el menú lo pone la
+  // plantilla ("Socios"), no el módulo ("Clientes").
+  const clientesCapas = {
+    slug: "clientes",
+    nombre: "Clientes",
+    descripcion: "El registro de personas del negocio: datos, historial y contacto.",
+    campo: "CORE" as const,
+    icono: "users",
+  };
+
+  // Los otros tres SIGUEN siendo verticales: solo tienen sentido con la
+  // plantilla de un rubro (membresías, cobros y gastos de un gym).
+  const gymVerticales = [
     { slug: "planes", nombre: "Planes", descripcion: "Planes de membresía del gimnasio.", campo: "SERVICES" as const, icono: "clipboard-list" },
     { slug: "pagos", nombre: "Pagos", descripcion: "Cobros y pagos de membresías.", campo: "SERVICES" as const, icono: "credit-card" },
     { slug: "gastos", nombre: "Gastos", descripcion: "Gastos del gimnasio.", campo: "SERVICES" as const, icono: "receipt" },
   ];
+
+  // Un CAPA se navega suelto en su propia ruta; un miembro de plantilla
+  // conserva la ruta del CATÁLOGO también, porque la ruta del módulo es la
+  // que usa el sidebar para sus sub-entradas (`/modulos/<slug>`).
+  const attrsClientes = {
+    ...clientesCapas,
+    naturaleza: "CAPA" as const,
+    porDefecto: true,
+    rutaBase: `/modulos/${clientesCapas.slug}`,
+    // Un CAPA no se sugiere POR rubro: viene siempre, no es recomendación.
+    sugeridoPara: [] as string[],
+    orden: 0,
+  };
 
   let gym: { id: string; slug: string };
   if (await prisma.module.findUnique({ where: { slug: "gym" } })) {
@@ -82,7 +111,8 @@ async function main() {
       campo: "SERVICES",
       rubro: "gimnasio",
       icono: "dumbbell",
-      // Los módulos MIEMBROS heredan esta ruta: se navega a /plantillas/gym.
+      // El DASHBOARD de la plantilla. Los módulos ya NO cuelgan de esta ruta:
+      // cada uno vive en la suya (`/modulos/<slug>`).
       rutaBase: "/plantillas/gym",
     },
     create: {
@@ -96,11 +126,32 @@ async function main() {
     },
   });
 
-  for (const [i, m] of gymModules.entries()) {
+  // `clientes` se upsertea APARTE: es CAPA + porDefecto, los otros son
+  // VERTICAL. El bucle único anterior los forzaba a todos a VERTICAL.
+  const modClientes = await prisma.module.upsert({
+    where: { slug: clientesCapas.slug },
+    update: { ...attrsClientes },
+    create: { ...attrsClientes },
+  });
+  await prisma.plantillaModulo.upsert({
+    where: { plantillaId_moduleId: { plantillaId: plantillaGym.id, moduleId: modClientes.id } },
+    update: { orden: 0 },
+    create: { plantillaId: plantillaGym.id, moduleId: modClientes.id, orden: 0 },
+  });
+
+  for (const [i, m] of gymVerticales.entries()) {
+    const attrs = {
+      ...m,
+      naturaleza: "VERTICAL" as const,
+      porDefecto: false,
+      rutaBase: `/modulos/${m.slug}`,
+      sugeridoPara: ["gimnasio"],
+      orden: i + 1,
+    };
     const mod = await prisma.module.upsert({
       where: { slug: m.slug },
-      update: { nombre: m.nombre, descripcion: m.descripcion, campo: m.campo, naturaleza: "VERTICAL", icono: m.icono, porDefecto: false, sugeridoPara: ["gimnasio"], orden: i + 1 },
-      create: { slug: m.slug, nombre: m.nombre, descripcion: m.descripcion, campo: m.campo, naturaleza: "VERTICAL", icono: m.icono, porDefecto: false, sugeridoPara: ["gimnasio"], orden: i + 1 },
+      update: attrs,
+      create: attrs,
     });
     await prisma.plantillaModulo.upsert({
       where: { plantillaId_moduleId: { plantillaId: plantillaGym.id, moduleId: mod.id } },

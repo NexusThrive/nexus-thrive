@@ -71,7 +71,7 @@ núcleo (capa 3) conozca un módulo concreto. Ver §4.
 | 2 | `/login` | `app/(auth)/login` | NextAuth; la sesión es el **email** (identidad global) |
 | 3 | `/onboarding` | `app/(onboarding)/onboarding` | Perfil del negocio: nombre, **moneda**, **país**, rubro → activa plantilla/módulos |
 | 4 | `/` (panel) | `app/(protected)/page.tsx` | Muestra lo que la org tiene activo, según su onboarding |
-| 5 | `/plantillas/gym/…` o `/modulos/caja-menor/…` | `app/(protected)/…` | La pantalla del producto contratado |
+| 5 | `/plantillas/gym` (dashboard) o `/modulos/<slug>` | `app/(protected)/…` | La pantalla del producto contratado: cada módulo vive en SU ruta, la plantilla solo tiene su panel |
 
 Los grupos entre paréntesis `(auth)`, `(onboarding)`, `(protected)` son **rutas
 virtuales** de Next: no existen como carpetas en la URL, solo organizan el
@@ -135,7 +135,8 @@ con `gym.prisma` (4 módulos en un archivo con nombre de rubro).
 ## 5. Anatomía de un módulo (las 5 piezas, siempre las 5)
 
 Para que un módulo exista hacen falta estas piezas, en este orden. Los módulos
-que ya están sirven de plantilla: **Gym** = VERTICAL, **Caja Menor** = CAPA.
+que ya están sirven de plantilla: **clientes** = CAPA (base del producto),
+**Caja Menor** = CAPA, **Gym** = plantilla de VERTICALES.
 
 ### 1. Catálogo — ¿existe el módulo?
 `Module` en el catálogo (`lib/core/modulos.ts` lo lee; el seed lo crea).
@@ -152,8 +153,10 @@ módulo lleva `orgId` y se consulta filtrando por él (ver §6).
 ### 4. Gate — ¿puede este usuario verlo y tocarlo?
 `lib/core/requiere-modulo.ts` — **una sola decisión** para todo el portal
 (`moduloActivoEnOrg` para datos, `requiereModuloActivo` para el guard con
-sesión y redirect). Los wrappers por módulo (`gymHabilitado`,
-`requireModuloCajaMenor`) existen por compatibilidad y **delegan** a esa función.
+sesión y redirect). Las rutas usan `components/core/GuardModulo.tsx` y los
+layouts llaman a `requiereModuloActivo` directo. Solo `requireModuloCajaMenor`
+(acciones del módulo) queda como delgado que delega a esa función; la
+envoltura `gymHabilitado` del dashboard de Gym se eliminó en el Eje A.
 
 ### 5. Interfaz — ¿dónde está?
 - Ruta: `app/(protected)/modulos/<slug>/` (suelto) o `app/(protected)/plantillas/<slug>/` (por rubro)

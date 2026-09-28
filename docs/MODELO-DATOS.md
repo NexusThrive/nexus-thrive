@@ -200,7 +200,7 @@ Un rubro completo, armado como **conjunto de módulos**.
 | `slug` | String | **único** (`gym`) |
 | `nombre` | String | "Gym" |
 | `rubro` | String | `"gimnasio"` — el onboarding matchea por acá |
-| `rutaBase` | String? | `/plantillas/gym`. **Los módulos miembros heredan esta ruta** |
+| `rutaBase` | String? | `/plantillas/gym` (plantilla) o `/modulos/<slug>` (módulo). La navegación lee **la ruta de acá**, no de un allowlist en código. Antes vivía hardcodeado y todo módulo nuevo nacía con un 404 |
 | `campo` / `icono` / `activo` / `orden` | — | igual que en `modules` |
 
 #### `plantilla_modulos`
@@ -396,55 +396,54 @@ discrepancia está en otro lado.
 
 | Capa | ¿Está separado? |
 |---|---|
-| **Catálogo** | ✅ Sí. El seed crea 4 filas de `Module`: `clientes`, `planes`, `pagos`, `gastos`; y una `Plantilla` `gym` que las agrupa |
-| **Datos** | ✅ Sí. `lib/modulos/{clientes,planes,pagos,gastos}/` con sus consultas y acciones separadas + `lib/plantillas/gym/dashboard.ts` |
-| **Schema** | ✅ Sí (2026-09-28). Los 4 modelos viven en 4 archivos de `schema/modulos/`, uno por módulo. Partirlo fue cosmético: cero migraciones (`migrate diff` dio *"empty migration"*) |
-| **Rutas** | ⚠️ A medias. `plantillas/gym/` tiene rutas propias para `clientes`, `pagos` y `gastos`, pero **`planes` no tiene ruta**: se maneja dentro del dashboard |
-| **Naturaleza** | ⚠️ Los 4 están marcados **`VERTICAL`** y `sugeridoPara: ["gimnasio"]` → **no se pueden activar solos** fuera de un gym |
+| **Catálogo** | ✅ Sí. El seed crea las filas de `Module`: `clientes` (CAPA + `porDefecto`) y `planes`, `pagos`, `gastos` (VERTICAL, miembros de la `Plantilla` `gym`); y `caja-menor` (CAPA) |
+| **Datos** | ✅ Sí. `lib/modulos/{clientes,planes,pagos,gastos,caja-menor}/` con sus consultas y acciones separadas + `lib/plantillas/gym/dashboard.ts` |
+| **Schema** | ✅ Sí (2026-09-28). Los modelos viven en `schema/modulos/`, uno por módulo. Partirlo fue cosmético: cero migraciones (`migrate diff` dio *"empty migration"*) |
+| **Rutas** | ✅ Sí (Eje A, 2026-09-28). Cada módulo en `/modulos/<slug>` (clientes, pagos, gastos, caja-menor); `/plantillas/gym` es solo el dashboard de la plantilla. `planes` sigue sin pantalla propia: se gestiona desde Pagos |
+| **Naturaleza** | ✅ Sí (Eje A, 2026-09-28). `clientes` es **`CAPA` + `porDefecto` + `sugeridoPara: []`**: se activa en toda organización (con backfill para las existentes). `planes`/`pagos`/`gastos` siguen **`VERTICAL`** de gym |
 
-### La brecha real
+### La brecha real (lo que queda)
 
-**"4 módulos" existe en el catálogo y en el código, pero en la práctica un salón
-de belleza, un consultorio o una clínica no pueden activar `clientes`**: está
-marcado como vertical de gimnasio. Y `clientes` no es reutilizable ni por
-accidente, porque **sus tablas están atadas a `Plan`**, que es concepto de
-gimnasio.
+**`clientes` ya es reutilizable**, pero su tabla sigue atada a `Plan`, que es
+concepto de gimnasio. Un salón de belleza puede activar `clientes` y lo va a
+usar; el precio que paga es cargar los "planes de membresía" del gym en un
+negocio que quizá no tiene membresías. Eso es el **Eje B**: la atadura
+`Cliente → Plan` que sigue en la base.
 
 ### Tres ejes posibles (independientes entre sí)
 
-**Eje A — la naturaleza de `clientes`:** ¿es un concepto de negocio genérico
-("los clientes de mi negocio") o un concepto de gimnasio ("el socio con
-membresía")?
-→ **Si es genérico, debería ser `CAPA` y `sugeridoPara: []`.** Es exactamente lo
-que el schema ya insinúa: el comentario de `Module.porDefecto` usa **"clientes"**
-como ejemplo de módulo base.
+**Eje A — la naturaleza de `clientes`:** **✅ hecho (2026-09-28).** `clientes` es
+`CAPA`, `porDefecto: true`, `sugeridoPara: []`. Los módulos base se activan al
+crear la organización (`activarModulosPorDefecto`), y una migración de datos
+idempotente (`20260928_000000_backfill_clientes_capa`) pone a las
+organizaciones existentes en la misma situación. El comentario del schema
+(`Module.porDefecto` usa "clientes" como ejemplo) ahora se cumple.
 
 **Eje B — el vínculo `Cliente → Plan`:** es la atadura que impide reutilizar
-`clientes`. Hay dos caminos:
+`clientes` del todo. Hay dos caminos:
 
 | Opción | Qué implica |
 |---|---|
 | **B) Sacar la membresía a su propia tabla** | `Cliente` queda limpio (nombre, documento, teléfono) y una tabla `Membresia { clienteId, planId, periodoFin, estado }` es lo gym-específico. **Es el modelo correcto** y además resuelve la fuga de §6.2 por construcción, si se le pone `orgId` |
 | A) Mover `Plan` junto a `Cliente` | "planes de servicio" es reutilizable (un salón también tiene planes). Menos trabajo, pero sigue siendo gym-céntrico |
 
-**Eje C — el archivo y la ruta:** la mitad de archivos ya está hecha
-(`gym.prisma` → `schema/modulos/{clientes,planes,pagos,gastos}.prisma`, sin
-migraciones). Falta la mitad de rutas: decidir si `clientes` se navega en
-`/plantillas/gym/clientes` (heredando la ruta) o en `/modulos/clientes`
-(suelto). Ojo: hoy la herencia de ruta está asumida en
-`plantillas/gym/layout.tsx`, que agrupa por prefijo de path en `NavModulos.tsx`.
+**Eje C — el archivo y la ruta:** **✅ hecho (2026-09-28).** Los archivos ya
+están partidos por módulo y cada módulo vive en `/modulos/<slug>`. Se hizo
+antes que el Eje B a propósito: la herencia de ruta ("un miembro de plantilla
+hereda la ruta de su plantilla") era del modelo viejo de rutas anidadas y se
+descartó; hoy cada módulo tiene su ruta propia, y la plantilla su dashboard.
 
 > Nota sobre el nombre: si el Eje B se aplica, el archivo se va a llamar
-> `membresias.prisma`, no `planes.prisma`. Conviene decidir el Eje B **antes** de
-> tocar rutas, o se hace el trabajo de rutas dos veces.
+> `membresias.prisma`, no `planes.prisma`. La ruta de `planes` hoy no existe
+> (se gestiona dentro de Pagos), así que el renombre no rompe ningún path.
 
 ### Mi lectura, sin decidir por vos
 
-El **Eje A es el barato y el de mayor retorno**: cambiar `naturaleza` y
-`sugeridoPara` en el seed es una línea, y ya abre la puerta a que otro rubro use
-`clientes` sin tocar nada más. El **Eje B es el que cuesta y el que vale**: es la
-diferencia entre "un módulo que dice clientes" y "clientes de verdad", y de paso
-cierra la fuga cross-tenant en la base, no solo en el código.
+El **Eje A está hecho** (fue el barato y el de mayor retorno): los módulos
+base se activan solos y cualquier rubro puede usar `clientes`. El **Eje B es el
+que cuesta y el que vale**: es la diferencia entre "un módulo que dice
+clientes" y "clientes de verdad", y de paso cierra la fuga cross-tenant en la
+base, no solo en el código.
 
 ### Antes de tocar nada, mirá estas cuatro cosas
 
@@ -455,8 +454,9 @@ cierra la fuga cross-tenant en la base, no solo en el código.
 2. **`Pago` pertenece a `Cliente` o a `Membresia`?** Si `Membresia` existe, un
    pago de membresía debería colgar de la membresía, no del cliente. Hoy cuelga
    del cliente.
-3. **`estado` y `periodoFin` se calculan en `pagos/acciones.ts`** — si se mueven
-   a `Membresia`, hay que mover esa lógica y sus tests.
+3. **`estado` y `periodoFin` se calculan** en `lib/modulos/clientes/estado.ts`
+   (2026-09-28: se centralizó en el módulo dueño, `derivarEstadosClientes`) —
+   si se mueven a `Membresia`, hay que mover esa lógica y sus tests.
 4. **Caja Menor no tiene clientes.** Si `clientes` fuera `CAPA`, caja podría
    registrar a quién se le entregó el efectivo. ¿Se quiere eso? Es una decisión de
    producto, no de base.
@@ -466,18 +466,15 @@ cierra la fuga cross-tenant en la base, no solo en el código.
 | # | Paso | Costo | Por qué en ese orden |
 |---|---|---|---|
 | 1 | **Corregir la doc** (este doc + `DECISIONES.md`) | 0 | Antes de mover una tabla, que las razones estén escritas. Ya está la mitad (§7.1) |
-| 2 | **Eje A**: `clientes` de `VERTICAL` → `CAPA`, `sugeridoPara: []` | **una línea de seed** | Es el paso de mayor retorno y el más barato. No toca el schema ni una sola fila |
+| 2 | **Eje A**: `clientes` de `VERTICAL` → `CAPA`, `sugeridoPara: []` | **✅ hecho (2026-09-28)** | Es el paso de mayor retorno y el más barato. No toca el schema; la migración de datos pone las orgs existentes al día |
 | 3 | Cerrar la fuga de `planId` **en la base** (FK compuesta o trigger) | media | Ya está cerrada en el código con tests; en la base sigue abierta (§6.2) |
 | 4 | **Eje B**: `Membresia` y `Cliente` genérico | alta | El que realmente libera a `clientes` para otros rubros. Toca la tabla más poblada |
-| 5 | **Eje C**: partir `gym.prisma` en archivos + rutas | baja | Cosmético. **Al final a propósito**: no aporta nada mientras los datos sigan atados |
+| 5 | **Eje C**: partir `gym.prisma` en archivos + rutas | baja | **✅ hecho (2026-09-28).** Archivos particidos y rutas `/modulos/<slug>`; quedó verificado con `type-check` + tests |
 
-> **Estado al 2026-09-28:** el paso 5 se hizo **por la mitad** y fuera de orden
-> (archivos sí, rutas no) — `schema/modulos/{clientes,planes,pagos,gastos}.prisma`,
-> cero migraciones. Fue barato y sin riesgo, pero **no desbloquea nada**: el
-> bloqueo real sigue siendo el paso 2 (`clientes` es `VERTICAL`, así que ningún
-> negocio que no sea gym puede activarlo) y el 4 (`Cliente.planId` lo ata a gym).
-> La mitad de rutas del paso 5 conviene hacerla **después** del 4, porque el 4
-> renombra `planes.prisma` a `membresias.prisma`.
+> **Estado al 2026-09-28:** el paso 5 (Eje C) está completo — archivos y rutas.
+> El paso 2 (Eje A) está completo: `clientes` es `CAPA` + `porDefecto`, con
+> backfill para las organizaciones existentes. El bloqueo real sigue siendo el
+> paso 4 (Eje B): `Cliente.planId` lo ata a gym.
 
 **El paso 2 es el que más rinde por lo que cuesta, y el 4 es el que importa de
 verdad.** No hay que hacerlos juntos: el 2 no obliga al 4, y hacer el 4 primero

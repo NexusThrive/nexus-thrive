@@ -1,10 +1,10 @@
 import { Users } from "lucide-react";
 import { AlertTriangle } from "lucide-react";
-import { prisma } from "@/lib/core/prisma";
 import { getOrgActiva } from "@/lib/core/org";
 import { crearFormatos } from "@/lib/shared/format";
 import { crearCliente } from "@/lib/modulos/clientes/acciones";
 import { getClientesDeOrg } from "@/lib/modulos/clientes/consultas";
+import { getPlanesDeOrg } from "@/lib/modulos/planes/consultas";
 import { ListaClientes } from "@/components/modulos/clientes/ListaClientes";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +15,7 @@ export const dynamic = "force-dynamic";
  */
 const ERRORES: Record<string, string> = {
   nombre: "El nombre del socio es obligatorio.",
+  fecha: "La fecha de nacimiento no es válida.",
   plan: "La membresía seleccionada no pertenece a este negocio. No se registró el socio.",
 };
 
@@ -45,7 +46,7 @@ export default async function ClientesPage({
 
   const [clientes, planes] = await Promise.all([
     getClientesDeOrg(org.id),
-    prisma.plan.findMany({ where: { orgId: org.id, activo: true }, orderBy: { precio: "asc" } }),
+    getPlanesDeOrg(org.id),
   ]);
 
   return (

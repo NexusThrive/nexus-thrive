@@ -3,8 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Plus } from "lucide-react";
-import { getSeccionesModulo } from "@/lib/core/navegacion";
 import { iconoModulo } from "@/lib/core/iconos-modulos";
+
+interface Seccion {
+  href: string;
+  label: string;
+}
 
 interface ModuloNav {
   slug: string;
@@ -12,6 +16,13 @@ interface ModuloNav {
   icono: string | null;
   /** Base de ruta LEÍDA DEL CATÁLOGO (ver getModulosActivosAgrupados). */
   rutaBase: string | null;
+  /** Sub-entradas, también del catálogo (módulos miembros o sub-páginas). */
+  secciones: Seccion[];
+}
+
+/** Una entrada está activa si la ruta actual es la base o cuelga de ella. */
+function coincide(ruta: string, pathname: string): boolean {
+  return pathname === ruta || pathname.startsWith(`${ruta}/`);
 }
 
 /**
@@ -19,22 +30,31 @@ interface ModuloNav {
  *
  *   Inicio
  *   Módulos
+ *     GYM
+ *       Clientes · Pagos · Gastos
  *     CAJA MENOR
- *       Dashboard · Movimientos · Categorías
+ *       Movimientos · Categorías
  *   Agregar módulo
  *
- * El módulo del pathname actual despliega sus secciones debajo de su nombre;
+ * El grupo del pathname actual despliega sus secciones debajo de su nombre;
  * los demás aparecen solo como nombre (clic → su dashboard). "Agregar módulo"
  * ancla al panel principal, donde están las sugerencias por rubro.
  *
- * La ruta llega por prop desde el catálogo: este componente no conoce rutas,
- * así que un módulo nuevo no puede producir un link 404.
+ * TODO lo que navega llega por prop desde el catálogo (`rutaBase` +
+ * `secciones`, armados en `getModulosActivosAgrupados`): este componente no
+ * conoce ninguna ruta de módulo, así que uno nuevo no puede producir un 404.
+ *
+ * El grupo se considera activo si la ruta actual coincide con SU base o con
+ * cualquiera de sus secciones. Antes solo se comparaba la base, y como los
+ * módulos ya no cuelgan de la plantilla (`/modulos/clientes` en vez de
+ * `/plantillas/gym/clientes`), entrar a un módulo no desplegaba su grupo.
  */
 export function NavModulos({ modulos }: { modulos: ModuloNav[] }) {
   const pathname = usePathname();
+
   const activo = modulos.find((m) => {
-    if (!m.rutaBase) return false;
-    return pathname === m.rutaBase || pathname.startsWith(`${m.rutaBase}/`);
+    if (m.rutaBase && coincide(m.rutaBase, pathname)) return true;
+    return m.secciones.some((s) => coincide(s.href, pathname));
   });
 
   return (
@@ -56,31 +76,28 @@ export function NavModulos({ modulos }: { modulos: ModuloNav[] }) {
           </p>
           {modulos.map((mod) => {
             const esActivo = mod.slug === activo?.slug;
-            const secciones = getSeccionesModulo(mod.slug);
             // Sin ruta en el catálogo no hay link: antes caía en /${slug} → 404.
             if (!mod.rutaBase) return null;
+            const Icono = iconoModulo(mod.icono);
             return (
               <div key={mod.slug}>
-<Link
-                    href={mod.rutaBase}
-                    className={`mt-1 flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-semibold uppercase tracking-wide transition hover:bg-nexus-surface-alt hover:text-nexus-ink ${
-                      esActivo ? "bg-nexus-surface-alt text-nexus-ink" : "text-nexus-muted"
-                    }`}
-                  >
-                    {(() => {
-                      const Icono = iconoModulo(mod.icono);
-                      return <Icono className="h-4 w-4 shrink-0" aria-hidden />;
-                    })()}
-                    {mod.nombre}
-                  </Link>
+                <Link
+                  href={mod.rutaBase}
+                  className={`mt-1 flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-semibold uppercase tracking-wide transition hover:bg-nexus-surface-alt hover:text-nexus-ink ${
+                    esActivo ? "bg-nexus-surface-alt text-nexus-ink" : "text-nexus-muted"
+                  }`}
+                >
+                  <Icono className="h-4 w-4 shrink-0" aria-hidden />
+                  {mod.nombre}
+                </Link>
 
                 {esActivo &&
-                  secciones.map((s) => (
+                  mod.secciones.map((s) => (
                     <Link
                       key={s.href}
                       href={s.href}
                       className={`ml-3 mt-0.5 flex items-center gap-2 rounded-lg border-l border-nexus-border py-1.5 pl-4 pr-2 text-sm font-medium transition hover:bg-nexus-surface-alt hover:text-nexus-ink ${
-                        pathname === s.href ? "text-nexus-ink" : "text-nexus-muted"
+                        coincide(s.href, pathname) ? "text-nexus-ink" : "text-nexus-muted"
                       }`}
                     >
                       {s.label}

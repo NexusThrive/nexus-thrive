@@ -1,37 +1,41 @@
 /**
- * NÚCLEO — definición ÚNICA de las secciones de cada módulo.
+ * NÚCLEO — sub-páginas de un módulo, para la sección del sidebar.
  *
- * La NAVBAR las muestra cuando estás dentro de un módulo; el layout del
- * módulo deja de tener subnav propio (decisión 2026-09-16): un solo
- * lugar de verdad para "a dónde puedo ir dentro de este negocio".
+ * QUÉ ES Y QUÉ NO ES
+ * -----------------
+ * Solo lo que NO se deduce del catálogo: páginas internas de un módulo que no
+ * son módulos por sí mismas (Caja Menor → Movimientos · Categorías).
+ *
+ * ANTES este archivo era la fuente de verdad de TODA la navegación y tenía
+ * 7 rutas hardcodeadas, más cuatro claves muertas (`clientes`, `planes`,
+ * `pagos` y `gastos` apuntaban a la misma lista de Gym y nunca se usaban,
+ * porque el sidebar agrupa por plantilla). Con `clientes` como CAPA eso ya no
+ * era inocuo: una org que activara solo `clientes` recibiría enlaces a Pagos
+ * y Gastos, que no tiene.
+ *
+ * AHORA:
+ *   - la entrada de un módulo y las de sus compañeros de plantilla salen del
+ *     CATÁLOGO, en `lib/core/modulos.ts` (el servidor ya tiene la base);
+ *   - acá queda solo el detalle que el catálogo no conoce.
+ *
+ * INVARIANTE: una sub-página cuelga de la ruta del módulo, `/modulos/<slug>`.
  */
-export interface SeccionModulo {
-  href: string;
-  label: string;
-}
+import type { SeccionModulo } from "@/lib/core/modulos";
 
-/** Secciones de la PLANTILLA Gym — compartidas por sus módulos. */
-const SECCIONES_GYM: SeccionModulo[] = [
-  { href: "/plantillas/gym", label: "Dashboard" },
-  { href: "/plantillas/gym/clientes", label: "Clientes" },
-  { href: "/plantillas/gym/pagos", label: "Pagos" },
-  { href: "/plantillas/gym/gastos", label: "Gastos" },
-];
-
-export const SECCIONES_MODULOS: Record<string, SeccionModulo[]> = {
-  // Cada módulo de la plantilla gym comparte las secciones de la plantilla.
-  gym: SECCIONES_GYM,
-  clientes: SECCIONES_GYM,
-  planes: SECCIONES_GYM,
-  pagos: SECCIONES_GYM,
-  gastos: SECCIONES_GYM,
+/** Sub-páginas por módulo. El `path` es explícito: no se deriva del label. */
+const SUBPAGINAS: Record<string, { path: string; label: string }[]> = {
   "caja-menor": [
-    { href: "/modulos/caja-menor", label: "Dashboard" },
-    { href: "/modulos/caja-menor/movimientos", label: "Movimientos" },
-    { href: "/modulos/caja-menor/categorias", label: "Categorías" },
+    { path: "movimientos", label: "Movimientos" },
+    { path: "categorias", label: "Categorías" },
   ],
 };
 
-export function getSeccionesModulo(slug: string): SeccionModulo[] {
-  return SECCIONES_MODULOS[slug] ?? [];
+/**
+ * Sub-páginas de un módulo, con su href resuelto a partir de su ruta base.
+ * Devuelve [] si el módulo no declara sub-páginas (lo normal: su título ya
+ * enlaza a su dashboard y no hace falta repetirlo debajo).
+ */
+export function getSubpaginasModulo(slug: string, rutaBase: string | null): SeccionModulo[] {
+  if (!rutaBase) return [];
+  return (SUBPAGINAS[slug] ?? []).map((s) => ({ href: `${rutaBase}/${s.path}`, label: s.label }));
 }

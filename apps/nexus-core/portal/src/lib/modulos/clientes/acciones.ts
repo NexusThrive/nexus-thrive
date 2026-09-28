@@ -1,7 +1,7 @@
 /**
- * MÓDULO CLIENTES (capa Services — dentro de la plantilla Gym).
- * Acciones server: alta, edición, congelar y reactivar socios.
- * Guard: la org debe tener el módulo de la plantilla ACTIVO.
+ * MÓDULO CLIENTES (capa Services).
+ * Acciones server: alta, edición, congelar y reactivar clientes.
+ * Guard: la org debe tener el módulo CLIENTES activo.
  */
 "use server";
 
@@ -10,19 +10,53 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/core/prisma";
 import { requiereModuloActivo } from "@/lib/core/requiere-modulo";
 import { resolverPlanDeOrg } from "@/lib/modulos/clientes/consultas";
+import { recalcularMembresia } from "@/lib/modulos/clientes/estado";
 import { str } from "@/lib/shared/form";
 
+const LISTADO = "/modulos/clientes";
+
+/** Resultado de leer una fecha opcional de un formulario. */
+type FechaOpcional =
+  | { ok: true; valor: Date | null }
+  | { ok: false }; // el campo venía y no era una fecha válida
+
+/**
+ * Lee una fecha de `<input type="date">` de forma segura.
+ *
+ * `new Date("cualquier cosa")` devuelve `Invalid Date` (no lanza), y Prisma
+ * lo serializa como error al insertar → 500 en vez de un rechazo limpio.
+ * Se valida el round-trip: se reconstruye la fecha y se compara con el texto,
+ * así que "2026-02-30" (que JS "corrige" a marzo) también se rechaza.
+ */
+function fechaOpcional(input: FormData, key: string): FechaOpcional {
+  const raw = str(input, key);
+  if (!raw) return { ok: true, valor: null };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return { ok: false };
+
+  const d = new Date(`${raw}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return { ok: false };
+
+  const normalizado =
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  if (normalizado !== raw) return { ok: false };
+
+  return { ok: true, valor: d };
+}
+
 export async function crearCliente(input: FormData) {
-  const { orgId } = await requiereModuloActivo("gym");
+  const { orgId } = await requiereModuloActivo("clientes");
   const nombre = str(input, "nombre");
-  if (!nombre) redirect("/plantillas/gym/clientes?error=nombre");
+  if (!nombre) redirect(`${LISTADO}?error=nombre`);
+
+  const fecha = fechaOpcional(input, "fechaNacimiento");
+  if (!fecha.ok) redirect(`${LISTADO}?error=fecha`);
 
   // El plan tiene que ser de ESTA org: sin esto, un `planId` manipulado
   // guardaba el cliente apuntando a un plan de otro negocio y la ficha
   // mostraba su nombre y su precio. Ver consultas.ts.
   const planPedido = str(input, "planId") || null;
   const planId = await resolverPlanDeOrg(planPedido, orgId);
-  if (planPedido && !planId) redirect("/plantillas/gym/clientes?error=plan");
+  if (planPedido && !planId) redirect(`${LISTADO}?error=plan`);
 
   const cliente = await prisma.cliente.create({
     data: {
@@ -31,7 +65,7 @@ export async function crearCliente(input: FormData) {
       documento: str(input, "documento") || null,
       telefono: str(input, "telefono") || null,
       email: str(input, "email") || null,
-      fechaNacimiento: str(input, "fechaNacimiento") ? new Date(str(input, "fechaNacimiento")) : null,
+      fechaNacimiento: fecha.valor,
       planId,
       nota: str(input, "nota") || null,
     },
@@ -39,16 +73,19 @@ export async function crearCliente(input: FormData) {
 
   // Si el cliente nace con membresía definida, registrar el primer pago es
   // responsabilidad del dueño desde el perfil (no se inventan pagos acá).
-  revalidatePath("/plantillas/gym/clientes");
-  redirect(`/plantillas/gym/clientes/${cliente.id}`);
+  revalidatePath(LISTADO);
+  redirect(`${LISTADO}/${cliente.id}`);
 }
 
 export async function actualizarCliente(input: FormData) {
-  const { orgId } = await requiereModuloActivo("gym");
+  const { orgId } = await requiereModuloActivo("clientes");
   const id = str(input, "id");
   if (!id) return;
   const nombre = str(input, "nombre");
   if (!nombre) return;
+
+  const fecha = fechaOpcional(input, "fechaNacimiento");
+  if (!fecha.ok) return;
 
   // Misma validación que en el alta (ver consultas.ts). Si mandan un plan
   // que no es de esta org no se escribe NADA: actualizar el resto de campos
@@ -64,29 +101,31 @@ export async function actualizarCliente(input: FormData) {
       documento: str(input, "documento") || null,
       telefono: str(input, "telefono") || null,
       email: str(input, "email") || null,
-      fechaNacimiento: str(input, "fechaNacimiento") ? new Date(str(input, "fechaNacimiento")) : null,
+      fechaNacimiento: fecha.valor,
       planId,
       nota: str(input, "nota") || null,
     },
   });
 
-  revalidatePath(`/plantillas/gym/clientes/${id}`);
+  revalidatePath(`${LISTADO}/${id}`);
 }
 
 export async function congelarCliente(input: FormData) {
-  const { orgId } = await requiereModuloActivo("gym");
+  const { orgId } = await requiereModuloActivo("clientes");
   const id = str(input, "id");
   if (!id) return;
   await prisma.cliente.updateMany({ where: { id, orgId }, data: { estado: "CONGELADO" } });
-  revalidatePath(`/plantillas/gym/clientes/${id}`);
-  revalidatePath("/plantillas/gym/clientes");
+  revalidatePath(`${LISTADO}/${id}`);
+  revalidatePath(LISTADO);
 }
 
 export async function reactivarCliente(input: FormData) {
-  const { orgId } = await requiereModuloActivo("gym");
+  const { orgId } = await requiereModuloActivo("clientes");
   const id = str(input, "id");
   if (!id) return;
-  await prisma.cliente.updateMany({ where: { id, orgId }, data: { estado: "ACTIVO" } });
-  revalidatePath(`/plantillas/gym/clientes/${id}`);
-  revalidatePath("/plantillas/gym/clientes");
+  // Reactivar NO devuelve a ACTIVO a ciegas: si el período ya venció, el
+  // cliente queda VENCIDO igual. `cobrarPago` es lo que reactiva de verdad.
+  await recalcularMembresia(id, orgId);
+  revalidatePath(`${LISTADO}/${id}`);
+  revalidatePath(LISTADO);
 }
