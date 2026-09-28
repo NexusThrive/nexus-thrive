@@ -1,13 +1,15 @@
 // ============================================================
-// MÓDULO CAJA MENOR — el efectivo del negocio, claro (Casa Museo
-// Pozón, rama core/base).
+// MÓDULO CAJA MENOR — el efectivo del negocio, claro.
 //
-// Regla de la base NEXUS: el NÚCLEO no conoce este archivo. Este
-// módulo cuelga de Organization (identidad.prisma) desde acá, y se
-// ACTIVA por organización vía OrganizationModule (catálogo global).
+// Archivo = 1 MÓDULO del catálogo (`modules.slug = "caja-menor"`).
+// Es CAPA: sirve a cualquier negocio que maneje efectivo, no a un rubro.
+//
+// El NÚCLEO no conoce este archivo: cuelga de Organization
+// (core/identidad.prisma) y se ACTIVA por organización vía
+// OrganizationModule (catálogo global).
 //
 // Reglas de negocio:
-//  - Un movimiento NUNCA se borra: se anula con motivo (igual que gym).
+//  - Un movimiento NUNCA se borra: se anula con motivo (igual que pagos).
 //  - El saldo se DERIVA: sumatoria de movimientos no anulados. Un
 //    EGRESO no puede dejar el saldo en negativo (validado en server
 //    action, no en schema).

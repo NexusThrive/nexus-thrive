@@ -1,8 +1,10 @@
 // ============================================================
-// MÓDULO IDENTIDAD — GLOBAL a nivel de datos (multitenancy real)
+// NÚCLEO DE NEXUS — identidad y catálogo (multitenancy real)
 //
-// El NÚCLEO de NEXUS. No conoce módulos verticales: cada módulo
-// (ej: gym.prisma) cuelga de Organization desde su propio archivo.
+// Este archivo NO conoce ningún módulo. Solo la estructura que hace
+// que los módulos existan y se vendan: quién es la persona, cuál es el
+// negocio, qué productos existen y cómo los contrata una organización.
+// Los datos de cada módulo viven en schema/modulos/<slug>.prisma.
 //
 // DECISIÓN CLAVE (PLAN-BASE-NEXUS 2026-09-12):
 //   Member = la persona (email global). Organization = el negocio.
@@ -12,6 +14,8 @@
 // POR QUÉ el catálogo (Module) vive ACÁ:
 //   El módulo es un PRODUCTO reutilizable → el catálogo es global.
 //   La organización lo ACTIVA (OrganizationModule) cuando le sirve.
+//   La PLANTILLA agrupa varios módulos para un rubro, pero no es un
+//   módulo: es un conjunto. Por eso no hay tablas "de gimnasio" acá.
 // ============================================================
 
 model Organization {

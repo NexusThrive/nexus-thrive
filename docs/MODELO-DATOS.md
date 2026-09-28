@@ -15,11 +15,21 @@ archivos por convención: **12 tablas y 9 enums**.
 
 ```
 packages/prisma/schema/
-├── schema.prisma       → datasource, generator, 4 enums globales
-├── identidad.prisma    → EL NÚCLEO (6 tablas): organización, persona, catálogo
-├── cajamenor.prisma    → MÓDULO CAPA (2 tablas)
-└── gym.prisma          → MÓDULO VERTICAL (4 tablas)
+├── schema.prisma           → datasource, generator, 4 enums globales
+├── core/
+│   └── identidad.prisma    → EL NÚCLEO (6 tablas): organización, persona, catálogo
+└── modulos/
+    ├── clientes.prisma     → MÓDULO clientes (1 tabla)
+    ├── planes.prisma       → MÓDULO planes (1 tabla)
+    ├── pagos.prisma        → MÓDULO pagos (1 tabla)
+    ├── gastos.prisma       → MÓDULO gastos (1 tabla)
+    └── caja-menor.prisma   → MÓDULO caja-menor (2 tablas)
 ```
+
+**Dos niveles, no cuatro archivos sueltos.** Cada archivo en `modulos/` es **un**
+módulo del catálogo y su nombre es su `modules.slug`. Antes los 4 módulos de
+`gym.prisma` convivían en un archivo con nombre de rubro, lo que hacía creer que
+`clientes` era de un gimnasio: no lo era, y no lo es.
 
 Migraciones versionadas en `packages/prisma/migrations/` (2: `baseline` +
 `add_ruta_base_catalogo`). Seeds en `packages/prisma/src/`.
@@ -68,10 +78,18 @@ de Postgres por módulo, ni una base por módulo, ni un `search_path` por módul
 | `Module` | Una fila del catálogo de productos | Una tabla, un schema, una DB |
 | `OrganizationModule` | Qué productos tiene contrata **esta** organización | Qué tablas existen |
 
-**Consecuencia práctica:** mover un modelo de `gym.prisma` a `clientes.prisma`
-**no cambia la base de datos en absoluto**. Prisa mult-archivo lee los 4 archivos
-como un solo schema: se puede relacionar `gym.Plan` desde `clientes.prisma` sin
-problema. El archivo es documentación, no barrera.
+**Consecuencia práctica:** mover un modelo de `modulos/gastos.prisma` a
+`modulos/clientes.prisma` **no cambia la base de datos en absoluto**. Prisma
+mult-archivo lee la carpeta `schema/` —incluidas sus subcarpetas `core/` y
+`modulos/`— como un solo schema: se puede relacionar `Pago` desde
+`clientes.prisma` sin problema. El archivo es documentación, no barrera.
+
+> **Verificado 2026-09-28** (refactor `schema/modulos/`): el cambio se comprobó
+> con `prisma migrate diff --from-schema-datamodel <viejo> --to-schema-datamodel
+> <nuevo>` y dio **"This is an empty migration"** — el schema es idéntico, solo
+> se movió de archivo. Cero migraciones nuevas. Ese diff es el control que hay
+> que correr **siempre** que se parta un `.prisma`: sin él, un `@@map()` mal
+> copiado renombra una tabla en silencio.
 
 **Y la consecuencia inversa, que es la importante:** nada impide que un
 `Cliente.organizacion` apunte a una `Organization` que no es. La separación entre
@@ -79,23 +97,30 @@ módulos es una promesa que el código cumple, no una que la base verifique.
 
 ---
 
-## 3. Los tres bloques
+## 3. Los dos bloques
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│ NÚCLEO — identidad.prisma                                      │
-│   Organization · Member · Module · OrganizationModule          │
-│   Plantilla · PlantillaModulo                                  │
-│   Regla: no conoce ningún módulo. Ni "gym", ni "caja-menor".  │
+│ NÚCLEO — core/identidad.prisma                                │
+│   Organization · Member · Module · OrganizationModule         │
+│   Plantilla · PlantillaModulo                                 │
+│   Regla: no conoce ningún módulo. Ni "clientes", ni "caja".   │
 └──────────────────────────────────────────────────────────────┘
               ▲ todas las tablas de módulo cuelgan de Organization
-┌──────────────────────────────┐  ┌──────────────────────────────┐
-│ CAPA — cajamenor.prisma      │  │ VERTICAL — gym.prisma        │
-│   CajaCategoria              │  │   Plan · Cliente             │
-│   MovimientoCaja             │  │   Pago · Gasto               │
-│   Sirve a cualquier negocio   │  │   Un rubro (gimnasio)        │
-└──────────────────────────────┘  └──────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│ MÓDULOS — modulos/<slug>.prisma                               │
+│   clientes · planes · pagos · gastos · caja-menor             │
+│   Un archivo = un módulo del catálogo = un `modules.slug`     │
+│   Todos con orgId: los datos son de la organización,         │
+│   no del módulo ni del rubro.                                 │
+└──────────────────────────────────────────────────────────────┘
 ```
+
+**CAPA vs VERTICAL no es un bloque del schema.** Es metadata de la fila del
+catálogo (`Module.naturaleza`): define cómo se *ofrece* el módulo, no dónde
+viven sus tablas. `clientes` es el mismo archivo y las mismas tablas le sirvan a
+un gym o a un museo; lo único que cambia es si el catálogo lo ofrece suelto
+(CAPA) o dentro de un conjunto por rubro (VERTICAL).
 
 ---
 
@@ -319,16 +344,16 @@ decide. Es una decisión consciente, no una omisión.
 
 | Decisión | Motivo | Dónde está escrita |
 |---|---|---|
-| **La identidad es global**: `Member` es la persona, `Organization` es el negocio | Un humano trabaja para varios negocios sin registrarse otra vez. Un módulo nuevo **nunca** re-registra usuarios | ⚠️ `identidad.prisma:7` cita `PLAN-BASE-NEXUS 2026-09-12` — **ese archivo no existe** (§7.1) |
-| **El catálogo es global, la activación es por org** | El módulo es un producto reutilizable; el negocio lo contrata. Permite vender y medir activación | comentario en `identidad.prisma` |
+| **La identidad es global**: `Member` es la persona, `Organization` es el negocio | Un humano trabaja para varios negocios sin registrarse otra vez. Un módulo nuevo **nunca** re-registra usuarios | ⚠️ `core/identidad.prisma` cita `PLAN-BASE-NEXUS 2026-09-12` — **ese archivo no existe** (§7.1) |
+| **El catálogo es global, la activación es por org** | El módulo es un producto reutilizable; el negocio lo contrata. Permite vender y medir activación | comentario en `core/identidad.prisma` |
 | **`rutaBase` vive en el catálogo** | La navegación lee la base, no un allowlist. Arregla de raíz la clase de bugs "todo módulo nuevo nace con un 404" | comentario en `Module.rutaBase` |
 | **Los módulos miembros heredan la ruta de la plantilla** | Un cliente de gym no ve "4 módulos", ve "Gym". La unidad de venta y de navegación es la plantilla | `Plantilla.rutaBase` |
-| **Las categorías de caja son tabla, las de gasto son enum** | En caja el rubro *decide* sus categorías; los gastos quedaron fijados a 6 universales | `cajamenor.prisma` vs `gym.prisma` |
+| **Las categorías de caja son tabla, las de gasto son enum** | En caja el rubro *decide* sus categorías; los gastos quedaron fijados a 6 universales | `modulos/caja-menor.prisma` vs `modulos/gastos.prisma` |
 | **El saldo y el estado se derivan, no se guardan** | Una sola fuente de verdad: los movimientos y los pagos. El saldo no se puede "descuadrar" porque no existe | comentarios en ambos schemas |
-| **`Cliente.estado` sí se guarda** (contradicción consciente) | Es una caché para filtrar/listar rápido. **Se recalcula al cobrar** → puede desfasarse | `gym.prisma` |
+| **`Cliente.estado` sí se guarda** (contradicción consciente) | Es una caché para filtrar/listar rápido. **Se recalcula al cobrar** → puede desfasarse | `modulos/clientes.prisma` |
 | **Dinero siempre `Decimal(12,2)`** | Los `float` pierden centavos. Nunca `Float` para plata | todos los schemas |
 | **Nada se borra, se anula** | Un presupuesto de obra o una contabilidad tienen que poder auditar qué pasó | ambos schemas |
-| **`String[]` para `sugeridoPara`** | Evita una tabla de junctions para algo que es taxonomía interna. A cambio: **sin integridad referencial** | `identidad.prisma` |
+| **`String[]` para `sugeridoPara`** | Evita una tabla de junctions para algo que es taxonomía interna. A cambio: **sin integridad referencial** | `core/identidad.prisma` |
 
 ### 7.1 La deuda de fondo: `PLAN-BASE-NEXUS.md` no existe
 
@@ -344,7 +369,7 @@ separados, por qué el catálogo es global, por qué nada se borra— se llamaba
 | Cita | Qué dice |
 |---|---|
 | `schema.prisma:11` | "DECISIÓN (PLAN-BASE-NEXUS 2026-09-12): NEXUS es la marca, el Campo…" |
-| `identidad.prisma:7` | "DECISIÓN CLAVE (PLAN-BASE-NEXUS 2026-09-12)" — Member = la persona |
+| `core/identidad.prisma` | "DECISIÓN CLAVE (PLAN-BASE-NEXUS 2026-09-12)" — Member = la persona |
 | `src/lib/core/acciones.ts:7` | "Decisión (PLAN-BASE-NEXUS §6): el registro crea la cuenta de la…" |
 | `src/lib/shared/rango.ts:5` | "regla §9 PLAN-BASE-NEXUS: no abstraer antes de 2 casos reales" |
 | `packages/prisma/src/seed.ts:16` | "regla §9 PLAN-BASE-NEXUS: un módulo nace de un dolor validado" |
@@ -373,7 +398,7 @@ discrepancia está en otro lado.
 |---|---|
 | **Catálogo** | ✅ Sí. El seed crea 4 filas de `Module`: `clientes`, `planes`, `pagos`, `gastos`; y una `Plantilla` `gym` que las agrupa |
 | **Datos** | ✅ Sí. `lib/modulos/{clientes,planes,pagos,gastos}/` con sus consultas y acciones separadas + `lib/plantillas/gym/dashboard.ts` |
-| **Schema** | ❌ No. Los 4 modelos viven en **un** archivo, `gym.prisma` |
+| **Schema** | ✅ Sí (2026-09-28). Los 4 modelos viven en 4 archivos de `schema/modulos/`, uno por módulo. Partirlo fue cosmético: cero migraciones (`migrate diff` dio *"empty migration"*) |
 | **Rutas** | ⚠️ A medias. `plantillas/gym/` tiene rutas propias para `clientes`, `pagos` y `gastos`, pero **`planes` no tiene ruta**: se maneja dentro del dashboard |
 | **Naturaleza** | ⚠️ Los 4 están marcados **`VERTICAL`** y `sugeridoPara: ["gimnasio"]` → **no se pueden activar solos** fuera de un gym |
 
@@ -402,11 +427,16 @@ como ejemplo de módulo base.
 | **B) Sacar la membresía a su propia tabla** | `Cliente` queda limpio (nombre, documento, teléfono) y una tabla `Membresia { clienteId, planId, periodoFin, estado }` es lo gym-específico. **Es el modelo correcto** y además resuelve la fuga de §6.2 por construcción, si se le pone `orgId` |
 | A) Mover `Plan` junto a `Cliente` | "planes de servicio" es reutilizable (un salón también tiene planes). Menos trabajo, pero sigue siendo gym-céntrico |
 
-**Eje C — el archivo y la ruta:** `gym.prisma` → `clientes.prisma` +
-`membresias.prisma` + `pagos.prisma` + `gastos.prisma`, y decidir si `clientes` se
-navega en `/plantillas/gym/clientes` (heredando la ruta) o en
-`/modulos/clientes` (suelto). Ojo: hoy la herencia de ruta está asumida en
-`plantillas/gym/layout.tsx`.
+**Eje C — el archivo y la ruta:** la mitad de archivos ya está hecha
+(`gym.prisma` → `schema/modulos/{clientes,planes,pagos,gastos}.prisma`, sin
+migraciones). Falta la mitad de rutas: decidir si `clientes` se navega en
+`/plantillas/gym/clientes` (heredando la ruta) o en `/modulos/clientes`
+(suelto). Ojo: hoy la herencia de ruta está asumida en
+`plantillas/gym/layout.tsx`, que agrupa por prefijo de path en `NavModulos.tsx`.
+
+> Nota sobre el nombre: si el Eje B se aplica, el archivo se va a llamar
+> `membresias.prisma`, no `planes.prisma`. Conviene decidir el Eje B **antes** de
+> tocar rutas, o se hace el trabajo de rutas dos veces.
 
 ### Mi lectura, sin decidir por vos
 
@@ -440,6 +470,14 @@ cierra la fuga cross-tenant en la base, no solo en el código.
 | 3 | Cerrar la fuga de `planId` **en la base** (FK compuesta o trigger) | media | Ya está cerrada en el código con tests; en la base sigue abierta (§6.2) |
 | 4 | **Eje B**: `Membresia` y `Cliente` genérico | alta | El que realmente libera a `clientes` para otros rubros. Toca la tabla más poblada |
 | 5 | **Eje C**: partir `gym.prisma` en archivos + rutas | baja | Cosmético. **Al final a propósito**: no aporta nada mientras los datos sigan atados |
+
+> **Estado al 2026-09-28:** el paso 5 se hizo **por la mitad** y fuera de orden
+> (archivos sí, rutas no) — `schema/modulos/{clientes,planes,pagos,gastos}.prisma`,
+> cero migraciones. Fue barato y sin riesgo, pero **no desbloquea nada**: el
+> bloqueo real sigue siendo el paso 2 (`clientes` es `VERTICAL`, así que ningún
+> negocio que no sea gym puede activarlo) y el 4 (`Cliente.planId` lo ata a gym).
+> La mitad de rutas del paso 5 conviene hacerla **después** del 4, porque el 4
+> renombra `planes.prisma` a `membresias.prisma`.
 
 **El paso 2 es el que más rinde por lo que cuesta, y el 4 es el que importa de
 verdad.** No hay que hacerlos juntos: el 2 no obliga al 4, y hacer el 4 primero

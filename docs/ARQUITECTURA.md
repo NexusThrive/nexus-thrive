@@ -81,22 +81,54 @@ código y aplican el mismo `layout.tsx` (que exige sesión).
 
 ## 4. El núcleo no conoce los módulos (la regla más importante)
 
-`packages/prisma/schema/` tiene 4 archivos y cada uno tiene un trabajo:
+`packages/prisma/schema/` tiene **dos niveles**: el núcleo y los módulos. Cada
+archivo en `modulos/` es **un** módulo del catálogo y su nombre es su
+`modules.slug`.
+
+```
+schema/
+├── schema.prisma            → datasource, generator, enums globales
+├── core/
+│   └── identidad.prisma     → EL NÚCLEO (6 tablas)
+└── modulos/
+    ├── clientes.prisma      → Cliente
+    ├── planes.prisma        → Plan
+    ├── pagos.prisma         → Pago
+    ├── gastos.prisma        → Gasto
+    └── caja-menor.prisma    → CajaCategoria, MovimientoCaja
+```
 
 | Archivo | Qué contiene | Regla |
 |---|---|---|
 | `schema.prisma` | datasource, generator y **enums globales** (`Rol`, `CampoModulo`, `EstadoModuloOrg`, `UserScope`) | — |
-| `identidad.prisma` | `Organization`, `Member`, `Module`, `OrganizationModule`, `Plantilla`, `PlantillaModulo` | **Núcleo puro.** Nada de gym, nada de caja |
-| `cajamenor.prisma` | `CajaCategoria`, `MovimientoCaja` | Módulo CAPA (sirve a cualquier negocio con efectivo) |
-| `gym.prisma` | `Plan`, `Cliente`, `Pago`, `Gasto` | Módulo VERTICAL (rubro gimnasio) |
+| `core/identidad.prisma` | `Organization`, `Member`, `Module`, `OrganizationModule`, `Plantilla`, `PlantillaModulo` | **Núcleo puro.** Nada de clientes, nada de caja |
+| `modulos/<slug>.prisma` | los modelos de **un** módulo, siempre con `orgId` | nombre = `modules.slug` |
 
 **Por qué:** un módulo nuevo (construcción, odontología, lo que sea) se agrega
 **sin tocar el núcleo**. El núcleo solo sabe que existe un catálogo (`Module`) y
 que una organización lo activó (`OrganizationModule`).
 
+**Un módulo NO es de un rubro.** Es un producto que un negocio contrata. Lo que
+es "de un rubro" vive en configuración, nunca en el schema: `Plantilla.rubro`
+(a qué rubro se le ofrece el conjunto), `plantilla_modulos` (qué trae el
+conjunto y cómo se llama en el menú) y `Module.sugeridoPara` (a quién se le
+recomienda). Por eso `clientes` le sirve a un museo igual que a un gimnasio: son
+las mismas tablas con filas distintas por `orgId`.
+
 **Cómo se comprueba:** si mañana hay que agregar el módulo de presupuesto de
-obras, `identidad.prisma` **no se toca**. Ese es el test mental de si la
+obras, `core/identidad.prisma` **no se toca**. Ese es el test mental de si la
 arquitectura está sana.
+
+**El invariante del slug** — el mismo identificador en los cuatro lugares:
+
+```
+schema/modulos/clientes.prisma  ·  modules.slug = "clientes"
+lib/modulos/clientes/            ·  /modulos/clientes
+```
+
+Si un módulo nuevo rompe el invariante, es más fácil que alguien crea un
+archivo "de gimnasio" con tablas globales — que fue exactamente lo que pasó
+con `gym.prisma` (4 módulos en un archivo con nombre de rubro).
 
 ---
 
@@ -131,12 +163,12 @@ sesión y redirect). Los wrappers por módulo (`gymHabilitado`,
 ### Checklist para un módulo nuevo
 
 ```
-[ ] 1. schema/<slug>.prisma        — modelos con orgId
-[ ] 2. migración                   — pnpm --filter @nexus/prisma migrate dev
-[ ] 3. seed del catálogo           — Module (+ Plantilla si es vertical)
-[ ] 4. rutas + lib/<slug>/         — pantallas y acciones
-[ ] 5. gate: usar requiere-modulo  — sin copies
-[ ] 6. docs/README.md del módulo   — qué hace y cómo se prueba
+[ ] 1. schema/modulos/<slug>.prisma  — modelos con orgId
+[ ] 2. migración                      — pnpm --filter @nexus/prisma migrate dev
+[ ] 3. seed del catálogo              — Module (+ Plantilla si es vertical)
+[ ] 4. rutas + lib/modulos/<slug>/    — pantallas y acciones
+[ ] 5. gate: usar requiere-modulo     — sin copies
+[ ] 6. docs/README.md del módulo      — qué hace y cómo se prueba
 ```
 
 > Los issues #22 y #15 del repo son exactamente esto: falta el README de cada

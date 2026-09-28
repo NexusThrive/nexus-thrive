@@ -1,0 +1,44 @@
+// ============================================================
+// MÓDULO PAGOS — cada cobro registrado, con el período que cubrió.
+//
+// Archivo = 1 MÓDULO del catálogo (`modules.slug = "pagos"`).
+// El NÚCLEO no conoce este archivo: cuelga de Organization
+// (core/identidad.prisma) y se ACTIVA por organización vía
+// OrganizationModule (catálogo global).
+//
+// Reglas de negocio:
+//  - Un pago NUNCA se borra: se anula con motivo.
+//  - `monto` es siempre positivo; el signo lo da el tipo de movimiento
+//    del módulo al que pertenece.
+//  - Futuro: PSE/Stripe como pasarela de pago (roadmap en ROADMAP.md).
+// ============================================================
+
+enum MetodoPago {
+  EFECTIVO
+  TARJETA
+  TRANSFERENCIA
+  NEQUI
+  OTRO
+}
+
+/// Pago — registra el cobro y el período que cubre
+model Pago {
+  id             String     @id @default(cuid())
+  orgId          String
+  clienteId      String
+  cliente        Cliente    @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  monto          Decimal    @db.Decimal(12, 2)
+  metodo         MetodoPago @default(EFECTIVO)
+  concepto       String     // "Mensualidad septiembre", "Plan trimestral"
+  periodoInicio  DateTime   @default(now())
+  periodoFin     DateTime   // vencimiento cubierto por el pago
+  anulado        Boolean    @default(false)
+  motivoAnulacion String?
+  pagadoEl       DateTime   @default(now())
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@index([clienteId])
+  @@index([orgId, pagadoEl])
+  @@map("pagos")
+}

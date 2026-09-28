@@ -1,0 +1,44 @@
+// ============================================================
+// MÓDULO GASTOS — en qué se fue la plata del negocio.
+//
+// Archivo = 1 MÓDULO del catálogo (`modules.slug = "gastos"`).
+// No es de un rubro: un museo, una tienda y un gym los usan igual.
+// El NÚCLEO no conoce este archivo: cuelga de Organization
+// (core/identidad.prisma) y se ACTIVA por organización vía
+// OrganizationModule (catálogo global).
+//
+// ⚠️ PENDIENTE (docs/MODELO-DATOS.md §6): las categorías son un ENUM
+// fijo de 6 valores universales, mientras que en Caja Menor son tabla
+// configurable por organización. Es una contradicción consciente: el
+// rubro de gastos no puede elegir sus categorías. La salida sería la
+// misma que ya usa Caja Menor — tabla `gasto_categorias` con `orgId`.
+//
+// Reglas de negocio:
+//  - Un gasto NUNCA se borra: se anula con motivo.
+// ============================================================
+
+enum CategoriaGasto {
+  ARRIENDO
+  NOMINA
+  SERVICIOS
+  MANTENIMIENTO
+  PUBLICIDAD
+  OTROS
+}
+
+/// Gasto del negocio (arriendo, nómina, servicios, mantenimiento...)
+model Gasto {
+  id          String         @id @default(cuid())
+  orgId       String
+  categoria   CategoriaGasto
+  monto       Decimal        @db.Decimal(12, 2)
+  fecha       DateTime       @default(now())
+  descripcion String?
+  anulado     Boolean        @default(false)
+  motivoAnulacion String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([orgId, fecha])
+  @@map("gastos")
+}

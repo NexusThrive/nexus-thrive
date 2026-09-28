@@ -1,12 +1,33 @@
 // ============================================================
 // Schema base — Prisma multi-file (prismaSchemaFolder)
 //
-// El núcleo de NEXUS NO conoce ningún módulo vertical (gym, caja...).
-// Cada módulo vive en su propio archivo y cuelga de Organization:
-//   schema.prisma     → datasource, generator, enums compartidos
-//   identidad.prisma  → Organization, Member, Module, Plantilla (núcleo global)
-//   cajamenor.prisma  → MÓDULO Caja Menor (CAPA: cualquier negocio con efectivo)
-//   gym.prisma        → PLANTILLA Gym (VERTICAL: rubro gimnasio)
+// NEXUS se reparte en DOS niveles: el NÚCLEO y los MÓDULOS.
+//
+//   schema.prisma          → datasource, generator, enums globales
+//   core/
+//     identidad.prisma     → EL NÚCLEO: Organization, Member, Module,
+//                            OrganizationModule, Plantilla, PlantillaModulo
+//   modulos/
+//     clientes.prisma      → Cliente
+//     planes.prisma        → Plan
+//     pagos.prisma         → Pago
+//     gastos.prisma        → Gasto
+//     caja-menor.prisma    → CajaCategoria, MovimientoCaja
+//
+// INVARIANTE — un archivo en `modulos/` es UN MÓDULO del catálogo, y su
+// nombre es su `modules.slug`. El mismo slug aparece en cuatro lugares:
+//   schema/modulos/<slug>.prisma  ·  modules.slug  ·  /modulos/<slug>  ·  lib/modulos/<slug>/
+// Un módulo NO es de un rubro: es un producto que un negocio contrata. Lo
+// que es "de un rubro" vive en CONFIGURACIÓN, nunca en el schema:
+//   Plantilla.rubro         → qué rubro recibe este conjunto
+//   plantilla_modulos       → qué módulos trae el conjunto (+ su nombre en el menú)
+//   Module.sugeridoPara     → a quién se le recomienda
+// Un negocio activo un módulo con sus propias filas (todo tiene `orgId`),
+// así que dos negocios que contratan el mismo módulo nunca se mezclan.
+//
+// El NÚCLEO no conoce ningún módulo. Si alguna vez hay que tocar
+// core/identidad.prisma para agregar un módulo, es una señal de que algo
+// se está acoplando: el módulo va en modulos/, no en el núcleo.
 //
 // DECISIÓN (PLAN-BASE-NEXUS 2026-09-12): NEXUS es la marca, el Campo
 // es taxonomía interna y el Módulo es el producto reutilizable. La

@@ -11,7 +11,7 @@ Nexus es el **núcleo** de la base del ecosistema: un portal (Next.js) con la es
   - `src/lib/`: `core/` (núcleo: acciones, org, modulos, navegacion con RUTA_POR_SLUG, requiere-modulo) · `shared/` (rango, format, tipos, form) · `plantillas/gym/dashboard.ts` · `modulos/` (clientes, planes, pagos, gastos, caja-menor)
   - `src/components/`: `core/` (Navbar, NavModulos, MenuCuenta, SelectorNegocio, TourInicial) · `shared/` (FiltroRango, charts/) · `modulos/clientes/` (ListaClientes)
 - **packages/**:
-  - `@nexus/prisma`: Schema modular — `identidad.prisma` (NÚCLEO: Organization/Member/Module/OrganizationModule/Plantilla/PlantillaModulo) + `cajamenor.prisma` (CAPA) + `gym.prisma` (VERTICAL). El núcleo no conoce módulos verticales. Un rubro completo (`Plantilla`) es un conjunto de `Module` activados juntos. Diccionario completo: `docs/MODELO-DATOS.md`.
+  - `@nexus/prisma`: Schema modular en **dos niveles** — `core/identidad.prisma` (NÚCLEO: Organization/Member/Module/OrganizationModule/Plantilla/PlantillaModulo) y `modulos/<slug>.prisma` (un archivo POR MÓDULO del catálogo, nombre = `modules.slug`; hoy clientes, planes, pagos, gastos, caja-menor). El núcleo no conoce ningún módulo. **Un módulo NO es de un rubro**: es un producto que una Organization activa (`OrganizationModule`); lo "de un rubro" vive en `Plantilla.rubro` + `plantilla_modulos`, nunca en el schema. Un rubro completo (`Plantilla`) es un conjunto de `Module` activados juntos. Diccionario completo: `docs/MODELO-DATOS.md`.
   - `@nexus/ui`, `@nexus/utils`, `@nexus/config`: compartidos (UI, helpers, presets)
 - **tooling/**: ESLint y TypeScript base
 - **infraestructura**: `docker-compose.yml` (PostgreSQL 16 local), `.env.example`

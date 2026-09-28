@@ -13,7 +13,7 @@
 | **PLANTILLA** | Conjunto de módulos que resuelven un rubro completo (ej: Gym = clientes+planes+pagos+gastos) | Sí (como "el producto de su rubro") | `Plantilla` + `PlantillaModulo` |
 | **MÓDULO** | Producto reutilizable, se activa por organización | Sí — esto es lo que se contrata | `Module` + `OrganizationModule` |
 | **COMPONENTE** | Pieza de UI reutilizable | No | `components/` |
-| **ENTIDAD** | Modelo de datos (tabla) | No | `packages/prisma/schema/*.prisma` |
+| **ENTIDAD** | Modelo de datos (tabla) | No | `packages/prisma/schema/**/*.prisma` |
 
 ## Naturaleza de módulo
 
@@ -32,9 +32,13 @@
 
 ## Reglas innegociables
 
-1. El **núcleo no conoce módulos verticales**: `identidad.prisma` solo tiene
-   Organization/Member/Module/Plantilla/OrganizationModule/PlantillaModulo.
-2. Un módulo nace de un **dolor validado** (regla §9), no de listas imaginadas.
-3. Un módulo nuevo **nunca re-registra usuarios** (la identidad es global).
-4. Nunca se borra: **se anula** (pagos, gastos, movimientos — con motivo).
-5. El cliente solo ve **NEXUS y módulos/plantillas**; los campos son plomería interna.
+1. El **núcleo no conoce ningún módulo**: `core/identidad.prisma` solo tiene
+   Organization/Member/Module/Plantilla/OrganizationModule/PlantillaModulo. Los
+   datos de un módulo viven en `modulos/<slug>.prisma`.
+2. Un módulo **no es de un rubro**: es un producto que una organización contrata.
+   Lo "de un rubro" vive en `Plantilla.rubro` y `plantilla_modulos`, nunca en el
+   schema.
+3. Un módulo nace de un **dolor validado** (regla §9), no de listas imaginadas.
+4. Un módulo nuevo **nunca re-registra usuarios** (la identidad es global).
+5. Nunca se borra: **se anula** (pagos, gastos, movimientos — con motivo).
+6. El cliente solo ve **NEXUS y módulos/plantillas**; los campos son plomería interna.

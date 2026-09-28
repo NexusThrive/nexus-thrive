@@ -1,0 +1,47 @@
+// ============================================================
+// MÓDULO CLIENTES — el registro de personas del negocio.
+//
+// Archivo = 1 MÓDULO del catálogo (`modules.slug = "clientes"`).
+// No es de un rubro: cualquier organización que lo active lo usa.
+// El grupo de personas se llama distinto según el rubro — gym "socios",
+// restaurante "meseros", museo "visitantes" — y ese nombre sale de
+// `plantilla_modulos.nombreMenu`, NO de este archivo.
+//
+// El NÚCLEO no conoce este archivo: cuelga de Organization
+// (core/identidad.prisma) y se ACTIVA por organización vía
+// OrganizationModule (catálogo global).
+//
+// Reglas de negocio:
+//  - `estado` es una CACHÉ para filtrar y listar rápido. Se recalcula
+//    al cobrar (pagos/acciones.ts) → puede desfasarse. Ver MODELO-DATOS §.
+// ============================================================
+
+enum EstadoCliente {
+  ACTIVO
+  CONGELADO // el cliente pidió pausa (ej: viaje)
+  VENCIDO // sin pago al día (se calcula/actualiza al cobrar)
+}
+
+/// Cliente del negocio con su perfil completo
+model Cliente {
+  id           String         @id @default(cuid())
+  orgId        String
+  nombre       String
+  documento    String?        // cédula (búsqueda rápida)
+  telefono     String?
+  email        String?
+  fechaNacimiento DateTime?
+  planId       String?
+  plan         Plan?          @relation(fields: [planId], references: [id])
+  estado       EstadoCliente  @default(ACTIVO)
+  periodoFin   DateTime?      // vencimiento de la suscripción actual (activo si >= hoy)
+  fechaIngreso DateTime       @default(now())
+  nota         String?        // alergias, lesiones, preferencias
+  pagos        Pago[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([orgId, estado])
+  @@index([orgId, nombre])
+  @@map("clientes")
+}
