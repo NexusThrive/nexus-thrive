@@ -35,18 +35,3 @@ export const SECCIONES_MODULOS: Record<string, SeccionModulo[]> = {
 export function getSeccionesModulo(slug: string): SeccionModulo[] {
   return SECCIONES_MODULOS[slug] ?? [];
 }
-
-/**
- * Base de ruta por slug, según el NIVEL del catálogo:
- * las PLANTILLAS viven bajo /plantillas/<slug>/ y los MÓDULOS sueltos
- * bajo /modulos/<slug>/ (orden mental: NEXUS → CAPA → PLANTILLA → MÓDULO → COMPONENTE).
- * Los módulos MIEMBROS de una plantilla comparten su ruta base.
- */
-export const RUTA_POR_SLUG: Record<string, string> = {
-  gym: "/plantillas/gym",
-  clientes: "/plantillas/gym",
-  planes: "/plantillas/gym",
-  pagos: "/plantillas/gym",
-  gastos: "/plantillas/gym",
-  "caja-menor": "/modulos/caja-menor",
-};

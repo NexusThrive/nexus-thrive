@@ -3,13 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Plus } from "lucide-react";
-import { getSeccionesModulo, RUTA_POR_SLUG } from "@/lib/core/navegacion";
+import { getSeccionesModulo } from "@/lib/core/navegacion";
 import { iconoModulo } from "@/lib/core/iconos-modulos";
 
 interface ModuloNav {
   slug: string;
   nombre: string;
   icono: string | null;
+  /** Base de ruta LEÍDA DEL CATÁLOGO (ver getModulosActivosAgrupados). */
+  rutaBase: string | null;
 }
 
 /**
@@ -24,12 +26,15 @@ interface ModuloNav {
  * El módulo del pathname actual despliega sus secciones debajo de su nombre;
  * los demás aparecen solo como nombre (clic → su dashboard). "Agregar módulo"
  * ancla al panel principal, donde están las sugerencias por rubro.
+ *
+ * La ruta llega por prop desde el catálogo: este componente no conoce rutas,
+ * así que un módulo nuevo no puede producir un link 404.
  */
 export function NavModulos({ modulos }: { modulos: ModuloNav[] }) {
   const pathname = usePathname();
   const activo = modulos.find((m) => {
-    const base = RUTA_POR_SLUG[m.slug] ?? `/${m.slug}`;
-    return pathname === base || pathname.startsWith(`${base}/`);
+    if (!m.rutaBase) return false;
+    return pathname === m.rutaBase || pathname.startsWith(`${m.rutaBase}/`);
   });
 
   return (
@@ -52,11 +57,12 @@ export function NavModulos({ modulos }: { modulos: ModuloNav[] }) {
           {modulos.map((mod) => {
             const esActivo = mod.slug === activo?.slug;
             const secciones = getSeccionesModulo(mod.slug);
-            const baseRuta = RUTA_POR_SLUG[mod.slug] ?? `/${mod.slug}`;
+            // Sin ruta en el catálogo no hay link: antes caía en /${slug} → 404.
+            if (!mod.rutaBase) return null;
             return (
               <div key={mod.slug}>
 <Link
-                    href={baseRuta}
+                    href={mod.rutaBase}
                     className={`mt-1 flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-semibold uppercase tracking-wide transition hover:bg-nexus-surface-alt hover:text-nexus-ink ${
                       esActivo ? "bg-nexus-surface-alt text-nexus-ink" : "text-nexus-muted"
                     }`}

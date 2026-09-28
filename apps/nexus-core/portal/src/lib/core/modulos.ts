@@ -23,6 +23,15 @@ export interface ModuloNavAgrupado {
   nombre: string;
   descripcion: string | null;
   icono: string | null;
+  /**
+   * Dónde vive en el portal, LEÍDO DEL CATÁLOGO (`rutaBase`).
+   * Antes vivía en un allowlist hardcodeado (`RUTA_POR_SLUG`) con un fallback
+   * `/${slug}` que producía 404: por eso un CAPA suelto como caja-menor
+   * redirigía a `/caja-menor` en vez de `/modulos/caja-menor`. Con el catálogo
+   * como fuente, un módulo nuevo no puede nacer con un link roto.
+   * null = el catálogo no define ruta (el link no se renderiza).
+   */
+  rutaBase: string | null;
 }
 
 /**
@@ -38,13 +47,15 @@ export async function getModulosActivosAgrupados(orgId: string): Promise<ModuloN
   const enPlantilla = await prisma.plantillaModulo.findMany({
     include: { plantilla: true },
   });
-  const plantillaPorModule = new Map<string, { slug: string; nombre: string; descripcion: string | null; icono: string | null }>();
+  const plantillaPorModule = new Map<string, { slug: string; nombre: string; descripcion: string | null; icono: string | null; rutaBase: string | null }>();
   for (const pm of enPlantilla) {
     plantillaPorModule.set(pm.moduleId, {
       slug: pm.plantilla.slug,
       nombre: pm.plantilla.nombre,
       descripcion: pm.plantilla.descripcion,
       icono: pm.plantilla.icono,
+      // Los miembros de una plantilla se navegan desde la base DE LA PLANTILLA.
+      rutaBase: pm.plantilla.rutaBase,
     });
   }
 
@@ -63,10 +74,35 @@ export async function getModulosActivosAgrupados(orgId: string): Promise<ModuloN
         nombre: om.module.nombre,
         descripcion: om.module.descripcion,
         icono: om.module.icono,
+        rutaBase: om.module.rutaBase,
       });
     }
   }
   return resultado;
+}
+
+/**
+ * Base de ruta de un slug suelto, para cuando solo se tiene el slug y no se
+ * quiere pagar el agrupado completo. Acepta el slug de una PLANTILLA o de un
+ * MÓDULO (un miembro de plantilla hereda la base de su plantilla).
+ *
+ * Devuelve null si el catálogo no define ruta → quien llame decide (ocultar el
+ * link). NUNCA cae a `/${slug}`: ese fallback fue la causa de los 404.
+ */
+export async function getRutaBase(slug: string): Promise<string | null> {
+  const plantilla = await prisma.plantilla.findUnique({
+    where: { slug },
+    select: { rutaBase: true },
+  });
+  if (plantilla?.rutaBase) return plantilla.rutaBase;
+
+  const modulo = await prisma.module.findUnique({
+    where: { slug },
+    select: { rutaBase: true, plantillas: { select: { plantilla: { select: { rutaBase: true } } } } },
+  });
+  if (!modulo) return null;
+  const dePlantilla = modulo.plantillas[0]?.plantilla.rutaBase;
+  return dePlantilla ?? modulo.rutaBase ?? null;
 }
 
 /**

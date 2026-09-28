@@ -1,11 +1,22 @@
 import { Users } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { prisma } from "@/lib/core/prisma";
 import { getOrgActiva } from "@/lib/core/org";
 import { formatDate } from "@/lib/shared/format";
 import { crearCliente } from "@/lib/modulos/clientes/acciones";
+import { getClientesDeOrg } from "@/lib/modulos/clientes/consultas";
 import { ListaClientes } from "@/components/modulos/clientes/ListaClientes";
 
 export const dynamic = "force-dynamic";
+
+/**
+ * Errores que las acciones devuelven por redirect. Antes no se leía ninguno:
+ * `?error=nombre` rebotaba al listado sin explicar nada.
+ */
+const ERRORES: Record<string, string> = {
+  nombre: "El nombre del socio es obligatorio.",
+  plan: "La membresía seleccionada no pertenece a este negocio. No se registró el socio.",
+};
 
 const ESTADO_CLASES: Record<string, string> = {
   ACTIVO: "bg-nexus-green-soft text-nexus-green-text",
@@ -18,20 +29,32 @@ const ESTADO_LABEL: Record<string, string> = {
   VENCIDO: "Vencido",
 };
 
-export default async function ClientesPage() {
+export default async function ClientesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
   const { org } = await getOrgActiva();
+  const { error } = await searchParams;
+  const errorMsg = error ? ERRORES[error] : undefined;
 
   const [clientes, planes] = await Promise.all([
-    prisma.cliente.findMany({
-      where: { orgId: org.id },
-      include: { plan: true, pagos: { where: { anulado: false }, orderBy: { pagadoEl: "desc" }, take: 1 } },
-      orderBy: { createdAt: "desc" },
-    }),
+    getClientesDeOrg(org.id),
     prisma.plan.findMany({ where: { orgId: org.id, activo: true }, orderBy: { precio: "asc" } }),
   ]);
 
   return (
     <div className="space-y-6">
+      {errorMsg && (
+        <div
+          role="alert"
+          className="flex items-start gap-2 rounded-xl border border-nexus-red-text/30 bg-nexus-red-soft px-4 py-3 text-sm text-nexus-red-text"
+        >
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>{errorMsg}</span>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-nexus-ink">Clientes</h1>

@@ -87,6 +87,12 @@ model Module {
   /// Tipos de negocio para los que se recomienda este módulo
   /// (ej: "gimnasio" → presupuestos para control de gastos de máquinas).
   sugeridoPara String[]          @default([])
+  /// Base de ruta en el portal (ej: "/modulos/caja-menor"). La navegación la
+  /// LEE de acá: el catálogo es la única fuente de verdad de dónde vive cada
+  /// módulo. Antes vivía en un allowlist hardcodeado en el código, y todo
+  /// módulo nuevo nacía con un link 404. NULL = CAPA sin ruta propia (raro:
+  /// lo normal es que un CAPA se navegue suelto y tenga la suya).
+  rutaBase    String?
   activo      Boolean           @default(true)
   orden       Int               @default(0)
   organizaciones OrganizationModule[]
@@ -134,6 +140,9 @@ model Plantilla {
   /// Rubro al que sirve esta plantilla (ej: "gimnasio").
   rubro       String
   icono       String?
+  /// Base de ruta de la plantilla (ej: "/plantillas/gym"). Los módulos MIEMBROS
+  /// heredan esta ruta: se navega a la plantilla, no al módulo suelto.
+  rutaBase    String?
   activo      Boolean           @default(true)
   orden       Int               @default(0)
   modulos     PlantillaModulo[]

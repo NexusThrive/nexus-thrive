@@ -17,7 +17,7 @@ import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/core/prisma";
 import { requiereSesion } from "@/lib/core/org";
-import { activarModuloPorRubro, activarModuloEnOrg } from "@/lib/core/modulos";
+import { activarModuloPorRubro, activarModuloEnOrg, getModulosActivosAgrupados } from "@/lib/core/modulos";
 
 function str(input: FormData, key: string): string {
   return String(input.get(key) || "").trim();
@@ -134,23 +134,14 @@ export async function guardarOnboarding(input: FormData) {
   revalidatePath("/");
 
   // Al terminar la guía, el usuario cae en SU módulo activo (no hardcodeado).
-  // Si el módulo pertenece a una plantilla, va a la base de la plantilla.
+  // Se usa la MISMA vista agrupada que ve el sidebar (plantilla agrupada o
+  // CAPA suelto) y la ruta sale del CATÁLOGO (`rutaBase`). Antes se armaba la
+  // ruta acá con un fallback `/${slug}`: un CAPA suelto (caja-menor) caía en
+  // `/caja-menor?tour=1` → 404, en vez de `/modulos/caja-menor?tour=1`.
   if (conModulo) {
-    const activo = await prisma.module.findFirst({
-      where: {
-        organizaciones: { some: { orgId: miembro.orgId, estado: "ACTIVO" } },
-        activo: true,
-      },
-      orderBy: { orden: "asc" },
-    });
-    if (activo) {
-      const enPlantilla = await prisma.plantillaModulo.findFirst({
-        where: { moduleId: activo.id },
-        include: { plantilla: true },
-      });
-      const base = enPlantilla ? `/plantillas/${enPlantilla.plantilla.slug}` : `/${activo.slug}`;
-      redirect(`${base}?tour=1`);
-    }
+    const agrupados = await getModulosActivosAgrupados(miembro.orgId);
+    const destino = agrupados.find((m) => m.rutaBase);
+    if (destino?.rutaBase) redirect(`${destino.rutaBase}?tour=1`);
   }
   redirect("/");
 }

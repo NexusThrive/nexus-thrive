@@ -4,7 +4,6 @@ import { Button } from "@nexus/ui";
 import { getOrgActiva } from "@/lib/core/org";
 import { getModulosActivosAgrupados, getModulosSugeridos } from "@/lib/core/modulos";
 import { iconoModulo } from "@/lib/core/iconos-modulos";
-import { RUTA_POR_SLUG } from "@/lib/core/navegacion";
 import { activarModulo } from "@/lib/core/acciones";
 
 export const dynamic = "force-dynamic";
@@ -46,7 +45,7 @@ export default async function PanelPrincipalPage() {
             {activos.map((m) => (
               <Link
                 key={m.slug}
-                href={RUTA_POR_SLUG[m.slug] ?? `/${m.slug}`}
+                href={m.rutaBase ?? "/"}
                 className="group rounded-xl border border-nexus-border bg-nexus-surface p-5 transition hover:border-nexus-gold/60"
               >
                 <div className="flex items-start justify-between">
