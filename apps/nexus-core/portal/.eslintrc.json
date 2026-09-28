@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "../../../tooling/eslint-config/base.js",
+    "next/core-web-vitals"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": { "jsx": true }
+  },
+  "env": { "browser": true }
+}

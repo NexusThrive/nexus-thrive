@@ -183,6 +183,8 @@ export async function activarModulo(input: FormData) {
 
   revalidatePath("/");
   const org = await prisma.organization.findUnique({ where: { id: miembro.orgId } });
-  const module = await prisma.module.findUnique({ where: { id: moduleId } });
-  if (org && module) revalidatePath(`/${module.slug}`);
+  // NO se llama `module`: `module` es un global de CommonJS y Next lo
+  // reescribe; asignarle rompe el bundle del server (`@next/next/no-assign-module-variable`).
+  const modulo = await prisma.module.findUnique({ where: { id: moduleId } });
+  if (org && modulo) revalidatePath(`/${modulo.slug}`);
 }
