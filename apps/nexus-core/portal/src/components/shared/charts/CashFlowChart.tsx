@@ -12,13 +12,23 @@ import {
   YAxis,
 } from "recharts";
 import type { MonthlyFlow } from "@/lib/shared/tipos";
-import { formatCompact, formatMoney } from "@/lib/shared/format";
+import {
+  crearFormatos,
+  PRESENTACION_POR_DEFECTO,
+  type Presentacion,
+} from "@/lib/shared/format";
 
 interface CashFlowChartProps {
   data: MonthlyFlow[];
   title?: string;
   subtitle?: string;
   className?: string;
+  /**
+   * Presentación de la ORG (moneda/país). Llega como dato plano desde el
+   * server component — no se puede pasar una función a un client component,
+   * así que se pasa la config y el formateo se arma acá.
+   */
+  presentacion?: Presentacion;
 }
 
 /** Gráfica de flujo: ingresos vs egresos por período (rango configurable). */
@@ -27,7 +37,11 @@ export const CashFlowChart: React.FC<CashFlowChartProps> = ({
   title = "Flujo de efectivo",
   subtitle = "Ingresos vs egresos",
   className = "",
-}) => (
+  presentacion = PRESENTACION_POR_DEFECTO,
+}) => {
+  const { formatMoney, formatCompact } = crearFormatos(presentacion);
+
+  return (
   <div className={`rounded-xl border border-nexus-border bg-nexus-surface p-5 ${className}`}>
     <h3 className="text-sm font-semibold text-nexus-ink">{title}</h3>
     <p className="mt-0.5 text-xs text-nexus-muted">{subtitle}</p>
@@ -70,4 +84,5 @@ export const CashFlowChart: React.FC<CashFlowChartProps> = ({
       </div>
     )}
   </div>
-);
+  );
+};

@@ -2,7 +2,7 @@ import { Users } from "lucide-react";
 import { AlertTriangle } from "lucide-react";
 import { prisma } from "@/lib/core/prisma";
 import { getOrgActiva } from "@/lib/core/org";
-import { formatDate } from "@/lib/shared/format";
+import { crearFormatos } from "@/lib/shared/format";
 import { crearCliente } from "@/lib/modulos/clientes/acciones";
 import { getClientesDeOrg } from "@/lib/modulos/clientes/consultas";
 import { ListaClientes } from "@/components/modulos/clientes/ListaClientes";
@@ -35,6 +35,11 @@ export default async function ClientesPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const { org } = await getOrgActiva();
+  // La moneda y el país los persiste el onboarding: el formato sigue a la org,
+  // no a constantes del código.
+  const presentacion = { moneda: org.moneda, pais: org.pais };
+  const { formatDate } = crearFormatos(presentacion);
+
   const { error } = await searchParams;
   const errorMsg = error ? ERRORES[error] : undefined;
 

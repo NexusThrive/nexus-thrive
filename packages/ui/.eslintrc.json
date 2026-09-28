@@ -1,0 +1,7 @@
+{
+  "extends": ["../../tooling/eslint-config/base.js"],
+  "parserOptions": {
+    "ecmaFeatures": { "jsx": true }
+  },
+  "env": { "browser": true }
+}

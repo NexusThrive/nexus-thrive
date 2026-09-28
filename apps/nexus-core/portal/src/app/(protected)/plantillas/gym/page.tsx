@@ -5,7 +5,7 @@ import { CashFlowChart } from "@/components/shared/charts/CashFlowChart";
 import { ExpenseDonut } from "@/components/shared/charts/ExpenseDonut";
 import { FiltroRango } from "@/components/shared/FiltroRango";
 import { TourInicial } from "@/components/core/TourInicial";
-import { formatMoney, formatDate } from "@/lib/shared/format";
+import { crearFormatos } from "@/lib/shared/format";
 import { getGymDashboard, isRango, RANGOS } from "@/lib/plantillas/gym/dashboard";
 import { getOrgActiva } from "@/lib/core/org";
 
@@ -20,6 +20,13 @@ export default async function DashboardPage({
   const rango = isRango(rangoRaw) ? rangoRaw : "semana";
 
   const { org } = await getOrgActiva();
+
+  // La moneda y el país los persiste el onboarding: el formato sigue a la org,
+  // no a constantes del código.
+  const presentacion = { moneda: org.moneda, pais: org.pais };
+
+  const { formatMoney, formatDate } = crearFormatos(presentacion);
+
   const data = await getGymDashboard(rango, org.id, org.nombre);
 
   const rangoLabel = RANGOS.find((r) => r.key === rango)!.label;
@@ -55,6 +62,7 @@ export default async function DashboardPage({
       <div className="grid gap-4 lg:grid-cols-5">
         <CashFlowChart
           data={data.flujo}
+          presentacion={presentacion}
           title="Flujo de efectivo"
           subtitle={`Ingresos vs egresos · ${rangoLabel}`}
           className="lg:col-span-3"
@@ -62,11 +70,13 @@ export default async function DashboardPage({
         <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-1">
           <ExpenseDonut
             data={data.egresosPorCategoria}
+            presentacion={presentacion}
             title="Egresos por categoría"
             subtitle={rangoLabel}
           />
           <ExpenseDonut
             data={data.pagosPorMetodo}
+            presentacion={presentacion}
             title="Pagos por método"
             subtitle={rangoLabel}
           />

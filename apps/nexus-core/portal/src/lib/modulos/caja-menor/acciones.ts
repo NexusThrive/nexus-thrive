@@ -12,22 +12,16 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import type { TipoMovimientoCaja } from "@prisma/client";
 import { prisma } from "@/lib/core/prisma";
-import { requiereSesion, getOrgActiva } from "@/lib/core/org";
+import { requiereModuloActivo } from "@/lib/core/requiere-modulo";
 import { saldoCaja } from "@/lib/modulos/caja-menor/datos";
 
+/**
+ * DELGADO: el gate real (sesión + org activa + módulo ACTIVO) vive en
+ * `lib/core/requiere-modulo.ts`, el mismo que usan las demás acciones.
+ * Este nombre se mantiene porque lo usan las páginas del módulo.
+ */
 async function requireModuloCajaMenor() {
-  const { email } = await requiereSesion();
-  const { org } = await getOrgActiva();
-
-  const mod = await prisma.module.findUnique({ where: { slug: "caja-menor" } });
-  const habilitado = mod
-    ? await prisma.organizationModule.findUnique({
-        where: { orgId_moduleId: { orgId: org.id, moduleId: mod.id } },
-      })
-    : null;
-  if (!habilitado || habilitado.estado !== "ACTIVO") redirect("/");
-
-  return { email, orgId: org.id };
+  return requiereModuloActivo("caja-menor");
 }
 
 function str(input: FormData, key: string): string {

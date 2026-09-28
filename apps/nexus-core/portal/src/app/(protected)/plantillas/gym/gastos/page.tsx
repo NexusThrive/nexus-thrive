@@ -1,7 +1,7 @@
 import { Receipt } from "lucide-react";
 import { prisma } from "@/lib/core/prisma";
 import { getOrgActiva } from "@/lib/core/org";
-import { formatDate, formatMoney } from "@/lib/shared/format";
+import { crearFormatos } from "@/lib/shared/format";
 import { registrarGasto, anularGasto } from "@/lib/modulos/gastos/acciones";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +26,11 @@ const CAT_COLOR: Record<string, string> = {
 
 export default async function GastosPage() {
   const { org } = await getOrgActiva();
+
+  // La moneda y el país los persiste el onboarding: el formato sigue a la org,
+  // no a constantes del código.
+  const presentacion = { moneda: org.moneda, pais: org.pais };
+  const { formatDate, formatMoney } = crearFormatos(presentacion);
 
   const desde = new Date();
   desde.setMonth(desde.getMonth() - 1);

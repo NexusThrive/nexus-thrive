@@ -2,12 +2,14 @@
   "name": "nexus-portal",
   "version": "0.1.0",
   "private": true,
-  "description": "Nexus Core — Portal único: login → mis negocios → módulos. Columna vertebral del ecosistema.",
+  "description": "Nexus Core \u2014 Portal \u00fanico: login \u2192 mis negocios \u2192 m\u00f3dulos. Columna vertebral del ecosistema.",
   "scripts": {
     "dev": "next dev -p 3005",
     "build": "next build",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@nexus/ui": "workspace:*",
@@ -27,8 +29,11 @@
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.0",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.35",
     "postcss": "^8.4.0",
     "tailwindcss": "^3.4.0",
-    "typescript": "^5.5.0"
+    "typescript": "^5.5.0",
+    "vitest": "^2.1.8"
   }
 }

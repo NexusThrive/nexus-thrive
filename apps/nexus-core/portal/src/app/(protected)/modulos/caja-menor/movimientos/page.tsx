@@ -2,7 +2,7 @@ import { ArrowLeftRight } from "lucide-react";
 import { getOrgActiva } from "@/lib/core/org";
 import { getCategoriasCaja, getMovimientosCaja } from "@/lib/modulos/caja-menor/datos";
 import { crearMovimientoCaja, anularMovimientoCaja } from "@/lib/modulos/caja-menor/acciones";
-import { formatDate, formatMoney } from "@/lib/shared/format";
+import { crearFormatos } from "@/lib/shared/format";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +18,11 @@ export default async function MovimientosCajaPage({
 }) {
   const { tipo, categoria, error } = await searchParams;
   const { org } = await getOrgActiva();
+
+  // La moneda y el país los persiste el onboarding: el formato sigue a la org,
+  // no a constantes del código.
+  const presentacion = { moneda: org.moneda, pais: org.pais };
+  const { formatDate, formatMoney } = crearFormatos(presentacion);
 
   const [categorias, movimientos] = await Promise.all([
     getCategoriasCaja(org.id),
