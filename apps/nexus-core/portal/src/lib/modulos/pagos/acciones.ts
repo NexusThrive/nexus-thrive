@@ -34,7 +34,8 @@ function revalidarCobro(clienteId?: string) {
 }
 
 /**
- * Cobra una membresía: registra el pago y actualiza el período del cliente.
+ * Cobra una membresía: registra el pago y actualiza el período.
+ * Si el cliente no tenía membresía, el cobro la crea (Eje B).
  * El estado pasa a ACTIVO y el periodoFin lo da el plan (o fecha libre).
  */
 export async function cobrarPago(input: FormData) {
@@ -64,21 +65,34 @@ export async function cobrarPago(input: FormData) {
   const cliente = await prisma.cliente.findFirst({ where: { id: clienteId, orgId } });
   if (!cliente) redirect(`${LISTADO}?error=cliente`);
 
+  const membresia = await prisma.membresia.findFirst({
+    where: { orgId, clienteId },
+    select: { id: true, periodoFin: true },
+  });
+
   // Encadenar sobre el período que ya venía: cobrar dos meses seguidos no
   // reinicia el contador, lo extiende.
-  const base = cliente.periodoFin && cliente.periodoFin > new Date() ? cliente.periodoFin : new Date();
+  const base = membresia?.periodoFin && membresia.periodoFin > new Date() ? membresia.periodoFin : new Date();
   const dias = plan?.duracionDias ?? 30;
   const periodoFin = new Date(base);
   periodoFin.setDate(periodoFin.getDate() + dias);
 
-  // El pago y el estado del cliente van en UNA transacción: antes eran dos
-  // escrituras sueltas y, si la segunda fallaba, quedaba un cobro registrado
-  // que no actualizaba la membresía.
-  await prisma.$transaction([
-    prisma.pago.create({
+  // El cobro y el estado de la membresía van en UNA transacción: antes eran
+  // dos escrituras sueltas y, si la segunda fallaba, quedaba un cobro
+  // registrado que no actualizaba la membresía. Con Eje B el pago CUELGA de
+  // la membresía, así que primero se upserta la membresía (creándola si el
+  // cliente no tenía — ej. mes libre sin plan) y encima se crea el pago.
+  await prisma.$transaction(async (tx) => {
+    const mem = await tx.membresia.upsert({
+      where: { clienteId },
+      create: { orgId, clienteId, planId, estado: "ACTIVO", periodoFin },
+      update: { planId: plan?.id ?? null, estado: "ACTIVO", periodoFin },
+    });
+
+    await tx.pago.create({
       data: {
         orgId,
-        clienteId,
+        membresiaId: mem.id,
         monto,
         metodo,
         concepto: plan
@@ -87,12 +101,8 @@ export async function cobrarPago(input: FormData) {
         periodoInicio: base,
         periodoFin,
       },
-    }),
-    prisma.cliente.updateMany({
-      where: { id: clienteId, orgId },
-      data: { periodoFin, estado: "ACTIVO", planId: plan?.id ?? null },
-    }),
-  ]);
+    });
+  });
 
   revalidarCobro(clienteId);
   redirect(`${FICHA}/${clienteId}?ok=pago`);
@@ -102,7 +112,7 @@ export async function cobrarPago(input: FormData) {
  * Anula un cobro con motivo (nada se borra).
  *
  * ANTES: marcar `anulado` era lo único. La membresía NO se tocaba, así que
- * anular el último cobro dejaba al socio con el período extender y en ACTIVO:
+ * anular el último cobro dejaba al socio con el período extendido y en ACTIVO:
  * la membresía anulada seguía vigente y el dashboard lo contaba como cobrado.
  * Ahora, tras anular, el período se recalcula sobre los pagos que QUEDAN vivos
  * (`recalcularMembresia`).
@@ -113,18 +123,18 @@ export async function anularPago(input: FormData) {
   const motivo = str(input, "motivo");
   if (!id || !motivo) return;
 
-  // Se lee el cliente ANTES de anular: hay que saber a quién pertenece el pago
-  // para recalcular su membresía, y el `where` lleva `orgId` para no tocar un
-  // pago de otra organización.
+  // Se lee el cliente dueño ANTES de anular (vía la membresía del pago): hay
+  // que saber a quién pertenece para recalcular su membresía y revalidar su
+  // ficha, y el `where` lleva `orgId` para no tocar un pago de otra org.
   const pago = await prisma.pago.findFirst({
     where: { id, orgId },
-    select: { id: true, clienteId: true },
+    select: { id: true, membresia: { select: { clienteId: true } } },
   });
   if (!pago) return;
 
   await prisma.pago.updateMany({ where: { id, orgId }, data: { anulado: true, motivoAnulacion: motivo } });
 
-  await recalcularMembresia(pago.clienteId, orgId);
+  await recalcularMembresia(pago.membresia.clienteId, orgId);
 
-  revalidarCobro(pago.clienteId);
+  revalidarCobro(pago.membresia.clienteId);
 }

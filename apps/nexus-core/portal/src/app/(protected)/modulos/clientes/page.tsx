@@ -139,12 +139,16 @@ export default async function ClientesPage({
           nombre: c.nombre,
           documento: c.documento,
           telefono: c.telefono,
-          estado: c.estado,
+          // Desde el Eje B el estado vive en la membresía: un cliente sin
+          // membresía no tiene estado → "Sin membresía" (cliente genérico).
+          estado: c.membresia?.estado ?? null,
           plan: c.plan?.nombre ?? null,
-          vence: c.periodoFin ? formatDate(c.periodoFin) : null,
-          estadoClase: ESTADO_CLASES[c.estado] ?? "bg-nexus-surface-alt text-nexus-muted",
-          estadoLabel: ESTADO_LABEL[c.estado] ?? c.estado,
-          ultimoPago: c.pagos[0] ? formatDate(c.pagos[0].pagadoEl) : null,
+          vence: c.membresia?.periodoFin ? formatDate(c.membresia.periodoFin) : null,
+          estadoClase: c.membresia?.estado
+            ? ESTADO_CLASES[c.membresia.estado] ?? "bg-nexus-surface-alt text-nexus-muted"
+            : "bg-nexus-surface-alt text-nexus-muted",
+          estadoLabel: c.membresia?.estado ? ESTADO_LABEL[c.membresia.estado] ?? c.membresia.estado : "Sin membresía",
+          ultimoPago: c.membresia?.pagos[0] ? formatDate(c.membresia.pagos[0].pagadoEl) : null,
         }))}
       />
     </div>

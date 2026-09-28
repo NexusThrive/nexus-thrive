@@ -9,7 +9,7 @@
  * habilitada si tiene ACTIVO al menos un módulo miembro de la plantilla.
  */
 import { prisma } from "@/lib/core/prisma";
-import { derivarEstadosClientes } from "@/lib/modulos/clientes/estado";
+import { derivarEstadosMembresias } from "@/lib/modulos/clientes/estado";
 import type { MonthlyFlow, CategoryExpense } from "@/lib/shared/tipos";
 import { rangoFechas, buckets, inRange, type RangoKey } from "@/lib/shared/rango";
 
@@ -18,12 +18,10 @@ export { RANGOS, isRango, rangoFechas, buckets } from "@/lib/shared/rango";
 export type { RangoKey } from "@/lib/shared/rango";
 
 /**
- * La derivación de estado del cliente es del MÓDULO CLIENTES, no de esta
- * plantilla. Antes vivía acá y el dashboard hacía `updateMany` sobre la tabla
- * de otro módulo; ahora se llama a su dueño. Re-exportado para no romper los
- * imports de las páginas.
+ * La derivación de estado es de la MEMBRESÍA (módulo Clientes, Eje B), no de
+ * esta plantilla. Antes vivía acá y el dashboard hacía `updateMany` sobre la
+ * tabla de otro módulo; ahora se llama a su dueño.
  */
-export { derivarEstadosClientes };
 
 /**
  * EL GATE SOLO VIVE EN `lib/core/requiere-modulo.ts`.
@@ -49,7 +47,7 @@ export interface GymDashboard {
   pagosPorMetodo: CategoryExpense[];
 }
 
-/** Cuántos clientes se listan en "Vencen esta semana" como máximo. */
+/** Días hacia adelante que se consideran "por vencer". */
 const MAX_POR_VENCER = 10;
 
 /** Datos del dashboard del gym en el rango pedido — TODO real. */
@@ -59,7 +57,7 @@ export async function getGymDashboard(
   orgNombre: string,
 ): Promise<GymDashboard> {
   const { desde, hasta } = rangoFechas(rango);
-  await derivarEstadosClientes(orgId);
+  await derivarEstadosMembresias(orgId);
 
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
@@ -80,11 +78,11 @@ export async function getGymDashboard(
         where: { orgId, anulado: false, fecha: { gte: desde, lte: hasta } },
         _sum: { monto: true },
       }),
-      prisma.cliente.count({ where: { orgId, estado: "ACTIVO" } }),
-      prisma.cliente.count({ where: { orgId, estado: "VENCIDO" } }),
-      prisma.cliente.findMany({
+      prisma.membresia.count({ where: { orgId, estado: "ACTIVO" } }),
+      prisma.membresia.count({ where: { orgId, estado: "VENCIDO" } }),
+      prisma.membresia.findMany({
         where: { orgId, estado: "ACTIVO", periodoFin: { gte: hoy, lte: en7d } },
-        select: { id: true, nombre: true, periodoFin: true },
+        select: { periodoFin: true, cliente: { select: { id: true, nombre: true } } },
         orderBy: { periodoFin: "asc" },
         take: MAX_POR_VENCER,
       }),
@@ -140,7 +138,7 @@ export async function getGymDashboard(
     balance: ingresos - gastosTotal,
     sociosActivos: activos,
     sociosVencidos: vencidos,
-    porVencer: porVencer.map((c) => ({ id: c.id, nombre: c.nombre, vence: c.periodoFin! })),
+    porVencer: porVencer.map((m) => ({ id: m.cliente.id, nombre: m.cliente.nombre, vence: m.periodoFin! })),
     flujo,
     egresosPorCategoria,
     pagosPorMetodo,

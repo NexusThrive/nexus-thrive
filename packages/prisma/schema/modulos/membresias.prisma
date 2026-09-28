@@ -1,0 +1,45 @@
+// ============================================================
+// MEMBRESÍA — la suscripción vigente de UN cliente (Eje B).
+//
+// No es un módulo del catálogo: es el vínculo entre Cliente, Plan y
+// Pago que antes vivía pegado a Cliente (`planId`, `estado`,
+// `periodoFin`). Al sacarlo, `Cliente` quedó genérico (cualquier rubro
+// puede tener clientes sin membresía) y `Plan` pasó a ser "planes de
+// servicio" reutilizables.
+//
+// Reglas de negocio:
+//  - 0..1 membresía por cliente (`clienteId` único): un cliente tiene
+//    una membresía vigente o no tiene. El id de un cliente es global
+//    (cuid), así que la unicidad por cliente ya implica "por org".
+//  - `estado` es una CACHÉ para filtrar y listar rápido. Se recalcula
+//    al cobrar (pagos/acciones.ts) y en estado.ts → puede desfasarse.
+//    Ver MODELO-DATOS §.
+//  - `planId` nullable = "mes libre": se puede cobrar una membresía sin
+//    plan (30 días), y al quitarle el plan a un cliente la membresía
+//    no se borra (para no perder el historial de pagos).
+//  - Los pagos cuelgan de la membresía, no del cliente.
+// ============================================================
+
+enum EstadoMembresia {
+  ACTIVO
+  CONGELADO // el cliente pidió pausa (ej: viaje)
+  VENCIDO // sin pago al día (se calcula/actualiza al cobrar)
+}
+
+/// Membresía vigente de un cliente (0..1 por cliente)
+model Membresia {
+  id         String           @id @default(cuid())
+  orgId      String
+  clienteId  String           @unique
+  cliente    Cliente          @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  planId     String?          // null = membresía sin plan ("mes libre")
+  plan       Plan?            @relation(fields: [planId], references: [id], onDelete: SetNull)
+  estado     EstadoMembresia  @default(ACTIVO)
+  periodoFin DateTime?        // vencimiento de la suscripción actual (activo si >= hoy)
+  pagos      Pago[]
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@index([orgId, estado])
+  @@map("membresias")
+}

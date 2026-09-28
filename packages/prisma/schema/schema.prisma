@@ -9,6 +9,9 @@
 //                            OrganizationModule, Plantilla, PlantillaModulo
 //   modulos/
 //     clientes.prisma      → Cliente
+//     membresias.prisma    → Membresia + EstadoMembresia (Eje B: la membresía
+//                            es lo gym-específico; el modelo pertenece al
+//                            módulo clientes, no es un módulo del catálogo)
 //     planes.prisma        → Plan
 //     pagos.prisma         → Pago
 //     gastos.prisma        → Gasto
@@ -17,6 +20,10 @@
 // INVARIANTE — un archivo en `modulos/` es UN MÓDULO del catálogo, y su
 // nombre es su `modules.slug`. El mismo slug aparece en cuatro lugares:
 //   schema/modulos/<slug>.prisma  ·  modules.slug  ·  /modulos/<slug>  ·  lib/modulos/<slug>/
+// EXCEPCIÓN (2026-09-28, Eje B): un módulo puede partir su modelo en más de
+// un archivo cuando un dominio se separa (membresias.prisma pertenece al
+// módulo clientes); el archivo extra NO es un módulo, y el slug de su módulo
+// dueño sigue mandando para rutas y navegación.
 // Un módulo NO es de un rubro: es un producto que un negocio contrata. Lo
 // que es "de un rubro" vive en CONFIGURACIÓN, nunca en el schema:
 //   Plantilla.rubro         → qué rubro recibe este conjunto

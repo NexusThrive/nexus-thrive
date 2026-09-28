@@ -3,9 +3,9 @@
  *
  * POR QUÉ EXISTE ESTE ARCHIVO
  * ---------------------------
- * `Cliente.estado` y `Cliente.periodoFin` son una CACHÉ derivada de los pagos
- * (ver schema/modulos/clientes.prisma). La regla es UNA sola y antes estaba
- * escrita en tres lugares distintos, con resultados distintos:
+ * `Membresia.estado` y `Membresia.periodoFin` son una CACHÉ derivada de los
+ * pagos (ver schema/modulos/membresias.prisma). La regla es UNA sola y antes
+ * estaba escrita en tres lugares distintos, con resultados distintos:
  *
  *   1. `plantillas/gym/dashboard.ts` la derivaba al LEER (un GET escribía).
  *   2. `pagos/acciones.ts` la pisaba al COBRAR.
@@ -18,12 +18,13 @@
  *
  * REGLA
  * -----
- *   - El período vigente es el `periodoFin` MÁS ALTO de los pagos NO anulados.
- *     Si no queda ningún pago vivo → `periodoFin = null` y el cliente queda
- *     VENCIDO (no hay membresía registrada).
+ *   - El período vigente es el `periodoFin` MÁS ALTO de los pagos NO anulados
+ *     de la membresía. Si no queda ningún pago vivo → `periodoFin = null` y la
+ *     membresía queda VENCIDA.
  *   - `CONGELADO` es una decisión del dueño (pausa) y NUNCA se pisa sola: si
- *     el período vence, el socio sigue congelado, no "activo" ni "vencido".
- *     Solo `cobrarPago` lo saca de CONGELADO, y a propósito.
+ *     el período vence, la membresía sigue congelada, no "activa" ni "vencida".
+ *     Solo `cobrarPago` la saca de CONGELADO, y a propósito.
+ *   - Sin membresía (cliente genérico sin plan) no hay nada que recalcular.
  */
 
 import { prisma } from "@/lib/core/prisma";
@@ -36,48 +37,50 @@ function hoyMedianoche(): Date {
 }
 
 /**
- * Recalcula `periodoFin` y `estado` de UN cliente a partir de sus pagos vivos.
- * Scope por `orgId` en todas las consultas: aunque le pasen un `clienteId`
- * ajeno, no se lee ni se escribe nada de otra organización.
+ * Recalcula `periodoFin` y `estado` de LA membresía de un cliente a partir de
+ * sus pagos vivos. Scope por `orgId` en todas las consultas: aunque le pasen
+ * un `clienteId` ajeno, no se lee ni se escribe nada de otra organización.
  */
 export async function recalcularMembresia(clienteId: string, orgId: string): Promise<void> {
-  const [cliente, ultimoPago] = await Promise.all([
-    prisma.cliente.findFirst({
-      where: { id: clienteId, orgId },
-      select: { estado: true },
+  const [membresia, ultimoPago] = await Promise.all([
+    prisma.membresia.findFirst({
+      where: { orgId, clienteId },
+      select: { id: true, estado: true },
     }),
     prisma.pago.findFirst({
-      where: { clienteId, orgId, anulado: false },
+      where: { orgId, membresia: { clienteId }, anulado: false },
       orderBy: { periodoFin: "desc" },
       select: { periodoFin: true },
     }),
   ]);
 
-  // Cliente inexistente en esta org: no se inventa ni se toca nada.
-  if (!cliente) return;
+  // Sin membresía (cliente sin plan) o cliente inexistente en esta org: no se
+  // inventa ni se toca nada.
+  if (!membresia) return;
 
   const periodoFin = ultimoPago?.periodoFin ?? null;
   const vigente = periodoFin !== null && periodoFin >= hoyMedianoche();
-  const estado = cliente.estado === "CONGELADO" ? "CONGELADO" : vigente ? "ACTIVO" : "VENCIDO";
+  const estado = membresia.estado === "CONGELADO" ? "CONGELADO" : vigente ? "ACTIVO" : "VENCIDO";
 
-  await prisma.cliente.updateMany({ where: { id: clienteId, orgId }, data: { periodoFin, estado } });
+  await prisma.membresia.updateMany({ where: { id: membresia.id, orgId }, data: { periodoFin, estado } });
 }
 
 /**
  * Refleja el estado en el listado sin cambiar el período: solo marca como
- * VENCIDO a quien ya venció y reactiva a quien tiene período vigente. Un
- * CONGELADO no se toca. Se usa en el dashboard, donde interesta que el número
- * que se muestra sea real aunque el cliente no haya pasado por un cobro.
+ * VENCIDA a la membresía que ya venció y reactiva a la que tiene período
+ * vigente. Una CONGELADA no se toca. Se usa en el dashboard, donde interesa
+ * que el número que se muestra sea real aunque el socio no haya pasado por un
+ * cobro.
  */
-export async function derivarEstadosClientes(orgId: string): Promise<void> {
+export async function derivarEstadosMembresias(orgId: string): Promise<void> {
   const hoy = hoyMedianoche();
 
-  await prisma.cliente.updateMany({
+  await prisma.membresia.updateMany({
     where: { orgId, estado: "ACTIVO", periodoFin: { not: null, lt: hoy } },
     data: { estado: "VENCIDO" },
   });
 
-  await prisma.cliente.updateMany({
+  await prisma.membresia.updateMany({
     where: { orgId, estado: "VENCIDO", periodoFin: { not: null, gte: hoy } },
     data: { estado: "ACTIVO" },
   });

@@ -7,14 +7,10 @@
 // (core/identidad.prisma) y se ACTIVA por organización vía
 // OrganizationModule (catálogo global).
 //
-// ⚠️ PENDIENTE (docs/MODELO-DATOS.md § Eje B): un Plan sin Cliente no
-// existe, así que `Plan` hoy sigue siendo medio gym ("membresía").
-// El plan del doc es sacarlo a una tabla `Membresia { clienteId,
-// planId, periodoFin, estado }` para que `Plan` sea genérico
-// ("planes de servicio", reutilizables por salones y cualquier
-// negocio) y `Cliente` quede limpio. Cuando pase, este archivo pasa
-// a `membresias.prisma` y `clientes.prisma` pierde `planId`,
-// `estado` y `periodoFin`.
+// Eje B (2026-09-28): `Plan` ya no conoce clientes. La relación pasa por
+// `Membresia` (membresias.prisma): `Plan` es genérico ("planes de
+// servicio", reutilizables por salones y cualquier negocio) y `Cliente`
+// quedó limpio en clientes.prisma.
 // ============================================================
 
 /// Plan de suscripción (ej: Mensual $120.000, Trimestral, Anual)
@@ -25,7 +21,7 @@ model Plan {
   precio       Decimal  @db.Decimal(12, 2) // en la moneda de la org
   duracionDias Int      @default(30)
   activo       Boolean  @default(true)
-  clientes     Cliente[]
+  membresias   Membresia[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

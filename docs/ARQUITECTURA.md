@@ -92,6 +92,8 @@ schema/
 │   └── identidad.prisma     → EL NÚCLEO (6 tablas)
 └── modulos/
     ├── clientes.prisma      → Cliente
+    ├── membresias.prisma    → Membresia + EstadoMembresia (Eje B — pertenece
+    │                          al módulo clientes, NO es un módulo del catálogo)
     ├── planes.prisma        → Plan
     ├── pagos.prisma         → Pago
     ├── gastos.prisma        → Gasto
@@ -103,6 +105,7 @@ schema/
 | `schema.prisma` | datasource, generator y **enums globales** (`Rol`, `CampoModulo`, `EstadoModuloOrg`, `UserScope`) | — |
 | `core/identidad.prisma` | `Organization`, `Member`, `Module`, `OrganizationModule`, `Plantilla`, `PlantillaModulo` | **Núcleo puro.** Nada de clientes, nada de caja |
 | `modulos/<slug>.prisma` | los modelos de **un** módulo, siempre con `orgId` | nombre = `modules.slug` |
+| `modulos/membresias.prisma` | `Membresia` + `EstadoMembresia` (Eje B) | **excepción**: archivo extra del módulo `clientes`; no es módulo del catálogo ni tiene slug propio |
 
 **Por qué:** un módulo nuevo (construcción, odontología, lo que sea) se agrega
 **sin tocar el núcleo**. El núcleo solo sabe que existe un catálogo (`Module`) y
@@ -188,11 +191,14 @@ puede estar en varias orgs). La **org activa** se elige en el navbar (cookie
 **Regla:** toda query de datos de negocio filtra por `orgId` de la org activa.
 
 **Estado real de esa regla (honesto):** hoy la sostienen la revisión de código y
-3 tests. **No hay nada que la haga cumplir.** Ya se escapó una vez:
+44 tests. **No hay nada que la haga cumplir.** Ya se escapó una vez:
 `Cliente.planId` era un FK global sin org, y un `planId` manipulado guardaba un
 cliente de una org apuntando a un plan de otra (fuga de nombre y precio). Se
 corrigió en escritura y en lectura, y quedó con tests
-(`lib/modulos/clientes/consultas.test.ts`).
+(`lib/modulos/clientes/consultas.test.ts`). Con el **Eje B** (2026-09-28) el
+plan vive en `Membresia.planId` y la defensa se reforzó: al leer solo se
+resuelve con un Map de los planes **de la org** (una membresía envenenada se ve
+como "sin membresía").
 
 **Trabajo pendiente de robustez:** una extensión de Prisma o una regla de lint
 que obligue a pasar `orgId`. Es la diferencia entre "nos acordamos" y "no se

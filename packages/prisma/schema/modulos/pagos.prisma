@@ -10,6 +10,9 @@
 //  - Un pago NUNCA se borra: se anula con motivo.
 //  - `monto` es siempre positivo; el signo lo da el tipo de movimiento
 //    del módulo al que pertenece.
+//  - Eje B: el pago cuelga de la MEMBRESÍA (una por cliente), no del
+//    Cliente directo. El historial de un cliente se lee vía
+//    `cliente.membresia.pagos`.
 //  - Futuro: PSE/Stripe como pasarela de pago (roadmap en ROADMAP.md).
 // ============================================================
 
@@ -21,12 +24,12 @@ enum MetodoPago {
   OTRO
 }
 
-/// Pago — registra el cobro y el período que cubre
+/// Pago — registra el cobro de una membresía y el período que cubre
 model Pago {
   id             String     @id @default(cuid())
   orgId          String
-  clienteId      String
-  cliente        Cliente    @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  membresiaId    String
+  membresia      Membresia  @relation(fields: [membresiaId], references: [id], onDelete: Cascade)
   monto          Decimal    @db.Decimal(12, 2)
   metodo         MetodoPago @default(EFECTIVO)
   concepto       String     // "Mensualidad septiembre", "Plan trimestral"
@@ -38,7 +41,7 @@ model Pago {
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
-  @@index([clienteId])
+  @@index([membresiaId])
   @@index([orgId, pagadoEl])
   @@map("pagos")
 }

@@ -58,18 +58,26 @@ export async function crearCliente(input: FormData) {
   const planId = await resolverPlanDeOrg(planPedido, orgId);
   if (planPedido && !planId) redirect(`${LISTADO}?error=plan`);
 
-  const cliente = await prisma.cliente.create({
-    data: {
-      orgId,
-      nombre,
-      documento: str(input, "documento") || null,
-      telefono: str(input, "telefono") || null,
-      email: str(input, "email") || null,
-      fechaNacimiento: fecha.valor,
-      planId,
-      nota: str(input, "nota") || null,
-    },
-  });
+  const datos = {
+    orgId,
+    nombre,
+    documento: str(input, "documento") || null,
+    telefono: str(input, "telefono") || null,
+    email: str(input, "email") || null,
+    fechaNacimiento: fecha.valor,
+    nota: str(input, "nota") || null,
+  };
+
+  // El cliente y su membresía van en UNA transacción: si nace con plan, nace
+  // con membresía (estado ACTIVO por defecto; el vencimiento lo da el primer
+  // cobro — no se inventan pagos acá).
+  const cliente = planId
+    ? await prisma.$transaction(async (tx) => {
+        const c = await tx.cliente.create({ data: datos });
+        await tx.membresia.create({ data: { orgId, clienteId: c.id, planId } });
+        return c;
+      })
+    : await prisma.cliente.create({ data: datos });
 
   // Si el cliente nace con membresía definida, registrar el primer pago es
   // responsabilidad del dueño desde el perfil (no se inventan pagos acá).
@@ -94,7 +102,7 @@ export async function actualizarCliente(input: FormData) {
   const planId = await resolverPlanDeOrg(planPedido, orgId);
   if (planPedido && !planId) return;
 
-  await prisma.cliente.updateMany({
+  const { count } = await prisma.cliente.updateMany({
     where: { id, orgId },
     data: {
       nombre,
@@ -102,10 +110,24 @@ export async function actualizarCliente(input: FormData) {
       telefono: str(input, "telefono") || null,
       email: str(input, "email") || null,
       fechaNacimiento: fecha.valor,
-      planId,
       nota: str(input, "nota") || null,
     },
   });
+  if (count === 0) return; // cliente inexistente: nada que tocar
+
+  // La membresía se actualiza SOLO si el usuario la cambió: si mandan un plan
+  // se crea/actualiza; si mandan vacío se le quita el plan a la membresía que
+  // ya existía (no se inventa una membresía sin plan ni se borra la existente:
+  // borrarla arrastraría el historial de pagos).
+  if (planId) {
+    await prisma.membresia.upsert({
+      where: { clienteId: id },
+      create: { orgId, clienteId: id, planId },
+      update: { planId },
+    });
+  } else {
+    await prisma.membresia.updateMany({ where: { orgId, clienteId: id }, data: { planId: null } });
+  }
 
   revalidatePath(`${LISTADO}/${id}`);
 }
@@ -114,7 +136,9 @@ export async function congelarCliente(input: FormData) {
   const { orgId } = await requiereModuloActivo("clientes");
   const id = str(input, "id");
   if (!id) return;
-  await prisma.cliente.updateMany({ where: { id, orgId }, data: { estado: "CONGELADO" } });
+  // La pausa es un estado de la MEMBRESÍA (Eje B): sin membresía no hay nada
+  // que congelar.
+  await prisma.membresia.updateMany({ where: { orgId, clienteId: id }, data: { estado: "CONGELADO" } });
   revalidatePath(`${LISTADO}/${id}`);
   revalidatePath(LISTADO);
 }

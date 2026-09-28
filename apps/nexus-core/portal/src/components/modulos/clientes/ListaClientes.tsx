@@ -8,7 +8,8 @@ export interface ClienteRow {
   nombre: string;
   documento: string | null;
   telefono: string | null;
-  estado: string;
+  /** null = cliente sin membresía (Eje B). */
+  estado: string | null;
   plan: string | null;
   vence: string | null;
   ultimoPago: string | null;

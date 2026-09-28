@@ -33,7 +33,7 @@ export default async function PagosPage() {
     getPlanesDeOrg(org.id),
     prisma.pago.findMany({
       where: { orgId: org.id, anulado: false, pagadoEl: { gte: desdeMes } },
-      include: { cliente: { select: { nombre: true } } },
+      include: { membresia: { include: { cliente: { select: { nombre: true } } } } },
       orderBy: { pagadoEl: "desc" },
       take: 20,
     }),
@@ -147,7 +147,7 @@ export default async function PagosPage() {
               {pagosRecientes.map((p) => (
                 <li key={p.id} className="flex items-center justify-between py-2.5">
                   <div>
-                    <p className="text-sm font-medium text-nexus-ink">{p.cliente.nombre}</p>
+                    <p className="text-sm font-medium text-nexus-ink">{p.membresia.cliente.nombre}</p>
                     <p className="text-xs text-nexus-muted">
                       {p.concepto} · {formatDate(p.pagadoEl)} · {p.metodo}
                     </p>

@@ -11,13 +11,19 @@
  * 2. ID-FIJOS en todo. Se hace upsert por id, no create: el seed tiene que ser
  *    idempotente, se corre varias veces contra la misma base.
  *
- * 3. COHERENTE CON LA DERIVA DE ESTADOS. `derivaEstadosClientes()` (dashboard)
- *    recalcula ACTIVO/VENCIDO a partir de `periodoFin` en cada visita, así que
- *    el estado sembrado y la fecha tienen que concordar: vencido = periodoFin
- *    en pasado. CONGELADO no lo toca la deriva, ese sí va explícito.
+ * 3. COHERENTE CON LA DERIVA DE ESTADOS. `derivaEstadosMembresias()`
+ *    (dashboard) recalcula ACTIVO/VENCIDO a partir de `periodoFin` en cada
+ *    visita, así que el estado sembrado y la fecha tienen que concordar:
+ *    vencido = periodoFin en pasado. CONGELADO no lo toca la deriva, ese sí
+ *    va explícito.
  *
  * 4. ALCANCE A LA ORG. Todo se crea con `orgId` de la org del demo. Nada de
  *    `planId` cruzando orgs (ver lib/modulos/clientes/consultas.ts).
+ *
+ * 5. EJE B: la membresía es una fila aparte (plan + estado + vencimiento) y
+ *    los pagos cuelgan de ella. El id de la membresía ES el id del cliente
+ *    (relación 1:1), así el seed sigue siendo idempotente sobre la base ya
+ *    migrada: el `upsert` por id encuentra la membresía del backfill.
  */
 
 import type { PrismaClient, MetodoPago, CategoriaGasto } from "@prisma/client";
@@ -225,13 +231,15 @@ export async function seedGym(prisma: PrismaClient, orgId: string) {
   const planPorId = new Map(PLANOS.map((p) => [p.id, p]));
 
   // ---------- Socios ----------
-  // `registros` guarda el socio YA resuelto junto a su id, para que el bucle de
-  // pagos no tenga que buscarlo por índice (frágil y además `undefined`-able).
+  // `registros` guarda el socio YA resuelto junto a su id y el id de su
+  // membresía, para que el bucle de pagos no tenga que buscarlos por índice
+  // (frágil y además `undefined`-able).
   const padron = armarPadron(rnd);
-  const registros: { socio: Socio; id: string }[] = [];
+  const registros: { socio: Socio; id: string; membresiaId: string }[] = [];
 
   for (const [i, s] of padron.entries()) {
     const id = `demo-gym-cli-${String(i + 1).padStart(2, "0")}`;
+    const membresiaId = id; // 1:1 — el id de la membresía es el id del cliente
     const periodoFin = d(s.expira);
     // La deriva recalcula ACTIVO/VENCIDO desde periodoFin, así que se siembra
     // lo que corresponde y no se depende de que la primera visita lo arregle.
@@ -245,9 +253,6 @@ export async function seedGym(prisma: PrismaClient, orgId: string) {
         nombre: s.nombre,
         documento: s.documento,
         telefono: s.telefono,
-        planId: s.plan,
-        estado,
-        periodoFin,
         nota: s.nota ?? null,
       },
       create: {
@@ -257,14 +262,19 @@ export async function seedGym(prisma: PrismaClient, orgId: string) {
         documento: s.documento,
         telefono: s.telefono,
         email: null,
-        planId: s.plan,
-        estado,
         fechaIngreso: ingreso,
-        periodoFin,
         nota: s.nota ?? null,
       },
     });
-    registros.push({ socio: s, id });
+
+    // Eje B: plan, estado y vencimiento viven en la membresía, no en Cliente.
+    await prisma.membresia.upsert({
+      where: { id: membresiaId },
+      update: { orgId, clienteId: id, planId: s.plan, estado, periodoFin },
+      create: { id: membresiaId, orgId, clienteId: id, planId: s.plan, estado, periodoFin },
+    });
+
+    registros.push({ socio: s, id, membresiaId });
   }
 
   // ---------- Pagos (histórico de ~13 meses) ----------
@@ -277,7 +287,7 @@ export async function seedGym(prisma: PrismaClient, orgId: string) {
   // apenas daba 4 meses de historial frente a 12 meses de gastos, y el balance
   // anual salía en −30M. La demo parecía un negocio quebrado.
   let pagos = 0;
-  for (const { socio: soc, id: clienteId } of registros) {
+  for (const { socio: soc, membresiaId } of registros) {
     const plan = planPorId.get(soc.plan);
     if (!plan) throw new Error(`plan desconocido en el socio ${soc.nombre}: ${soc.plan}`);
 
@@ -292,7 +302,7 @@ export async function seedGym(prisma: PrismaClient, orgId: string) {
       if (pagadoEl > hoy) continue;
       ciclo++;
 
-      const id = `${clienteId}-p${ciclo}`;
+      const id = `${membresiaId}-p${ciclo}`;
       const metodo = elegir(METODOS, Math.floor(rnd() * METODOS.length));
       await prisma.pago.upsert({
         where: { id },
@@ -300,7 +310,7 @@ export async function seedGym(prisma: PrismaClient, orgId: string) {
         create: {
           id,
           orgId,
-          clienteId,
+          membresiaId,
           monto: plan.precio,
           metodo,
           concepto: `${plan.nombre} — ${MESES[pagadoEl.getMonth()]} ${pagadoEl.getFullYear()}`,
@@ -324,7 +334,7 @@ export async function seedGym(prisma: PrismaClient, orgId: string) {
     create: {
       id: anuladoId,
       orgId,
-      clienteId: primerSocio.id,
+      membresiaId: primerSocio.membresiaId,
       monto: planMensual.precio,
       metodo: "EFECTIVO",
       concepto: "Mensualidad — cobro duplicado",

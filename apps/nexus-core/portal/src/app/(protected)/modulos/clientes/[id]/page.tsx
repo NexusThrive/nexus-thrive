@@ -22,15 +22,19 @@ export default async function ClientePage({ params }: { params: Promise<{ id: st
   // getClienteDeOrg acota el cliente Y su plan a la org. Con
   // `include: { plan: true }` un planId envenenado mostraba el nombre y el
   // precio de un plan de otro negocio. Ver lib/modulos/clientes/consultas.ts.
+  // Desde el Eje B el plan/estado/vencimiento viven en la membresía:
+  // `cliente.membresia` es null si el cliente no tiene membresía.
   const cliente = await getClienteDeOrg(id, org.id);
   if (!cliente) notFound();
+
+  const membresia = cliente.membresia;
 
   const planes = await prisma.plan.findMany({ where: { orgId: org.id, activo: true }, orderBy: { precio: "asc" } });
 
   const estadoClase =
-    cliente.estado === "ACTIVO"
+    membresia?.estado === "ACTIVO"
       ? "bg-nexus-green-soft text-nexus-green-text"
-      : cliente.estado === "VENCIDO"
+      : membresia?.estado === "VENCIDO"
         ? "bg-nexus-red-soft text-nexus-red-text"
         : "bg-nexus-surface-alt text-nexus-muted";
 
@@ -53,7 +57,7 @@ export default async function ClientePage({ params }: { params: Promise<{ id: st
               <p className="text-sm text-nexus-muted">{cliente.email || ""}</p>
             </div>
             <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${estadoClase}`}>
-              {cliente.estado}
+              {membresia?.estado ?? "Sin membresía"}
             </span>
           </div>
 
@@ -69,7 +73,7 @@ export default async function ClientePage({ params }: { params: Promise<{ id: st
             <div className="flex justify-between">
               <dt className="text-nexus-muted">Vence</dt>
               <dd className="font-medium text-nexus-ink">
-                {cliente.periodoFin ? formatDate(cliente.periodoFin) : "—"}
+                {membresia?.periodoFin ? formatDate(membresia.periodoFin) : "—"}
               </dd>
             </div>
             {cliente.nota && (
@@ -81,21 +85,22 @@ export default async function ClientePage({ params }: { params: Promise<{ id: st
           </dl>
 
           <div className="mt-5 flex flex-col gap-2">
-            {cliente.estado === "CONGELADO" ? (
+            {membresia?.estado === "CONGELADO" ? (
               <form action={reactivarCliente}>
                 <input type="hidden" name="id" value={cliente.id} />
                 <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-nexus-green px-3 py-2 text-sm font-medium text-white transition hover:opacity-85">
                   <Play className="h-4 w-4" /> Reactivar
                 </button>
               </form>
-            ) : (
+            ) : membresia ? (
               <form action={congelarCliente}>
                 <input type="hidden" name="id" value={cliente.id} />
                 <button className="flex w-full items-center justify-center gap-2 rounded-lg border border-nexus-border px-3 py-2 text-sm font-medium text-nexus-muted transition hover:bg-nexus-surface-alt hover:text-nexus-ink">
                   <Pause className="h-4 w-4" /> Congelar membresía
                 </button>
               </form>
-            )}
+            ) : null}
+            {/* Sin membresía no hay nada que congelar ni reactivar. */}
           </div>
         </div>
 
@@ -137,20 +142,20 @@ export default async function ClientePage({ params }: { params: Promise<{ id: st
             </button>
           </form>
           <p className="mt-3 text-xs text-nexus-muted">
-            El cobro extiende la membresía {cliente.periodoFin && cliente.periodoFin > new Date()
+            El cobro extiende la membresía {membresia?.periodoFin && membresia.periodoFin > new Date()
               ? "desde su vencimiento actual"
               : "desde hoy"}.
           </p>
 
           {/* Historial */}
           <h3 className="mt-6 text-sm font-semibold text-nexus-ink">Historial de pagos</h3>
-          {cliente.pagos.length === 0 ? (
+          {(membresia?.pagos.length ?? 0) === 0 ? (
             <p className="mt-3 rounded-lg border border-dashed border-nexus-border bg-nexus-surface/50 px-4 py-6 text-center text-sm text-nexus-muted">
               Sin pagos todavía
             </p>
           ) : (
             <ul className="mt-3 divide-y divide-nexus-border/70">
-              {cliente.pagos.map((p) => (
+              {membresia!.pagos.map((p) => (
                 <li key={p.id} className={`flex items-center justify-between py-2.5 ${p.anulado ? "opacity-60" : ""}`}>
                   <div>
                     <p className="text-sm font-medium text-nexus-ink">

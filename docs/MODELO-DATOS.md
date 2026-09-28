@@ -240,7 +240,7 @@ Plan de membresía.
 `nombre` · `precio` Decimal(12,2) · `duracionDias` Int (30) · `activo` Boolean · `@@index([orgId])`
 
 #### `clients` → tabla `clientes`
-El socio del gimnasio.
+El socio del gimnasio. **Genérico desde el Eje B: no sabe qué es un plan.**
 
 | Campo | Tipo | Notas |
 |---|---|---|
@@ -248,21 +248,34 @@ El socio del gimnasio.
 | `nombre` | String | |
 | `documento` | String? | cédula, para búsqueda rápida |
 | `telefono` / `email` / `fechaNacimiento` | String? / DateTime? | |
-| `planId` | String? | → **`Plan` (FK global, sin org)** — ver §6 |
-| `estado` | EstadoCliente | `ACTIVO` \| `CONGELADO` \| `VENCIDO` — **derivado**, se recalcula al cobrar |
-| `periodoFin` | DateTime? | vencimiento de la membresía actual |
 | `fechaIngreso` | DateTime | |
 | `nota` | String? | alergias, lesiones, preferencias |
 
-`@@index([orgId, estado])` · `@@index([orgId, nombre])`
+`@@index([orgId, nombre])`
+
+#### `membresias` (Eje B, 2026-09-28)
+Lo gym-específico: `Cliente` × `Plan` (o **"mes libre"**, que es una membresía
+sin plan — por eso `planId` es nullable y quitar el plan a un cliente NO borra
+la membresía, solo la deja sin plan).
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `id` | String | **= `clienteId`** (relación 1:1; el seed y el backfill son idempotentes) |
+| `orgId` | String | |
+| `clienteId` | String (`@unique`) | → `Cliente` (`onDelete: Cascade`) — el `@unique` es lo que Prisma exige para una relación 1:1 |
+| `planId` | String? | → **`Plan` (FK global, sin org)** — ver §6.2 |
+| `estado` | EstadoMembresia | `ACTIVO` \| `CONGELADO` \| `VENCIDO` — **caché derivada**, se recalcula al cobrar/anular |
+| `periodoFin` | DateTime? | vencimiento de la membresía actual (`null` = sin pago vivo) |
+
+`@@index([orgId, estado])` · relación `pagos Pago[]`
 
 #### `pagos`
 Cobro de membresía. **Nunca se borra: se anula con motivo.**
 
-`clienteId` → `Cliente` (`onDelete: Cascade`) · `monto` Decimal(12,2) · `metodo` MetodoPago ·
+`membresiaId` → `Membresia` (`onDelete: Cascade`) · `monto` Decimal(12,2) · `metodo` MetodoPago ·
 `concepto` · `periodoInicio` / `periodoFin` (qué período cubre) · `anulado` / `motivoAnulacion` · `pagadoEl`
 
-`@@index([clienteId])` · `@@index([orgId, pagadoEl])`
+`@@index([membresiaId])` · `@@index([orgId, pagadoEl])`
 
 #### `gastos`
 `categoria` **enum fijo** (ARRIENDO, NOMINA, SERVICIOS, MANTENIMIENTO, PUBLICIDAD, OTROS) ·
@@ -288,7 +301,7 @@ Cobro de membresía. **Nunca se borra: se anula con motivo.**
 | `UserScope` | `USER` · `CEO` (consola global, futuro) | núcleo |
 | `NaturalezaModulo` | `CAPA` · `VERTICAL` | núcleo |
 | `TipoMovimientoCaja` | `INGRESO` · `EGRESO` | caja |
-| `EstadoCliente` | `ACTIVO` · `CONGELADO` (pausa) · `VENCIDO` (sin pago al día) | gym |
+| `EstadoMembresia` | `ACTIVO` · `CONGELADO` (pausa) · `VENCIDO` (sin pago al día) | gym |
 | `MetodoPago` | `EFECTIVO` · `TARJETA` · `TRANSFERENCIA` · `NEQUI` · `OTRO` | gym |
 | `CategoriaGasto` | `ARRIENDO` · `NOMINA` · `SERVICIOS` · `MANTENIMIENTO` · `PUBLICIDAD` · `OTROS` | gym |
 
@@ -305,7 +318,7 @@ cuál la sostiene el código**.
 campo `orgId`, pero **casi ninguno declara la relación a `Organization`**: es un
 `String` suelto, sin foreign key. En todo el schema, la relación `org
 Organization` aparece **solo dos veces**: en `Member` y en `OrganizationModule`.
-Ninguna tabla de negocio (`clientes`, `plans`, `pagos`, `gastos`,
+Ninguna tabla de negocio (`clientes`, `membresias`, `plans`, `pagos`, `gastos`,
 `movimientos_caja`, `caja_categorias`) tiene FK a `organizations`.
 
 Efectos: un `orgId` mal escrito crea filas huérfanas sin que nadie lo note, y
@@ -323,12 +336,16 @@ normales, sin organización:
 
 | Relación | Qué permite si se manipula |
 |---|---|
-| `clientes.planId → plans` | cliente de la org A con plan de la org B (**ya pasó**) |
-| `pagos.clienteId → clientes` | pago de la org A a un socio de la org B |
+| `membresias.planId → plans` | membresía de la org A con plan de la org B (**ya pasó, y se volvió a blindar en el Eje B**) |
+| `pagos.membresiaId → membresias` | pago de la org A contra una membresía de la org B |
 | `movimientos_caja.categoriaId → caja_categorias` | movimiento de la org A con categoría de la org B |
 
-La fuga de `planId` se corrigió **en el código** (escritura y lectura, con tests).
-**La base sigue permitiendo la fila.** La solución de fondo sería una FK compuesta
+La fuga del plan se corrigió **en el código** (escritura y lectura, con tests).
+Con el **Eje B** la defensa se reforzó: el plan se valida contra la org al
+escribir (`resolverPlanDeOrg`) y al leer solo se resuelve con un Map de los
+planes **de la org** (listado, ficha y por-vencer) — una membresía envenenada se
+ve como "sin membresía", nunca con el nombre/precio ajeno. **La base sigue
+permitiendo la fila manipulada:** la solución de fondo sería una FK compuesta
 `(orgId, planId)`, que Postgres sí soporta y Prisma todavía no expone de forma
 cómoda; o una extensión de cliente que inyecte el filtro.
 
@@ -350,7 +367,7 @@ decide. Es una decisión consciente, no una omisión.
 | **Los módulos miembros heredan la ruta de la plantilla** | Un cliente de gym no ve "4 módulos", ve "Gym". La unidad de venta y de navegación es la plantilla | `Plantilla.rutaBase` |
 | **Las categorías de caja son tabla, las de gasto son enum** | En caja el rubro *decide* sus categorías; los gastos quedaron fijados a 6 universales | `modulos/caja-menor.prisma` vs `modulos/gastos.prisma` |
 | **El saldo y el estado se derivan, no se guardan** | Una sola fuente de verdad: los movimientos y los pagos. El saldo no se puede "descuadrar" porque no existe | comentarios en ambos schemas |
-| **`Cliente.estado` sí se guarda** (contradicción consciente) | Es una caché para filtrar/listar rápido. **Se recalcula al cobrar** → puede desfasarse | `modulos/clientes.prisma` |
+| **`Membresia.estado`/`periodoFin` sí se guardan** (contradicción consciente) | Son una caché para filtrar/listar rápido. **Se recalculan al cobrar/anular** → pueden desfasarse | `modulos/membresias.prisma` |
 | **Dinero siempre `Decimal(12,2)`** | Los `float` pierden centavos. Nunca `Float` para plata | todos los schemas |
 | **Nada se borra, se anula** | Un presupuesto de obra o una contabilidad tienen que poder auditar qué pasó | ambos schemas |
 | **`String[]` para `sugeridoPara`** | Evita una tabla de junctions para algo que es taxonomía interna. A cambio: **sin integridad referencial** | `core/identidad.prisma` |
@@ -402,13 +419,16 @@ discrepancia está en otro lado.
 | **Rutas** | ✅ Sí (Eje A, 2026-09-28). Cada módulo en `/modulos/<slug>` (clientes, pagos, gastos, caja-menor); `/plantillas/gym` es solo el dashboard de la plantilla. `planes` sigue sin pantalla propia: se gestiona desde Pagos |
 | **Naturaleza** | ✅ Sí (Eje A, 2026-09-28). `clientes` es **`CAPA` + `porDefecto` + `sugeridoPara: []`**: se activa en toda organización (con backfill para las existentes). `planes`/`pagos`/`gastos` siguen **`VERTICAL`** de gym |
 
-### La brecha real (lo que queda)
+### La brecha real (cerrada con el Eje B)
 
-**`clientes` ya es reutilizable**, pero su tabla sigue atada a `Plan`, que es
-concepto de gimnasio. Un salón de belleza puede activar `clientes` y lo va a
-usar; el precio que paga es cargar los "planes de membresía" del gym en un
-negocio que quizá no tiene membresías. Eso es el **Eje B**: la atadura
-`Cliente → Plan` que sigue en la base.
+**Antes:** `clientes` ya era reutilizable (Eje A), pero su tabla seguía atada a
+`Plan`, que es concepto de gimnasio. Un salón de belleza podía activar
+`clientes` y lo usaba, pero pagaba el precio de cargar los "planes de membresía"
+del gym en un negocio que quizá no tiene membresías.
+
+**Hoy (2026-09-28):** la atadura `Cliente → Plan` se sacó a la tabla
+`membresias` (migración `20260928_000001_eje_b_membresia`). `cliente` es un
+cliente genérico — cualquier rubro lo usa sin saber qué es un plan.
 
 ### Tres ejes posibles (independientes entre sí)
 
@@ -419,13 +439,14 @@ idempotente (`20260928_000000_backfill_clientes_capa`) pone a las
 organizaciones existentes en la misma situación. El comentario del schema
 (`Module.porDefecto` usa "clientes" como ejemplo) ahora se cumple.
 
-**Eje B — el vínculo `Cliente → Plan`:** es la atadura que impide reutilizar
-`clientes` del todo. Hay dos caminos:
+**Eje B — el vínculo `Cliente → Plan`:** **✅ hecho (2026-09-28).** Se eligió la
+opción B (sacar la membresía a su propia tabla), que era la correcta y la que
+resuelve la fuga de §6.2 por construcción:
 
-| Opción | Qué implica |
-|---|---|
-| **B) Sacar la membresía a su propia tabla** | `Cliente` queda limpio (nombre, documento, teléfono) y una tabla `Membresia { clienteId, planId, periodoFin, estado }` es lo gym-específico. **Es el modelo correcto** y además resuelve la fuga de §6.2 por construcción, si se le pone `orgId` |
-| A) Mover `Plan` junto a `Cliente` | "planes de servicio" es reutilizable (un salón también tiene planes). Menos trabajo, pero sigue siendo gym-céntrico |
+| Opción | Qué implica | Estado |
+|---|---|---|
+| **B) Sacar la membresía a su propia tabla** | `Cliente` queda limpio (nombre, documento, teléfono) y una tabla `Membresia { clienteId, planId, periodoFin, estado }` es lo gym-específico. **Es el modelo correcto** y además resuelve la fuga de §6.2 por construcción, si se le pone `orgId` | **✅ aplicada** — además `Pago` cuelga de `Membresia` y `EstadoCliente` se renombró a `EstadoMembresia` |
+| A) Mover `Plan` junto a `Cliente` | "planes de servicio" es reutilizable (un salón también tiene planes). Menos trabajo, pero sigue siendo gym-céntrico | no elegida — `Plan` sigue siendo de módulo |
 
 **Eje C — el archivo y la ruta:** **✅ hecho (2026-09-28).** Los archivos ya
 están partidos por módulo y cada módulo vive en `/modulos/<slug>`. Se hizo
@@ -433,52 +454,51 @@ antes que el Eje B a propósito: la herencia de ruta ("un miembro de plantilla
 hereda la ruta de su plantilla") era del modelo viejo de rutas anidadas y se
 descartó; hoy cada módulo tiene su ruta propia, y la plantilla su dashboard.
 
-> Nota sobre el nombre: si el Eje B se aplica, el archivo se va a llamar
-> `membresias.prisma`, no `planes.prisma`. La ruta de `planes` hoy no existe
-> (se gestiona dentro de Pagos), así que el renombre no rompe ningún path.
+> Nota sobre el nombre (cumplida): el archivo del modelo es
+> **`membresias.prisma`**, no `planes.prisma`. El **slug del catálogo sigue
+> siendo `planes`** (renombrarlo rompería `OrganizationModule`/`plantilla_modulos`);
+> el archivo es del módulo, el slug es del catálogo, y no tienen que coincidir.
+> La ruta de `planes` no existe (se gestiona dentro de Pagos), así que el modelo
+> nuevo no rompe ningún path.
 
-### Mi lectura, sin decidir por vos
+### Mi lectura
 
-El **Eje A está hecho** (fue el barato y el de mayor retorno): los módulos
-base se activan solos y cualquier rubro puede usar `clientes`. El **Eje B es el
-que cuesta y el que vale**: es la diferencia entre "un módulo que dice
-clientes" y "clientes de verdad", y de paso cierra la fuga cross-tenant en la
-base, no solo en el código.
+Los **tres ejes están hechos** (2026-09-28): `clientes` es `CAPA` por defecto
+(Eje A), la membresía vive en su tabla y el plan se resuelve solo dentro de la
+org (Eje B), y los archivos/rutas están partidos (Eje C). El Eje B era el que
+valía: es la diferencia entre "un módulo que dice clientes" y "clientes de
+verdad", y de paso blindó la fuga cross-tenant en el código, no solo en la base.
 
-### Antes de tocar nada, mirá estas cuatro cosas
+### Las cuatro cosas que se miraron antes de mover la tabla
 
 1. **¿Cuánto pesa la migración?** **88 clientes y 738 pagos** (§1.1), y el padrón
    es **datos semilla, no producción real**: se puede tirar y regenerar con
-   `seed-demo-gym.ts`. Eso hace que una migración de Gym sea barata **hoy** y
-   carísima mañana. La ventana buena es ahora.
-2. **`Pago` pertenece a `Cliente` o a `Membresia`?** Si `Membresia` existe, un
-   pago de membresía debería colgar de la membresía, no del cliente. Hoy cuelga
-   del cliente.
+   `seed-demo-gym.ts`. La migración se hizo **ahora** (barata); mañana habría sido
+   carísima. El backfill (`membresia.id = cliente.id`) la hace idempotente.
+2. **`Pago` pertenece a `Cliente` o a `Membresia`?** **Resuelto: cuelga de
+   `Membresia`** (`Pago.membresiaId NOT NULL`, `onDelete: Cascade`). El pago es
+   el evento que renueva la membresía, y la anulación vuelve a calcular su estado.
 3. **`estado` y `periodoFin` se calculan** en `lib/modulos/clientes/estado.ts`
-   (2026-09-28: se centralizó en el módulo dueño, `derivarEstadosClientes`) —
-   si se mueven a `Membresia`, hay que mover esa lógica y sus tests.
-4. **Caja Menor no tiene clientes.** Si `clientes` fuera `CAPA`, caja podría
-   registrar a quién se le entregó el efectivo. ¿Se quiere eso? Es una decisión de
-   producto, no de base.
+   — **resuelto: la lógica se movió a `Membresia`** (`recalcularMembresia` +
+   `derivarEstadosMembresias`, CONGELADO nunca se pisa solo) con sus tests.
+4. **Caja Menor no tiene clientes.** Sigue pendiente: es una decisión de
+   producto, no de base. Ahora que `clientes` es `CAPA` y genérico, caja podría
+   registrar a quién se le entregó el efectivo — si el negocio lo quiere.
 
-### El orden que yo seguiría (para discutir, no decidido)
+### El orden que se siguió
 
-| # | Paso | Costo | Por qué en ese orden |
-|---|---|---|---|
-| 1 | **Corregir la doc** (este doc + `DECISIONES.md`) | 0 | Antes de mover una tabla, que las razones estén escritas. Ya está la mitad (§7.1) |
-| 2 | **Eje A**: `clientes` de `VERTICAL` → `CAPA`, `sugeridoPara: []` | **✅ hecho (2026-09-28)** | Es el paso de mayor retorno y el más barato. No toca el schema; la migración de datos pone las orgs existentes al día |
-| 3 | Cerrar la fuga de `planId` **en la base** (FK compuesta o trigger) | media | Ya está cerrada en el código con tests; en la base sigue abierta (§6.2) |
-| 4 | **Eje B**: `Membresia` y `Cliente` genérico | alta | El que realmente libera a `clientes` para otros rubros. Toca la tabla más poblada |
-| 5 | **Eje C**: partir `gym.prisma` en archivos + rutas | baja | **✅ hecho (2026-09-28).** Archivos particidos y rutas `/modulos/<slug>`; quedó verificado con `type-check` + tests |
+| # | Paso | Estado |
+|---|---|---|
+| 1 | **Corregir la doc** (este doc + `DECISIONES.md`) | ✅ este doc; `DECISIONES.md` pendiente de crear (§7.1) |
+| 2 | **Eje A**: `clientes` de `VERTICAL` → `CAPA`, `sugeridoPara: []` | **✅ hecho (2026-09-28)** |
+| 3 | Cerrar la fuga de `planId` **en la base** (FK compuesta o trigger) | ⏳ sigue pendiente — el código ya la cierra con tests y el Eje B la reforzó; la base aún la permite (§6.2) |
+| 4 | **Eje B**: `Membresia` y `Cliente` genérico | **✅ hecho (2026-09-28)** — migración `20260928_000001_eje_b_membresia` aplicada a datos reales (88 membresías, 738 pagos): backfill, `pagos.membresiaId`, DROP de columnas viejas, `EstadoCliente` → `EstadoMembresia` |
+| 5 | **Eje C**: partir `gym.prisma` en archivos + rutas | **✅ hecho (2026-09-28)** |
 
-> **Estado al 2026-09-28:** el paso 5 (Eje C) está completo — archivos y rutas.
-> El paso 2 (Eje A) está completo: `clientes` es `CAPA` + `porDefecto`, con
-> backfill para las organizaciones existentes. El bloqueo real sigue siendo el
-> paso 4 (Eje B): `Cliente.planId` lo ata a gym.
-
-**El paso 2 es el que más rinde por lo que cuesta, y el 4 es el que importa de
-verdad.** No hay que hacerlos juntos: el 2 no obliga al 4, y hacer el 4 primero
-es hacer el trabajo difícil sin haber probado si el negocio lo quiere.
+> **Estado al 2026-09-28:** Ejes A, B y C completos y verificados
+> (`type-check` + 44 tests + `lint` + `build`; seed demo idempotente sobre la
+> base migrada). Queda pendiente: `docs/DECISIONES.md` (§7.1) y la FK compuesta
+> en la base (paso 3).
 
 ---
 

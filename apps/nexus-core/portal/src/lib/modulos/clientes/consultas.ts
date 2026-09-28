@@ -3,18 +3,17 @@
  *
  * POR QUÉ EXISTE ESTE ARCHIVO
  * ---------------------------
- * `Cliente.planId` es un FK global a `Plan` sin restricción de organización:
- * la base permite que un cliente de la org A apunte a un plan de la org B.
- * Eso convertía un `<select name="planId">` manipulado en una fuga de datos
- * entre negocios: el cliente se guardaba en la org A pero la ficha y el listado
- * mostraban el nombre y el precio del plan de la org B.
+ * Un `planId` manipulado convertía un `<select>` en una fuga de datos entre
+ * negocios: el cliente se guardaba en la org A pero la ficha y el listado
+ * mostraban el nombre y el precio del plan de la org B (PR #28).
  *
- * Por eso se corrigen LOS DOS LADOS:
+ * Desde el Eje B el plan ya no cuelga de `Cliente` sino de `Membresia`, pero
+ * el riesgo es el MISMO — `Membresia.planId` sigue siendo un FK global a
+ * `Plan`. Se mantienen LOS DOS LADOS de la defensa:
  *   - ESCRITURA (`resolverPlanDeOrg`): un plan ajeno nunca se persiste.
- *   - LECTURA (`getClientesDeOrg` / `getClienteDeOrg`): aunque ya exista una
- *     fila envenenada en la base, el plan se resuelve con `orgId` y se
- *     entrega `null` si no es de esta org. Nunca se muestra nada ajeno,
- *     aunque el dato ya esté guardado.
+ *   - LECTURA (`getClientesDeOrg` / `getClienteDeOrg` / `getClientesPorVencer`):
+ *     el plan se resuelve con `orgId` y se entrega `null` si no es de esta
+ *     org. Nunca se muestra nada ajeno, aunque el dato ya esté guardado.
  *
  * Nota sobre Prisma: `include: { plan: true }` NO admite `where` (solo las
  * relaciones to-many lo admiten), así que para acotar un to-one hay que
@@ -30,14 +29,18 @@ import type { Plan, Prisma } from "@prisma/client";
  * type-check avisa. Escribirlos a mano ya falló una vez (`pagos` desaparecía).
  */
 
-/** Listado: cliente + plan acotado a la org + último pago no anulado. */
+/** Listado: cliente + membresía (con último pago no anulado) + plan acotado. */
 export type ClienteListado = Prisma.ClienteGetPayload<{
-  include: { pagos: { where: { anulado: false }; orderBy: { pagadoEl: "desc" }; take: 1 } };
+  include: {
+    membresia: {
+      include: { pagos: { where: { anulado: false }; orderBy: { pagadoEl: "desc" }; take: 1 } };
+    };
+  };
 }> & { plan: Plan | null };
 
-/** Ficha: cliente + plan acotado a la org + todos sus pagos. */
+/** Ficha: cliente + membresía (con todos sus pagos) + plan acotado a la org. */
 export type ClienteFicha = Prisma.ClienteGetPayload<{
-  include: { pagos: { orderBy: { pagadoEl: "desc" } } };
+  include: { membresia: { include: { pagos: { orderBy: { pagadoEl: "desc" } } } } };
 }> & { plan: Plan | null };
 
 /**
@@ -55,13 +58,15 @@ export async function resolverPlanDeOrg(planId: string | null, orgId: string): P
 
 /**
  * Listado de clientes con el plan resuelto dentro de la MISMA org.
- * Reemplaza a `include: { plan: true }`, que cruzaba organizaciones.
+ * El estado / vencimiento / último pago salen de `membresia` (Eje B).
  */
 export async function getClientesDeOrg(orgId: string): Promise<ClienteListado[]> {
   const clientes = await prisma.cliente.findMany({
     where: { orgId },
     include: {
-      pagos: { where: { anulado: false }, orderBy: { pagadoEl: "desc" }, take: 1 },
+      membresia: {
+        include: { pagos: { where: { anulado: false }, orderBy: { pagadoEl: "desc" }, take: 1 } },
+      },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -75,7 +80,7 @@ export async function getClientesDeOrg(orgId: string): Promise<ClienteListado[]>
     ...c,
     // `?? null` es lo que impide la fuga: un planId que apunta a otra org
     // simplemente no resuelve y se muestra como "Sin membresía".
-    plan: c.planId ? porId.get(c.planId) ?? null : null,
+    plan: c.membresia?.planId ? porId.get(c.membresia.planId) ?? null : null,
   }));
 }
 
@@ -83,12 +88,12 @@ export async function getClientesDeOrg(orgId: string): Promise<ClienteListado[]>
 export async function getClienteDeOrg(id: string, orgId: string): Promise<ClienteFicha | null> {
   const cliente = await prisma.cliente.findFirst({
     where: { id, orgId },
-    include: { pagos: { orderBy: { pagadoEl: "desc" } } },
+    include: { membresia: { include: { pagos: { orderBy: { pagadoEl: "desc" } } } } },
   });
   if (!cliente) return null;
 
-  const plan = cliente.planId
-    ? await prisma.plan.findFirst({ where: { id: cliente.planId, orgId } })
+  const plan = cliente.membresia?.planId
+    ? await prisma.plan.findFirst({ where: { id: cliente.membresia.planId, orgId } })
     : null;
 
   return { ...cliente, plan };
@@ -104,13 +109,13 @@ export async function getNombresClientes(orgId: string) {
 }
 
 /**
- * Clientes cuya membresía vence dentro de la ventana dada, con el nombre del
- * plan resuelto DENTRO de la org.
+ * Membresías que vencen dentro de la ventana dada, con el nombre del plan
+ * resuelto DENTRO de la org.
  *
  * POR QUÉ EXISTE: la página de pagos hacía esto con
  * `select: { plan: { select: { nombre: true } } }`. Como en Prisma las
  * relaciones to-one no admiten `where`, ese include no lleva `orgId`: una fila
- * ya envenenada (cliente de la org A con `planId` de un plan de la org B)
+ * ya envenenada (membresía de la org A con `planId` de un plan de la org B)
  * filtraba el NOMBRE del plan ajeno. Esta función resuelve el plan con el
  * mismo criterio que el listado, así que un plan ajeno nunca se muestra.
  */
@@ -118,23 +123,27 @@ export async function getClientesPorVencer(
   orgId: string,
   { desde, hasta }: { desde: Date; hasta: Date },
 ) {
-  const clientes = await prisma.cliente.findMany({
+  const membresias = await prisma.membresia.findMany({
     where: { orgId, estado: "ACTIVO", periodoFin: { gte: desde, lte: hasta } },
-    select: { id: true, nombre: true, periodoFin: true, planId: true },
+    select: {
+      planId: true,
+      periodoFin: true,
+      cliente: { select: { id: true, nombre: true } },
+    },
     orderBy: { periodoFin: "asc" },
   });
-  if (clientes.length === 0) return [];
+  if (membresias.length === 0) return [];
 
-  const planIds = clientes.map((c) => c.planId).filter((id): id is string => id !== null);
+  const planIds = membresias.map((m) => m.planId).filter((id): id is string => id !== null);
   const planes = planIds.length
     ? await prisma.plan.findMany({ where: { orgId, id: { in: planIds } }, select: { id: true, nombre: true } })
     : [];
   const nombrePorPlan = new Map(planes.map((p) => [p.id, p.nombre]));
 
-  return clientes.map((c) => ({
-    id: c.id,
-    nombre: c.nombre,
-    periodoFin: c.periodoFin,
-    plan: c.planId ? (nombrePorPlan.get(c.planId) ?? null) : null,
+  return membresias.map((m) => ({
+    id: m.cliente.id,
+    nombre: m.cliente.nombre,
+    periodoFin: m.periodoFin,
+    plan: m.planId ? (nombrePorPlan.get(m.planId) ?? null) : null,
   }));
 }
