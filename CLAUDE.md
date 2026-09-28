@@ -3,9 +3,9 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## 📋 Overview
-Nexus es el **núcleo** de la base del ecosistema: un portal (Next.js) con la estructura REGISTRO → ONBOARDING → PANEL PRINCIPAL → PLANTILLAS Y MÓDULOS SEGÚN EL ONBOARDING. Las apps verticales antiguas (`nexus-finance`, `nexus-services`) fueron eliminadas del monorepo. Ver `docs/BASE-NEXUS.md`.
+Nexus es el **núcleo** de la base del ecosistema: un portal (Next.js) con la estructura REGISTRO → ONBOARDING → PANEL PRINCIPAL → PLANTILLAS Y MÓDULOS SEGÚN EL ONBOARDING. Las apps verticales antiguas (`nexus-finance`, `nexus-services`) fueron eliminadas del monorepo. Mapa del repo: `docs/ARQUITECTURA.md`. Nomenclatura: `docs/GLOSARIO.md`.
 
-## 🏗️ Arquitectura (rama `core/base`)
+## 🏗️ Arquitectura
 - **apps/nexus-core/portal/**: Portal único de Nexus
   - `src/app/`: `(auth)` registro/login · `(onboarding)` perfil del negocio · `(protected)` shell + panel principal + `plantillas/gym/` (PLANTILLA armada de módulos) + `modulos/caja-menor/` (módulo suelto)
   - `src/lib/`: `core/` (núcleo: acciones, org, modulos, navegacion con RUTA_POR_SLUG, requiere-modulo) · `shared/` (rango, format, tipos, form) · `plantillas/gym/dashboard.ts` · `modulos/` (clientes, planes, pagos, gastos, caja-menor)
@@ -59,9 +59,15 @@ pnpm ls --filter @nexus/prisma
 ## 🧪 Testing
 Los tests se ejecutan mediante Turborepo con cache basado en build:
 ```bash
-pnpm test              # ejecuta tests en todos los packages que los tengan
-pnpm --filter @nexus/prisma test  # tests específicos de un package
+pnpm test              # Vitest en los packages que tengan tests (hoy: el portal)
+pnpm --filter nexus-portal test     # tests solo del portal
+pnpm --filter nexus-portal test:watch
 ```
+
+Los tests son unitarios y viven junto al código (`*.test.ts`), con Vitest y el
+alias `@/`. Hoy cubren el formateo de dinero, el gate de módulos y el
+aislamiento multi-tenant de las consultas de Clientes. **No hay E2E ni CI todavía**
+(issues #19 y #20).
 
 ## 🔧 Notas de desarrollo
 - El monorepo usa pnpm como gestor de paquetes
@@ -72,6 +78,7 @@ pnpm --filter @nexus/prisma test  # tests específicos de un package
 - TypeScript está configurado en modo estricto en todo el workspace
 
 ## 📚 Convenciones
+- Un módulo **no** es una app: es un módulo (pantallas + datos) dentro de `apps/nexus-core/portal`. Solo hay un portal.
 - Sigue la estructura `apps/<campo>/<módulo>/` para nuevas aplicaciones
 - El código reutilizable entre apps va en `packages/`
 - La configuración compartida vive en `packages/config` y `tooling/`
