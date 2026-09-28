@@ -1,8 +1,8 @@
 # Glosario NEXUS — nomenclatura congelada (2026-09-22)
 
 > Referencia corta. Un solo significado por término. No usar sinónimos en
-> nombres de variables, rutas, tablas, PRs ni docs. Base técnica completa:
-> `docs/BASE-NEXUS.md` y `PLAN-BASE-NEXUS.md`.
+> nombres de variables, rutas, tablas, PRs ni docs. Dónde vive cada cosa:
+> `docs/ARQUITECTURA.md`.
 
 ## Niveles de producto (de afuera hacia adentro)
 
