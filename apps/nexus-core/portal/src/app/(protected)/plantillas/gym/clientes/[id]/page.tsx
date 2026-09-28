@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Pause, Play, Wallet } from "lucide-react";
 import { prisma } from "@/lib/core/prisma";
 import { getOrgActiva } from "@/lib/core/org";
-import { formatDate, formatMoney } from "@/lib/shared/format";
+import { crearFormatos } from "@/lib/shared/format";
 import { cobrarPago, anularPago } from "@/lib/modulos/pagos/acciones";
 import { congelarCliente, reactivarCliente } from "@/lib/modulos/clientes/acciones";
 import { getClienteDeOrg } from "@/lib/modulos/clientes/consultas";
@@ -12,6 +12,11 @@ export const dynamic = "force-dynamic";
 
 export default async function ClientePage({ params }: { params: Promise<{ id: string }> }) {
   const { org } = await getOrgActiva();
+  // La moneda y el país los persiste el onboarding: el formato sigue a la org,
+  // no a constantes del código.
+  const presentacion = { moneda: org.moneda, pais: org.pais };
+  const { formatDate, formatMoney } = crearFormatos(presentacion);
+
   const { id } = await params;
 
   // getClienteDeOrg acota el cliente Y su plan a la org. Con

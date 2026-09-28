@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Wallet, Plus } from "lucide-react";
 import { prisma } from "@/lib/core/prisma";
 import { getOrgActiva } from "@/lib/core/org";
-import { formatDate, formatMoney } from "@/lib/shared/format";
+import { crearFormatos } from "@/lib/shared/format";
 import { cobrarPago } from "@/lib/modulos/pagos/acciones";
 import { crearPlan } from "@/lib/modulos/planes/acciones";
 
@@ -10,6 +10,11 @@ export const dynamic = "force-dynamic";
 
 export default async function PagosPage() {
   const { org } = await getOrgActiva();
+
+  // La moneda y el país los persiste el onboarding: el formato sigue a la org,
+  // no a constantes del código.
+  const presentacion = { moneda: org.moneda, pais: org.pais };
+  const { formatDate, formatMoney } = crearFormatos(presentacion);
 
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);

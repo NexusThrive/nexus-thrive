@@ -4,7 +4,7 @@ import { StatCard } from "@nexus/ui";
 import { CashFlowChart } from "@/components/shared/charts/CashFlowChart";
 import { ExpenseDonut } from "@/components/shared/charts/ExpenseDonut";
 import { FiltroRango } from "@/components/shared/FiltroRango";
-import { formatMoney, formatDate } from "@/lib/shared/format";
+import { crearFormatos } from "@/lib/shared/format";
 import { getCajaDashboard } from "@/lib/modulos/caja-menor/datos";
 import { getOrgActiva } from "@/lib/core/org";
 import { isRango, RANGOS } from "@/lib/shared/rango";
@@ -20,6 +20,13 @@ export default async function CajaDashboardPage({
   const rango = isRango(rangoRaw) ? rangoRaw : "mes";
 
   const { org } = await getOrgActiva();
+
+  // La moneda y el país los persiste el onboarding: el formato sigue a la org,
+  // no a constantes del código.
+  const presentacion = { moneda: org.moneda, pais: org.pais };
+
+  const { formatMoney, formatDate } = crearFormatos(presentacion);
+
   const data = await getCajaDashboard(rango, org.id, org.nombre);
 
   const rangoLabel = RANGOS.find((r) => r.key === rango)!.label;
@@ -51,6 +58,7 @@ export default async function CajaDashboardPage({
       <div className="grid gap-4 lg:grid-cols-5">
         <CashFlowChart
           data={data.flujo}
+          presentacion={presentacion}
           title="Flujo de caja"
           subtitle={`Entradas vs salidas · ${rangoLabel}`}
           className="lg:col-span-3"
@@ -58,6 +66,7 @@ export default async function CajaDashboardPage({
         <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-1">
           <ExpenseDonut
             data={data.egresosPorCategoria}
+            presentacion={presentacion}
             title="Egresos por categoría"
             subtitle={rangoLabel}
           />

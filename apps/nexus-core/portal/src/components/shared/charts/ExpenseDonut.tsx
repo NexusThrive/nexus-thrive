@@ -3,13 +3,15 @@
 import React from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import type { CategoryExpense } from "@/lib/shared/tipos";
-import { formatMoney } from "@/lib/shared/format";
+import { crearFormatos, PRESENTACION_POR_DEFECTO, type Presentacion } from "@/lib/shared/format";
 
 interface ExpenseDonutProps {
   data: CategoryExpense[];
   title?: string;
   subtitle?: string;
   className?: string;
+  /** Presentación de la ORG (moneda/país); llega como dato plano desde el server. */
+  presentacion?: Presentacion;
 }
 
 /** Paleta Nexus (sin azul): dorado, verde, rojo y neutros. */
@@ -21,7 +23,11 @@ export const ExpenseDonut: React.FC<ExpenseDonutProps> = ({
   title = "Egresos por categoría",
   subtitle = "Período seleccionado",
   className = "",
-}) => (
+  presentacion = PRESENTACION_POR_DEFECTO,
+}) => {
+  const { formatMoney } = crearFormatos(presentacion);
+
+  return (
   <div className={`rounded-xl border border-nexus-border bg-nexus-surface p-5 ${className}`}>
     <h3 className="text-sm font-semibold text-nexus-ink">{title}</h3>
     <p className="mt-0.5 text-xs text-nexus-muted">{subtitle}</p>
@@ -75,4 +81,5 @@ export const ExpenseDonut: React.FC<ExpenseDonutProps> = ({
       </>
     )}
   </div>
-);
+  );
+};
