@@ -1,22 +1,24 @@
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
+import { TrendingDown, TrendingUp, Users, Wallet } from "lucide-react";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
-import {
-  mockRecentActivity,
-  placeholderMetrics,
-} from "@/lib/dashboard-mocks";
+import { formatCurrency, formatRelativeTime } from "@/lib/format";
+import type {
+  DashboardMetric,
+  RecentActivityItem,
+} from "@/lib/dashboard-types";
 import MetricCard from "../components/tenant/metric-card";
 import QuickActions from "../components/tenant/quick-actions";
 import RecentActivity from "../components/tenant/recent-activity";
 
 /**
  * Dashboard del negocio. Server Component: toda la data (tenant, usuario,
- * métricas) se resuelve aquí y solo se pasan valores serializables a los
- * componentes de UI.
+ * métricas y actividad reciente) se resuelve aquí desde PostgreSQL vía
+ * `tenantDb` y solo se pasan valores serializables a la UI.
  *
- * Las métricas y la actividad usan placeholders de `lib/dashboard-mocks.ts`
- * hasta que exista la capa de agregación de datos.
+ * Las métricas y la actividad son reales: ingresos/gastos del mes en curso
+ * (horario Bogotá) y últimos 5 movimientos del tenant.
  */
 export default async function TenantDashboard({
   params,
@@ -56,6 +58,84 @@ export default async function TenantDashboard({
   }).format(new Date());
   const formattedDate = rawDate.charAt(0).toUpperCase() + rawDate.slice(1);
 
+  // Datos reales (mismo mes Bogotá que usa Finanzas).
+  const [metrics, activeCustomers, recentActivity] = await Promise.all([
+    tenantDb.finance.getMetrics(),
+    tenantDb.customers.countActive(),
+    tenantDb.finance.getRecentActivity(5),
+  ]);
+
+  const metricsCards: DashboardMetric[] = [
+    {
+      id: "ingresos",
+      title: "Ingresos",
+      value: formatCurrency(metrics.income),
+      description: "Cobros aprobados durante el mes en curso",
+      icon: TrendingUp,
+      iconTone: "indigo",
+      trend: {
+        direction: "neutral",
+        label:
+          metrics.income > 0 ? "Ingresos del mes" : "Sin cobros registrados",
+      },
+    },
+    {
+      id: "clientes",
+      title: "Clientes",
+      value: String(activeCustomers),
+      description: "Clientes activos en tu cartera",
+      icon: Users,
+      iconTone: "emerald",
+      trend: {
+        direction: "neutral",
+        label:
+          activeCustomers > 0
+            ? `${activeCustomers} ${activeCustomers === 1 ? "cliente" : "clientes"}`
+            : "Sin clientes aún",
+      },
+    },
+    {
+      id: "gastos",
+      title: "Gastos",
+      value: formatCurrency(metrics.expenses),
+      description: "Egresos de caja menor del mes en curso",
+      icon: TrendingDown,
+      iconTone: "rose",
+      trend: {
+        direction: "neutral",
+        label:
+          metrics.expenses > 0 ? "Gastos del mes" : "Sin gastos registrados",
+      },
+    },
+    {
+      id: "balance",
+      title: "Balance",
+      value: formatCurrency(metrics.balance),
+      description: "Ingresos menos gastos del mes en curso",
+      icon: Wallet,
+      iconTone: "slate",
+      trend: {
+        direction:
+          metrics.balance > 0 ? "up" : metrics.balance < 0 ? "down" : "neutral",
+        label:
+          metrics.balance > 0
+            ? "Balance positivo"
+            : metrics.balance < 0
+              ? "Balance negativo"
+              : "Sin movimientos",
+      },
+    },
+  ];
+
+  const activityItems: RecentActivityItem[] = recentActivity.map((item) => ({
+    id: item.id,
+    type: item.type,
+    title: item.title,
+    description: item.description,
+    amount: formatCurrency(item.amount),
+    time: formatRelativeTime(item.date),
+  }));
+
   return (
     <div className="flex flex-col gap-6">
       {/* Encabezado del dashboard */}
@@ -75,20 +155,20 @@ export default async function TenantDashboard({
         <p className="shrink-0 text-sm text-slate-500">{formattedDate}</p>
       </div>
 
-      {/* Métricas */}
+      {/* Métricas reales */}
       <section
         aria-label="Métricas del negocio"
         className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
       >
-        {placeholderMetrics.map(({ id, ...metric }) => (
+        {metricsCards.map(({ id, ...metric }) => (
           <MetricCard key={id} {...metric} />
         ))}
       </section>
 
-      {/* Actividad reciente + acciones rápidas */}
+      {/* Actividad reciente real + acciones rápidas */}
       <section className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <RecentActivity items={mockRecentActivity} />
+          <RecentActivity items={activityItems} />
         </div>
         <QuickActions tenantSlug={tenantRecord.slug} />
       </section>

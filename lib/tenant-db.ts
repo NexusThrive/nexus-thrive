@@ -1,5 +1,10 @@
-import { or } from "@prisma/orm-postgres/orm-client";
+import { and, or } from "@prisma/orm-postgres/orm-client";
 import { db } from "@/prisma/db";
+import { toNumber } from "@/lib/format";
+import type {
+  PaymentMethodValue,
+  PaymentStatusValue,
+} from "@/lib/finance";
 
 /** Escapa los comodines de LIKE para que la búsqueda sea literal. */
 function escapeLike(input: string): string {
@@ -15,6 +20,122 @@ export type CustomerSearchInput = {
   page?: number;
   pageSize?: number;
 };
+
+export type FinanceMetrics = {
+  income: number;
+  expenses: number;
+  balance: number;
+  byMethod: { method: PaymentMethodValue; total: number }[];
+};
+
+export type PaymentListInput = {
+  q?: string;
+  method?: PaymentMethodValue;
+  status?: PaymentStatusValue;
+  page?: number;
+  limit?: number;
+};
+
+/** Fila serializable de pago (Decimal → number, Temporal → ISO string). */
+export type PaymentRow = {
+  id: string;
+  customerId: string | null;
+  customerName: string | null;
+  customerEmail: string | null;
+  amount: number;
+  provider: PaymentMethodValue;
+  status: PaymentStatusValue;
+  providerRefId: string | null;
+  description: string | null;
+  createdAt: string;
+};
+
+export type ExpenseListInput = {
+  q?: string;
+  category?: string;
+  page?: number;
+  limit?: number;
+};
+
+/** Fila serializable de gasto. */
+export type ExpenseRow = {
+  id: string;
+  description: string;
+  category: string;
+  amount: number;
+  date: string;
+  createdAt: string;
+};
+
+export type RecentActivityRow = {
+  id: string;
+  type: "payment" | "expense";
+  title: string;
+  description: string;
+  amount: number;
+  date: string;
+};
+
+const PAYMENT_METHOD_VALUES: PaymentMethodValue[] = [
+  "CASH",
+  "NEQUI",
+  "WOMPI",
+  "TRANSFER",
+];
+
+/**
+ * Rango del mes en horario de Bogotá (UTC−5): inicio del mes y del
+ * siguiente, como `Temporal.Instant` (codec obligatorio del driver).
+ * Los registros se comparan con `>= start` y `< end`.
+ */
+function monthRangeBogota(year: number, month: number): {
+  start: Temporal.Instant;
+  end: Temporal.Instant;
+} {
+  // 05:00 UTC del día 1 = 00:00 en Bogotá (UTC−5). JS normaliza el
+  // overflow: mes 12 → enero del año siguiente.
+  const start = Temporal.Instant.fromEpochMilliseconds(
+    Date.UTC(year, month - 1, 1, 5, 0, 0),
+  );
+  const end = Temporal.Instant.fromEpochMilliseconds(
+    Date.UTC(year, month, 1, 5, 0, 0),
+  );
+  return { start, end };
+}
+
+/** Valida y normaliza un mes/año; por defecto usa el mes actual (Bogotá). */
+function resolveMonthYear(month?: number, year?: number) {
+  const now = new Date();
+  // El día actual en Bogotá: DateTimeFormat con timeZone para no depender
+  // de la zona horaria del servidor.
+  const bogotaParts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Bogota",
+    month: "numeric",
+    year: "numeric",
+  }).formatToParts(now);
+  const bogotaMonth = Number(
+    bogotaParts.find((part) => part.type === "month")?.value,
+  );
+  const bogotaYear = Number(
+    bogotaParts.find((part) => part.type === "year")?.value,
+  );
+
+  const resolvedMonth = month ?? bogotaMonth;
+  const resolvedYear = year ?? bogotaYear;
+
+  if (
+    !Number.isInteger(resolvedMonth) ||
+    resolvedMonth < 1 ||
+    resolvedMonth > 12
+  ) {
+    throw new Error("Mes inválido para las métricas financieras.");
+  }
+  if (!Number.isInteger(resolvedYear) || resolvedYear < 2000 || resolvedYear > 2100) {
+    throw new Error("Año inválido para las métricas financieras.");
+  }
+
+  return { month: resolvedMonth, year: resolvedYear };
+}
 
 export function createTenantDb(tenantId: string) {
   if (!tenantId || tenantId.trim() === "") {
@@ -144,6 +265,14 @@ export function createTenantDb(tenantId: string) {
         const { affectedRows } = await db.runtime().execute(plan);
         return affectedRows;
       },
+
+      /** Cantidad de clientes activos (para el dashboard). */
+      countActive: () =>
+        db.orm.public.Customer
+          .where({ tenantId })
+          .where((customer) => customer.active.eq(true))
+          .aggregate((aggregate) => ({ total: aggregate.count() }))
+          .then(({ total }) => total),
     },
 
     users: {
@@ -236,6 +365,261 @@ export function createTenantDb(tenantId: string) {
         db.orm.public.Expense
           .where({ id, tenantId })
           .delete(),
+    },
+
+    finance: {
+      /**
+       * Métricas del mes (horario Bogotá): ingresos aprobados, gastos,
+       * balance neto y desglose por método de pago. Todo en el servidor.
+       */
+      getMetrics: async (options?: { month?: number; year?: number }) => {
+        const { month, year } = resolveMonthYear(
+          options?.month,
+          options?.year,
+        );
+        const { start, end } = monthRangeBogota(year, month);
+
+        const [incomeAgg, expenseAgg] = await Promise.all([
+          db.orm.public.Payment
+            .where({ tenantId })
+            .where((payment) =>
+              and(
+                payment.status.eq("APPROVED"),
+                payment.createdAt.gte(start),
+                payment.createdAt.lt(end),
+              ),
+            )
+            .aggregate((aggregate) => ({ total: aggregate.sum("amount") })),
+          db.orm.public.Expense
+            .where({ tenantId })
+            .where((expense) =>
+              and(expense.date.gte(start), expense.date.lt(end)),
+            )
+            .aggregate((aggregate) => ({ total: aggregate.sum("amount") })),
+        ]);
+
+        const income = toNumber(incomeAgg.total);
+        const expenses = toNumber(expenseAgg.total);
+
+        const byMethodAggs = await Promise.all(
+          PAYMENT_METHOD_VALUES.map(async (method) => {
+            const result = await db.orm.public.Payment
+              .where({ tenantId })
+              .where((payment) =>
+                and(
+                  payment.status.eq("APPROVED"),
+                  payment.provider.eq(method),
+                  payment.createdAt.gte(start),
+                  payment.createdAt.lt(end),
+                ),
+              )
+              .aggregate((aggregate) => ({ total: aggregate.sum("amount") }));
+            return { method, total: toNumber(result.total) };
+          }),
+        );
+
+        return {
+          income,
+          expenses,
+          balance: income - expenses,
+          byMethod: byMethodAggs,
+        } satisfies FinanceMetrics;
+      },
+
+      /**
+       * Historial de pagos paginado, con nombre/email del cliente.
+       * Aislamiento: `tenantId` siempre en el filtro base.
+       */
+      listPayments: async ({
+        q,
+        method,
+        status,
+        page = 1,
+        limit = 10,
+      }: PaymentListInput): Promise<{ rows: PaymentRow[]; total: number }> => {
+        const text = (q ?? "").trim();
+        const pattern = `%${escapeLike(text)}%`;
+        const safePage = Math.max(1, Math.trunc(page));
+        const safeLimit = Math.min(100, Math.max(1, Math.trunc(limit)));
+
+        let filtered = db.orm.public.Payment.where({ tenantId });
+        if (status) {
+          filtered = filtered.where((payment) => payment.status.eq(status));
+        }
+        if (method) {
+          filtered = filtered.where((payment) => payment.provider.eq(method));
+        }
+        if (text) {
+          filtered = filtered.where((payment) =>
+            or(
+              payment.description.ilike(pattern),
+              payment.providerRefId.ilike(pattern),
+            ),
+          );
+        }
+
+        const [rows, { total }] = await Promise.all([
+          filtered
+            .orderBy((payment) => payment.createdAt.desc())
+            .limit(safeLimit)
+            .offset((safePage - 1) * safeLimit)
+            .all(),
+          filtered.aggregate((aggregate) => ({ total: aggregate.count() })),
+        ]);
+
+        // Clientes involucrados (join manual; siempre scoped al tenant).
+        const customerIds = [
+          ...new Set(
+            rows
+              .map((row) => row.customerId)
+              .filter((id): id is string => Boolean(id)),
+          ),
+        ];
+        const customers =
+          customerIds.length === 0
+            ? []
+            : await db.orm.public.Customer
+                .where({ tenantId })
+                .where((customer) => customer.id.in(customerIds))
+                .all();
+        const customerById = new Map(
+          customers.map((customer) => [customer.id, customer]),
+        );
+
+        return {
+          rows: rows.map((row) => ({
+            id: row.id,
+            customerId: row.customerId,
+            customerName: row.customerId
+              ? customerById.get(row.customerId)?.name ?? "Cliente eliminado"
+              : null,
+            customerEmail: row.customerId
+              ? customerById.get(row.customerId)?.email ?? null
+              : null,
+            amount: toNumber(row.amount),
+            provider: row.provider,
+            status: row.status,
+            providerRefId: row.providerRefId,
+            description: row.description,
+            createdAt: String(row.createdAt),
+          })),
+          total,
+        };
+      },
+
+      /**
+       * Historial de gastos de caja menor, paginado.
+       * Aislamiento: `tenantId` siempre en el filtro base.
+       */
+      listExpenses: async ({
+        q,
+        category,
+        page = 1,
+        limit = 10,
+      }: ExpenseListInput): Promise<{ rows: ExpenseRow[]; total: number }> => {
+        const text = (q ?? "").trim();
+        const pattern = `%${escapeLike(text)}%`;
+        const safePage = Math.max(1, Math.trunc(page));
+        const safeLimit = Math.min(100, Math.max(1, Math.trunc(limit)));
+
+        let filtered = db.orm.public.Expense.where({ tenantId });
+        if (category) {
+          filtered = filtered.where((expense) => expense.category.eq(category));
+        }
+        if (text) {
+          filtered = filtered.where((expense) =>
+            expense.description.ilike(pattern),
+          );
+        }
+
+        const [rows, { total }] = await Promise.all([
+          filtered
+            .orderBy((expense) => expense.date.desc())
+            .limit(safeLimit)
+            .offset((safePage - 1) * safeLimit)
+            .all(),
+          filtered.aggregate((aggregate) => ({ total: aggregate.count() })),
+        ]);
+
+        return {
+          rows: rows.map((row) => ({
+            id: row.id,
+            description: row.description,
+            category: row.category,
+            amount: toNumber(row.amount),
+            date: String(row.date),
+            createdAt: String(row.createdAt),
+          })),
+          total,
+        };
+      },
+
+      /**
+       * Últimos movimientos del tenant (pagos aprobados + gastos), ordenados
+       * por fecha descendente. Base para la "Actividad reciente" del dashboard.
+       */
+      getRecentActivity: async (
+        limit = 5,
+      ): Promise<RecentActivityRow[]> => {
+        const safeLimit = Math.min(20, Math.max(1, Math.trunc(limit)));
+
+        const [payments, expenses] = await Promise.all([
+          db.orm.public.Payment
+            .where({ tenantId })
+            .where((payment) => payment.status.eq("APPROVED"))
+            .orderBy((payment) => payment.createdAt.desc())
+            .limit(safeLimit)
+            .all(),
+          db.orm.public.Expense
+            .where({ tenantId })
+            .orderBy((expense) => expense.date.desc())
+            .limit(safeLimit)
+            .all(),
+        ]);
+
+        const customerIds = [
+          ...new Set(
+            payments
+              .map((payment) => payment.customerId)
+              .filter((id): id is string => Boolean(id)),
+          ),
+        ];
+        const customers =
+          customerIds.length === 0
+            ? []
+            : await db.orm.public.Customer
+                .where({ tenantId })
+                .where((customer) => customer.id.in(customerIds))
+                .all();
+        const customerById = new Map(
+          customers.map((customer) => [customer.id, customer]),
+        );
+
+        const items: RecentActivityRow[] = [
+          ...payments.map((payment) => ({
+            id: `payment-${payment.id}`,
+            type: "payment" as const,
+            title: "Pago recibido",
+            description:
+              (payment.customerId
+                ? customerById.get(payment.customerId)?.name ?? "Cliente eliminado"
+                : "Cliente libre") ?? "Cliente libre",
+            amount: toNumber(payment.amount),
+            date: String(payment.createdAt),
+          })),
+          ...expenses.map((expense) => ({
+            id: `expense-${expense.id}`,
+            type: "expense" as const,
+            title: "Gasto registrado",
+            description: expense.description,
+            amount: -toNumber(expense.amount),
+            date: String(expense.date),
+          })),
+        ];
+
+        items.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+        return items.slice(0, safeLimit);
+      },
     },
   };
 }

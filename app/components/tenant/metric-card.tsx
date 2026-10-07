@@ -1,7 +1,11 @@
 import type { LucideIcon } from "lucide-react";
 import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/cn";
-import type { DashboardMetric, MetricTone, TrendDirection } from "@/lib/dashboard-mocks";
+import type {
+  DashboardMetric,
+  MetricTone,
+  TrendDirection,
+} from "@/lib/dashboard-types";
 
 type MetricCardProps = Pick<
   DashboardMetric,
