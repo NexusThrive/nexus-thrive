@@ -1,0 +1,101 @@
+// use prisma-8
+
+enum Role {
+  SUPERADMIN
+  OWNER
+  STAFF
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  DECLINED
+  VOIDED
+}
+
+enum PaymentProvider {
+  WOMPI
+  NEQUI
+  CASH
+  TRANSFER
+}
+
+model Tenant {
+  id           String   @id @default(uuid())
+  name         String
+  slug         String   @unique
+  customDomain String?  @unique
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    temporal.updatedAt()
+
+  users     User[]
+  customers Customer[]
+  payments  Payment[]
+  expenses  Expense[]
+
+  @@index([slug])
+}
+
+model User {
+  id          String   @id @default(uuid())
+  clerkUserId String
+  email       String
+  name        String?
+  role        Role     @default(STAFF)
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   temporal.updatedAt()
+
+  @@unique([clerkUserId, tenantId])
+  @@index([tenantId])
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  email     String?
+  phone     String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+
+  payments Payment[]
+
+  @@index([tenantId])
+}
+
+model Payment {
+  id            String          @id @default(uuid())
+  tenantId      String
+  tenant        Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId    String?
+  customer      Customer?       @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  amount        Decimal
+  status        PaymentStatus   @default(PENDING)
+  provider      PaymentProvider @default(CASH)
+  providerRefId String?         @unique
+  description   String?
+  createdAt     DateTime        @default(now())
+  updatedAt     temporal.updatedAt()
+
+  @@index([tenantId])
+  @@index([providerRefId])
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  amount      Decimal
+  category    String
+  description String
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   temporal.updatedAt()
+
+  @@index([tenantId])
+}
