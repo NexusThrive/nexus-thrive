@@ -24,6 +24,10 @@
       "model": "Tenant",
       "namespace": "public"
     },
+    "TenantModule": {
+      "model": "TenantModule",
+      "namespace": "public"
+    },
     "User": {
       "model": "User",
       "namespace": "public"
@@ -64,6 +68,31 @@
               {
                 "name": "anual",
                 "value": "anual"
+              }
+            ]
+          },
+          "ModuleName": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "caja_menor",
+                "value": "caja_menor"
+              },
+              {
+                "name": "membresias",
+                "value": "membresias"
+              },
+              {
+                "name": "reservas",
+                "value": "reservas"
+              },
+              {
+                "name": "pedidos",
+                "value": "pedidos"
+              },
+              {
+                "name": "presupuestos",
+                "value": "presupuestos"
               }
             ]
           },
@@ -123,6 +152,27 @@
               {
                 "name": "STAFF",
                 "value": "STAFF"
+              }
+            ]
+          },
+          "Vertical": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "gym",
+                "value": "gym"
+              },
+              {
+                "name": "barber",
+                "value": "barber"
+              },
+              {
+                "name": "restaurant",
+                "value": "restaurant"
+              },
+              {
+                "name": "services",
+                "value": "services"
               }
             ]
           }
@@ -787,6 +837,19 @@
                   "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
+              },
+              "vertical": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "Vertical",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
               }
             },
             "relations": {
@@ -832,6 +895,21 @@
                 },
                 "to": {
                   "model": "Membership",
+                  "namespace": "public"
+                }
+              },
+              "modules": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "TenantModule",
                   "namespace": "public"
                 }
               },
@@ -888,10 +966,107 @@
                 },
                 "updatedAt": {
                   "column": "updatedAt"
+                },
+                "vertical": {
+                  "column": "vertical"
                 }
               },
               "namespaceId": "public",
               "table": "Tenant"
+            }
+          },
+          "TenantModule": {
+            "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "moduleName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "ModuleName",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "active": {
+                  "column": "active"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "moduleName": {
+                  "column": "moduleName"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "TenantModule"
             }
           },
           "User": {
@@ -1546,6 +1721,13 @@
               ]
             },
             "Tenant": {
+              "checks": [
+                {
+                  "expression": "\"vertical\" IN ('gym', 'barber', 'restaurant', 'services')",
+                  "name": "Tenant_vertical_check_030f2312",
+                  "prefix": "Tenant_vertical_check"
+                }
+              ],
               "columns": {
                 "active": {
                   "codecId": "pg/bool@1",
@@ -1589,6 +1771,21 @@
                   "codecId": "pg/timestamptz-temporal@1",
                   "nativeType": "timestamptz",
                   "nullable": false
+                },
+                "vertical": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "services"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "Vertical",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
                 }
               },
               "foreignKeys": [],
@@ -1616,6 +1813,103 @@
                 {
                   "columns": [
                     "customDomain"
+                  ]
+                }
+              ]
+            },
+            "TenantModule": {
+              "checks": [
+                {
+                  "expression": "\"moduleName\" IN ('caja_menor', 'membresias', 'reservas', 'pedidos', 'presupuestos')",
+                  "name": "TenantModule_moduleName_check_dc8fddad",
+                  "prefix": "TenantModule_moduleName_check"
+                }
+              ],
+              "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "moduleName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "ModuleName",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "TenantModule"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "TenantModule_tenantId_idx_c93ed4f1",
+                  "prefix": "TenantModule_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "moduleName"
                   ]
                 }
               ]
@@ -1745,6 +2039,16 @@
                 "anual"
               ]
             },
+            "ModuleName": {
+              "kind": "valueSet",
+              "values": [
+                "caja_menor",
+                "membresias",
+                "reservas",
+                "pedidos",
+                "presupuestos"
+              ]
+            },
             "PaymentProvider": {
               "kind": "valueSet",
               "values": [
@@ -1770,6 +2074,15 @@
                 "OWNER",
                 "STAFF"
               ]
+            },
+            "Vertical": {
+              "kind": "valueSet",
+              "values": [
+                "gym",
+                "barber",
+                "restaurant",
+                "services"
+              ]
             }
           }
         },
@@ -1777,10 +2090,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "030021bdac88764d15107fbf662fe78cd3fd2f09ab6fd17cef2e182145e9acec"
+    "storageHash": "e8fa51ac45119a7235204964eb130965618e7be62de43dc4e735d9fd827b89ca"
   },
   "execution": {
-    "executionHash": "8f4beac3d34f565a4b24308198a39e8d5e189bbf0b4013df2ce14835d750e869",
+    "executionHash": "e05314e6e8d33ee4549a2f80c7b86e1da5a87ba6bd440b2fe061db49ed1485ac",
     "mutations": {
       "defaults": [
         {
@@ -1909,6 +2222,32 @@
           },
           "ref": {
             "entry": "Tenant",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "TenantModule",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "TenantModule",
             "field": "updatedAt",
             "namespace": "public"
           }

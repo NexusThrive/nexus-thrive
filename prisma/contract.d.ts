@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'030021bdac88764d15107fbf662fe78cd3fd2f09ab6fd17cef2e182145e9acec'>;
+  StorageHashBase<'e8fa51ac45119a7235204964eb130965618e7be62de43dc4e735d9fd827b89ca'>;
 export type ExecutionHash =
-  ExecutionHashBase<'8f4beac3d34f565a4b24308198a39e8d5e189bbf0b4013df2ce14835d750e869'>;
+  ExecutionHashBase<'e05314e6e8d33ee4549a2f80c7b86e1da5a87ba6bd440b2fe061db49ed1485ac'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -304,6 +304,15 @@ export type FieldOutputTypes = {
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly vertical: 'gym' | 'barber' | 'restaurant' | 'services';
+    };
+    readonly TenantModule: {
+      readonly active: CodecTypes['pg/bool@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly moduleName: 'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos';
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly User: {
       readonly clerkUserId: CodecTypes['pg/text@1']['output'];
@@ -372,6 +381,15 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly slug: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly vertical: 'gym' | 'barber' | 'restaurant' | 'services';
+    };
+    readonly TenantModule: {
+      readonly active: CodecTypes['pg/bool@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly moduleName: 'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos';
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly User: {
@@ -442,6 +460,15 @@ export type StorageColumnTypes = {
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly vertical: 'gym' | 'barber' | 'restaurant' | 'services';
+    };
+    readonly TenantModule: {
+      readonly active: CodecTypes['pg/bool@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly moduleName: 'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos';
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly User: {
       readonly clerkUserId: CodecTypes['pg/text@1']['output'];
@@ -510,6 +537,15 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly slug: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly vertical: 'gym' | 'barber' | 'restaurant' | 'services';
+    };
+    readonly TenantModule: {
+      readonly active: CodecTypes['pg/bool@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly moduleName: 'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos';
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly User: {
@@ -594,12 +630,25 @@ export namespace Models {
     name: CodecTypes['pg/text@1']['output'];
     slug: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    vertical: 'gym' | 'barber' | 'restaurant' | 'services';
     customers: public_Customer[];
     expenses: public_Expense[];
     memberships: public_Membership[];
+    modules: public_TenantModule[];
     payments: public_Payment[];
     users: public_User[];
-    readonly [RelationKeys]?: 'customers' | 'expenses' | 'memberships' | 'payments' | 'users';
+    readonly [RelationKeys]?:
+      'customers' | 'expenses' | 'memberships' | 'modules' | 'payments' | 'users';
+  };
+  export type public_TenantModule = {
+    active: CodecTypes['pg/bool@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    moduleName: 'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos';
+    tenantId: CodecTypes['pg/text@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
   };
   export type public_User = {
     clerkUserId: CodecTypes['pg/text@1']['output'];
@@ -622,6 +671,7 @@ export declare const models: {
     Membership: Models.public_Membership;
     Payment: Models.public_Payment;
     Tenant: Models.public_Tenant;
+    TenantModule: Models.public_TenantModule;
     User: Models.public_User;
   };
 };
@@ -1075,6 +1125,15 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: false;
                 };
+                readonly vertical: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'services'>;
+                  };
+                };
               };
               primaryKey: { readonly columns: readonly ['id'] };
               uniques: readonly [
@@ -1090,6 +1149,69 @@ type ContractBase = Omit<
                 },
               ];
               foreignKeys: readonly [];
+            };
+            readonly TenantModule: {
+              columns: {
+                readonly active: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+                  };
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly moduleName: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['tenantId', 'moduleName'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'TenantModule_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'TenantModule_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'TenantModule';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly User: {
               columns: {
@@ -1174,6 +1296,16 @@ type ContractBase = Omit<
               readonly kind: 'valueSet';
               readonly values: readonly ['mensual', 'trimestral', 'anual'];
             };
+            readonly ModuleName: {
+              readonly kind: 'valueSet';
+              readonly values: readonly [
+                'caja_menor',
+                'membresias',
+                'reservas',
+                'pedidos',
+                'presupuestos',
+              ];
+            };
             readonly PaymentProvider: {
               readonly kind: 'valueSet';
               readonly values: readonly ['WOMPI', 'NEQUI', 'CASH', 'TRANSFER'];
@@ -1185,6 +1317,10 @@ type ContractBase = Omit<
             readonly Role: {
               readonly kind: 'valueSet';
               readonly values: readonly ['SUPERADMIN', 'OWNER', 'STAFF'];
+            };
+            readonly Vertical: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['gym', 'barber', 'restaurant', 'services'];
             };
           };
         };
@@ -1205,6 +1341,10 @@ type ContractBase = Omit<
     };
     readonly Payment: { readonly namespace: 'public' & NamespaceId; readonly model: 'Payment' };
     readonly Tenant: { readonly namespace: 'public' & NamespaceId; readonly model: 'Tenant' };
+    readonly TenantModule: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'TenantModule';
+    };
     readonly User: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
   };
   readonly domain: {
@@ -1635,6 +1775,10 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/timestamptz-temporal@1';
                 };
               };
+              readonly vertical: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
             };
             readonly relations: {
               readonly customers: {
@@ -1663,6 +1807,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'Membership';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly modules: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'TenantModule';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -1700,6 +1855,67 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly name: { readonly column: 'name' };
                 readonly slug: { readonly column: 'slug' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+                readonly vertical: { readonly column: 'vertical' };
+              };
+            };
+          };
+          readonly TenantModule: {
+            readonly fields: {
+              readonly active: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly moduleName: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'TenantModule';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly active: { readonly column: 'active' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly id: { readonly column: 'id' };
+                readonly moduleName: { readonly column: 'moduleName' };
+                readonly tenantId: { readonly column: 'tenantId' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
               };
             };
@@ -1792,6 +2008,16 @@ type ContractBase = Omit<
               { readonly name: 'anual'; readonly value: 'anual' },
             ];
           };
+          readonly ModuleName: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'caja_menor'; readonly value: 'caja_menor' },
+              { readonly name: 'membresias'; readonly value: 'membresias' },
+              { readonly name: 'reservas'; readonly value: 'reservas' },
+              { readonly name: 'pedidos'; readonly value: 'pedidos' },
+              { readonly name: 'presupuestos'; readonly value: 'presupuestos' },
+            ];
+          };
           readonly PaymentProvider: {
             readonly codecId: 'pg/text@1';
             readonly members: readonly [
@@ -1816,6 +2042,15 @@ type ContractBase = Omit<
               { readonly name: 'SUPERADMIN'; readonly value: 'SUPERADMIN' },
               { readonly name: 'OWNER'; readonly value: 'OWNER' },
               { readonly name: 'STAFF'; readonly value: 'STAFF' },
+            ];
+          };
+          readonly Vertical: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'gym'; readonly value: 'gym' },
+              { readonly name: 'barber'; readonly value: 'barber' },
+              { readonly name: 'restaurant'; readonly value: 'restaurant' },
+              { readonly name: 'services'; readonly value: 'services' },
             ];
           };
         };
@@ -1928,6 +2163,23 @@ type ContractBase = Omit<
           readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'Tenant';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'TenantModule';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'TenantModule';
             readonly field: 'updatedAt';
             readonly namespace: 'public';
           };
