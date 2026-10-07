@@ -5,6 +5,16 @@ import type {
   PaymentMethodValue,
   PaymentStatusValue,
 } from "@/lib/finance";
+import {
+  EXPIRING_WINDOW_DAYS,
+  computeMembershipStatus,
+  plusDays,
+} from "@/lib/memberships";
+import type {
+  MembershipPaymentEntry,
+  MembershipStatusValue,
+  MembershipTypeValue,
+} from "@/lib/memberships";
 
 /** Escapa los comodines de LIKE para que la búsqueda sea literal. */
 function escapeLike(input: string): string {
@@ -74,6 +84,44 @@ export type RecentActivityRow = {
   description: string;
   amount: number;
   date: string;
+};
+
+export type MembershipListInput = {
+  /** Texto libre contra nombre/teléfono/email del cliente. */
+  q?: string;
+  /** Estado DINÁMICO (calculado desde `endDate`), no el persistido. */
+  status?: MembershipStatusValue;
+  type?: MembershipTypeValue;
+  page?: number;
+  limit?: number;
+};
+
+/** Fila serializable de membresía (Decimal → number, Temporal → ISO). */
+export type MembershipRow = {
+  id: string;
+  customerId: string;
+  customerName: string;
+  customerPhone: string | null;
+  customerEmail: string | null;
+  type: MembershipTypeValue;
+  status: MembershipStatusValue;
+  price: number;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+};
+
+/** Detalle de membresía con historial de cobros (Json). */
+export type MembershipDetail = MembershipRow & {
+  payments: MembershipPaymentEntry[];
+};
+
+export type MembershipMetrics = {
+  activeCount: number;
+  expiringCount: number;
+  expiredCount: number;
+  /** Suma de precios de membresías que vencen en el mes (Bogotá). */
+  renewalRevenueProjection: number;
 };
 
 const PAYMENT_METHOD_VALUES: PaymentMethodValue[] = [
@@ -620,6 +668,188 @@ export function createTenantDb(tenantId: string) {
         items.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
         return items.slice(0, safeLimit);
       },
+    },
+
+    memberships: {
+      /**
+       * Listado paginado de membresías del tenant, con datos del cliente
+       * (include) y estado dinámico calculado desde `endDate`.
+       *
+       * El filtro `status` se traduce a rangos sobre `endDate` (now /
+       * now+3d), así que se evalúa 100% en la base de datos.
+       * Aislamiento: `tenantId` siempre en el filtro base.
+       */
+      list: async ({
+        q,
+        status,
+        type,
+        page = 1,
+        limit = 10,
+      }: MembershipListInput): Promise<{ rows: MembershipRow[]; total: number }> => {
+        const text = (q ?? "").trim();
+        const pattern = `%${escapeLike(text)}%`;
+        const safePage = Math.max(1, Math.trunc(page));
+        const safeLimit = Math.min(100, Math.max(1, Math.trunc(limit)));
+
+        const now = Temporal.Instant.fromEpochMilliseconds(Date.now());
+        const windowEnd = plusDays(now, EXPIRING_WINDOW_DAYS);
+
+        let filtered = db.orm.public.Membership.where({ tenantId });
+        if (type) {
+          filtered = filtered.where((membership) => membership.type.eq(type));
+        }
+        if (status === "active") {
+          filtered = filtered.where((membership) => membership.endDate.gt(windowEnd));
+        } else if (status === "expiring") {
+          filtered = filtered.where((membership) =>
+            and(membership.endDate.gt(now), membership.endDate.lte(windowEnd)),
+          );
+        } else if (status === "expired") {
+          filtered = filtered.where((membership) => membership.endDate.lte(now));
+        }
+        if (text) {
+          filtered = filtered.where((membership) =>
+            membership.customer.some((customer) =>
+              or(
+                customer.name.ilike(pattern),
+                customer.phone.ilike(pattern),
+                customer.email.ilike(pattern),
+              ),
+            ),
+          );
+        }
+
+        const [rows, { total }] = await Promise.all([
+          filtered
+            .orderBy([
+              (membership) => membership.endDate.asc(),
+              (membership) => membership.id.asc(),
+            ])
+            .include("customer", (customer) =>
+              customer.select("name", "phone", "email"),
+            )
+            .limit(safeLimit)
+            .offset((safePage - 1) * safeLimit)
+            .all(),
+          filtered.aggregate((aggregate) => ({ total: aggregate.count() })),
+        ]);
+
+        return {
+          rows: rows.map((row) => ({
+            id: row.id,
+            customerId: row.customerId,
+            customerName: row.customer?.name ?? "Cliente eliminado",
+            customerPhone: row.customer?.phone ?? null,
+            customerEmail: row.customer?.email ?? null,
+            type: row.type,
+            status: computeMembershipStatus(row.endDate),
+            price: toNumber(row.price),
+            startDate: String(row.startDate),
+            endDate: String(row.endDate),
+            createdAt: String(row.createdAt),
+          })),
+          total,
+        };
+      },
+
+      /**
+       * Detalle de una membresía (incluye historial de cobros Json).
+       * Devuelve `null` si no existe en este tenant.
+       */
+      get: async (id: string): Promise<MembershipDetail | null> => {
+        const membership = await db.orm.public.Membership
+          .where({ id, tenantId })
+          .include("customer", (customer) =>
+            customer.select("name", "phone", "email"),
+          )
+          .first();
+
+        if (!membership) {
+          return null;
+        }
+
+        const payments: MembershipPaymentEntry[] = Array.isArray(membership.payments)
+          ? (membership.payments as unknown as MembershipPaymentEntry[])
+          : [];
+
+        return {
+          id: membership.id,
+          customerId: membership.customerId,
+          customerName: membership.customer?.name ?? "Cliente eliminado",
+          customerPhone: membership.customer?.phone ?? null,
+          customerEmail: membership.customer?.email ?? null,
+          type: membership.type,
+          status: computeMembershipStatus(membership.endDate),
+          price: toNumber(membership.price),
+          startDate: String(membership.startDate),
+          endDate: String(membership.endDate),
+          createdAt: String(membership.createdAt),
+          payments,
+        };
+      },
+
+      /**
+       * Métricas del módulo: conteos por estado dinámico (active / expiring
+       * / expired según `endDate` vs. ahora) y proyección de renovaciones =
+       * suma de precios de las membresías que vencen en el mes (Bogotá).
+       */
+      getMetrics: async (options?: {
+        month?: number;
+        year?: number;
+      }): Promise<MembershipMetrics> => {
+        const now = Temporal.Instant.fromEpochMilliseconds(Date.now());
+        const windowEnd = plusDays(now, EXPIRING_WINDOW_DAYS);
+
+        const { month, year } = resolveMonthYear(options?.month, options?.year);
+        const { start, end } = monthRangeBogota(year, month);
+
+        const [activeAgg, expiringAgg, expiredAgg, projectionAgg] =
+          await Promise.all([
+            db.orm.public.Membership
+              .where({ tenantId })
+              .where((membership) => membership.endDate.gt(windowEnd))
+              .aggregate((aggregate) => ({ total: aggregate.count() })),
+            db.orm.public.Membership
+              .where({ tenantId })
+              .where((membership) =>
+                and(membership.endDate.gt(now), membership.endDate.lte(windowEnd)),
+              )
+              .aggregate((aggregate) => ({ total: aggregate.count() })),
+            db.orm.public.Membership
+              .where({ tenantId })
+              .where((membership) => membership.endDate.lte(now))
+              .aggregate((aggregate) => ({ total: aggregate.count() })),
+            db.orm.public.Membership
+              .where({ tenantId })
+              .where((membership) =>
+                and(membership.endDate.gte(start), membership.endDate.lt(end)),
+              )
+              .aggregate((aggregate) => ({ total: aggregate.sum("price") })),
+          ]);
+
+        return {
+          activeCount: activeAgg.total,
+          expiringCount: expiringAgg.total,
+          expiredCount: expiredAgg.total,
+          renewalRevenueProjection: toNumber(projectionAgg.total),
+        };
+      },
+
+      create: (
+        data: Omit<
+          Parameters<typeof db.orm.public.Membership.create>[0],
+          "tenantId"
+        >,
+      ) =>
+        db.orm.public.Membership.create({
+          ...data,
+          tenantId,
+        }),
+
+      update: (id: string, data: Record<string, unknown>) =>
+        db.orm.public.Membership
+          .where({ id, tenantId })
+          .update(data),
     },
   };
 }

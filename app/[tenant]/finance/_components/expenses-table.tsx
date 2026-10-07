@@ -1,6 +1,6 @@
 import { Receipt } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/format";
-import PaginationLinks from "./pagination-links";
+import PaginationLinks from "@/app/components/tenant/pagination-links";
 
 export type ExpenseViewRow = {
   id: string;

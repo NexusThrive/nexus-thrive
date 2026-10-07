@@ -7,20 +7,20 @@ import { Loader2, Search, X } from "lucide-react";
 const DEBOUNCE_MS = 250;
 
 /**
- * Buscador "en tiempo real" para Finanzas. Como la página tiene DOS
- * buscadores (pagos y gastos), el nombre del parámetro de URL se pasa por
- * prop (`paramKey`): `pq` para pagos, `gq` para gastos. Los filtros no se
- * pisan entre secciones.
+ * Buscador "en tiempo real" que mantiene la URL como fuente de verdad.
+ * `paramKey` es el parámetro de texto de la sección (`pq`, `gq`, `q`) y
+ * `pageParam` el de su paginación: cada búsqueda vuelve a la primera
+ * página de su sección sin tocar los demás filtros.
  */
-export default function FinanceSearch({
+export default function SearchInput({
   paramKey,
-  inputName,
+  pageParam,
   ariaLabel,
   placeholder,
   defaultValue,
 }: {
   paramKey: string;
-  inputName: string;
+  pageParam: string;
   ariaLabel: string;
   placeholder: string;
   defaultValue: string;
@@ -62,11 +62,7 @@ export default function FinanceSearch({
         params.delete(paramKey);
       }
       // Volver a la primera página de esta sección.
-      if (paramKey === "pq") {
-        params.delete("ppage");
-      } else {
-        params.delete("gpage");
-      }
+      params.delete(pageParam);
       startTransition(() => {
         router.replace(`${pathname}?${params.toString()}`, { scroll: false });
       });
@@ -88,7 +84,6 @@ export default function FinanceSearch({
       />
       <input
         ref={inputRef}
-        name={inputName}
         type="text"
         role="searchbox"
         aria-label={ariaLabel}

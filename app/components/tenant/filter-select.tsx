@@ -6,16 +6,19 @@ import { Loader2 } from "lucide-react";
 
 /**
  * Select de filtro que mantiene la URL como única fuente de verdad.
- * `paramKey` identifica el parámetro de la sección (`pmethod`, `pstatus`,
- * `gcat`); al seleccionar se resetea la página correspondiente.
+ * `paramKey` identifica el parámetro de la sección (`pmethod`, `status`, …)
+ * y `pageParam` el de su paginación (`ppage`, `page`, …): al cambiar el
+ * filtro se resetea la página de esa sección.
  */
 export default function FilterSelect({
   paramKey,
+  pageParam,
   allLabel,
   options,
   value,
 }: {
   paramKey: string;
+  pageParam: string;
   allLabel: string;
   options: readonly { value: string; label: string }[];
   value: string;
@@ -25,8 +28,6 @@ export default function FilterSelect({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  const pageKey = paramKey.startsWith("p") ? "ppage" : "gpage";
-
   const onChange = (next: string) => {
     const params = new URLSearchParams(searchParams.toString());
     if (next) {
@@ -34,7 +35,7 @@ export default function FilterSelect({
     } else {
       params.delete(paramKey);
     }
-    params.delete(pageKey);
+    params.delete(pageParam);
     startTransition(() => {
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     });

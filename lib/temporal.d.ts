@@ -8,7 +8,6 @@ declare namespace Temporal {
   class Instant {
     static fromEpochMilliseconds(epochMilliseconds: number): Instant;
     static from(isoLike: string): Instant;
-    toEpochMilliseconds(): number;
     toString(): string;
     readonly epochMilliseconds: number;
   }

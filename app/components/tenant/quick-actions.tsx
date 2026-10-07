@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { FileText, HandCoins, Receipt, UserPlus } from "lucide-react";
+import { CalendarCheck, FileText, HandCoins, Receipt, UserPlus } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 type QuickAction = {
@@ -47,6 +47,14 @@ export default function QuickActions({ tenantSlug }: QuickActionsProps) {
       path: "/finance",
       icon: Receipt,
       tone: "bg-rose-50 text-rose-600 group-hover:bg-rose-100",
+    },
+    {
+      id: "new-membership",
+      label: "Nueva membresía",
+      hint: "Registrar un plan",
+      path: "/memberships",
+      icon: CalendarCheck,
+      tone: "bg-amber-50 text-amber-600 group-hover:bg-amber-100",
     },
     {
       id: "create-invoice",

@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'68571a979ab0803b08127e36c56068f4a2d4660e4598f20817e6b287ce67f5cd'>;
+  StorageHashBase<'030021bdac88764d15107fbf662fe78cd3fd2f09ab6fd17cef2e182145e9acec'>;
 export type ExecutionHash =
-  ExecutionHashBase<'96b7ee81bbfae0c619e58d4e7fb11c721f3eac68df6a046fbd980c3089a012dc'>;
+  ExecutionHashBase<'8f4beac3d34f565a4b24308198a39e8d5e189bbf0b4013df2ce14835d750e869'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -270,12 +270,26 @@ export type FieldOutputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
+    readonly Membership: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly customerId: CodecTypes['pg/text@1']['output'];
+      readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly payments: CodecTypes['pg/json@1']['output'] | null;
+      readonly price: CodecTypes['pg/numeric@1']['output'];
+      readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly status: 'active' | 'expiring' | 'expired';
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly type: 'mensual' | 'trimestral' | 'anual';
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
     readonly Payment: {
       readonly amount: CodecTypes['pg/numeric@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly customerId: CodecTypes['pg/text@1']['output'] | null;
       readonly description: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
+      readonly membershipId: CodecTypes['pg/text@1']['output'] | null;
       readonly provider: 'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER';
       readonly providerRefId: CodecTypes['pg/text@1']['output'] | null;
       readonly status: 'PENDING' | 'APPROVED' | 'DECLINED' | 'VOIDED';
@@ -325,12 +339,26 @@ export type FieldInputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
+    readonly Membership: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly customerId: CodecTypes['pg/text@1']['input'];
+      readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly payments: CodecTypes['pg/json@1']['input'] | null;
+      readonly price: CodecTypes['pg/numeric@1']['input'];
+      readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly status: 'active' | 'expiring' | 'expired';
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly type: 'mensual' | 'trimestral' | 'anual';
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly Payment: {
       readonly amount: CodecTypes['pg/numeric@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly customerId: CodecTypes['pg/text@1']['input'] | null;
       readonly description: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
+      readonly membershipId: CodecTypes['pg/text@1']['input'] | null;
       readonly provider: 'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER';
       readonly providerRefId: CodecTypes['pg/text@1']['input'] | null;
       readonly status: 'PENDING' | 'APPROVED' | 'DECLINED' | 'VOIDED';
@@ -380,12 +408,26 @@ export type StorageColumnTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
+    readonly Membership: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly customerId: CodecTypes['pg/text@1']['output'];
+      readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly payments: CodecTypes['pg/json@1']['output'] | null;
+      readonly price: CodecTypes['pg/numeric@1']['output'];
+      readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly status: 'active' | 'expiring' | 'expired';
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly type: 'mensual' | 'trimestral' | 'anual';
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
     readonly Payment: {
       readonly amount: CodecTypes['pg/numeric@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly customerId: CodecTypes['pg/text@1']['output'] | null;
       readonly description: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
+      readonly membershipId: CodecTypes['pg/text@1']['output'] | null;
       readonly provider: 'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER';
       readonly providerRefId: CodecTypes['pg/text@1']['output'] | null;
       readonly status: 'PENDING' | 'APPROVED' | 'DECLINED' | 'VOIDED';
@@ -435,12 +477,26 @@ export type StorageColumnInputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
+    readonly Membership: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly customerId: CodecTypes['pg/text@1']['input'];
+      readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly payments: CodecTypes['pg/json@1']['input'] | null;
+      readonly price: CodecTypes['pg/numeric@1']['input'];
+      readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly status: 'active' | 'expiring' | 'expired';
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly type: 'mensual' | 'trimestral' | 'anual';
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly Payment: {
       readonly amount: CodecTypes['pg/numeric@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly customerId: CodecTypes['pg/text@1']['input'] | null;
       readonly description: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
+      readonly membershipId: CodecTypes['pg/text@1']['input'] | null;
       readonly provider: 'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER';
       readonly providerRefId: CodecTypes['pg/text@1']['input'] | null;
       readonly status: 'PENDING' | 'APPROVED' | 'DECLINED' | 'VOIDED';
@@ -479,9 +535,10 @@ export namespace Models {
     phone: CodecTypes['pg/text@1']['output'] | null;
     tenantId: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    memberships: public_Membership[];
     payments: public_Payment[];
     tenant: public_Tenant;
-    readonly [RelationKeys]?: 'payments' | 'tenant';
+    readonly [RelationKeys]?: 'memberships' | 'payments' | 'tenant';
   };
   export type public_Expense = {
     amount: CodecTypes['pg/numeric@1']['output'];
@@ -495,20 +552,39 @@ export namespace Models {
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'tenant';
   };
+  export type public_Membership = {
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    customerId: CodecTypes['pg/text@1']['output'];
+    endDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    payments: CodecTypes['pg/json@1']['output'] | null;
+    price: CodecTypes['pg/numeric@1']['output'];
+    startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    status: 'active' | 'expiring' | 'expired';
+    tenantId: CodecTypes['pg/text@1']['output'];
+    type: 'mensual' | 'trimestral' | 'anual';
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    charges: public_Payment[];
+    customer: public_Customer;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'charges' | 'customer' | 'tenant';
+  };
   export type public_Payment = {
     amount: CodecTypes['pg/numeric@1']['output'];
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     customerId: CodecTypes['pg/text@1']['output'] | null;
     description: CodecTypes['pg/text@1']['output'] | null;
     id: CodecTypes['pg/text@1']['output'];
+    membershipId: CodecTypes['pg/text@1']['output'] | null;
     provider: 'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER';
     providerRefId: CodecTypes['pg/text@1']['output'] | null;
     status: 'PENDING' | 'APPROVED' | 'DECLINED' | 'VOIDED';
     tenantId: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     customer: public_Customer | null;
+    membership: public_Membership | null;
     tenant: public_Tenant;
-    readonly [RelationKeys]?: 'customer' | 'tenant';
+    readonly [RelationKeys]?: 'customer' | 'membership' | 'tenant';
   };
   export type public_Tenant = {
     active: CodecTypes['pg/bool@1']['output'];
@@ -520,9 +596,10 @@ export namespace Models {
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     customers: public_Customer[];
     expenses: public_Expense[];
+    memberships: public_Membership[];
     payments: public_Payment[];
     users: public_User[];
-    readonly [RelationKeys]?: 'customers' | 'expenses' | 'payments' | 'users';
+    readonly [RelationKeys]?: 'customers' | 'expenses' | 'memberships' | 'payments' | 'users';
   };
   export type public_User = {
     clerkUserId: CodecTypes['pg/text@1']['output'];
@@ -542,6 +619,7 @@ export declare const models: {
   public: {
     Customer: Models.public_Customer;
     Expense: Models.public_Expense;
+    Membership: Models.public_Membership;
     Payment: Models.public_Payment;
     Tenant: Models.public_Tenant;
     User: Models.public_User;
@@ -709,6 +787,118 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly Membership: {
+              columns: {
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly customerId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly endDate: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly payments: {
+                  readonly nativeType: 'json';
+                  readonly codecId: 'pg/json@1';
+                  readonly nullable: true;
+                };
+                readonly price: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+                readonly startDate: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'active'>;
+                  };
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly type: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'Membership_customerId_idx_b2a8a46c';
+                  readonly prefix: 'Membership_customerId_idx';
+                  readonly columns: readonly ['customerId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'Membership_tenantId_endDate_idx_49363571';
+                  readonly prefix: 'Membership_tenantId_endDate_idx';
+                  readonly columns: readonly ['tenantId', 'endDate'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'Membership_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'Membership_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Membership';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Membership';
+                    readonly columns: readonly ['customerId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Customer';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly Payment: {
               columns: {
                 readonly amount: {
@@ -736,6 +926,11 @@ type ContractBase = Omit<
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                };
+                readonly membershipId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                 };
                 readonly provider: {
                   readonly nativeType: 'text';
@@ -781,6 +976,12 @@ type ContractBase = Omit<
                   readonly unique: false;
                 },
                 {
+                  readonly name: 'Payment_membershipId_idx_fdcfb7b5';
+                  readonly prefix: 'Payment_membershipId_idx';
+                  readonly columns: readonly ['membershipId'];
+                  readonly unique: false;
+                },
+                {
                   readonly name: 'Payment_providerRefId_idx_0d521fc8';
                   readonly prefix: 'Payment_providerRefId_idx';
                   readonly columns: readonly ['providerRefId'];
@@ -815,6 +1016,18 @@ type ContractBase = Omit<
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'Customer';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Payment';
+                    readonly columns: readonly ['membershipId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Membership';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -953,6 +1166,14 @@ type ContractBase = Omit<
             };
           };
           readonly valueSet: {
+            readonly MembershipStatus: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['active', 'expiring', 'expired'];
+            };
+            readonly MembershipType: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['mensual', 'trimestral', 'anual'];
+            };
             readonly PaymentProvider: {
               readonly kind: 'valueSet';
               readonly values: readonly ['WOMPI', 'NEQUI', 'CASH', 'TRANSFER'];
@@ -978,6 +1199,10 @@ type ContractBase = Omit<
   readonly roots: {
     readonly Customer: { readonly namespace: 'public' & NamespaceId; readonly model: 'Customer' };
     readonly Expense: { readonly namespace: 'public' & NamespaceId; readonly model: 'Expense' };
+    readonly Membership: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'Membership';
+    };
     readonly Payment: { readonly namespace: 'public' & NamespaceId; readonly model: 'Payment' };
     readonly Tenant: { readonly namespace: 'public' & NamespaceId; readonly model: 'Tenant' };
     readonly User: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
@@ -1028,6 +1253,17 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
+              readonly memberships: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Membership';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['customerId'];
+                };
+              };
               readonly payments: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -1140,6 +1376,120 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly Membership: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly customerId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly endDate: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly payments: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/json@1' };
+              };
+              readonly price: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly startDate: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly type: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly charges: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Payment';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['membershipId'];
+                };
+              };
+              readonly customer: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Customer';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['customerId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'Membership';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly customerId: { readonly column: 'customerId' };
+                readonly endDate: { readonly column: 'endDate' };
+                readonly id: { readonly column: 'id' };
+                readonly payments: { readonly column: 'payments' };
+                readonly price: { readonly column: 'price' };
+                readonly startDate: { readonly column: 'startDate' };
+                readonly status: { readonly column: 'status' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly type: { readonly column: 'type' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
           readonly Payment: {
             readonly fields: {
               readonly amount: {
@@ -1163,6 +1513,10 @@ type ContractBase = Omit<
               };
               readonly id: {
                 readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly membershipId: {
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly provider: {
@@ -1202,6 +1556,18 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['id'];
                 };
               };
+              readonly membership: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Membership';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['membershipId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
               readonly tenant: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -1224,6 +1590,7 @@ type ContractBase = Omit<
                 readonly customerId: { readonly column: 'customerId' };
                 readonly description: { readonly column: 'description' };
                 readonly id: { readonly column: 'id' };
+                readonly membershipId: { readonly column: 'membershipId' };
                 readonly provider: { readonly column: 'provider' };
                 readonly providerRefId: { readonly column: 'providerRefId' };
                 readonly status: { readonly column: 'status' };
@@ -1285,6 +1652,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'Expense';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly memberships: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Membership';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -1398,6 +1776,22 @@ type ContractBase = Omit<
           };
         };
         readonly enum: {
+          readonly MembershipStatus: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'active'; readonly value: 'active' },
+              { readonly name: 'expiring'; readonly value: 'expiring' },
+              { readonly name: 'expired'; readonly value: 'expired' },
+            ];
+          };
+          readonly MembershipType: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'mensual'; readonly value: 'mensual' },
+              { readonly name: 'trimestral'; readonly value: 'trimestral' },
+              { readonly name: 'anual'; readonly value: 'anual' },
+            ];
+          };
           readonly PaymentProvider: {
             readonly codecId: 'pg/text@1';
             readonly members: readonly [
@@ -1483,6 +1877,23 @@ type ContractBase = Omit<
           readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'Expense';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'Membership';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'Membership';
             readonly field: 'updatedAt';
             readonly namespace: 'public';
           };

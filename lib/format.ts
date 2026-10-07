@@ -19,6 +19,13 @@ const dateFormatter = new Intl.DateTimeFormat("es-CO", {
   timeZone: "America/Bogota",
 });
 
+const shortDateFormatter = new Intl.DateTimeFormat("es-CO", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  timeZone: "America/Bogota",
+});
+
 const dateTimeFormatter = new Intl.DateTimeFormat("es-CO", {
   day: "2-digit",
   month: "short",
@@ -60,6 +67,12 @@ function toDate(value: unknown): Date | null {
 export function formatDate(value: unknown): string {
   const date = toDate(value);
   return date ? dateFormatter.format(date) : "—";
+}
+
+/** 07/10/2026 — fecha calendario en America/Bogota (sin corrimiento UTC). */
+export function formatDateShort(value: unknown): string {
+  const date = toDate(value);
+  return date ? shortDateFormatter.format(date) : "—";
 }
 
 /** 07 oct 2026, 10:30 */

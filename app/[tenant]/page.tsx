@@ -1,4 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { TrendingDown, TrendingUp, Users, Wallet } from "lucide-react";
 import { db } from "@/prisma/db";
@@ -11,6 +12,7 @@ import type {
 import MetricCard from "../components/tenant/metric-card";
 import QuickActions from "../components/tenant/quick-actions";
 import RecentActivity from "../components/tenant/recent-activity";
+import MembershipSummary from "./memberships/_components/membership-summary";
 
 /**
  * Dashboard del negocio. Server Component: toda la data (tenant, usuario,
@@ -59,11 +61,13 @@ export default async function TenantDashboard({
   const formattedDate = rawDate.charAt(0).toUpperCase() + rawDate.slice(1);
 
   // Datos reales (mismo mes Bogotá que usa Finanzas).
-  const [metrics, activeCustomers, recentActivity] = await Promise.all([
-    tenantDb.finance.getMetrics(),
-    tenantDb.customers.countActive(),
-    tenantDb.finance.getRecentActivity(5),
-  ]);
+  const [metrics, activeCustomers, recentActivity, membershipMetrics] =
+    await Promise.all([
+      tenantDb.finance.getMetrics(),
+      tenantDb.customers.countActive(),
+      tenantDb.finance.getRecentActivity(5),
+      tenantDb.memberships.getMetrics(),
+    ]);
 
   const metricsCards: DashboardMetric[] = [
     {
@@ -163,6 +167,33 @@ export default async function TenantDashboard({
         {metricsCards.map(({ id, ...metric }) => (
           <MetricCard key={id} {...metric} />
         ))}
+      </section>
+
+      {/* Estado de las membresías (datos reales) */}
+      <section
+        aria-labelledby="dashboard-memberships-title"
+        className="space-y-4"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2
+              id="dashboard-memberships-title"
+              className="text-base font-semibold text-slate-900"
+            >
+              Membresías
+            </h2>
+            <p className="text-sm text-slate-500">
+              Estado actual de los planes de tus clientes.
+            </p>
+          </div>
+          <Link
+            href={`/${tenantSlug}/memberships`}
+            className="text-sm font-medium text-indigo-600 transition hover:text-indigo-700"
+          >
+            Ver módulo →
+          </Link>
+        </div>
+        <MembershipSummary metrics={membershipMetrics} />
       </section>
 
       {/* Actividad reciente real + acciones rápidas */}

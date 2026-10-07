@@ -3,7 +3,7 @@ import { cn } from "@/lib/cn";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { paymentMethodLabel, paymentStatusLabel } from "@/lib/finance";
 import type { PaymentMethodValue, PaymentStatusValue } from "@/lib/finance";
-import PaginationLinks from "./pagination-links";
+import PaginationLinks from "@/app/components/tenant/pagination-links";
 
 export type PaymentViewRow = {
   id: string;

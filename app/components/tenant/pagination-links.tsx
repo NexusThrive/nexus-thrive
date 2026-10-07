@@ -5,8 +5,9 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 /**
- * Paginación genérica de Finanzas. Conserva el resto de los filtros de la
- * URL y solo cambia el parámetro de página de su sección (`ppage`/`gpage`).
+ * Paginación genérica. `paramKey` es el parámetro de página de la sección
+ * (`ppage`, `page`, …): al navegar conserva el resto de los filtros de la
+ * URL y solo cambia esa página.
  */
 export default function PaginationLinks({
   paramKey,

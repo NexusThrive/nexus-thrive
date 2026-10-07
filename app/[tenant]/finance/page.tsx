@@ -3,8 +3,8 @@ import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
 import FinanceSummary from "./_components/finance-summary";
 import FinanceActions from "./_components/finance-actions";
-import FinanceSearch from "./_components/finance-search";
-import FilterSelect from "./_components/filter-select";
+import SearchInput from "@/app/components/tenant/search-input";
+import FilterSelect from "@/app/components/tenant/filter-select";
 import PaymentsTable, { type PaymentViewRow } from "./_components/payments-table";
 import ExpensesTable, { type ExpenseViewRow } from "./_components/expenses-table";
 import { PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/finance";
@@ -168,21 +168,23 @@ export default async function FinancePage({
         </div>
 
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          <FinanceSearch
+          <SearchInput
             paramKey="pq"
-            inputName="pq"
+            pageParam="ppage"
             ariaLabel="Buscar pagos"
             placeholder="Buscar por referencia o descripción…"
             defaultValue={pq}
           />
           <FilterSelect
             paramKey="pmethod"
+            pageParam="ppage"
             allLabel="Todos los métodos"
             options={PAYMENT_METHODS}
             value={pmethod ?? ""}
           />
           <FilterSelect
             paramKey="pstatus"
+            pageParam="ppage"
             allLabel="Todos los estados"
             options={PAYMENT_STATUSES}
             value={pstatus ?? ""}
@@ -216,15 +218,16 @@ export default async function FinancePage({
         </div>
 
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          <FinanceSearch
+          <SearchInput
             paramKey="gq"
-            inputName="gq"
+            pageParam="gpage"
             ariaLabel="Buscar gastos"
             placeholder="Buscar por descripción…"
             defaultValue={gq}
           />
           <FilterSelect
             paramKey="gcat"
+            pageParam="gpage"
             allLabel="Todas las categorías"
             options={[
               "Servicios",
