@@ -2,6 +2,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
+import Header from "../components/tenant/header";
 
 export default async function TenantLayout({
   children,
@@ -15,9 +16,6 @@ export default async function TenantLayout({
   const { userId, redirectToSignIn } = await auth();
 
   if (!userId) {
-    // redirectToSignIn conserva la URL de retorno (returnBackUrl), a
-    // diferencia de redirect("/sign-in") que pierde a dónde iba el usuario.
-    // Lanza en runtime; el `return` solo satisface el narrowing de TS.
     redirectToSignIn();
     return null;
   }
@@ -38,10 +36,6 @@ export default async function TenantLayout({
   if (!localUser) {
     const hasMembers = (await tenantDb.users.findFirst()) !== null;
 
-    // Solo el primer usuario de un tenant sin miembros entra como OWNER
-    // (bootstrap del negocio). Si ya hay miembros y este visitante no es
-    // uno de ellos, no se auto-provisiona: nadie debe escalarse a OWNER
-    // adivinando el slug de un negocio ajeno.
     if (hasMembers) {
       return <AccessDenied tenantName={tenantRecord.name} />;
     }
@@ -67,6 +61,8 @@ export default async function TenantLayout({
 
   return (
     <div>
+      <Header tenantName={tenantRecord.name} />
+
       <div>
         <span>Negocio Activo</span>
 
@@ -86,9 +82,11 @@ function AccessDenied({ tenantName }: { tenantName: string }) {
   return (
     <div>
       <h2>Sin acceso</h2>
+
       <p>
-        Tu cuenta no está vinculada a <strong>{tenantName}</strong>. Pide a
-        un administrador que te invite antes de entrar.
+        Tu cuenta no está vinculada a{" "}
+        <strong>{tenantName}</strong>. Pide a un administrador que
+        te invite antes de entrar.
       </p>
     </div>
   );
