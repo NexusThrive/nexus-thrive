@@ -37,6 +37,18 @@ export default clerkMiddleware(async (auth, request) => {
     subdomain !== "app" &&
     subdomain !== "www"
   ) {
+    // Los enlaces internos del shell siempre son /{tenant}/... (multi-tenant).
+    // Si la ruta ya viene espaciada por el tenant, no se reescribe de nuevo:
+    // evita /gymcarlos/gymcarlos/crm (404) cuando se navega desde el
+    // subdominio. Cualquier otra ruta conserva la reescritura original.
+    const isTenantScoped =
+      pathname === `/${subdomain}` ||
+      pathname.startsWith(`/${subdomain}/`);
+
+    if (isTenantScoped) {
+      return NextResponse.next();
+    }
+
     return NextResponse.rewrite(
       new URL(`/${subdomain}${pathname}`, request.url)
     );

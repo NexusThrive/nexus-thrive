@@ -1,51 +1,81 @@
 "use client";
 
 import { UserButton } from "@clerk/nextjs";
-import { useState } from "react";
+import { Building2, Menu, Sparkles, X } from "lucide-react";
+import { useSidebar } from "./sidebar-context";
 
-export default function Header({
-  tenantName,
-}: {
+type HeaderProps = {
+  /** Nombre del negocio activo (serializable: nunca pasar el record de Prisma). */
   tenantName: string;
-}) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+};
 
-  const handleMenuClick = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+/**
+ * Barra superior del shell del negocio.
+ *
+ * Client Component: solo recibe strings serializables desde el layout y usa
+ * el estado local del sidebar para abrir/cerrar el menú mobile.
+ * Importa exclusivamente desde `@clerk/nextjs` (nunca `/server`).
+ */
+export default function Header({ tenantName }: HeaderProps) {
+  const { isOpen, toggle } = useSidebar();
 
   return (
-    <header className="flex items-center justify-between bg-white px-4 py-2 shadow max-[480px]: max-[480px]:gap-2">
-      <span className="block text-lg font-semibold text-gray-900">
-        Nexus Thrive
-      </span>
-
-      <div className="flex items-center gap-1.5 max-[480px]:hidden">
-        <label className="rounded border border-green-500 bg-green-300 px-2 py-1 text-green-800 max-sm:text-sm">
-          {tenantName}
-        </label>
-
-        <UserButton />
-      </div>
-
-      <div
-        className="hidden cursor-pointer max-[480px]:block max-[480px]:flex max-[480px]:flex-col max-[480px]:gap-1.5 absolute right-4 top-2 z-50"
-        onClick={handleMenuClick}
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-slate-200 bg-white px-4 sm:px-6">
+      {/* Menú mobile: abre/cierra el sidebar */}
+      <button
+        type="button"
+        onClick={toggle}
+        aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
+        aria-expanded={isOpen}
+        aria-controls="tenant-sidebar"
+        className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-slate-200 text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 lg:hidden"
       >
-        <div className="h-1 w-6 rounded bg-black" />
-        <div className="h-1 w-6 rounded bg-black" />
-        <div className="h-1 w-6 rounded bg-black" />
-      </div>
-      <div className="hidden max-[480px]:block">
-        {isMenuOpen && (
-          <div className="absolute w-full right-0 top-12 z-50 flex gap-2 rounded border border-gray-300 bg-white p-2 shadow">
-            <label className="rounded w-full text-center border border-green-500 bg-green-300 px-2 py-1 text-green-800 max-sm:text-sm">
-              {tenantName}
-            </label>
-
-            <UserButton />
-          </div>
+        {isOpen ? (
+          <X className="h-5 w-5" aria-hidden="true" />
+        ) : (
+          <Menu className="h-5 w-5" aria-hidden="true" />
         )}
+      </button>
+
+      {/* Marca NEXUS THRIVE */}
+      <div className="flex shrink-0 items-center gap-2">
+        <span
+          aria-hidden="true"
+          className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600 text-white"
+        >
+          <Sparkles className="h-4 w-4" />
+        </span>
+        <span className="text-sm font-semibold tracking-tight text-slate-900 sm:text-base">
+          NEXUS <span className="text-indigo-600">THRIVE</span>
+        </span>
+      </div>
+
+      <span
+        aria-hidden="true"
+        className="hidden h-6 w-px bg-slate-200 md:block"
+      />
+
+      {/* Negocio activo + estado */}
+      <div className="flex min-w-0 items-center gap-2">
+        <Building2
+          aria-hidden="true"
+          className="hidden h-4 w-4 shrink-0 text-slate-400 sm:block"
+        />
+        <span className="hidden max-w-[9rem] truncate text-sm font-medium text-slate-700 sm:block lg:max-w-[16rem]">
+          {tenantName}
+        </span>
+        <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+          <span
+            aria-hidden="true"
+            className="h-1.5 w-1.5 rounded-full bg-emerald-500"
+          />
+          Activo
+        </span>
+      </div>
+
+      {/* Cuenta */}
+      <div className="ml-auto flex shrink-0 items-center gap-3">
+        <UserButton />
       </div>
     </header>
   );

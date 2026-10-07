@@ -3,7 +3,15 @@ import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
 import Header from "../components/tenant/header";
+import Sidebar from "../components/tenant/sidebar";
+import { SidebarProvider } from "../components/tenant/sidebar-context";
 
+/**
+ * Shell del negocio (multi-tenant).
+ *
+ * Server Component: resuelve tenant, acceso y usuario con Clerk + Prisma aquí,
+ * y pasa al cliente únicamente strings serializables (`tenantName`, `tenantSlug`).
+ */
 export default async function TenantLayout({
   children,
   params,
@@ -20,6 +28,7 @@ export default async function TenantLayout({
     return null;
   }
 
+  // 1) El tenant debe existir y estar activo.
   const tenantRecord = await db.orm.public.Tenant.where({
     slug: tenantSlug,
     active: true,
@@ -29,8 +38,10 @@ export default async function TenantLayout({
     notFound();
   }
 
+  // 2) Contexto de acceso a la base de datos del tenant.
   const tenantDb = createTenantDb(tenantRecord.id);
 
+  // 3) Usuario local asociado al tenant (con bootstrap del primer OWNER).
   let localUser = await tenantDb.users.findByClerkUserId(userId);
 
   if (!localUser) {
@@ -57,37 +68,45 @@ export default async function TenantLayout({
     });
   }
 
-  const displayName = localUser.name || localUser.email;
-
   return (
-    <div>
-      <Header tenantName={tenantRecord.name} />
+    <SidebarProvider>
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+        <Header tenantName={tenantRecord.name} />
 
-      <div>
-        <span>Negocio Activo</span>
+        <Sidebar
+          tenantSlug={tenantRecord.slug}
+          tenantName={tenantRecord.name}
+        />
 
-        <h1>{tenantRecord.name}</h1>
-
-        <p>
-          Hola, <strong>{displayName}</strong> ({localUser.role})
-        </p>
+        <main className="px-4 py-6 sm:px-6 lg:py-8 lg:pl-[18rem] lg:pr-8">
+          {children}
+        </main>
       </div>
-
-      {children}
-    </div>
+    </SidebarProvider>
   );
 }
 
 function AccessDenied({ tenantName }: { tenantName: string }) {
   return (
-    <div>
-      <h2>Sin acceso</h2>
-
-      <p>
-        Tu cuenta no está vinculada a{" "}
-        <strong>{tenantName}</strong>. Pide a un administrador que
-        te invite antes de entrar.
-      </p>
+    <div className="grid min-h-screen place-items-center bg-slate-50 px-4 font-sans">
+      <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+        <span
+          aria-hidden="true"
+          className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-rose-50 text-lg font-semibold text-rose-600"
+        >
+          !
+        </span>
+        <h2 className="mt-4 text-lg font-semibold text-slate-900">
+          Sin acceso
+        </h2>
+        <p className="mt-2 text-sm leading-6 text-slate-500">
+          Tu cuenta no está vinculada a{" "}
+          <strong className="font-semibold text-slate-700">
+            {tenantName}
+          </strong>
+          . Pide a un administrador que te invite antes de entrar.
+        </p>
+      </div>
     </div>
   );
 }
