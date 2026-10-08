@@ -1,6 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { CheckCircle2, FileText, Plus, Wallet } from "lucide-react";
+import {
+  CheckCircle2,
+  FileText,
+  Plus,
+  Upload,
+  Wallet,
+} from "lucide-react";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
 import { getQuoteTerms } from "@/lib/vertical-terms";
@@ -200,15 +206,26 @@ export default async function QuotesPage({
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-          {terms.quotes}
-        </h1>
-        <p className="text-sm text-slate-500">
-          Presupuestos de obra, catálogo de análisis de precios unitarios y
-          banco de insumos de{" "}
-          <span className="font-medium text-slate-700">{tenantRecord.name}</span>.
-        </p>
+      <header className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+            {terms.quotes}
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Presupuestos de obra, catálogo de análisis de precios unitarios y
+            banco de insumos de{" "}
+            <span className="font-medium text-slate-700">{tenantRecord.name}</span>.
+          </p>
+        </div>
+        <div className="mt-3 flex shrink-0 items-center gap-2 sm:mt-0">
+          <Link
+            href={`/${tenantSlug}/quotes/import`}
+            className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-3 text-sm font-medium text-indigo-700 transition hover:border-indigo-300 hover:bg-indigo-100"
+          >
+            <Upload aria-hidden="true" className="h-4 w-4" />
+            Importar APU
+          </Link>
+        </div>
       </header>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
