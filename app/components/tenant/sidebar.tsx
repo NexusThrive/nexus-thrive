@@ -90,7 +90,7 @@ const MODULE_NAV: Record<
   quotes: {
     href: "/quotes",
     icon: FileText,
-    label: () => "Cotizaciones",
+    label: (terms) => terms.quotes ?? "Cotizaciones",
   },
   inventory: {
     href: "/inventory",

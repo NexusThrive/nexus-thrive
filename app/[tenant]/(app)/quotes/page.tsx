@@ -1,13 +1,266 @@
-import { FileText } from "lucide-react";
-import ModulePlaceholder from "../../../components/tenant/module-placeholder";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { CheckCircle2, FileText, Plus, Wallet } from "lucide-react";
+import { db } from "@/prisma/db";
+import { createTenantDb } from "@/lib/tenant-db";
+import { getQuoteTerms } from "@/lib/vertical-terms";
+import { formatCurrency } from "@/lib/format";
+import {
+  QUOTE_STATUSES,
+  isValidCategory,
+  isValidStatus,
+  type QuoteStatusValue,
+} from "@/lib/apu-engine";
+import { cn } from "@/lib/cn";
+import SearchInput from "@/app/components/tenant/search-input";
+import FilterSelect from "@/app/components/tenant/filter-select";
+import QuotesWorkspace, { type QuotesTab } from "./_components/quotes-workspace";
+import QuotesTable from "./_components/quotes-table";
+import ItemsBank from "./_components/items-bank";
+import ActivityCatalog from "./_components/activity-catalog";
 
-/** Módulo Cotizaciones: habilitado por TenantModule; implementación en roadmap. */
-export default function QuotesPage() {
+const QUOTES_PAGE_SIZE = 10;
+const ITEMS_PAGE_SIZE = 10;
+
+function firstString(value: string | string[] | undefined): string {
+  return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
+}
+
+function card(
+  icon: React.ReactNode,
+  title: string,
+  value: string,
+  description: string,
+  tone: string,
+) {
   return (
-    <ModulePlaceholder
-      title="Cotizaciones"
-      description="Crea y envía cotizaciones a tus clientes con seguimiento de estado."
-      icon={FileText}
-    />
+    <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium text-slate-500">{title}</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+            {value}
+          </p>
+        </div>
+        <span
+          aria-hidden="true"
+          className={cn(
+            "grid h-10 w-10 shrink-0 place-items-center rounded-lg",
+            tone,
+          )}
+        >
+          {icon}
+        </span>
+      </div>
+      <p className="mt-3 border-t border-slate-100 pt-2 text-xs text-slate-500">
+        {description}
+      </p>
+    </article>
+  );
+}
+
+/**
+ * Módulo Construcción & APU: la URL es la fuente de verdad
+ * (`?tab=&bq=&bs=&aq=&iq=&ic=`). Cada Server Action llama `revalidatePath`.
+ *
+ * El acceso (tenant activo + miembro) está garantizado por el layout de
+ * `app/[tenant]/layout.tsx`.
+ */
+export default async function QuotesPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ tenant: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { tenant: tenantSlug } = await params;
+  const sp = await searchParams;
+
+  const tag = firstString(sp.tab);
+  const activeTab: QuotesTab =
+    tag === "activities" || tag === "items" ? tag : "quotes";
+
+  const tenantRecord = await db.orm.public.Tenant.where({
+    slug: tenantSlug,
+    active: true,
+  }).first();
+  if (!tenantRecord) {
+    notFound();
+  }
+
+  const tenantDb = createTenantDb(tenantRecord.id);
+  const [metrics] = await Promise.all([tenantDb.quotes.getMetrics()]);
+
+  const terms = getQuoteTerms(tenantRecord.vertical);
+
+  let quotesSection: React.ReactNode = null;
+  let activitiesSection: React.ReactNode = null;
+  let itemsSection: React.ReactNode = null;
+
+  if (activeTab === "quotes") {
+    const q = firstString(sp.bq).trim();
+    const statusRaw = firstString(sp.bs);
+    const status: QuoteStatusValue | undefined = isValidStatus(statusRaw)
+      ? statusRaw
+      : undefined;
+    const pageRaw = Number.parseInt(firstString(sp.bpage), 10);
+    const requestedPage = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
+
+    const result = await tenantDb.quotes.list({
+      q,
+      status,
+      page: requestedPage,
+      limit: QUOTES_PAGE_SIZE,
+    });
+    const totalPages = Math.max(1, Math.ceil(result.total / QUOTES_PAGE_SIZE));
+    const safePage = Math.min(requestedPage, totalPages);
+
+    quotesSection = (
+      <div className="space-y-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-2">
+            <SearchInput
+              paramKey="bq"
+              pageParam="bpage"
+              ariaLabel={`Buscar ${terms.quotes.toLowerCase()}`}
+              placeholder={`Buscar ${terms.quote.toLowerCase()} o código…`}
+              defaultValue={q}
+            />
+            <FilterSelect
+              paramKey="bs"
+              pageParam="bpage"
+              allLabel={`Todos los estados`}
+              options={QUOTE_STATUSES}
+              value={status ?? ""}
+            />
+          </div>
+          <Link
+            href={`/${tenantSlug}/quotes/new`}
+            className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-indigo-600 px-3 text-sm font-medium text-white transition hover:bg-indigo-700"
+          >
+            <Plus aria-hidden="true" className="h-4 w-4" />
+            Nuevo {terms.quote.toLowerCase()}
+          </Link>
+        </div>
+        <QuotesTable
+          tenantSlug={tenantSlug}
+          rows={result.rows}
+          total={result.total}
+          page={safePage}
+          quoteLabel={terms.quote}
+        />
+      </div>
+    );
+  }
+
+  if (activeTab === "activities") {
+    const q = firstString(sp.aq).trim();
+    const [catalog, itemsResult] = await Promise.all([
+      tenantDb.apu.listActivities({ q }),
+      tenantDb.apu.listItems({ limit: 400 }),
+    ]);
+    activitiesSection = (
+      <ActivityCatalog
+        tenantSlug={tenantSlug}
+        rows={catalog.rows}
+        items={itemsResult.rows}
+        activityLabel={terms.apuActivity}
+      />
+    );
+  }
+
+  if (activeTab === "items") {
+    const q = firstString(sp.iq).trim();
+    const categoryRaw = firstString(sp.ic);
+    const category = isValidCategory(categoryRaw)
+      ? categoryRaw
+      : undefined;
+    const pageRaw = Number.parseInt(firstString(sp.ipage), 10);
+    const requestedPage = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
+
+    const result = await tenantDb.apu.listItems({
+      q,
+      category,
+      page: requestedPage,
+      limit: ITEMS_PAGE_SIZE,
+    });
+    const totalPages = Math.max(1, Math.ceil(result.total / ITEMS_PAGE_SIZE));
+    const safePage = Math.min(requestedPage, totalPages);
+
+    itemsSection = (
+      <ItemsBank
+        tenantSlug={tenantSlug}
+        rows={result.rows}
+        total={result.total}
+        page={safePage}
+        itemLabel={terms.apuItem}
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <header className="flex flex-col gap-1">
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+          {terms.quotes}
+        </h1>
+        <p className="text-sm text-slate-500">
+          Presupuestos de obra, catálogo de análisis de precios unitarios y
+          banco de insumos de{" "}
+          <span className="font-medium text-slate-700">{tenantRecord.name}</span>.
+        </p>
+      </header>
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {card(
+          <FileText aria-hidden="true" className="h-5 w-5 text-indigo-600" />,
+          `Total ${terms.quotes.toLowerCase()}`,
+          String(metrics.total),
+          "Creados en este negocio",
+          "bg-indigo-50 text-indigo-600",
+        )}
+        {card(
+          <CheckCircle2
+            aria-hidden="true"
+            className="h-5 w-5 text-emerald-600"
+          />,
+          `${terms.quotes.toLowerCase()} aprobados`,
+          String(metrics.approved),
+          "Aprobados por el cliente",
+          "bg-emerald-50 text-emerald-600",
+        )}
+        {card(
+          <FileText aria-hidden="true" className="h-5 w-5 text-amber-600" />,
+          `${terms.quotes.toLowerCase()} en borrador`,
+          String(metrics.draft),
+          "Pendientes de enviar",
+          "bg-amber-50 text-amber-600",
+        )}
+        {card(
+          <Wallet aria-hidden="true" className="h-5 w-5 text-slate-600" />,
+          `Monto total cotizado`,
+          formatCurrency(metrics.totalAmount),
+          "Suma de todos los presupuestos",
+          "bg-slate-100 text-slate-600",
+        )}
+      </div>
+
+      <QuotesWorkspace
+        activeTab={activeTab}
+        tabs={[
+          { value: "quotes", label: terms.quotes },
+          { value: "activities", label: terms.apuActivities },
+          { value: "items", label: terms.apuItems },
+        ]}
+      >
+        {activeTab === "quotes" ? (
+          quotesSection
+        ) : activeTab === "activities" ? (
+          activitiesSection
+        ) : (
+          itemsSection
+        )}
+      </QuotesWorkspace>
+    </div>
   );
 }

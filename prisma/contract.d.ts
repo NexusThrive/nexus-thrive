@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'7924e5f7554e644ee55d4df116e037b3d915ce4a48cb87cce6dfa264a92be4f2'>;
+  StorageHashBase<'796e292566b480742876e769b42829e657742201c2e498c0d86f0fd86311058a'>;
 export type ExecutionHash =
-  ExecutionHashBase<'745e79f15b629640767cb3a1d4f384a4d4a59fe3dd5cb54b97134d16713fc91a'>;
+  ExecutionHashBase<'59c96bbbb5b0beb0b10a45703eb1b9093f03d9d0851016aecf5e50c8a7804019'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -250,6 +250,33 @@ type DefaultLiteralValue<CodecId extends string, Encoded> = CodecId extends keyo
 
 export type FieldOutputTypes = {
   readonly public: {
+    readonly ApuActivity: {
+      readonly code: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly description: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly unit: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly ApuActivityComposition: {
+      readonly activityId: CodecTypes['pg/text@1']['output'];
+      readonly consumption: CodecTypes['pg/numeric@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly itemId: CodecTypes['pg/text@1']['output'];
+      readonly wastePercent: CodecTypes['pg/numeric@1']['output'];
+    };
+    readonly ApuItem: {
+      readonly category: 'MATERIAL' | 'MANO_DE_OBRA' | 'EQUIPO' | 'TRANSPORTE';
+      readonly code: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly unit: CodecTypes['pg/text@1']['output'];
+      readonly unitPrice: CodecTypes['pg/numeric@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
     readonly Customer: {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -304,6 +331,33 @@ export type FieldOutputTypes = {
       readonly status: 'PENDING' | 'APPROVED' | 'DECLINED' | 'VOIDED';
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly Quote: {
+      readonly adminPercent: CodecTypes['pg/numeric@1']['output'];
+      readonly code: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly customerId: CodecTypes['pg/text@1']['output'] | null;
+      readonly directCost: CodecTypes['pg/numeric@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly imprevPercent: CodecTypes['pg/numeric@1']['output'];
+      readonly status: 'DRAFT' | 'SENT' | 'APPROVED' | 'REJECTED';
+      readonly taxPercent: CodecTypes['pg/numeric@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly title: CodecTypes['pg/text@1']['output'];
+      readonly totalAmount: CodecTypes['pg/numeric@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly utilPercent: CodecTypes['pg/numeric@1']['output'];
+    };
+    readonly QuoteItem: {
+      readonly activityId: CodecTypes['pg/text@1']['output'] | null;
+      readonly apuSnapshot: CodecTypes['pg/json@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+      readonly quantity: CodecTypes['pg/numeric@1']['output'];
+      readonly quoteId: CodecTypes['pg/text@1']['output'];
+      readonly totalCost: CodecTypes['pg/numeric@1']['output'];
+      readonly unit: CodecTypes['pg/text@1']['output'];
+      readonly unitCost: CodecTypes['pg/numeric@1']['output'];
     };
     readonly Tenant: {
       readonly active: CodecTypes['pg/bool@1']['output'];
@@ -371,6 +425,33 @@ export type FieldOutputTypes = {
 };
 export type FieldInputTypes = {
   readonly public: {
+    readonly ApuActivity: {
+      readonly code: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly description: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly unit: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly ApuActivityComposition: {
+      readonly activityId: CodecTypes['pg/text@1']['input'];
+      readonly consumption: CodecTypes['pg/numeric@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly itemId: CodecTypes['pg/text@1']['input'];
+      readonly wastePercent: CodecTypes['pg/numeric@1']['input'];
+    };
+    readonly ApuItem: {
+      readonly category: 'MATERIAL' | 'MANO_DE_OBRA' | 'EQUIPO' | 'TRANSPORTE';
+      readonly code: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly unit: CodecTypes['pg/text@1']['input'];
+      readonly unitPrice: CodecTypes['pg/numeric@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly Customer: {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -425,6 +506,33 @@ export type FieldInputTypes = {
       readonly status: 'PENDING' | 'APPROVED' | 'DECLINED' | 'VOIDED';
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly Quote: {
+      readonly adminPercent: CodecTypes['pg/numeric@1']['input'];
+      readonly code: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly customerId: CodecTypes['pg/text@1']['input'] | null;
+      readonly directCost: CodecTypes['pg/numeric@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly imprevPercent: CodecTypes['pg/numeric@1']['input'];
+      readonly status: 'DRAFT' | 'SENT' | 'APPROVED' | 'REJECTED';
+      readonly taxPercent: CodecTypes['pg/numeric@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly title: CodecTypes['pg/text@1']['input'];
+      readonly totalAmount: CodecTypes['pg/numeric@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly utilPercent: CodecTypes['pg/numeric@1']['input'];
+    };
+    readonly QuoteItem: {
+      readonly activityId: CodecTypes['pg/text@1']['input'] | null;
+      readonly apuSnapshot: CodecTypes['pg/json@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+      readonly quantity: CodecTypes['pg/numeric@1']['input'];
+      readonly quoteId: CodecTypes['pg/text@1']['input'];
+      readonly totalCost: CodecTypes['pg/numeric@1']['input'];
+      readonly unit: CodecTypes['pg/text@1']['input'];
+      readonly unitCost: CodecTypes['pg/numeric@1']['input'];
     };
     readonly Tenant: {
       readonly active: CodecTypes['pg/bool@1']['input'];
@@ -492,6 +600,33 @@ export type FieldInputTypes = {
 };
 export type StorageColumnTypes = {
   readonly public: {
+    readonly ApuActivity: {
+      readonly code: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly description: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly unit: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly ApuActivityComposition: {
+      readonly activityId: CodecTypes['pg/text@1']['output'];
+      readonly consumption: CodecTypes['pg/numeric@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly itemId: CodecTypes['pg/text@1']['output'];
+      readonly wastePercent: CodecTypes['pg/numeric@1']['output'];
+    };
+    readonly ApuItem: {
+      readonly category: 'MATERIAL' | 'MANO_DE_OBRA' | 'EQUIPO' | 'TRANSPORTE';
+      readonly code: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly unit: CodecTypes['pg/text@1']['output'];
+      readonly unitPrice: CodecTypes['pg/numeric@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
     readonly Customer: {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -546,6 +681,33 @@ export type StorageColumnTypes = {
       readonly status: 'PENDING' | 'APPROVED' | 'DECLINED' | 'VOIDED';
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly Quote: {
+      readonly adminPercent: CodecTypes['pg/numeric@1']['output'];
+      readonly code: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly customerId: CodecTypes['pg/text@1']['output'] | null;
+      readonly directCost: CodecTypes['pg/numeric@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly imprevPercent: CodecTypes['pg/numeric@1']['output'];
+      readonly status: 'DRAFT' | 'SENT' | 'APPROVED' | 'REJECTED';
+      readonly taxPercent: CodecTypes['pg/numeric@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly title: CodecTypes['pg/text@1']['output'];
+      readonly totalAmount: CodecTypes['pg/numeric@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly utilPercent: CodecTypes['pg/numeric@1']['output'];
+    };
+    readonly QuoteItem: {
+      readonly activityId: CodecTypes['pg/text@1']['output'] | null;
+      readonly apuSnapshot: CodecTypes['pg/json@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+      readonly quantity: CodecTypes['pg/numeric@1']['output'];
+      readonly quoteId: CodecTypes['pg/text@1']['output'];
+      readonly totalCost: CodecTypes['pg/numeric@1']['output'];
+      readonly unit: CodecTypes['pg/text@1']['output'];
+      readonly unitCost: CodecTypes['pg/numeric@1']['output'];
     };
     readonly Tenant: {
       readonly active: CodecTypes['pg/bool@1']['output'];
@@ -613,6 +775,33 @@ export type StorageColumnTypes = {
 };
 export type StorageColumnInputTypes = {
   readonly public: {
+    readonly ApuActivity: {
+      readonly code: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly description: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly unit: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly ApuActivityComposition: {
+      readonly activityId: CodecTypes['pg/text@1']['input'];
+      readonly consumption: CodecTypes['pg/numeric@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly itemId: CodecTypes['pg/text@1']['input'];
+      readonly wastePercent: CodecTypes['pg/numeric@1']['input'];
+    };
+    readonly ApuItem: {
+      readonly category: 'MATERIAL' | 'MANO_DE_OBRA' | 'EQUIPO' | 'TRANSPORTE';
+      readonly code: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly unit: CodecTypes['pg/text@1']['input'];
+      readonly unitPrice: CodecTypes['pg/numeric@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly Customer: {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -667,6 +856,33 @@ export type StorageColumnInputTypes = {
       readonly status: 'PENDING' | 'APPROVED' | 'DECLINED' | 'VOIDED';
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly Quote: {
+      readonly adminPercent: CodecTypes['pg/numeric@1']['input'];
+      readonly code: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly customerId: CodecTypes['pg/text@1']['input'] | null;
+      readonly directCost: CodecTypes['pg/numeric@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly imprevPercent: CodecTypes['pg/numeric@1']['input'];
+      readonly status: 'DRAFT' | 'SENT' | 'APPROVED' | 'REJECTED';
+      readonly taxPercent: CodecTypes['pg/numeric@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly title: CodecTypes['pg/text@1']['input'];
+      readonly totalAmount: CodecTypes['pg/numeric@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly utilPercent: CodecTypes['pg/numeric@1']['input'];
+    };
+    readonly QuoteItem: {
+      readonly activityId: CodecTypes['pg/text@1']['input'] | null;
+      readonly apuSnapshot: CodecTypes['pg/json@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+      readonly quantity: CodecTypes['pg/numeric@1']['input'];
+      readonly quoteId: CodecTypes['pg/text@1']['input'];
+      readonly totalCost: CodecTypes['pg/numeric@1']['input'];
+      readonly unit: CodecTypes['pg/text@1']['input'];
+      readonly unitCost: CodecTypes['pg/numeric@1']['input'];
     };
     readonly Tenant: {
       readonly active: CodecTypes['pg/bool@1']['input'];
@@ -734,6 +950,43 @@ export type StorageColumnInputTypes = {
 };
 
 export namespace Models {
+  export type public_ApuActivity = {
+    code: CodecTypes['pg/text@1']['output'] | null;
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    description: CodecTypes['pg/text@1']['output'] | null;
+    id: CodecTypes['pg/text@1']['output'];
+    name: CodecTypes['pg/text@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    unit: CodecTypes['pg/text@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    compositions: public_ApuActivityComposition[];
+    quoteItems: public_QuoteItem[];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'compositions' | 'quoteItems' | 'tenant';
+  };
+  export type public_ApuActivityComposition = {
+    activityId: CodecTypes['pg/text@1']['output'];
+    consumption: CodecTypes['pg/numeric@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    itemId: CodecTypes['pg/text@1']['output'];
+    wastePercent: CodecTypes['pg/numeric@1']['output'];
+    activity: public_ApuActivity;
+    item: public_ApuItem;
+    readonly [RelationKeys]?: 'activity' | 'item';
+  };
+  export type public_ApuItem = {
+    category: 'MATERIAL' | 'MANO_DE_OBRA' | 'EQUIPO' | 'TRANSPORTE';
+    code: CodecTypes['pg/text@1']['output'] | null;
+    id: CodecTypes['pg/text@1']['output'];
+    name: CodecTypes['pg/text@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    unit: CodecTypes['pg/text@1']['output'];
+    unitPrice: CodecTypes['pg/numeric@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    compositions: public_ApuActivityComposition[];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'compositions' | 'tenant';
+  };
   export type public_Customer = {
     active: CodecTypes['pg/bool@1']['output'];
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -746,8 +999,9 @@ export namespace Models {
     memberships: public_Membership[];
     notes: public_CustomerNote[];
     payments: public_Payment[];
+    quotes: public_Quote[];
     tenant: public_Tenant;
-    readonly [RelationKeys]?: 'memberships' | 'notes' | 'payments' | 'tenant';
+    readonly [RelationKeys]?: 'memberships' | 'notes' | 'payments' | 'quotes' | 'tenant';
   };
   export type public_CustomerNote = {
     content: CodecTypes['pg/text@1']['output'];
@@ -808,6 +1062,40 @@ export namespace Models {
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'customer' | 'membership' | 'tenant';
   };
+  export type public_Quote = {
+    adminPercent: CodecTypes['pg/numeric@1']['output'];
+    code: CodecTypes['pg/text@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    customerId: CodecTypes['pg/text@1']['output'] | null;
+    directCost: CodecTypes['pg/numeric@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    imprevPercent: CodecTypes['pg/numeric@1']['output'];
+    status: 'DRAFT' | 'SENT' | 'APPROVED' | 'REJECTED';
+    taxPercent: CodecTypes['pg/numeric@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    title: CodecTypes['pg/text@1']['output'];
+    totalAmount: CodecTypes['pg/numeric@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    utilPercent: CodecTypes['pg/numeric@1']['output'];
+    customer: public_Customer | null;
+    items: public_QuoteItem[];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'customer' | 'items' | 'tenant';
+  };
+  export type public_QuoteItem = {
+    activityId: CodecTypes['pg/text@1']['output'] | null;
+    apuSnapshot: CodecTypes['pg/json@1']['output'] | null;
+    id: CodecTypes['pg/text@1']['output'];
+    name: CodecTypes['pg/text@1']['output'];
+    quantity: CodecTypes['pg/numeric@1']['output'];
+    quoteId: CodecTypes['pg/text@1']['output'];
+    totalCost: CodecTypes['pg/numeric@1']['output'];
+    unit: CodecTypes['pg/text@1']['output'];
+    unitCost: CodecTypes['pg/numeric@1']['output'];
+    activity: public_ApuActivity | null;
+    quote: public_Quote;
+    readonly [RelationKeys]?: 'activity' | 'quote';
+  };
   export type public_Tenant = {
     active: CodecTypes['pg/bool@1']['output'];
     city: CodecTypes['pg/text@1']['output'] | null;
@@ -840,15 +1128,27 @@ export namespace Models {
       | 'events';
     websiteUrl: CodecTypes['pg/text@1']['output'] | null;
     whatsappNumber: CodecTypes['pg/text@1']['output'] | null;
+    apuActivities: public_ApuActivity[];
+    apuItems: public_ApuItem[];
     customerNotes: public_CustomerNote[];
     customers: public_Customer[];
     expenses: public_Expense[];
     memberships: public_Membership[];
     modules: public_TenantModule[];
     payments: public_Payment[];
+    quotes: public_Quote[];
     users: public_User[];
     readonly [RelationKeys]?:
-      'customerNotes' | 'customers' | 'expenses' | 'memberships' | 'modules' | 'payments' | 'users';
+      | 'apuActivities'
+      | 'apuItems'
+      | 'customerNotes'
+      | 'customers'
+      | 'expenses'
+      | 'memberships'
+      | 'modules'
+      | 'payments'
+      | 'quotes'
+      | 'users';
   };
   export type public_TenantModule = {
     active: CodecTypes['pg/bool@1']['output'];
@@ -888,11 +1188,16 @@ export namespace Models {
 
 export declare const models: {
   public: {
+    ApuActivity: Models.public_ApuActivity;
+    ApuActivityComposition: Models.public_ApuActivityComposition;
+    ApuItem: Models.public_ApuItem;
     Customer: Models.public_Customer;
     CustomerNote: Models.public_CustomerNote;
     Expense: Models.public_Expense;
     Membership: Models.public_Membership;
     Payment: Models.public_Payment;
+    Quote: Models.public_Quote;
+    QuoteItem: Models.public_QuoteItem;
     Tenant: Models.public_Tenant;
     TenantModule: Models.public_TenantModule;
     User: Models.public_User;
@@ -917,6 +1222,214 @@ type ContractBase = Omit<
         readonly kind: 'postgres-schema';
         readonly entries: {
           readonly table: {
+            readonly ApuActivity: {
+              columns: {
+                readonly code: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly description: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly name: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly unit: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['tenantId', 'code'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'ApuActivity_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'ApuActivity_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuActivity';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly ApuActivityComposition: {
+              columns: {
+                readonly activityId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly consumption: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly itemId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly wastePercent: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['activityId', 'itemId'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'ApuActivityComposition_activityId_idx_bf2a659e';
+                  readonly prefix: 'ApuActivityComposition_activityId_idx';
+                  readonly columns: readonly ['activityId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ApuActivityComposition_itemId_idx_41357140';
+                  readonly prefix: 'ApuActivityComposition_itemId_idx';
+                  readonly columns: readonly ['itemId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuActivityComposition';
+                    readonly columns: readonly ['activityId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuActivity';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuActivityComposition';
+                    readonly columns: readonly ['itemId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuItem';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly ApuItem: {
+              columns: {
+                readonly category: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly code: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly name: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly unit: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly unitPrice: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['tenantId', 'code'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'ApuItem_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'ApuItem_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuItem';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly Customer: {
               columns: {
                 readonly active: {
@@ -1406,6 +1919,240 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly Quote: {
+              columns: {
+                readonly adminPercent: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/numeric@1', '15'>;
+                  };
+                };
+                readonly code: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly customerId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly directCost: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly imprevPercent: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/numeric@1', '5'>;
+                  };
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'DRAFT'>;
+                  };
+                };
+                readonly taxPercent: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/numeric@1', '19'>;
+                  };
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly title: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly totalAmount: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly utilPercent: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/numeric@1', '10'>;
+                  };
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['tenantId', 'code'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'Quote_customerId_idx_b2a8a46c';
+                  readonly prefix: 'Quote_customerId_idx';
+                  readonly columns: readonly ['customerId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'Quote_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'Quote_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'Quote_tenantId_status_idx_d3d04256';
+                  readonly prefix: 'Quote_tenantId_status_idx';
+                  readonly columns: readonly ['tenantId', 'status'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Quote';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Quote';
+                    readonly columns: readonly ['customerId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Customer';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly QuoteItem: {
+              columns: {
+                readonly activityId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly apuSnapshot: {
+                  readonly nativeType: 'json';
+                  readonly codecId: 'pg/json@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly name: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly quantity: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+                readonly quoteId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly totalCost: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+                readonly unit: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly unitCost: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'QuoteItem_activityId_idx_bf2a659e';
+                  readonly prefix: 'QuoteItem_activityId_idx';
+                  readonly columns: readonly ['activityId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'QuoteItem_quoteId_idx_a7628ce5';
+                  readonly prefix: 'QuoteItem_quoteId_idx';
+                  readonly columns: readonly ['quoteId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'QuoteItem';
+                    readonly columns: readonly ['quoteId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Quote';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'QuoteItem';
+                    readonly columns: readonly ['activityId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuActivity';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly Tenant: {
               columns: {
                 readonly active: {
@@ -1646,6 +2393,10 @@ type ContractBase = Omit<
             };
           };
           readonly valueSet: {
+            readonly ApuItemCategory: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['MATERIAL', 'MANO_DE_OBRA', 'EQUIPO', 'TRANSPORTE'];
+            };
             readonly MembershipStatus: {
               readonly kind: 'valueSet';
               readonly values: readonly ['active', 'expiring', 'expired'];
@@ -1677,6 +2428,10 @@ type ContractBase = Omit<
             readonly PaymentStatus: {
               readonly kind: 'valueSet';
               readonly values: readonly ['PENDING', 'APPROVED', 'DECLINED', 'VOIDED'];
+            };
+            readonly QuoteStatus: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['DRAFT', 'SENT', 'APPROVED', 'REJECTED'];
             };
             readonly Role: {
               readonly kind: 'valueSet';
@@ -1714,6 +2469,15 @@ type ContractBase = Omit<
   readonly target: 'postgres';
   readonly targetFamily: 'sql';
   readonly roots: {
+    readonly ApuActivity: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'ApuActivity';
+    };
+    readonly ApuActivityComposition: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'ApuActivityComposition';
+    };
+    readonly ApuItem: { readonly namespace: 'public' & NamespaceId; readonly model: 'ApuItem' };
     readonly Customer: { readonly namespace: 'public' & NamespaceId; readonly model: 'Customer' };
     readonly CustomerNote: {
       readonly namespace: 'public' & NamespaceId;
@@ -1725,6 +2489,8 @@ type ContractBase = Omit<
       readonly model: 'Membership';
     };
     readonly Payment: { readonly namespace: 'public' & NamespaceId; readonly model: 'Payment' };
+    readonly Quote: { readonly namespace: 'public' & NamespaceId; readonly model: 'Quote' };
+    readonly QuoteItem: { readonly namespace: 'public' & NamespaceId; readonly model: 'QuoteItem' };
     readonly Tenant: { readonly namespace: 'public' & NamespaceId; readonly model: 'Tenant' };
     readonly TenantModule: {
       readonly namespace: 'public' & NamespaceId;
@@ -1736,6 +2502,237 @@ type ContractBase = Omit<
     readonly namespaces: {
       readonly public: {
         readonly models: {
+          readonly ApuActivity: {
+            readonly fields: {
+              readonly code: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly description: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly unit: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly compositions: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuActivityComposition';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['activityId'];
+                };
+              };
+              readonly quoteItems: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'QuoteItem';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['activityId'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'ApuActivity';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly code: { readonly column: 'code' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly description: { readonly column: 'description' };
+                readonly id: { readonly column: 'id' };
+                readonly name: { readonly column: 'name' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly unit: { readonly column: 'unit' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly ApuActivityComposition: {
+            readonly fields: {
+              readonly activityId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly consumption: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly itemId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly wastePercent: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+            };
+            readonly relations: {
+              readonly activity: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuActivity';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['activityId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly item: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuItem';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['itemId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'ApuActivityComposition';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly activityId: { readonly column: 'activityId' };
+                readonly consumption: { readonly column: 'consumption' };
+                readonly id: { readonly column: 'id' };
+                readonly itemId: { readonly column: 'itemId' };
+                readonly wastePercent: { readonly column: 'wastePercent' };
+              };
+            };
+          };
+          readonly ApuItem: {
+            readonly fields: {
+              readonly category: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly code: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly unit: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly unitPrice: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly compositions: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuActivityComposition';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['itemId'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'ApuItem';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly category: { readonly column: 'category' };
+                readonly code: { readonly column: 'code' };
+                readonly id: { readonly column: 'id' };
+                readonly name: { readonly column: 'name' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly unit: { readonly column: 'unit' };
+                readonly unitPrice: { readonly column: 'unitPrice' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
           readonly Customer: {
             readonly fields: {
               readonly active: {
@@ -1804,6 +2801,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'Payment';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['customerId'];
+                };
+              };
+              readonly quotes: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Quote';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -2221,6 +3229,210 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly Quote: {
+            readonly fields: {
+              readonly adminPercent: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly code: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly customerId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly directCost: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly imprevPercent: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly taxPercent: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly title: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly totalAmount: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly utilPercent: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+            };
+            readonly relations: {
+              readonly customer: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Customer';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['customerId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly items: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'QuoteItem';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['quoteId'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'Quote';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly adminPercent: { readonly column: 'adminPercent' };
+                readonly code: { readonly column: 'code' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly customerId: { readonly column: 'customerId' };
+                readonly directCost: { readonly column: 'directCost' };
+                readonly id: { readonly column: 'id' };
+                readonly imprevPercent: { readonly column: 'imprevPercent' };
+                readonly status: { readonly column: 'status' };
+                readonly taxPercent: { readonly column: 'taxPercent' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly title: { readonly column: 'title' };
+                readonly totalAmount: { readonly column: 'totalAmount' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+                readonly utilPercent: { readonly column: 'utilPercent' };
+              };
+            };
+          };
+          readonly QuoteItem: {
+            readonly fields: {
+              readonly activityId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly apuSnapshot: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/json@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly quantity: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly quoteId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly totalCost: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly unit: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly unitCost: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+            };
+            readonly relations: {
+              readonly activity: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuActivity';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['activityId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly quote: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Quote';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['quoteId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'QuoteItem';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly activityId: { readonly column: 'activityId' };
+                readonly apuSnapshot: { readonly column: 'apuSnapshot' };
+                readonly id: { readonly column: 'id' };
+                readonly name: { readonly column: 'name' };
+                readonly quantity: { readonly column: 'quantity' };
+                readonly quoteId: { readonly column: 'quoteId' };
+                readonly totalCost: { readonly column: 'totalCost' };
+                readonly unit: { readonly column: 'unit' };
+                readonly unitCost: { readonly column: 'unitCost' };
+              };
+            };
+          };
           readonly Tenant: {
             readonly fields: {
               readonly active: {
@@ -2292,6 +3504,28 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
+              readonly apuActivities: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuActivity';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly apuItems: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuItem';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly customerNotes: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -2351,6 +3585,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'Payment';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly quotes: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Quote';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -2532,6 +3777,15 @@ type ContractBase = Omit<
           };
         };
         readonly enum: {
+          readonly ApuItemCategory: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'MATERIAL'; readonly value: 'MATERIAL' },
+              { readonly name: 'MANO_DE_OBRA'; readonly value: 'MANO_DE_OBRA' },
+              { readonly name: 'EQUIPO'; readonly value: 'EQUIPO' },
+              { readonly name: 'TRANSPORTE'; readonly value: 'TRANSPORTE' },
+            ];
+          };
           readonly MembershipStatus: {
             readonly codecId: 'pg/text@1';
             readonly members: readonly [
@@ -2580,6 +3834,15 @@ type ContractBase = Omit<
               { readonly name: 'APPROVED'; readonly value: 'APPROVED' },
               { readonly name: 'DECLINED'; readonly value: 'DECLINED' },
               { readonly name: 'VOIDED'; readonly value: 'VOIDED' },
+            ];
+          };
+          readonly QuoteStatus: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'DRAFT'; readonly value: 'DRAFT' },
+              { readonly name: 'SENT'; readonly value: 'SENT' },
+              { readonly name: 'APPROVED'; readonly value: 'APPROVED' },
+              { readonly name: 'REJECTED'; readonly value: 'REJECTED' },
             ];
           };
           readonly Role: {
@@ -2643,6 +3906,48 @@ type ContractBase = Omit<
         {
           readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
           readonly ref: {
+            readonly entry: 'ApuActivity';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'ApuActivity';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'ApuActivityComposition';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'ApuItem';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'ApuItem';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
             readonly entry: 'Customer';
             readonly field: 'id';
             readonly namespace: 'public';
@@ -2722,6 +4027,31 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'Payment';
             readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'Quote';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'Quote';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'QuoteItem';
+            readonly field: 'id';
             readonly namespace: 'public';
           };
         },

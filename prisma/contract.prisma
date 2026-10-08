@@ -65,6 +65,22 @@ enum MembershipStatus {
   expired
 }
 
+/// Categoría de un insumo del banco APU (Análisis de Precios Unitarios).
+enum ApuItemCategory {
+  MATERIAL
+  MANO_DE_OBRA
+  EQUIPO
+  TRANSPORTE
+}
+
+/// Estado de un presupuesto/cotización de obra.
+enum QuoteStatus {
+  DRAFT
+  SENT
+  APPROVED
+  REJECTED
+}
+
 model Tenant {
   id           String   @id @default(uuid())
   name         String
@@ -96,6 +112,9 @@ model Tenant {
   memberships   Membership[]
   modules       TenantModule[]
   customerNotes CustomerNote[]
+  apuItems      ApuItem[]
+  apuActivities ApuActivity[]
+  quotes        Quote[]
 
   @@index([slug])
 }
@@ -144,6 +163,7 @@ model Customer {
   payments Payment[]
   memberships Membership[]
   notes CustomerNote[]
+  quotes Quote[]
 
   @@index([tenantId])
 }
@@ -222,4 +242,109 @@ model CustomerNote {
 
   @@index([tenantId])
   @@index([customerId])
+}
+
+/// Insumo/recurso básico del banco APU (material, mano de obra, equipo o
+/// transporte). El `code` es opcional pero único DENTRO del tenant cuando existe.
+model ApuItem {
+  id        String          @id @default(uuid())
+  tenantId  String
+  tenant    Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  code      String?
+  name      String
+  unit      String
+  category  ApuItemCategory
+  unitPrice Decimal
+  updatedAt temporal.updatedAt()
+
+  compositions ApuActivityComposition[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+}
+
+/// Actividad de obra reutilizable (ej. M2 de muro en ladrillo). Se compone
+/// de insumos con rendimiento (`consumption`) y desperdicio (`wastePercent`).
+model ApuActivity {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  code        String?
+  name        String
+  unit        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   temporal.updatedAt()
+
+  compositions ApuActivityComposition[]
+  quoteItems  QuoteItem[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+}
+
+/// Composición de una actividad APU: insumo + rendimiento + desperdicio.
+/// Se elimina en cascada con la actividad.
+model ApuActivityComposition {
+  id           String      @id @default(uuid())
+  activityId   String
+  activity     ApuActivity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  itemId       String
+  item         ApuItem     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  /// Cantidad del insumo por unidad de actividad (rendimiento).
+  consumption  Decimal
+  /// Porcentaje de desperdicio (0–50).
+  wastePercent Decimal
+
+  @@unique([activityId, itemId])
+  @@index([activityId])
+  @@index([itemId])
+}
+
+/// Encabezado de un presupuesto/cotización de obra.
+model Quote {
+  id            String      @id @default(uuid())
+  tenantId      String
+  tenant        Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId    String?
+  customer      Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  title         String
+  /// Código de negocio: PRES-2026-001 (único dentro del tenant).
+  code          String
+  status        QuoteStatus @default(DRAFT)
+  adminPercent  Decimal     @default(15)
+  imprevPercent Decimal     @default(5)
+  utilPercent   Decimal     @default(10)
+  taxPercent    Decimal     @default(19)
+  directCost    Decimal
+  totalAmount   Decimal
+  createdAt     DateTime    @default(now())
+  updatedAt     temporal.updatedAt()
+
+  items QuoteItem[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([customerId])
+}
+
+/// Actividad dentro de un presupuesto. Congela nombre, unidad, cantidad y
+/// costos al momento de cotizar; opcionalmente guarda el snapshot del APU.
+model QuoteItem {
+  id          String       @id @default(uuid())
+  quoteId     String
+  quote       Quote        @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  activityId  String?
+  activity    ApuActivity? @relation(fields: [activityId], references: [id], onDelete: SetNull)
+  name        String
+  unit        String
+  quantity    Decimal
+  unitCost    Decimal
+  totalCost   Decimal
+  /// Fotografía inmutable del APU utilizado (catálogo + composición + precios).
+  apuSnapshot Json?
+
+  @@index([quoteId])
+  @@index([activityId])
 }

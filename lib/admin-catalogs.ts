@@ -144,6 +144,61 @@ export type VerticalTerms = {
   bookings: string;
   item: string;
   items: string;
+  /** Plural del módulo Cotizaciones (sidebar); opcional con default. */
+  quotes?: string;
+};
+
+/**
+ * Terminología del módulo Cotizaciones / APU por vertical.
+ * `getQuoteTerms()` en lib/vertical-terms.ts mezcla estos defaults con
+ * los overrides por rubro (construcción y carpintería usan "Presupuesto",
+ * "Actividad / APU" e "Insumo").
+ */
+export type QuoteTerms = {
+  quote: string;
+  quotes: string;
+  quoteItem: string;
+  quoteItems: string;
+  apuActivity: string;
+  apuActivities: string;
+  apuItem: string;
+  apuItems: string;
+};
+
+export const QUOTE_TERM_DEFAULTS: QuoteTerms = {
+  quote: "Cotización",
+  quotes: "Cotizaciones",
+  quoteItem: "Ítem",
+  quoteItems: "Ítems",
+  apuActivity: "Actividad",
+  apuActivities: "Actividades",
+  apuItem: "Recurso",
+  apuItems: "Recursos",
+};
+
+export const VERTICAL_QUOTE_TERMS: Partial<
+  Record<VerticalValue, QuoteTerms>
+> = {
+  construction: {
+    quote: "Presupuesto",
+    quotes: "Presupuestos",
+    quoteItem: "Actividad / APU",
+    quoteItems: "Actividades / APUs",
+    apuActivity: "Actividad / APU",
+    apuActivities: "Actividades / APUs",
+    apuItem: "Insumo",
+    apuItems: "Insumos",
+  },
+  carpentry: {
+    quote: "Presupuesto",
+    quotes: "Presupuestos",
+    quoteItem: "Actividad / APU",
+    quoteItems: "Actividades / APUs",
+    apuActivity: "Actividad / APU",
+    apuActivities: "Actividades / APUs",
+    apuItem: "Insumo",
+    apuItems: "Insumos",
+  },
 };
 
 /** Receta por vertical: módulos por defecto + terminología adaptativa. */
@@ -195,6 +250,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
       bookings: "Proyectos",
       item: "Servicio",
       items: "Servicios",
+      quotes: "Presupuestos",
     },
   },
   carpentry: {
@@ -206,6 +262,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
       bookings: "Encargos",
       item: "Producto",
       items: "Productos",
+      quotes: "Presupuestos",
     },
   },
   restaurant: {

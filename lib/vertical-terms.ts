@@ -1,6 +1,9 @@
 import {
+  QUOTE_TERM_DEFAULTS,
+  VERTICAL_QUOTE_TERMS,
   VERTICAL_RECIPES,
   normalizeVertical,
+  type QuoteTerms,
   type VerticalTerms,
 } from "@/lib/admin-catalogs";
 
@@ -19,6 +22,7 @@ const FALLBACK_TERMS: VerticalTerms = {
   bookings: "Reservas",
   item: "Producto",
   items: "Productos",
+  quotes: "Cotizaciones",
 };
 
 /**
@@ -33,4 +37,17 @@ export function getVerticalTerms(vertical: string): VerticalTerms {
   return recipe?.terms ?? FALLBACK_TERMS;
 }
 
-export type { VerticalTerms };
+/**
+ * Terminología del módulo Cotizaciones / APU (Presupuesto, Actividad/APU,
+ * Insumo…). Construcción y carpintería la personalizan; el resto usa los
+ * defaults del catálogo.
+ */
+export function getQuoteTerms(vertical: string): QuoteTerms {
+  const value = normalizeVertical(vertical);
+  return {
+    ...QUOTE_TERM_DEFAULTS,
+    ...VERTICAL_QUOTE_TERMS[value],
+  };
+}
+
+export type { VerticalTerms, QuoteTerms };
