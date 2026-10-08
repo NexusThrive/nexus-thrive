@@ -2,16 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
-import type { LucideIcon } from "lucide-react";
+import { useEffect, type ComponentType } from "react";
 import {
+  Banknote,
+  CalendarDays,
+  CreditCard,
+  FileText,
   LayoutDashboard,
+  MessageCircle,
   Package,
+  Receipt,
   Settings,
+  ShoppingCart,
   Users,
   Wallet,
-  X,
 } from "lucide-react";
+import { MODULES, type ModuleValue, type VerticalValue } from "@/lib/admin-catalogs";
+import { getVerticalTerms, type VerticalTerms } from "@/lib/vertical-terms";
 import { cn } from "@/lib/cn";
 import { useSidebar } from "./sidebar-context";
 
@@ -20,13 +27,21 @@ type SidebarProps = {
   tenantSlug: string;
   /** Nombre del negocio activo, solo para el bloque de espacio de trabajo. */
   tenantName: string;
+  /** Vertical del negocio: alimenta el vocabulario adaptativo (Socios/Pacientes/Turistas…). */
+  vertical: VerticalValue;
+  /** Módulos ACTIVOS de este negocio (filtrados y ordenados en el servidor). */
+  activeModules: ModuleValue[];
 };
 
 type NavItem = {
+  /** Clave del módulo del catálogo ("" = ruta raíz del tenant, dashboard). */
+  module: ModuleValue | "settings";
   label: string;
-  /** Ruta relativa al tenant ("" = dashboard del tenant). */
   href: string;
-  icon: LucideIcon;
+  icon: ComponentType<{
+    "aria-hidden"?: boolean | "true" | "false";
+    className?: string;
+  }>;
 };
 
 type NavGroup = {
@@ -34,38 +49,140 @@ type NavGroup = {
   items: NavItem[];
 };
 
-const NAV_GROUPS: NavGroup[] = [
+/**
+ * Definición de navegación por módulo. Los rótulos que dependen del rubro
+ * (CRM → Socios/Pacientes; Reservas → Clases/Citas/Mesas; Inventario →
+ * Productos/Tours) se resuelven con `getVerticalTerms` en el render.
+ */
+const MODULE_NAV: Record<
+  ModuleValue,
   {
-    label: "General",
-    items: [{ label: "Dashboard", href: "", icon: LayoutDashboard }],
+    href: string;
+    icon: NavItem["icon"];
+    label: (terms: VerticalTerms) => string;
+  }
+> = {
+  dashboard: {
+    href: "",
+    icon: LayoutDashboard,
+    label: () => "Dashboard",
   },
-  {
-    label: "Gestión",
-    items: [
-      { label: "CRM", href: "/crm", icon: Users },
-      { label: "Finanzas", href: "/finance", icon: Wallet },
-      { label: "Inventario", href: "/inventory", icon: Package },
-    ],
+  crm: {
+    href: "/crm",
+    icon: Users,
+    label: (terms) => terms.customers,
   },
-  {
-    label: "Sistema",
-    items: [{ label: "Configuración", href: "/settings", icon: Settings }],
+  bookings: {
+    href: "/bookings",
+    icon: CalendarDays,
+    label: (terms) => terms.bookings,
   },
-];
+  memberships: {
+    href: "/memberships",
+    icon: CreditCard,
+    label: () => "Membresías",
+  },
+  orders: {
+    href: "/orders",
+    icon: ShoppingCart,
+    label: () => "Pedidos",
+  },
+  quotes: {
+    href: "/quotes",
+    icon: FileText,
+    label: () => "Cotizaciones",
+  },
+  inventory: {
+    href: "/inventory",
+    icon: Package,
+    label: (terms) => terms.items,
+  },
+  finance: {
+    href: "/finance",
+    icon: Wallet,
+    label: () => "Finanzas",
+  },
+  payments: {
+    href: "/payments",
+    icon: Banknote,
+    label: () => "Pagos",
+  },
+  billing: {
+    href: "/billing",
+    icon: Receipt,
+    label: () => "Facturación",
+  },
+  whatsapp: {
+    href: "/whatsapp",
+    icon: MessageCircle,
+    label: () => "WhatsApp",
+  },
+};
 
 /**
  * Navegación principal del negocio.
  *
+ * - Dinámica: muestra SOLO los módulos con `active === true` en
+ *   `TenantModule` (resueltos en el layout padre) + Configuración, siempre
+ *   visible porque no es un módulo del catálogo.
+ * - Vocabulario adaptativo según `Tenant.vertical` (getVerticalTerms).
  * - Desktop: fija bajo el header, ancho 256px (`lg:w-64`).
  * - Mobile: drawer oculto inicialmente; se abre desde el Header mediante el
  *   estado compartido de `SidebarProvider` e incluye overlay + cierre con
  *   Escape, al navegar y al volver a desktop.
  * - Rutas siempre relativas al tenant: `/{tenantSlug}/crm`, etc.
  */
-export default function Sidebar({ tenantSlug, tenantName }: SidebarProps) {
+export default function Sidebar({
+  tenantSlug,
+  tenantName,
+  vertical,
+  activeModules,
+}: SidebarProps) {
   const { isOpen, close } = useSidebar();
   const pathname = usePathname();
   const basePath = `/${tenantSlug}`;
+  const terms = getVerticalTerms(vertical);
+
+  const activeSet = new Set(activeModules);
+  const navModules = MODULES.filter((moduleName) => activeSet.has(moduleName));
+
+  const groups = (
+    [
+      {
+        label: "General",
+        items: navModules
+          .filter((moduleName) => moduleName === "dashboard")
+          .map((moduleName) => ({
+            module: moduleName,
+            href: MODULE_NAV[moduleName].href,
+            icon: MODULE_NAV[moduleName].icon,
+            label: MODULE_NAV[moduleName].label(terms),
+          })),
+      },
+      {
+        label: "Gestión",
+        items: navModules
+          .filter((moduleName) => moduleName !== "dashboard")
+          .map((moduleName) => ({
+            module: moduleName,
+            href: MODULE_NAV[moduleName].href,
+            icon: MODULE_NAV[moduleName].icon,
+            label: MODULE_NAV[moduleName].label(terms),
+          })),
+      },
+      {
+        label: "Sistema",
+        items: [
+          {
+            module: "settings",
+            label: "Configuración",
+            href: "/settings",
+            icon: Settings,
+          },
+        ],
+      },
+    ] satisfies NavGroup[]
+  ).filter((group) => group.items.length > 0);
 
   /**
    * El proxy reescribe el subdominio a `/{tenant}/...`, así que el pathname
@@ -161,13 +278,25 @@ export default function Sidebar({ tenantSlug, tenantName }: SidebarProps) {
             aria-label="Cerrar menú"
             className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 lg:hidden"
           >
-            <X className="h-4 w-4" aria-hidden="true" />
+            <svg
+              aria-hidden="true"
+              className="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
           </button>
         </div>
 
         {/* Navegación */}
         <nav className="flex-1 overflow-y-auto px-3 py-4">
-          {NAV_GROUPS.map((group) => (
+          {groups.map((group) => (
             <div key={group.label} className="mb-5 last:mb-0">
               <p className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
                 {group.label}
@@ -180,7 +309,7 @@ export default function Sidebar({ tenantSlug, tenantName }: SidebarProps) {
                     item.href === "" ? basePath : `${basePath}${item.href}`;
 
                   return (
-                    <li key={item.label}>
+                    <li key={item.module}>
                       <Link
                         href={href}
                         onClick={close}

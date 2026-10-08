@@ -1,12 +1,21 @@
 "use client";
 
 import { useEffect, useState, useActionState } from "react";
-import { ExternalLink, Loader2, Power, Settings2, Store } from "lucide-react";
+import {
+  CircleCheck,
+  CircleDashed,
+  ExternalLink,
+  Loader2,
+  Power,
+  Settings2,
+  Store,
+} from "lucide-react";
 import {
   toggleTenantStatusAction,
   type AdminFormState,
 } from "../actions";
 import {
+  VERTICAL_ICONS,
   VERTICAL_LABELS,
   type VerticalValue,
 } from "@/lib/admin-catalogs";
@@ -22,17 +31,53 @@ type Notice = { kind: "error" | "success"; text: string } | null;
 const ICON_BUTTON =
   "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-800 disabled:cursor-not-allowed disabled:opacity-50";
 
+/** Tono de badge por vertical (los 16 del catálogo, un color por rubro). */
 const VERTICAL_TONES: Record<VerticalValue, string> = {
   gym: "bg-indigo-50 text-indigo-700 ring-indigo-600/20",
-  barber: "bg-violet-50 text-violet-700 ring-violet-600/20",
-  restaurant: "bg-amber-50 text-amber-700 ring-amber-600/20",
-  services: "bg-slate-100 text-slate-600 ring-slate-500/20",
-  tourism: "bg-teal-50 text-teal-700 ring-teal-600/20",
+  tourism_agency: "bg-teal-50 text-teal-700 ring-teal-600/20",
+  hospitality: "bg-amber-50 text-amber-700 ring-amber-600/20",
+  construction: "bg-orange-50 text-orange-700 ring-orange-600/20",
+  carpentry: "bg-yellow-50 text-yellow-700 ring-yellow-600/20",
+  restaurant: "bg-rose-50 text-rose-700 ring-rose-600/20",
+  retail: "bg-cyan-50 text-cyan-700 ring-cyan-600/20",
+  beauty: "bg-pink-50 text-pink-700 ring-pink-600/20",
+  healthcare: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
+  mechanic: "bg-slate-100 text-slate-600 ring-slate-500/20",
+  education: "bg-blue-50 text-blue-700 ring-blue-600/20",
+  real_estate: "bg-purple-50 text-purple-700 ring-purple-600/20",
+  hardware_store: "bg-stone-100 text-stone-700 ring-stone-500/20",
+  nautical_transport: "bg-sky-50 text-sky-700 ring-sky-600/20",
+  tour_guides: "bg-lime-50 text-lime-700 ring-lime-600/20",
+  events: "bg-fuchsia-50 text-fuchsia-700 ring-fuchsia-600/20",
 };
 
 function initialsOf(name: string): string {
   const parts = name.trim().split(/\s+/).slice(0, 2);
   return parts.map((part) => part.charAt(0).toUpperCase()).join("") || "?";
+}
+
+/**
+ * Estado del wizard de onboarding: Completado (verde) / Pendiente (ámbar,
+ * el negocio aún no pasó por los 5 pasos del wizard).
+ */
+function OnboardingBadge({ completed }: { completed: boolean }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset",
+        completed
+          ? "bg-emerald-50 text-emerald-700 ring-emerald-600/20"
+          : "bg-amber-50 text-amber-700 ring-amber-600/20",
+      )}
+    >
+      {completed ? (
+        <CircleCheck aria-hidden="true" className="h-3.5 w-3.5" />
+      ) : (
+        <CircleDashed aria-hidden="true" className="h-3.5 w-3.5" />
+      )}
+      {completed ? "Completado" : "Pendiente"}
+    </span>
+  );
 }
 
 /**
@@ -131,6 +176,9 @@ export default function TenantTable({
     name: row.name,
     slug: row.slug,
     active: row.active,
+    vertical: row.vertical,
+    onboardingCompleted: row.onboardingCompleted,
+    ecosystem: row.ecosystem,
     activeModules: row.modules,
   });
 
@@ -199,6 +247,9 @@ export default function TenantTable({
                     Estado
                   </th>
                   <th scope="col" className="px-4 py-3">
+                    Onboarding
+                  </th>
+                  <th scope="col" className="px-4 py-3">
                     Registrado
                   </th>
                   <th scope="col" className="px-4 py-3 text-right">
@@ -233,10 +284,13 @@ export default function TenantTable({
                     <td className="px-4 py-3">
                       <span
                         className={cn(
-                          "inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset",
+                          "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset",
                           VERTICAL_TONES[row.vertical],
                         )}
                       >
+                        <span aria-hidden="true">
+                          {VERTICAL_ICONS[row.vertical]}
+                        </span>
                         {VERTICAL_LABELS[row.vertical]}
                       </span>
                     </td>
@@ -245,6 +299,9 @@ export default function TenantTable({
                     </td>
                     <td className="px-4 py-3">
                       <TenantStatusBadge active={row.active} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <OnboardingBadge completed={row.onboardingCompleted} />
                     </td>
                     <td className="px-4 py-3 text-slate-600">
                       {row.createdAt}
@@ -305,13 +362,17 @@ export default function TenantTable({
                     <div className="mt-2 flex flex-wrap items-center gap-1.5">
                       <span
                         className={cn(
-                          "inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset",
+                          "inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset",
                           VERTICAL_TONES[row.vertical],
                         )}
                       >
+                        <span aria-hidden="true">
+                          {VERTICAL_ICONS[row.vertical]}
+                        </span>
                         {VERTICAL_LABELS[row.vertical]}
                       </span>
                       <TenantStatusBadge active={row.active} />
+                      <OnboardingBadge completed={row.onboardingCompleted} />
                     </div>
                     <div className="mt-2">
                       <TenantModuleBadges modules={row.modules} />

@@ -23,6 +23,7 @@ import {
 } from "../actions";
 import ConfirmDialog from "./confirm-dialog";
 import CustomerForm from "./customer-form";
+import { useVerticalTerms } from "../../vertical-terms-context";
 
 export type CustomerRow = {
   id: string;
@@ -68,6 +69,9 @@ export default function CustomerTable({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const terms = useVerticalTerms();
+  const customerLabel = terms.customer.toLowerCase();
+  const customersLabel = terms.customers.toLowerCase();
 
   // La selección solo aplica a la vista de archivados. Se guarda junto a la
   // vista en la que se hizo: si el usuario cambia de pestaña, la selección
@@ -166,7 +170,7 @@ export default function CustomerTable({
         const count = result.deleted ?? ids.length;
         setNotice({
           kind: "success",
-          text: `Se eliminaron ${count} ${count === 1 ? "cliente" : "clientes"} definitivamente.`,
+          text: `Se eliminaron ${count} ${count === 1 ? customerLabel : customersLabel} definitivamente.`,
         });
       },
     );
@@ -241,15 +245,15 @@ export default function CustomerTable({
             {query
               ? `Sin coincidencias para «${query}»`
               : isArchivedView
-                ? "No hay clientes archivados"
-                : "Aún no hay clientes registrados"}
+                ? `No hay ${customersLabel} archivados`
+                : `Aún no hay ${customersLabel} registrados`}
           </p>
           <p className="mx-auto mt-1 max-w-sm text-sm text-slate-500">
             {query
               ? "Prueba con otro término o limpia la búsqueda."
               : isArchivedView
-                ? "Los clientes que archives aparecerán aquí."
-                : "Crea el primer cliente con el botón «Nuevo cliente»."}
+                ? `Los ${customersLabel} que archives aparecerán aquí.`
+                : `Crea el primer ${customerLabel} con el botón «Nuevo ${customerLabel}».`}
           </p>
         </div>
       ) : (
@@ -257,14 +261,16 @@ export default function CustomerTable({
           {/* ---------- Tabla (desktop) ---------- */}
           <div className="hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm sm:block">
             <table className="w-full text-left text-sm">
-              <caption className="sr-only">Clientes de {tenantSlug}</caption>
+              <caption className="sr-only">
+                {terms.customers} de {tenantSlug}
+              </caption>
               <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <tr>
                   {isArchivedView ? (
                     <th scope="col" className="w-10 px-4 py-3">
                       <input
                         type="checkbox"
-                        aria-label="Seleccionar todos los clientes de esta página"
+                        aria-label={`Seleccionar todos los ${customersLabel} de esta página`}
                         checked={allSelected}
                         ref={(element) => {
                           if (element) {
@@ -277,7 +283,7 @@ export default function CustomerTable({
                     </th>
                   ) : null}
                   <th scope="col" className="px-4 py-3">
-                    Cliente
+                    {terms.customer}
                   </th>
                   <th scope="col" className="px-4 py-3">
                     Teléfono
@@ -516,10 +522,12 @@ export default function CustomerTable({
       {confirmOpen ? (
         <ConfirmDialog
           title="Eliminar definitivamente"
-          description="Esta acción no se puede deshacer. Los clientes seleccionados se eliminarán del sistema."
+          description={`Esta acción no se puede deshacer. Los ${customersLabel} seleccionados se eliminarán del sistema.`}
           detail={`${selected.size} ${
-            selected.size === 1 ? "cliente archivado seleccionado" : "clientes archivados seleccionados"
-          } · sus pagos se conservarán sin cliente vinculado.`}
+            selected.size === 1
+              ? `${customerLabel} archivado seleccionado`
+              : `${customersLabel} archivados seleccionados`
+          } · sus pagos se conserván sin ${customerLabel} vinculado.`}
           confirmLabel="Eliminar definitivamente"
           pending={isPending}
           onConfirm={confirmBulkDelete}

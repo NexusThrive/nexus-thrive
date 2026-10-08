@@ -8,10 +8,13 @@ import {
   type AdminFormState,
 } from "../actions";
 import {
+  DEFAULT_MODULES_BY_VERTICAL,
   MODULE_LABELS,
   MODULES,
+  VERTICAL_ICONS,
   VERTICAL_LABELS,
   VERTICALS,
+  type VerticalValue,
 } from "@/lib/admin-catalogs";
 
 const IDLE_STATE: AdminFormState = { status: "idle" };
@@ -34,12 +37,15 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
 
   const [name, setName] = useState(state.values?.name ?? "");
   const [slug, setSlug] = useState(state.values?.slug ?? "");
-  const [vertical, setVertical] = useState(
-    state.values?.vertical ?? ("services" as const),
+  const [vertical, setVertical] = useState<VerticalValue | "">(
+    state.values?.vertical ?? "",
   );
   const [modules, setModules] = useState<ReadonlySet<string>>(
     new Set(state.values?.modules ?? []),
   );
+  // Si el CEO aún no tocó los módulos a mano, elegir vertical preselecciona
+  // la receta del catálogo (VERTICAL_RECIPES → DEFAULT_MODULES_BY_VERTICAL).
+  const [modulesTouched, setModulesTouched] = useState(false);
   // Última respuesta del servidor; se deriva `slugStatus` para no llamar
   // setState de forma síncrona dentro de un effect.
   const [slugCheck, setSlugCheck] = useState<{
@@ -106,6 +112,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
       : "checking";
 
   const toggleModule = (moduleName: string) => {
+    setModulesTouched(true);
     setModules((current) => {
       const next = new Set(current);
       if (next.has(moduleName)) {
@@ -259,9 +266,13 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
               id="tenant-vertical"
               name="vertical"
               value={vertical}
-              onChange={(event) =>
-                setVertical(event.target.value as typeof vertical)
-              }
+              onChange={(event) => {
+                const next = event.target.value as VerticalValue | "";
+                setVertical(next);
+                if (!modulesTouched && next) {
+                  setModules(new Set(DEFAULT_MODULES_BY_VERTICAL[next]));
+                }
+              }}
               aria-invalid={Boolean(errors.vertical)}
               className={[
                 "mt-1 h-10 w-full appearance-none rounded-lg border bg-white px-3 text-sm text-slate-900 transition focus:outline-2",
@@ -270,9 +281,12 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                   : "border-slate-200 hover:border-slate-300 focus:border-indigo-400 focus:outline-indigo-500/30",
               ].join(" ")}
             >
+              <option value="" disabled>
+                Selecciona una vertical…
+              </option>
               {VERTICALS.map((value) => (
                 <option key={value} value={value}>
-                  {VERTICAL_LABELS[value]}
+                  {VERTICAL_ICONS[value]} {VERTICAL_LABELS[value]}
                 </option>
               ))}
             </select>

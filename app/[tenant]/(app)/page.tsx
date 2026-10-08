@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { TrendingDown, TrendingUp, Users, Wallet } from "lucide-react";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
+import { getVerticalTerms } from "@/lib/vertical-terms";
 import { formatCurrency, formatRelativeTime } from "@/lib/format";
 import type {
   DashboardMetric,
@@ -69,6 +70,9 @@ export default async function TenantDashboard({
       tenantDb.memberships.getMetrics(),
     ]);
 
+  // Vocabulario adaptativo de la vertical (Socios / Pacientes / Turistas…).
+  const terms = getVerticalTerms(tenantRecord.vertical);
+
   const metricsCards: DashboardMetric[] = [
     {
       id: "ingresos",
@@ -85,17 +89,21 @@ export default async function TenantDashboard({
     },
     {
       id: "clientes",
-      title: "Clientes",
+      title: terms.customers,
       value: String(activeCustomers),
-      description: "Clientes activos en tu cartera",
+      description: `${terms.customers} activos en tu cartera`,
       icon: Users,
       iconTone: "emerald",
       trend: {
         direction: "neutral",
         label:
           activeCustomers > 0
-            ? `${activeCustomers} ${activeCustomers === 1 ? "cliente" : "clientes"}`
-            : "Sin clientes aún",
+            ? `${activeCustomers} ${
+                activeCustomers === 1
+                  ? terms.customer.toLowerCase()
+                  : terms.customers.toLowerCase()
+              }`
+            : `Sin ${terms.customers.toLowerCase()} aún`,
       },
     },
     {
@@ -183,7 +191,8 @@ export default async function TenantDashboard({
               Membresías
             </h2>
             <p className="text-sm text-slate-500">
-              Estado actual de los planes de tus clientes.
+              Estado actual de los planes de tus{" "}
+              {terms.customers.toLowerCase()}.
             </p>
           </div>
           <Link
@@ -201,7 +210,7 @@ export default async function TenantDashboard({
         <div className="lg:col-span-2">
           <RecentActivity items={activityItems} />
         </div>
-        <QuickActions tenantSlug={tenantRecord.slug} />
+        <QuickActions tenantSlug={tenantRecord.slug} terms={terms} />
       </section>
     </div>
   );

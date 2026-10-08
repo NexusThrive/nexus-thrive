@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useVerticalTerms } from "../../vertical-terms-context";
 
 export type CustomerStatus = "active" | "archived";
 export type CustomerSort = "recent" | "name_asc" | "name_desc";
@@ -32,6 +33,7 @@ export default function CustomerFilters({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
+  const terms = useVerticalTerms();
 
   const updateParams = (mutate: (params: URLSearchParams) => void) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -70,7 +72,7 @@ export default function CustomerFilters({
       </div>
 
       <label className="sr-only" htmlFor="customer-sort">
-        Ordenar clientes
+        {`Ordenar ${terms.customers.toLowerCase()}`}
       </label>
       <select
         id="customer-sort"

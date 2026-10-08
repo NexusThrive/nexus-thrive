@@ -75,28 +75,48 @@
             "codecId": "pg/text@1",
             "members": [
               {
-                "name": "caja_menor",
-                "value": "caja_menor"
-              },
-              {
-                "name": "membresias",
-                "value": "membresias"
-              },
-              {
-                "name": "reservas",
-                "value": "reservas"
-              },
-              {
-                "name": "pedidos",
-                "value": "pedidos"
-              },
-              {
-                "name": "presupuestos",
-                "value": "presupuestos"
-              },
-              {
                 "name": "crm",
                 "value": "crm"
+              },
+              {
+                "name": "dashboard",
+                "value": "dashboard"
+              },
+              {
+                "name": "bookings",
+                "value": "bookings"
+              },
+              {
+                "name": "payments",
+                "value": "payments"
+              },
+              {
+                "name": "billing",
+                "value": "billing"
+              },
+              {
+                "name": "inventory",
+                "value": "inventory"
+              },
+              {
+                "name": "finance",
+                "value": "finance"
+              },
+              {
+                "name": "whatsapp",
+                "value": "whatsapp"
+              },
+              {
+                "name": "memberships",
+                "value": "memberships"
+              },
+              {
+                "name": "orders",
+                "value": "orders"
+              },
+              {
+                "name": "quotes",
+                "value": "quotes"
               }
             ]
           },
@@ -167,20 +187,64 @@
                 "value": "gym"
               },
               {
-                "name": "barber",
-                "value": "barber"
+                "name": "tourism_agency",
+                "value": "tourism_agency"
+              },
+              {
+                "name": "hospitality",
+                "value": "hospitality"
+              },
+              {
+                "name": "construction",
+                "value": "construction"
+              },
+              {
+                "name": "carpentry",
+                "value": "carpentry"
               },
               {
                 "name": "restaurant",
                 "value": "restaurant"
               },
               {
-                "name": "services",
-                "value": "services"
+                "name": "retail",
+                "value": "retail"
               },
               {
-                "name": "tourism",
-                "value": "tourism"
+                "name": "beauty",
+                "value": "beauty"
+              },
+              {
+                "name": "healthcare",
+                "value": "healthcare"
+              },
+              {
+                "name": "mechanic",
+                "value": "mechanic"
+              },
+              {
+                "name": "education",
+                "value": "education"
+              },
+              {
+                "name": "real_estate",
+                "value": "real_estate"
+              },
+              {
+                "name": "hardware_store",
+                "value": "hardware_store"
+              },
+              {
+                "name": "nautical_transport",
+                "value": "nautical_transport"
+              },
+              {
+                "name": "tour_guides",
+                "value": "tour_guides"
+              },
+              {
+                "name": "events",
+                "value": "events"
               }
             ]
           }
@@ -1812,8 +1876,8 @@
                   "prefix": "Tenant_paymentMethods_elem_not_null"
                 },
                 {
-                  "expression": "\"vertical\" IN ('gym', 'barber', 'restaurant', 'services', 'tourism')",
-                  "name": "Tenant_vertical_check_f471ba97",
+                  "expression": "\"vertical\" IN ('gym', 'tourism_agency', 'hospitality', 'construction', 'carpentry', 'restaurant', 'retail', 'beauty', 'healthcare', 'mechanic', 'education', 'real_estate', 'hardware_store', 'nautical_transport', 'tour_guides', 'events')",
+                  "name": "Tenant_vertical_check_739779ca",
                   "prefix": "Tenant_vertical_check"
                 }
               ],
@@ -1899,10 +1963,6 @@
                 },
                 "vertical": {
                   "codecId": "pg/text@1",
-                  "default": {
-                    "kind": "literal",
-                    "value": "services"
-                  },
                   "nativeType": "text",
                   "nullable": false,
                   "valueSet": {
@@ -1955,8 +2015,8 @@
             "TenantModule": {
               "checks": [
                 {
-                  "expression": "\"moduleName\" IN ('caja_menor', 'membresias', 'reservas', 'pedidos', 'presupuestos', 'crm')",
-                  "name": "TenantModule_moduleName_check_a86ce1f3",
+                  "expression": "\"moduleName\" IN ('crm', 'dashboard', 'bookings', 'payments', 'billing', 'inventory', 'finance', 'whatsapp', 'memberships', 'orders', 'quotes')",
+                  "name": "TenantModule_moduleName_check_e283a8b3",
                   "prefix": "TenantModule_moduleName_check"
                 }
               ],
@@ -2177,12 +2237,17 @@
             "ModuleName": {
               "kind": "valueSet",
               "values": [
-                "caja_menor",
-                "membresias",
-                "reservas",
-                "pedidos",
-                "presupuestos",
-                "crm"
+                "crm",
+                "dashboard",
+                "bookings",
+                "payments",
+                "billing",
+                "inventory",
+                "finance",
+                "whatsapp",
+                "memberships",
+                "orders",
+                "quotes"
               ]
             },
             "PaymentProvider": {
@@ -2215,10 +2280,21 @@
               "kind": "valueSet",
               "values": [
                 "gym",
-                "barber",
+                "tourism_agency",
+                "hospitality",
+                "construction",
+                "carpentry",
                 "restaurant",
-                "services",
-                "tourism"
+                "retail",
+                "beauty",
+                "healthcare",
+                "mechanic",
+                "education",
+                "real_estate",
+                "hardware_store",
+                "nautical_transport",
+                "tour_guides",
+                "events"
               ]
             }
           }
@@ -2227,7 +2303,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "6cb666e0694ef89c25391291cfe0478b043465891719b81ff2a3216197465c1e"
+    "storageHash": "48dc47c09ec5bfb3b22641b4bdee5ee3556fdcf04653f823069c524d03052267"
   },
   "execution": {
     "executionHash": "e05314e6e8d33ee4549a2f80c7b86e1da5a87ba6bd440b2fe061db49ed1485ac",

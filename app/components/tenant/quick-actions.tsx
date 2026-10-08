@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { CalendarCheck, FileText, HandCoins, Receipt, UserPlus } from "lucide-react";
 import { cn } from "@/lib/cn";
+import type { VerticalTerms } from "@/lib/vertical-terms";
 
 type QuickAction = {
   id: string;
@@ -16,17 +17,19 @@ type QuickAction = {
 type QuickActionsProps = {
   /** Slug del tenant: los destinos se construyen con él (nunca hardcodeado). */
   tenantSlug: string;
+  /** Vocabulario de la vertical activa (Socios / Pacientes / Turistas…). */
+  terms: VerticalTerms;
 };
 
 /**
  * Acciones rápidas del dashboard. Cada acción navega al módulo correspondiente
  * del tenant (los formularios llegan en fases siguientes).
  */
-export default function QuickActions({ tenantSlug }: QuickActionsProps) {
+export default function QuickActions({ tenantSlug, terms }: QuickActionsProps) {
   const actions: QuickAction[] = [
     {
       id: "new-customer",
-      label: "Nuevo cliente",
+      label: `Nuevo ${terms.customer.toLowerCase()}`,
       hint: "Agregar un contacto",
       path: "/crm",
       icon: UserPlus,

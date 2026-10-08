@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Loader2, Search, X } from "lucide-react";
+import { useVerticalTerms } from "../../vertical-terms-context";
 
 const DEBOUNCE_MS = 250;
 
@@ -16,6 +17,7 @@ export default function CustomerSearch() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const terms = useVerticalTerms();
 
   const paramQ = searchParams.get("q") ?? "";
   const [value, setValue] = useState(paramQ);
@@ -73,7 +75,7 @@ export default function CustomerSearch() {
         ref={inputRef}
         type="text"
         role="searchbox"
-        aria-label="Buscar clientes"
+        aria-label={`Buscar ${terms.customers.toLowerCase()}`}
         placeholder="Buscar por nombre, correo o teléfono…"
         value={value}
         onChange={(event) => setValue(event.target.value)}

@@ -7,6 +7,7 @@ import {
   updateCustomerAction,
   type CustomerFormState,
 } from "../actions";
+import { useVerticalTerms } from "../../vertical-terms-context";
 
 type CustomerToEdit = {
   id: string;
@@ -35,6 +36,7 @@ export default function CustomerForm({
 }) {
   const action = mode === "create" ? createCustomerAction : updateCustomerAction;
   const [state, formAction, isPending] = useActionState(action, IDLE_STATE);
+  const terms = useVerticalTerms();
 
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
@@ -97,12 +99,14 @@ export default function CustomerForm({
               id="customer-form-title"
               className="text-lg font-semibold text-slate-900"
             >
-              {mode === "create" ? "Nuevo cliente" : "Editar cliente"}
+              {mode === "create"
+                ? `Nuevo ${terms.customer.toLowerCase()}`
+                : `Editar ${terms.customer.toLowerCase()}`}
             </h2>
             <p className="mt-0.5 text-sm text-slate-500">
               {mode === "create"
-                ? "Registra los datos de contacto del cliente."
-                : "Actualiza los datos del cliente."}
+                ? `Registra los datos de contacto del ${terms.customer.toLowerCase()}.`
+                : `Actualiza los datos del ${terms.customer.toLowerCase()}.`}
             </p>
           </div>
           <button
@@ -220,7 +224,11 @@ export default function CustomerForm({
               {isPending ? (
                 <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
               ) : null}
-              {isPending ? "Guardando…" : mode === "create" ? "Crear cliente" : "Guardar cambios"}
+              {isPending
+                ? "Guardando…"
+                : mode === "create"
+                  ? `Crear ${terms.customer.toLowerCase()}`
+                  : "Guardar cambios"}
             </button>
           </div>
         </form>

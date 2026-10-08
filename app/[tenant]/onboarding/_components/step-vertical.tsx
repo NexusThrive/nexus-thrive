@@ -5,10 +5,10 @@ import {
   DEFAULT_MODULES_BY_VERTICAL,
   MODULE_LABELS,
   VERTICAL_LABELS,
-  VERTICAL_TERMINOLOGY,
   VERTICALS,
   type VerticalValue,
 } from "@/lib/admin-catalogs";
+import { getVerticalTerms } from "@/lib/vertical-terms";
 import type { OnboardingFormState } from "../actions";
 
 /**
@@ -72,7 +72,10 @@ export default function StepVertical({
           Terminología principal
         </p>
         <p className="mt-0.5 text-sm text-slate-700">
-          {VERTICAL_TERMINOLOGY[selected]}
+          {(() => {
+            const terms = getVerticalTerms(selected);
+            return `${terms.customer} · ${terms.booking} · ${terms.items}`;
+          })()}
         </p>
       </div>
 

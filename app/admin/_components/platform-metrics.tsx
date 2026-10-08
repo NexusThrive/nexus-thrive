@@ -101,13 +101,16 @@ export default function PlatformMetrics({
           </div>
         </div>
 
-        <ul className="mt-4 space-y-3">
+        <ul className="mt-4 grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
           {metrics.tenantsByVertical.map((entry) => (
             <li
               key={entry.vertical}
               className="flex items-center gap-3 text-sm"
             >
-              <span className="w-24 shrink-0 text-slate-600">
+              <span
+                className="w-28 shrink-0 truncate text-slate-600"
+                title={VERTICAL_LABELS[entry.vertical]}
+              >
                 {VERTICAL_LABELS[entry.vertical]}
               </span>
               <span className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">

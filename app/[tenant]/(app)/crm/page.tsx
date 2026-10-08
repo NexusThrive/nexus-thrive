@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
+import { getVerticalTerms } from "@/lib/vertical-terms";
 import CustomerToolbar from "./_components/customer-toolbar";
 import CustomerTable, { type CustomerRow } from "./_components/customer-table";
 import type { CustomerSort, CustomerStatus } from "./_components/customer-filters";
@@ -103,14 +104,16 @@ export default async function CrmPage({
     createdAt: formatCustomerDate(row.createdAt),
   }));
 
+  const terms = getVerticalTerms(tenantRecord.vertical);
+
   return (
     <div className="space-y-6">
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-          Clientes
+          {terms.customers}
         </h1>
         <p className="text-sm text-slate-500">
-          Administra los clientes de{" "}
+          Administra los {terms.customers.toLowerCase()} de{" "}
           <span className="font-medium text-slate-700">{tenantRecord.name}</span>.
         </p>
       </header>

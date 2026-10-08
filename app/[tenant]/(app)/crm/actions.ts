@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
+import { getVerticalTerms, type VerticalTerms } from "@/lib/vertical-terms";
 import { validateCustomer, type CustomerFieldErrors } from "./validators";
 
 export type CustomerFormState = {
@@ -27,11 +28,19 @@ const ACCESS_DENIED_FORM: CustomerFormState = {
 
 type TenantDb = ReturnType<typeof createTenantDb>;
 
+/** DB del tenant + vocabulario de su vertical (mensajes adaptativos). */
+type TenantContext = {
+  tenantDb: TenantDb;
+  terms: VerticalTerms;
+};
+
 /**
  * Verifica sesión de Clerk + tenant activo + membresía del usuario.
  * Devuelve `null` cuando algo falla (el caller responde con mensaje genérico).
  */
-async function requireTenantDb(tenantSlug: string): Promise<TenantDb | null> {
+async function requireTenantContext(
+  tenantSlug: string,
+): Promise<TenantContext | null> {
   if (!tenantSlug || tenantSlug.trim() === "") {
     return null;
   }
@@ -55,7 +64,10 @@ async function requireTenantDb(tenantSlug: string): Promise<TenantDb | null> {
     return null;
   }
 
-  return tenantDb;
+  return {
+    tenantDb,
+    terms: getVerticalTerms(tenantRecord.vertical),
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -67,10 +79,11 @@ export async function createCustomerAction(
   formData: FormData,
 ): Promise<CustomerFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const tenantDb = await requireTenantDb(tenantSlug);
-  if (!tenantDb) {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
     return ACCESS_DENIED_FORM;
   }
+  const { tenantDb } = context;
 
   const validation = validateCustomer(formData);
   if (!validation.ok) {
@@ -94,13 +107,16 @@ export async function updateCustomerAction(
 ): Promise<CustomerFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
   const customerId = String(formData.get("customerId") ?? "");
-  if (!customerId) {
-    return { status: "error", message: "Cliente no válido." };
-  }
 
-  const tenantDb = await requireTenantDb(tenantSlug);
-  if (!tenantDb) {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
     return ACCESS_DENIED_FORM;
+  }
+  const { tenantDb, terms } = context;
+  const customerLabel = terms.customer.toLowerCase();
+
+  if (!customerId) {
+    return { status: "error", message: `${terms.customer} no válido.` };
   }
 
   const validation = validateCustomer(formData);
@@ -115,7 +131,10 @@ export async function updateCustomerAction(
   });
 
   if (!updated) {
-    return { status: "error", message: "No se encontró el cliente a editar." };
+    return {
+      status: "error",
+      message: `No se encontró el ${customerLabel} a editar.`,
+    };
   }
 
   revalidatePath(`/${tenantSlug}/crm`);
@@ -130,14 +149,18 @@ export async function archiveCustomerAction(
   tenantSlug: string,
   customerId: string,
 ): Promise<CustomerActionResult> {
-  const tenantDb = await requireTenantDb(tenantSlug);
-  if (!tenantDb) {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
     return { ok: false, message: "No tienes acceso a este negocio." };
   }
+  const { tenantDb, terms } = context;
 
   const result = await tenantDb.customers.archive(customerId);
   if (!result) {
-    return { ok: false, message: "No se encontró el cliente." };
+    return {
+      ok: false,
+      message: `No se encontró el ${terms.customer.toLowerCase()}.`,
+    };
   }
 
   revalidatePath(`/${tenantSlug}/crm`);
@@ -148,14 +171,18 @@ export async function restoreCustomerAction(
   tenantSlug: string,
   customerId: string,
 ): Promise<CustomerActionResult> {
-  const tenantDb = await requireTenantDb(tenantSlug);
-  if (!tenantDb) {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
     return { ok: false, message: "No tienes acceso a este negocio." };
   }
+  const { tenantDb, terms } = context;
 
   const result = await tenantDb.customers.restore(customerId);
   if (!result) {
-    return { ok: false, message: "No se encontró el cliente." };
+    return {
+      ok: false,
+      message: `No se encontró el ${terms.customer.toLowerCase()}.`,
+    };
   }
 
   revalidatePath(`/${tenantSlug}/crm`);
@@ -170,20 +197,25 @@ export async function deleteCustomersAction(
   tenantSlug: string,
   customerIds: string[],
 ): Promise<CustomerActionResult> {
-  const tenantDb = await requireTenantDb(tenantSlug);
-  if (!tenantDb) {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
     return { ok: false, message: "No tienes acceso a este negocio." };
   }
+  const { tenantDb, terms } = context;
+  const customersLabel = terms.customers.toLowerCase();
 
   if (!Array.isArray(customerIds) || customerIds.length === 0) {
-    return { ok: false, message: "Selecciona al menos un cliente archivado." };
+    return {
+      ok: false,
+      message: `Selecciona al menos un ${terms.customer.toLowerCase()} archivado.`,
+    };
   }
 
   const deleted = await tenantDb.customers.deleteManyArchived(customerIds);
   if (deleted === 0) {
     return {
       ok: false,
-      message: "No había clientes archivados para eliminar (recarga la página).",
+      message: `No había ${customersLabel} archivados para eliminar (recarga la página).`,
     };
   }
 

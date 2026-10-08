@@ -1,7 +1,16 @@
 "use client";
 
 import { useEffect, useActionState } from "react";
-import { Loader2, Power, X } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import {
+  AtSign,
+  Globe,
+  Loader2,
+  MapPin,
+  MessageCircle,
+  Power,
+  X,
+} from "lucide-react";
 import {
   toggleTenantModuleAction,
   type AdminFormState,
@@ -9,7 +18,10 @@ import {
 import {
   MODULES,
   MODULE_LABELS,
+  VERTICAL_ICONS,
+  VERTICAL_LABELS,
   type ModuleValue,
+  type VerticalValue,
 } from "@/lib/admin-catalogs";
 
 const IDLE_STATE: AdminFormState = { status: "idle" };
@@ -19,15 +31,34 @@ export type TenantModuleTarget = {
   name: string;
   slug: string;
   active: boolean;
+  /** Vertical del negocio (para el rótulo + icono del encabezado). */
+  vertical: VerticalValue;
+  /** Estado del wizard de onboarding. */
+  onboardingCompleted: boolean;
+  /** Canales del ecosistema digital (null = sin dato configurado). */
+  ecosystem: {
+    whatsappNumber: string | null;
+    instagramHandle: string | null;
+    websiteUrl: string | null;
+    googleBusinessUrl: string | null;
+  };
   /** Módulos con `active: true` (los del catálogo no listados = inactivos). */
   activeModules: ModuleValue[];
 };
 
+/** Dígitos puros para el link wa.me (formato internacional sin '+'). */
+function waMeLink(phone: string): string {
+  return `https://wa.me/${phone.replace(/[^0-9]/g, "")}`;
+}
+
 /**
- * Modal de gestión de módulos de un negocio. Muestra los 5 del catálogo
- * con su estado y alterna cada uno vía Server Action (upsert sobre
- * `TenantModule`). Tras cada acción, el revalidado de `/admin` refresca
- * los props y el modal ve el nuevo estado sin cerrarse.
+ * Modal de gestión de un negocio. Muestra:
+ * 1. Ecosistema Digital Conectado (WhatsApp, Instagram, web, Google Maps —
+ *    datos del Paso 3 del onboarding; sin datos = onboarding pendiente).
+ * 2. Los 11 módulos del catálogo con su estado, alternando cada uno vía
+ *    Server Action (upsert sobre `TenantModule`). Tras cada acción, el
+ *    revalidado de `/admin` refresca los props y el modal ve el nuevo
+ *    estado sin cerrarse.
  */
 export default function TenantModal({
   tenant,
@@ -72,7 +103,7 @@ export default function TenantModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="tenant-modules-title"
-        className="relative mt-10 w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-xl sm:mt-0"
+        className="relative mt-10 w-full max-w-lg rounded-xl border border-slate-200 bg-white p-6 shadow-xl sm:mt-0"
       >
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
@@ -80,11 +111,17 @@ export default function TenantModal({
               id="tenant-modules-title"
               className="text-lg font-semibold text-slate-900"
             >
-              Módulos del negocio
+              Gestión del negocio
             </h2>
             <p className="mt-0.5 truncate text-sm text-slate-500">
               {tenant.name} · <span className="font-mono">{tenant.slug}</span>
             </p>
+            <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700">
+              <span aria-hidden="true">
+                {VERTICAL_ICONS[tenant.vertical]}
+              </span>
+              {VERTICAL_LABELS[tenant.vertical]}
+            </span>
           </div>
           <button
             type="button"
@@ -97,7 +134,60 @@ export default function TenantModal({
           </button>
         </div>
 
-        <ul className="mt-4 space-y-2">
+        {/* Ecosistema digital (Paso 3 del onboarding) */}
+        <section className="mt-5">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Ecosistema Digital Conectado
+          </h3>
+          <ul className="mt-2 space-y-1.5">
+            <EcosystemRow
+              icon={MessageCircle}
+              label="WhatsApp"
+              value={tenant.ecosystem.whatsappNumber}
+              href={
+                tenant.ecosystem.whatsappNumber
+                  ? waMeLink(tenant.ecosystem.whatsappNumber)
+                  : null
+              }
+            />
+            <EcosystemRow
+              icon={AtSign}
+              label="Instagram"
+              value={
+                tenant.ecosystem.instagramHandle
+                  ? `@${tenant.ecosystem.instagramHandle.replace(/^@/, "")}`
+                  : null
+              }
+              href={
+                tenant.ecosystem.instagramHandle
+                  ? `https://instagram.com/${tenant.ecosystem.instagramHandle.replace(/^@/, "")}`
+                  : null
+              }
+            />
+            <EcosystemRow
+              icon={Globe}
+              label="Sitio web"
+              value={tenant.ecosystem.websiteUrl}
+              href={tenant.ecosystem.websiteUrl}
+            />
+            <EcosystemRow
+              icon={MapPin}
+              label="Google Maps"
+              value={tenant.ecosystem.googleBusinessUrl}
+              href={tenant.ecosystem.googleBusinessUrl}
+            />
+          </ul>
+          {!tenant.onboardingCompleted ? (
+            <p className="mt-2 text-xs text-amber-700">
+              Onboarding pendiente: el negocio aún no completó los 5 pasos.
+            </p>
+          ) : null}
+        </section>
+
+        <h3 className="mt-5 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          Módulos
+        </h3>
+        <ul className="mt-2 space-y-2">
           {MODULES.map((moduleName) => {
             const isActive = activeSet.has(moduleName);
             return (
@@ -171,5 +261,46 @@ export default function TenantModal({
         ) : null}
       </div>
     </div>
+  );
+}
+
+/**
+ * Fila del ecosistema digital: muestra el canal y su valor (link cuando
+ * hay URL/registro; texto plano para el teléfono). Sin dato = "Sin dato".
+ */
+function EcosystemRow({
+  icon: Icon,
+  label,
+  value,
+  href,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: string | null;
+  href: string | null;
+}) {
+  return (
+    <li className="flex items-center gap-2.5 rounded-lg border border-slate-200 px-3 py-2 text-sm">
+      <Icon aria-hidden="true" className="h-4 w-4 shrink-0 text-slate-400" />
+      <span className="w-24 shrink-0 text-slate-500">{label}</span>
+      {value ? (
+        href ? (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="min-w-0 truncate font-medium text-indigo-700 transition hover:text-indigo-900 hover:underline"
+          >
+            {value}
+          </a>
+        ) : (
+          <span className="min-w-0 truncate font-medium text-slate-800">
+            {value}
+          </span>
+        )
+      ) : (
+        <span className="text-xs text-slate-400">Sin dato</span>
+      )}
+    </li>
   );
 }

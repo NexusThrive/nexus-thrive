@@ -45,6 +45,15 @@ export type TenantListRow = {
   customDomain: string | null;
   vertical: VerticalValue;
   active: boolean;
+  /** Wizard de onboarding (false = aún no configuró el negocio). */
+  onboardingCompleted: boolean;
+  /** Canales del ecosistema digital (Paso 3 del onboarding; null = sin dato). */
+  ecosystem: {
+    whatsappNumber: string | null;
+    instagramHandle: string | null;
+    websiteUrl: string | null;
+    googleBusinessUrl: string | null;
+  };
   /** Fecha ya formateada en el servidor (hidratación estable). */
   createdAt: string;
   /** Módulos con `active: true`, en orden del catálogo. */
@@ -53,7 +62,7 @@ export type TenantListRow = {
   url: string;
 };
 
-/** Detalle de módulos de un tenant (los 5 del catálogo con su estado). */
+/** Detalle de módulos de un tenant (los 11 del catálogo con su estado). */
 export type TenantModulesDetail = {
   tenantId: string;
   name: string;
@@ -201,6 +210,13 @@ export function createAdminDb() {
           customDomain: row.customDomain ?? null,
           vertical: row.vertical,
           active: row.active,
+          onboardingCompleted: row.onboardingCompleted,
+          ecosystem: {
+            whatsappNumber: row.whatsappNumber ?? null,
+            instagramHandle: row.instagramHandle ?? null,
+            websiteUrl: row.websiteUrl ?? null,
+            googleBusinessUrl: row.googleBusinessUrl ?? null,
+          },
           createdAt: formatDateShort(String(row.createdAt)),
           modules: sortModules(
             row.modules
@@ -252,7 +268,7 @@ export function createAdminDb() {
       db.orm.public.Tenant.where({ id }).update({ active }),
 
     /**
-     * Detalle de módulos de un tenant: los 5 del catálogo con su estado
+     * Detalle de módulos de un tenant: los 11 del catálogo con su estado
      * (los no registrados cuentan como inactivos).
      */
     getTenantModules: async (

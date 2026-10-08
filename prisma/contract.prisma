@@ -8,19 +8,35 @@ enum Role {
 
 enum Vertical {
   gym
-  barber
+  tourism_agency
+  hospitality
+  construction
+  carpentry
   restaurant
-  services
-  tourism
+  retail
+  beauty
+  healthcare
+  mechanic
+  education
+  real_estate
+  hardware_store
+  nautical_transport
+  tour_guides
+  events
 }
 
 enum ModuleName {
-  caja_menor
-  membresias
-  reservas
-  pedidos
-  presupuestos
   crm
+  dashboard
+  bookings
+  payments
+  billing
+  inventory
+  finance
+  whatsapp
+  memberships
+  orders
+  quotes
 }
 
 enum PaymentStatus {
@@ -54,7 +70,7 @@ model Tenant {
   name         String
   slug         String   @unique
   customDomain String?  @unique
-  vertical     Vertical @default(services)
+  vertical     Vertical
   active       Boolean  @default(true)
 
   /// Wizard de onboarding: false = el tenant es nuevo y debe configurarse.

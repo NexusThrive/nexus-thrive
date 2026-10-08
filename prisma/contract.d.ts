@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'6cb666e0694ef89c25391291cfe0478b043465891719b81ff2a3216197465c1e'>;
+  StorageHashBase<'48dc47c09ec5bfb3b22641b4bdee5ee3556fdcf04653f823069c524d03052267'>;
 export type ExecutionHash =
   ExecutionHashBase<'e05314e6e8d33ee4549a2f80c7b86e1da5a87ba6bd440b2fe061db49ed1485ac'>;
 export type ProfileHash =
@@ -309,7 +309,23 @@ export type FieldOutputTypes = {
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-      readonly vertical: 'gym' | 'barber' | 'restaurant' | 'services' | 'tourism';
+      readonly vertical:
+        | 'gym'
+        | 'tourism_agency'
+        | 'hospitality'
+        | 'construction'
+        | 'carpentry'
+        | 'restaurant'
+        | 'retail'
+        | 'beauty'
+        | 'healthcare'
+        | 'mechanic'
+        | 'education'
+        | 'real_estate'
+        | 'hardware_store'
+        | 'nautical_transport'
+        | 'tour_guides'
+        | 'events';
       readonly websiteUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly whatsappNumber: CodecTypes['pg/text@1']['output'] | null;
     };
@@ -318,7 +334,17 @@ export type FieldOutputTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly moduleName:
-        'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos' | 'crm';
+        | 'crm'
+        | 'dashboard'
+        | 'bookings'
+        | 'payments'
+        | 'billing'
+        | 'inventory'
+        | 'finance'
+        | 'whatsapp'
+        | 'memberships'
+        | 'orders'
+        | 'quotes';
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
@@ -395,7 +421,23 @@ export type FieldInputTypes = {
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
       readonly slug: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
-      readonly vertical: 'gym' | 'barber' | 'restaurant' | 'services' | 'tourism';
+      readonly vertical:
+        | 'gym'
+        | 'tourism_agency'
+        | 'hospitality'
+        | 'construction'
+        | 'carpentry'
+        | 'restaurant'
+        | 'retail'
+        | 'beauty'
+        | 'healthcare'
+        | 'mechanic'
+        | 'education'
+        | 'real_estate'
+        | 'hardware_store'
+        | 'nautical_transport'
+        | 'tour_guides'
+        | 'events';
       readonly websiteUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly whatsappNumber: CodecTypes['pg/text@1']['input'] | null;
     };
@@ -404,7 +446,17 @@ export type FieldInputTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly moduleName:
-        'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos' | 'crm';
+        | 'crm'
+        | 'dashboard'
+        | 'bookings'
+        | 'payments'
+        | 'billing'
+        | 'inventory'
+        | 'finance'
+        | 'whatsapp'
+        | 'memberships'
+        | 'orders'
+        | 'quotes';
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
@@ -481,7 +533,23 @@ export type StorageColumnTypes = {
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-      readonly vertical: 'gym' | 'barber' | 'restaurant' | 'services' | 'tourism';
+      readonly vertical:
+        | 'gym'
+        | 'tourism_agency'
+        | 'hospitality'
+        | 'construction'
+        | 'carpentry'
+        | 'restaurant'
+        | 'retail'
+        | 'beauty'
+        | 'healthcare'
+        | 'mechanic'
+        | 'education'
+        | 'real_estate'
+        | 'hardware_store'
+        | 'nautical_transport'
+        | 'tour_guides'
+        | 'events';
       readonly websiteUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly whatsappNumber: CodecTypes['pg/text@1']['output'] | null;
     };
@@ -490,7 +558,17 @@ export type StorageColumnTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly moduleName:
-        'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos' | 'crm';
+        | 'crm'
+        | 'dashboard'
+        | 'bookings'
+        | 'payments'
+        | 'billing'
+        | 'inventory'
+        | 'finance'
+        | 'whatsapp'
+        | 'memberships'
+        | 'orders'
+        | 'quotes';
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
@@ -567,7 +645,23 @@ export type StorageColumnInputTypes = {
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
       readonly slug: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
-      readonly vertical: 'gym' | 'barber' | 'restaurant' | 'services' | 'tourism';
+      readonly vertical:
+        | 'gym'
+        | 'tourism_agency'
+        | 'hospitality'
+        | 'construction'
+        | 'carpentry'
+        | 'restaurant'
+        | 'retail'
+        | 'beauty'
+        | 'healthcare'
+        | 'mechanic'
+        | 'education'
+        | 'real_estate'
+        | 'hardware_store'
+        | 'nautical_transport'
+        | 'tour_guides'
+        | 'events';
       readonly websiteUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly whatsappNumber: CodecTypes['pg/text@1']['input'] | null;
     };
@@ -576,7 +670,17 @@ export type StorageColumnInputTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly moduleName:
-        'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos' | 'crm';
+        | 'crm'
+        | 'dashboard'
+        | 'bookings'
+        | 'payments'
+        | 'billing'
+        | 'inventory'
+        | 'finance'
+        | 'whatsapp'
+        | 'memberships'
+        | 'orders'
+        | 'quotes';
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
@@ -667,7 +771,23 @@ export namespace Models {
     paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
     slug: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-    vertical: 'gym' | 'barber' | 'restaurant' | 'services' | 'tourism';
+    vertical:
+      | 'gym'
+      | 'tourism_agency'
+      | 'hospitality'
+      | 'construction'
+      | 'carpentry'
+      | 'restaurant'
+      | 'retail'
+      | 'beauty'
+      | 'healthcare'
+      | 'mechanic'
+      | 'education'
+      | 'real_estate'
+      | 'hardware_store'
+      | 'nautical_transport'
+      | 'tour_guides'
+      | 'events';
     websiteUrl: CodecTypes['pg/text@1']['output'] | null;
     whatsappNumber: CodecTypes['pg/text@1']['output'] | null;
     customers: public_Customer[];
@@ -683,7 +803,18 @@ export namespace Models {
     active: CodecTypes['pg/bool@1']['output'];
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     id: CodecTypes['pg/text@1']['output'];
-    moduleName: 'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos' | 'crm';
+    moduleName:
+      | 'crm'
+      | 'dashboard'
+      | 'bookings'
+      | 'payments'
+      | 'billing'
+      | 'inventory'
+      | 'finance'
+      | 'whatsapp'
+      | 'memberships'
+      | 'orders'
+      | 'quotes';
     tenantId: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     tenant: public_Tenant;
@@ -1197,10 +1328,6 @@ type ContractBase = Omit<
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/text@1', 'services'>;
-                  };
                 };
                 readonly websiteUrl: {
                   readonly nativeType: 'text';
@@ -1377,12 +1504,17 @@ type ContractBase = Omit<
             readonly ModuleName: {
               readonly kind: 'valueSet';
               readonly values: readonly [
-                'caja_menor',
-                'membresias',
-                'reservas',
-                'pedidos',
-                'presupuestos',
                 'crm',
+                'dashboard',
+                'bookings',
+                'payments',
+                'billing',
+                'inventory',
+                'finance',
+                'whatsapp',
+                'memberships',
+                'orders',
+                'quotes',
               ];
             };
             readonly PaymentProvider: {
@@ -1399,7 +1531,24 @@ type ContractBase = Omit<
             };
             readonly Vertical: {
               readonly kind: 'valueSet';
-              readonly values: readonly ['gym', 'barber', 'restaurant', 'services', 'tourism'];
+              readonly values: readonly [
+                'gym',
+                'tourism_agency',
+                'hospitality',
+                'construction',
+                'carpentry',
+                'restaurant',
+                'retail',
+                'beauty',
+                'healthcare',
+                'mechanic',
+                'education',
+                'real_estate',
+                'hardware_store',
+                'nautical_transport',
+                'tour_guides',
+                'events',
+              ];
             };
           };
         };
@@ -2126,12 +2275,17 @@ type ContractBase = Omit<
           readonly ModuleName: {
             readonly codecId: 'pg/text@1';
             readonly members: readonly [
-              { readonly name: 'caja_menor'; readonly value: 'caja_menor' },
-              { readonly name: 'membresias'; readonly value: 'membresias' },
-              { readonly name: 'reservas'; readonly value: 'reservas' },
-              { readonly name: 'pedidos'; readonly value: 'pedidos' },
-              { readonly name: 'presupuestos'; readonly value: 'presupuestos' },
               { readonly name: 'crm'; readonly value: 'crm' },
+              { readonly name: 'dashboard'; readonly value: 'dashboard' },
+              { readonly name: 'bookings'; readonly value: 'bookings' },
+              { readonly name: 'payments'; readonly value: 'payments' },
+              { readonly name: 'billing'; readonly value: 'billing' },
+              { readonly name: 'inventory'; readonly value: 'inventory' },
+              { readonly name: 'finance'; readonly value: 'finance' },
+              { readonly name: 'whatsapp'; readonly value: 'whatsapp' },
+              { readonly name: 'memberships'; readonly value: 'memberships' },
+              { readonly name: 'orders'; readonly value: 'orders' },
+              { readonly name: 'quotes'; readonly value: 'quotes' },
             ];
           };
           readonly PaymentProvider: {
@@ -2164,10 +2318,21 @@ type ContractBase = Omit<
             readonly codecId: 'pg/text@1';
             readonly members: readonly [
               { readonly name: 'gym'; readonly value: 'gym' },
-              { readonly name: 'barber'; readonly value: 'barber' },
+              { readonly name: 'tourism_agency'; readonly value: 'tourism_agency' },
+              { readonly name: 'hospitality'; readonly value: 'hospitality' },
+              { readonly name: 'construction'; readonly value: 'construction' },
+              { readonly name: 'carpentry'; readonly value: 'carpentry' },
               { readonly name: 'restaurant'; readonly value: 'restaurant' },
-              { readonly name: 'services'; readonly value: 'services' },
-              { readonly name: 'tourism'; readonly value: 'tourism' },
+              { readonly name: 'retail'; readonly value: 'retail' },
+              { readonly name: 'beauty'; readonly value: 'beauty' },
+              { readonly name: 'healthcare'; readonly value: 'healthcare' },
+              { readonly name: 'mechanic'; readonly value: 'mechanic' },
+              { readonly name: 'education'; readonly value: 'education' },
+              { readonly name: 'real_estate'; readonly value: 'real_estate' },
+              { readonly name: 'hardware_store'; readonly value: 'hardware_store' },
+              { readonly name: 'nautical_transport'; readonly value: 'nautical_transport' },
+              { readonly name: 'tour_guides'; readonly value: 'tour_guides' },
+              { readonly name: 'events'; readonly value: 'events' },
             ];
           };
         };

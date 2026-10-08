@@ -1,8 +1,11 @@
 import { notFound, redirect } from "next/navigation";
 import { db } from "@/prisma/db";
+import { sortModules } from "@/lib/admin-catalogs";
+import { getVerticalTerms } from "@/lib/vertical-terms";
 import Header from "../../components/tenant/header";
 import Sidebar from "../../components/tenant/sidebar";
 import { SidebarProvider } from "../../components/tenant/sidebar-context";
+import { VerticalTermsProvider } from "./vertical-terms-context";
 
 /**
  * Ruta `(app)`: shell del negocio + gate de onboarding.
@@ -24,10 +27,13 @@ export default async function AppLayout({
 }) {
   const { tenant: tenantSlug } = await params;
 
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
+  const tenantRecord = await db.orm.public.Tenant
+    .where({
+      slug: tenantSlug,
+      active: true,
+    })
+    .include("modules", (module) => module.select("moduleName", "active"))
+    .first();
 
   if (!tenantRecord) {
     notFound();
@@ -37,20 +43,31 @@ export default async function AppLayout({
     redirect(`/${tenantRecord.slug}/onboarding`);
   }
 
+  // Nav espejo de TenantModule: solo se muestra lo que está ACTIVO.
+  const activeModules = sortModules(
+    tenantRecord.modules
+      .filter((module) => module.active)
+      .map((module) => module.moduleName),
+  );
+
   return (
     <SidebarProvider>
-      <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-        <Header tenantName={tenantRecord.name} />
+      <VerticalTermsProvider terms={getVerticalTerms(tenantRecord.vertical)}>
+        <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+          <Header tenantName={tenantRecord.name} />
 
-        <Sidebar
-          tenantSlug={tenantRecord.slug}
-          tenantName={tenantRecord.name}
-        />
+          <Sidebar
+            tenantSlug={tenantRecord.slug}
+            tenantName={tenantRecord.name}
+            vertical={tenantRecord.vertical}
+            activeModules={activeModules}
+          />
 
-        <main className="px-4 py-6 sm:px-6 lg:py-8 lg:pl-[18rem] lg:pr-8">
-          {children}
-        </main>
-      </div>
+          <main className="px-4 py-6 sm:px-6 lg:py-8 lg:pl-[18rem] lg:pr-8">
+            {children}
+          </main>
+        </div>
+      </VerticalTermsProvider>
     </SidebarProvider>
   );
 }

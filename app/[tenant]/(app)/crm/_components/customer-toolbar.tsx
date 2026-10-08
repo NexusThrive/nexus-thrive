@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import CustomerSearch from "./customer-search";
 import CustomerFilters, { type CustomerSort, type CustomerStatus } from "./customer-filters";
 import CustomerForm from "./customer-form";
+import { useVerticalTerms } from "../../vertical-terms-context";
 
 /**
  * Barra superior del CRM: búsqueda + filtros + contador + botón de alta.
@@ -22,6 +23,7 @@ export default function CustomerToolbar({
   total: number;
 }) {
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const terms = useVerticalTerms();
 
   return (
     <>
@@ -33,7 +35,7 @@ export default function CustomerToolbar({
             aria-live="polite"
             className="text-xs font-medium text-slate-500 sm:ml-1"
           >
-            {total} {total === 1 ? "cliente" : "clientes"}
+            {total} {total === 1 ? terms.customer.toLowerCase() : terms.customers.toLowerCase()}
           </p>
         </div>
 
@@ -43,7 +45,7 @@ export default function CustomerToolbar({
           className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 lg:self-auto"
         >
           <Plus aria-hidden="true" className="h-4 w-4" />
-          Nuevo cliente
+          {`Nuevo ${terms.customer.toLowerCase()}`}
         </button>
       </div>
 
