@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, Eye, Loader2 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
@@ -107,10 +108,20 @@ export default function QuotesTable({
               rows.map((row) => (
                 <tr key={row.id} className="transition hover:bg-slate-50/60">
                   <td className="px-4 py-3 font-mono text-xs font-medium text-indigo-600">
-                    {row.code}
+                    <Link
+                      href={`/${tenantSlug}/quotes/${row.id}`}
+                      className="transition hover:underline"
+                    >
+                      {row.code}
+                    </Link>
                   </td>
                   <td className="max-w-[14rem] truncate px-4 py-3 font-medium text-slate-900">
-                    {row.title}
+                    <Link
+                      href={`/${tenantSlug}/quotes/${row.id}`}
+                      className="transition hover:text-indigo-700"
+                    >
+                      {row.title}
+                    </Link>
                   </td>
                   <td className="hidden truncate px-4 py-3 text-slate-600 sm:table-cell">
                     {row.customerName ?? "—"}

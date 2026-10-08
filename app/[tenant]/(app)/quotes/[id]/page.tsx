@@ -1,0 +1,303 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import {
+  ArrowLeft,
+  BarChart3,
+  CalendarDays,
+  FileText,
+  MessageCircle,
+  Printer,
+  User,
+  Wallet,
+} from "lucide-react";
+import { db } from "@/prisma/db";
+import { createTenantDb } from "@/lib/tenant-db";
+import { getQuoteTerms, getVerticalTerms } from "@/lib/vertical-terms";
+import { getQuotePublicUrl } from "@/lib/app-url";
+import { formatCurrency, formatDateShort } from "@/lib/format";
+import { QuoteStatusBadge } from "../_components/quote-badges";
+
+/**
+ * Detalle de presupuesto — Fase 3.
+ *
+ * Vista completa de un presupuesto con acciones rápidas:
+ *   - Imprimir / PDF Cliente → `/[tenant]/quotes/[id]/print` (documento A4).
+ *   - Explosión de Materiales → `/[tenant]/quotes/[id]/explosion` (panel de obra).
+ *   - Compartir por WhatsApp → enlace `wa.me` con mensaje resumido (sin datos
+ *     sensibles: solo información pública del presupuesto).
+ *
+ * Multi-tenant: `tenantDb.quotes.get(quoteId)` filtra por `tenantId`; si el
+ * presupuesto no pertenece al tenant → 404 sin revelar su existencia.
+ */
+export default async function QuoteDetailPage({
+  params,
+}: {
+  params: Promise<{ tenant: string; id: string }>;
+}) {
+  const { tenant: tenantSlug, id: quoteId } = await params;
+
+  const tenantRecord = await db.orm.public.Tenant.where({
+    slug: tenantSlug,
+    active: true,
+  }).first();
+  if (!tenantRecord) {
+    notFound();
+  }
+
+  const tenantDb = createTenantDb(tenantRecord.id);
+  const quote = await tenantDb.quotes.get(quoteId);
+  if (!quote) {
+    notFound();
+  }
+
+  const customer = quote.customerId
+    ? await db.orm.public.Customer.where({
+        id: quote.customerId,
+        tenantId: tenantRecord.id,
+      })
+        .select("name", "email", "phone")
+        .first()
+    : null;
+
+  const terms = getQuoteTerms(tenantRecord.vertical);
+  const baseTerms = getVerticalTerms(tenantRecord.vertical);
+
+  const publicUrl = getQuotePublicUrl(tenantSlug, quote.id);
+  const waText = [
+    `${terms.quote} — ${quote.code}`,
+    "",
+    `Cliente: ${customer?.name ?? quote.customerName ?? "—"}`,
+    `Proyecto: ${quote.title}`,
+    "",
+    `Total: ${formatCurrency(quote.totalAmount)}`,
+    "",
+    "Ver presupuesto:",
+    publicUrl,
+  ].join("\n");
+  const waLink = `https://wa.me/?text=${encodeURIComponent(waText)}`;
+
+  return (
+    <div className="space-y-6">
+      <header className="flex flex-col gap-1">
+        <Link
+          href={`/${tenantSlug}/quotes`}
+          className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-slate-700"
+        >
+          <ArrowLeft aria-hidden="true" className="h-4 w-4" />
+          Volver a {terms.quotes.toLowerCase()}
+        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+            {quote.code} · {quote.title}
+          </h1>
+          <QuoteStatusBadge status={quote.status} />
+        </div>
+        <p className="text-sm text-slate-500">
+          Creado el {formatDateShort(quote.createdAt)}
+        </p>
+      </header>
+
+      {/* Acciones rápidas */}
+      <div className="flex flex-wrap items-center gap-2">
+        <Link
+          href={`/${tenantSlug}/quotes/${quote.id}/print`}
+          className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-3 text-sm font-medium text-indigo-700 transition hover:border-indigo-300 hover:bg-indigo-100"
+        >
+          <Printer aria-hidden="true" className="h-4 w-4" />
+          Imprimir / PDF Cliente
+        </Link>
+        <Link
+          href={`/${tenantSlug}/quotes/${quote.id}/explosion`}
+          className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+        >
+          <BarChart3 aria-hidden="true" className="h-4 w-4" />
+          Explosión de Materiales
+        </Link>
+        <a
+          href={waLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 text-sm font-medium text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100"
+        >
+          <MessageCircle aria-hidden="true" className="h-4 w-4" />
+          Compartir por WhatsApp
+        </a>
+      </div>
+
+      {/* Resumen */}
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-slate-500">
+                {baseTerms.customer}
+              </p>
+              <p className="mt-2 truncate text-lg font-semibold text-slate-900">
+                {customer?.name ?? quote.customerName ?? "Sin cliente"}
+              </p>
+              {customer?.email ? (
+                <p className="mt-1 truncate text-xs text-slate-500">
+                  {customer.email}
+                </p>
+              ) : null}
+              {customer?.phone ? (
+                <p className="text-xs text-slate-500">{customer.phone}</p>
+              ) : null}
+            </div>
+            <span
+              aria-hidden="true"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-600"
+            >
+              <User className="h-5 w-5" />
+            </span>
+          </div>
+        </article>
+
+        <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-slate-500">Estado</p>
+              <div className="mt-2">
+                <QuoteStatusBadge status={quote.status} />
+              </div>
+            </div>
+            <span
+              aria-hidden="true"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-600"
+            >
+              <FileText className="h-5 w-5" />
+            </span>
+          </div>
+        </article>
+
+        <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-slate-500">Fecha</p>
+              <p className="mt-2 text-lg font-semibold text-slate-900">
+                {formatDateShort(quote.createdAt)}
+              </p>
+            </div>
+            <span
+              aria-hidden="true"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-600"
+            >
+              <CalendarDays className="h-5 w-5" />
+            </span>
+          </div>
+        </article>
+
+        <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-slate-500">Total</p>
+              <p className="mt-2 text-lg font-semibold text-slate-900">
+                {formatCurrency(quote.totalAmount)}
+              </p>
+            </div>
+            <span
+              aria-hidden="true"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-indigo-50 text-indigo-600"
+            >
+              <Wallet className="h-5 w-5" />
+            </span>
+          </div>
+        </article>
+      </div>
+
+      {/* Actividades */}
+      <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <header className="border-b border-slate-100 px-4 py-3">
+          <h2 className="text-sm font-semibold text-slate-900">
+            {terms.quoteItems}
+          </h2>
+        </header>
+        {quote.items.length === 0 ? (
+          <div className="px-4 py-10 text-center text-sm text-slate-400">
+            Sin actividades por mostrar.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-100 text-sm">
+              <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+                <tr>
+                  <th className="px-4 py-3 font-medium">{terms.quoteItem}</th>
+                  <th className="px-4 py-3 font-medium">Unidad</th>
+                  <th className="px-4 py-3 text-right font-medium">Cantidad</th>
+                  <th className="px-4 py-3 text-right font-medium">
+                    Vr. Unitario
+                  </th>
+                  <th className="px-4 py-3 text-right font-medium">
+                    Vr. Total
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {quote.items.map((item) => (
+                  <tr key={item.id} className="transition hover:bg-slate-50/60">
+                    <td className="max-w-[16rem] truncate px-4 py-3 font-medium text-slate-900">
+                      {item.name}
+                    </td>
+                    <td className="px-4 py-3 text-slate-600">{item.unit}</td>
+                    <td className="px-4 py-3 text-right text-slate-600">
+                      {item.quantity}
+                    </td>
+                    <td className="px-4 py-3 text-right text-slate-600">
+                      {formatCurrency(item.unitCost)}
+                    </td>
+                    <td className="px-4 py-3 text-right font-semibold text-slate-900">
+                      {formatCurrency(item.totalCost)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {/* Desglose AIU */}
+      <section className="flex justify-end">
+        <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-slate-900">
+            Desglose financiero
+          </h2>
+          <dl className="mt-3 space-y-1.5 text-sm">
+            <div className="flex justify-between text-slate-600">
+              <dt>Costo directo</dt>
+              <dd className="font-medium text-slate-900">
+                {formatCurrency(quote.directCost)}
+              </dd>
+            </div>
+            <div className="flex justify-between text-slate-600">
+              <dt>Administración ({quote.adminPercent}%)</dt>
+              <dd>{formatCurrency(quote.administration)}</dd>
+            </div>
+            <div className="flex justify-between text-slate-600">
+              <dt>Imprevistos ({quote.imprevPercent}%)</dt>
+              <dd>{formatCurrency(quote.contingency)}</dd>
+            </div>
+            <div className="flex justify-between text-slate-600">
+              <dt>Utilidad ({quote.utilPercent}%)</dt>
+              <dd>{formatCurrency(quote.utility)}</dd>
+            </div>
+            <div className="flex justify-between text-slate-600">
+              <dt>Subtotal</dt>
+              <dd className="font-medium text-slate-900">
+                {formatCurrency(quote.subtotal)}
+              </dd>
+            </div>
+            <div className="flex justify-between text-slate-600">
+              <dt>IVA sobre utilidad ({quote.taxPercent}%)</dt>
+              <dd>{formatCurrency(quote.tax)}</dd>
+            </div>
+            <div className="flex justify-between border-t border-slate-200 pt-2 text-base font-semibold text-slate-900">
+              <dt>Total</dt>
+              <dd>{formatCurrency(quote.totalAmount)}</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+    </div>
+  );
+}
