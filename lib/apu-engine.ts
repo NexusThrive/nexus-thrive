@@ -154,6 +154,13 @@ export const APU_UNITS = [
   "M",
   "CM",
   "PZA",
+  "DIA",
+  "MES",
+  "GAL",
+  "PAR",
+  "JGO",
+  "KM",
+  "HA",
 ] as const;
 export type ApuUnitValue = (typeof APU_UNITS)[number];
 
