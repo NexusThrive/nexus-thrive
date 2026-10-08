@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import {
   Archive,
   ChevronLeft,
@@ -320,7 +321,13 @@ export default function CustomerTable({
                         </span>
                         <div className="min-w-0">
                           <p className="flex items-center gap-2 font-medium text-slate-900">
-                            <span className="truncate">{row.name}</span>
+                            <Link
+                              href={`/${tenantSlug}/crm/${row.id}`}
+                              className="truncate text-slate-900 transition-colors hover:text-indigo-600 hover:underline"
+                              title={`Ver ficha de ${row.name}`}
+                            >
+                              {row.name}
+                            </Link>
                             {isArchivedView ? (
                               <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-slate-500">
                                 Archivado
@@ -421,7 +428,13 @@ export default function CustomerTable({
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="flex flex-wrap items-center gap-2 font-medium text-slate-900">
-                      {row.name}
+                      <Link
+                        href={`/${tenantSlug}/crm/${row.id}`}
+                        className="text-slate-900 transition-colors hover:text-indigo-600 hover:underline"
+                        title={`Ver ficha de ${row.name}`}
+                      >
+                        {row.name}
+                      </Link>
                       {isArchivedView ? (
                         <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-slate-500">
                           Archivado

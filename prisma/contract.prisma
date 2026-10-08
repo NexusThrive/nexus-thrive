@@ -89,12 +89,13 @@ model Tenant {
   createdAt DateTime @default(now())
   updatedAt temporal.updatedAt()
 
-  users       User[]
-  customers   Customer[]
-  payments    Payment[]
-  expenses    Expense[]
-  memberships Membership[]
-  modules     TenantModule[]
+  users         User[]
+  customers     Customer[]
+  payments      Payment[]
+  expenses      Expense[]
+  memberships   Membership[]
+  modules       TenantModule[]
+  customerNotes CustomerNote[]
 
   @@index([slug])
 }
@@ -123,6 +124,8 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   temporal.updatedAt()
 
+  customerNotes CustomerNote[]
+
   @@unique([clerkUserId, tenantId])
   @@index([tenantId])
 }
@@ -140,6 +143,7 @@ model Customer {
 
   payments Payment[]
   memberships Membership[]
+  notes CustomerNote[]
 
   @@index([tenantId])
 }
@@ -198,5 +202,24 @@ model Membership {
 
   @@index([tenantId])
   @@index([tenantId, endDate])
+  @@index([customerId])
+}
+
+/// Observación interna sobre un cliente (Ficha 360°). Sin módulo propio:
+/// pertenece al núcleo del CRM.
+model CustomerNote {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  content    String
+  /// User.id del autor (se conserva el contenido si el usuario se elimina).
+  createdBy  String?
+  author     User?    @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  createdAt  DateTime @default(now())
+  updatedAt  temporal.updatedAt()
+
+  @@index([tenantId])
   @@index([customerId])
 }
