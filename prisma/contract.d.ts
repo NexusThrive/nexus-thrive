@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'796e292566b480742876e769b42829e657742201c2e498c0d86f0fd86311058a'>;
+  StorageHashBase<'fdb9466b51a0aca5f38161535d1ec7c1cb57e791de0e41d9c27bbb4b00ba3855'>;
 export type ExecutionHash =
-  ExecutionHashBase<'59c96bbbb5b0beb0b10a45703eb1b9093f03d9d0851016aecf5e50c8a7804019'>;
+  ExecutionHashBase<'64b703c5c02d3b67602a942432cf9cbf61159f0d86f8a3fcb5c2baa6f02d8615'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -277,6 +277,18 @@ export type FieldOutputTypes = {
       readonly unitPrice: CodecTypes['pg/numeric@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
+    readonly AuditLog: {
+      readonly action: CodecTypes['pg/text@1']['output'];
+      readonly actorEmail: CodecTypes['pg/text@1']['output'] | null;
+      readonly actorId: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly ipAddress: CodecTypes['pg/text@1']['output'] | null;
+      readonly metadata: CodecTypes['pg/json@1']['output'] | null;
+      readonly targetTenantId: CodecTypes['pg/text@1']['output'] | null;
+      readonly targetTenantName: CodecTypes['pg/text@1']['output'] | null;
+      readonly userAgent: CodecTypes['pg/text@1']['output'] | null;
+    };
     readonly Customer: {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -371,6 +383,8 @@ export type FieldOutputTypes = {
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['output'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
       readonly slug: CodecTypes['pg/text@1']['output'];
+      readonly suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly suspendedReason: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly vertical:
         | 'gym'
@@ -452,6 +466,18 @@ export type FieldInputTypes = {
       readonly unitPrice: CodecTypes['pg/numeric@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
+    readonly AuditLog: {
+      readonly action: CodecTypes['pg/text@1']['input'];
+      readonly actorEmail: CodecTypes['pg/text@1']['input'] | null;
+      readonly actorId: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly ipAddress: CodecTypes['pg/text@1']['input'] | null;
+      readonly metadata: CodecTypes['pg/json@1']['input'] | null;
+      readonly targetTenantId: CodecTypes['pg/text@1']['input'] | null;
+      readonly targetTenantName: CodecTypes['pg/text@1']['input'] | null;
+      readonly userAgent: CodecTypes['pg/text@1']['input'] | null;
+    };
     readonly Customer: {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -546,6 +572,8 @@ export type FieldInputTypes = {
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['input'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
       readonly slug: CodecTypes['pg/text@1']['input'];
+      readonly suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly suspendedReason: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly vertical:
         | 'gym'
@@ -626,6 +654,18 @@ export type StorageColumnTypes = {
       readonly unit: CodecTypes['pg/text@1']['output'];
       readonly unitPrice: CodecTypes['pg/numeric@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly AuditLog: {
+      readonly action: CodecTypes['pg/text@1']['output'];
+      readonly actorEmail: CodecTypes['pg/text@1']['output'] | null;
+      readonly actorId: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly ipAddress: CodecTypes['pg/text@1']['output'] | null;
+      readonly metadata: CodecTypes['pg/json@1']['output'] | null;
+      readonly targetTenantId: CodecTypes['pg/text@1']['output'] | null;
+      readonly targetTenantName: CodecTypes['pg/text@1']['output'] | null;
+      readonly userAgent: CodecTypes['pg/text@1']['output'] | null;
     };
     readonly Customer: {
       readonly active: CodecTypes['pg/bool@1']['output'];
@@ -721,6 +761,8 @@ export type StorageColumnTypes = {
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['output'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
       readonly slug: CodecTypes['pg/text@1']['output'];
+      readonly suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly suspendedReason: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly vertical:
         | 'gym'
@@ -801,6 +843,18 @@ export type StorageColumnInputTypes = {
       readonly unit: CodecTypes['pg/text@1']['input'];
       readonly unitPrice: CodecTypes['pg/numeric@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly AuditLog: {
+      readonly action: CodecTypes['pg/text@1']['input'];
+      readonly actorEmail: CodecTypes['pg/text@1']['input'] | null;
+      readonly actorId: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly ipAddress: CodecTypes['pg/text@1']['input'] | null;
+      readonly metadata: CodecTypes['pg/json@1']['input'] | null;
+      readonly targetTenantId: CodecTypes['pg/text@1']['input'] | null;
+      readonly targetTenantName: CodecTypes['pg/text@1']['input'] | null;
+      readonly userAgent: CodecTypes['pg/text@1']['input'] | null;
     };
     readonly Customer: {
       readonly active: CodecTypes['pg/bool@1']['input'];
@@ -896,6 +950,8 @@ export type StorageColumnInputTypes = {
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['input'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
       readonly slug: CodecTypes['pg/text@1']['input'];
+      readonly suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly suspendedReason: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly vertical:
         | 'gym'
@@ -986,6 +1042,19 @@ export namespace Models {
     compositions: public_ApuActivityComposition[];
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'compositions' | 'tenant';
+  };
+  export type public_AuditLog = {
+    action: CodecTypes['pg/text@1']['output'];
+    actorEmail: CodecTypes['pg/text@1']['output'] | null;
+    actorId: CodecTypes['pg/text@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    ipAddress: CodecTypes['pg/text@1']['output'] | null;
+    metadata: CodecTypes['pg/json@1']['output'] | null;
+    targetTenantId: CodecTypes['pg/text@1']['output'] | null;
+    targetTenantName: CodecTypes['pg/text@1']['output'] | null;
+    userAgent: CodecTypes['pg/text@1']['output'] | null;
+    readonly [RelationKeys]?: never;
   };
   export type public_Customer = {
     active: CodecTypes['pg/bool@1']['output'];
@@ -1108,6 +1177,8 @@ export namespace Models {
     onboardingCompleted: CodecTypes['pg/bool@1']['output'];
     paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
     slug: CodecTypes['pg/text@1']['output'];
+    suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    suspendedReason: CodecTypes['pg/text@1']['output'] | null;
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     vertical:
       | 'gym'
@@ -1191,6 +1262,7 @@ export declare const models: {
     ApuActivity: Models.public_ApuActivity;
     ApuActivityComposition: Models.public_ApuActivityComposition;
     ApuItem: Models.public_ApuItem;
+    AuditLog: Models.public_AuditLog;
     Customer: Models.public_Customer;
     CustomerNote: Models.public_CustomerNote;
     Expense: Models.public_Expense;
@@ -1429,6 +1501,84 @@ type ContractBase = Omit<
                   };
                 },
               ];
+            };
+            readonly AuditLog: {
+              columns: {
+                readonly action: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly actorEmail: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly actorId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly ipAddress: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly metadata: {
+                  readonly nativeType: 'json';
+                  readonly codecId: 'pg/json@1';
+                  readonly nullable: true;
+                };
+                readonly targetTenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly targetTenantName: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly userAgent: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'AuditLog_actorId_idx_a58f6b4b';
+                  readonly prefix: 'AuditLog_actorId_idx';
+                  readonly columns: readonly ['actorId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'AuditLog_createdAt_idx_9575dbd7';
+                  readonly prefix: 'AuditLog_createdAt_idx';
+                  readonly columns: readonly ['createdAt'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'AuditLog_targetTenantId_idx_9ecf2d83';
+                  readonly prefix: 'AuditLog_targetTenantId_idx';
+                  readonly columns: readonly ['targetTenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [];
             };
             readonly Customer: {
               columns: {
@@ -2219,6 +2369,16 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
+                readonly suspendedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly suspendedReason: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly updatedAt: {
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
@@ -2478,6 +2638,7 @@ type ContractBase = Omit<
       readonly model: 'ApuActivityComposition';
     };
     readonly ApuItem: { readonly namespace: 'public' & NamespaceId; readonly model: 'ApuItem' };
+    readonly AuditLog: { readonly namespace: 'public' & NamespaceId; readonly model: 'AuditLog' };
     readonly Customer: { readonly namespace: 'public' & NamespaceId; readonly model: 'Customer' };
     readonly CustomerNote: {
       readonly namespace: 'public' & NamespaceId;
@@ -2730,6 +2891,70 @@ type ContractBase = Omit<
                 readonly unit: { readonly column: 'unit' };
                 readonly unitPrice: { readonly column: 'unitPrice' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly AuditLog: {
+            readonly fields: {
+              readonly action: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly actorEmail: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly actorId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly ipAddress: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly metadata: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/json@1' };
+              };
+              readonly targetTenantId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly targetTenantName: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly userAgent: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: Record<string, never>;
+            readonly storage: {
+              readonly table: 'AuditLog';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly action: { readonly column: 'action' };
+                readonly actorEmail: { readonly column: 'actorEmail' };
+                readonly actorId: { readonly column: 'actorId' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly id: { readonly column: 'id' };
+                readonly ipAddress: { readonly column: 'ipAddress' };
+                readonly metadata: { readonly column: 'metadata' };
+                readonly targetTenantId: { readonly column: 'targetTenantId' };
+                readonly targetTenantName: { readonly column: 'targetTenantName' };
+                readonly userAgent: { readonly column: 'userAgent' };
               };
             };
           };
@@ -3483,6 +3708,17 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly suspendedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly suspendedReason: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly updatedAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -3627,6 +3863,8 @@ type ContractBase = Omit<
                 readonly onboardingCompleted: { readonly column: 'onboardingCompleted' };
                 readonly paymentMethods: { readonly column: 'paymentMethods' };
                 readonly slug: { readonly column: 'slug' };
+                readonly suspendedAt: { readonly column: 'suspendedAt' };
+                readonly suspendedReason: { readonly column: 'suspendedReason' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
                 readonly vertical: { readonly column: 'vertical' };
                 readonly websiteUrl: { readonly column: 'websiteUrl' };
@@ -3942,6 +4180,14 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'ApuItem';
             readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'AuditLog';
+            readonly field: 'id';
             readonly namespace: 'public';
           };
         },

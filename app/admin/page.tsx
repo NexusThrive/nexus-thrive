@@ -1,17 +1,28 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { createAdminDb } from "@/lib/admin-db";
+import { createAdminDb, type TenantSortKey } from "@/lib/admin-db";
 import { isVertical } from "@/lib/admin-catalogs";
 import AdminHeader from "./_components/admin-header";
-import PlatformMetrics from "./_components/platform-metrics";
-import TenantFilters from "./_components/tenant-filters";
+import ExecutiveKpis from "./_components/executive-kpis";
+import TenantToolbar from "./_components/tenant-toolbar";
 import TenantTable from "./_components/tenant-table";
+import ActivityFeed from "./_components/activity-feed";
+import AuditLog from "./_components/audit-log";
 
 export const metadata: Metadata = {
-  title: "Panel CEO · Nexus Thrive",
+  title: "Centro de comando · Nexus Thrive",
 };
 
 const PAGE_SIZE = 10;
+
+const SORTS: TenantSortKey[] = [
+  "created_desc",
+  "created_asc",
+  "name_asc",
+  "name_desc",
+  "activity_desc",
+  "activity_asc",
+];
 
 function firstString(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
@@ -23,11 +34,15 @@ function firstNumber(value: string | string[] | undefined): number {
 }
 
 /**
- * Panel CEO / SuperAdmin (host `admin.lvh.me` → rewrite de `proxy.ts`).
+ * Centro de comando del CEO / SuperAdmin (host `admin.lvh.me` → rewrite de
+ * `proxy.ts`).
  *
  * El gate de autorización (sesión + rol) vive en `app/admin/layout.tsx`.
  * Esta page solo resuelve datos y filtros; la URL es la fuente de verdad:
- * `q` (búsqueda), `vertical`, `status` y `page`.
+ * `q`, `vertical`, `status`, `attention`, `sort` y `page`.
+ *
+ * Todos los datos son reales (`lib/admin-db.ts`); lo que no tiene fuente
+ * (MRR, trials, último login) se declara explícitamente en la UI.
  */
 export default async function AdminPage({
   searchParams,
@@ -41,71 +56,106 @@ export default async function AdminPage({
   const statusRaw = firstString(sp.status);
   const activeStatus =
     statusRaw === "active" || statusRaw === "inactive" ? statusRaw : "all";
-  const page = firstNumber(sp.page);
+  const attentionOnly = firstString(sp.attention) === "1";
+  const sortRaw = firstString(sp.sort);
+  const sort: TenantSortKey = SORTS.includes(sortRaw as TenantSortKey)
+    ? (sortRaw as TenantSortKey)
+    : "created_desc";
+  const requestedPage = firstNumber(sp.page);
 
   const host = (await headers()).get("host") ?? "localhost:3000";
   const adminDb = createAdminDb();
 
-  const [metrics, listResult] = await Promise.all([
-    adminDb.getPlatformMetrics(),
+  const [metrics, listResult, activity, audit] = await Promise.all([
+    adminDb.getExecutiveMetrics(),
     adminDb.listTenants({
       host,
       q,
       vertical,
       activeStatus,
-      page,
+      attentionOnly,
+      sort,
+      page: requestedPage,
       limit: PAGE_SIZE,
     }),
+    adminDb.getActivityFeed({ limit: 8 }),
+    adminDb.listAuditLogs(6),
   ]);
 
-  const totalPages = Math.max(
-    1,
-    Math.ceil(listResult.total / PAGE_SIZE),
-  );
-  const safePage = Math.min(page, totalPages);
+  const totalPages = Math.max(1, Math.ceil(listResult.total / PAGE_SIZE));
+  const safePage = Math.min(requestedPage, totalPages);
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
-        {/* Encabezado (incluye botón de alta) */}
-        <AdminHeader />
+    <div className="space-y-8">
+      <AdminHeader />
 
-        {/* Métricas globales */}
-        <PlatformMetrics metrics={metrics} />
+      <section id="resumen" className="scroll-mt-6">
+        <ExecutiveKpis metrics={metrics} />
+      </section>
 
-        {/* Filtros + listado */}
-        <section aria-labelledby="admin-tenants-title" className="space-y-4">
-          <div className="flex flex-wrap items-baseline justify-between gap-3">
-            <div>
-              <h2
-                id="admin-tenants-title"
-                className="text-base font-semibold text-slate-900"
-              >
-                Negocios de la plataforma
-              </h2>
-              <p className="text-sm text-slate-500">
-                {listResult.total}{" "}
-                {listResult.total === 1
-                  ? "negocio registrado"
-                  : "negocios registrados"}
-              </p>
-            </div>
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <section
+          id="negocios"
+          className="scroll-mt-6 space-y-4 lg:col-span-2"
+        >
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="text-base font-semibold text-slate-900">
+              Negocios de la plataforma
+            </h2>
+            <p className="text-sm text-slate-500">
+              {listResult.total}{" "}
+              {listResult.total === 1
+                ? "negocio registrado"
+                : "negocios registrados"}
+            </p>
           </div>
 
-          <TenantFilters
+          <TenantToolbar
             q={q}
             vertical={vertical}
             status={activeStatus === "all" ? undefined : activeStatus}
+            sort={sort}
+            attentionOnly={attentionOnly}
           />
 
           <TenantTable
             rows={listResult.rows}
-            query={q}
+            sort={sort}
             page={safePage}
             totalPages={totalPages}
             total={listResult.total}
           />
         </section>
+
+        <aside className="space-y-8">
+          <section
+            id="actividad"
+            className="scroll-mt-6 rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm"
+          >
+            <h2 className="text-sm font-semibold text-slate-900">
+              Actividad de la plataforma
+            </h2>
+            <p className="text-xs text-slate-500">
+              Últimos movimientos reales de los negocios.
+            </p>
+            <div className="mt-4">
+              <ActivityFeed items={activity} />
+            </div>
+          </section>
+
+          <section
+            id="auditoria"
+            className="scroll-mt-6 rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm"
+          >
+            <h2 className="text-sm font-semibold text-slate-900">Auditoría</h2>
+            <p className="text-xs text-slate-500">
+              Acciones administrativas recientes.
+            </p>
+            <div className="mt-4">
+              <AuditLog rows={audit} />
+            </div>
+          </section>
+        </aside>
       </div>
     </div>
   );

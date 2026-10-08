@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { createAdminDb } from "@/lib/admin-db";
+import AdminShell from "./_components/admin-shell";
 
 /**
  * Gate del panel CEO / SuperAdmin, en el layout (mismo patrón de
@@ -29,5 +30,5 @@ export default async function AdminLayout({
     notFound();
   }
 
-  return <>{children}</>;
+  return <AdminShell>{children}</AdminShell>;
 }

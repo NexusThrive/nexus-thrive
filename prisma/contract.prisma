@@ -102,6 +102,11 @@ model Tenant {
   /// Nullable en DB: un tenant nuevo aún no los configuró; el código normaliza a [].
   paymentMethods    PaymentProvider[]?
 
+  /// Suspensión administrativa (Panel CEO): motivo obligatorio + timestamp.
+  /// Se conserva aunque el tenant se reactive (historial de por qué se suspendió).
+  suspendedReason String?
+  suspendedAt     DateTime?
+
   createdAt DateTime @default(now())
   updatedAt temporal.updatedAt()
 
@@ -327,6 +332,32 @@ model Quote {
   @@index([tenantId])
   @@index([tenantId, status])
   @@index([customerId])
+}
+
+/// Registro de auditoría de acciones privilegiadas del SuperAdmin
+/// (suspensión, activación, módulos, exportación, impersonación). No se
+/// relaciona por FK con Tenant a propósito: la auditoría debe sobrevivir al
+/// borrado del negocio. NUNCA guarda secretos ni tokens.
+model AuditLog {
+  id         String   @id @default(uuid())
+  /// Clerk user id del SuperAdmin actor (no expone datos sensibles).
+  actorId    String
+  actorEmail String?
+  /// Acción auditada (string controlado por el código, no un enum: las
+  /// migraciones de enum en Prisma 8 son frágiles y aquí no aportan valor).
+  action     String
+  /// Negocio objetivo (puede ser null en acciones globales como exportar).
+  targetTenantId   String?
+  targetTenantName String?
+  /// Metadatos serializables (motivo, módulos, filas exportadas…). Sin secretos.
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([targetTenantId])
+  @@index([actorId])
 }
 
 /// Actividad dentro de un presupuesto. Congela nombre, unidad, cantidad y

@@ -1,9 +1,8 @@
 /**
- * Une clases de Tailwind ignorando los valores falsy.
- * Utilidad local: evita agregar dependencias extra (clsx, etc.).
+ * Alias histórico de `@/lib/utils#cn`.
+ *
+ * El panel tenant lo importa como `@/lib/cn`; los componentes shadcn lo
+ * importan como `@/lib/utils`. Ambos resuelven a la misma implementación
+ * (clsx + tailwind-merge) para no duplicar lógica.
  */
-export function cn(
-  ...classes: Array<string | false | null | undefined>
-): string {
-  return classes.filter(Boolean).join(" ");
-}
+export { cn } from "./utils";

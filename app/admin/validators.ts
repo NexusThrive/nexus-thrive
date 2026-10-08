@@ -162,6 +162,54 @@ export function validateToggleModule(
   return { ok: true, values: { ...values, moduleName: rawModule } };
 }
 
+/** Normaliza y valida un id de tenant (UUID). Devuelve `null` si es inválido. */
+export function validateTenantId(raw: unknown): string | null {
+  const tenantId = String(raw ?? "").trim();
+  return UUID_PATTERN.test(tenantId) ? tenantId : null;
+}
+
+export type SuspensionFormValues = {
+  tenantId: string;
+  reason: string;
+};
+
+export type SuspensionValidation =
+  | { ok: true; values: SuspensionFormValues }
+  | { ok: false; message: string; values: SuspensionFormValues };
+
+/**
+ * Suspensión administrativa: el motivo es obligatorio (queda en el historial
+ * del negocio y en la bitácora de auditoría). Se acota para no almacenar
+ * texto arbitrario sin límite.
+ */
+export function validateSuspendTenant(
+  formData: FormData,
+): SuspensionValidation {
+  const tenantId = String(formData.get("tenantId") ?? "").trim();
+  const reason = String(formData.get("reason") ?? "").trim();
+  const values: SuspensionFormValues = { tenantId, reason };
+
+  if (!UUID_PATTERN.test(tenantId)) {
+    return { ok: false, message: "Negocio no válido.", values };
+  }
+  if (reason.length < 5) {
+    return {
+      ok: false,
+      message: "Describe el motivo (mínimo 5 caracteres).",
+      values,
+    };
+  }
+  if (reason.length > 300) {
+    return {
+      ok: false,
+      message: "El motivo no puede superar 300 caracteres.",
+      values,
+    };
+  }
+
+  return { ok: true, values };
+}
+
 /** Reexporta el catálogo para que los componentes no lo dupliquen. */
 export const ADMIN_VERTICAL_OPTIONS = VERTICALS;
 export const ADMIN_MODULE_OPTIONS = MODULES;

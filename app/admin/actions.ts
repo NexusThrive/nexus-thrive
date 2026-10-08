@@ -1,13 +1,15 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
+import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { createAdminDb } from "@/lib/admin-db";
+import { createAdminDb, type AuditLogInput } from "@/lib/admin-db";
 import { validateSlug, type SlugValidation } from "@/lib/admin-catalogs";
 import {
+  validateSuspendTenant,
   validateTenantForm,
+  validateTenantId,
   validateToggleModule,
-  validateToggleTenant,
   type TenantFieldErrors,
   type TenantFormValues,
 } from "./validators";
@@ -23,26 +25,81 @@ export type SlugCheckState = {
   status: "available" | "taken" | "invalid" | "unauthorized";
 };
 
+export type ImpersonationState = {
+  status: "ok" | "error";
+  message?: string;
+  /** Ticket de Clerk para iniciar sesión como el dueño del negocio. */
+  ticket?: string;
+  /** Destino sugerido tras completar el cambio de sesión. */
+  url?: string;
+};
+
 const ACCESS_DENIED: AdminFormState = {
   status: "error",
   message: "No tienes permisos de administración.",
 };
 
+type Actor = { userId: string; email: string | null };
+
 /**
  * Autorización de todas las actions /admin: sesión de Clerk + fila
- * `User.role = SUPERADMIN`. Devuelve `false` si falta cualquiera (el
- * caller responde con mensaje genérico, sin exponer detalle).
+ * `User.role = SUPERADMIN`. Devuelve el actor (para auditoría) o `null`.
  */
-async function requireSuperAdmin(): Promise<boolean> {
-  const { userId } = await auth();
+async function requireSuperAdmin(): Promise<Actor | null> {
+  const { userId, sessionClaims } = await auth();
   if (!userId) {
-    return false;
+    return null;
   }
-  return createAdminDb().isSuperAdmin(userId);
+  const isAdmin = await createAdminDb().isSuperAdmin(userId);
+  if (!isAdmin) {
+    return null;
+  }
+  const claims = sessionClaims as { email?: unknown } | null;
+  return {
+    userId,
+    email: typeof claims?.email === "string" ? claims.email : null,
+  };
 }
 
 function revalidateAdmin(): void {
   revalidatePath("/admin");
+}
+
+/** IP y user-agent de la request, solo para la bitácora de auditoría. */
+async function requestContext(): Promise<{
+  ipAddress: string | null;
+  userAgent: string | null;
+}> {
+  const headerList = await headers();
+  const forwarded = headerList.get("x-forwarded-for");
+  return {
+    ipAddress:
+      forwarded?.split(",")[0]?.trim() ??
+      headerList.get("x-real-ip") ??
+      null,
+    userAgent: headerList.get("user-agent") ?? null,
+  };
+}
+
+/**
+ * Registra una acción en la bitácora de auditoría. Nunca rompe la acción
+ * principal: si la auditoría falla, se registra en consola y se continúa.
+ */
+async function audit(
+  actor: Actor,
+  entry: Omit<AuditLogInput, "actorId" | "actorEmail">,
+): Promise<void> {
+  try {
+    const context = await requestContext();
+    await createAdminDb().logAudit({
+      actorId: actor.userId,
+      actorEmail: actor.email,
+      ...entry,
+      ...context,
+    });
+  } catch (error) {
+    console.error("[admin] audit failed:", error);
+  }
 }
 
 /**
@@ -55,7 +112,8 @@ export async function createTenantAction(
   _prevState: AdminFormState,
   formData: FormData,
 ): Promise<AdminFormState> {
-  if (!(await requireSuperAdmin())) {
+  const actor = await requireSuperAdmin();
+  if (!actor) {
     return ACCESS_DENIED;
   }
 
@@ -93,6 +151,12 @@ export async function createTenantAction(
     return { status: "error", message, values: validation.values };
   }
 
+  await audit(actor, {
+    action: "CREATE_TENANT",
+    targetTenantName: name,
+    metadata: { slug, vertical, modules },
+  });
+
   revalidateAdmin();
   return {
     status: "ok",
@@ -101,33 +165,78 @@ export async function createTenantAction(
 }
 
 /**
- * Activa o suspende un negocio (fila + subdominio dejan de responder
- * cuando está suspendido; el host base pasa igual por el proxy).
+ * Suspende un negocio con motivo obligatorio (queda en el historial y en la
+ * bitácora). El subdominio deja de responder vía proxy.
  */
-export async function toggleTenantStatusAction(
+export async function suspendTenantAction(
   _prevState: AdminFormState,
   formData: FormData,
 ): Promise<AdminFormState> {
-  if (!(await requireSuperAdmin())) {
+  const actor = await requireSuperAdmin();
+  if (!actor) {
     return ACCESS_DENIED;
   }
 
-  const validation = validateToggleTenant(formData);
+  const validation = validateSuspendTenant(formData);
   if (!validation.ok) {
     return { status: "error", message: validation.message };
   }
 
-  const { tenantId, active } = validation.values;
-  const updated = await createAdminDb().setTenantActive(tenantId, active);
-  if (!updated) {
+  const { tenantId, reason } = validation.values;
+  const adminDb = createAdminDb();
+
+  const tenant = await adminDb.getTenantModules(tenantId);
+  if (!tenant) {
+    return { status: "error", message: "El negocio no fue encontrado." };
+  }
+  if (!tenant.active) {
+    return { status: "ok", message: "El negocio ya estaba suspendido." };
+  }
+
+  await adminDb.suspendTenant(tenantId, reason);
+  await audit(actor, {
+    action: "SUSPEND_TENANT",
+    targetTenantId: tenant.tenantId,
+    targetTenantName: tenant.name,
+    metadata: { reason },
+  });
+
+  revalidateAdmin();
+  revalidatePath(`/admin/${tenantId}`);
+  return { status: "ok", message: `Negocio "${tenant.name}" suspendido.` };
+}
+
+/** Reactiva un negocio suspendido (conserva el motivo histórico). */
+export async function activateTenantAction(
+  _prevState: AdminFormState,
+  formData: FormData,
+): Promise<AdminFormState> {
+  const actor = await requireSuperAdmin();
+  if (!actor) {
+    return ACCESS_DENIED;
+  }
+
+  const tenantId = validateTenantId(formData.get("tenantId"));
+  if (!tenantId) {
+    return { status: "error", message: "Negocio no válido." };
+  }
+
+  const adminDb = createAdminDb();
+  const tenant = await adminDb.getTenantModules(tenantId);
+  if (!tenant) {
     return { status: "error", message: "El negocio no fue encontrado." };
   }
 
+  await adminDb.activateTenant(tenantId);
+  await audit(actor, {
+    action: "ACTIVATE_TENANT",
+    targetTenantId: tenant.tenantId,
+    targetTenantName: tenant.name,
+  });
+
   revalidateAdmin();
-  return {
-    status: "ok",
-    message: active ? "Negocio activado." : "Negocio suspendido.",
-  };
+  revalidatePath(`/admin/${tenantId}`);
+  return { status: "ok", message: `Negocio "${tenant.name}" reactivado.` };
 }
 
 /**
@@ -138,7 +247,8 @@ export async function toggleTenantModuleAction(
   _prevState: AdminFormState,
   formData: FormData,
 ): Promise<AdminFormState> {
-  if (!(await requireSuperAdmin())) {
+  const actor = await requireSuperAdmin();
+  if (!actor) {
     return ACCESS_DENIED;
   }
 
@@ -156,12 +266,105 @@ export async function toggleTenantModuleAction(
   }
 
   await adminDb.toggleModule(tenantId, moduleName, active);
+  await audit(actor, {
+    action: "TOGGLE_MODULE",
+    targetTenantId: tenant.tenantId,
+    targetTenantName: tenant.name,
+    metadata: { moduleName, active },
+  });
 
   revalidateAdmin();
+  revalidatePath(`/admin/${tenantId}`);
   return {
     status: "ok",
     message: active ? "Módulo activado." : "Módulo desactivado.",
   };
+}
+
+/** Detalle de un negocio para el drawer (autorizado server-side). */
+export async function getTenantDetailAction(tenantId: string) {
+  const actor = await requireSuperAdmin();
+  if (!actor) {
+    return null;
+  }
+  const id = validateTenantId(tenantId);
+  if (!id) {
+    return null;
+  }
+  return createAdminDb().getTenantDetail(id);
+}
+
+/**
+ * Crea un token de actor de Clerk para que el CEO entre al negocio como su
+ * dueño. Devuelve un ticket de un solo uso (el cliente completa el cambio de
+ * sesión). Queda auditado.
+ */
+export async function createImpersonationAction(
+  tenantId: string,
+): Promise<ImpersonationState> {
+  const actor = await requireSuperAdmin();
+  if (!actor) {
+    return { status: "error", message: "No tienes permisos de administración." };
+  }
+
+  const id = validateTenantId(tenantId);
+  if (!id) {
+    return { status: "error", message: "Negocio no válido." };
+  }
+
+  const adminDb = createAdminDb();
+  const detail = await adminDb.getTenantDetail(id);
+  if (!detail) {
+    return { status: "error", message: "El negocio no fue encontrado." };
+  }
+
+  const owner = detail.users.find((user) => user.role === "OWNER");
+  const targetClerkUserId =
+    owner?.id ?? detail.users[0]?.id ?? null;
+  if (!targetClerkUserId) {
+    return {
+      status: "error",
+      message: "El negocio no tiene usuarios con acceso configurado.",
+    };
+  }
+
+  // `User.id` no es el id de Clerk; se resuelve el clerkUserId real.
+  const clerkUserId = await adminDb.getUserClerkId(targetClerkUserId);
+  if (!clerkUserId) {
+    return {
+      status: "error",
+      message: "No se pudo resolver el acceso del negocio.",
+    };
+  }
+
+  try {
+    const client = await clerkClient();
+    const actorToken = await client.actorTokens.create({
+      userId: clerkUserId,
+      actor: { sub: actor.userId },
+      expiresInSeconds: 600,
+      sessionMaxDurationInSeconds: 3600,
+    });
+
+    await audit(actor, {
+      action: "IMPERSONATE",
+      targetTenantId: detail.id,
+      targetTenantName: detail.name,
+      metadata: { targetClerkUserId: clerkUserId },
+    });
+
+    return {
+      status: "ok",
+      ticket: actorToken.token ?? undefined,
+      url: detail.slug ? `/${detail.slug}` : undefined,
+    };
+  } catch (error) {
+    console.error("[admin] impersonation failed:", error);
+    return {
+      status: "error",
+      message: "No se pudo iniciar la impersonación. Intenta de nuevo.",
+    };
+  }
 }
 
 /**

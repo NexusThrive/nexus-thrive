@@ -1,415 +1,209 @@
 "use client";
 
-import { useEffect, useState, useActionState } from "react";
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
-  CircleCheck,
-  CircleDashed,
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
   ExternalLink,
-  Loader2,
-  Power,
-  Settings2,
-  Store,
+  Eye,
+  Link2,
+  MoreHorizontal,
+  Users,
 } from "lucide-react";
 import {
-  toggleTenantStatusAction,
-  type AdminFormState,
-} from "../actions";
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
-  VERTICAL_ICONS,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { getVerticalIcon } from "@/lib/admin/vertical-icons";
+import {
+  MODULE_LABELS,
   VERTICAL_LABELS,
-  type VerticalValue,
+  type ModuleValue,
 } from "@/lib/admin-catalogs";
-import type { TenantListRow } from "@/lib/admin-db";
-import { cn } from "@/lib/cn";
-import PaginationLinks from "@/app/components/tenant/pagination-links";
+import type { TenantListRow, TenantSortKey } from "@/lib/admin-db";
+import { cn } from "@/lib/utils";
 import TenantStatusBadge from "./tenant-status-badge";
-import TenantModuleBadges from "./tenant-module-badges";
-import TenantModal, { type TenantModuleTarget } from "./tenant-modal";
+import TenantDrawer from "./tenant-drawer";
+import PaginationLinks from "@/app/components/tenant/pagination-links";
 
-type Notice = { kind: "error" | "success"; text: string } | null;
+type SortableColumn = "name" | "created" | "activity";
 
-const ICON_BUTTON =
-  "inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-800 disabled:cursor-not-allowed disabled:opacity-50";
-
-/** Tono de badge por vertical (los 16 del catálogo, un color por rubro). */
-const VERTICAL_TONES: Record<VerticalValue, string> = {
-  gym: "bg-indigo-50 text-indigo-700 ring-indigo-600/20",
-  tourism_agency: "bg-teal-50 text-teal-700 ring-teal-600/20",
-  hospitality: "bg-amber-50 text-amber-700 ring-amber-600/20",
-  construction: "bg-orange-50 text-orange-700 ring-orange-600/20",
-  carpentry: "bg-yellow-50 text-yellow-700 ring-yellow-600/20",
-  restaurant: "bg-rose-50 text-rose-700 ring-rose-600/20",
-  retail: "bg-cyan-50 text-cyan-700 ring-cyan-600/20",
-  beauty: "bg-pink-50 text-pink-700 ring-pink-600/20",
-  healthcare: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
-  mechanic: "bg-slate-100 text-slate-600 ring-slate-500/20",
-  education: "bg-blue-50 text-blue-700 ring-blue-600/20",
-  real_estate: "bg-purple-50 text-purple-700 ring-purple-600/20",
-  hardware_store: "bg-stone-100 text-stone-700 ring-stone-500/20",
-  nautical_transport: "bg-sky-50 text-sky-700 ring-sky-600/20",
-  tour_guides: "bg-lime-50 text-lime-700 ring-lime-600/20",
-  events: "bg-fuchsia-50 text-fuchsia-700 ring-fuchsia-600/20",
+const SORT_ASC: Record<SortableColumn, TenantSortKey> = {
+  name: "name_asc",
+  created: "created_asc",
+  activity: "activity_asc",
+};
+const SORT_DESC: Record<SortableColumn, TenantSortKey> = {
+  name: "name_desc",
+  created: "created_desc",
+  activity: "activity_desc",
 };
 
-function initialsOf(name: string): string {
-  const parts = name.trim().split(/\s+/).slice(0, 2);
-  return parts.map((part) => part.charAt(0).toUpperCase()).join("") || "?";
-}
-
 /**
- * Estado del wizard de onboarding: Completado (verde) / Pendiente (ámbar,
- * el negocio aún no pasó por los 5 pasos del wizard).
- */
-function OnboardingBadge({ completed }: { completed: boolean }) {
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset",
-        completed
-          ? "bg-emerald-50 text-emerald-700 ring-emerald-600/20"
-          : "bg-amber-50 text-amber-700 ring-amber-600/20",
-      )}
-    >
-      {completed ? (
-        <CircleCheck aria-hidden="true" className="h-3.5 w-3.5" />
-      ) : (
-        <CircleDashed aria-hidden="true" className="h-3.5 w-3.5" />
-      )}
-      {completed ? "Completado" : "Pendiente"}
-    </span>
-  );
-}
-
-/**
- * Activar/suspender un negocio desde la tabla. Su propio
- * `useActionState` — el resultado se eleva al banner de la tabla vía
- * `onNotice` y el revalidado de `/admin` refresca la fila.
- */
-function StatusToggle({
-  tenant,
-  onNotice,
-}: {
-  tenant: TenantListRow;
-  onNotice: (notice: Notice) => void;
-}) {
-  const [state, formAction, isPending] = useActionState(
-    toggleTenantStatusAction,
-    { status: "idle" } as AdminFormState,
-  );
-
-  useEffect(() => {
-    if (state.status === "ok") {
-      onNotice({ kind: "success", text: state.message ?? "Estado actualizado." });
-    } else if (state.status === "error") {
-      onNotice({ kind: "error", text: state.message ?? "No se pudo completar la acción." });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state]);
-
-  return (
-    <form action={formAction} className="inline">
-      <input type="hidden" name="tenantId" value={tenant.id} />
-      <input
-        type="hidden"
-        name="active"
-        value={tenant.active ? "false" : "true"}
-      />
-      <button
-        type="submit"
-        disabled={isPending}
-        title={tenant.active ? "Suspender negocio" : "Activar negocio"}
-        className={cn(
-          ICON_BUTTON,
-          tenant.active
-            ? "border-rose-200 text-rose-600 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700"
-            : "border-emerald-200 text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700",
-        )}
-      >
-        {isPending ? (
-          <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin" />
-        ) : (
-          <Power aria-hidden="true" className="h-3.5 w-3.5" />
-        )}
-        {tenant.active ? "Suspender" : "Activar"}
-      </button>
-    </form>
-  );
-}
-
-/**
- * Listado de negocios de la plataforma: tabla desktop + tarjetas mobile,
- * con búsqueda/filtros ya reflejados en la URL por la page. Las acciones
- * (activar/suspender, gestionar módulos) son Server Actions con feedback
- * en un banner auto-ocultable.
+ * Tabla principal de negocios. Toda la fila abre el drawer de detalle;
+ * los encabezados ordenan (server-side vía `sort` en la URL).
  */
 export default function TenantTable({
   rows,
-  query,
+  sort,
   page,
   totalPages,
   total,
 }: {
   rows: TenantListRow[];
-  query: string;
+  sort: TenantSortKey;
   page: number;
   totalPages: number;
   total: number;
 }) {
-  const [notice, setNotice] = useState<Notice>(null);
-  const [modulesTarget, setModulesTarget] = useState<TenantListRow | null>(
-    null,
-  );
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  // Los avisos se auto-ocultan a los 5 s.
-  useEffect(() => {
-    if (!notice) {
-      return;
-    }
-    const timer = setTimeout(() => setNotice(null), 5000);
-    return () => clearTimeout(timer);
-  }, [notice]);
+  const sortHref = useMemo(() => {
+    return (column: SortableColumn, direction: TenantSortKey) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("sort", direction);
+      params.delete("page");
+      return `${pathname}?${params.toString()}`;
+    };
+  }, [pathname, searchParams]);
 
-  const openTarget = rows.find((row) => row.id === modulesTarget?.id) ?? null;
+  const sortState = (column: SortableColumn): "asc" | "desc" | null => {
+    if (sort === SORT_ASC[column]) return "asc";
+    if (sort === SORT_DESC[column]) return "desc";
+    return null;
+  };
 
-  const toModalTarget = (row: TenantListRow): TenantModuleTarget => ({
-    id: row.id,
-    name: row.name,
-    slug: row.slug,
-    active: row.active,
-    vertical: row.vertical,
-    onboardingCompleted: row.onboardingCompleted,
-    ecosystem: row.ecosystem,
-    activeModules: row.modules,
-  });
+  if (rows.length === 0) {
+    return (
+      <div className="rounded-xl border border-dashed bg-card px-6 py-14 text-center">
+        <p className="text-sm font-medium">No hay negocios que coincidan.</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Ajusta la búsqueda o los filtros para ver resultados.
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4">
-      {/* Aviso de éxito/error */}
-      {notice ? (
-        <div
-          role="status"
-          className={[
-            "flex items-center justify-between gap-3 rounded-lg border px-4 py-2.5 text-sm",
-            notice.kind === "error"
-              ? "border-rose-200 bg-rose-50 text-rose-700"
-              : "border-emerald-200 bg-emerald-50 text-emerald-700",
-          ].join(" ")}
-        >
-          <span>{notice.text}</span>
-          <button
-            type="button"
-            aria-label="Cerrar aviso"
-            onClick={() => setNotice(null)}
-            className="rounded p-0.5 opacity-70 transition hover:opacity-100"
-          >
-            <span aria-hidden="true">✕</span>
-          </button>
-        </div>
-      ) : null}
-
-      {/* ---------- Estado vacío ---------- */}
-      {rows.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white px-6 py-12 text-center shadow-sm">
-          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-            <Store aria-hidden="true" className="h-6 w-6" />
-          </span>
-          <p className="mt-4 text-sm font-medium text-slate-900">
-            {query
-              ? `Sin coincidencias para «${query}»`
-              : "Aún no hay negocios en la plataforma"}
-          </p>
-          <p className="mx-auto mt-1 max-w-sm text-sm text-slate-500">
-            {query
-              ? "Prueba con otro término o limpia la búsqueda."
-              : "Crea el primer negocio con el botón «Nuevo negocio»."}
-          </p>
-        </div>
-      ) : (
-        <>
-          {/* ---------- Tabla (desktop) ---------- */}
-          <div className="hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm sm:block">
-            <table className="w-full text-left text-sm">
-              <caption className="sr-only">
-                Negocios de la plataforma Nexus Thrive
-              </caption>
-              <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                <tr>
-                  <th scope="col" className="px-4 py-3">
-                    Negocio
-                  </th>
-                  <th scope="col" className="px-4 py-3">
-                    Vertical
-                  </th>
-                  <th scope="col" className="px-4 py-3">
-                    Módulos
-                  </th>
-                  <th scope="col" className="px-4 py-3">
-                    Estado
-                  </th>
-                  <th scope="col" className="px-4 py-3">
-                    Onboarding
-                  </th>
-                  <th scope="col" className="px-4 py-3">
-                    Registrado
-                  </th>
-                  <th scope="col" className="px-4 py-3 text-right">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {rows.map((row) => (
-                  <tr key={row.id} className="transition hover:bg-slate-50/60">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
+    <>
+      <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[860px] border-collapse text-sm">
+            <thead>
+              <tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
+                <SortHeader
+                  label="Negocio"
+                  column="name"
+                  state={sortState("name")}
+                  hrefAsc={sortHref("name", SORT_ASC.name)}
+                  hrefDesc={sortHref("name", SORT_DESC.name)}
+                />
+                <th className="px-3 py-2.5 font-medium">Vertical</th>
+                <th className="px-3 py-2.5 font-medium">Estado</th>
+                <th className="px-3 py-2.5 font-medium">Onboarding</th>
+                <th className="px-3 py-2.5 font-medium">Módulos</th>
+                <th className="px-3 py-2.5 font-medium">Usuarios</th>
+                <SortHeader
+                  label="Última actividad"
+                  column="activity"
+                  state={sortState("activity")}
+                  hrefAsc={sortHref("activity", SORT_ASC.activity)}
+                  hrefDesc={sortHref("activity", SORT_DESC.activity)}
+                />
+                <SortHeader
+                  label="Creado"
+                  column="created"
+                  state={sortState("created")}
+                  hrefAsc={sortHref("created", SORT_ASC.created)}
+                  hrefDesc={sortHref("created", SORT_DESC.created)}
+                />
+                <th className="w-10 px-3 py-2.5" aria-label="Acciones" />
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => {
+                const visual = getVerticalIcon(row.vertical);
+                const VerticalIcon = visual.icon;
+                return (
+                  <tr
+                    key={row.id}
+                    onClick={() => setSelectedId(row.id)}
+                    className="cursor-pointer border-b last:border-0 transition hover:bg-muted/40"
+                  >
+                    <td className="px-3 py-3">
+                      <div className="flex items-center gap-2.5">
                         <span
-                          aria-hidden="true"
-                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700"
+                          className={cn(
+                            "inline-flex size-8 shrink-0 items-center justify-center rounded-md",
+                            visual.chipClass,
+                          )}
                         >
-                          {initialsOf(row.name)}
+                          <VerticalIcon
+                            aria-hidden="true"
+                            className="h-4 w-4"
+                          />
                         </span>
-                        <div className="min-w-0">
-                          <p className="truncate font-medium text-slate-900">
+                        <span className="min-w-0">
+                          <span className="block truncate font-medium">
                             {row.name}
-                          </p>
-                          <p className="truncate text-xs text-slate-500">
-                            <span className="font-mono">{row.slug}</span>
-                            {row.customDomain
-                              ? ` · ${row.customDomain}`
-                              : null}
-                          </p>
-                        </div>
+                          </span>
+                          <span className="block truncate font-mono text-xs text-muted-foreground">
+                            {row.customDomain ?? `${row.slug}`}
+                          </span>
+                        </span>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={cn(
-                          "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset",
-                          VERTICAL_TONES[row.vertical],
-                        )}
-                      >
-                        <span aria-hidden="true">
-                          {VERTICAL_ICONS[row.vertical]}
-                        </span>
-                        {VERTICAL_LABELS[row.vertical]}
-                      </span>
+                    <td className="px-3 py-3 text-muted-foreground">
+                      {VERTICAL_LABELS[row.vertical]}
                     </td>
-                    <td className="px-4 py-3">
-                      <TenantModuleBadges modules={row.modules} />
-                    </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-3">
                       <TenantStatusBadge active={row.active} />
                     </td>
-                    <td className="px-4 py-3">
-                      <OnboardingBadge completed={row.onboardingCompleted} />
+                    <td className="px-3 py-3">
+                      <OnboardingProgress row={row} />
                     </td>
-                    <td className="px-4 py-3 text-slate-600">
+                    <td className="px-3 py-3">
+                      <ModuleChips modules={row.modules} />
+                    </td>
+                    <td className="px-3 py-3">
+                      <span className="inline-flex items-center gap-1 text-muted-foreground">
+                        <Users aria-hidden="true" className="h-3.5 w-3.5" />
+                        {row.usersCount}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3 text-muted-foreground">
+                      {row.lastActivityLabel}
+                    </td>
+                    <td className="px-3 py-3 text-muted-foreground">
                       {row.createdAt}
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <a
-                          href={row.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title="Abrir negocio"
-                          aria-label={`Abrir ${row.name} en una pestaña nueva`}
-                          className={ICON_BUTTON}
-                        >
-                          <ExternalLink aria-hidden="true" className="h-3.5 w-3.5" />
-                          Abrir
-                        </a>
-                        <StatusToggle tenant={row} onNotice={setNotice} />
-                        <button
-                          type="button"
-                          title="Gestionar módulos"
-                          aria-label={`Gestionar módulos de ${row.name}`}
-                          onClick={() => setModulesTarget(row)}
-                          className={ICON_BUTTON}
-                        >
-                          <Settings2 aria-hidden="true" className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
+                    <td
+                      className="px-3 py-3"
+                      onClick={(event) => event.stopPropagation()}
+                    >
+                      <RowActions row={row} onOpen={() => setSelectedId(row.id)} />
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-          {/* ---------- Tarjetas (mobile) ---------- */}
-          <ul className="space-y-3 sm:hidden">
-            {rows.map((row) => (
-              <li
-                key={row.id}
-                className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
-              >
-                <div className="flex items-start gap-3">
-                  <span
-                    aria-hidden="true"
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700"
-                  >
-                    {initialsOf(row.name)}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-slate-900">
-                      {row.name}
-                    </p>
-                    <p className="truncate text-xs text-slate-500">
-                      <span className="font-mono">{row.slug}</span>
-                      {row.customDomain ? ` · ${row.customDomain}` : null}
-                    </p>
-                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                      <span
-                        className={cn(
-                          "inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset",
-                          VERTICAL_TONES[row.vertical],
-                        )}
-                      >
-                        <span aria-hidden="true">
-                          {VERTICAL_ICONS[row.vertical]}
-                        </span>
-                        {VERTICAL_LABELS[row.vertical]}
-                      </span>
-                      <TenantStatusBadge active={row.active} />
-                      <OnboardingBadge completed={row.onboardingCompleted} />
-                    </div>
-                    <div className="mt-2">
-                      <TenantModuleBadges modules={row.modules} />
-                    </div>
-                    <p className="mt-1.5 text-xs text-slate-500">
-                      Registrado {row.createdAt}
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-3 flex justify-end gap-1.5 border-t border-slate-100 pt-3">
-                  <a
-                    href={row.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Abrir ${row.name} en una pestaña nueva`}
-                    className={ICON_BUTTON}
-                  >
-                    <ExternalLink aria-hidden="true" className="h-3.5 w-3.5" />
-                    <span className="ml-1">Abrir</span>
-                  </a>
-                  <StatusToggle tenant={row} onNotice={setNotice} />
-                  <button
-                    type="button"
-                    aria-label={`Gestionar módulos de ${row.name}`}
-                    onClick={() => setModulesTarget(row)}
-                    className={ICON_BUTTON}
-                  >
-                    <Settings2 aria-hidden="true" className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-
-      {/* ---------- Paginación ---------- */}
       <PaginationLinks
         paramKey="page"
         page={page}
@@ -417,13 +211,136 @@ export default function TenantTable({
         totalLabel={`${total} ${total === 1 ? "negocio" : "negocios"}`}
       />
 
-      {/* ---------- Modal de módulos ---------- */}
-      {openTarget ? (
-        <TenantModal
-          tenant={toModalTarget(openTarget)}
-          onClose={() => setModulesTarget(null)}
+      <TenantDrawer
+        key={selectedId ?? "none"}
+        tenantId={selectedId}
+        onClose={() => setSelectedId(null)}
+      />
+    </>
+  );
+}
+
+function SortHeader({
+  label,
+  state,
+  hrefAsc,
+  hrefDesc,
+}: {
+  label: string;
+  column: SortableColumn;
+  state: "asc" | "desc" | null;
+  hrefAsc: string;
+  hrefDesc: string;
+}) {
+  const Icon = state === "asc" ? ArrowUp : state === "desc" ? ArrowDown : ArrowUpDown;
+  return (
+    <th className="px-3 py-2.5 font-medium">
+      <Link
+        href={(state === "asc" ? hrefDesc : hrefAsc)}
+        className="inline-flex items-center gap-1 transition hover:text-foreground"
+        scroll={false}
+      >
+        {label}
+        <Icon aria-hidden="true" className="h-3 w-3" />
+      </Link>
+    </th>
+  );
+}
+
+function OnboardingProgress({ row }: { row: TenantListRow }) {
+  const done = row.onboardingCompleted;
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span className="h-1.5 w-16 overflow-hidden rounded-full bg-muted">
+        <span
+          className={cn(
+            "block h-full rounded-full",
+            done ? "bg-emerald-500" : "bg-amber-500",
+          )}
+          style={{ width: `${row.onboardingProgress}%` }}
         />
+      </span>
+      <span className="text-xs tabular-nums text-muted-foreground">
+        {done ? "Completo" : `${row.onboardingProgress}%`}
+      </span>
+    </span>
+  );
+}
+
+function ModuleChips({ modules }: { modules: ModuleValue[] }) {
+  if (modules.length === 0) {
+    return <span className="text-xs text-muted-foreground">—</span>;
+  }
+  const visible = modules.slice(0, 2);
+  const rest = modules.slice(2);
+  return (
+    <span className="flex flex-wrap items-center gap-1">
+      {visible.map((module) => (
+        <span
+          key={module}
+          className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground"
+        >
+          {MODULE_LABELS[module]}
+        </span>
+      ))}
+      {rest.length > 0 ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground transition hover:bg-accent"
+            >
+              +{rest.length}
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {rest.map((module) => MODULE_LABELS[module]).join(" · ")}
+          </TooltipContent>
+        </Tooltip>
       ) : null}
-    </div>
+    </span>
+  );
+}
+
+function RowActions({
+  row,
+  onOpen,
+}: {
+  row: TenantListRow;
+  onOpen: () => void;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label={`Acciones de ${row.name}`}
+          className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
+        >
+          <MoreHorizontal aria-hidden="true" className="h-4 w-4" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-44">
+        <DropdownMenuItem onSelect={onOpen}>
+          <Eye aria-hidden="true" />
+          Ver detalle
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onSelect={() => {
+            void navigator.clipboard?.writeText(row.url);
+          }}
+        >
+          <Link2 aria-hidden="true" />
+          Copiar enlace
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <a href={row.url} target="_blank" rel="noopener noreferrer">
+            <ExternalLink aria-hidden="true" />
+            Abrir sitio
+          </a>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
