@@ -9,9 +9,9 @@ import type {
   DashboardMetric,
   RecentActivityItem,
 } from "@/lib/dashboard-types";
-import MetricCard from "../components/tenant/metric-card";
-import QuickActions from "../components/tenant/quick-actions";
-import RecentActivity from "../components/tenant/recent-activity";
+import MetricCard from "../../components/tenant/metric-card";
+import QuickActions from "../../components/tenant/quick-actions";
+import RecentActivity from "../../components/tenant/recent-activity";
 import MembershipSummary from "./memberships/_components/membership-summary";
 
 /**

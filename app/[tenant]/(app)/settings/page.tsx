@@ -1,5 +1,5 @@
 import { Settings } from "lucide-react";
-import ModulePlaceholder from "../../components/tenant/module-placeholder";
+import ModulePlaceholder from "../../../components/tenant/module-placeholder";
 
 export default function SettingsPage() {
   return (

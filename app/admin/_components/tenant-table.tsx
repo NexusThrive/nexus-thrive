@@ -27,6 +27,7 @@ const VERTICAL_TONES: Record<VerticalValue, string> = {
   barber: "bg-violet-50 text-violet-700 ring-violet-600/20",
   restaurant: "bg-amber-50 text-amber-700 ring-amber-600/20",
   services: "bg-slate-100 text-slate-600 ring-slate-500/20",
+  tourism: "bg-teal-50 text-teal-700 ring-teal-600/20",
 };
 
 function initialsOf(name: string): string {

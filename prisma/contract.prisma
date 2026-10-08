@@ -11,6 +11,7 @@ enum Vertical {
   barber
   restaurant
   services
+  tourism
 }
 
 enum ModuleName {
@@ -19,6 +20,7 @@ enum ModuleName {
   reservas
   pedidos
   presupuestos
+  crm
 }
 
 enum PaymentStatus {
@@ -54,8 +56,22 @@ model Tenant {
   customDomain String?  @unique
   vertical     Vertical @default(services)
   active       Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    temporal.updatedAt()
+
+  /// Wizard de onboarding: false = el tenant es nuevo y debe configurarse.
+  onboardingCompleted Boolean @default(false)
+  /// Identidad y ubicación (Paso 1 del onboarding).
+  city              String?
+  whatsappNumber    String?
+  /// Ecosistema digital (Paso 3 del onboarding).
+  websiteUrl        String?
+  instagramHandle   String?
+  googleBusinessUrl String?
+  /// Métodos de pago aceptados (Paso 4 del onboarding; catálogo PaymentProvider).
+  /// Nullable en DB: un tenant nuevo aún no los configuró; el código normaliza a [].
+  paymentMethods    PaymentProvider[]?
+
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
 
   users       User[]
   customers   Customer[]

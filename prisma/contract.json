@@ -93,6 +93,10 @@
               {
                 "name": "presupuestos",
                 "value": "presupuestos"
+              },
+              {
+                "name": "crm",
+                "value": "crm"
               }
             ]
           },
@@ -173,6 +177,10 @@
               {
                 "name": "services",
                 "value": "services"
+              },
+              {
+                "name": "tourism",
+                "value": "tourism"
               }
             ]
           }
@@ -796,6 +804,13 @@
                   "kind": "scalar"
                 }
               },
+              "city": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -810,6 +825,13 @@
                   "kind": "scalar"
                 }
               },
+              "googleBusinessUrl": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -817,8 +839,30 @@
                   "kind": "scalar"
                 }
               },
+              "instagramHandle": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "name": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "onboardingCompleted": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "paymentMethods": {
+                "many": true,
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -849,6 +893,20 @@
                   "entityName": "Vertical",
                   "namespaceId": "public",
                   "plane": "domain"
+                }
+              },
+              "websiteUrl": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "whatsappNumber": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
                 }
               }
             },
@@ -949,17 +1007,32 @@
                 "active": {
                   "column": "active"
                 },
+                "city": {
+                  "column": "city"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
                 "customDomain": {
                   "column": "customDomain"
                 },
+                "googleBusinessUrl": {
+                  "column": "googleBusinessUrl"
+                },
                 "id": {
                   "column": "id"
                 },
+                "instagramHandle": {
+                  "column": "instagramHandle"
+                },
                 "name": {
                   "column": "name"
+                },
+                "onboardingCompleted": {
+                  "column": "onboardingCompleted"
+                },
+                "paymentMethods": {
+                  "column": "paymentMethods"
                 },
                 "slug": {
                   "column": "slug"
@@ -969,6 +1042,12 @@
                 },
                 "vertical": {
                   "column": "vertical"
+                },
+                "websiteUrl": {
+                  "column": "websiteUrl"
+                },
+                "whatsappNumber": {
+                  "column": "whatsappNumber"
                 }
               },
               "namespaceId": "public",
@@ -1723,8 +1802,18 @@
             "Tenant": {
               "checks": [
                 {
-                  "expression": "\"vertical\" IN ('gym', 'barber', 'restaurant', 'services')",
-                  "name": "Tenant_vertical_check_030f2312",
+                  "expression": "\"paymentMethods\"::text[] <@ ARRAY['WOMPI', 'NEQUI', 'CASH', 'TRANSFER']::text[]",
+                  "name": "Tenant_paymentMethods_check_08fe4dd4",
+                  "prefix": "Tenant_paymentMethods_check"
+                },
+                {
+                  "expression": "array_position(\"paymentMethods\", NULL) IS NULL",
+                  "name": "Tenant_paymentMethods_elem_not_null_7b2f47d4",
+                  "prefix": "Tenant_paymentMethods_elem_not_null"
+                },
+                {
+                  "expression": "\"vertical\" IN ('gym', 'barber', 'restaurant', 'services', 'tourism')",
+                  "name": "Tenant_vertical_check_f471ba97",
                   "prefix": "Tenant_vertical_check"
                 }
               ],
@@ -1737,6 +1826,11 @@
                   },
                   "nativeType": "bool",
                   "nullable": false
+                },
+                "city": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "createdAt": {
                   "codecId": "pg/timestamptz-temporal@1",
@@ -1752,15 +1846,46 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "googleBusinessUrl": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "id": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
                 },
+                "instagramHandle": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "name": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "onboardingCompleted": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "paymentMethods": {
+                  "codecId": "pg/text@1",
+                  "many": true,
+                  "nativeType": "text",
+                  "nullable": true,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "PaymentProvider",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
                 },
                 "slug": {
                   "codecId": "pg/text@1",
@@ -1786,6 +1911,16 @@
                     "namespaceId": "public",
                     "plane": "storage"
                   }
+                },
+                "websiteUrl": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "whatsappNumber": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 }
               },
               "foreignKeys": [],
@@ -1820,8 +1955,8 @@
             "TenantModule": {
               "checks": [
                 {
-                  "expression": "\"moduleName\" IN ('caja_menor', 'membresias', 'reservas', 'pedidos', 'presupuestos')",
-                  "name": "TenantModule_moduleName_check_dc8fddad",
+                  "expression": "\"moduleName\" IN ('caja_menor', 'membresias', 'reservas', 'pedidos', 'presupuestos', 'crm')",
+                  "name": "TenantModule_moduleName_check_a86ce1f3",
                   "prefix": "TenantModule_moduleName_check"
                 }
               ],
@@ -2046,7 +2181,8 @@
                 "membresias",
                 "reservas",
                 "pedidos",
-                "presupuestos"
+                "presupuestos",
+                "crm"
               ]
             },
             "PaymentProvider": {
@@ -2081,7 +2217,8 @@
                 "gym",
                 "barber",
                 "restaurant",
-                "services"
+                "services",
+                "tourism"
               ]
             }
           }
@@ -2090,7 +2227,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "e8fa51ac45119a7235204964eb130965618e7be62de43dc4e735d9fd827b89ca"
+    "storageHash": "6cb666e0694ef89c25391291cfe0478b043465891719b81ff2a3216197465c1e"
   },
   "execution": {
     "executionHash": "e05314e6e8d33ee4549a2f80c7b86e1da5a87ba6bd440b2fe061db49ed1485ac",

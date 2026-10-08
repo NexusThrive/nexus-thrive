@@ -5,7 +5,13 @@
  * navegador ni literales duplicados.
  */
 
-export const VERTICALS = ["gym", "barber", "restaurant", "services"] as const;
+export const VERTICALS = [
+  "gym",
+  "barber",
+  "restaurant",
+  "services",
+  "tourism",
+] as const;
 export type VerticalValue = (typeof VERTICALS)[number];
 
 export const VERTICAL_LABELS: Record<VerticalValue, string> = {
@@ -13,6 +19,7 @@ export const VERTICAL_LABELS: Record<VerticalValue, string> = {
   barber: "Barbería",
   restaurant: "Restaurante",
   services: "Servicios",
+  tourism: "Turismo",
 };
 
 export const MODULES = [
@@ -21,6 +28,7 @@ export const MODULES = [
   "reservas",
   "pedidos",
   "presupuestos",
+  "crm",
 ] as const;
 export type ModuleValue = (typeof MODULES)[number];
 
@@ -30,6 +38,46 @@ export const MODULE_LABELS: Record<ModuleValue, string> = {
   reservas: "Reservas",
   pedidos: "Pedidos",
   presupuestos: "Presupuestos",
+  crm: "CRM",
+};
+
+/**
+ * Módulos que NEXUS activa automáticamente por vertical (onboarding y
+ * panel CEO usan este mismo catálogo). Centralizado: nunca se recibe del
+ * navegador como autoridad.
+ */
+export const DEFAULT_MODULES_BY_VERTICAL: Record<
+  VerticalValue,
+  readonly ModuleValue[]
+> = {
+  gym: ["membresias", "caja_menor", "crm"],
+  barber: ["reservas", "caja_menor", "crm"],
+  restaurant: ["pedidos", "caja_menor", "crm"],
+  services: ["presupuestos", "caja_menor", "crm"],
+  tourism: ["reservas", "caja_menor", "crm"],
+};
+
+/** Terminología principal que NEXUS usa por vertical (resumen del onboarding). */
+export const VERTICAL_TERMINOLOGY: Record<VerticalValue, string> = {
+  gym: "Membresías, planes y clientes recurrentes",
+  barber: "Citas, turnos y clientes frecuentes",
+  restaurant: "Pedidos, mesas y clientes",
+  services: "Cotizaciones, proyectos y consultas",
+  tourism: "Reservas, experiencias y visitantes",
+};
+
+/**
+ * Métodos de pago aceptados configurados por el negocio (Paso 4 del
+ * onboarding). Reutiliza los valores del enum `PaymentProvider` existente
+ * de la plataforma.
+ */
+export const PAYMENT_METHODS = ["CASH", "TRANSFER", "WOMPI"] as const;
+export type PaymentMethodValue = (typeof PAYMENT_METHODS)[number];
+
+export const PAYMENT_METHOD_LABELS: Record<PaymentMethodValue, string> = {
+  CASH: "Efectivo",
+  TRANSFER: "Transferencia (Nequi / Bancolombia)",
+  WOMPI: "Wompi — pagos en línea",
 };
 
 /**
@@ -105,6 +153,10 @@ export function isVertical(value: string): value is VerticalValue {
 
 export function isModule(value: string): value is ModuleValue {
   return (MODULES as readonly string[]).includes(value);
+}
+
+export function isPaymentMethod(value: string): value is PaymentMethodValue {
+  return (PAYMENT_METHODS as readonly string[]).includes(value);
 }
 
 /** Orden estable de módulos según el catálogo (para listas/badges). */

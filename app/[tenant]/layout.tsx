@@ -2,15 +2,21 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
-import Header from "../components/tenant/header";
-import Sidebar from "../components/tenant/sidebar";
-import { SidebarProvider } from "../components/tenant/sidebar-context";
 
 /**
- * Shell del negocio (multi-tenant).
+ * Shell multi-tenant: acceso.
  *
- * Server Component: resuelve tenant, acceso y usuario con Clerk + Prisma aquí,
- * y pasa al cliente únicamente strings serializables (`tenantName`, `tenantSlug`).
+ * Server Component que resuelve sesión (Clerk), tenant (existente y
+ * activo) y membresía del usuario. Es el ÚNICO responsable de autorización:
+ * - Sin sesión → sign-in.
+ * - Tenant inexistente/inactivo → 404.
+ * - No miembro (y el tenant tiene miembros) → "Sin acceso" sin renderizar
+ *   hijos.
+ * - Tenant vacío → bootstrap del primer OWNER.
+ *
+ * Los hijos (dashboard, módulos u onboarding) solo se renderizan cuando la
+ * membresía está confirmada. El layout de la ruta `(app)` decide después si
+ * redirigir a onboarding según `onboardingCompleted`.
  */
 export default async function TenantLayout({
   children,
@@ -68,22 +74,9 @@ export default async function TenantLayout({
     });
   }
 
-  return (
-    <SidebarProvider>
-      <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-        <Header tenantName={tenantRecord.name} />
-
-        <Sidebar
-          tenantSlug={tenantRecord.slug}
-          tenantName={tenantRecord.name}
-        />
-
-        <main className="px-4 py-6 sm:px-6 lg:py-8 lg:pl-[18rem] lg:pr-8">
-          {children}
-        </main>
-      </div>
-    </SidebarProvider>
-  );
+  // El shell visual (Header/Sidebar) vive en `(app)/layout.tsx`: el
+  // onboarding se ve a pantalla completa, sin el shell del negocio.
+  return <>{children}</>;
 }
 
 function AccessDenied({ tenantName }: { tenantName: string }) {

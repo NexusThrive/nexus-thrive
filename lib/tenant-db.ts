@@ -1,6 +1,10 @@
 import { and, or } from "@prisma/orm-postgres/orm-client";
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
+import {
+  DEFAULT_MODULES_BY_VERTICAL,
+  type VerticalValue,
+} from "@/lib/admin-catalogs";
 import type {
   PaymentMethodValue,
   PaymentStatusValue,
@@ -850,6 +854,114 @@ export function createTenantDb(tenantId: string) {
         db.orm.public.Membership
           .where({ id, tenantId })
           .update(data),
+    },
+
+    /**
+     * Wizard de onboarding del tenant (progresivo, idempotente).
+     *
+     * Todas las escrituras van POR `tenantId` (nunca se confía en un id o
+     * slug enviado por el navegador para resolver la fila) y el gates de la
+     * ruta ya validó membresía antes de que llegara una action.
+     */
+    onboarding: {
+      /**
+       * Activa los módulos por defecto de la vertical seleccionada.
+       * Idempotente: el upsert sobre `[tenantId, moduleName]` nunca crea
+       * duplicados aunque se re-ejecute (paso 2, finalización, reintentos).
+       */
+      activateModules: async (vertical: VerticalValue) => {
+        const modules = DEFAULT_MODULES_BY_VERTICAL[vertical];
+        await Promise.all(
+          modules.map((moduleName) =>
+            db.orm.public.TenantModule.upsert({
+              create: { tenantId, moduleName },
+              update: {},
+              conflictOn: { tenantId, moduleName },
+            }),
+          ),
+        );
+        return [...modules];
+      },
+
+      /** Paso 1: identidad y ubicación (el slug NO se toca desde aquí). */
+      saveIdentity: (data: {
+        name: string;
+        city: string;
+        whatsappNumber: string;
+      }) => db.orm.public.Tenant.where({ id: tenantId }).update(data),
+
+      /** Paso 2: vertical del negocio. */
+      setVertical: (vertical: VerticalValue) =>
+        db.orm.public.Tenant.where({ id: tenantId }).update({ vertical }),
+
+      /** Paso 3: ecosistema digital. */
+      saveEcosystem: (data: {
+        websiteUrl: string;
+        instagramHandle: string;
+        googleBusinessUrl: string;
+      }) => db.orm.public.Tenant.where({ id: tenantId }).update(data),
+
+      /** Paso 4: métodos de pago aceptados (catálogo de la plataforma). */
+      setPaymentMethods: (methods: readonly PaymentMethodValue[]) =>
+        db.orm.public.Tenant.where({ id: tenantId }).update({
+          paymentMethods: [...methods],
+        }),
+
+      /**
+       * Finalización del wizard: re-activa los módulos de la vertical,
+       * crea los clientes iniciales opcionales (dedupe) y marca
+       * `onboardingCompleted = true` — TODO en una transacción. Si algo
+       * falla, nada queda a medias y el tenant sigue en onboarding.
+       */
+      complete: async (input: {
+        customers: { name: string; phone: string; email: string }[];
+      }) =>
+        db.transaction(async (tx) => {
+          const tenant = await tx.orm.public.Tenant
+            .where({ id: tenantId })
+            .first();
+          if (!tenant) {
+            throw new Error("Tenant no encontrado para completar onboarding.");
+          }
+
+          // Módulos según la vertical persistida (nunca la del navegador).
+          for (const moduleName of DEFAULT_MODULES_BY_VERTICAL[tenant.vertical]) {
+            await tx.orm.public.TenantModule.upsert({
+              create: { tenantId, moduleName },
+              update: {},
+              conflictOn: { tenantId, moduleName },
+            });
+          }
+
+          // Clientes iniciales opcionales: solo se crean si no existe ya
+          // una fila con el mismo teléfono (o correo) en ESTE tenant.
+          let created = 0;
+          for (const row of input.customers) {
+            let byCustomer = tx.orm.public.Customer.where({ tenantId });
+            byCustomer = row.email
+              ? byCustomer.where((customer) =>
+                  or(customer.phone.eq(row.phone), customer.email.eq(row.email)),
+                )
+              : byCustomer.where((customer) => customer.phone.eq(row.phone));
+
+            const existing = await byCustomer.first();
+            if (!existing) {
+              await tx.orm.public.Customer.create({
+                name: row.name,
+                phone: row.phone,
+                email: row.email,
+                tenantId,
+              });
+              created += 1;
+            }
+          }
+
+          await tx.orm.public.Tenant.where({ id: tenantId }).update({
+            onboardingCompleted: true,
+          });
+
+          return { createdCustomers: created, vertical: tenant.vertical };
+        }),
     },
   };
 }

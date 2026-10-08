@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'e8fa51ac45119a7235204964eb130965618e7be62de43dc4e735d9fd827b89ca'>;
+  StorageHashBase<'6cb666e0694ef89c25391291cfe0478b043465891719b81ff2a3216197465c1e'>;
 export type ExecutionHash =
   ExecutionHashBase<'e05314e6e8d33ee4549a2f80c7b86e1da5a87ba6bd440b2fe061db49ed1485ac'>;
 export type ProfileHash =
@@ -298,19 +298,27 @@ export type FieldOutputTypes = {
     };
     readonly Tenant: {
       readonly active: CodecTypes['pg/bool@1']['output'];
+      readonly city: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly customDomain: CodecTypes['pg/text@1']['output'] | null;
+      readonly googleBusinessUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
+      readonly instagramHandle: CodecTypes['pg/text@1']['output'] | null;
       readonly name: CodecTypes['pg/text@1']['output'];
+      readonly onboardingCompleted: CodecTypes['pg/bool@1']['output'];
+      readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-      readonly vertical: 'gym' | 'barber' | 'restaurant' | 'services';
+      readonly vertical: 'gym' | 'barber' | 'restaurant' | 'services' | 'tourism';
+      readonly websiteUrl: CodecTypes['pg/text@1']['output'] | null;
+      readonly whatsappNumber: CodecTypes['pg/text@1']['output'] | null;
     };
     readonly TenantModule: {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
-      readonly moduleName: 'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos';
+      readonly moduleName:
+        'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos' | 'crm';
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
@@ -376,19 +384,27 @@ export type FieldInputTypes = {
     };
     readonly Tenant: {
       readonly active: CodecTypes['pg/bool@1']['input'];
+      readonly city: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly customDomain: CodecTypes['pg/text@1']['input'] | null;
+      readonly googleBusinessUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
+      readonly instagramHandle: CodecTypes['pg/text@1']['input'] | null;
       readonly name: CodecTypes['pg/text@1']['input'];
+      readonly onboardingCompleted: CodecTypes['pg/bool@1']['input'];
+      readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
       readonly slug: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
-      readonly vertical: 'gym' | 'barber' | 'restaurant' | 'services';
+      readonly vertical: 'gym' | 'barber' | 'restaurant' | 'services' | 'tourism';
+      readonly websiteUrl: CodecTypes['pg/text@1']['input'] | null;
+      readonly whatsappNumber: CodecTypes['pg/text@1']['input'] | null;
     };
     readonly TenantModule: {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
-      readonly moduleName: 'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos';
+      readonly moduleName:
+        'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos' | 'crm';
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
@@ -454,19 +470,27 @@ export type StorageColumnTypes = {
     };
     readonly Tenant: {
       readonly active: CodecTypes['pg/bool@1']['output'];
+      readonly city: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly customDomain: CodecTypes['pg/text@1']['output'] | null;
+      readonly googleBusinessUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
+      readonly instagramHandle: CodecTypes['pg/text@1']['output'] | null;
       readonly name: CodecTypes['pg/text@1']['output'];
+      readonly onboardingCompleted: CodecTypes['pg/bool@1']['output'];
+      readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-      readonly vertical: 'gym' | 'barber' | 'restaurant' | 'services';
+      readonly vertical: 'gym' | 'barber' | 'restaurant' | 'services' | 'tourism';
+      readonly websiteUrl: CodecTypes['pg/text@1']['output'] | null;
+      readonly whatsappNumber: CodecTypes['pg/text@1']['output'] | null;
     };
     readonly TenantModule: {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
-      readonly moduleName: 'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos';
+      readonly moduleName:
+        'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos' | 'crm';
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
@@ -532,19 +556,27 @@ export type StorageColumnInputTypes = {
     };
     readonly Tenant: {
       readonly active: CodecTypes['pg/bool@1']['input'];
+      readonly city: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly customDomain: CodecTypes['pg/text@1']['input'] | null;
+      readonly googleBusinessUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
+      readonly instagramHandle: CodecTypes['pg/text@1']['input'] | null;
       readonly name: CodecTypes['pg/text@1']['input'];
+      readonly onboardingCompleted: CodecTypes['pg/bool@1']['input'];
+      readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
       readonly slug: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
-      readonly vertical: 'gym' | 'barber' | 'restaurant' | 'services';
+      readonly vertical: 'gym' | 'barber' | 'restaurant' | 'services' | 'tourism';
+      readonly websiteUrl: CodecTypes['pg/text@1']['input'] | null;
+      readonly whatsappNumber: CodecTypes['pg/text@1']['input'] | null;
     };
     readonly TenantModule: {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
-      readonly moduleName: 'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos';
+      readonly moduleName:
+        'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos' | 'crm';
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
@@ -624,13 +656,20 @@ export namespace Models {
   };
   export type public_Tenant = {
     active: CodecTypes['pg/bool@1']['output'];
+    city: CodecTypes['pg/text@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     customDomain: CodecTypes['pg/text@1']['output'] | null;
+    googleBusinessUrl: CodecTypes['pg/text@1']['output'] | null;
     id: CodecTypes['pg/text@1']['output'];
+    instagramHandle: CodecTypes['pg/text@1']['output'] | null;
     name: CodecTypes['pg/text@1']['output'];
+    onboardingCompleted: CodecTypes['pg/bool@1']['output'];
+    paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
     slug: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-    vertical: 'gym' | 'barber' | 'restaurant' | 'services';
+    vertical: 'gym' | 'barber' | 'restaurant' | 'services' | 'tourism';
+    websiteUrl: CodecTypes['pg/text@1']['output'] | null;
+    whatsappNumber: CodecTypes['pg/text@1']['output'] | null;
     customers: public_Customer[];
     expenses: public_Expense[];
     memberships: public_Membership[];
@@ -644,7 +683,7 @@ export namespace Models {
     active: CodecTypes['pg/bool@1']['output'];
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     id: CodecTypes['pg/text@1']['output'];
-    moduleName: 'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos';
+    moduleName: 'caja_menor' | 'membresias' | 'reservas' | 'pedidos' | 'presupuestos' | 'crm';
     tenantId: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     tenant: public_Tenant;
@@ -1094,6 +1133,11 @@ type ContractBase = Omit<
                     readonly value: DefaultLiteralValue<'pg/bool@1', true>;
                   };
                 };
+                readonly city: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly createdAt: {
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
@@ -1105,15 +1149,39 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
+                readonly googleBusinessUrl: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly id: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
+                readonly instagramHandle: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly name: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                };
+                readonly onboardingCompleted: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+                  };
+                };
+                readonly paymentMethods: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                 };
                 readonly slug: {
                   readonly nativeType: 'text';
@@ -1133,6 +1201,16 @@ type ContractBase = Omit<
                     readonly kind: 'literal';
                     readonly value: DefaultLiteralValue<'pg/text@1', 'services'>;
                   };
+                };
+                readonly websiteUrl: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly whatsappNumber: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
@@ -1304,6 +1382,7 @@ type ContractBase = Omit<
                 'reservas',
                 'pedidos',
                 'presupuestos',
+                'crm',
               ];
             };
             readonly PaymentProvider: {
@@ -1320,7 +1399,7 @@ type ContractBase = Omit<
             };
             readonly Vertical: {
               readonly kind: 'valueSet';
-              readonly values: readonly ['gym', 'barber', 'restaurant', 'services'];
+              readonly values: readonly ['gym', 'barber', 'restaurant', 'services', 'tourism'];
             };
           };
         };
@@ -1745,6 +1824,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
               };
+              readonly city: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly createdAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -1756,13 +1839,30 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly googleBusinessUrl: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly id: {
                 readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly instagramHandle: {
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly name: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly onboardingCompleted: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly paymentMethods: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+                readonly many: true;
               };
               readonly slug: {
                 readonly nullable: false;
@@ -1777,6 +1877,14 @@ type ContractBase = Omit<
               };
               readonly vertical: {
                 readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly websiteUrl: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly whatsappNumber: {
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
             };
@@ -1850,13 +1958,20 @@ type ContractBase = Omit<
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly active: { readonly column: 'active' };
+                readonly city: { readonly column: 'city' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly customDomain: { readonly column: 'customDomain' };
+                readonly googleBusinessUrl: { readonly column: 'googleBusinessUrl' };
                 readonly id: { readonly column: 'id' };
+                readonly instagramHandle: { readonly column: 'instagramHandle' };
                 readonly name: { readonly column: 'name' };
+                readonly onboardingCompleted: { readonly column: 'onboardingCompleted' };
+                readonly paymentMethods: { readonly column: 'paymentMethods' };
                 readonly slug: { readonly column: 'slug' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
                 readonly vertical: { readonly column: 'vertical' };
+                readonly websiteUrl: { readonly column: 'websiteUrl' };
+                readonly whatsappNumber: { readonly column: 'whatsappNumber' };
               };
             };
           };
@@ -2016,6 +2131,7 @@ type ContractBase = Omit<
               { readonly name: 'reservas'; readonly value: 'reservas' },
               { readonly name: 'pedidos'; readonly value: 'pedidos' },
               { readonly name: 'presupuestos'; readonly value: 'presupuestos' },
+              { readonly name: 'crm'; readonly value: 'crm' },
             ];
           };
           readonly PaymentProvider: {
@@ -2051,6 +2167,7 @@ type ContractBase = Omit<
               { readonly name: 'barber'; readonly value: 'barber' },
               { readonly name: 'restaurant'; readonly value: 'restaurant' },
               { readonly name: 'services'; readonly value: 'services' },
+              { readonly name: 'tourism'; readonly value: 'tourism' },
             ];
           };
         };
