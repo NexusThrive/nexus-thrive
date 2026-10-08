@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useActionState, useState } from "react";
-import { Building2, Check, Loader2, X } from "lucide-react";
+import { Building2, Check, Loader2, User, X } from "lucide-react";
 import {
   createTenantAction,
   checkSlugAvailabilityAction,
   type AdminFormState,
 } from "../actions";
 import {
-  DEFAULT_MODULES_BY_VERTICAL,
   MODULE_LABELS,
   MODULES,
   VERTICAL_ICONS,
@@ -16,6 +15,12 @@ import {
   VERTICALS,
   type VerticalValue,
 } from "@/lib/admin-catalogs";
+import {
+  TEAM_SIZE_LABELS,
+  type OnboardingTenantType,
+  type TeamSizeValue,
+} from "@/lib/onboarding/types";
+import { getOnboardingModulePreset } from "@/lib/onboarding/presets";
 
 const IDLE_STATE: AdminFormState = { status: "idle" };
 const SLUG_DEBOUNCE_MS = 350;
@@ -43,8 +48,19 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
   const [modules, setModules] = useState<ReadonlySet<string>>(
     new Set(state.values?.modules ?? []),
   );
-  // Si el CEO aún no tocó los módulos a mano, elegir vertical preselecciona
-  // la receta del catálogo (VERTICAL_RECIPES → DEFAULT_MODULES_BY_VERTICAL).
+  // Perfil adaptativo del onboarding: Empresa (default) / Persona individual.
+  const [tenantType, setTenantType] = useState<OnboardingTenantType>(
+    state.values?.tenantType === "INDIVIDUAL" ? "INDIVIDUAL" : "COMPANY",
+  );
+  const [legalName, setLegalName] = useState(state.values?.legalName ?? "");
+  const [taxId, setTaxId] = useState(state.values?.taxId ?? "");
+  const [teamSize, setTeamSize] = useState<TeamSizeValue | "">(
+    state.values?.teamSize ?? "",
+  );
+  const [address, setAddress] = useState(state.values?.address ?? "");
+  // Si el CEO aún no tocó los módulos a mano, elegir vertical/perfil
+  // preselecciona la receta adaptativa (tenantType + vertical), igual que
+  // el wizard de onboarding del integrante.
   const [modulesTouched, setModulesTouched] = useState(false);
   // Última respuesta del servidor; se deriva `slugStatus` para no llamar
   // setState de forma síncrona dentro de un effect.
@@ -124,6 +140,30 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
     });
   };
 
+  // Receta adaptativa (misma regla que el wizard: INDIVIDUAL quita los
+  // módulos pesados de equipo). Solo actúa mientras el CEO no tocó módulos.
+  const applyPreset = (
+    nextTenantType: OnboardingTenantType,
+    nextVertical: VerticalValue | "",
+  ) => {
+    if (modulesTouched || !nextVertical) {
+      return;
+    }
+    setModules(
+      new Set(
+        getOnboardingModulePreset({
+          tenantType: nextTenantType,
+          vertical: nextVertical,
+        }),
+      ),
+    );
+  };
+
+  const changeTenantType = (next: OnboardingTenantType) => {
+    setTenantType(next);
+    applyPreset(next, vertical);
+  };
+
   const slugHint =
     slugStatus === "checking"
       ? "Verificando…"
@@ -179,6 +219,53 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
         </div>
 
         <form action={formAction} className="mt-5 space-y-4" noValidate>
+          {/* Perfil del onboarding (Empresa / Persona individual) */}
+          <fieldset>
+            <legend className="text-sm font-medium text-slate-700">
+              Perfil del negocio
+            </legend>
+            <p className="mt-0.5 text-xs text-slate-500">
+              Define cómo se presenta el negocio en NEXUS; el integrante
+              confirma el resto en su onboarding.
+            </p>
+            <input type="hidden" name="tenantType" value={tenantType} />
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => changeTenantType("COMPANY")}
+                aria-pressed={tenantType === "COMPANY"}
+                className={[
+                  "flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm font-medium transition",
+                  tenantType === "COMPANY"
+                    ? "border-indigo-500 bg-indigo-50 text-indigo-700"
+                    : "border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                ].join(" ")}
+              >
+                <Building2 aria-hidden="true" className="h-4 w-4 shrink-0" />
+                Empresa
+              </button>
+              <button
+                type="button"
+                onClick={() => changeTenantType("INDIVIDUAL")}
+                aria-pressed={tenantType === "INDIVIDUAL"}
+                className={[
+                  "flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm font-medium transition",
+                  tenantType === "INDIVIDUAL"
+                    ? "border-indigo-500 bg-indigo-50 text-indigo-700"
+                    : "border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                ].join(" ")}
+              >
+                <User aria-hidden="true" className="h-4 w-4 shrink-0" />
+                Persona individual
+              </button>
+            </div>
+            {errors.tenantType ? (
+              <p role="alert" className="mt-1 text-xs text-rose-600">
+                {errors.tenantType}
+              </p>
+            ) : null}
+          </fieldset>
+
           {/* Nombre del negocio */}
           <div>
             <label
@@ -193,7 +280,11 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
               type="text"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder="Ej: Gimnasio Carlos"
+              placeholder={
+                tenantType === "COMPANY"
+                  ? "Ej: Gimnasio Carlos"
+                  : "Ej: Ana Diseñadora"
+              }
               aria-invalid={Boolean(errors.name)}
               className={[
                 "mt-1 h-10 w-full rounded-lg border bg-white px-3 text-sm text-slate-900 transition focus:outline-2",
@@ -208,6 +299,149 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
               </p>
             ) : null}
           </div>
+
+          {/* Razón social (solo Empresa, opcional) */}
+          {tenantType === "COMPANY" ? (
+            <div>
+              <label
+                htmlFor="tenant-legal-name"
+                className="text-sm font-medium text-slate-700"
+              >
+                Razón social{" "}
+                <span className="font-normal text-slate-400">(opcional)</span>
+              </label>
+              <input
+                id="tenant-legal-name"
+                name="legalName"
+                type="text"
+                value={legalName}
+                onChange={(event) => setLegalName(event.target.value)}
+                placeholder="Ej: Gimnasio Carlos S.A.S."
+                aria-invalid={Boolean(errors.legalName)}
+                className={[
+                  "mt-1 h-10 w-full rounded-lg border bg-white px-3 text-sm text-slate-900 transition focus:outline-2",
+                  errors.legalName
+                    ? "border-rose-300 focus:border-rose-400 focus:outline-rose-500/30"
+                    : "border-slate-200 hover:border-slate-300 focus:border-indigo-400 focus:outline-indigo-500/30",
+                ].join(" ")}
+              />
+              {errors.legalName ? (
+                <p role="alert" className="mt-1 text-xs text-rose-600">
+                  {errors.legalName}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+
+          {/* NIT / RUT (opcional; quien lo omita lo completa en el onboarding) */}
+          <div>
+            <label
+              htmlFor="tenant-tax-id"
+              className="text-sm font-medium text-slate-700"
+            >
+              {tenantType === "COMPANY" ? "NIT / RUT" : "Documento (CC / NIT)"}{" "}
+              <span className="font-normal text-slate-400">(opcional)</span>
+            </label>
+            <input
+              id="tenant-tax-id"
+              name="taxId"
+              type="text"
+              value={taxId}
+              onChange={(event) => setTaxId(event.target.value)}
+              placeholder={
+                tenantType === "COMPANY" ? "Ej: 901123456" : "Ej: 1036654321"
+              }
+              aria-invalid={Boolean(errors.taxId)}
+              className={[
+                "mt-1 h-10 w-full rounded-lg border bg-white px-3 text-sm text-slate-900 transition focus:outline-2",
+                errors.taxId
+                  ? "border-rose-300 focus:border-rose-400 focus:outline-rose-500/30"
+                  : "border-slate-200 hover:border-slate-300 focus:border-indigo-400 focus:outline-indigo-500/30",
+              ].join(" ")}
+            />
+            {errors.taxId ? (
+              <p role="alert" className="mt-1 text-xs text-rose-600">
+                {errors.taxId}
+              </p>
+            ) : null}
+          </div>
+
+          {/* Tamaño del equipo (solo Empresa, opcional) */}
+          {tenantType === "COMPANY" ? (
+            <div>
+              <label
+                htmlFor="tenant-team-size"
+                className="text-sm font-medium text-slate-700"
+              >
+                Equipo{" "}
+                <span className="font-normal text-slate-400">(opcional)</span>
+              </label>
+              <select
+                id="tenant-team-size"
+                name="teamSize"
+                value={teamSize}
+                onChange={(event) =>
+                  setTeamSize(event.target.value as TeamSizeValue | "")
+                }
+                aria-invalid={Boolean(errors.teamSize)}
+                className={[
+                  "mt-1 h-10 w-full appearance-none rounded-lg border bg-white px-3 text-sm text-slate-900 transition focus:outline-2",
+                  errors.teamSize
+                    ? "border-rose-300 focus:border-rose-400 focus:outline-rose-500/30"
+                    : "border-slate-200 hover:border-slate-300 focus:border-indigo-400 focus:outline-indigo-500/30",
+                ].join(" ")}
+              >
+                <option value="" disabled>
+                  Sin dato (se confirma en el onboarding)…
+                </option>
+                {Object.entries(TEAM_SIZE_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+              {errors.teamSize ? (
+                <p role="alert" className="mt-1 text-xs text-rose-600">
+                  {errors.teamSize}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+
+          {/* Dirección / REMOTE (solo Empresa, opcional) */}
+          {tenantType === "COMPANY" ? (
+            <div>
+              <label
+                htmlFor="tenant-address"
+                className="text-sm font-medium text-slate-700"
+              >
+                Dirección{" "}
+                <span className="font-normal text-slate-400">
+                  (opcional · «REMOTE» si no tiene sede)
+                </span>
+              </label>
+              <input
+                id="tenant-address"
+                name="address"
+                type="text"
+                value={address}
+                onChange={(event) => setAddress(event.target.value)}
+                placeholder="Ej: Cra 15 # 82-52, Bogotá"
+                aria-invalid={Boolean(errors.address)}
+                className={[
+                  "mt-1 h-10 w-full rounded-lg border bg-white px-3 text-sm text-slate-900 transition focus:outline-2",
+                  errors.address
+                    ? "border-rose-300 focus:border-rose-400 focus:outline-rose-500/30"
+                    : "border-slate-200 hover:border-slate-300 focus:border-indigo-400 focus:outline-indigo-500/30",
+                ].join(" ")}
+              />
+              {errors.address ? (
+                <p role="alert" className="mt-1 text-xs text-rose-600">
+                  {errors.address}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
 
           {/* Slug (subdominio) con check en vivo */}
           <div>
@@ -269,9 +503,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
               onChange={(event) => {
                 const next = event.target.value as VerticalValue | "";
                 setVertical(next);
-                if (!modulesTouched && next) {
-                  setModules(new Set(DEFAULT_MODULES_BY_VERTICAL[next]));
-                }
+                applyPreset(tenantType, next);
               }}
               aria-invalid={Boolean(errors.vertical)}
               className={[

@@ -7,12 +7,24 @@ import {
   type ModuleValue,
   type VerticalValue,
 } from "@/lib/admin-catalogs";
+import {
+  TEAM_SIZES,
+  type OnboardingTenantType,
+  type TeamSizeValue,
+} from "@/lib/onboarding/types";
+import { TAX_ID_PATTERN } from "@/lib/onboarding/validation";
 
 export type TenantFormValues = {
   name: string;
   slug: string;
   vertical: VerticalValue | "";
   modules: ModuleValue[];
+  /** Perfil adaptativo del onboarding (Empresa / Persona individual). */
+  tenantType: OnboardingTenantType | "";
+  legalName: string;
+  taxId: string;
+  teamSize: TeamSizeValue | "";
+  address: string;
 };
 
 export type TenantFieldErrors = Partial<
@@ -20,7 +32,13 @@ export type TenantFieldErrors = Partial<
 >;
 
 export type TenantValidation =
-  | { ok: true; values: TenantFormValues & { vertical: VerticalValue } }
+  | {
+      ok: true;
+      values: TenantFormValues & {
+        vertical: VerticalValue;
+        tenantType: OnboardingTenantType;
+      };
+    }
   | {
       ok: false;
       errors: TenantFieldErrors;
@@ -31,6 +49,10 @@ export type TenantValidation =
  * Validación de creación de tenant en el servidor. El slug se normaliza y
  * valida aquí SIEMPRE (nunca se confía en el form) y los módulos deben
  * pertenecer al catálogo de la plataforma.
+ *
+ * Los campos del perfil adaptativo son un PREFILL del CEO: formato válido
+ * si vienen, pero no obligatorios (el wizard de onboarding del integrante
+ * exige lo que necesite según su perfil: NIT/equipo/dirección en Empresa).
  */
 export function validateTenantForm(formData: FormData): TenantValidation {
   const name = String(formData.get("name") ?? "").trim();
@@ -39,15 +61,31 @@ export function validateTenantForm(formData: FormData): TenantValidation {
   const rawModules = formData
     .getAll("modules")
     .map((entry) => String(entry).trim());
+  const rawTenantType = String(formData.get("tenantType") ?? "").trim();
+  const rawTeamSize = String(formData.get("teamSize") ?? "").trim();
 
   // Duplicados defensivos desde el cliente.
   const modules = [...new Set(rawModules)];
+
+  const legalName = String(formData.get("legalName") ?? "").trim();
+  const taxId = String(formData.get("taxId") ?? "").trim();
+  const address = String(formData.get("address") ?? "").trim();
 
   const values: TenantFormValues = {
     name,
     slug: rawSlug,
     vertical: isVertical(rawVertical) ? rawVertical : "",
     modules: modules.filter(isModule),
+    tenantType:
+      rawTenantType === "INDIVIDUAL" || rawTenantType === "COMPANY"
+        ? rawTenantType
+        : "",
+    legalName,
+    taxId,
+    teamSize: (TEAM_SIZES as readonly string[]).includes(rawTeamSize)
+      ? (rawTeamSize as TeamSizeValue)
+      : "",
+    address,
   };
 
   const errors: TenantFieldErrors = {};
@@ -69,6 +107,24 @@ export function validateTenantForm(formData: FormData): TenantValidation {
     errors.vertical = "Selecciona una vertical válida.";
   }
 
+  if (!values.tenantType) {
+    errors.tenantType = "Selecciona un perfil válido.";
+  } else {
+    if (legalName.length > 0 && legalName.length < 2) {
+      errors.legalName = "Mínimo 2 caracteres.";
+    } else if (legalName.length > 120) {
+      errors.legalName = "Máximo 120 caracteres.";
+    }
+
+    if (taxId.length > 0 && !TAX_ID_PATTERN.test(taxId)) {
+      errors.taxId = "Formato: 5–15 dígitos (opcional sufijo -01).";
+    }
+
+    if (address.length > 120) {
+      errors.address = "Máximo 120 caracteres.";
+    }
+  }
+
   // Un módulo desconocido es error explícito: la lista viene manipulada.
   if (modules.some((module) => !isModule(module))) {
     errors.modules = "Módulo no válido.";
@@ -87,6 +143,11 @@ export function validateTenantForm(formData: FormData): TenantValidation {
       slug: slugValidation.slug,
       vertical: rawVertical as VerticalValue,
       modules: modules.filter(isModule),
+      tenantType: values.tenantType as OnboardingTenantType,
+      legalName,
+      taxId,
+      teamSize: values.teamSize,
+      address,
     },
   };
 }

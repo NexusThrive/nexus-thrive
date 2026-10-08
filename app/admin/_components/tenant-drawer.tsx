@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { MODULE_LABELS, VERTICAL_LABELS } from "@/lib/admin-catalogs";
+import { TEAM_SIZE_LABELS, type TeamSizeValue } from "@/lib/onboarding/types";
 import { paymentMethodLabel } from "@/lib/finance";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import type { TenantDetail } from "@/lib/admin-db";
@@ -364,6 +365,26 @@ function ResumenTab({ detail }: { detail: TenantDetail }) {
           Identidad y ubicación
         </h3>
         <dl className="mt-2 grid grid-cols-1 gap-1 text-sm sm:grid-cols-2">
+          <InfoRow
+            label="Perfil"
+            value={
+              detail.tenantType === "INDIVIDUAL"
+                ? "Persona individual"
+                : "Empresa"
+            }
+          />
+          <InfoRow label="Razón social" value={detail.legalName} />
+          <InfoRow label="NIT / RUT" value={detail.taxId} />
+          <InfoRow
+            label="Equipo"
+            value={
+              detail.teamSize
+                ? (TEAM_SIZE_LABELS[detail.teamSize as TeamSizeValue] ??
+                  detail.teamSize)
+                : null
+            }
+          />
+          <InfoRow label="Dirección" value={detail.address} />
           <InfoRow label="Ciudad" value={detail.city} />
           <InfoRow
             label="Dominio personalizado"

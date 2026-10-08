@@ -36,7 +36,7 @@ const CITY_MAX = 80;
 const ADDRESS_MAX = 200;
 
 /** NIT/RUT: dígitos con separadores opcionales (p. ej. 901.234.567-9). */
-const TAX_ID_PATTERN = /^[\d]{5,15}(?:[-.][\d]{1,2})?$/;
+export const TAX_ID_PATTERN = /^[\d]{5,15}(?:[-.][\d]{1,2})?$/;
 
 const clean = (value: unknown) =>
   typeof value === "string" ? value.trim() : "";

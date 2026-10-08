@@ -16,6 +16,7 @@ import {
   type ModuleValue,
   type VerticalValue,
 } from "@/lib/admin-catalogs";
+import type { OnboardingTenantType } from "@/lib/onboarding/types";
 
 /**
  * Capa de datos GLOBAL de la plataforma (capa /admin).
@@ -134,6 +135,12 @@ export type TenantListRow = {
   slug: string;
   customDomain: string | null;
   vertical: VerticalValue;
+  /** Perfil adaptativo del onboarding (Empresa / Persona individual). */
+  tenantType: OnboardingTenantType;
+  legalName: string | null;
+  taxId: string | null;
+  teamSize: string | null;
+  address: string | null;
   active: boolean;
   /** Motivo de la última suspensión administrativa (historial). */
   suspendedReason: string | null;
@@ -194,6 +201,12 @@ export type TenantDetail = {
   slug: string;
   customDomain: string | null;
   vertical: VerticalValue;
+  /** Perfil adaptativo del onboarding (Empresa / Persona individual). */
+  tenantType: OnboardingTenantType;
+  legalName: string | null;
+  taxId: string | null;
+  teamSize: string | null;
+  address: string | null;
   active: boolean;
   suspendedReason: string | null;
   suspendedAt: string | null;
@@ -282,6 +295,11 @@ type TenantRowSource = {
   slug: string;
   customDomain: string | null;
   vertical: VerticalValue;
+  tenantType: OnboardingTenantType;
+  legalName: string | null;
+  taxId: string | null;
+  teamSize: string | null;
+  address: string | null;
   active: boolean;
   onboardingCompleted: boolean;
   city: string | null;
@@ -372,6 +390,11 @@ function buildTenantRow(
     slug: row.slug,
     customDomain: row.customDomain ?? null,
     vertical: row.vertical,
+    tenantType: row.tenantType,
+    legalName: row.legalName ?? null,
+    taxId: row.taxId ?? null,
+    teamSize: row.teamSize ?? null,
+    address: row.address ?? null,
     active: row.active,
     suspendedReason: row.suspendedReason ?? null,
     city: row.city ?? null,
@@ -716,12 +739,22 @@ export function createAdminDb() {
       slug: string;
       vertical: VerticalValue;
       modules: ModuleValue[];
+      tenantType: OnboardingTenantType;
+      legalName?: string | null;
+      taxId?: string | null;
+      teamSize?: string | null;
+      address?: string | null;
     }) =>
       db.transaction(async (tx) => {
         const tenant = await tx.orm.public.Tenant.create({
           name: data.name,
           slug: data.slug,
           vertical: data.vertical,
+          tenantType: data.tenantType,
+          legalName: data.legalName?.trim() ? data.legalName.trim() : null,
+          taxId: data.taxId?.trim() ? data.taxId.trim() : null,
+          teamSize: data.teamSize?.trim() ? data.teamSize.trim() : null,
+          address: data.address?.trim() ? data.address.trim() : null,
         });
 
         for (const moduleName of data.modules) {
@@ -828,6 +861,11 @@ export function createAdminDb() {
         slug: tenant.slug,
         customDomain: tenant.customDomain ?? null,
         vertical: tenant.vertical,
+        tenantType: tenant.tenantType,
+        legalName: tenant.legalName ?? null,
+        taxId: tenant.taxId ?? null,
+        teamSize: tenant.teamSize ?? null,
+        address: tenant.address ?? null,
         active: tenant.active,
         suspendedReason: tenant.suspendedReason ?? null,
         suspendedAt: tenant.suspendedAt

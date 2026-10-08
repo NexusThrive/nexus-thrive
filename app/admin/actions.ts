@@ -126,7 +126,8 @@ export async function createTenantAction(
     };
   }
 
-  const { name, slug, vertical, modules } = validation.values;
+  const { name, slug, vertical, modules, tenantType, legalName, taxId, teamSize, address } =
+    validation.values;
   const adminDb = createAdminDb();
 
   if (await adminDb.slugExists(slug)) {
@@ -138,7 +139,17 @@ export async function createTenantAction(
   }
 
   try {
-    await adminDb.createTenant({ name, slug, vertical, modules });
+    await adminDb.createTenant({
+      name,
+      slug,
+      vertical,
+      modules,
+      tenantType,
+      legalName,
+      taxId,
+      teamSize,
+      address,
+    });
   } catch (error) {
     // Colisión de slug por carrera (constraint único en DB) u otro fallo
     // del motor: la transacción ya revirtió todo.
@@ -154,7 +165,7 @@ export async function createTenantAction(
   await audit(actor, {
     action: "CREATE_TENANT",
     targetTenantName: name,
-    metadata: { slug, vertical, modules },
+    metadata: { slug, vertical, modules, tenantType, taxId, teamSize },
   });
 
   revalidateAdmin();
