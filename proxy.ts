@@ -32,6 +32,13 @@ export default clerkMiddleware(async (auth, request) => {
     );
   }
 
+  if (pathname === "/onboarding") {
+    // Onboarding adaptativo top-level: desde un subdominio de tenant NO se
+    // reescribe a /{tenant}/onboarding (wizard clásico). El gate de `(app)`
+    // reanuda el tenant pendiente vía ?tenant=<slug>.
+    return NextResponse.next();
+  }
+
   if (
     subdomain &&
     subdomain !== "app" &&

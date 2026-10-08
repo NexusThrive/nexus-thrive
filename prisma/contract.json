@@ -249,6 +249,19 @@
               }
             ]
           },
+          "TenantType": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "INDIVIDUAL",
+                "value": "INDIVIDUAL"
+              },
+              {
+                "name": "COMPANY",
+                "value": "COMPANY"
+              }
+            ]
+          },
           "Vertical": {
             "codecId": "pg/text@1",
             "members": [
@@ -1909,6 +1922,13 @@
                   "kind": "scalar"
                 }
               },
+              "address": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "city": {
                 "nullable": true,
                 "type": {
@@ -1945,6 +1965,13 @@
                 }
               },
               "instagramHandle": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "legalName": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
@@ -1992,6 +2019,33 @@
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
+                }
+              },
+              "taxId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "teamSize": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "TenantType",
+                  "namespaceId": "public",
+                  "plane": "domain"
                 }
               },
               "updatedAt": {
@@ -2186,6 +2240,9 @@
                 "active": {
                   "column": "active"
                 },
+                "address": {
+                  "column": "address"
+                },
                 "city": {
                   "column": "city"
                 },
@@ -2204,6 +2261,9 @@
                 "instagramHandle": {
                   "column": "instagramHandle"
                 },
+                "legalName": {
+                  "column": "legalName"
+                },
                 "name": {
                   "column": "name"
                 },
@@ -2221,6 +2281,15 @@
                 },
                 "suspendedReason": {
                   "column": "suspendedReason"
+                },
+                "taxId": {
+                  "column": "taxId"
+                },
+                "teamSize": {
+                  "column": "teamSize"
+                },
+                "tenantType": {
+                  "column": "tenantType"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
@@ -3812,6 +3881,11 @@
                   "prefix": "Tenant_paymentMethods_elem_not_null"
                 },
                 {
+                  "expression": "\"tenantType\" IN ('INDIVIDUAL', 'COMPANY')",
+                  "name": "Tenant_tenantType_check_0d8e073f",
+                  "prefix": "Tenant_tenantType_check"
+                },
+                {
                   "expression": "\"vertical\" IN ('gym', 'tourism_agency', 'hospitality', 'construction', 'carpentry', 'restaurant', 'retail', 'beauty', 'healthcare', 'mechanic', 'education', 'real_estate', 'hardware_store', 'nautical_transport', 'tour_guides', 'events')",
                   "name": "Tenant_vertical_check_739779ca",
                   "prefix": "Tenant_vertical_check"
@@ -3826,6 +3900,11 @@
                   },
                   "nativeType": "bool",
                   "nullable": false
+                },
+                "address": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "city": {
                   "codecId": "pg/text@1",
@@ -3857,6 +3936,11 @@
                   "nullable": false
                 },
                 "instagramHandle": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "legalName": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
@@ -3901,6 +3985,31 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
+                },
+                "taxId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "teamSize": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "tenantType": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "COMPANY"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "TenantType",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
                 },
                 "updatedAt": {
                   "codecId": "pg/timestamptz-temporal@1",
@@ -4240,6 +4349,13 @@
                 "STAFF"
               ]
             },
+            "TenantType": {
+              "kind": "valueSet",
+              "values": [
+                "INDIVIDUAL",
+                "COMPANY"
+              ]
+            },
             "Vertical": {
               "kind": "valueSet",
               "values": [
@@ -4267,7 +4383,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "fdb9466b51a0aca5f38161535d1ec7c1cb57e791de0e41d9c27bbb4b00ba3855"
+    "storageHash": "ab7da12f6f749e6e7969c5c15132adb9038598e0fe4266d6700d84799c0b8e5a"
   },
   "execution": {
     "executionHash": "64b703c5c02d3b67602a942432cf9cbf61159f0d86f8a3fcb5c2baa6f02d8615",

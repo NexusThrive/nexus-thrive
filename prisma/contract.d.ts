@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'fdb9466b51a0aca5f38161535d1ec7c1cb57e791de0e41d9c27bbb4b00ba3855'>;
+  StorageHashBase<'ab7da12f6f749e6e7969c5c15132adb9038598e0fe4266d6700d84799c0b8e5a'>;
 export type ExecutionHash =
   ExecutionHashBase<'64b703c5c02d3b67602a942432cf9cbf61159f0d86f8a3fcb5c2baa6f02d8615'>;
 export type ProfileHash =
@@ -373,18 +373,23 @@ export type FieldOutputTypes = {
     };
     readonly Tenant: {
       readonly active: CodecTypes['pg/bool@1']['output'];
+      readonly address: CodecTypes['pg/text@1']['output'] | null;
       readonly city: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly customDomain: CodecTypes['pg/text@1']['output'] | null;
       readonly googleBusinessUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly instagramHandle: CodecTypes['pg/text@1']['output'] | null;
+      readonly legalName: CodecTypes['pg/text@1']['output'] | null;
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['output'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly suspendedReason: CodecTypes['pg/text@1']['output'] | null;
+      readonly taxId: CodecTypes['pg/text@1']['output'] | null;
+      readonly teamSize: CodecTypes['pg/text@1']['output'] | null;
+      readonly tenantType: 'INDIVIDUAL' | 'COMPANY';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly vertical:
         | 'gym'
@@ -562,18 +567,23 @@ export type FieldInputTypes = {
     };
     readonly Tenant: {
       readonly active: CodecTypes['pg/bool@1']['input'];
+      readonly address: CodecTypes['pg/text@1']['input'] | null;
       readonly city: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly customDomain: CodecTypes['pg/text@1']['input'] | null;
       readonly googleBusinessUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly instagramHandle: CodecTypes['pg/text@1']['input'] | null;
+      readonly legalName: CodecTypes['pg/text@1']['input'] | null;
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['input'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
       readonly slug: CodecTypes['pg/text@1']['input'];
       readonly suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly suspendedReason: CodecTypes['pg/text@1']['input'] | null;
+      readonly taxId: CodecTypes['pg/text@1']['input'] | null;
+      readonly teamSize: CodecTypes['pg/text@1']['input'] | null;
+      readonly tenantType: 'INDIVIDUAL' | 'COMPANY';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly vertical:
         | 'gym'
@@ -751,18 +761,23 @@ export type StorageColumnTypes = {
     };
     readonly Tenant: {
       readonly active: CodecTypes['pg/bool@1']['output'];
+      readonly address: CodecTypes['pg/text@1']['output'] | null;
       readonly city: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly customDomain: CodecTypes['pg/text@1']['output'] | null;
       readonly googleBusinessUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly instagramHandle: CodecTypes['pg/text@1']['output'] | null;
+      readonly legalName: CodecTypes['pg/text@1']['output'] | null;
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['output'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly suspendedReason: CodecTypes['pg/text@1']['output'] | null;
+      readonly taxId: CodecTypes['pg/text@1']['output'] | null;
+      readonly teamSize: CodecTypes['pg/text@1']['output'] | null;
+      readonly tenantType: 'INDIVIDUAL' | 'COMPANY';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly vertical:
         | 'gym'
@@ -940,18 +955,23 @@ export type StorageColumnInputTypes = {
     };
     readonly Tenant: {
       readonly active: CodecTypes['pg/bool@1']['input'];
+      readonly address: CodecTypes['pg/text@1']['input'] | null;
       readonly city: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly customDomain: CodecTypes['pg/text@1']['input'] | null;
       readonly googleBusinessUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly instagramHandle: CodecTypes['pg/text@1']['input'] | null;
+      readonly legalName: CodecTypes['pg/text@1']['input'] | null;
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['input'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
       readonly slug: CodecTypes['pg/text@1']['input'];
       readonly suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly suspendedReason: CodecTypes['pg/text@1']['input'] | null;
+      readonly taxId: CodecTypes['pg/text@1']['input'] | null;
+      readonly teamSize: CodecTypes['pg/text@1']['input'] | null;
+      readonly tenantType: 'INDIVIDUAL' | 'COMPANY';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly vertical:
         | 'gym'
@@ -1167,18 +1187,23 @@ export namespace Models {
   };
   export type public_Tenant = {
     active: CodecTypes['pg/bool@1']['output'];
+    address: CodecTypes['pg/text@1']['output'] | null;
     city: CodecTypes['pg/text@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     customDomain: CodecTypes['pg/text@1']['output'] | null;
     googleBusinessUrl: CodecTypes['pg/text@1']['output'] | null;
     id: CodecTypes['pg/text@1']['output'];
     instagramHandle: CodecTypes['pg/text@1']['output'] | null;
+    legalName: CodecTypes['pg/text@1']['output'] | null;
     name: CodecTypes['pg/text@1']['output'];
     onboardingCompleted: CodecTypes['pg/bool@1']['output'];
     paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
     slug: CodecTypes['pg/text@1']['output'];
     suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     suspendedReason: CodecTypes['pg/text@1']['output'] | null;
+    taxId: CodecTypes['pg/text@1']['output'] | null;
+    teamSize: CodecTypes['pg/text@1']['output'] | null;
+    tenantType: 'INDIVIDUAL' | 'COMPANY';
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     vertical:
       | 'gym'
@@ -2314,6 +2339,11 @@ type ContractBase = Omit<
                     readonly value: DefaultLiteralValue<'pg/bool@1', true>;
                   };
                 };
+                readonly address: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly city: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -2341,6 +2371,11 @@ type ContractBase = Omit<
                   readonly nullable: false;
                 };
                 readonly instagramHandle: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly legalName: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
@@ -2378,6 +2413,25 @@ type ContractBase = Omit<
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
+                };
+                readonly taxId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly teamSize: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly tenantType: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'COMPANY'>;
+                  };
                 };
                 readonly updatedAt: {
                   readonly nativeType: 'timestamptz';
@@ -2596,6 +2650,10 @@ type ContractBase = Omit<
             readonly Role: {
               readonly kind: 'valueSet';
               readonly values: readonly ['SUPERADMIN', 'OWNER', 'STAFF'];
+            };
+            readonly TenantType: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['INDIVIDUAL', 'COMPANY'];
             };
             readonly Vertical: {
               readonly kind: 'valueSet';
@@ -3664,6 +3722,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
               };
+              readonly address: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly city: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -3688,6 +3750,10 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly instagramHandle: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly legalName: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
@@ -3717,6 +3783,18 @@ type ContractBase = Omit<
               };
               readonly suspendedReason: {
                 readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly taxId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly teamSize: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantType: {
+                readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly updatedAt: {
@@ -3853,18 +3931,23 @@ type ContractBase = Omit<
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly active: { readonly column: 'active' };
+                readonly address: { readonly column: 'address' };
                 readonly city: { readonly column: 'city' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly customDomain: { readonly column: 'customDomain' };
                 readonly googleBusinessUrl: { readonly column: 'googleBusinessUrl' };
                 readonly id: { readonly column: 'id' };
                 readonly instagramHandle: { readonly column: 'instagramHandle' };
+                readonly legalName: { readonly column: 'legalName' };
                 readonly name: { readonly column: 'name' };
                 readonly onboardingCompleted: { readonly column: 'onboardingCompleted' };
                 readonly paymentMethods: { readonly column: 'paymentMethods' };
                 readonly slug: { readonly column: 'slug' };
                 readonly suspendedAt: { readonly column: 'suspendedAt' };
                 readonly suspendedReason: { readonly column: 'suspendedReason' };
+                readonly taxId: { readonly column: 'taxId' };
+                readonly teamSize: { readonly column: 'teamSize' };
+                readonly tenantType: { readonly column: 'tenantType' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
                 readonly vertical: { readonly column: 'vertical' };
                 readonly websiteUrl: { readonly column: 'websiteUrl' };
@@ -4089,6 +4172,13 @@ type ContractBase = Omit<
               { readonly name: 'SUPERADMIN'; readonly value: 'SUPERADMIN' },
               { readonly name: 'OWNER'; readonly value: 'OWNER' },
               { readonly name: 'STAFF'; readonly value: 'STAFF' },
+            ];
+          };
+          readonly TenantType: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'INDIVIDUAL'; readonly value: 'INDIVIDUAL' },
+              { readonly name: 'COMPANY'; readonly value: 'COMPANY' },
             ];
           };
           readonly Vertical: {

@@ -6,6 +6,14 @@ enum Role {
   STAFF
 }
 
+/// Perfil del negocio en el onboarding auto-servicio: persona natural vs empresa.
+enum TenantType {
+  /// Emprendedor / persona natural (perfil liviano: sin NIT obligatorio).
+  INDIVIDUAL
+  /// Empresa / negocio establecido (perfil completo: NIT, tamaño, dirección).
+  COMPANY
+}
+
 enum Vertical {
   gym
   tourism_agency
@@ -91,6 +99,18 @@ model Tenant {
 
   /// Wizard de onboarding: false = el tenant es nuevo y debe configurarse.
   onboardingCompleted Boolean @default(false)
+  /// Perfil adaptativo (onboarding auto-servicio). Las reglas de validación
+  /// viven en lib/onboarding/validation.ts; estos campos son la persistencia.
+  tenantType TenantType @default(COMPANY)
+  /// Razón social (solo COMPANY; el nombre comercial vive en `name`).
+  legalName String?
+  /// NIT/RUT (obligatorio en COMPANY, opcional en INDIVIDUAL).
+  taxId String?
+  /// Tamaño del equipo: "SOLO" | "2-5" | "6-20" | "20+" (guardado como texto
+  /// validado por la app; el enum rígido dificultaría agregar rangos).
+  teamSize String?
+  /// Dirección física; "REMOTE" si el negocio no tiene local.
+  address String?
   /// Identidad y ubicación (Paso 1 del onboarding).
   city              String?
   whatsappNumber    String?
