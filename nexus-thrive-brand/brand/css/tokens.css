@@ -1,0 +1,132 @@
+/* ==========================================================================
+   NEXUS THRIVE — Design tokens
+   Origen: el logo (bloque negro sólido, cortes diagonales blancos, esquinas
+   rectas). De ahí salen: negro dominante, oro como único acento, radios casi
+   nulos y bordes en lugar de sombras.
+   Proporción de uso: 60% neutros oscuros/Ink, 30% blanco/Paper, 10% oro.
+   ========================================================================== */
+
+:root {
+  /* --- Marca (primitivos) --- */
+  --nx-ink: #000000;
+  --nx-white: #ffffff;
+  --nx-paper: #f7f6f3;
+
+  --nx-gold-100: #f6ebc4;
+  --nx-gold-300: #e6cb74;
+  --nx-gold-500: #d4af37;
+  --nx-gold-600: #b8921f;
+  --nx-gold-700: #7f6210;
+
+  --nx-graphite-950: #0a0a0b;
+  --nx-graphite-900: #141416;
+  --nx-graphite-800: #1e1e21;
+  --nx-graphite-700: #2a2a2e;
+  --nx-graphite-500: #6b6b73;
+  --nx-graphite-400: #a1a1a8;
+  --nx-graphite-200: #e8e6e1;
+  --nx-graphite-100: #f2f1ee;
+
+  /* Estados: solo funcionales, nunca decorativos */
+  --nx-success: #2e7d5b;
+  --nx-danger: #b3261e;
+
+  /* --- Tipografía --- */
+  --font-display: var(--font-montserrat, "Montserrat"), "Segoe UI", system-ui, sans-serif;
+  --font-sans: var(--font-inter, "Inter"), "Segoe UI", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains, "JetBrains Mono"), ui-monospace, "SFMono-Regular", monospace;
+
+  --text-xs: 0.75rem;   --lh-xs: 1rem;
+  --text-sm: 0.875rem;  --lh-sm: 1.25rem;
+  --text-base: 1rem;    --lh-base: 1.5rem;
+  --text-lg: 1.125rem;  --lh-lg: 1.75rem;
+  --text-xl: 1.25rem;   --lh-xl: 1.75rem;
+  --text-2xl: 1.5rem;   --lh-2xl: 2rem;
+  --text-3xl: 1.875rem; --lh-3xl: 2.25rem;
+  --text-4xl: 2.5rem;   --lh-4xl: 2.75rem;
+  --text-5xl: 3.25rem;  --lh-5xl: 3.5rem;
+
+  /* --- Forma: esquinas casi rectas, como la N del logo --- */
+  --radius-none: 0;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+
+  /* --- Espaciado base 4px --- */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+  --space-12: 48px; --space-16: 64px; --space-20: 80px;
+
+  /* --- Movimiento --- */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* --- Layout de la app --- */
+  --sidebar-width: 248px;
+  --sidebar-width-collapsed: 64px;
+  --topbar-height: 56px;
+  --content-max: 1280px;
+
+  /* --- Semánticos: MODO CLARO (por defecto) --- */
+  --background: var(--nx-paper);
+  --surface: var(--nx-white);
+  --surface-muted: var(--nx-graphite-100);
+  --surface-inverse: var(--nx-ink);
+  --border: var(--nx-graphite-200);
+  --border-strong: #cfcdc7;
+
+  --foreground: var(--nx-graphite-950);
+  --foreground-muted: var(--nx-graphite-500);
+  --foreground-inverse: var(--nx-paper);
+
+  --primary: var(--nx-ink);
+  --primary-foreground: var(--nx-paper);
+  --primary-hover: var(--nx-graphite-800);
+  --accent: var(--nx-gold-500);
+  --accent-hover: var(--nx-gold-600);
+  --accent-foreground: var(--nx-ink);
+  --accent-text: var(--nx-gold-700);
+  --accent-subtle: var(--nx-gold-100);
+
+  --ring: var(--nx-gold-600);
+  --success: var(--nx-success);
+  --danger: var(--nx-danger);
+  --warning-bg: var(--nx-gold-100);
+  --warning-fg: var(--nx-gold-700);
+
+  --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* --- MODO OSCURO --- */
+.dark,
+[data-theme="dark"] {
+  --background: var(--nx-graphite-950);
+  --surface: var(--nx-graphite-900);
+  --surface-muted: var(--nx-graphite-800);
+  --surface-inverse: var(--nx-ink);
+  --border: var(--nx-graphite-700);
+  --border-strong: #3a3a40;
+
+  --foreground: var(--nx-paper);
+  --foreground-muted: var(--nx-graphite-400);
+  --foreground-inverse: var(--nx-paper);
+
+  --primary: var(--nx-gold-500);
+  --primary-foreground: var(--nx-ink);
+  --primary-hover: var(--nx-gold-300);
+  --accent: var(--nx-gold-500);
+  --accent-hover: var(--nx-gold-300);
+  --accent-foreground: var(--nx-ink);
+  --accent-text: var(--nx-gold-500);
+  --accent-subtle: rgba(212, 175, 55, 0.14);
+
+  --ring: var(--nx-gold-500);
+  --success: #3fa57a;
+  --danger: #e5564d;
+  --warning-bg: rgba(212, 175, 55, 0.14);
+  --warning-fg: var(--nx-gold-300);
+
+  --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.6);
+}

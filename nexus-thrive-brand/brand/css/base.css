@@ -1,0 +1,144 @@
+/* NEXUS THRIVE — Estilos base. Importar DESPUÉS de tokens.css */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; color-scheme: light; }
+html.dark, html[data-theme="dark"] { color-scheme: dark; }
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--lh-base);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Cifras tabulares: imprescindible en finanzas, caja menor y presupuestos */
+table, .tabular, input[type="number"] { font-variant-numeric: tabular-nums; }
+
+/* --- Títulos: Montserrat, en minúsculas normales (sentence case) --- */
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 { font-size: var(--text-4xl); line-height: var(--lh-4xl); font-weight: 700; }
+h2 { font-size: var(--text-3xl); line-height: var(--lh-3xl); }
+h3 { font-size: var(--text-2xl); line-height: var(--lh-2xl); }
+h4 { font-size: var(--text-xl);  line-height: var(--lh-xl); }
+
+p { margin: 0; max-width: 72ch; }
+small, .text-small { font-size: var(--text-sm); line-height: var(--lh-sm); }
+.text-muted { color: var(--foreground-muted); }
+code, kbd, pre { font-family: var(--font-mono); font-size: 0.9em; }
+
+/* --- Wordmark: ÚNICO lugar con mayúsculas y tracking amplio (como THRIVE en el logo) --- */
+.nx-wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+}
+
+/* --- Foco visible siempre --- */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+::selection { background: var(--nx-gold-500); color: var(--nx-ink); }
+
+/* --- Motivo de marca: el corte diagonal de la N.
+   Uso: un solo elemento por pantalla (divisor, indicador, cierre de sección). --- */
+.nx-slash {
+  display: inline-block;
+  width: 4px;
+  height: 1.5em;
+  background: var(--accent);
+  transform: skewX(-24deg);
+}
+.nx-cut-corner {
+  clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+}
+
+/* --- Navegación lateral (sobre superficie Ink) --- */
+.nx-nav-item {
+  position: relative;
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--nx-paper);
+  opacity: 0.72;
+  transition: opacity var(--motion-fast) var(--ease), background var(--motion-fast) var(--ease);
+}
+.nx-nav-item:hover { opacity: 1; background: rgba(255, 255, 255, 0.06); }
+.nx-nav-item[aria-current="page"] { opacity: 1; background: rgba(255, 255, 255, 0.08); }
+.nx-nav-item[aria-current="page"]::before {
+  content: ""; position: absolute; left: 0; top: 6px; bottom: 6px;
+  width: 3px; background: var(--nx-gold-500);
+}
+
+/* --- Botones --- */
+.nx-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  height: 40px; padding: 0 var(--space-5);
+  font: 600 var(--text-sm)/1 var(--font-sans);
+  border: 1px solid transparent; border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease), border-color var(--motion-fast) var(--ease);
+}
+.nx-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.nx-btn--primary { background: var(--primary); color: var(--primary-foreground); }
+.nx-btn--primary:hover:not(:disabled) { background: var(--primary-hover); }
+.nx-btn--accent { background: var(--accent); color: var(--accent-foreground); }
+.nx-btn--accent:hover:not(:disabled) { background: var(--accent-hover); }
+.nx-btn--outline { background: transparent; color: var(--foreground); border-color: var(--border-strong); }
+.nx-btn--outline:hover:not(:disabled) { background: var(--surface-muted); }
+.nx-btn--danger { background: var(--danger); color: #fff; }
+
+/* --- Tarjetas: borde, no sombra --- */
+.nx-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+}
+
+/* --- Inputs --- */
+.nx-input {
+  width: 100%; height: 40px; padding: 0 var(--space-3);
+  background: var(--surface); color: var(--foreground);
+  border: 1px solid var(--border-strong); border-radius: var(--radius-md);
+  font: 400 var(--text-sm)/1 var(--font-sans);
+}
+.nx-input::placeholder { color: var(--foreground-muted); }
+.nx-input:focus-visible { outline-offset: 0; border-color: var(--ring); }
+
+/* --- Badges (el significado nunca depende solo del color: lleva texto) --- */
+.nx-badge {
+  display: inline-flex; align-items: center; padding: 2px var(--space-2);
+  font: 500 var(--text-xs)/var(--lh-xs) var(--font-sans);
+  border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: var(--surface-muted); color: var(--foreground);
+}
+.nx-badge--gold { background: var(--warning-bg); color: var(--warning-fg); border-color: transparent; }
+
+/* --- Tablas --- */
+.nx-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.nx-table th {
+  text-align: left; font-weight: 600; color: var(--foreground-muted);
+  padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--border-strong);
+}
+.nx-table td { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--border); }
+.nx-table td.num, .nx-table th.num { text-align: right; }
+.nx-table tbody tr:hover { background: var(--surface-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
