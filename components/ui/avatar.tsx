@@ -5,6 +5,11 @@ import * as AvatarPrimitive from "@radix-ui/react-avatar";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * Avatar NEXUS THRIVE: cuadrado, radio 4 px. Nada de círculos de colores.
+ * Fallback en tinta con inicial paper (oro con inicial negra en modo oscuro,
+ * vía los tokens `--primary` / `--primary-foreground`).
+ */
 function Avatar({
   className,
   ...props
@@ -13,7 +18,7 @@ function Avatar({
     <AvatarPrimitive.Root
       data-slot="avatar"
       className={cn(
-        "relative flex size-8 shrink-0 overflow-hidden rounded-full",
+        "relative flex size-8 shrink-0 overflow-hidden rounded",
         className,
       )}
       {...props}
@@ -42,7 +47,7 @@ function AvatarFallback({
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
       className={cn(
-        "bg-muted flex size-full items-center justify-center rounded-full text-muted-foreground",
+        "flex size-full items-center justify-center rounded bg-primary text-xs font-semibold text-primary-foreground",
         className,
       )}
       {...props}

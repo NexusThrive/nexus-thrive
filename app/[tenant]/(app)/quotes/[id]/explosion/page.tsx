@@ -25,7 +25,7 @@ function metricCard(
   tone: string,
 ) {
   return (
-    <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
+    <article className="rounded-lg border border-border bg-card p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-muted-foreground">
@@ -127,7 +127,7 @@ export default async function QuoteExplosionPage({
           <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             Explosión de Materiales
           </h1>
-          <span className="rounded-full border border-border bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
+          <span className="rounded-sm border border-border bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
             {explosion.quote.code} · {explosion.quote.title}
           </span>
         </div>
@@ -169,7 +169,7 @@ export default async function QuoteExplosionPage({
         )}
       </div>
 
-      <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
+      <article className="rounded-lg border border-border bg-card p-5">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="text-sm font-medium text-muted-foreground">
@@ -189,7 +189,7 @@ export default async function QuoteExplosionPage({
       </article>
 
       {resourceCount === 0 ? (
-        <div className="rounded-lg border border-border bg-card px-6 py-16 text-center shadow-xs">
+        <div className="rounded-lg border border-border bg-card px-6 py-16 text-center">
           <p className="text-sm font-medium text-foreground/80">
             No existen composiciones APU disponibles para generar la
             explosión.

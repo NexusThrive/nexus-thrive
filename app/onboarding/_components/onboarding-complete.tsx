@@ -118,7 +118,7 @@ export default function OnboardingComplete({
   return (
     <div className="space-y-5">
       <div className="rounded-lg border border-border bg-card p-6 text-center sm:p-8">
-        <span className="mx-auto grid size-14 place-items-center rounded-full bg-gold-500 text-ink ring-8 ring-gold-500/15">
+        <span className="mx-auto grid size-14 place-items-center rounded-sm bg-gold-500 text-ink ring-8 ring-gold-500/15">
           <Sparkles className="size-7" aria-hidden="true" />
         </span>
         <h2 className="mt-4 text-xl font-bold text-foreground">
@@ -170,7 +170,7 @@ export default function OnboardingComplete({
 
       <Link
         href={`/${slug}`}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gold-500 px-4 py-2.5 text-sm font-semibold text-ink shadow-xs transition hover:bg-gold-600"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gold-500 px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-gold-600"
       >
         Entrar a mi espacio NEXUS
         <ArrowRight className="size-4" aria-hidden="true" />

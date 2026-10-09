@@ -36,7 +36,7 @@ export default function OnboardingProgress({
               <span
                 aria-current={isActive ? "step" : undefined}
                 className={cn(
-                  "grid size-8 shrink-0 place-items-center rounded-full text-xs font-semibold transition",
+                  "grid size-8 shrink-0 place-items-center rounded-sm text-xs font-semibold transition",
                   isDone &&
                     "bg-gold-500 text-ink ring-4 ring-gold-500/20",
                   isActive &&
@@ -65,7 +65,7 @@ export default function OnboardingProgress({
               <span
                 aria-hidden="true"
                 className={cn(
-                  "h-px flex-1 rounded-full",
+                  "h-px flex-1 rounded-sm",
                   isDone ? "bg-gold-500" : "bg-border",
                 )}
               />

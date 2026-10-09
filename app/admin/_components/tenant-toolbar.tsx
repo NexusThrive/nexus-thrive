@@ -32,12 +32,15 @@ export default function TenantToolbar({
   status,
   sort,
   attentionOnly,
+  attentionCount,
 }: {
   q: string;
   vertical?: VerticalValue;
   status?: "active" | "inactive";
   sort: TenantSortKey;
   attentionOnly: boolean;
+  /** Negocios que requieren atención (para el contador del botón). */
+  attentionCount?: number;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -107,25 +110,37 @@ export default function TenantToolbar({
           disabled={isPending}
           aria-pressed={attentionOnly}
           className={cn(
-            "inline-flex h-10 items-center gap-1.5 rounded-lg border px-3 text-sm font-medium transition disabled:opacity-60",
+            "inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded border px-3 text-[13px] font-semibold transition disabled:opacity-60",
             attentionOnly
-              ? "border-gold-500/20 bg-gold-100 text-gold-700"
-              : "border-border bg-card text-foreground/80 hover:bg-muted",
+              ? "border-transparent bg-primary text-primary-foreground"
+              : "border-border-strong bg-transparent text-foreground hover:bg-surface-muted",
           )}
         >
           {isPending ? (
             <NLoader size={16} className="text-current" />
           ) : (
-            <TriangleAlert aria-hidden="true" className="h-4 w-4" />
+            <TriangleAlert aria-hidden="true" className="size-4" />
           )}
           Requieren atención
+          {typeof attentionCount === "number" && attentionCount > 0 ? (
+            <span
+              className={cn(
+                "ml-0.5 inline-flex min-w-[18px] items-center justify-center rounded-sm px-1 text-[11px] font-semibold tabular-nums",
+                attentionOnly
+                  ? "bg-primary-foreground/20 text-primary-foreground"
+                  : "bg-gold-100 text-gold-700",
+              )}
+            >
+              {attentionCount}
+            </span>
+          ) : null}
         </button>
 
         <a
           href={exportHref}
-          className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted"
+          className="inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded border border-border-strong px-3 text-[13px] font-semibold text-foreground transition hover:bg-surface-muted"
         >
-          <Download aria-hidden="true" className="h-4 w-4" />
+          <Download aria-hidden="true" className="size-4" />
           Exportar CSV
         </a>
       </div>

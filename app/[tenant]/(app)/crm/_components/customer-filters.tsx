@@ -62,7 +62,7 @@ export default function CustomerFilters({
             }
             className={
               status === option.value
-                ? "rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground shadow-xs"
+                ? "rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
                 : "rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
             }
           >

@@ -78,7 +78,7 @@ export default function OnboardingShell({
     <div className="min-h-screen bg-background font-sans text-foreground">
       <main className="mx-auto flex w-full max-w-2xl flex-col px-4 py-10 sm:px-6">
         <header className="mb-8 text-center">
-          <span className="inline-flex items-center rounded-full bg-accent-subtle px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent-text">
+          <span className="inline-flex items-center rounded-sm bg-accent-subtle px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent-text">
             NEXUS
           </span>
           <h1 className="mt-3 text-2xl font-bold text-foreground">
@@ -98,7 +98,7 @@ export default function OnboardingShell({
 
           <section
             aria-live="polite"
-            className="rounded-lg border border-border bg-card p-5 shadow-xs sm:p-6"
+            className="rounded-lg border border-border bg-card p-5 sm:p-6"
           >
             {viewing === 1 && (
               <StepBusiness
@@ -157,7 +157,7 @@ export default function OnboardingShell({
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isPending && <NLoader size={16} className="text-current" />}
               {submitLabel}

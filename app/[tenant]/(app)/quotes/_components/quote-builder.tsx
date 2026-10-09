@@ -184,7 +184,7 @@ export default function QuoteBuilder({
             </label>
           </div>
 
-          <div className="rounded-lg border border-border bg-card p-4 shadow-xs">
+          <div className="rounded-lg border border-border bg-card p-4">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-sm font-semibold text-foreground">
                 Actividades del {quoteLabel.toLowerCase()}
@@ -283,7 +283,7 @@ export default function QuoteBuilder({
 
         {/* Columna derecha: AIU + resumen financiero */}
         <aside className="space-y-4">
-          <div className="rounded-lg border border-border bg-card p-4 shadow-xs">
+          <div className="rounded-lg border border-border bg-card p-4">
             <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-foreground">
               <Calculator aria-hidden="true" className="h-4 w-4 text-accent-text" />
               AIU (%)
@@ -318,7 +318,7 @@ export default function QuoteBuilder({
             </div>
           </div>
 
-          <div className="rounded-lg border border-border bg-card p-4 shadow-xs">
+          <div className="rounded-lg border border-border bg-card p-4">
             <h2 className="mb-3 text-sm font-semibold text-foreground">
               Resumen financiero
             </h2>

@@ -92,7 +92,7 @@ export default function ActivityFeed({ items }: { items: ActivityItem[] }) {
           <li key={item.id} className="flex gap-3 py-3 first:pt-0 last:pb-0">
             <span
               className={cn(
-                "mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-full",
+                "mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-sm",
                 meta.className,
               )}
             >

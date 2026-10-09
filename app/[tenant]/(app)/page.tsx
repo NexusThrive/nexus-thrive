@@ -78,64 +78,44 @@ export default async function TenantDashboard({
       id: "ingresos",
       title: "Ingresos",
       value: formatCurrency(metrics.income),
-      description: "Cobros aprobados durante el mes en curso",
+      description:
+        metrics.income > 0 ? "Cobros del mes" : "Sin cobros registrados",
       icon: TrendingUp,
-      iconTone: "indigo",
-      trend: {
-        direction: "neutral",
-        label:
-          metrics.income > 0 ? "Ingresos del mes" : "Sin cobros registrados",
-      },
     },
     {
       id: "clientes",
       title: terms.customers,
       value: String(activeCustomers),
-      description: `${terms.customers} activos en tu cartera`,
+      description:
+        activeCustomers > 0
+          ? `${activeCustomers} ${
+              activeCustomers === 1
+                ? terms.customer.toLowerCase()
+                : terms.customers.toLowerCase()
+            } activos en tu cartera`
+          : `Sin ${terms.customers.toLowerCase()} aún`,
       icon: Users,
-      iconTone: "emerald",
-      trend: {
-        direction: "neutral",
-        label:
-          activeCustomers > 0
-            ? `${activeCustomers} ${
-                activeCustomers === 1
-                  ? terms.customer.toLowerCase()
-                  : terms.customers.toLowerCase()
-              }`
-            : `Sin ${terms.customers.toLowerCase()} aún`,
-      },
     },
     {
       id: "gastos",
       title: "Gastos",
       value: formatCurrency(metrics.expenses),
-      description: "Egresos de caja menor del mes en curso",
+      description:
+        metrics.expenses > 0 ? "Gastos del mes" : "Sin gastos registrados",
       icon: TrendingDown,
-      iconTone: "rose",
-      trend: {
-        direction: "neutral",
-        label:
-          metrics.expenses > 0 ? "Gastos del mes" : "Sin gastos registrados",
-      },
     },
     {
       id: "balance",
       title: "Balance",
       value: formatCurrency(metrics.balance),
-      description: "Ingresos menos gastos del mes en curso",
+      description:
+        metrics.balance > 0
+          ? "Balance positivo"
+          : metrics.balance < 0
+            ? "Balance negativo"
+            : "Sin movimientos",
       icon: Wallet,
-      iconTone: "slate",
-      trend: {
-        direction:
-          metrics.balance > 0 ? "up" : metrics.balance < 0 ? "down" : "neutral",
-        label:
-          metrics.balance > 0
-            ? "Balance positivo"
-            : metrics.balance < 0
-              ? "Balance negativo"
-              : "Sin movimientos",
-      },
+      alert: metrics.balance < 0,
     },
   ];
 
@@ -153,7 +133,7 @@ export default async function TenantDashboard({
       {/* Encabezado del dashboard */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          <h1 className="font-display text-[26px] font-semibold leading-8 tracking-[-0.01em] text-foreground">
             {greeting}, {greetingName}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -186,7 +166,7 @@ export default async function TenantDashboard({
           <div>
             <h2
               id="dashboard-memberships-title"
-              className="text-base font-semibold text-foreground"
+              className="font-display text-base font-semibold text-foreground"
             >
               Membresías
             </h2>
@@ -197,7 +177,7 @@ export default async function TenantDashboard({
           </div>
           <Link
             href={`/${tenantSlug}/memberships`}
-            className="text-sm font-medium text-accent-text transition hover:text-gold-600"
+            className="text-sm font-medium text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
           >
             Ver módulo →
           </Link>

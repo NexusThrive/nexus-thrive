@@ -158,14 +158,14 @@ export default function ExplosionReport({
         return (
           <section
             key={section.key}
-            className="overflow-hidden rounded-lg border border-border bg-card shadow-xs"
+            className="overflow-hidden rounded-lg border border-border bg-card"
           >
             <header
               className={`flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3 ${tone.header}`}
             >
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-semibold">{section.title}</h2>
-                <span className="rounded-full bg-card/70 px-2 py-0.5 text-xs font-medium">
+                <span className="rounded-sm bg-card/70 px-2 py-0.5 text-xs font-medium">
                   {section.rows.length}{" "}
                   {section.rows.length === 1 ? "recurso" : "recursos"}
                 </span>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NEXUS THRIVE — Intro de la app</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F7F6F3;--surface:#fff;--fg:#0A0A0B;--muted:#6B6B73;--line:#E8E6E1;--gold:#D4AF37;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0;height:100%;overflow-x:hidden}
+body{background:var(--bg);color:var(--fg);font:400 14px/1.5 Inter,"Segoe UI",system-ui,sans-serif}
+/* ---------- Intro: un panel blanco con la N recortada como ventana ---------- */
+#splash{position:fixed;inset:0;z-index:20;overflow:hidden;--s:clamp(150px,27vmin,250px)}
+#splash[hidden]{display:none}
+#stage{position:absolute;inset:0;width:100%;height:100%;display:block;shape-rendering:geometricPrecision}
+#fill{transition:fill-opacity .6s ease}
+#trace{transition:stroke-opacity .4s ease .1s}
+#edge{transition:stroke-opacity .4s ease}
+.filled #fill{fill-opacity:1}
+.filled #trace{stroke-opacity:0!important}
+.filled #edge{stroke-opacity:1}
+.leaving #fill{transition:none}
+.lt{opacity:0;filter:blur(14px);transition:opacity .9s ease-out var(--d),filter .9s ease-out var(--d)}
+.word .lt{opacity:1;filter:blur(0)}
+.leaving .lt{opacity:0;filter:blur(6px);transition:opacity .25s ease,filter .25s ease;transition-delay:0s}
+.msg{position:absolute;left:0;right:0;top:calc(50% + var(--s)/2 + 24px);margin:0;display:grid;justify-items:center;font:500 14px Inter,sans-serif;letter-spacing:.01em;color:#6B6B73;transition:opacity .3s ease}
+.line{grid-area:1/1;white-space:nowrap;transition:opacity .3s ease,filter .3s ease}
+.line.out{opacity:0;filter:blur(6px)}
+.ch{display:inline-block;white-space:pre;opacity:0;filter:blur(8px);transform:translateY(4px);transition:opacity .55s ease-out,filter .55s ease-out,transform .55s ease-out}
+.line.in .ch{opacity:1;filter:blur(0);transform:none}
+.filled .msg{opacity:0}
+@media (prefers-reduced-motion:reduce){.ch,.line,.lt,#fill,#trace,#edge{transition:none}}
+/* ---------- Dashboard de ejemplo (siempre modo claro) ---------- */
+.app{display:flex;min-height:100%}
+aside{width:220px;flex:none;background:#000;color:#F7F6F3;padding:24px 16px;display:flex;flex-direction:column;gap:4px}
+.wm{font:700 13px/1 Montserrat,sans-serif;letter-spacing:.32em;text-transform:uppercase;padding:0 12px 24px}
+.nav{position:relative;padding:8px 12px;border-radius:4px;opacity:.72}
+.nav.on{opacity:1;background:rgba(255,255,255,.08)}
+.nav.on::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:3px;background:var(--gold)}
+main{flex:1;padding:32px;min-width:0}
+h1{font:700 28px/1.2 Montserrat,sans-serif;letter-spacing:-.01em;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 24px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px}
+.card small{color:var(--muted)}
+.card b{display:block;font:600 24px/1.3 Montserrat,sans-serif;font-variant-numeric:tabular-nums;margin-top:4px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th{text-align:left;color:var(--muted);font-weight:600;padding:12px 16px;border-bottom:1px solid var(--line)}
+td{padding:12px 16px;border-bottom:1px solid var(--line)}
+.num{text-align:right}
+.replay{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:30;height:40px;padding:0 20px;border:0;border-radius:4px;background:var(--gold);color:#000;font:600 14px Inter,sans-serif;cursor:pointer}
+.replay:hover{background:#B8921F}
+.replay:focus-visible{outline:2px solid #B8921F;outline-offset:2px}
+.replay:disabled{opacity:.45;cursor:not-allowed}
+@media (max-width:700px){aside{display:none}main{padding:20px}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside>
+    <div class="wm">Nexus thrive</div>
+    <div class="nav on" aria-current="page">Resumen</div>
+    <div class="nav">Clientes</div>
+    <div class="nav">Caja menor</div>
+    <div class="nav">Presupuestos</div>
+    <div class="nav">Ajustes</div>
+  </aside>
+  <main>
+    <h1>Resumen</h1>
+    <p class="sub">Datos de ejemplo para ver la transición hacia el dashboard.</p>
+    <div class="cards">
+      <div class="card"><small>Ingresos del mes</small><b>$ 48.250.000</b></div>
+      <div class="card"><small>Caja menor</small><b>$ 1.320.000</b></div>
+      <div class="card"><small>Presupuestos activos</small><b>7</b></div>
+    </div>
+    <div class="card tw">
+      <table>
+        <thead><tr><th>Movimiento</th><th>Módulo</th><th class="num">Valor</th></tr></thead>
+        <tbody>
+          <tr><td>Compra de materiales</td><td>Caja menor</td><td class="num">$ 185.000</td></tr>
+          <tr><td>Presupuesto de obra, fase 2</td><td>Presupuestos</td><td class="num">$ 12.400.000</td></tr>
+          <tr><td>Pago de cliente</td><td>Ventas</td><td class="num">$ 3.900.000</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+<button class="replay" id="replay" type="button">Repetir intro</button>
+
+<div id="splash" role="progressbar" aria-label="Iniciando NEXUS THRIVE" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <svg id="stage" aria-hidden="true">
+    <defs>
+      <mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
+        <rect width="100%" height="100%" fill="#fff"/>
+        <path id="hp" data-p fill="#000" fill-opacity="0"/>
+      </mask>
+    </defs>
+    <rect width="100%" height="100%" fill="#fff" mask="url(#m)"/>
+    <g id="mark">
+      <path data-p fill="none" stroke="#000" stroke-opacity=".14" stroke-width="8" stroke-linejoin="round"/>
+      <path id="fill" data-p fill="#000" fill-opacity="0"/>
+      <path id="edge" data-p fill="none" stroke="#000" stroke-width="3" stroke-linejoin="round" vector-effect="non-scaling-stroke" stroke-opacity="0"/>
+      <path id="trace" data-p fill="none" stroke="#B8921F" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="0 1" style="stroke-opacity:0"/>
+      <g id="thrive" role="img" aria-label="THRIVE"><g class="lt" style="--d:0ms"><path fill="#000" fill-opacity="0.302" transform="translate(390.439307 1019.35578)" d="M 24.6875 -61.484375 L 0.4375 -61.484375 L 0.4375 -75.78125 L 66.46875 -75.78125 L 66.46875 -61.484375 L 42.21875 -61.484375 L 42.21875 0 L 24.6875 0 Z M 24.6875 -61.484375"/><path fill="#000" fill-opacity="0.502" transform="translate(389.053153 1018.27278)" d="M 24.6875 -61.484375 L 0.4375 -61.484375 L 0.4375 -75.78125 L 66.46875 -75.78125 L 66.46875 -61.484375 L 42.21875 -61.484375 L 42.21875 0 L 24.6875 0 Z M 24.6875 -61.484375"/><path fill="#000" fill-opacity="1" transform="translate(387.667002 1017.189804)" d="M 24.6875 -61.484375 L 0.4375 -61.484375 L 0.4375 -75.78125 L 66.46875 -75.78125 L 66.46875 -61.484375 L 42.21875 -61.484375 L 42.21875 0 L 24.6875 0 Z M 24.6875 -61.484375"/></g><g class="lt" style="--d:90ms"><path fill="#000" fill-opacity="0.302" transform="translate(523.042528 1019.35578)" d="M 78.484375 -75.78125 L 78.484375 0 L 60.9375 0 L 60.9375 -31.0625 L 26.515625 -31.0625 L 26.515625 0 L 8.984375 0 L 8.984375 -75.78125 L 26.515625 -75.78125 L 26.515625 -45.890625 L 60.9375 -45.890625 L 60.9375 -75.78125 Z M 78.484375 -75.78125"/><path fill="#000" fill-opacity="0.502" transform="translate(521.656374 1018.27278)" d="M 78.484375 -75.78125 L 78.484375 0 L 60.9375 0 L 60.9375 -31.0625 L 26.515625 -31.0625 L 26.515625 0 L 8.984375 0 L 8.984375 -75.78125 L 26.515625 -75.78125 L 26.515625 -45.890625 L 60.9375 -45.890625 L 60.9375 -75.78125 Z M 78.484375 -75.78125"/><path fill="#000" fill-opacity="1" transform="translate(520.270223 1017.189804)" d="M 78.484375 -75.78125 L 78.484375 0 L 60.9375 0 L 60.9375 -31.0625 L 26.515625 -31.0625 L 26.515625 0 L 8.984375 0 L 8.984375 -75.78125 L 26.515625 -75.78125 L 26.515625 -45.890625 L 60.9375 -45.890625 L 60.9375 -75.78125 Z M 78.484375 -75.78125"/></g><g class="lt" style="--d:180ms"><path fill="#000" fill-opacity="0.302" transform="translate(676.212494 1019.35578)" d="M 57.265625 0 L 42.65625 -21.109375 L 26.515625 -21.109375 L 26.515625 0 L 8.984375 0 L 8.984375 -75.78125 L 41.78125 -75.78125 C 48.5 -75.78125 54.328125 -74.660156 59.265625 -72.421875 C 64.210938 -70.179688 68.019531 -67.003906 70.6875 -62.890625 C 73.351562 -58.773438 74.6875 -53.90625 74.6875 -48.28125 C 74.6875 -42.65625 73.332031 -37.800781 70.625 -33.71875 C 67.925781 -29.644531 64.085938 -26.523438 59.109375 -24.359375 L 76.09375 0 Z M 56.9375 -48.28125 C 56.9375 -52.539062 55.566406 -55.804688 52.828125 -58.078125 C 50.085938 -60.347656 46.082031 -61.484375 40.8125 -61.484375 L 26.515625 -61.484375 L 26.515625 -35.078125 L 40.8125 -35.078125 C 46.082031 -35.078125 50.085938 -36.226562 52.828125 -38.53125 C 55.566406 -40.84375 56.9375 -44.09375 56.9375 -48.28125 Z M 56.9375 -48.28125"/><path fill="#000" fill-opacity="0.502" transform="translate(674.826341 1018.27278)" d="M 57.265625 0 L 42.65625 -21.109375 L 26.515625 -21.109375 L 26.515625 0 L 8.984375 0 L 8.984375 -75.78125 L 41.78125 -75.78125 C 48.5 -75.78125 54.328125 -74.660156 59.265625 -72.421875 C 64.210938 -70.179688 68.019531 -67.003906 70.6875 -62.890625 C 73.351562 -58.773438 74.6875 -53.90625 74.6875 -48.28125 C 74.6875 -42.65625 73.332031 -37.800781 70.625 -33.71875 C 67.925781 -29.644531 64.085938 -26.523438 59.109375 -24.359375 L 76.09375 0 Z M 56.9375 -48.28125 C 56.9375 -52.539062 55.566406 -55.804688 52.828125 -58.078125 C 50.085938 -60.347656 46.082031 -61.484375 40.8125 -61.484375 L 26.515625 -61.484375 L 26.515625 -35.078125 L 40.8125 -35.078125 C 46.082031 -35.078125 50.085938 -36.226562 52.828125 -38.53125 C 55.566406 -40.84375 56.9375 -44.09375 56.9375 -48.28125 Z M 56.9375 -48.28125"/><path fill="#000" fill-opacity="1" transform="translate(673.44019 1017.189804)" d="M 57.265625 0 L 42.65625 -21.109375 L 26.515625 -21.109375 L 26.515625 0 L 8.984375 0 L 8.984375 -75.78125 L 41.78125 -75.78125 C 48.5 -75.78125 54.328125 -74.660156 59.265625 -72.421875 C 64.210938 -70.179688 68.019531 -67.003906 70.6875 -62.890625 C 73.351562 -58.773438 74.6875 -53.90625 74.6875 -48.28125 C 74.6875 -42.65625 73.332031 -37.800781 70.625 -33.71875 C 67.925781 -29.644531 64.085938 -26.523438 59.109375 -24.359375 L 76.09375 0 Z M 56.9375 -48.28125 C 56.9375 -52.539062 55.566406 -55.804688 52.828125 -58.078125 C 50.085938 -60.347656 46.082031 -61.484375 40.8125 -61.484375 L 26.515625 -61.484375 L 26.515625 -35.078125 L 40.8125 -35.078125 C 46.082031 -35.078125 50.085938 -36.226562 52.828125 -38.53125 C 55.566406 -40.84375 56.9375 -44.09375 56.9375 -48.28125 Z M 56.9375 -48.28125"/></g><g class="lt" style="--d:270ms"><path fill="#000" fill-opacity="0.302" transform="translate(821.480529 1019.35578)" d="M 8.984375 -75.78125 L 26.515625 -75.78125 L 26.515625 0 L 8.984375 0 Z M 8.984375 -75.78125"/><path fill="#000" fill-opacity="0.502" transform="translate(820.094376 1018.27278)" d="M 8.984375 -75.78125 L 26.515625 -75.78125 L 26.515625 0 L 8.984375 0 Z M 8.984375 -75.78125"/><path fill="#000" fill-opacity="1" transform="translate(818.708225 1017.189804)" d="M 8.984375 -75.78125 L 26.515625 -75.78125 L 26.515625 0 L 8.984375 0 Z M 8.984375 -75.78125"/></g><g class="lt" style="--d:360ms"><path fill="#000" fill-opacity="0.302" transform="translate(922.25939 1019.35578)" d="M 81.84375 -75.78125 L 49.03125 0 L 31.71875 0 L -0.96875 -75.78125 L 17.96875 -75.78125 L 41.03125 -21.65625 L 64.40625 -75.78125 Z M 81.84375 -75.78125"/><path fill="#000" fill-opacity="0.502" transform="translate(920.873237 1018.27278)" d="M 81.84375 -75.78125 L 49.03125 0 L 31.71875 0 L -0.96875 -75.78125 L 17.96875 -75.78125 L 41.03125 -21.65625 L 64.40625 -75.78125 Z M 81.84375 -75.78125"/><path fill="#000" fill-opacity="1" transform="translate(919.487086 1017.189804)" d="M 81.84375 -75.78125 L 49.03125 0 L 31.71875 0 L -0.96875 -75.78125 L 17.96875 -75.78125 L 41.03125 -21.65625 L 64.40625 -75.78125 Z M 81.84375 -75.78125"/></g><g class="lt" style="--d:450ms"><path fill="#000" fill-opacity="0.302" transform="translate(1067.094383 1019.35578)" d="M 67.65625 -14.078125 L 67.65625 0 L 8.984375 0 L 8.984375 -75.78125 L 66.25 -75.78125 L 66.25 -61.703125 L 26.40625 -61.703125 L 26.40625 -45.25 L 61.59375 -45.25 L 61.59375 -31.609375 L 26.40625 -31.609375 L 26.40625 -14.078125 Z M 67.65625 -14.078125"/><path fill="#000" fill-opacity="0.502" transform="translate(1065.708229 1018.27278)" d="M 67.65625 -14.078125 L 67.65625 0 L 8.984375 0 L 8.984375 -75.78125 L 66.25 -75.78125 L 66.25 -61.703125 L 26.40625 -61.703125 L 26.40625 -45.25 L 61.59375 -45.25 L 61.59375 -31.609375 L 26.40625 -31.609375 L 26.40625 -14.078125 Z M 67.65625 -14.078125"/><path fill="#000" fill-opacity="1" transform="translate(1064.322078 1017.189804)" d="M 67.65625 -14.078125 L 67.65625 0 L 8.984375 0 L 8.984375 -75.78125 L 66.25 -75.78125 L 66.25 -61.703125 L 26.40625 -61.703125 L 26.40625 -45.25 L 61.59375 -45.25 L 61.59375 -31.609375 L 26.40625 -31.609375 L 26.40625 -14.078125 Z M 67.65625 -14.078125"/></g></g>
+    </g>
+  </svg>
+  <p class="msg" id="msg" aria-live="polite"></p>
+</div>
+
+<script>
+(function(){
+var P="M394.83 874.18 L394.83 239.93 L699.27 239.93 L837.22 525.34 L864.18 511.07 L799.96 371.52 L799.96 239.93 L1129.79 239.93 L1129.79 874.18 L815.82 874.18 L704.04 614.93 L677.87 630.79 L725.44 741.77 L725.44 874.18 Z";
+var $=function(s){return document.querySelector(s)};
+var ov=$("#splash"),grp=$("#mark"),hp=$("#hp"),trace=$("#trace"),fillp=$("#fill"),msg=$("#msg"),btn=$("#replay");
+var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+document.querySelectorAll("[data-p]").forEach(function(p){p.setAttribute("d",P)});
+
+/* Geometría: todo en vectores, se vuelve a dibujar en cada fotograma (sin escalar imágenes), así nunca pierde calidad */
+var W,H,S,k,ox,oy,cs=1;
+function T(s){
+  var t="translate("+ox+" "+oy+") scale("+s+") translate("+(-ox)+" "+(-oy)+") translate("+W/2+" "+H/2+") scale("+k+") translate(-762.31 -557.06)";
+  grp.setAttribute("transform",t);hp.setAttribute("transform",t);cs=s;
+}
+function layout(){
+  W=innerWidth;H=innerHeight;S=Math.min(250,Math.max(150,.27*Math.min(W,H)));k=S/950;
+  ox=W/2+(540-762.31)*k;oy=H/2+(560-557.06)*k;   /* punto de entrada: dentro del trazo izquierdo de la N */
+  ov.style.setProperty("--s",S+"px");T(cs);
+}
+layout();addEventListener("resize",layout);
+
+var MSGS=[[0,"Iniciando NEXUS THRIVE"],[20,"Cargando módulos"],[40,"Conectando con tu organización"],[60,"Preparando caja menor"],[80,"Sincronizando datos"]];
+var cur="";
+function setMsg(t){
+  if(t===cur)return;cur=t;
+  msg.querySelectorAll(".line").forEach(function(o){o.classList.add("out");setTimeout(function(){o.remove()},320)});
+  var l=document.createElement("span");l.className="line";
+  t.split("").forEach(function(c,i){var s=document.createElement("span");s.className="ch";s.textContent=c;s.style.transitionDelay=(i*14)+"ms";l.appendChild(s)});
+  msg.appendChild(l);void l.offsetWidth;l.classList.add("in");
+}
+function setP(p){
+  trace.setAttribute("stroke-dasharray",p+" 1");
+  trace.style.strokeOpacity=p>0?1:0;
+  var v=Math.round(p*100);ov.setAttribute("aria-valuenow",v);
+  var t=MSGS[0][1];for(var i=0;i<MSGS.length;i++)if(v>=MSGS[i][0])t=MSGS[i][1];
+  setMsg(t);
+}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+function tween(a,b,ms){return new Promise(function(res){
+  var t0=performance.now();
+  (function f(t){var k=Math.min(1,(t-t0)/ms);setP(a+(b-a)*k);k<1?requestAnimationFrame(f):res()})(t0);
+})}
+
+/* Dolly: leve retroceso, empuje exponencial con arranque y frenado suaves.
+   La letra se vuelve transparente (ventana al dashboard) y los bordes se mantienen nítidos. */
+function dolly(){return new Promise(function(res){
+  var A=240,B=1500,S0=.97,SE=Math.max(30,Math.max(W,H)*1.15/(150*k)),t0=performance.now();
+  function ease(x){return x<.5?8*x*x*x*x:1-Math.pow(-2*x+2,4)/2}
+  function ss(x){x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)}
+  (function f(now){
+    var t=now-t0,s,b=0;
+    if(t<A){s=1-.03*(1-Math.pow(1-t/A,3))}
+    else{b=Math.min(1,(t-A)/B);s=S0*Math.pow(SE/S0,ease(b))}
+    T(s);
+    var h=ss(b/.22);hp.style.fillOpacity=h;fillp.style.fillOpacity=1-h;
+    b<1?requestAnimationFrame(f):res();
+  })(t0);
+})}
+function reset(){
+  ov.getAnimations({subtree:true}).forEach(function(a){a.cancel()});
+  ov.hidden=false;ov.className="";hp.style.fillOpacity=0;fillp.style.fillOpacity="";T(1);cur="";msg.textContent="";setP(0);
+}
+async function intro(){
+  btn.disabled=true;reset();
+  if(reduce){
+    setP(1);ov.classList.add("filled","word");setMsg("Todo listo");
+    await wait(1200);ov.hidden=true;btn.disabled=false;return;
+  }
+  await tween(0,1,4200);                              /* avance lineal y continuo */
+  ov.classList.add("filled");setMsg("Todo listo");   /* se rellena de negro */
+  await wait(550);
+  ov.classList.add("word");                           /* THRIVE aparece, igual que en el logo */
+  await wait(1400+1000);                              /* letras entrando + 1 s con el logo completo */
+  ov.classList.add("leaving");
+  await dolly();
+  ov.hidden=true;btn.disabled=false;
+}
+btn.onclick=intro;
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(function(){wait(300).then(intro)});
+})();
+</script>
+</body>
+</html>

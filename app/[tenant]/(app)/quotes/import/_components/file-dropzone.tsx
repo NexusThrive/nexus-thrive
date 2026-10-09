@@ -57,9 +57,9 @@ export default function FileDropzone({
         )}
         aria-label="Subir archivo de insumos o APUs"
       >
-        <span className="grid h-12 w-12 place-items-center rounded-full bg-muted text-muted-foreground">
+        <span className="grid h-12 w-12 place-items-center rounded-sm bg-muted text-muted-foreground">
           {pending ? (
-            <span className="h-5 w-5 animate-spin rounded-full border-2 border-border-strong border-t-foreground/80" />
+            <span className="h-5 w-5 animate-spin rounded-sm border-2 border-border-strong border-t-foreground/80" />
           ) : (
             <UploadCloud aria-hidden="true" className="h-6 w-6" />
           )}

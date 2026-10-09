@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { fontVariables } from "@/lib/fonts";
-import { AppIntro } from "@/components/brand/app-intro";
+import { themeInitScript } from "@/components/brand/theme";
+import { SplashIntro } from "@/components/brand/splash-intro";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Nexus Thrive",
-  description: "Nexus Thrive",
+  title: "NEXUS THRIVE",
+  description: "NEXUS THRIVE — plataforma de gestión de negocios.",
+  applicationName: "NEXUS THRIVE",
 };
 
 export default function RootLayout({
@@ -21,8 +23,11 @@ export default function RootLayout({
         className={`${fontVariables} h-full antialiased`}
         suppressHydrationWarning
       >
-        <body className="min-h-full flex flex-col">
-          <AppIntro />
+        <head>
+          <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        </head>
+        <body className="min-h-full flex flex-col bg-background text-foreground">
+          <SplashIntro />
           {children}
         </body>
       </html>

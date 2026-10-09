@@ -18,14 +18,14 @@ export default function CrmLoading() {
         <Skeleton className="h-10 w-36" />
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-xs">
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
         <div className="border-b border-border bg-muted px-4 py-3">
           <Skeleton className="h-4 w-2/3 max-w-md" />
         </div>
         <div className="divide-y divide-border">
           {Array.from({ length: 6 }).map((_, index) => (
             <div key={index} className="flex items-center gap-3 px-4 py-4">
-              <Skeleton className="h-9 w-9 shrink-0 rounded-full" />
+              <Skeleton className="h-9 w-9 shrink-0 rounded-sm" />
               <div className="min-w-0 flex-1 space-y-2">
                 <Skeleton className="h-4 w-40 max-w-[60%]" />
                 <Skeleton className="h-3 w-56 max-w-[80%]" />

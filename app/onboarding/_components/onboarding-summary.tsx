@@ -103,7 +103,7 @@ export default function OnboardingSummary({
           <h3 className="text-sm font-semibold text-foreground">
             Módulos activos
           </h3>
-          <span className="rounded-full bg-gold-100 px-2 py-0.5 text-xs font-semibold text-gold-700">
+          <span className="rounded-sm bg-gold-100 px-2 py-0.5 text-xs font-semibold text-gold-700">
             {modules.length}
           </span>
         </div>
@@ -111,7 +111,7 @@ export default function OnboardingSummary({
           {modules.map((moduleName) => (
             <span
               key={moduleName}
-              className="inline-flex items-center gap-1 rounded-full border border-border bg-muted px-2.5 py-1 text-xs font-medium text-foreground/80"
+              className="inline-flex items-center gap-1 rounded-sm border border-border bg-muted px-2.5 py-1 text-xs font-medium text-foreground/80"
             >
               <Check className="size-3 text-gold-500" aria-hidden="true" />
               {moduleLabel(moduleName)}
@@ -133,7 +133,7 @@ export default function OnboardingSummary({
         type="button"
         onClick={onSubmit}
         disabled={isPending}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gold-500 px-4 py-2.5 text-sm font-semibold text-ink shadow-xs transition hover:bg-gold-600 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gold-500 px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-gold-600 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? (
           <>

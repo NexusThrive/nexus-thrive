@@ -184,7 +184,7 @@ export default function OnboardingWizard({
     <div className="min-h-screen bg-background font-sans text-foreground">
       <main className="mx-auto flex w-full max-w-3xl flex-col px-4 py-10 sm:px-6">
         <header className="mb-8 text-center">
-          <span className="inline-flex items-center rounded-full bg-gold-100 px-3 py-1 text-xs font-semibold tracking-wide text-gold-700 uppercase">
+          <span className="inline-flex items-center rounded-sm bg-gold-100 px-3 py-1 text-xs font-semibold tracking-wide text-gold-700 uppercase">
             NEXUS
           </span>
           <h1 className="mt-3 text-2xl font-bold text-foreground">
@@ -205,7 +205,7 @@ export default function OnboardingWizard({
 
         <section
           aria-live="polite"
-          className="mt-8 rounded-lg border border-border bg-card p-5 shadow-xs sm:p-6"
+          className="mt-8 rounded-lg border border-border bg-card p-5 sm:p-6"
         >
           {completedSlug ? (
             <OnboardingComplete draft={draft} slug={completedSlug} />
@@ -273,7 +273,7 @@ export default function OnboardingWizard({
                     type="button"
                     onClick={goNext}
                     disabled={isSubmitting}
-                    className="inline-flex items-center gap-2 rounded-lg bg-gold-500 px-4 py-2 text-sm font-semibold text-ink shadow-xs transition hover:bg-gold-600 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-lg bg-gold-500 px-4 py-2 text-sm font-semibold text-ink transition hover:bg-gold-600 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     Continuar
                     <ArrowRight className="size-4" aria-hidden="true" />

@@ -66,21 +66,23 @@ export default async function AdminPage({
   const host = (await headers()).get("host") ?? "localhost:3000";
   const adminDb = createAdminDb();
 
-  const [metrics, listResult, activity, audit] = await Promise.all([
-    adminDb.getExecutiveMetrics(),
-    adminDb.listTenants({
-      host,
-      q,
-      vertical,
-      activeStatus,
-      attentionOnly,
-      sort,
-      page: requestedPage,
-      limit: PAGE_SIZE,
-    }),
-    adminDb.getActivityFeed({ limit: 8 }),
-    adminDb.listAuditLogs(6),
-  ]);
+  const [metrics, listResult, attentionResult, activity, audit] =
+    await Promise.all([
+      adminDb.getExecutiveMetrics(),
+      adminDb.listTenants({
+        host,
+        q,
+        vertical,
+        activeStatus,
+        attentionOnly,
+        sort,
+        page: requestedPage,
+        limit: PAGE_SIZE,
+      }),
+      adminDb.listTenants({ host, attentionOnly: true, limit: 1 }),
+      adminDb.getActivityFeed({ limit: 8 }),
+      adminDb.listAuditLogs(6),
+    ]);
 
   const totalPages = Math.max(1, Math.ceil(listResult.total / PAGE_SIZE));
   const safePage = Math.min(requestedPage, totalPages);
@@ -99,7 +101,7 @@ export default async function AdminPage({
           className="scroll-mt-6 space-y-4 lg:col-span-2"
         >
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="text-base font-semibold text-foreground">
+            <h2 className="font-display text-lg font-semibold text-foreground">
               Negocios de la plataforma
             </h2>
             <p className="text-sm text-muted-foreground">
@@ -116,6 +118,7 @@ export default async function AdminPage({
             status={activeStatus === "all" ? undefined : activeStatus}
             sort={sort}
             attentionOnly={attentionOnly}
+            attentionCount={attentionResult.total}
           />
 
           <TenantTable
@@ -130,9 +133,9 @@ export default async function AdminPage({
         <aside className="space-y-8">
           <section
             id="actividad"
-            className="scroll-mt-6 rounded-lg border border-border bg-card p-5 shadow-xs"
+            className="scroll-mt-6 rounded-lg border border-border bg-card p-5"
           >
-            <h2 className="text-sm font-semibold text-foreground">
+            <h2 className="font-display text-base font-semibold text-foreground">
               Actividad de la plataforma
             </h2>
             <p className="text-xs text-muted-foreground">
@@ -145,9 +148,11 @@ export default async function AdminPage({
 
           <section
             id="auditoria"
-            className="scroll-mt-6 rounded-lg border border-border bg-card p-5 shadow-xs"
+            className="scroll-mt-6 rounded-lg border border-border bg-card p-5"
           >
-            <h2 className="text-sm font-semibold text-foreground">Auditoría</h2>
+            <h2 className="font-display text-base font-semibold text-foreground">
+              Auditoría
+            </h2>
             <p className="text-xs text-muted-foreground">
               Acciones administrativas recientes.
             </p>

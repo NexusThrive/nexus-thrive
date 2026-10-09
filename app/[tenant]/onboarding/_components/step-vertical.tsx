@@ -87,7 +87,7 @@ export default function StepVertical({
           {modules.map((moduleName) => (
             <span
               key={moduleName}
-              className="inline-flex items-center rounded-full bg-gold-100 px-2.5 py-0.5 text-xs font-medium text-accent-text"
+              className="inline-flex items-center rounded-sm bg-gold-100 px-2.5 py-0.5 text-xs font-medium text-accent-text"
             >
               {MODULE_LABELS[moduleName]}
             </span>

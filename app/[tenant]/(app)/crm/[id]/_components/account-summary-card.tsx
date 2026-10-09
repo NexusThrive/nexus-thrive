@@ -31,7 +31,7 @@ export default function AccountSummaryCard({
   terms: VerticalTerms;
 }) {
   return (
-    <aside className="rounded-lg border border-border bg-card p-5 shadow-xs">
+    <aside className="rounded-lg border border-border bg-card p-5">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
         Resumen de la cuenta
       </h2>

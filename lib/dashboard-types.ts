@@ -2,13 +2,8 @@ import type { LucideIcon } from "lucide-react";
 
 /**
  * Tipos de presentación del dashboard y la actividad reciente.
- * (Antes vivían en `lib/dashboard-mocks.ts`; se separaron para poder
- * eliminar los mocks sin desacoplar los componentes de presentación.)
+ * El color del dato es tinta; el estado solo aparece como un punto cuadrado.
  */
-
-export type MetricTone = "indigo" | "emerald" | "rose" | "slate";
-
-export type TrendDirection = "up" | "down" | "neutral";
 
 export type DashboardMetric = {
   id: string;
@@ -16,11 +11,8 @@ export type DashboardMetric = {
   value: string;
   description: string;
   icon: LucideIcon;
-  iconTone: MetricTone;
-  trend: {
-    direction: TrendDirection;
-    label: string;
-  };
+  /** Alerta real (p. ej. Vencidas > 0): punto cuadrado antes de la etiqueta. */
+  alert?: boolean;
 };
 
 export type ActivityType = "payment" | "expense";

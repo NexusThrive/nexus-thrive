@@ -68,7 +68,7 @@ export default async function QuotePrintPage({
       </div>
 
       {/* Documento A4 */}
-      <article className="mx-auto w-full max-w-[210mm] rounded-lg bg-card px-8 py-10 text-foreground shadow-xs sm:px-10 print:max-w-none print:rounded-none print:px-0 print:py-0 print:shadow-none">
+      <article className="mx-auto w-full max-w-[210mm] rounded-lg bg-card px-8 py-10 text-foreground sm:px-10 print:max-w-none print:rounded-none print:px-0 print:py-0 print:shadow-none">
         {/* Encabezado */}
         <header className="flex flex-col gap-6 border-b border-border pb-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">

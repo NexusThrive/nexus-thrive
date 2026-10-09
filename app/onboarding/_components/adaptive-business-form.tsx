@@ -222,7 +222,7 @@ export default function AdaptiveBusinessForm({
                   onClick={() => patch({ teamSize: value })}
                   aria-pressed={isSelected}
                   className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition",
+                    "inline-flex items-center gap-1.5 rounded-sm border px-3 py-1.5 text-xs font-medium transition",
                     isSelected
                       ? "border-gold-500 bg-gold-100 text-gold-700 ring-2 ring-gold-600/20"
                       : "border-border bg-card text-muted-foreground hover:border-foreground/20 hover:bg-muted",

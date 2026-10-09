@@ -36,7 +36,7 @@ export default function CustomerHeader({
   const whatsappHref = whatsappReminderLink(customer.phone, whatsappMessage);
 
   return (
-    <header className="rounded-lg border border-border bg-card p-5 shadow-xs sm:p-6">
+    <header className="rounded-lg border border-border bg-card p-5 sm:p-6">
       <Link
         href={`/${tenantSlug}/crm`}
         className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
@@ -49,7 +49,7 @@ export default function CustomerHeader({
         <div className="flex min-w-0 items-center gap-4">
           <span
             aria-hidden="true"
-            className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-accent-subtle text-lg font-semibold text-accent-text"
+            className="grid h-14 w-14 shrink-0 place-items-center rounded-sm bg-accent-subtle text-lg font-semibold text-accent-text"
           >
             {initialsOf(customer.name)}
           </span>
@@ -59,7 +59,7 @@ export default function CustomerHeader({
                 {customer.name}
               </h1>
               {!customer.active ? (
-                <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                <span className="rounded-sm bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
                   Archivado
                 </span>
               ) : null}
@@ -92,7 +92,7 @@ export default function CustomerHeader({
             href={whatsappHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-success px-4 py-2.5 text-sm font-medium text-success-foreground shadow-xs transition-colors hover:bg-success/90"
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-success px-4 py-2.5 text-sm font-medium text-success-foreground transition-colors hover:bg-success/90"
           >
             <MessageCircle aria-hidden="true" className="h-4 w-4" />
             WhatsApp

@@ -28,145 +28,82 @@ import type { VerticalValue } from "@/lib/admin-catalogs";
  * administrativa: todo vertical pasa por `getVerticalIcon`.
  */
 
+/**
+ * Tono dentro del sistema de marca: la identidad la da el ICONO, nunca un
+ * color fuera de la paleta (Ink / Paper / oro / grafito).
+ */
+type VerticalTone = "gold" | "ink" | "graphite" | "muted";
+
+const TONES: Record<VerticalTone, Omit<VerticalVisual, "icon">> = {
+  gold: {
+    color: "gold",
+    iconClass: "text-gold-600",
+    chipClass: "bg-gold-100 text-gold-700 ring-gold-600/20",
+    barClass: "bg-gold-500",
+  },
+  ink: {
+    color: "ink",
+    iconClass: "text-graphite-900",
+    chipClass: "bg-graphite-100 text-graphite-900 ring-graphite-900/15",
+    barClass: "bg-graphite-900",
+  },
+  graphite: {
+    color: "graphite",
+    iconClass: "text-graphite-700",
+    chipClass: "bg-graphite-200 text-graphite-800 ring-graphite-700/20",
+    barClass: "bg-graphite-700",
+  },
+  muted: {
+    color: "muted",
+    iconClass: "text-muted-foreground",
+    chipClass: "bg-surface-muted text-foreground ring-border",
+    barClass: "bg-border-strong",
+  },
+};
+
 export type VerticalVisual = {
   icon: LucideIcon;
-  /** Nombre base del color Tailwind (ej. "amber"). */
+  /** Tono de marca (nunca una paleta Tailwind cruda). */
   color: string;
-  /** Color del icono en texto (ej. "text-amber-600"). */
+  /** Color del icono en texto. */
   iconClass: string;
-  /** Chip/badge: fondo + texto + ring (ej. "bg-amber-50 text-amber-700 …"). */
+  /** Chip/badge: fondo + texto + ring. */
   chipClass: string;
-  /** Barra/acento sólido (ej. "bg-amber-500"). */
+  /** Barra/acento sólido. */
   barClass: string;
 };
 
-/** Paleta por vertical. Los 16 rubros del catálogo de la plataforma. */
-const VERTICAL_VISUALS: Record<VerticalValue, VerticalVisual> = {
-  construction: {
-    icon: HardHat,
-    color: "amber",
-    iconClass: "text-amber-600",
-    chipClass: "bg-amber-50 text-amber-700 ring-amber-600/20",
-    barClass: "bg-amber-500",
-  },
-  gym: {
-    icon: Dumbbell,
-    color: "emerald",
-    iconClass: "text-emerald-600",
-    chipClass: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
-    barClass: "bg-emerald-500",
-  },
-  restaurant: {
-    icon: Utensils,
-    color: "orange",
-    iconClass: "text-orange-600",
-    chipClass: "bg-orange-50 text-orange-700 ring-orange-600/20",
-    barClass: "bg-orange-500",
-  },
-  beauty: {
-    icon: Scissors,
-    color: "indigo",
-    iconClass: "text-indigo-600",
-    chipClass: "bg-indigo-50 text-indigo-700 ring-indigo-600/20",
-    barClass: "bg-indigo-500",
-  },
-  healthcare: {
-    icon: HeartPulse,
-    color: "rose",
-    iconClass: "text-rose-600",
-    chipClass: "bg-rose-50 text-rose-700 ring-rose-600/20",
-    barClass: "bg-rose-500",
-  },
-  events: {
-    icon: Landmark,
-    color: "violet",
-    iconClass: "text-violet-600",
-    chipClass: "bg-violet-50 text-violet-700 ring-violet-600/20",
-    barClass: "bg-violet-500",
-  },
-  carpentry: {
-    icon: Hammer,
-    color: "yellow",
-    iconClass: "text-yellow-600",
-    chipClass: "bg-yellow-50 text-yellow-700 ring-yellow-600/20",
-    barClass: "bg-yellow-500",
-  },
-  tourism_agency: {
-    icon: Plane,
-    color: "teal",
-    iconClass: "text-teal-600",
-    chipClass: "bg-teal-50 text-teal-700 ring-teal-600/20",
-    barClass: "bg-teal-500",
-  },
-  hospitality: {
-    icon: BedDouble,
-    color: "sky",
-    iconClass: "text-sky-600",
-    chipClass: "bg-sky-50 text-sky-700 ring-sky-600/20",
-    barClass: "bg-sky-500",
-  },
-  retail: {
-    icon: Store,
-    color: "cyan",
-    iconClass: "text-cyan-600",
-    chipClass: "bg-cyan-50 text-cyan-700 ring-cyan-600/20",
-    barClass: "bg-cyan-500",
-  },
-  mechanic: {
-    icon: Wrench,
-    color: "slate",
-    iconClass: "text-slate-600",
-    chipClass: "bg-slate-100 text-slate-700 ring-slate-600/20",
-    barClass: "bg-slate-500",
-  },
-  education: {
-    icon: GraduationCap,
-    color: "blue",
-    iconClass: "text-blue-600",
-    chipClass: "bg-blue-50 text-blue-700 ring-blue-600/20",
-    barClass: "bg-blue-500",
-  },
-  real_estate: {
-    icon: House,
-    color: "purple",
-    iconClass: "text-purple-600",
-    chipClass: "bg-purple-50 text-purple-700 ring-purple-600/20",
-    barClass: "bg-purple-500",
-  },
-  hardware_store: {
-    icon: Package,
-    color: "stone",
-    iconClass: "text-stone-600",
-    chipClass: "bg-stone-100 text-stone-700 ring-stone-600/20",
-    barClass: "bg-stone-500",
-  },
-  nautical_transport: {
-    icon: Ship,
-    color: "sky",
-    iconClass: "text-sky-600",
-    chipClass: "bg-sky-50 text-sky-700 ring-sky-600/20",
-    barClass: "bg-sky-500",
-  },
-  tour_guides: {
-    icon: Compass,
-    color: "lime",
-    iconClass: "text-lime-600",
-    chipClass: "bg-lime-50 text-lime-700 ring-lime-600/20",
-    barClass: "bg-lime-500",
-  },
+/** Icono + tono de marca por vertical. Los 16 rubros de la plataforma. */
+const VERTICAL_VISUALS: Record<
+  VerticalValue,
+  { icon: LucideIcon; tone: VerticalTone }
+> = {
+  construction: { icon: HardHat, tone: "gold" },
+  gym: { icon: Dumbbell, tone: "ink" },
+  restaurant: { icon: Utensils, tone: "graphite" },
+  beauty: { icon: Scissors, tone: "muted" },
+  healthcare: { icon: HeartPulse, tone: "gold" },
+  events: { icon: Landmark, tone: "ink" },
+  carpentry: { icon: Hammer, tone: "graphite" },
+  tourism_agency: { icon: Plane, tone: "muted" },
+  hospitality: { icon: BedDouble, tone: "gold" },
+  retail: { icon: Store, tone: "ink" },
+  mechanic: { icon: Wrench, tone: "graphite" },
+  education: { icon: GraduationCap, tone: "muted" },
+  real_estate: { icon: House, tone: "gold" },
+  hardware_store: { icon: Package, tone: "ink" },
+  nautical_transport: { icon: Ship, tone: "graphite" },
+  tour_guides: { icon: Compass, tone: "muted" },
 };
 
 const DEFAULT_VISUAL: VerticalVisual = {
   icon: Building2,
-  color: "slate",
-  iconClass: "text-slate-500",
-  chipClass: "bg-slate-100 text-slate-600 ring-slate-500/20",
-  barClass: "bg-slate-500",
+  ...TONES.muted,
 };
 
 /** Icono + tono de una vertical (con fallback neutro). */
 export function getVerticalIcon(vertical: string): VerticalVisual {
-  return (
-    VERTICAL_VISUALS[vertical as VerticalValue] ?? DEFAULT_VISUAL
-  );
+  const entry = VERTICAL_VISUALS[vertical as VerticalValue];
+  if (!entry) return DEFAULT_VISUAL;
+  return { icon: entry.icon, ...TONES[entry.tone] };
 }

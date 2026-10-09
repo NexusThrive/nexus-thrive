@@ -1,18 +1,18 @@
-import { cn } from "@/lib/cn";
+import { Badge, StatusDot } from "@/components/ui/badge";
 import {
   MEMBERSHIP_STATUSES,
   type MembershipStatusValue,
 } from "@/lib/memberships";
 
-const TONES: Record<MembershipStatusValue, string> = {
-  active: "bg-success/10 text-success ring-success/20",
-  expiring: "bg-warning text-warning-foreground ring-gold-600/20",
-  expired: "bg-destructive/10 text-destructive ring-destructive/20",
+const TONES: Record<MembershipStatusValue, "success" | "muted" | "danger"> = {
+  active: "success",
+  expiring: "muted",
+  expired: "danger",
 };
 
 /**
  * Badge del estado DINÁMICO de la membresía (calculado en el servidor
- * desde `endDate`, nunca desde el valor persistido).
+ * desde `endDate`, nunca desde el valor persistido). Punto cuadrado.
  */
 export default function MembershipStatusBadge({
   status,
@@ -24,13 +24,9 @@ export default function MembershipStatusBadge({
     status;
 
   return (
-    <span
-      className={cn(
-        "inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset",
-        TONES[status],
-      )}
-    >
+    <Badge variant="default">
+      <StatusDot tone={TONES[status]} />
       {label}
-    </span>
+    </Badge>
   );
 }

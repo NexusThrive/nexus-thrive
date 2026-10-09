@@ -29,7 +29,7 @@ export default function KpiCard({
   tone?: KpiTone;
 }) {
   return (
-    <article className="rounded-lg border border-border bg-card p-4 shadow-xs">
+    <article className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-start justify-between gap-2">
         <p className="truncate text-sm font-medium text-muted-foreground">{title}</p>
         <span

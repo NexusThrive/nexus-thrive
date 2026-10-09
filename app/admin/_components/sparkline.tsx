@@ -38,7 +38,7 @@ export default function Sparkline({
       aria-label={ariaLabel}
       className={className}
     >
-      <polygon points={area} fill="currentColor" opacity={0.12} />
+      <polygon points={area} fill="var(--surface-muted)" />
       <polyline
         points={line}
         fill="none"

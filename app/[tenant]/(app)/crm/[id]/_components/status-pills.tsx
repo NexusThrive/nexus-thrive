@@ -1,4 +1,4 @@
-import { cn } from "@/lib/cn";
+import { Badge, StatusDot } from "@/components/ui/badge";
 import {
   paymentStatusLabel,
   type PaymentStatusValue,
@@ -9,32 +9,30 @@ import {
 } from "@/lib/memberships";
 import type { CustomerAccountStatus } from "@/lib/tenant-db";
 
+type DotTone = "success" | "danger" | "warning" | "muted";
+
 /** Tonos por estado de pago (PENDING / APPROVED / DECLINED / VOIDED). */
-const PAYMENT_TONES: Record<PaymentStatusValue, string> = {
-  APPROVED: "bg-success/10 text-success ring-success/20",
-  PENDING: "bg-warning text-warning-foreground ring-gold-600/20",
-  DECLINED: "bg-destructive/10 text-destructive ring-destructive/20",
-  VOIDED: "bg-muted text-muted-foreground ring-border",
+const PAYMENT_TONES: Record<PaymentStatusValue, DotTone> = {
+  APPROVED: "success",
+  PENDING: "warning",
+  DECLINED: "danger",
+  VOIDED: "muted",
 };
 
 export function PaymentStatusPill({ status }: { status: PaymentStatusValue }) {
   return (
-    <span
-      className={cn(
-        "inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset",
-        PAYMENT_TONES[status],
-      )}
-    >
+    <Badge variant="default">
+      <StatusDot tone={PAYMENT_TONES[status]} />
       {paymentStatusLabel(status)}
-    </span>
+    </Badge>
   );
 }
 
 /** Tonos del estado DINÁMICO de membresía (mismo criterio del módulo). */
-const MEMBERSHIP_TONES: Record<MembershipStatusValue, string> = {
-  active: "bg-success/10 text-success ring-success/20",
-  expiring: "bg-warning text-warning-foreground ring-gold-600/20",
-  expired: "bg-destructive/10 text-destructive ring-destructive/20",
+const MEMBERSHIP_TONES: Record<MembershipStatusValue, DotTone> = {
+  active: "success",
+  expiring: "warning",
+  expired: "danger",
 };
 
 export function MembershipStatusPill({
@@ -46,14 +44,10 @@ export function MembershipStatusPill({
     MEMBERSHIP_STATUSES.find((option) => option.value === status)?.label ??
     status;
   return (
-    <span
-      className={cn(
-        "inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset",
-        MEMBERSHIP_TONES[status],
-      )}
-    >
+    <Badge variant="default">
+      <StatusDot tone={MEMBERSHIP_TONES[status]} />
       {label}
-    </span>
+    </Badge>
   );
 }
 
@@ -66,12 +60,12 @@ export const ACCOUNT_STATUS_LABELS: Record<CustomerAccountStatus, string> = {
   sin_datos: "Sin datos",
 };
 
-const ACCOUNT_STATUS_TONES: Record<CustomerAccountStatus, string> = {
-  al_dia: "bg-success/10 text-success ring-success/20",
-  pendiente: "bg-warning text-warning-foreground ring-gold-600/20",
-  vencido: "bg-destructive/10 text-destructive ring-destructive/20",
-  sin_actividad: "bg-muted text-muted-foreground ring-border",
-  sin_datos: "bg-muted text-muted-foreground ring-border",
+const ACCOUNT_STATUS_TONES: Record<CustomerAccountStatus, DotTone> = {
+  al_dia: "success",
+  pendiente: "warning",
+  vencido: "danger",
+  sin_actividad: "muted",
+  sin_datos: "muted",
 };
 
 export function AccountStatusPill({
@@ -80,13 +74,9 @@ export function AccountStatusPill({
   status: CustomerAccountStatus;
 }) {
   return (
-    <span
-      className={cn(
-        "inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset",
-        ACCOUNT_STATUS_TONES[status],
-      )}
-    >
+    <Badge variant="default">
+      <StatusDot tone={ACCOUNT_STATUS_TONES[status]} />
       {ACCOUNT_STATUS_LABELS[status]}
-    </span>
+    </Badge>
   );
 }

@@ -82,7 +82,7 @@ export default async function TenantLayout({
 function AccessDenied({ tenantName }: { tenantName: string }) {
   return (
     <div className="grid min-h-screen place-items-center bg-background px-4 font-sans">
-      <div className="w-full max-w-md rounded-lg border border-border bg-card p-8 text-center shadow-sm">
+      <div className="w-full max-w-md rounded-lg border border-border bg-card p-8 text-center">
         <span
           aria-hidden="true"
           className="mx-auto grid h-12 w-12 place-items-center rounded-md bg-destructive/10 text-lg font-semibold text-destructive"

@@ -126,7 +126,7 @@ export default async function QuoteDetailPage({
 
       {/* Resumen */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
+        <article className="rounded-lg border border-border bg-card p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-muted-foreground">
@@ -153,7 +153,7 @@ export default async function QuoteDetailPage({
           </div>
         </article>
 
-        <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
+        <article className="rounded-lg border border-border bg-card p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="text-sm font-medium text-muted-foreground">Estado</p>
@@ -170,7 +170,7 @@ export default async function QuoteDetailPage({
           </div>
         </article>
 
-        <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
+        <article className="rounded-lg border border-border bg-card p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="text-sm font-medium text-muted-foreground">Fecha</p>
@@ -187,7 +187,7 @@ export default async function QuoteDetailPage({
           </div>
         </article>
 
-        <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
+        <article className="rounded-lg border border-border bg-card p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="text-sm font-medium text-muted-foreground">Total</p>
@@ -206,7 +206,7 @@ export default async function QuoteDetailPage({
       </div>
 
       {/* Actividades */}
-      <section className="overflow-hidden rounded-lg border border-border bg-card shadow-xs">
+      <section className="overflow-hidden rounded-lg border border-border bg-card">
         <header className="border-b border-border px-4 py-3">
           <h2 className="text-sm font-semibold text-foreground">
             {terms.quoteItems}
@@ -258,7 +258,7 @@ export default async function QuoteDetailPage({
 
       {/* Desglose AIU */}
       <section className="flex justify-end">
-        <div className="w-full max-w-sm rounded-lg border border-border bg-card p-5 shadow-xs">
+        <div className="w-full max-w-sm rounded-lg border border-border bg-card p-5">
           <h2 className="text-sm font-semibold text-foreground">
             Desglose financiero
           </h2>

@@ -1,7 +1,13 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { CalendarCheck, FileText, HandCoins, Receipt, UserPlus } from "lucide-react";
-import { cn } from "@/lib/cn";
+import {
+  CalendarCheck,
+  ChevronRight,
+  FileText,
+  HandCoins,
+  Receipt,
+  UserPlus,
+} from "lucide-react";
 import type { VerticalTerms } from "@/lib/vertical-terms";
 
 type QuickAction = {
@@ -11,7 +17,6 @@ type QuickAction = {
   /** Ruta relativa al tenant. */
   path: string;
   icon: LucideIcon;
-  tone: string;
 };
 
 type QuickActionsProps = {
@@ -22,8 +27,8 @@ type QuickActionsProps = {
 };
 
 /**
- * Acciones rápidas del dashboard. Cada acción navega al módulo correspondiente
- * del tenant (los formularios llegan en fases siguientes).
+ * Acciones rápidas del dashboard (Server Component). Una sola card, filas de
+ * 56 px, icono Lucide discreto en muted (sin chips de color) y chevron.
  */
 export default function QuickActions({ tenantSlug, terms }: QuickActionsProps) {
   const actions: QuickAction[] = [
@@ -33,7 +38,6 @@ export default function QuickActions({ tenantSlug, terms }: QuickActionsProps) {
       hint: "Agregar un contacto",
       path: "/crm",
       icon: UserPlus,
-      tone: "bg-accent-subtle text-accent-text group-hover:bg-accent/20",
     },
     {
       id: "register-payment",
@@ -41,7 +45,6 @@ export default function QuickActions({ tenantSlug, terms }: QuickActionsProps) {
       hint: "Cobrar un movimiento",
       path: "/finance",
       icon: HandCoins,
-      tone: "bg-success/10 text-success group-hover:bg-success/15",
     },
     {
       id: "register-expense",
@@ -49,7 +52,6 @@ export default function QuickActions({ tenantSlug, terms }: QuickActionsProps) {
       hint: "Anotar un egreso",
       path: "/finance",
       icon: Receipt,
-      tone: "bg-destructive/10 text-destructive group-hover:bg-destructive/15",
     },
     {
       id: "new-membership",
@@ -57,7 +59,6 @@ export default function QuickActions({ tenantSlug, terms }: QuickActionsProps) {
       hint: "Registrar un plan",
       path: "/memberships",
       icon: CalendarCheck,
-      tone: "bg-gold-100 text-gold-700 group-hover:bg-gold-100/70",
     },
     {
       id: "create-invoice",
@@ -65,19 +66,18 @@ export default function QuickActions({ tenantSlug, terms }: QuickActionsProps) {
       hint: "Generar un documento",
       path: "/finance",
       icon: FileText,
-      tone: "bg-muted text-muted-foreground group-hover:bg-muted/70",
     },
   ];
 
   return (
     <section
       aria-labelledby="quick-actions-title"
-      className="rounded-lg border border-border bg-card p-5 shadow-xs"
+      className="rounded-lg border border-border bg-card"
     >
-      <div className="mb-4">
+      <div className="border-b border-border px-5 py-4">
         <h2
           id="quick-actions-title"
-          className="text-base font-semibold text-foreground"
+          className="font-display text-base font-semibold text-foreground"
         >
           Acciones rápidas
         </h2>
@@ -86,41 +86,38 @@ export default function QuickActions({ tenantSlug, terms }: QuickActionsProps) {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
+      <ul>
         {actions.map((action) => {
           const Icon = action.icon;
 
           return (
-            <Link
-              key={action.id}
-              href={`/${tenantSlug}${action.path}`}
-              className={cn(
-                "group flex items-center gap-3 rounded-lg border border-border bg-card p-3 text-left transition-colors",
-                "hover:border-accent/40 hover:bg-muted",
-                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-              )}
-            >
-              <span
-                aria-hidden="true"
-                className={cn(
-                  "grid h-9 w-9 shrink-0 place-items-center rounded-lg transition-colors",
-                  action.tone,
-                )}
+            <li key={action.id} className="border-b border-border last:border-b-0">
+              <Link
+                href={`/${tenantSlug}${action.path}`}
+                className="group flex h-14 items-center gap-3 px-5 transition-colors hover:bg-surface-muted focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
               >
-                <Icon className="h-4 w-4" />
-              </span>
-              <span className="min-w-0">
-                <span className="block truncate text-sm font-medium text-foreground">
-                  {action.label}
+                <Icon
+                  aria-hidden="true"
+                  strokeWidth={1.5}
+                  className="size-[18px] shrink-0 text-muted-foreground"
+                />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-medium text-foreground">
+                    {action.label}
+                  </span>
+                  <span className="block truncate text-xs text-muted-foreground">
+                    {action.hint}
+                  </span>
                 </span>
-                <span className="block truncate text-xs text-muted-foreground">
-                  {action.hint}
-                </span>
-              </span>
-            </Link>
+                <ChevronRight
+                  aria-hidden="true"
+                  className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                />
+              </Link>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </section>
   );
 }

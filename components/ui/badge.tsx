@@ -4,27 +4,51 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * Badge NEXUS THRIVE: radio 2 px, padding 2px 8px, Inter 500 12 px, fondo
+ * `--surface-muted` y borde. Los estados llevan un punto cuadrado de 6 px en
+ * lugar de una píldora de color. La variante `gold` es para avisos.
+ */
 const badgeVariants = cva(
-  "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none transition-[color,box-shadow] overflow-hidden",
+  "inline-flex w-fit shrink-0 items-center gap-1.5 whitespace-nowrap rounded-sm border px-2 py-0.5 text-xs font-medium",
   {
     variants: {
       variant: {
-        default: "border-transparent bg-primary text-primary-foreground",
-        secondary: "border-transparent bg-secondary text-secondary-foreground",
-        destructive:
-          "border-transparent bg-destructive text-destructive-foreground",
-        outline: "text-foreground",
-        success:
-          "border-transparent bg-success/15 text-success",
-        warning:
-          "border-transparent bg-warning text-warning-foreground",
+        default: "border-border bg-surface-muted text-foreground",
+        secondary: "border-border bg-surface-muted text-foreground",
+        outline: "border-border bg-transparent text-muted-foreground",
+        gold: "border-transparent bg-warning text-warning-foreground",
+        success: "border-border bg-surface-muted text-foreground",
+        destructive: "border-transparent bg-danger/10 text-danger",
+        warning: "border-transparent bg-warning text-warning-foreground",
       },
     },
-    defaultVariants: {
-      variant: "default",
-    },
+    defaultVariants: { variant: "default" },
   },
 );
+
+/** Punto cuadrado de 6 px para estados (funcional, no decorativo). */
+export function StatusDot({
+  className,
+  tone = "success",
+}: {
+  className?: string;
+  tone?: "success" | "danger" | "warning" | "muted";
+}) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "block size-1.5 shrink-0",
+        tone === "success" && "bg-success",
+        tone === "danger" && "bg-danger",
+        tone === "warning" && "bg-gold-500",
+        tone === "muted" && "bg-muted-foreground",
+        className,
+      )}
+    />
+  );
+}
 
 function Badge({
   className,
@@ -34,7 +58,6 @@ function Badge({
 }: React.ComponentProps<"span"> &
   VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
   const Comp = asChild ? Slot : "span";
-
   return (
     <Comp
       data-slot="badge"

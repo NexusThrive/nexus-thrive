@@ -13,7 +13,7 @@ export default function PaymentsTable({
 }) {
   if (payments.length === 0) {
     return (
-      <div className="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground shadow-xs">
+      <div className="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground">
         Este cliente todavía no tiene pagos registrados.
       </div>
     );
@@ -22,7 +22,7 @@ export default function PaymentsTable({
   const truncated = total > payments.length;
 
   return (
-    <div className="rounded-lg border border-border bg-card shadow-xs">
+    <div className="rounded-lg border border-border bg-card">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-border text-sm">
           <thead className="bg-muted text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">

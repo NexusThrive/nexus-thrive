@@ -1,5 +1,5 @@
 import { CalendarDays, HandCoins, User } from "lucide-react";
-import { cn } from "@/lib/cn";
+import { Badge, StatusDot } from "@/components/ui/badge";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { paymentMethodLabel, paymentStatusLabel } from "@/lib/finance";
 import type { PaymentMethodValue, PaymentStatusValue } from "@/lib/finance";
@@ -16,11 +16,14 @@ export type PaymentViewRow = {
   createdAt: string;
 };
 
-const STATUS_TONES: Record<PaymentStatusValue, string> = {
-  APPROVED: "bg-success/10 text-success border-success/20",
-  PENDING: "bg-warning text-warning-foreground border-warning-foreground/20",
-  DECLINED: "bg-destructive/10 text-destructive border-destructive/20",
-  VOIDED: "bg-muted text-muted-foreground border-border",
+const STATUS_DOTS: Record<
+  PaymentStatusValue,
+  "success" | "danger" | "warning" | "muted"
+> = {
+  APPROVED: "success",
+  PENDING: "warning",
+  DECLINED: "danger",
+  VOIDED: "muted",
 };
 
 /**
@@ -41,8 +44,8 @@ export default function PaymentsTable({
   return (
     <div className="space-y-4">
       {rows.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card px-6 py-12 text-center shadow-xs">
-          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+        <div className="rounded-lg border border-border bg-card px-6 py-12 text-center">
+          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-sm bg-muted text-muted-foreground">
             <HandCoins aria-hidden="true" className="h-6 w-6" />
           </span>
           <p className="mt-4 text-sm font-medium text-foreground">
@@ -59,7 +62,7 @@ export default function PaymentsTable({
       ) : (
         <>
           {/* ---------- Tabla (desktop) ---------- */}
-          <div className="hidden overflow-hidden rounded-lg border border-border bg-card shadow-xs sm:block">
+          <div className="hidden overflow-hidden rounded-lg border border-border bg-card sm:block">
             <table className="w-full text-left text-sm">
               <caption className="sr-only">Pagos registrados</caption>
               <thead className="border-b border-border bg-muted text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -110,14 +113,10 @@ export default function PaymentsTable({
                       {paymentMethodLabel(row.provider)}
                     </td>
                     <td className="px-4 py-3">
-                      <span
-                        className={cn(
-                          "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium",
-                          STATUS_TONES[row.status],
-                        )}
-                      >
+                      <Badge>
+                        <StatusDot tone={STATUS_DOTS[row.status]} />
                         {paymentStatusLabel(row.status)}
-                      </span>
+                      </Badge>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
                       {formatDateTime(row.createdAt)}
@@ -136,7 +135,7 @@ export default function PaymentsTable({
             {rows.map((row) => (
               <li
                 key={row.id}
-                className="rounded-lg border border-border bg-card p-4 shadow-xs"
+                className="rounded-lg border border-border bg-card p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -144,14 +143,10 @@ export default function PaymentsTable({
                       <span className="truncate">
                         {row.customerName ?? "Sin cliente"}
                       </span>
-                      <span
-                        className={cn(
-                          "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase",
-                          STATUS_TONES[row.status],
-                        )}
-                      >
+                      <Badge className="text-[10px] uppercase">
+                        <StatusDot tone={STATUS_DOTS[row.status]} />
                         {paymentStatusLabel(row.status)}
-                      </span>
+                      </Badge>
                     </p>
                     <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                       <User aria-hidden="true" className="h-3 w-3 shrink-0" />

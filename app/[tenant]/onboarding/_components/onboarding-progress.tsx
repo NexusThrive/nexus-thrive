@@ -30,7 +30,7 @@ export default function OnboardingProgress({
             >
               <span
                 aria-hidden="true"
-                className={`grid h-6 w-6 place-items-center rounded-full text-xs font-semibold transition ${
+                className={`grid h-6 w-6 place-items-center rounded-sm text-xs font-semibold transition ${
                   done
                     ? "bg-primary text-primary-foreground"
                     : active
@@ -57,10 +57,10 @@ export default function OnboardingProgress({
         aria-valuemin={0}
         aria-valuemax={100}
         aria-label="Progreso del onboarding"
-        className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted"
+        className="mt-3 h-1.5 w-full overflow-hidden rounded-sm bg-muted"
       >
         <div
-          className="h-full rounded-full bg-primary transition-all duration-300"
+          className="h-full rounded-sm bg-primary transition-all duration-300"
           style={{ width: `${percent}%` }}
         />
       </div>

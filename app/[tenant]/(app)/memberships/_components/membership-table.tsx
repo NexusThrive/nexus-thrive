@@ -48,7 +48,7 @@ export default function MembershipTable({
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-lg border border-border bg-card p-10 text-center shadow-xs">
+      <div className="rounded-lg border border-border bg-card p-10 text-center">
         <p className="text-sm font-medium text-foreground/80">
           No hay membresías{query ? " que coincidan con la búsqueda" : ""}.
         </p>
@@ -64,7 +64,7 @@ export default function MembershipTable({
   return (
     <>
       {/* Desktop */}
-      <div className="hidden overflow-hidden rounded-lg border border-border bg-card shadow-xs md:block">
+      <div className="hidden overflow-hidden rounded-lg border border-border bg-card md:block">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-border bg-muted text-xs font-medium uppercase tracking-wide text-muted-foreground">
             <tr>
@@ -145,7 +145,7 @@ export default function MembershipTable({
         {rows.map((row) => (
           <article
             key={row.id}
-            className="rounded-lg border border-border bg-card p-4 shadow-xs"
+            className="rounded-lg border border-border bg-card p-4"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">

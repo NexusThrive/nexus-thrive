@@ -125,7 +125,7 @@ export default function ModuleSelection({
                     {MODULE_LABELS[moduleName]}
                   </p>
                   {isRecommended && (
-                    <span className="rounded-full bg-gold-100 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-gold-700 uppercase">
+                    <span className="rounded-sm bg-gold-100 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-gold-700 uppercase">
                       Recomendado
                     </span>
                   )}

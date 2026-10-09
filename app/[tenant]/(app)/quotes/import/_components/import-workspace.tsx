@@ -12,6 +12,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { NLoader } from "@/components/brand/n-loader";
+import { Badge } from "@/components/ui/badge";
 import FileDropzone from "./file-dropzone";
 import MetricsPanel from "./metrics-panel";
 import MappingEditor from "./mapping-editor";
@@ -135,7 +136,7 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
               {parseError}
             </p>
           )}
-          <details className="rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground shadow-xs">
+          <details className="rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground">
             <summary className="cursor-pointer font-medium text-foreground/80">
               ¿Qué formatos reconoce el importador?
             </summary>
@@ -174,10 +175,10 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
                 {preview.separator ? ` · separador "${preview.separator}"` : ""}
               </span>
               {preview.blockMode && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-accent/30 bg-accent-subtle px-2 py-0.5 text-[11px] font-medium text-accent-text">
+                <Badge variant="gold">
                   <Sparkles aria-hidden="true" className="h-3 w-3" />
                   pack APU detectado
-                </span>
+                </Badge>
               )}
             </div>
             <button
@@ -216,7 +217,7 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
           <PreviewTable rows={preview.rows} blockMode={preview.blockMode} />
 
           {preview.warnings.length > 0 && (
-            <details className="rounded-lg border border-gold-300 bg-gold-100/60 p-4 shadow-xs">
+            <details className="rounded-lg border border-gold-300 bg-gold-100/60 p-4">
               <summary className="cursor-pointer text-sm font-medium text-gold-700">
                 {preview.warnings.length} aviso(s) a revisar
               </summary>
@@ -243,7 +244,7 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
             </p>
           )}
 
-          <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-xs sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">
               {importable > 0 ? (
                 <>
@@ -265,7 +266,7 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
               disabled={importable === 0 || executePending}
               onClick={handleExecute}
               className={cn(
-                "inline-flex items-center justify-center gap-2 rounded-lg bg-gold-500 px-5 py-2.5 text-sm font-semibold text-accent-foreground shadow-xs transition hover:bg-gold-600",
+                "inline-flex items-center justify-center gap-2 rounded-lg bg-gold-500 px-5 py-2.5 text-sm font-semibold text-accent-foreground transition hover:bg-gold-600",
                 (importable === 0 || executePending) &&
                   "cursor-not-allowed opacity-50 hover:bg-gold-500",
               )}
@@ -288,9 +289,9 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
 
       {/* Paso 3: reporte */}
       {step === "done" && result && (
-        <section className="rounded-lg border border-success/30 bg-card p-6 shadow-xs">
+        <section className="rounded-lg border border-success/30 bg-card p-6">
           <div className="flex items-start gap-4">
-            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-success/10 text-success">
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-sm bg-success/10 text-success">
               <CheckCircle2 aria-hidden="true" className="h-6 w-6" />
             </span>
             <div className="min-w-0">

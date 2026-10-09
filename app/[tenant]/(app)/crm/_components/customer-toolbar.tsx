@@ -42,7 +42,7 @@ export default function CustomerToolbar({
         <button
           type="button"
           onClick={() => setIsFormOpen(true)}
-          className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-xs transition hover:bg-primary/90 lg:self-auto"
+          className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 lg:self-auto"
         >
           <Plus aria-hidden="true" className="h-4 w-4" />
           {`Nuevo ${terms.customer.toLowerCase()}`}

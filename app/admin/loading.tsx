@@ -42,8 +42,8 @@ export default function AdminLoading() {
                   <Skeleton className="h-4 w-40" />
                   <Skeleton className="h-3 w-28" />
                 </div>
-                <Skeleton className="hidden h-5 w-20 rounded-full sm:block" />
-                <Skeleton className="hidden h-5 w-24 rounded-full sm:block" />
+                <Skeleton className="hidden h-5 w-20 rounded-sm sm:block" />
+                <Skeleton className="hidden h-5 w-24 rounded-sm sm:block" />
               </div>
             ))}
           </div>

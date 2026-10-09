@@ -40,18 +40,18 @@ export default function MetricsPanel({
   return (
     <div className="grid gap-4 sm:grid-cols-3">
       {/* Confianza */}
-      <article className="rounded-lg border border-border bg-card p-4 shadow-xs sm:col-span-1">
+      <article className="rounded-lg border border-border bg-card p-4 sm:col-span-1">
         <div className="flex items-start justify-between gap-2">
           <div>
             <p className="text-sm font-medium text-muted-foreground">Confianza del análisis</p>
-            <p className={cn("mt-1 inline-flex rounded-full border px-2 py-0.5 text-xs font-medium", LEVEL_TONE[confidence.level])}>
+            <p className={cn("mt-1 inline-flex rounded-sm border px-2 py-0.5 text-xs font-medium", LEVEL_TONE[confidence.level])}>
               {LEVEL_LABEL[confidence.level]}
             </p>
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{confidence.label}</p>
           </div>
           <div
             className={cn(
-              "grid h-14 w-14 shrink-0 place-items-center rounded-full border-4 text-lg font-bold tabular-nums",
+              "grid h-14 w-14 shrink-0 place-items-center rounded-sm border-4 text-lg font-bold tabular-nums",
               confidence.value >= 85
                 ? "border-success/30 text-success"
                 : confidence.value >= 65
@@ -71,7 +71,7 @@ export default function MetricsPanel({
       </article>
 
       {/* Contadores */}
-      <article className="rounded-lg border border-border bg-card p-4 shadow-xs sm:col-span-2">
+      <article className="rounded-lg border border-border bg-card p-4 sm:col-span-2">
         <p className="text-sm font-medium text-muted-foreground">
           {blockMode ? "Bloques APU detectados" : "Insumos detectados"}
         </p>

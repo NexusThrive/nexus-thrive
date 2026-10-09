@@ -43,7 +43,7 @@ export default function MappingEditor({
 }) {
   if (blockMode) {
     return (
-      <article className="rounded-lg border border-border bg-card p-4 shadow-xs">
+      <article className="rounded-lg border border-border bg-card p-4">
         <div className="flex items-center gap-2">
           <Columns3 aria-hidden="true" className="h-4 w-4 text-muted-foreground" />
           <p className="text-sm font-medium text-foreground/80">Estructura APU detectada</p>
@@ -57,7 +57,7 @@ export default function MappingEditor({
           {mapping.map((m) => (
             <span
               key={m.targetField}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted px-2.5 py-1 text-xs text-muted-foreground"
+              className="inline-flex items-center gap-1.5 rounded-sm border border-border bg-muted px-2.5 py-1 text-xs text-muted-foreground"
             >
               <CheckCircle2 aria-hidden="true" className="h-3.5 w-3.5 text-success" />
               {TARGET_LABELS[m.targetField]} ← “{m.sourceHeader}”
@@ -100,7 +100,7 @@ export default function MappingEditor({
   );
 
   return (
-    <article className="rounded-lg border border-border bg-card p-4 shadow-xs">
+    <article className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-center gap-2">
         <Columns3 aria-hidden="true" className="h-4 w-4 text-muted-foreground" />
         <p className="text-sm font-medium text-foreground/80">Mapeo de columnas</p>
@@ -115,7 +115,7 @@ export default function MappingEditor({
               <span className="flex items-center justify-between gap-2 text-xs font-medium text-muted-foreground">
                 {TARGET_LABELS[field]}
                 {entry.needsAttention && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-gold-100 px-1.5 py-0.5 text-[10px] font-medium text-gold-700">
+                  <span className="inline-flex items-center gap-1 rounded-sm bg-gold-100 px-1.5 py-0.5 text-[10px] font-medium text-gold-700">
                     <AlertTriangle aria-hidden="true" className="h-3 w-3" />
                     difusa
                   </span>

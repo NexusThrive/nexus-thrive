@@ -44,7 +44,8 @@ const SECTIONS: Section[] = [
 ];
 
 /**
- * Armazón del panel: sidebar fija en escritorio (superficie Ink), drawer en
+ * Armazón del panel: sidebar fija en escritorio (superficie Sidebar: blanca en
+ * claro, Ink en oscuro), drawer en
  * móvil y scroll-spy sobre las secciones de la página. El contenido (server
  * components) se pasa como children.
  */
@@ -89,13 +90,13 @@ export default function AdminShell({
   return (
     <div className="flex min-h-screen bg-background/60">
       {/* Sidebar escritorio */}
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-graphite-800 bg-ink lg:flex">
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
         <SidebarContent active={active} onNavigate={goTo} />
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Barra superior móvil */}
-        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-background/90 px-4 py-3 backdrop-blur lg:hidden">
+        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-sidebar-border bg-sidebar/90 px-4 py-3 backdrop-blur lg:hidden">
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger
               className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground transition hover:bg-muted"
@@ -103,7 +104,7 @@ export default function AdminShell({
             >
               <Menu className="h-5 w-5" aria-hidden />
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 gap-0 bg-ink p-0">
+            <SheetContent side="left" className="w-64 gap-0 bg-sidebar p-0">
               <SheetHeader className="sr-only">
                 <SheetTitle>Navegación</SheetTitle>
               </SheetHeader>
@@ -132,12 +133,12 @@ function SidebarContent({
 }) {
   return (
     <>
-      <div className="flex h-16 items-center border-b border-graphite-800 px-5">
-        <Brand tone="on-ink" />
+      <div className="flex h-35 items-center justify-center border-b border-sidebar-border px-5">
+        <Brand tone="on-sidebar" />
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-        <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-paper/35">
+        <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-sidebar-fg-muted">
           Plataforma
         </p>
         {SECTIONS.map((section) => {
@@ -152,20 +153,20 @@ function SidebarContent({
               className={cn(
                 "relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-[opacity,background-color] duration-120",
                 isActive
-                  ? "bg-white/[0.08] text-paper opacity-100"
-                  : "text-paper opacity-[0.72] hover:bg-white/[0.06] hover:opacity-100",
+                  ? "bg-sidebar-active text-sidebar-fg opacity-100"
+                  : "text-sidebar-fg opacity-[0.72] hover:bg-sidebar-hover hover:opacity-100",
               )}
             >
               {isActive && (
                 <span
                   aria-hidden="true"
-                  className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-gold-500"
+                  className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-sm bg-sidebar-accent"
                 />
               )}
               <Icon
                 className={cn(
                   "h-4 w-4",
-                  isActive ? "text-gold-500" : "text-paper/50",
+                  isActive ? "text-sidebar-accent" : "text-sidebar-fg-muted",
                 )}
                 aria-hidden
               />
@@ -175,33 +176,33 @@ function SidebarContent({
         })}
 
         <div className="pt-3">
-          <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-paper/35">
+          <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-sidebar-fg-muted">
             Herramientas
           </p>
           <button
             type="button"
             onClick={downloadExport}
-            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-paper opacity-[0.72] transition hover:bg-white/[0.06] hover:opacity-100"
+            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-sidebar-fg opacity-[0.72] transition hover:bg-sidebar-hover hover:opacity-100"
           >
-            <Download className="h-4 w-4 text-paper/50" aria-hidden />
+            <Download className="h-4 w-4 text-sidebar-fg-muted" aria-hidden />
             Exportar CSV
           </button>
           <Link
             href="/"
-            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-paper opacity-[0.72] transition hover:bg-white/[0.06] hover:opacity-100"
+            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-sidebar-fg opacity-[0.72] transition hover:bg-sidebar-hover hover:opacity-100"
           >
-            <Building2 className="h-4 w-4 text-paper/50" aria-hidden />
+            <Building2 className="h-4 w-4 text-sidebar-fg-muted" aria-hidden />
             Sitio público
           </Link>
         </div>
       </nav>
 
-      <div className="border-t border-graphite-800 p-3">
+      <div className="border-t border-sidebar-border p-3">
         <div className="flex items-center gap-3 rounded-md px-2 py-2">
           <UserButton />
           <div className="min-w-0 leading-tight">
-            <p className="truncate text-sm font-medium text-paper">SuperAdmin</p>
-            <p className="flex items-center gap-1 text-[11px] text-paper/50">
+            <p className="truncate text-sm font-medium text-sidebar-fg">SuperAdmin</p>
+            <p className="flex items-center gap-1 text-[11px] text-sidebar-fg-muted">
               <ShieldCheck className="h-3 w-3" aria-hidden />
               Acceso total
             </p>

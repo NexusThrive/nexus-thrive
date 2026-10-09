@@ -29,7 +29,7 @@ export default function TimelinePanel({
 }) {
   if (events.length === 0) {
     return (
-      <div className="rounded-lg border border-border bg-card p-6 text-center text-sm text-muted-foreground shadow-xs">
+      <div className="rounded-lg border border-border bg-card p-6 text-center text-sm text-muted-foreground">
         {emptyText}
       </div>
     );
@@ -51,7 +51,7 @@ export default function TimelinePanel({
             <span
               aria-hidden="true"
               className={cn(
-                "z-10 grid h-10 w-10 shrink-0 place-items-center rounded-full ring-4 ring-background",
+                "z-10 grid h-10 w-10 shrink-0 place-items-center rounded-sm ring-4 ring-background",
                 EVENT_TONE[event.type],
               )}
             >
@@ -61,7 +61,7 @@ export default function TimelinePanel({
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <p className="font-medium text-foreground">{event.title}</p>
                 {event.status ? (
-                  <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                  <span className="rounded-sm bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                     {event.status}
                   </span>
                 ) : null}

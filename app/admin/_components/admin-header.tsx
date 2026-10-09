@@ -7,8 +7,9 @@ import TenantForm from "./tenant-form";
 import CommandPalette from "./command-palette";
 
 /**
- * Cabecera de la página. Controla el alta de negocios y la paleta de
- * comandos (⌘K). El usuario y el rol se muestran en el sidebar del shell.
+ * Cabecera de la página: `h1` Montserrat + subtítulo, botón outline de 40 px
+ * "Buscar o comando ⌘K" y botón ACENTO oro "Nuevo negocio". El usuario y el rol
+ * se muestran en el sidebar del shell.
  */
 export default function AdminHeader() {
   const [formOpen, setFormOpen] = useState(false);
@@ -18,31 +19,32 @@ export default function AdminHeader() {
     <>
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h1 className="font-display text-[26px] font-semibold leading-8 tracking-[-0.01em] text-foreground">
             Resumen general
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Gestión global de negocios, verticales y módulos de la plataforma.
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setPaletteOpen(true)}
-            className="hidden h-10 items-center gap-2 rounded-lg border border-border bg-card px-3 text-sm text-muted-foreground transition hover:bg-muted md:inline-flex"
-          >
-            <Command className="h-4 w-4" aria-hidden />
-            Buscar o comando
-            <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
-              ⌘K
-            </kbd>
-          </button>
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           <Button
             type="button"
-            onClick={() => setFormOpen(true)}
-            className="bg-gold-500 text-ink hover:bg-gold-600"
+            variant="outline"
+            onClick={() => setPaletteOpen(true)}
+            className="hidden md:inline-flex"
           >
-            <Plus aria-hidden />
+            <Command aria-hidden="true" />
+            Buscar o comando
+            <kbd className="ml-1 rounded-sm border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+              ⌘K
+            </kbd>
+          </Button>
+          <Button
+            type="button"
+            variant="accent"
+            onClick={() => setFormOpen(true)}
+          >
+            <Plus aria-hidden="true" />
             Nuevo negocio
           </Button>
         </div>

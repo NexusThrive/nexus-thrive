@@ -56,7 +56,7 @@ export default function Modal({
       <div
         className={`w-full ${
           wide ? "max-w-3xl" : "max-w-xl"
-        } rounded-xl border border-border bg-card shadow-popover`}
+        } rounded-lg border border-border bg-card shadow-popover`}
       >
         <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-4">
           <h2 className="text-base font-semibold text-foreground">{title}</h2>

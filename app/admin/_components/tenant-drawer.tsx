@@ -481,7 +481,7 @@ function UsuariosTab({ detail }: { detail: TenantDetail }) {
     <ul className="divide-y">
       {detail.users.map((user) => (
         <li key={user.id} className="flex items-center gap-3 py-3 first:pt-0">
-          <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-medium uppercase">
+          <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-sm bg-muted text-sm font-medium uppercase">
             {(user.name ?? user.email).slice(0, 1)}
           </span>
           <span className="min-w-0 flex-1">

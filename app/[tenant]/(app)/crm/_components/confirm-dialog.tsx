@@ -62,7 +62,7 @@ export default function ConfirmDialog({
         className="relative w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-popover"
       >
         <div className="flex items-start gap-3">
-          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-destructive/10 text-destructive">
             <TriangleAlert aria-hidden="true" className="h-5 w-5" />
           </span>
           <div className="min-w-0">

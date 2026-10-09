@@ -9,7 +9,7 @@ const PREVIEW_LIMIT = 50;
 function StatusBadge({ row }: { row: ParsedRow }) {
   if (row.status === "OK") {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success">
+      <span className="inline-flex items-center gap-1 rounded-sm bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success">
         <CheckCircle2 aria-hidden="true" className="h-3 w-3" />
         OK
       </span>
@@ -17,14 +17,14 @@ function StatusBadge({ row }: { row: ParsedRow }) {
   }
   if (row.status === "WARNING") {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-gold-100 px-2 py-0.5 text-[11px] font-medium text-gold-700">
+      <span className="inline-flex items-center gap-1 rounded-sm bg-gold-100 px-2 py-0.5 text-[11px] font-medium text-gold-700">
         <AlertTriangle aria-hidden="true" className="h-3 w-3" />
         Aviso
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2 py-0.5 text-[11px] font-medium text-destructive">
+    <span className="inline-flex items-center gap-1 rounded-sm bg-destructive/10 px-2 py-0.5 text-[11px] font-medium text-destructive">
       <XCircle aria-hidden="true" className="h-3 w-3" />
       Omitir
     </span>
@@ -95,7 +95,7 @@ export default function PreviewTable({ rows, blockMode }: { rows: ParsedRow[]; b
   const hidden = rows.length - shown.length;
 
   return (
-    <article className="overflow-hidden rounded-lg border border-border bg-card shadow-xs">
+    <article className="overflow-hidden rounded-lg border border-border bg-card">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <p className="text-sm font-medium text-foreground/80">
           Vista previa <span className="font-normal text-muted-foreground">(primeras {Math.min(PREVIEW_LIMIT, rows.length)} de {rows.length})</span>

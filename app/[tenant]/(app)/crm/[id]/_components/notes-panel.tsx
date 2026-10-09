@@ -61,7 +61,7 @@ export default function NotesPanel({
           rows={4}
           maxLength={NOTE_MAX_LENGTH}
           placeholder="Observación interna sobre este cliente…"
-          className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm text-foreground shadow-xs placeholder:text-muted-foreground focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-600/20"
+          className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-600/20"
         />
         <div className="flex items-center justify-between gap-3">
           <p
@@ -82,7 +82,7 @@ export default function NotesPanel({
           <button
             type="submit"
             disabled={isPending}
-            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isPending ? (
               <NLoader size={16} className="text-current" />
@@ -96,14 +96,14 @@ export default function NotesPanel({
 
       <div className="space-y-3 lg:col-span-2">
         {initialNotes.length === 0 ? (
-          <div className="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground shadow-xs">
+          <div className="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground">
             Todavía no hay notas sobre este cliente.
           </div>
         ) : (
           initialNotes.map((note) => (
             <article
               key={note.id}
-              className="rounded-lg border border-border bg-card p-4 shadow-xs"
+              className="rounded-lg border border-border bg-card p-4"
             >
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-medium text-foreground">

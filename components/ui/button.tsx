@@ -1,58 +1,116 @@
+"use client";
+
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import { FocusText, NMark } from "@/components/brand/loaders";
 
+/**
+ * Botón NEXUS THRIVE (idéntico a reference/nexus-loaders.html):
+ * alto 40 px, padding 0 18px, radio 4 px, Inter 600 13 px, gap 8 px,
+ * `whitespace-nowrap`. Primario = Ink (claro) / oro (oscuro) vía --primary.
+ * Acento = oro, único CTA por pantalla. Foco dorado, deshabilitado opacidad .5.
+ * Estados `loading` / `done` con la N de marca + texto con enfoque.
+ */
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 active:scale-[0.98]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded border border-transparent text-[13px] font-semibold leading-none transition-colors outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20",
+        primary: "bg-primary text-primary-foreground hover:bg-primary-hover",
+        accent: "bg-accent text-accent-foreground hover:bg-accent-hover",
         outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground",
+          "border-border-strong bg-transparent text-foreground hover:bg-surface-muted",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-surface-muted text-foreground hover:bg-border",
+        ghost: "bg-transparent text-foreground hover:bg-surface-muted",
+        danger: "bg-danger text-white hover:bg-danger/90",
+        link: "text-accent-text underline-offset-4 hover:underline",
+        // Alias de compatibilidad (shadcn).
+        default: "bg-primary text-primary-foreground hover:bg-primary-hover",
+        destructive: "bg-danger text-white hover:bg-danger/90",
       },
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
-        sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
-        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
-        icon: "size-9",
-        "icon-sm": "size-8",
+        default: "h-10 px-[18px]",
+        sm: "h-8 px-3.5 text-[13px]",
+        lg: "h-10 px-6",
+        icon: "size-10 p-0",
+        "icon-sm": "size-8 p-0",
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: "primary",
       size: "default",
     },
   },
 );
+
+export interface ButtonProps
+  extends React.ComponentProps<"button">,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean;
+  /** Mientras la mutación real está en curso. */
+  loading?: boolean;
+  /** Cuando la mutación terminó correctamente (se muestra ~1.3 s). */
+  done?: boolean;
+  /** Texto de estado; por defecto "Guardando…". */
+  loadingText?: string;
+  /** Texto de éxito; por defecto "Guardado". */
+  doneText?: string;
+}
 
 function Button({
   className,
   variant,
   size,
   asChild = false,
+  loading = false,
+  done = false,
+  loadingText = "Guardando…",
+  doneText = "Guardado",
+  children,
+  disabled,
   ...props
-}: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-  }) {
-  const Comp = asChild ? Slot : "button";
+}: ButtonProps) {
+  if (asChild) {
+    const Comp = Slot as React.ElementType;
+    return (
+      <Comp
+        data-slot="button"
+        className={cn(buttonVariants({ variant, size, className }))}
+        disabled={disabled}
+        {...props}
+      >
+        {children}
+      </Comp>
+    );
+  }
+
+  const busy = loading || done;
 
   return (
-    <Comp
+    <button
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      data-state={busy ? (done ? "done" : "loading") : "idle"}
+      aria-busy={loading || undefined}
+      className={cn(
+        buttonVariants({ variant, size, className }),
+        busy && "min-w-[176px]",
+      )}
+      disabled={disabled || busy}
       {...props}
-    />
+    >
+      {busy ? (
+        <>
+          <NMark size={16} state={done ? "done" : "loop"} />
+          <FocusText text={done ? doneText : loadingText} />
+        </>
+      ) : (
+        children
+      )}
+    </button>
   );
 }
 

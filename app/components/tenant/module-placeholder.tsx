@@ -28,7 +28,7 @@ export default function ModulePlaceholder({
         {title}
       </h1>
       <p className="mt-1 max-w-md text-sm text-muted-foreground">{description}</p>
-      <span className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-foreground">
+      <span className="mt-5 inline-flex items-center gap-1.5 rounded-sm border border-border bg-muted px-3 py-1 text-xs font-medium text-foreground">
         <Wrench className="h-3.5 w-3.5" aria-hidden="true" />
         Módulo en construcción
       </span>

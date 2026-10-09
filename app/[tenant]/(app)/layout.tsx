@@ -2,6 +2,8 @@ import { notFound, redirect } from "next/navigation";
 import { db } from "@/prisma/db";
 import { sortModules } from "@/lib/admin-catalogs";
 import { getVerticalTerms } from "@/lib/vertical-terms";
+import { RouteBar } from "@/components/brand/loaders";
+import { ModuleEntry } from "@/components/brand/module-intro";
 import Header from "../../components/tenant/header";
 import Sidebar from "../../components/tenant/sidebar";
 import { SidebarProvider } from "../../components/tenant/sidebar-context";
@@ -66,8 +68,9 @@ export default async function AppLayout({
             activeModules={activeModules}
           />
 
-          <main className="px-4 py-6 sm:px-6 lg:py-8 lg:pl-[17rem] lg:pr-8">
-            {children}
+          <main className="px-4 py-6 sm:px-6 lg:py-8 lg:pl-[15.5rem] lg:pr-8">
+            <RouteBar />
+            <ModuleEntry>{children}</ModuleEntry>
           </main>
         </div>
       </VerticalTermsProvider>

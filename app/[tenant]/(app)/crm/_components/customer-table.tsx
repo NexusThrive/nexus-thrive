@@ -238,8 +238,8 @@ export default function CustomerTable({
 
       {/* ---------- Estado vacío ---------- */}
       {rows.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card px-6 py-12 text-center shadow-xs">
-          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+        <div className="rounded-lg border border-border bg-card px-6 py-12 text-center">
+          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-sm bg-muted text-muted-foreground">
             <Users aria-hidden="true" className="h-6 w-6" />
           </span>
           <p className="mt-4 text-sm font-medium text-foreground">
@@ -260,7 +260,7 @@ export default function CustomerTable({
       ) : (
         <>
           {/* ---------- Tabla (desktop) ---------- */}
-          <div className="hidden overflow-hidden rounded-lg border border-border bg-card shadow-xs sm:block">
+          <div className="hidden overflow-hidden rounded-lg border border-border bg-card sm:block">
             <table className="w-full text-left text-sm">
               <caption className="sr-only">
                 {terms.customers} de {tenantSlug}
@@ -315,7 +315,7 @@ export default function CustomerTable({
                       <div className="flex items-center gap-3">
                         <span
                           aria-hidden="true"
-                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-xs font-semibold text-accent-text"
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-accent-subtle text-xs font-semibold text-accent-text"
                         >
                           {initialsOf(row.name)}
                         </span>
@@ -408,7 +408,7 @@ export default function CustomerTable({
             {rows.map((row) => (
               <li
                 key={row.id}
-                className="rounded-lg border border-border bg-card p-4 shadow-xs"
+                className="rounded-lg border border-border bg-card p-4"
               >
                 <div className="flex items-start gap-3">
                   {isArchivedView ? (
@@ -422,7 +422,7 @@ export default function CustomerTable({
                   ) : null}
                   <span
                     aria-hidden="true"
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-xs font-semibold text-accent-text"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-accent-subtle text-xs font-semibold text-accent-text"
                   >
                     {initialsOf(row.name)}
                   </span>

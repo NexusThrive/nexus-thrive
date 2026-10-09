@@ -20,7 +20,7 @@ export default function FinanceSummary({
       className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
     >
       {/* Ingresos */}
-      <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
+      <article className="rounded-lg border border-border bg-card p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-muted-foreground">
@@ -43,7 +43,7 @@ export default function FinanceSummary({
       </article>
 
       {/* Gastos */}
-      <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
+      <article className="rounded-lg border border-border bg-card p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-muted-foreground">
@@ -66,7 +66,7 @@ export default function FinanceSummary({
       </article>
 
       {/* Balance */}
-      <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
+      <article className="rounded-lg border border-border bg-card p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-muted-foreground">
@@ -105,7 +105,7 @@ export default function FinanceSummary({
       </article>
 
       {/* Por método */}
-      <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
+      <article className="rounded-lg border border-border bg-card p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-muted-foreground">

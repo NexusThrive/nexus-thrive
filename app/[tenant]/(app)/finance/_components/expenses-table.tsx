@@ -1,4 +1,5 @@
 import { Receipt } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/format";
 import PaginationLinks from "@/app/components/tenant/pagination-links";
 
@@ -8,14 +9,6 @@ export type ExpenseViewRow = {
   description: string;
   amount: number;
   date: string;
-};
-
-const CATEGORY_TONES: Record<string, string> = {
-  Servicios: "bg-accent-subtle text-accent-text border-gold-300",
-  Nómina: "bg-success/10 text-success border-success/20",
-  Insumos: "bg-warning text-warning-foreground border-warning-foreground/20",
-  Arriendo: "bg-secondary text-secondary-foreground border-border",
-  Otros: "bg-muted text-muted-foreground border-border",
 };
 
 /**
@@ -35,8 +28,8 @@ export default function ExpensesTable({
   return (
     <div className="space-y-4">
       {rows.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card px-6 py-12 text-center shadow-xs">
-          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+        <div className="rounded-lg border border-border bg-card px-6 py-12 text-center">
+          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-sm bg-muted text-muted-foreground">
             <Receipt aria-hidden="true" className="h-6 w-6" />
           </span>
           <p className="mt-4 text-sm font-medium text-foreground">
@@ -53,7 +46,7 @@ export default function ExpensesTable({
       ) : (
         <>
           {/* ---------- Tabla (desktop) ---------- */}
-          <div className="hidden overflow-hidden rounded-lg border border-border bg-card shadow-xs sm:block">
+          <div className="hidden overflow-hidden rounded-lg border border-border bg-card sm:block">
             <table className="w-full text-left text-sm">
               <caption className="sr-only">Gastos de caja menor</caption>
               <thead className="border-b border-border bg-muted text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -81,14 +74,7 @@ export default function ExpensesTable({
                       </p>
                     </td>
                     <td className="px-4 py-3">
-                      <span
-                        className={
-                          "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium " +
-                          (CATEGORY_TONES[row.category] ?? CATEGORY_TONES.Otros)
-                        }
-                      >
-                        {row.category}
-                      </span>
+                      <Badge variant="secondary">{row.category}</Badge>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
                       {formatDate(row.date)}
@@ -107,21 +93,19 @@ export default function ExpensesTable({
             {rows.map((row) => (
               <li
                 key={row.id}
-                className="rounded-lg border border-border bg-card p-4 shadow-xs"
+                className="rounded-lg border border-border bg-card p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="truncate font-medium text-foreground">
                       {row.description}
                     </p>
-                    <p
-                      className={
-                        "mt-1.5 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase " +
-                        (CATEGORY_TONES[row.category] ?? CATEGORY_TONES.Otros)
-                      }
+                    <Badge
+                      variant="secondary"
+                      className="mt-1.5 text-[10px] uppercase"
                     >
                       {row.category}
-                    </p>
+                    </Badge>
                   </div>
                   <p className="shrink-0 text-base font-semibold text-destructive">
                     {formatCurrency(row.amount)}

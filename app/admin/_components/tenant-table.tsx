@@ -25,6 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { EmptyState } from "@/components/brand/empty-state";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import {
   MODULE_LABELS,
@@ -88,22 +89,22 @@ export default function TenantTable({
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed bg-card px-6 py-14 text-center">
-        <p className="text-sm font-medium">No hay negocios que coincidan.</p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Ajusta la búsqueda o los filtros para ver resultados.
-        </p>
+      <div className="rounded-lg border border-border bg-card">
+        <EmptyState
+          title="No hay negocios que coincidan"
+          description="Ajusta la búsqueda o los filtros para ver resultados."
+        />
       </div>
     );
   }
 
   return (
     <>
-      <div className="overflow-hidden rounded-lg border bg-card shadow-xs">
+      <div className="overflow-hidden rounded-lg border bg-card">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[860px] border-collapse text-sm">
+          <table className="w-full min-w-[860px] border-collapse text-sm [&_td]:align-middle [&_td:first-child]:sticky [&_td:first-child]:left-0 [&_td:first-child]:z-10 [&_td:first-child]:bg-card [&_tbody_tr]:h-14 [&_th:first-child]:sticky [&_th:first-child]:left-0 [&_th:first-child]:z-10 [&_th:first-child]:bg-card">
             <thead>
-              <tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
+              <tr className="border-b border-border text-left text-xs text-muted-foreground">
                 <SortHeader
                   label="Negocio"
                   column="name"
@@ -141,7 +142,7 @@ export default function TenantTable({
                   <tr
                     key={row.id}
                     onClick={() => setSelectedId(row.id)}
-                    className="cursor-pointer border-b last:border-0 transition hover:bg-muted/40"
+                    className="cursor-pointer border-b border-border last:border-0 transition hover:bg-surface-muted"
                   >
                     <td className="px-3 py-3">
                       <div className="flex items-center gap-2.5">
@@ -251,13 +252,13 @@ function OnboardingProgress({ row }: { row: TenantListRow }) {
   const done = row.onboardingCompleted;
   return (
     <span className="inline-flex items-center gap-2">
-      <span className="h-1.5 w-16 overflow-hidden rounded-full bg-muted">
+      <span className="h-1 w-16 bg-border">
         <span
-          className={cn(
-            "block h-full rounded-full",
-            done ? "bg-success" : "bg-gold-500",
-          )}
-          style={{ width: `${row.onboardingProgress}%` }}
+          className={cn("block h-full", done ? "bg-foreground" : "bg-gold-500")}
+          style={{
+            width: `${row.onboardingProgress}%`,
+            clipPath: "polygon(0 0,100% 0,calc(100% - 6px) 100%,0 100%)",
+          }}
         />
       </span>
       <span className="text-xs tabular-nums text-muted-foreground">
@@ -278,7 +279,7 @@ function ModuleChips({ modules }: { modules: ModuleValue[] }) {
       {visible.map((module) => (
         <span
           key={module}
-          className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground"
+          className="rounded-sm bg-surface-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground"
         >
           {MODULE_LABELS[module]}
         </span>
@@ -288,7 +289,7 @@ function ModuleChips({ modules }: { modules: ModuleValue[] }) {
           <TooltipTrigger asChild>
             <button
               type="button"
-              className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground transition hover:bg-accent"
+              className="rounded-sm bg-surface-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground transition hover:bg-border"
             >
               +{rest.length}
             </button>
@@ -315,7 +316,7 @@ function RowActions({
         <button
           type="button"
           aria-label={`Acciones de ${row.name}`}
-          className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
+          className="inline-flex size-8 items-center justify-center rounded text-muted-foreground transition hover:bg-surface-muted hover:text-foreground"
         >
           <MoreHorizontal aria-hidden="true" className="h-4 w-4" />
         </button>

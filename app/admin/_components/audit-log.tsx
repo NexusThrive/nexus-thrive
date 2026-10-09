@@ -28,7 +28,7 @@ export default function AuditLog({ rows }: { rows: AuditLogRow[] }) {
     <ol className="divide-y">
       {rows.map((row) => (
         <li key={row.id} className="flex gap-3 py-3 first:pt-0 last:pb-0">
-          <span className="mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-gold-100 text-gold-700">
+          <span className="mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-sm bg-gold-100 text-gold-700">
             <ShieldCheck aria-hidden="true" className="h-3.5 w-3.5" />
           </span>
           <div className="min-w-0 flex-1">
