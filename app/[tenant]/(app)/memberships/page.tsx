@@ -112,12 +112,12 @@ export default async function MembershipsPage({
       {/* Encabezado */}
       <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             Membresías
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             Planes y renovaciones de{" "}
-            <span className="font-medium text-slate-700">
+            <span className="font-medium text-foreground/80">
               {tenantRecord.name}
             </span>
             .
@@ -138,11 +138,11 @@ export default async function MembershipsPage({
           <div>
             <h2
               id="memberships-list-title"
-              className="text-base font-semibold text-slate-900"
+              className="text-base font-semibold text-foreground"
             >
               Listado de membresías
             </h2>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-muted-foreground">
               {membershipResult.total}{" "}
               {membershipResult.total === 1
                 ? "membresía registrada"

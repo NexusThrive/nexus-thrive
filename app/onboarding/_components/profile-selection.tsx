@@ -46,26 +46,26 @@ export default function ProfileSelection({
               onClick={() => onChange(profile.value)}
               aria-pressed={isSelected}
               className={cn(
-                "group rounded-xl border p-5 text-left transition",
+                "group rounded-lg border p-5 text-left transition",
                 isSelected
-                  ? "border-amber-400 bg-amber-50/60 ring-2 ring-amber-500/30"
-                  : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50",
+                  ? "border-gold-500 bg-gold-100/60 ring-2 ring-gold-600/30"
+                  : "border-border bg-card hover:border-foreground/20 hover:bg-muted",
               )}
             >
               <span
                 className={cn(
                   "grid size-10 place-items-center rounded-lg transition",
                   isSelected
-                    ? "bg-amber-500 text-white"
-                    : "bg-slate-100 text-slate-600 group-hover:bg-slate-200",
+                    ? "bg-gold-500 text-ink"
+                    : "bg-muted text-muted-foreground group-hover:bg-foreground/10",
                 )}
               >
                 <Icon className="size-5" aria-hidden="true" />
               </span>
-              <span className="mt-3 block text-sm font-semibold text-slate-900">
+              <span className="mt-3 block text-sm font-semibold text-foreground">
                 {profile.title}
               </span>
-              <span className="mt-1 block text-xs leading-5 text-slate-500">
+              <span className="mt-1 block text-xs leading-5 text-muted-foreground">
                 {profile.description}
               </span>
             </button>

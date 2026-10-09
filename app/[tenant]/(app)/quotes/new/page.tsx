@@ -40,15 +40,15 @@ export default async function NewQuotePage({
       <header className="flex flex-col gap-1">
         <Link
           href={`/${tenantSlug}/quotes`}
-          className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-slate-700"
+          className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-foreground/80"
         >
           <ArrowLeft aria-hidden="true" className="h-4 w-4" />
           Volver a {terms.quotes.toLowerCase()}
         </Link>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
           Nuevo {terms.quote.toLowerCase()}
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           Arma el {terms.quote.toLowerCase()} con el catálogo APU y ajusta la
           AIU. El servidor recalcula todo con precisión decimal exacta.
         </p>

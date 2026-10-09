@@ -32,9 +32,9 @@ export default function StepVertical({
   return (
     <div className="space-y-4">
       <fieldset>
-        <legend className="text-sm font-medium text-slate-700">
+        <legend className="text-sm font-medium text-foreground/80">
           ¿Cuál es tu tipo de negocio?{" "}
-          <span className="text-rose-500">*</span>
+          <span className="text-destructive">*</span>
         </legend>
         <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
           {VERTICALS.map((value) => {
@@ -45,8 +45,8 @@ export default function StepVertical({
                 key={value}
                 className={`flex cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm transition ${
                   checked
-                    ? "border-indigo-400 bg-indigo-50 text-indigo-900"
-                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                    ? "border-gold-500 bg-accent-subtle text-accent-text"
+                    : "border-border bg-card text-foreground/80 hover:border-foreground/20 hover:bg-muted"
                 }`}
               >
                 <input
@@ -55,7 +55,7 @@ export default function StepVertical({
                   value={value}
                   checked={checked}
                   onChange={() => setVertical(value)}
-                  className="h-4 w-4 accent-indigo-600"
+                  className="h-4 w-4 accent-gold-600"
                 />
                 {label}
               </label>
@@ -63,15 +63,15 @@ export default function StepVertical({
           })}
         </div>
         {errors?.vertical && (
-          <p className="mt-1 text-xs text-rose-600">{errors.vertical}</p>
+          <p className="mt-1 text-xs text-destructive">{errors.vertical}</p>
         )}
       </fieldset>
 
-      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-        <p className="text-xs font-medium text-slate-500">
+      <div className="rounded-lg border border-border bg-card p-3">
+        <p className="text-xs font-medium text-muted-foreground">
           Terminología principal
         </p>
-        <p className="mt-0.5 text-sm text-slate-700">
+        <p className="mt-0.5 text-sm text-foreground/80">
           {(() => {
             const terms = getVerticalTerms(selected);
             return `${terms.customer} · ${terms.booking} · ${terms.items}`;
@@ -79,21 +79,21 @@ export default function StepVertical({
         </p>
       </div>
 
-      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-        <p className="text-xs font-medium text-slate-500">
+      <div className="rounded-lg border border-border bg-card p-3">
+        <p className="text-xs font-medium text-muted-foreground">
           Módulos que activaremos automáticamente
         </p>
         <div className="mt-1.5 flex flex-wrap gap-1.5">
           {modules.map((moduleName) => (
             <span
               key={moduleName}
-              className="inline-flex items-center rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-700"
+              className="inline-flex items-center rounded-full bg-gold-100 px-2.5 py-0.5 text-xs font-medium text-accent-text"
             >
               {MODULE_LABELS[moduleName]}
             </span>
           ))}
         </div>
-        <p className="mt-2 text-xs text-slate-500">
+        <p className="mt-2 text-xs text-muted-foreground">
           Podrás activar otros módulos después desde el panel del CEO.
         </p>
       </div>

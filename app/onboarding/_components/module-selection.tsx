@@ -85,9 +85,9 @@ export default function ModuleSelection({
   return (
     <div className="space-y-4">
       {preset.length > 0 && (
-        <p className="flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2.5 text-xs leading-5 text-amber-800">
+        <p className="flex items-start gap-2 rounded-lg bg-gold-100 px-3 py-2.5 text-xs leading-5 text-gold-700">
           <Sparkles
-            className="mt-0.5 size-4 shrink-0 text-amber-500"
+            className="mt-0.5 size-4 shrink-0 text-gold-500"
             aria-hidden="true"
           />
           {selectWrapText(draft)}
@@ -103,34 +103,34 @@ export default function ModuleSelection({
             <div
               key={moduleName}
               className={cn(
-                "flex items-center gap-3 rounded-xl border p-3 transition",
+                "flex items-center gap-3 rounded-lg border p-3 transition",
                 isSelected
-                  ? "border-amber-300 bg-white"
-                  : "border-slate-200 bg-white opacity-75 hover:opacity-100",
+                  ? "border-gold-500 bg-card"
+                  : "border-border bg-card opacity-75 hover:opacity-100",
               )}
             >
               <span
                 className={cn(
                   "grid size-10 shrink-0 place-items-center rounded-lg",
                   isSelected
-                    ? "bg-amber-500/10 text-amber-600"
-                    : "bg-slate-100 text-slate-500",
+                    ? "bg-gold-500/10 text-gold-700"
+                    : "bg-muted text-muted-foreground",
                 )}
               >
                 <Icon className="size-5" aria-hidden="true" />
               </span>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold text-slate-900">
+                  <p className="text-sm font-semibold text-foreground">
                     {MODULE_LABELS[moduleName]}
                   </p>
                   {isRecommended && (
-                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-amber-700 uppercase">
+                    <span className="rounded-full bg-gold-100 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-gold-700 uppercase">
                       Recomendado
                     </span>
                   )}
                 </div>
-                <p className="mt-0.5 text-xs leading-5 text-slate-500">
+                <p className="mt-0.5 text-xs leading-5 text-muted-foreground">
                   {MODULE_DESCRIPTIONS[moduleName]}
                 </p>
               </div>
@@ -139,7 +139,7 @@ export default function ModuleSelection({
                 onCheckedChange={() => toggle(moduleName)}
                 aria-label={`Activar módulo ${MODULE_LABELS[moduleName]}`}
                 className={cn(
-                  isSelected && "data-[state=checked]:bg-amber-500",
+                  isSelected && "data-[state=checked]:bg-gold-500",
                 )}
               />
             </div>

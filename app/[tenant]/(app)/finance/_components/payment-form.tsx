@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useActionState, useRef } from "react";
-import { Loader2, X } from "lucide-react";
+import { X } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 import { createPaymentAction, type PaymentFormState } from "../actions";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import type { CustomerOption } from "./finance-actions";
@@ -62,17 +63,17 @@ export default function PaymentForm({
 
   const fieldClass = (hasError: boolean) =>
     [
-      "mt-1 h-10 w-full rounded-lg border bg-white px-3 text-sm text-slate-900 transition placeholder:text-slate-400 focus:outline-2",
+      "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
       hasError
-        ? "border-rose-300 focus:border-rose-400 focus:outline-rose-500/30"
-        : "border-slate-200 hover:border-slate-300 focus:border-indigo-400 focus:outline-indigo-500/30",
+        ? "border-destructive focus:border-destructive focus:outline-destructive/30"
+        : "border-border hover:border-ring/50 focus:border-ring focus:outline-ring/30",
     ].join(" ");
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center">
       <div
         aria-hidden="true"
-        className="fixed inset-0 bg-slate-950/45 backdrop-blur-[1px]"
+        className="fixed inset-0 bg-ink/45 backdrop-blur-[1px]"
         onClick={() => !isPending && onClose()}
       />
       <div
@@ -80,17 +81,17 @@ export default function PaymentForm({
         role="dialog"
         aria-modal="true"
         aria-labelledby="payment-form-title"
-        className="relative mt-10 w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-xl sm:mt-0"
+        className="relative mt-10 w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-popover sm:mt-0"
       >
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2
               id="payment-form-title"
-              className="text-lg font-semibold text-slate-900"
+              className="text-lg font-semibold text-foreground"
             >
               Registrar pago
             </h2>
-            <p className="mt-0.5 text-sm text-slate-500">
+            <p className="mt-0.5 text-sm text-muted-foreground">
               Registra un cobro recibido por el negocio.
             </p>
           </div>
@@ -99,7 +100,7 @@ export default function PaymentForm({
             aria-label="Cerrar"
             disabled={isPending}
             onClick={onClose}
-            className="-m-1 rounded-lg p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 disabled:opacity-50"
+            className="-m-1 rounded-lg p-1 text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-50"
           >
             <X aria-hidden="true" className="h-5 w-5" />
           </button>
@@ -112,9 +113,9 @@ export default function PaymentForm({
           <div>
             <label
               htmlFor="payment-amount"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground/80"
             >
-              Monto (COP) <span className="text-rose-500">*</span>
+              Monto (COP) <span className="text-destructive">*</span>
             </label>
             <input
               id="payment-amount"
@@ -127,7 +128,7 @@ export default function PaymentForm({
               className={fieldClass(Boolean(errors.amount))}
             />
             {errors.amount ? (
-              <p role="alert" className="mt-1 text-xs text-rose-600">
+              <p role="alert" className="mt-1 text-xs text-destructive">
                 {errors.amount}
               </p>
             ) : null}
@@ -136,7 +137,7 @@ export default function PaymentForm({
           <div>
             <label
               htmlFor="payment-customer"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground/80"
             >
               Cliente
             </label>
@@ -157,7 +158,7 @@ export default function PaymentForm({
             </select>
             <p
               id="payment-customer-hint"
-              className="mt-1 text-xs text-slate-400"
+              className="mt-1 text-xs text-muted-foreground"
             >
               Opcional: asocia el pago a un cliente activo.
             </p>
@@ -166,9 +167,9 @@ export default function PaymentForm({
           <div>
             <label
               htmlFor="payment-provider"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground/80"
             >
-              Método de pago <span className="text-rose-500">*</span>
+              Método de pago <span className="text-destructive">*</span>
             </label>
             <select
               id="payment-provider"
@@ -184,7 +185,7 @@ export default function PaymentForm({
               ))}
             </select>
             {errors.provider ? (
-              <p role="alert" className="mt-1 text-xs text-rose-600">
+              <p role="alert" className="mt-1 text-xs text-destructive">
                 {errors.provider}
               </p>
             ) : null}
@@ -193,7 +194,7 @@ export default function PaymentForm({
           <div>
             <label
               htmlFor="payment-ref"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground/80"
             >
               Referencia del proveedor
             </label>
@@ -206,7 +207,7 @@ export default function PaymentForm({
               className={fieldClass(Boolean(errors.providerRefId))}
             />
             {errors.providerRefId ? (
-              <p role="alert" className="mt-1 text-xs text-rose-600">
+              <p role="alert" className="mt-1 text-xs text-destructive">
                 {errors.providerRefId}
               </p>
             ) : null}
@@ -215,7 +216,7 @@ export default function PaymentForm({
           <div>
             <label
               htmlFor="payment-description"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground/80"
             >
               Descripción
             </label>
@@ -232,7 +233,7 @@ export default function PaymentForm({
               ].join(" ")}
             />
             {errors.description ? (
-              <p role="alert" className="mt-1 text-xs text-rose-600">
+              <p role="alert" className="mt-1 text-xs text-destructive">
                 {errors.description}
               </p>
             ) : null}
@@ -241,7 +242,7 @@ export default function PaymentForm({
           {state.status === "error" && state.message ? (
             <p
               role="alert"
-              className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700"
+              className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
             >
               {state.message}
             </p>
@@ -252,17 +253,17 @@ export default function PaymentForm({
               type="button"
               disabled={isPending}
               onClick={onClose}
-              className="h-10 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+              className="h-10 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isPending ? (
-                <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+                <NLoader size={16} className="text-current" />
               ) : null}
               {isPending ? "Guardando…" : "Registrar pago"}
             </button>

@@ -14,8 +14,8 @@ export default function TenantStatusBadge({
       className={cn(
         "inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset",
         active
-          ? "bg-emerald-50 text-emerald-700 ring-emerald-600/20"
-          : "bg-rose-50 text-rose-700 ring-rose-600/20",
+          ? "bg-success/10 text-success ring-success/20"
+          : "bg-destructive/10 text-destructive ring-destructive/20",
       )}
     >
       {active ? "Activo" : "Suspendido"}

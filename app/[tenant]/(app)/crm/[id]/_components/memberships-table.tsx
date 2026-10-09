@@ -19,17 +19,17 @@ export default function MembershipsTable({
 
   if (memberships.length === 0) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 shadow-sm">
+      <div className="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground shadow-xs">
         {emptyText}
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div className="rounded-lg border border-border bg-card shadow-xs">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-slate-200 text-sm">
-          <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <table className="min-w-full divide-y divide-border text-sm">
+          <thead className="bg-muted text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             <tr>
               <th scope="col" className="px-4 py-3">
                 Plan
@@ -48,22 +48,22 @@ export default function MembershipsTable({
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-border">
             {memberships.map((membership) => (
-              <tr key={membership.id} className="hover:bg-slate-50">
-                <td className="whitespace-nowrap px-4 py-3 font-medium text-slate-900">
+              <tr key={membership.id} className="hover:bg-muted">
+                <td className="whitespace-nowrap px-4 py-3 font-medium text-foreground">
                   {typeLabel(membership.type)}
                 </td>
-                <td className="whitespace-nowrap px-4 py-3 text-slate-600">
+                <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                   {formatDateShort(membership.startDate)}
                 </td>
-                <td className="whitespace-nowrap px-4 py-3 text-slate-600">
+                <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                   {formatDateShort(membership.endDate)}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3">
                   <MembershipStatusPill status={membership.status} />
                 </td>
-                <td className="whitespace-nowrap px-4 py-3 font-semibold text-slate-900">
+                <td className="whitespace-nowrap px-4 py-3 font-semibold text-foreground">
                   {formatCurrency(membership.price)}
                 </td>
               </tr>

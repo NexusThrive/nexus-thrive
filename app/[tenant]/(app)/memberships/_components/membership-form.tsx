@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useActionState, useMemo, useState } from "react";
-import { Check, Loader2, Plus, X } from "lucide-react";
+import { Check, Plus, X } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 import {
   createMembershipAction,
   type MembershipFormState,
@@ -42,7 +43,7 @@ export function NewMembershipButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex h-10 items-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white transition hover:bg-indigo-700"
+        className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
       >
         <Plus aria-hidden="true" className="h-4 w-4" />
         Nueva membresía
@@ -129,34 +130,34 @@ function MembershipForm({
 
   const fieldClass = (hasError: boolean) =>
     [
-      "mt-1 h-10 w-full rounded-lg border bg-white px-3 text-sm text-slate-900 transition placeholder:text-slate-400 focus:outline-2",
+      "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
       hasError
-        ? "border-rose-300 focus:border-rose-400 focus:outline-rose-500/30"
-        : "border-slate-200 hover:border-slate-300 focus:border-indigo-400 focus:outline-indigo-500/30",
+        ? "border-destructive focus:border-destructive focus:outline-destructive/30"
+        : "border-border hover:border-ring/50 focus:border-ring focus:outline-ring/30",
     ].join(" ");
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center">
       <div
         aria-hidden="true"
-        className="fixed inset-0 bg-slate-950/45 backdrop-blur-[1px]"
+        className="fixed inset-0 bg-ink/45 backdrop-blur-[1px]"
         onClick={() => !isPending && onClose()}
       />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="membership-form-title"
-        className="relative mt-10 w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-xl sm:mt-0"
+        className="relative mt-10 w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-popover sm:mt-0"
       >
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2
               id="membership-form-title"
-              className="text-lg font-semibold text-slate-900"
+              className="text-lg font-semibold text-foreground"
             >
               Nueva membresía
             </h2>
-            <p className="mt-0.5 text-sm text-slate-500">
+            <p className="mt-0.5 text-sm text-muted-foreground">
               Registra un plan de membresía para un cliente.
             </p>
           </div>
@@ -165,7 +166,7 @@ function MembershipForm({
             aria-label="Cerrar"
             disabled={isPending}
             onClick={onClose}
-            className="-m-1 rounded-lg p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 disabled:opacity-50"
+            className="-m-1 rounded-lg p-1 text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-50"
           >
             <X aria-hidden="true" className="h-5 w-5" />
           </button>
@@ -180,9 +181,9 @@ function MembershipForm({
           <div>
             <label
               htmlFor="membership-customer"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground/80"
             >
-              Cliente <span className="text-rose-500">*</span>
+              Cliente <span className="text-destructive">*</span>
             </label>
             <select
               id="membership-customer"
@@ -203,7 +204,7 @@ function MembershipForm({
               ))}
             </select>
             {errors.customerId ? (
-              <p role="alert" className="mt-1 text-xs text-rose-600">
+              <p role="alert" className="mt-1 text-xs text-destructive">
                 {errors.customerId}
               </p>
             ) : null}
@@ -213,9 +214,9 @@ function MembershipForm({
             <div>
               <label
                 htmlFor="membership-type"
-                className="text-sm font-medium text-slate-700"
+                className="text-sm font-medium text-foreground/80"
               >
-                Plan <span className="text-rose-500">*</span>
+                Plan <span className="text-destructive">*</span>
               </label>
               <select
                 id="membership-type"
@@ -236,9 +237,9 @@ function MembershipForm({
             <div>
               <label
                 htmlFor="membership-start"
-                className="text-sm font-medium text-slate-700"
+                className="text-sm font-medium text-foreground/80"
               >
-                Inicio <span className="text-rose-500">*</span>
+                Inicio <span className="text-destructive">*</span>
               </label>
               <input
                 id="membership-start"
@@ -249,7 +250,7 @@ function MembershipForm({
                 className={fieldClass(Boolean(errors.startDate))}
               />
               {errors.startDate ? (
-                <p role="alert" className="mt-1 text-xs text-rose-600">
+                <p role="alert" className="mt-1 text-xs text-destructive">
                   {errors.startDate}
                 </p>
               ) : null}
@@ -259,9 +260,9 @@ function MembershipForm({
           <div>
             <label
               htmlFor="membership-price"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground/80"
             >
-              Precio (COP) <span className="text-rose-500">*</span>
+              Precio (COP) <span className="text-destructive">*</span>
             </label>
             <input
               id="membership-price"
@@ -273,28 +274,28 @@ function MembershipForm({
               className={fieldClass(Boolean(errors.price))}
             />
             {errors.price ? (
-              <p role="alert" className="mt-1 text-xs text-rose-600">
+              <p role="alert" className="mt-1 text-xs text-destructive">
                 {errors.price}
               </p>
             ) : null}
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-muted-foreground">
               Vigencia calculada: vence {endDatePreview || "—"} (fin de día).
             </p>
           </div>
 
-          <label className="flex items-start gap-3 rounded-lg border border-slate-200 p-3">
+          <label className="flex items-start gap-3 rounded-lg border border-border p-3">
             <input
               type="checkbox"
               name="registerInitialPayment"
               checked={registerInitialPayment}
               onChange={(event) => setRegisterInitialPayment(event.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded border-slate-300 accent-indigo-600"
+              className="mt-0.5 h-4 w-4 rounded-md border-border accent-primary"
             />
             <span>
-              <span className="block text-sm font-medium text-slate-800">
+              <span className="block text-sm font-medium text-foreground/90">
                 Registrar cobro inicial
               </span>
-              <span className="block text-xs text-slate-500">
+              <span className="block text-xs text-muted-foreground">
                 Crea un pago aprobado por el precio del plan.
               </span>
             </span>
@@ -304,9 +305,9 @@ function MembershipForm({
             <div>
               <label
                 htmlFor="membership-provider"
-                className="text-sm font-medium text-slate-700"
+                className="text-sm font-medium text-foreground/80"
               >
-                Método de pago <span className="text-rose-500">*</span>
+                Método de pago <span className="text-destructive">*</span>
               </label>
               <select
                 id="membership-provider"
@@ -322,7 +323,7 @@ function MembershipForm({
                 ))}
               </select>
               {errors.provider ? (
-                <p role="alert" className="mt-1 text-xs text-rose-600">
+                <p role="alert" className="mt-1 text-xs text-destructive">
                   {errors.provider}
                 </p>
               ) : null}
@@ -332,7 +333,7 @@ function MembershipForm({
           {state.status === "error" && state.message ? (
             <p
               role="alert"
-              className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700"
+              className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
             >
               {state.message}
             </p>
@@ -341,7 +342,7 @@ function MembershipForm({
           {state.status === "ok" ? (
             <p
               role="status"
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
+              className="inline-flex items-center gap-2 rounded-lg bg-success/10 px-3 py-2 text-sm text-success"
             >
               <Check aria-hidden="true" className="h-4 w-4" />
               Membresía creada.
@@ -353,17 +354,17 @@ function MembershipForm({
               type="button"
               disabled={isPending}
               onClick={onClose}
-              className="h-10 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+              className="h-10 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isPending ? (
-                <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+                <NLoader size={16} className="text-current" />
               ) : null}
               {isPending ? "Guardando…" : "Crear membresía"}
             </button>

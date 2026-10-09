@@ -18,24 +18,24 @@ const SECTION_TONES: Record<
   { header: string; badge: string; iconBox: string }
 > = {
   materials: {
-    header: "border-indigo-200 bg-indigo-50 text-indigo-700",
-    badge: "bg-indigo-50 text-indigo-600",
-    iconBox: "bg-indigo-50 text-indigo-600",
+    header: "border-accent/30 bg-accent-subtle text-accent-text",
+    badge: "bg-accent-subtle text-accent-text",
+    iconBox: "bg-accent-subtle text-accent-text",
   },
   labor: {
-    header: "border-amber-200 bg-amber-50 text-amber-700",
-    badge: "bg-amber-50 text-amber-600",
-    iconBox: "bg-amber-50 text-amber-600",
+    header: "border-gold-300 bg-gold-100 text-gold-700",
+    badge: "bg-gold-100 text-gold-700",
+    iconBox: "bg-gold-100 text-gold-700",
   },
   equipment: {
-    header: "border-violet-200 bg-violet-50 text-violet-700",
-    badge: "bg-violet-50 text-violet-600",
-    iconBox: "bg-violet-50 text-violet-600",
+    header: "border-graphite-200 bg-graphite-100 text-graphite-700",
+    badge: "bg-graphite-100 text-graphite-700",
+    iconBox: "bg-graphite-100 text-graphite-700",
   },
   transport: {
-    header: "border-cyan-200 bg-cyan-50 text-cyan-700",
-    badge: "bg-cyan-50 text-cyan-600",
-    iconBox: "bg-cyan-50 text-cyan-600",
+    header: "border-graphite-200 bg-graphite-100 text-graphite-500",
+    badge: "bg-graphite-100 text-graphite-500",
+    iconBox: "bg-graphite-100 text-graphite-500",
   },
 };
 
@@ -129,7 +129,7 @@ export default function ExplosionReport({
         <div className="relative w-full sm:max-w-xs">
           <Search
             aria-hidden="true"
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
           />
           <input
             type="search"
@@ -137,14 +137,14 @@ export default function ExplosionReport({
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Buscar insumo (código o nombre)…"
             aria-label="Buscar insumo"
-            className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+            className="h-10 w-full rounded-lg border border-border bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent/40 focus:outline-none focus:ring-2 focus:ring-gold-600/20"
           />
         </div>
         <button
           type="button"
           onClick={() => downloadCsv(sections, quote.code)}
           disabled={totalRows === 0}
-          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 text-sm font-medium text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-success/30 bg-success/10 px-3 text-sm font-medium text-success transition hover:border-success/40 hover:bg-success/10 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Download aria-hidden="true" className="h-4 w-4" />
           Exportar Lista de Compras
@@ -158,14 +158,14 @@ export default function ExplosionReport({
         return (
           <section
             key={section.key}
-            className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+            className="overflow-hidden rounded-lg border border-border bg-card shadow-xs"
           >
             <header
               className={`flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3 ${tone.header}`}
             >
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-semibold">{section.title}</h2>
-                <span className="rounded-full bg-white/70 px-2 py-0.5 text-xs font-medium">
+                <span className="rounded-full bg-card/70 px-2 py-0.5 text-xs font-medium">
                   {section.rows.length}{" "}
                   {section.rows.length === 1 ? "recurso" : "recursos"}
                 </span>
@@ -174,15 +174,15 @@ export default function ExplosionReport({
             </header>
 
             {section.rows.length === 0 ? (
-              <div className="px-4 py-10 text-center text-sm text-slate-400">
+              <div className="px-4 py-10 text-center text-sm text-muted-foreground">
                 {query
                   ? "Sin resultados para esa búsqueda."
                   : "No hay recursos en esta categoría."}
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-slate-100 text-sm">
-                  <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+                <table className="min-w-full divide-y divide-border text-sm">
+                  <thead className="bg-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
                     <tr>
                       <th className="px-4 py-3 font-medium">Código</th>
                       <th className="px-4 py-3 font-medium">
@@ -200,26 +200,26 @@ export default function ExplosionReport({
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-50">
+                  <tbody className="divide-y divide-border">
                     {section.rows.map((row) => (
                       <tr
                         key={`${section.key}:${row.itemId ?? row.name}:${row.code ?? ""}`}
-                        className="transition hover:bg-slate-50/60"
+                        className="transition hover:bg-muted/60"
                       >
-                        <td className="px-4 py-2.5 font-mono text-xs text-slate-500">
+                        <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">
                           {row.code ?? "—"}
                         </td>
-                        <td className="px-4 py-2.5 font-medium text-slate-900">
+                        <td className="px-4 py-2.5 font-medium text-foreground">
                           {row.name}
                         </td>
-                        <td className="px-4 py-2.5 text-slate-600">{row.unit}</td>
-                        <td className="px-4 py-2.5 text-right text-slate-900">
+                        <td className="px-4 py-2.5 text-muted-foreground">{row.unit}</td>
+                        <td className="px-4 py-2.5 text-right text-foreground">
                           {row.quantity}
                         </td>
-                        <td className="px-4 py-2.5 text-right text-slate-600">
+                        <td className="px-4 py-2.5 text-right text-muted-foreground">
                           {formatCurrency(row.unitPrice)}
                         </td>
-                        <td className="px-4 py-2.5 text-right font-semibold text-slate-900">
+                        <td className="px-4 py-2.5 text-right font-semibold text-foreground">
                           {formatCurrency(row.estimatedCost)}
                         </td>
                       </tr>

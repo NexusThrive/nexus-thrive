@@ -8,10 +8,10 @@ import {
   ArrowRight,
   CheckCircle2,
   FileSpreadsheet,
-  Loader2,
   RefreshCw,
   Sparkles,
 } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 import FileDropzone from "./file-dropzone";
 import MetricsPanel from "./metrics-panel";
 import MappingEditor from "./mapping-editor";
@@ -129,17 +129,17 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
           {parseError && (
             <p
               role="alert"
-              className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
+              className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
             >
               <AlertTriangle aria-hidden="true" className="h-4 w-4 shrink-0" />
               {parseError}
             </p>
           )}
-          <details className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm">
-            <summary className="cursor-pointer font-medium text-slate-700">
+          <details className="rounded-lg border border-border bg-card p-4 text-sm text-muted-foreground shadow-xs">
+            <summary className="cursor-pointer font-medium text-foreground/80">
               ¿Qué formatos reconoce el importador?
             </summary>
-            <ul className="mt-2 list-inside list-disc space-y-1 text-xs leading-relaxed text-slate-500">
+            <ul className="mt-2 list-inside list-disc space-y-1 text-xs leading-relaxed text-muted-foreground">
               <li>
                 <b>Insumos planos</b> (CSV, TXT o XLSX con columnas como código,
                 descripción, unidad y precio): se mapean automáticamente.
@@ -166,15 +166,15 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
       {step === "preview" && preview && (
         <section className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2 text-sm text-slate-600">
-              <FileSpreadsheet aria-hidden="true" className="h-4 w-4 text-slate-400" />
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <FileSpreadsheet aria-hidden="true" className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">{preview.fileName}</span>
-              <span className="text-slate-400">
+              <span className="text-muted-foreground">
                 · {(preview.fileSize / 1024).toFixed(0)} KB
                 {preview.separator ? ` · separador "${preview.separator}"` : ""}
               </span>
               {preview.blockMode && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-medium text-violet-700">
+                <span className="inline-flex items-center gap-1 rounded-full border border-accent/30 bg-accent-subtle px-2 py-0.5 text-[11px] font-medium text-accent-text">
                   <Sparkles aria-hidden="true" className="h-3 w-3" />
                   pack APU detectado
                 </span>
@@ -183,7 +183,7 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
             <button
               type="button"
               onClick={reset}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium text-muted-foreground transition hover:bg-muted"
             >
               <RefreshCw aria-hidden="true" className="h-3.5 w-3.5" />
               Cambiar archivo
@@ -193,7 +193,7 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
           {parseError && (
             <p
               role="alert"
-              className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
+              className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
             >
               <AlertTriangle aria-hidden="true" className="h-4 w-4 shrink-0" />
               {parseError}
@@ -216,11 +216,11 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
           <PreviewTable rows={preview.rows} blockMode={preview.blockMode} />
 
           {preview.warnings.length > 0 && (
-            <details className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 shadow-sm">
-              <summary className="cursor-pointer text-sm font-medium text-amber-800">
+            <details className="rounded-lg border border-gold-300 bg-gold-100/60 p-4 shadow-xs">
+              <summary className="cursor-pointer text-sm font-medium text-gold-700">
                 {preview.warnings.length} aviso(s) a revisar
               </summary>
-              <ul className="mt-2 max-h-40 list-inside list-disc space-y-1 overflow-y-auto text-xs text-amber-800">
+              <ul className="mt-2 max-h-40 list-inside list-disc space-y-1 overflow-y-auto text-xs text-gold-700">
                 {preview.warnings.map((warning, i) => (
                   <li key={i}>
                     {warning.rowIndex !== undefined && (
@@ -236,15 +236,15 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
           {executeError && (
             <p
               role="alert"
-              className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
+              className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
             >
               <AlertTriangle aria-hidden="true" className="h-4 w-4 shrink-0" />
               {executeError}
             </p>
           )}
 
-          <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-slate-600">
+          <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-xs sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-muted-foreground">
               {importable > 0 ? (
                 <>
                   Se importarán <b className="tabular-nums">{importable}</b>{" "}
@@ -254,7 +254,7 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
                   se guarda nada.
                 </>
               ) : (
-                <span className="text-rose-600">
+                <span className="text-destructive">
                   No hay filas válidas para importar: ajusta el mapeo o el
                   archivo.
                 </span>
@@ -265,14 +265,14 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
               disabled={importable === 0 || executePending}
               onClick={handleExecute}
               className={cn(
-                "inline-flex items-center justify-center gap-2 rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-600",
+                "inline-flex items-center justify-center gap-2 rounded-lg bg-gold-500 px-5 py-2.5 text-sm font-semibold text-accent-foreground shadow-xs transition hover:bg-gold-600",
                 (importable === 0 || executePending) &&
-                  "cursor-not-allowed opacity-50 hover:bg-amber-500",
+                  "cursor-not-allowed opacity-50 hover:bg-gold-500",
               )}
             >
               {executePending ? (
                 <>
-                  <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+                  <NLoader size={16} className="text-current" />
                   Importando…
                 </>
               ) : (
@@ -288,71 +288,71 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
 
       {/* Paso 3: reporte */}
       {step === "done" && result && (
-        <section className="rounded-xl border border-emerald-200 bg-white p-6 shadow-sm">
+        <section className="rounded-lg border border-success/30 bg-card p-6 shadow-xs">
           <div className="flex items-start gap-4">
-            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-emerald-100 text-emerald-700">
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-success/10 text-success">
               <CheckCircle2 aria-hidden="true" className="h-6 w-6" />
             </span>
             <div className="min-w-0">
-              <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+              <h2 className="text-lg font-semibold tracking-tight text-foreground">
                 Importación completada
               </h2>
-              <p className="mt-1 text-sm text-slate-600">
+              <p className="mt-1 text-sm text-muted-foreground">
                 La base ya quedó actualizada. Resumen:
               </p>
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {(result.createdItems > 0 || result.updatedItems > 0) && (
-                  <div className="rounded-lg border border-slate-100 bg-slate-50/60 p-3">
-                    <p className="text-2xl font-semibold tabular-nums text-slate-800">
+                  <div className="rounded-lg border border-border bg-muted/60 p-3">
+                    <p className="text-2xl font-semibold tabular-nums text-foreground">
                       {result.createdItems + result.updatedItems}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted-foreground">
                       insumos ({result.createdItems} nuevos · {result.updatedItems} actualizados)
                     </p>
                   </div>
                 )}
                 {(result.createdActivities > 0 || result.updatedActivities > 0) && (
-                  <div className="rounded-lg border border-slate-100 bg-slate-50/60 p-3">
-                    <p className="text-2xl font-semibold tabular-nums text-slate-800">
+                  <div className="rounded-lg border border-border bg-muted/60 p-3">
+                    <p className="text-2xl font-semibold tabular-nums text-foreground">
                       {result.createdActivities + result.updatedActivities}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted-foreground">
                       actividades ({result.createdActivities} nuevas ·{" "}
                       {result.updatedActivities} actualizadas)
                     </p>
                   </div>
                 )}
-                <div className="rounded-lg border border-slate-100 bg-slate-50/60 p-3">
-                  <p className="text-2xl font-semibold tabular-nums text-slate-800">
+                <div className="rounded-lg border border-border bg-muted/60 p-3">
+                  <p className="text-2xl font-semibold tabular-nums text-foreground">
                     {result.createdCompositions}
                   </p>
-                  <p className="text-xs text-slate-500">líneas de composición</p>
+                  <p className="text-xs text-muted-foreground">líneas de composición</p>
                 </div>
-                <div className="rounded-lg border border-slate-100 bg-slate-50/60 p-3">
-                  <p className="text-2xl font-semibold tabular-nums text-slate-800">
+                <div className="rounded-lg border border-border bg-muted/60 p-3">
+                  <p className="text-2xl font-semibold tabular-nums text-foreground">
                     {result.omittedRows + result.warnings}
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     omitidas + avisos
                   </p>
                 </div>
               </div>
               {result.errors.length > 0 && (
-                <p className="mt-3 text-xs text-rose-600">
+                <p className="mt-3 text-xs text-destructive">
                   {result.errors.join(" ")}
                 </p>
               )}
               <div className="mt-5 flex flex-wrap gap-2">
                 <Link
                   href={`/${tenantSlug}/quotes`}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
                 >
                   Ir a presupuestos
                 </Link>
                 <button
                   type="button"
                   onClick={reset}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted"
                 >
                   <RefreshCw aria-hidden="true" className="h-3.5 w-3.5" />
                   Importar otro archivo

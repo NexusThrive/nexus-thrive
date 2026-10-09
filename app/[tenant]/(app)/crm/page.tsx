@@ -109,12 +109,12 @@ export default async function CrmPage({
   return (
     <div className="space-y-6">
       <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
           {terms.customers}
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           Administra los {terms.customers.toLowerCase()} de{" "}
-          <span className="font-medium text-slate-700">{tenantRecord.name}</span>.
+          <span className="font-medium text-foreground/80">{tenantRecord.name}</span>.
         </p>
       </header>
 

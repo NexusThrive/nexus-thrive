@@ -81,18 +81,18 @@ export default async function QuoteDetailPage({
       <header className="flex flex-col gap-1">
         <Link
           href={`/${tenantSlug}/quotes`}
-          className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-slate-700"
+          className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-foreground/80"
         >
           <ArrowLeft aria-hidden="true" className="h-4 w-4" />
           Volver a {terms.quotes.toLowerCase()}
         </Link>
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             {quote.code} · {quote.title}
           </h1>
           <QuoteStatusBadge status={quote.status} />
         </div>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           Creado el {formatDateShort(quote.createdAt)}
         </p>
       </header>
@@ -101,14 +101,14 @@ export default async function QuoteDetailPage({
       <div className="flex flex-wrap items-center gap-2">
         <Link
           href={`/${tenantSlug}/quotes/${quote.id}/print`}
-          className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-3 text-sm font-medium text-indigo-700 transition hover:border-indigo-300 hover:bg-indigo-100"
+          className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-accent/30 bg-accent-subtle px-3 text-sm font-medium text-accent-text transition hover:border-accent/40 hover:bg-accent-subtle"
         >
           <Printer aria-hidden="true" className="h-4 w-4" />
           Imprimir / PDF Cliente
         </Link>
         <Link
           href={`/${tenantSlug}/quotes/${quote.id}/explosion`}
-          className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+          className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted"
         >
           <BarChart3 aria-hidden="true" className="h-4 w-4" />
           Explosión de Materiales
@@ -117,7 +117,7 @@ export default async function QuoteDetailPage({
           href={waLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 text-sm font-medium text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100"
+          className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-success/30 bg-success/10 px-3 text-sm font-medium text-success transition hover:border-success/40 hover:bg-success/10"
         >
           <MessageCircle aria-hidden="true" className="h-4 w-4" />
           Compartir por WhatsApp
@@ -126,78 +126,78 @@ export default async function QuoteDetailPage({
 
       {/* Resumen */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-slate-500">
+              <p className="truncate text-sm font-medium text-muted-foreground">
                 {baseTerms.customer}
               </p>
-              <p className="mt-2 truncate text-lg font-semibold text-slate-900">
+              <p className="mt-2 truncate text-lg font-semibold text-foreground">
                 {customer?.name ?? quote.customerName ?? "Sin cliente"}
               </p>
               {customer?.email ? (
-                <p className="mt-1 truncate text-xs text-slate-500">
+                <p className="mt-1 truncate text-xs text-muted-foreground">
                   {customer.email}
                 </p>
               ) : null}
               {customer?.phone ? (
-                <p className="text-xs text-slate-500">{customer.phone}</p>
+                <p className="text-xs text-muted-foreground">{customer.phone}</p>
               ) : null}
             </div>
             <span
               aria-hidden="true"
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-600"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-muted text-muted-foreground"
             >
               <User className="h-5 w-5" />
             </span>
           </div>
         </article>
 
-        <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-sm font-medium text-slate-500">Estado</p>
+              <p className="text-sm font-medium text-muted-foreground">Estado</p>
               <div className="mt-2">
                 <QuoteStatusBadge status={quote.status} />
               </div>
             </div>
             <span
               aria-hidden="true"
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-600"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-muted text-muted-foreground"
             >
               <FileText className="h-5 w-5" />
             </span>
           </div>
         </article>
 
-        <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-sm font-medium text-slate-500">Fecha</p>
-              <p className="mt-2 text-lg font-semibold text-slate-900">
+              <p className="text-sm font-medium text-muted-foreground">Fecha</p>
+              <p className="mt-2 text-lg font-semibold text-foreground">
                 {formatDateShort(quote.createdAt)}
               </p>
             </div>
             <span
               aria-hidden="true"
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-600"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-muted text-muted-foreground"
             >
               <CalendarDays className="h-5 w-5" />
             </span>
           </div>
         </article>
 
-        <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-sm font-medium text-slate-500">Total</p>
-              <p className="mt-2 text-lg font-semibold text-slate-900">
+              <p className="text-sm font-medium text-muted-foreground">Total</p>
+              <p className="mt-2 text-lg font-semibold text-foreground">
                 {formatCurrency(quote.totalAmount)}
               </p>
             </div>
             <span
               aria-hidden="true"
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-indigo-50 text-indigo-600"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-accent-subtle text-accent-text"
             >
               <Wallet className="h-5 w-5" />
             </span>
@@ -206,20 +206,20 @@ export default async function QuoteDetailPage({
       </div>
 
       {/* Actividades */}
-      <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <header className="border-b border-slate-100 px-4 py-3">
-          <h2 className="text-sm font-semibold text-slate-900">
+      <section className="overflow-hidden rounded-lg border border-border bg-card shadow-xs">
+        <header className="border-b border-border px-4 py-3">
+          <h2 className="text-sm font-semibold text-foreground">
             {terms.quoteItems}
           </h2>
         </header>
         {quote.items.length === 0 ? (
-          <div className="px-4 py-10 text-center text-sm text-slate-400">
+          <div className="px-4 py-10 text-center text-sm text-muted-foreground">
             Sin actividades por mostrar.
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-100 text-sm">
-              <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+            <table className="min-w-full divide-y divide-border text-sm">
+              <thead className="bg-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
                   <th className="px-4 py-3 font-medium">{terms.quoteItem}</th>
                   <th className="px-4 py-3 font-medium">Unidad</th>
@@ -232,20 +232,20 @@ export default async function QuoteDetailPage({
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-border">
                 {quote.items.map((item) => (
-                  <tr key={item.id} className="transition hover:bg-slate-50/60">
-                    <td className="max-w-[16rem] truncate px-4 py-3 font-medium text-slate-900">
+                  <tr key={item.id} className="transition hover:bg-muted/60">
+                    <td className="max-w-[16rem] truncate px-4 py-3 font-medium text-foreground">
                       {item.name}
                     </td>
-                    <td className="px-4 py-3 text-slate-600">{item.unit}</td>
-                    <td className="px-4 py-3 text-right text-slate-600">
+                    <td className="px-4 py-3 text-muted-foreground">{item.unit}</td>
+                    <td className="px-4 py-3 text-right text-muted-foreground">
                       {item.quantity}
                     </td>
-                    <td className="px-4 py-3 text-right text-slate-600">
+                    <td className="px-4 py-3 text-right text-muted-foreground">
                       {formatCurrency(item.unitCost)}
                     </td>
-                    <td className="px-4 py-3 text-right font-semibold text-slate-900">
+                    <td className="px-4 py-3 text-right font-semibold text-foreground">
                       {formatCurrency(item.totalCost)}
                     </td>
                   </tr>
@@ -258,40 +258,40 @@ export default async function QuoteDetailPage({
 
       {/* Desglose AIU */}
       <section className="flex justify-end">
-        <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-slate-900">
+        <div className="w-full max-w-sm rounded-lg border border-border bg-card p-5 shadow-xs">
+          <h2 className="text-sm font-semibold text-foreground">
             Desglose financiero
           </h2>
           <dl className="mt-3 space-y-1.5 text-sm">
-            <div className="flex justify-between text-slate-600">
+            <div className="flex justify-between text-muted-foreground">
               <dt>Costo directo</dt>
-              <dd className="font-medium text-slate-900">
+              <dd className="font-medium text-foreground">
                 {formatCurrency(quote.directCost)}
               </dd>
             </div>
-            <div className="flex justify-between text-slate-600">
+            <div className="flex justify-between text-muted-foreground">
               <dt>Administración ({quote.adminPercent}%)</dt>
               <dd>{formatCurrency(quote.administration)}</dd>
             </div>
-            <div className="flex justify-between text-slate-600">
+            <div className="flex justify-between text-muted-foreground">
               <dt>Imprevistos ({quote.imprevPercent}%)</dt>
               <dd>{formatCurrency(quote.contingency)}</dd>
             </div>
-            <div className="flex justify-between text-slate-600">
+            <div className="flex justify-between text-muted-foreground">
               <dt>Utilidad ({quote.utilPercent}%)</dt>
               <dd>{formatCurrency(quote.utility)}</dd>
             </div>
-            <div className="flex justify-between text-slate-600">
+            <div className="flex justify-between text-muted-foreground">
               <dt>Subtotal</dt>
-              <dd className="font-medium text-slate-900">
+              <dd className="font-medium text-foreground">
                 {formatCurrency(quote.subtotal)}
               </dd>
             </div>
-            <div className="flex justify-between text-slate-600">
+            <div className="flex justify-between text-muted-foreground">
               <dt>IVA sobre utilidad ({quote.taxPercent}%)</dt>
               <dd>{formatCurrency(quote.tax)}</dd>
             </div>
-            <div className="flex justify-between border-t border-slate-200 pt-2 text-base font-semibold text-slate-900">
+            <div className="flex justify-between border-t border-border pt-2 text-base font-semibold text-foreground">
               <dt>Total</dt>
               <dd>{formatCurrency(quote.totalAmount)}</dd>
             </div>

@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Loader2, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 import { useVerticalTerms } from "../../vertical-terms-context";
 
 const DEBOUNCE_MS = 250;
@@ -69,7 +70,7 @@ export default function CustomerSearch() {
     <div className="relative w-full sm:max-w-xs">
       <Search
         aria-hidden="true"
-        className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+        className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
       />
       <input
         ref={inputRef}
@@ -79,17 +80,17 @@ export default function CustomerSearch() {
         placeholder="Buscar por nombre, correo o teléfono…"
         value={value}
         onChange={(event) => setValue(event.target.value)}
-        className="h-10 w-full rounded-lg border border-slate-200 bg-white pr-9 pl-9 text-sm text-slate-900 transition placeholder:text-slate-400 hover:border-slate-300 focus:border-indigo-400 focus:outline-2 focus:outline-indigo-500/30"
+        className="h-10 w-full rounded-lg border border-border bg-card pr-9 pl-9 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-foreground/20 focus:border-gold-500 focus:outline-2 focus:outline-gold-600/30"
       />
       <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
         {isPending ? (
-          <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin text-slate-400" />
+          <NLoader size={16} className="text-current" />
         ) : value ? (
           <button
             type="button"
             aria-label="Limpiar búsqueda"
             onClick={() => setValue("")}
-            className="rounded p-0.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+            className="rounded p-0.5 text-muted-foreground transition hover:bg-muted hover:text-foreground"
           >
             <X aria-hidden="true" className="h-4 w-4" />
           </button>

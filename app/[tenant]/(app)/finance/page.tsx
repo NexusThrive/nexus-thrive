@@ -131,12 +131,12 @@ export default async function FinancePage({
     <div className="space-y-8">
       {/* Encabezado */}
       <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
           Finanzas y caja menor
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           Cobros y gastos de{" "}
-          <span className="font-medium text-slate-700">{tenantRecord.name}</span>{" "}
+          <span className="font-medium text-foreground/80">{tenantRecord.name}</span>{" "}
           · {monthLabel}.
         </p>
       </header>
@@ -155,11 +155,11 @@ export default async function FinancePage({
           <div>
             <h2
               id="payments-title"
-              className="text-base font-semibold text-slate-900"
+              className="text-base font-semibold text-foreground"
             >
               Cobros (pagos)
             </h2>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-muted-foreground">
               {paymentResult.total}{" "}
               {paymentResult.total === 1 ? "pago registrado" : "pagos registrados"}
             </p>
@@ -205,11 +205,11 @@ export default async function FinancePage({
           <div>
             <h2
               id="expenses-title"
-              className="text-base font-semibold text-slate-900"
+              className="text-base font-semibold text-foreground"
             >
               Gastos de caja menor
             </h2>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-muted-foreground">
               {expenseResult.total}{" "}
               {expenseResult.total === 1 ? "gasto registrado" : "gastos registrados"}
             </p>

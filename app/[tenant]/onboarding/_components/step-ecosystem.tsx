@@ -46,7 +46,7 @@ export default function StepEcosystem({
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-muted-foreground">
         Conecta los canales que ya tienes. Todo es opcional: puedes agregarlo
         o cambiarlo más tarde desde Configuración.
       </p>
@@ -58,11 +58,11 @@ export default function StepEcosystem({
           <div key={field}>
             <label
               htmlFor={field}
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground/80"
             >
               {helper.label}{" "}
               {helper.optional && (
-                <span className="font-normal text-slate-400">
+                <span className="font-normal text-muted-foreground">
                   (opcional)
                 </span>
               )}
@@ -73,11 +73,11 @@ export default function StepEcosystem({
               type="text"
               defaultValue={value}
               placeholder={helper.placeholder}
-              className="mt-1 block h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 transition focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+              className="mt-1 block h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-600/30"
             />
-            <p className="mt-1 text-xs text-slate-500">{helper.helper}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{helper.helper}</p>
             {errors?.[field] && (
-              <p className="mt-1 text-xs text-rose-600">{errors[field]}</p>
+              <p className="mt-1 text-xs text-destructive">{errors[field]}</p>
             )}
           </div>
         );

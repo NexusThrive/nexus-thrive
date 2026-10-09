@@ -99,10 +99,10 @@ export default async function AdminPage({
           className="scroll-mt-6 space-y-4 lg:col-span-2"
         >
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="text-base font-semibold text-slate-900">
+            <h2 className="text-base font-semibold text-foreground">
               Negocios de la plataforma
             </h2>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-muted-foreground">
               {listResult.total}{" "}
               {listResult.total === 1
                 ? "negocio registrado"
@@ -130,12 +130,12 @@ export default async function AdminPage({
         <aside className="space-y-8">
           <section
             id="actividad"
-            className="scroll-mt-6 rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm"
+            className="scroll-mt-6 rounded-lg border border-border bg-card p-5 shadow-xs"
           >
-            <h2 className="text-sm font-semibold text-slate-900">
+            <h2 className="text-sm font-semibold text-foreground">
               Actividad de la plataforma
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Últimos movimientos reales de los negocios.
             </p>
             <div className="mt-4">
@@ -145,10 +145,10 @@ export default async function AdminPage({
 
           <section
             id="auditoria"
-            className="scroll-mt-6 rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm"
+            className="scroll-mt-6 rounded-lg border border-border bg-card p-5 shadow-xs"
           >
-            <h2 className="text-sm font-semibold text-slate-900">Auditoría</h2>
-            <p className="text-xs text-slate-500">
+            <h2 className="text-sm font-semibold text-foreground">Auditoría</h2>
+            <p className="text-xs text-muted-foreground">
               Acciones administrativas recientes.
             </p>
             <div className="mt-4">

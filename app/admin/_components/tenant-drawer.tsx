@@ -6,13 +6,13 @@ import {
   AtSign,
   CheckCircle2,
   Globe,
-  Loader2,
   LogIn,
   MapPin,
   MessageCircle,
   Power,
   RotateCcw,
 } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 import {
   Sheet,
   SheetContent,
@@ -185,7 +185,7 @@ export default function TenantDrawer({
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <TenantStatusBadge active={detail.active} />
                     {detail.suspendedReason && !detail.active ? (
-                      <span className="text-xs text-rose-600">
+                      <span className="text-xs text-destructive">
                         Motivo: {detail.suspendedReason}
                       </span>
                     ) : null}
@@ -210,7 +210,7 @@ export default function TenantDrawer({
                       disabled={activatePending}
                     >
                       {activatePending ? (
-                        <Loader2 className="animate-spin" />
+                        <NLoader size={16} className="text-current" />
                       ) : (
                         <RotateCcw />
                       )}
@@ -226,7 +226,7 @@ export default function TenantDrawer({
                   disabled={impersonating || detail.users.length === 0}
                 >
                   {impersonating ? (
-                    <Loader2 className="animate-spin" />
+                    <NLoader size={16} className="text-current" />
                   ) : (
                     <LogIn />
                   )}
@@ -235,7 +235,7 @@ export default function TenantDrawer({
               </div>
 
               {impersonationError ? (
-                <p className="mt-2 text-xs text-rose-600">
+                <p className="mt-2 text-xs text-destructive">
                   {impersonationError}
                 </p>
               ) : null}
@@ -251,7 +251,7 @@ export default function TenantDrawer({
                   className={cn(
                     "-mb-px border-b-2 px-3 py-2.5 text-sm font-medium transition",
                     activeTab === tab.id
-                      ? "border-amber-500 text-foreground"
+                      ? "border-gold-500 text-foreground"
                       : "border-transparent text-muted-foreground hover:text-foreground",
                   )}
                 >
@@ -441,7 +441,7 @@ function ResumenTab({ detail }: { detail: TenantDetail }) {
                       href={row.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="min-w-0 truncate font-medium text-amber-700 hover:underline"
+                      className="min-w-0 truncate font-medium text-gold-700 hover:underline"
                     >
                       {row.value}
                     </a>
@@ -515,7 +515,7 @@ function ModulosTab({
   return (
     <>
       {message ? (
-        <p className="flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+        <p className="flex items-center gap-1.5 rounded-lg bg-success/10 px-3 py-2 text-sm text-success">
           <CheckCircle2 aria-hidden="true" className="h-4 w-4" />
           {message}
         </p>
@@ -552,7 +552,7 @@ function ModulosTab({
                 size="sm"
                 disabled={pending}
               >
-                {pending ? <Loader2 className="animate-spin" /> : <Power />}
+                {pending ? <NLoader size={16} className="text-current" /> : <Power />}
                 {module.active ? "Desactivar" : "Activar"}
               </Button>
             </form>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useActionState, useState } from "react";
-import { Building2, Check, Loader2, User, X } from "lucide-react";
+import { Building2, Check, User, X } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 import {
   createTenantAction,
   checkSlugAvailabilityAction,
@@ -177,33 +178,33 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
 
   const slugHintTone =
     slugStatus === "available"
-      ? "text-emerald-600"
+      ? "text-success"
       : slugStatus === "taken" || slugStatus === "invalid"
-        ? "text-rose-600"
-        : "text-slate-500";
+        ? "text-destructive"
+        : "text-muted-foreground";
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center">
       <div
         aria-hidden="true"
-        className="fixed inset-0 bg-slate-950/45 backdrop-blur-[1px]"
+        className="fixed inset-0 bg-ink/50 backdrop-blur-[1px]"
         onClick={() => !isPending && onClose()}
       />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="tenant-form-title"
-        className="relative mt-10 w-full max-w-lg rounded-xl border border-slate-200 bg-white p-6 shadow-xl sm:mt-0"
+        className="relative mt-10 w-full max-w-lg rounded-lg border border-border bg-card p-6 shadow-popover sm:mt-0"
       >
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2
               id="tenant-form-title"
-              className="text-lg font-semibold text-slate-900"
+              className="text-lg font-semibold text-foreground"
             >
               Nuevo negocio
             </h2>
-            <p className="mt-0.5 text-sm text-slate-500">
+            <p className="mt-0.5 text-sm text-muted-foreground">
               Crea el tenant con su vertical y módulos iniciales.
             </p>
           </div>
@@ -212,7 +213,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
             aria-label="Cerrar"
             disabled={isPending}
             onClick={onClose}
-            className="-m-1 rounded-lg p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 disabled:opacity-50"
+            className="-m-1 rounded-lg p-1 text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-50"
           >
             <X aria-hidden="true" className="h-5 w-5" />
           </button>
@@ -221,10 +222,10 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
         <form action={formAction} className="mt-5 space-y-4" noValidate>
           {/* Perfil del onboarding (Empresa / Persona individual) */}
           <fieldset>
-            <legend className="text-sm font-medium text-slate-700">
+            <legend className="text-sm font-medium text-foreground/80">
               Perfil del negocio
             </legend>
-            <p className="mt-0.5 text-xs text-slate-500">
+            <p className="mt-0.5 text-xs text-muted-foreground">
               Define cómo se presenta el negocio en NEXUS; el integrante
               confirma el resto en su onboarding.
             </p>
@@ -237,8 +238,8 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                 className={[
                   "flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm font-medium transition",
                   tenantType === "COMPANY"
-                    ? "border-indigo-500 bg-indigo-50 text-indigo-700"
-                    : "border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                    ? "border-gold-600/30 bg-accent-subtle text-accent-text"
+                    : "border-border text-foreground/80 hover:border-border-strong hover:bg-muted",
                 ].join(" ")}
               >
                 <Building2 aria-hidden="true" className="h-4 w-4 shrink-0" />
@@ -251,8 +252,8 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                 className={[
                   "flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm font-medium transition",
                   tenantType === "INDIVIDUAL"
-                    ? "border-indigo-500 bg-indigo-50 text-indigo-700"
-                    : "border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                    ? "border-gold-600/30 bg-accent-subtle text-accent-text"
+                    : "border-border text-foreground/80 hover:border-border-strong hover:bg-muted",
                 ].join(" ")}
               >
                 <User aria-hidden="true" className="h-4 w-4 shrink-0" />
@@ -260,7 +261,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
               </button>
             </div>
             {errors.tenantType ? (
-              <p role="alert" className="mt-1 text-xs text-rose-600">
+              <p role="alert" className="mt-1 text-xs text-destructive">
                 {errors.tenantType}
               </p>
             ) : null}
@@ -270,7 +271,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
           <div>
             <label
               htmlFor="tenant-name"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground/80"
             >
               Nombre
             </label>
@@ -287,14 +288,14 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
               }
               aria-invalid={Boolean(errors.name)}
               className={[
-                "mt-1 h-10 w-full rounded-lg border bg-white px-3 text-sm text-slate-900 transition focus:outline-2",
+                "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
                 errors.name
-                  ? "border-rose-300 focus:border-rose-400 focus:outline-rose-500/30"
-                  : "border-slate-200 hover:border-slate-300 focus:border-indigo-400 focus:outline-indigo-500/30",
+                  ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
+                  : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
               ].join(" ")}
             />
             {errors.name ? (
-              <p role="alert" className="mt-1 text-xs text-rose-600">
+              <p role="alert" className="mt-1 text-xs text-destructive">
                 {errors.name}
               </p>
             ) : null}
@@ -305,10 +306,10 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
             <div>
               <label
                 htmlFor="tenant-legal-name"
-                className="text-sm font-medium text-slate-700"
+                className="text-sm font-medium text-foreground/80"
               >
                 Razón social{" "}
-                <span className="font-normal text-slate-400">(opcional)</span>
+                <span className="font-normal text-muted-foreground">(opcional)</span>
               </label>
               <input
                 id="tenant-legal-name"
@@ -319,14 +320,14 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                 placeholder="Ej: Gimnasio Carlos S.A.S."
                 aria-invalid={Boolean(errors.legalName)}
                 className={[
-                  "mt-1 h-10 w-full rounded-lg border bg-white px-3 text-sm text-slate-900 transition focus:outline-2",
+                  "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
                   errors.legalName
-                    ? "border-rose-300 focus:border-rose-400 focus:outline-rose-500/30"
-                    : "border-slate-200 hover:border-slate-300 focus:border-indigo-400 focus:outline-indigo-500/30",
+                    ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
+                    : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
                 ].join(" ")}
               />
               {errors.legalName ? (
-                <p role="alert" className="mt-1 text-xs text-rose-600">
+                <p role="alert" className="mt-1 text-xs text-destructive">
                   {errors.legalName}
                 </p>
               ) : null}
@@ -337,10 +338,10 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
           <div>
             <label
               htmlFor="tenant-tax-id"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground/80"
             >
               {tenantType === "COMPANY" ? "NIT / RUT" : "Documento (CC / NIT)"}{" "}
-              <span className="font-normal text-slate-400">(opcional)</span>
+              <span className="font-normal text-muted-foreground">(opcional)</span>
             </label>
             <input
               id="tenant-tax-id"
@@ -353,14 +354,14 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
               }
               aria-invalid={Boolean(errors.taxId)}
               className={[
-                "mt-1 h-10 w-full rounded-lg border bg-white px-3 text-sm text-slate-900 transition focus:outline-2",
+                "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
                 errors.taxId
-                  ? "border-rose-300 focus:border-rose-400 focus:outline-rose-500/30"
-                  : "border-slate-200 hover:border-slate-300 focus:border-indigo-400 focus:outline-indigo-500/30",
+                  ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
+                  : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
               ].join(" ")}
             />
             {errors.taxId ? (
-              <p role="alert" className="mt-1 text-xs text-rose-600">
+              <p role="alert" className="mt-1 text-xs text-destructive">
                 {errors.taxId}
               </p>
             ) : null}
@@ -371,10 +372,10 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
             <div>
               <label
                 htmlFor="tenant-team-size"
-                className="text-sm font-medium text-slate-700"
+                className="text-sm font-medium text-foreground/80"
               >
                 Equipo{" "}
-                <span className="font-normal text-slate-400">(opcional)</span>
+                <span className="font-normal text-muted-foreground">(opcional)</span>
               </label>
               <select
                 id="tenant-team-size"
@@ -385,10 +386,10 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                 }
                 aria-invalid={Boolean(errors.teamSize)}
                 className={[
-                  "mt-1 h-10 w-full appearance-none rounded-lg border bg-white px-3 text-sm text-slate-900 transition focus:outline-2",
+                  "mt-1 h-10 w-full appearance-none rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
                   errors.teamSize
-                    ? "border-rose-300 focus:border-rose-400 focus:outline-rose-500/30"
-                    : "border-slate-200 hover:border-slate-300 focus:border-indigo-400 focus:outline-indigo-500/30",
+                    ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
+                    : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
                 ].join(" ")}
               >
                 <option value="" disabled>
@@ -401,7 +402,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                 ))}
               </select>
               {errors.teamSize ? (
-                <p role="alert" className="mt-1 text-xs text-rose-600">
+                <p role="alert" className="mt-1 text-xs text-destructive">
                   {errors.teamSize}
                 </p>
               ) : null}
@@ -413,10 +414,10 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
             <div>
               <label
                 htmlFor="tenant-address"
-                className="text-sm font-medium text-slate-700"
+                className="text-sm font-medium text-foreground/80"
               >
                 Dirección{" "}
-                <span className="font-normal text-slate-400">
+                <span className="font-normal text-muted-foreground">
                   (opcional · «REMOTE» si no tiene sede)
                 </span>
               </label>
@@ -429,14 +430,14 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                 placeholder="Ej: Cra 15 # 82-52, Bogotá"
                 aria-invalid={Boolean(errors.address)}
                 className={[
-                  "mt-1 h-10 w-full rounded-lg border bg-white px-3 text-sm text-slate-900 transition focus:outline-2",
+                  "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
                   errors.address
-                    ? "border-rose-300 focus:border-rose-400 focus:outline-rose-500/30"
-                    : "border-slate-200 hover:border-slate-300 focus:border-indigo-400 focus:outline-indigo-500/30",
+                    ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
+                    : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
                 ].join(" ")}
               />
               {errors.address ? (
-                <p role="alert" className="mt-1 text-xs text-rose-600">
+                <p role="alert" className="mt-1 text-xs text-destructive">
                   {errors.address}
                 </p>
               ) : null}
@@ -447,11 +448,11 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
           <div>
             <label
               htmlFor="tenant-slug"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground/80"
             >
               Slug (subdominio)
             </label>
-            <div className="mt-1 flex items-center rounded-lg border border-slate-200 bg-white transition focus-within:border-indigo-400 focus-within:outline-2 focus-within:outline-indigo-500/30 hover:border-slate-300">
+            <div className="mt-1 flex items-center rounded-lg border border-border bg-card transition focus-within:border-gold-600/30 focus-within:outline-2 focus-within:outline-ring/30 hover:border-border-strong">
               <input
                 id="tenant-slug"
                 name="slug"
@@ -460,29 +461,26 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                 onChange={(event) => setSlug(event.target.value)}
                 placeholder="gimnasio-carlos"
                 aria-invalid={Boolean(errors.slug)}
-                className="h-10 w-full rounded-l-lg bg-transparent px-3 text-sm text-slate-900 focus:outline-none"
+                className="h-10 w-full rounded-l-lg bg-transparent px-3 text-sm text-foreground focus:outline-none"
               />
-                <span className="flex h-10 shrink-0 items-center border-l border-slate-200 px-3 text-xs text-slate-500">
+                <span className="flex h-10 shrink-0 items-center border-l border-border px-3 text-xs text-muted-foreground">
                 {slugStatus === "checking" ? (
-                  <Loader2
-                    aria-hidden="true"
-                    className="h-3.5 w-3.5 animate-spin"
-                  />
+                  <NLoader size={14} className="text-current" />
                 ) : slugStatus === "available" ? (
-                  <Check aria-hidden="true" className="h-3.5 w-3.5 text-emerald-500" />
+                  <Check aria-hidden="true" className="h-3.5 w-3.5 text-success" />
                 ) : slugStatus === "taken" || slugStatus === "invalid" ? (
-                  <X aria-hidden="true" className="h-3.5 w-3.5 text-rose-500" />
+                  <X aria-hidden="true" className="h-3.5 w-3.5 text-destructive" />
                 ) : null}
               </span>
             </div>
             {errors.slug ? (
-              <p role="alert" className="mt-1 text-xs text-rose-600">
+              <p role="alert" className="mt-1 text-xs text-destructive">
                 {errors.slug}
               </p>
             ) : slugHint ? (
               <p className={`mt-1 text-xs ${slugHintTone}`}>{slugHint}</p>
             ) : (
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-muted-foreground">
                 Minúsculas, números y guiones · 3–48 caracteres.
               </p>
             )}
@@ -492,7 +490,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
           <div>
             <label
               htmlFor="tenant-vertical"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground/80"
             >
               Vertical
             </label>
@@ -507,10 +505,10 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
               }}
               aria-invalid={Boolean(errors.vertical)}
               className={[
-                "mt-1 h-10 w-full appearance-none rounded-lg border bg-white px-3 text-sm text-slate-900 transition focus:outline-2",
+                "mt-1 h-10 w-full appearance-none rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
                 errors.vertical
-                  ? "border-rose-300 focus:border-rose-400 focus:outline-rose-500/30"
-                  : "border-slate-200 hover:border-slate-300 focus:border-indigo-400 focus:outline-indigo-500/30",
+                  ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
+                  : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
               ].join(" ")}
             >
               <option value="" disabled>
@@ -523,7 +521,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
               ))}
             </select>
             {errors.vertical ? (
-              <p role="alert" className="mt-1 text-xs text-rose-600">
+              <p role="alert" className="mt-1 text-xs text-destructive">
                 {errors.vertical}
               </p>
             ) : null}
@@ -531,17 +529,17 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
 
           {/* Módulos iniciales */}
           <fieldset>
-            <legend className="text-sm font-medium text-slate-700">
+            <legend className="text-sm font-medium text-foreground/80">
               Módulos iniciales
             </legend>
-            <p className="mt-0.5 text-xs text-slate-500">
+            <p className="mt-0.5 text-xs text-muted-foreground">
               Podrás activar o desactivar cada módulo después desde la tabla.
             </p>
             <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {MODULES.map((moduleName) => (
                 <label
                   key={moduleName}
-                  className="flex cursor-pointer items-center gap-2.5 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                  className="flex cursor-pointer items-center gap-2.5 rounded-lg border border-border px-3 py-2.5 text-sm text-foreground/80 transition hover:border-border-strong hover:bg-muted"
                 >
                   <input
                     type="checkbox"
@@ -549,14 +547,14 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                     value={moduleName}
                     checked={modules.has(moduleName)}
                     onChange={() => toggleModule(moduleName)}
-                    className="h-4 w-4 rounded border-slate-300 accent-indigo-600"
+                    className="h-4 w-4 rounded border-border-strong accent-primary"
                   />
                   {MODULE_LABELS[moduleName]}
                 </label>
               ))}
             </div>
             {errors.modules ? (
-              <p role="alert" className="mt-1 text-xs text-rose-600">
+              <p role="alert" className="mt-1 text-xs text-destructive">
                 {errors.modules}
               </p>
             ) : null}
@@ -565,7 +563,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
           {state.status === "error" && state.message ? (
             <p
               role="alert"
-              className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700"
+              className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
             >
               {state.message}
             </p>
@@ -574,7 +572,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
           {state.status === "ok" ? (
             <p
               role="status"
-              className="flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
+              className="flex items-center gap-2 rounded-lg bg-success/10 px-3 py-2 text-sm text-success"
             >
               <Building2 aria-hidden="true" className="h-4 w-4 shrink-0" />
               {state.message ?? "Negocio creado correctamente."}
@@ -586,17 +584,17 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
               type="button"
               disabled={isPending}
               onClick={onClose}
-              className="h-10 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+              className="h-10 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isPending ? (
-                <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+                <NLoader size={16} className="text-current" />
               ) : (
                 <Building2 aria-hidden="true" className="h-4 w-4" />
               )}

@@ -49,7 +49,7 @@ export default function CustomerFilters({
       <div
         role="group"
         aria-label="Filtrar por estado"
-        className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5"
+        className="inline-flex rounded-lg border border-border bg-card p-0.5"
       >
         {STATUS_OPTIONS.map((option) => (
           <button
@@ -62,8 +62,8 @@ export default function CustomerFilters({
             }
             className={
               status === option.value
-                ? "rounded-[6px] bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm"
-                : "rounded-[6px] px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+                ? "rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground shadow-xs"
+                : "rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
             }
           >
             {option.label}
@@ -83,7 +83,7 @@ export default function CustomerFilters({
             updateParams((params) => params.set("sort", next));
           }
         }}
-        className="h-9 cursor-pointer rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition hover:border-slate-300 focus:border-indigo-400 focus:outline-2 focus:outline-indigo-500/30"
+        className="h-9 cursor-pointer rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground/80 transition hover:border-foreground/20 focus:border-gold-500 focus:outline-2 focus:outline-gold-600/30"
       >
         {SORT_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>

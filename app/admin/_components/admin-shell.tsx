@@ -11,9 +11,9 @@ import {
   Menu,
   ScrollText,
   ShieldCheck,
-  Sparkles,
   type LucideIcon,
 } from "lucide-react";
+import { Brand } from "@/components/brand/brand";
 import {
   Sheet,
   SheetContent,
@@ -44,8 +44,8 @@ const SECTIONS: Section[] = [
 ];
 
 /**
- * Armazón del panel: sidebar fija en escritorio, drawer en móvil y
- * scroll-spy sobre las secciones de la página. El contenido (server
+ * Armazón del panel: sidebar fija en escritorio (superficie Ink), drawer en
+ * móvil y scroll-spy sobre las secciones de la página. El contenido (server
  * components) se pasa como children.
  */
 export default function AdminShell({
@@ -87,30 +87,30 @@ export default function AdminShell({
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50/70">
+    <div className="flex min-h-screen bg-background/60">
       {/* Sidebar escritorio */}
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-slate-200/80 bg-white lg:flex">
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-graphite-800 bg-ink lg:flex">
         <SidebarContent active={active} onNavigate={goTo} />
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Barra superior móvil */}
-        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-slate-200/80 bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
+        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-background/90 px-4 py-3 backdrop-blur lg:hidden">
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200/80 text-slate-600 transition hover:bg-slate-50"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground transition hover:bg-muted"
               aria-label="Abrir menú"
             >
               <Menu className="h-5 w-5" aria-hidden />
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 gap-0 p-0">
+            <SheetContent side="left" className="w-64 gap-0 bg-ink p-0">
               <SheetHeader className="sr-only">
                 <SheetTitle>Navegación</SheetTitle>
               </SheetHeader>
               <SidebarContent active={active} onNavigate={goTo} />
             </SheetContent>
           </Sheet>
-          <Brand />
+          <Brand tone="on-paper" />
         </header>
 
         <main className="flex-1">
@@ -119,24 +119,6 @@ export default function AdminShell({
           </div>
         </main>
       </div>
-    </div>
-  );
-}
-
-function Brand() {
-  return (
-    <div className="flex items-center gap-2.5">
-      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-sm">
-        <Sparkles className="h-5 w-5" aria-hidden />
-      </span>
-      <span className="leading-tight">
-        <span className="block text-sm font-semibold tracking-tight text-slate-900">
-          Nexus Thrive
-        </span>
-        <span className="block text-[11px] font-medium text-slate-400">
-          Centro de comando
-        </span>
-      </span>
     </div>
   );
 }
@@ -150,12 +132,12 @@ function SidebarContent({
 }) {
   return (
     <>
-      <div className="flex h-16 items-center border-b border-slate-200/80 px-4">
-        <Brand />
+      <div className="flex h-16 items-center border-b border-graphite-800 px-5">
+        <Brand tone="on-ink" />
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-        <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+        <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-paper/35">
           Plataforma
         </p>
         {SECTIONS.map((section) => {
@@ -168,16 +150,22 @@ function SidebarContent({
               onClick={() => onNavigate(section.id)}
               aria-current={isActive ? "true" : undefined}
               className={cn(
-                "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition",
+                "relative flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-[opacity,background-color] duration-120",
                 isActive
-                  ? "bg-amber-50 text-amber-900 ring-1 ring-inset ring-amber-500/20"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+                  ? "bg-white/[0.08] text-paper opacity-100"
+                  : "text-paper opacity-[0.72] hover:bg-white/[0.06] hover:opacity-100",
               )}
             >
+              {isActive && (
+                <span
+                  aria-hidden="true"
+                  className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-gold-500"
+                />
+              )}
               <Icon
                 className={cn(
                   "h-4 w-4",
-                  isActive ? "text-amber-600" : "text-slate-400",
+                  isActive ? "text-gold-500" : "text-paper/50",
                 )}
                 aria-hidden
               />
@@ -187,35 +175,33 @@ function SidebarContent({
         })}
 
         <div className="pt-3">
-          <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-paper/35">
             Herramientas
           </p>
           <button
             type="button"
             onClick={downloadExport}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-paper opacity-[0.72] transition hover:bg-white/[0.06] hover:opacity-100"
           >
-            <Download className="h-4 w-4 text-slate-400" aria-hidden />
+            <Download className="h-4 w-4 text-paper/50" aria-hidden />
             Exportar CSV
           </button>
           <Link
             href="/"
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-paper opacity-[0.72] transition hover:bg-white/[0.06] hover:opacity-100"
           >
-            <Building2 className="h-4 w-4 text-slate-400" aria-hidden />
+            <Building2 className="h-4 w-4 text-paper/50" aria-hidden />
             Sitio público
           </Link>
         </div>
       </nav>
 
-      <div className="border-t border-slate-200/80 p-3">
-        <div className="flex items-center gap-3 rounded-lg px-2 py-2">
+      <div className="border-t border-graphite-800 p-3">
+        <div className="flex items-center gap-3 rounded-md px-2 py-2">
           <UserButton />
           <div className="min-w-0 leading-tight">
-            <p className="truncate text-sm font-medium text-slate-900">
-              SuperAdmin
-            </p>
-            <p className="flex items-center gap-1 text-[11px] text-slate-400">
+            <p className="truncate text-sm font-medium text-paper">SuperAdmin</p>
+            <p className="flex items-center gap-1 text-[11px] text-paper/50">
               <ShieldCheck className="h-3 w-3" aria-hidden />
               Acceso total
             </p>

@@ -11,9 +11,9 @@ const EVENT_ICON: Record<CustomerTimelineEvent["type"], LucideIcon> = {
 };
 
 const EVENT_TONE: Record<CustomerTimelineEvent["type"], string> = {
-  payment: "bg-emerald-50 text-emerald-600",
-  membership: "bg-indigo-50 text-indigo-600",
-  note: "bg-slate-100 text-slate-500",
+  payment: "bg-success/10 text-success",
+  membership: "bg-accent-subtle text-accent-text",
+  note: "bg-muted text-muted-foreground",
 };
 
 /**
@@ -29,7 +29,7 @@ export default function TimelinePanel({
 }) {
   if (events.length === 0) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
+      <div className="rounded-lg border border-border bg-card p-6 text-center text-sm text-muted-foreground shadow-xs">
         {emptyText}
       </div>
     );
@@ -45,13 +45,13 @@ export default function TimelinePanel({
             {!isLast ? (
               <span
                 aria-hidden="true"
-                className="absolute left-[19px] top-9 h-full w-px bg-slate-200"
+                className="absolute left-[19px] top-9 h-full w-px bg-border"
               />
             ) : null}
             <span
               aria-hidden="true"
               className={cn(
-                "z-10 grid h-10 w-10 shrink-0 place-items-center rounded-full ring-4 ring-white",
+                "z-10 grid h-10 w-10 shrink-0 place-items-center rounded-full ring-4 ring-background",
                 EVENT_TONE[event.type],
               )}
             >
@@ -59,21 +59,21 @@ export default function TimelinePanel({
             </span>
             <div className="min-w-0 flex-1 pt-0.5">
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                <p className="font-medium text-slate-900">{event.title}</p>
+                <p className="font-medium text-foreground">{event.title}</p>
                 {event.status ? (
-                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                     {event.status}
                   </span>
                 ) : null}
               </div>
-              <p className="mt-0.5 text-sm text-slate-500">
+              <p className="mt-0.5 text-sm text-muted-foreground">
                 {formatDateTime(event.date)}
               </p>
               {event.description ? (
-                <p className="mt-1 text-sm text-slate-600">{event.description}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{event.description}</p>
               ) : null}
               {typeof event.amount === "number" ? (
-                <p className="mt-1 text-sm font-semibold text-slate-900">
+                <p className="mt-1 text-sm font-semibold text-foreground">
                   {formatCurrency(event.amount)}
                 </p>
               ) : null}

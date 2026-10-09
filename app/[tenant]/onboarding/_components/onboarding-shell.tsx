@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 import type {
   PaymentMethodValue,
   VerticalValue,
@@ -74,16 +75,16 @@ export default function OnboardingShell({
       : "Continuar";
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="min-h-screen bg-background font-sans text-foreground">
       <main className="mx-auto flex w-full max-w-2xl flex-col px-4 py-10 sm:px-6">
         <header className="mb-8 text-center">
-          <span className="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-700">
+          <span className="inline-flex items-center rounded-full bg-accent-subtle px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent-text">
             NEXUS
           </span>
-          <h1 className="mt-3 text-2xl font-bold text-slate-900">
+          <h1 className="mt-3 text-2xl font-bold text-foreground">
             Configura tu negocio
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             Cinco pasos y NEXUS queda listo para operar.
           </p>
         </header>
@@ -97,7 +98,7 @@ export default function OnboardingShell({
 
           <section
             aria-live="polite"
-            className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+            className="rounded-lg border border-border bg-card p-5 shadow-xs sm:p-6"
           >
             {viewing === 1 && (
               <StepBusiness
@@ -132,7 +133,7 @@ export default function OnboardingShell({
           {state.status === "error" && state.message && (
             <p
               role="alert"
-              className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700"
+              className="mt-3 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
             >
               {state.message}
             </p>
@@ -147,7 +148,7 @@ export default function OnboardingShell({
                 )
               }
               disabled={viewing === 1 || isPending}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3.5 py-2 text-sm font-medium text-muted-foreground transition hover:border-foreground/20 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
             >
               <ArrowLeft className="h-4 w-4" />
               Atrás
@@ -156,15 +157,15 @@ export default function OnboardingShell({
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+              {isPending && <NLoader size={16} className="text-current" />}
               {submitLabel}
             </button>
           </div>
         </form>
 
-        <p className="mt-6 text-center text-xs text-slate-400">
+        <p className="mt-6 text-center text-xs text-muted-foreground">
           Guardamos cada paso: puedes cerrar y continuar en cualquier momento.
         </p>
       </main>

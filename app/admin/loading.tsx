@@ -22,7 +22,7 @@ export default function AdminLoading() {
       {/* KPIs */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[0, 1, 2, 3].map((index) => (
-          <Skeleton key={index} className="h-36 rounded-xl" />
+          <Skeleton key={index} className="h-36 rounded-lg" />
         ))}
       </div>
 
@@ -30,12 +30,12 @@ export default function AdminLoading() {
         <div className="space-y-4 lg:col-span-2">
           <Skeleton className="h-5 w-56" />
           <Skeleton className="h-10 w-full max-w-xl" />
-          <div className="overflow-hidden rounded-xl border border-slate-200/80 bg-white">
-            <div className="h-10 border-b border-slate-200/80 bg-slate-50" />
+          <div className="overflow-hidden rounded-lg border border-border bg-card">
+            <div className="h-10 border-b border-border bg-muted" />
             {[0, 1, 2, 3, 4].map((index) => (
               <div
                 key={index}
-                className="flex items-center gap-4 border-b border-slate-100 px-4 py-4 last:border-b-0"
+                className="flex items-center gap-4 border-b border-border/70 px-4 py-4 last:border-b-0"
               >
                 <Skeleton className="size-8 rounded-md" />
                 <div className="flex-1 space-y-2">
@@ -50,8 +50,8 @@ export default function AdminLoading() {
         </div>
 
         <div className="space-y-8">
-          <Skeleton className="h-64 rounded-xl" />
-          <Skeleton className="h-48 rounded-xl" />
+          <Skeleton className="h-64 rounded-lg" />
+          <Skeleton className="h-48 rounded-lg" />
         </div>
       </div>
     </div>

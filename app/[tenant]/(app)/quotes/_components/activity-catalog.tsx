@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, Layers, Loader2, Pencil, Plus, X } from "lucide-react";
+import { Eye, Layers, Pencil, Plus, X } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 import { formatCurrency } from "@/lib/format";
 import { APU_UNITS } from "@/lib/apu-engine";
 import SearchInput from "@/app/components/tenant/search-input";
@@ -24,7 +25,7 @@ import { ApuCategoryBadge } from "./quote-badges";
 const INITIAL_ACTIVITY_STATE: ApuActivityFormState = { status: "idle" };
 
 const inputClass =
-  "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 transition placeholder:text-slate-400 hover:border-slate-300 focus:border-indigo-400 focus:outline-2 focus:outline-indigo-500/30";
+  "h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-border-strong focus:border-accent focus:outline-2 focus:outline-accent/30";
 
 type CompRow = { itemId: string; consumption: string; wastePercent: string };
 
@@ -52,7 +53,7 @@ function CompositionEditor({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-slate-700">
+        <span className="text-sm font-medium text-foreground/80">
           Composición (insumos de la actividad)
         </span>
         <button
@@ -60,7 +61,7 @@ function CompositionEditor({
           onClick={() =>
             onChange([...comps, { itemId: "", consumption: "", wastePercent: "0" }])
           }
-          className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+          className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
         >
           <Plus aria-hidden="true" className="h-3.5 w-3.5" />
           Agregar insumo
@@ -68,13 +69,13 @@ function CompositionEditor({
       </div>
 
       {comps.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-slate-200 px-3 py-4 text-center text-xs text-slate-400">
+        <p className="rounded-lg border border-dashed border-border px-3 py-4 text-center text-xs text-muted-foreground">
           Sin insumos. Agrega al menos uno para poder cotizar esta actividad.
         </p>
       ) : (
         <div className="space-y-2">
           {comps.map((row, index) => (
-            <div key={index} className="grid grid-cols-[1fr_auto] gap-2 rounded-lg border border-slate-100 bg-slate-50/60 p-2">
+            <div key={index} className="grid grid-cols-[1fr_auto] gap-2 rounded-lg border border-border bg-muted/60 p-2">
               <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_6.5rem_6.5rem]">
                 <select
                   value={row.itemId}
@@ -114,7 +115,7 @@ function CompositionEditor({
                 type="button"
                 aria-label={`Quitar insumo ${index + 1}`}
                 onClick={() => onChange(comps.filter((_, i) => i !== index))}
-                className="self-start rounded-lg p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+                className="self-start rounded-lg p-2 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
               >
                 <X aria-hidden="true" className="h-4 w-4" />
               </button>
@@ -122,7 +123,7 @@ function CompositionEditor({
           ))}
         </div>
       )}
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-muted-foreground">
         Rendimiento = cantidad por unidad de actividad (ej. 0.25 M3 por M2
         de muro). Desperdicio en % (0-50).
       </p>
@@ -208,14 +209,14 @@ function ActivityForm({
       />
 
       {state.status === "error" && state.message ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {state.message}
         </p>
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">
+          <span className="mb-1 block text-sm font-medium text-foreground/80">
             Código (opcional)
           </span>
           <input
@@ -225,13 +226,13 @@ function ActivityForm({
             className={inputClass}
           />
           {fieldError(state.errors, "code") ? (
-            <span className="mt-1 block text-xs text-rose-600">
+            <span className="mt-1 block text-xs text-destructive">
               {fieldError(state.errors, "code")}
             </span>
           ) : null}
         </label>
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">
+          <span className="mb-1 block text-sm font-medium text-foreground/80">
             Unidad
           </span>
           <select name="unit" defaultValue={defaults.unit} className={inputClass}>
@@ -243,7 +244,7 @@ function ActivityForm({
             ))}
           </select>
           {fieldError(state.errors, "unit") ? (
-            <span className="mt-1 block text-xs text-rose-600">
+            <span className="mt-1 block text-xs text-destructive">
               {fieldError(state.errors, "unit")}
             </span>
           ) : null}
@@ -251,7 +252,7 @@ function ActivityForm({
       </div>
 
       <label className="block">
-        <span className="mb-1 block text-sm font-medium text-slate-700">
+        <span className="mb-1 block text-sm font-medium text-foreground/80">
           Nombre de la actividad
         </span>
         <input
@@ -261,39 +262,39 @@ function ActivityForm({
           className={inputClass}
         />
         {fieldError(state.errors, "name") ? (
-          <span className="mt-1 block text-xs text-rose-600">
+          <span className="mt-1 block text-xs text-destructive">
             {fieldError(state.errors, "name")}
           </span>
         ) : null}
       </label>
 
       <label className="block">
-        <span className="mb-1 block text-sm font-medium text-slate-700">
+        <span className="mb-1 block text-sm font-medium text-foreground/80">
           Descripción (opcional)
         </span>
         <textarea
           name="description"
           defaultValue={defaults.description}
           rows={2}
-          className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 transition placeholder:text-slate-400 focus:border-indigo-400 focus:outline-2 focus:outline-indigo-500/30"
+          className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground transition placeholder:text-muted-foreground focus:border-accent focus:outline-2 focus:outline-accent/30"
         />
         {fieldError(state.errors, "description") ? (
-          <span className="mt-1 block text-xs text-rose-600">
+          <span className="mt-1 block text-xs text-destructive">
             {fieldError(state.errors, "description")}
           </span>
         ) : null}
       </label>
 
       {loadingComps ? (
-        <div className="flex items-center justify-center gap-2 py-6 text-sm text-slate-400">
-          <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+        <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
+          <NLoader size={16} className="text-current" />
           Cargando composición…
         </div>
       ) : (
         <>
           <CompositionEditor items={items} comps={comps} onChange={setComps} />
           {fieldError(state.errors, "compositions") ? (
-            <span className="block text-xs text-rose-600">
+            <span className="block text-xs text-destructive">
               {fieldError(state.errors, "compositions")}
             </span>
           ) : null}
@@ -304,7 +305,7 @@ function ActivityForm({
         <button
           type="submit"
           disabled={isPending || loadingComps}
-          className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isPending
             ? "Guardando…"
@@ -325,8 +326,8 @@ function ActivityDetail({
 }) {
   if (!detail) {
     return (
-      <div className="flex items-center justify-center gap-2 py-10 text-sm text-slate-400">
-        <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+      <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted-foreground">
+        <NLoader size={16} className="text-current" />
         Cargando…
       </div>
     );
@@ -334,20 +335,20 @@ function ActivityDetail({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-slate-500">
-          {detail.code ? <span className="font-mono text-xs text-indigo-600">{detail.code} · </span> : null}
+        <p className="text-sm text-muted-foreground">
+          {detail.code ? <span className="font-mono text-xs text-accent-text">{detail.code} · </span> : null}
           {detail.description}
         </p>
-        <p className="text-sm font-semibold text-slate-900">
+        <p className="text-sm font-semibold text-foreground">
           Costo unitario: {formatCurrency(detail.unitCost)}
-          <span className="ml-1 text-xs font-normal text-slate-400">
+          <span className="ml-1 text-xs font-normal text-muted-foreground">
             / {detail.unit}
           </span>
         </p>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-slate-100 text-sm">
-          <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+        <table className="min-w-full divide-y divide-border text-sm">
+          <thead className="bg-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
             <tr>
               <th className="px-3 py-2 font-medium">Insumo</th>
               <th className="px-3 py-2 font-medium">Categoría</th>
@@ -357,28 +358,28 @@ function ActivityDetail({
               <th className="px-3 py-2 text-right font-medium">Costo</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-50">
+          <tbody className="divide-y divide-border">
             {detail.compositions.map((composition) => (
               <tr key={composition.id}>
-                <td className="px-3 py-2 font-medium text-slate-900">
+                <td className="px-3 py-2 font-medium text-foreground">
                   {composition.itemName}
-                  <span className="ml-1 text-xs text-slate-400">
+                  <span className="ml-1 text-xs text-muted-foreground">
                     {composition.itemUnit}
                   </span>
                 </td>
                 <td className="px-3 py-2">
                   <ApuCategoryBadge category={composition.category} />
                 </td>
-                <td className="px-3 py-2 text-right text-slate-600">
+                <td className="px-3 py-2 text-right text-muted-foreground">
                   {formatCurrency(composition.unitPrice)}
                 </td>
-                <td className="px-3 py-2 text-right text-slate-600">
+                <td className="px-3 py-2 text-right text-muted-foreground">
                   {composition.consumption}
                 </td>
-                <td className="px-3 py-2 text-right text-slate-600">
+                <td className="px-3 py-2 text-right text-muted-foreground">
                   {composition.wastePercent}%
                 </td>
-                <td className="px-3 py-2 text-right font-semibold text-slate-900">
+                <td className="px-3 py-2 text-right font-semibold text-foreground">
                   {formatCurrency(composition.cost)}
                 </td>
               </tr>
@@ -433,16 +434,16 @@ export default function ActivityCatalog({
         <button
           type="button"
           onClick={() => setModal({ type: "create" })}
-          className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-indigo-600 px-3 text-sm font-medium text-white transition hover:bg-indigo-700"
+          className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
         >
           <Plus aria-hidden="true" className="h-4 w-4" />
           Nueva {activityLabel.toLowerCase()}
         </button>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <table className="min-w-full divide-y divide-slate-100 text-sm">
-          <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-xs">
+        <table className="min-w-full divide-y divide-border text-sm">
+          <thead className="bg-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
             <tr>
               <th className="px-4 py-3 font-medium">Código</th>
               <th className="px-4 py-3 font-medium">Nombre</th>
@@ -454,28 +455,28 @@ export default function ActivityCatalog({
               <th className="px-4 py-3 text-right font-medium">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-50">
+          <tbody className="divide-y divide-border">
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-slate-400">
+                <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
                   Sin {activityLabel.toLowerCase()} por mostrar.
                 </td>
               </tr>
             ) : (
               rows.map((row) => (
-                <tr key={row.id} className="transition hover:bg-slate-50/60">
-                  <td className="px-4 py-3 font-mono text-xs font-medium text-indigo-600">
+                <tr key={row.id} className="transition hover:bg-muted/60">
+                  <td className="px-4 py-3 font-mono text-xs font-medium text-accent-text">
                     {row.code ?? "—"}
                   </td>
-                  <td className="px-4 py-3 font-medium text-slate-900">
+                  <td className="px-4 py-3 font-medium text-foreground">
                     {row.name}
                   </td>
-                  <td className="px-4 py-3 text-slate-600">{row.unit}</td>
-                  <td className="px-4 py-3 text-right font-semibold text-slate-900">
+                  <td className="px-4 py-3 text-muted-foreground">{row.unit}</td>
+                  <td className="px-4 py-3 text-right font-semibold text-foreground">
                     {formatCurrency(row.unitCost)}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <span className="inline-flex items-center gap-1 text-xs text-slate-500">
+                    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                       <Layers aria-hidden="true" className="h-3.5 w-3.5" />
                       {row.itemCount}
                     </span>
@@ -485,7 +486,7 @@ export default function ActivityCatalog({
                       <button
                         type="button"
                         onClick={() => void openDetail(row, "detail")}
-                        className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                        className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
                       >
                         <Eye aria-hidden="true" className="h-3.5 w-3.5" />
                         Ver
@@ -493,7 +494,7 @@ export default function ActivityCatalog({
                       <button
                         type="button"
                         onClick={() => void openDetail(row, "edit")}
-                        className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                        className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
                       >
                         <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
                         Editar

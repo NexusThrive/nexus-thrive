@@ -2,7 +2,8 @@
 
 import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Download, Loader2, TriangleAlert } from "lucide-react";
+import { Download, TriangleAlert } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 import SearchInput from "@/app/components/tenant/search-input";
 import FilterSelect from "@/app/components/tenant/filter-select";
 import {
@@ -108,12 +109,12 @@ export default function TenantToolbar({
           className={cn(
             "inline-flex h-10 items-center gap-1.5 rounded-lg border px-3 text-sm font-medium transition disabled:opacity-60",
             attentionOnly
-              ? "border-amber-300 bg-amber-50 text-amber-700"
-              : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+              ? "border-gold-500/20 bg-gold-100 text-gold-700"
+              : "border-border bg-card text-foreground/80 hover:bg-muted",
           )}
         >
           {isPending ? (
-            <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+            <NLoader size={16} className="text-current" />
           ) : (
             <TriangleAlert aria-hidden="true" className="h-4 w-4" />
           )}
@@ -122,7 +123,7 @@ export default function TenantToolbar({
 
         <a
           href={exportHref}
-          className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+          className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted"
         >
           <Download aria-hidden="true" className="h-4 w-4" />
           Exportar CSV

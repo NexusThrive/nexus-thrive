@@ -7,17 +7,17 @@ import {
 } from "@/lib/apu-engine";
 
 const STATUS_TONES: Record<QuoteStatusValue, string> = {
-  DRAFT: "border-slate-200 bg-slate-50 text-slate-600",
-  SENT: "border-sky-200 bg-sky-50 text-sky-700",
-  APPROVED: "border-emerald-200 bg-emerald-50 text-emerald-700",
-  REJECTED: "border-rose-200 bg-rose-50 text-rose-700",
+  DRAFT: "border-border bg-muted text-muted-foreground",
+  SENT: "border-accent/30 bg-accent-subtle text-accent-text",
+  APPROVED: "border-success/30 bg-success/10 text-success",
+  REJECTED: "border-destructive/30 bg-destructive/10 text-destructive",
 };
 
 const CATEGORY_TONES: Record<ApuItemCategoryValue, string> = {
-  MATERIAL: "border-indigo-200 bg-indigo-50 text-indigo-700",
-  MANO_DE_OBRA: "border-amber-200 bg-amber-50 text-amber-700",
-  EQUIPO: "border-violet-200 bg-violet-50 text-violet-700",
-  TRANSPORTE: "border-cyan-200 bg-cyan-50 text-cyan-700",
+  MATERIAL: "border-accent/30 bg-accent-subtle text-accent-text",
+  MANO_DE_OBRA: "border-gold-300 bg-gold-100 text-gold-700",
+  EQUIPO: "border-graphite-200 bg-graphite-100 text-graphite-700",
+  TRANSPORTE: "border-graphite-200 bg-graphite-100 text-graphite-500",
 };
 
 /** Badge de estado de presupuesto (presentación pura, server-safe). */

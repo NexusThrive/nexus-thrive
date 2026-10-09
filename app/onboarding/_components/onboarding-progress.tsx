@@ -38,12 +38,12 @@ export default function OnboardingProgress({
                 className={cn(
                   "grid size-8 shrink-0 place-items-center rounded-full text-xs font-semibold transition",
                   isDone &&
-                    "bg-amber-500 text-white ring-4 ring-amber-500/20",
+                    "bg-gold-500 text-ink ring-4 ring-gold-500/20",
                   isActive &&
-                    "bg-amber-500 text-white ring-4 ring-amber-500/20",
+                    "bg-gold-500 text-ink ring-4 ring-gold-500/20",
                   !isDone &&
                     !isActive &&
-                    "border border-slate-300 bg-white text-slate-500",
+                    "border border-border bg-card text-muted-foreground",
                 )}
               >
                 {isDone ? (
@@ -55,7 +55,7 @@ export default function OnboardingProgress({
               <span
                 className={cn(
                   "hidden text-xs font-medium sm:block",
-                  isActive || isDone ? "text-slate-900" : "text-slate-500",
+                  isActive || isDone ? "text-foreground" : "text-muted-foreground",
                 )}
               >
                 {ONBOARDING_STEP_LABELS[step]}
@@ -66,7 +66,7 @@ export default function OnboardingProgress({
                 aria-hidden="true"
                 className={cn(
                   "h-px flex-1 rounded-full",
-                  isDone ? "bg-amber-400" : "bg-slate-200",
+                  isDone ? "bg-gold-500" : "bg-border",
                 )}
               />
             )}

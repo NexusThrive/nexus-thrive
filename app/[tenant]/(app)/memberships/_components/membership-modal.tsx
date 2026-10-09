@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useActionState } from "react";
-import { Loader2, RefreshCw, X } from "lucide-react";
+import { RefreshCw, X } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 import {
   renewMembershipAction,
   type RenewalFormState,
@@ -64,24 +65,24 @@ export default function MembershipModal({
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center">
       <div
         aria-hidden="true"
-        className="fixed inset-0 bg-slate-950/45 backdrop-blur-[1px]"
+        className="fixed inset-0 bg-ink/45 backdrop-blur-[1px]"
         onClick={() => !isPending && onClose()}
       />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="renewal-modal-title"
-        className="relative mt-10 w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-xl sm:mt-0"
+        className="relative mt-10 w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-popover sm:mt-0"
       >
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2
               id="renewal-modal-title"
-              className="text-lg font-semibold text-slate-900"
+              className="text-lg font-semibold text-foreground"
             >
               Renovar membresía
             </h2>
-            <p className="mt-0.5 text-sm text-slate-500">
+            <p className="mt-0.5 text-sm text-muted-foreground">
               {membership.customerName} · {typeLabel(membership.type)}
             </p>
           </div>
@@ -90,26 +91,26 @@ export default function MembershipModal({
             aria-label="Cerrar"
             disabled={isPending}
             onClick={onClose}
-            className="-m-1 rounded-lg p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 disabled:opacity-50"
+            className="-m-1 rounded-lg p-1 text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-50"
           >
             <X aria-hidden="true" className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm">
-          <div className="flex items-center justify-between gap-2 text-slate-600">
+        <div className="mt-4 rounded-lg border border-border bg-muted p-3 text-sm">
+          <div className="flex items-center justify-between gap-2 text-muted-foreground">
             <span>Precio del plan</span>
-            <span className="font-medium text-slate-900">
+            <span className="font-medium text-foreground">
               {formatCurrency(membership.price)}
             </span>
           </div>
-          <div className="mt-1 flex items-center justify-between gap-2 text-slate-600">
+          <div className="mt-1 flex items-center justify-between gap-2 text-muted-foreground">
             <span>Vence hoy</span>
-            <span className="font-medium text-slate-900">
+            <span className="font-medium text-foreground">
               {formatDateShort(membership.endDate)}
             </span>
           </div>
-          <p className="mt-2 border-t border-slate-200 pt-2 text-xs text-slate-500">
+          <p className="mt-2 border-t border-border pt-2 text-xs text-muted-foreground">
             {membership.status === "expired"
               ? "Está vencida: la nueva vigencia comienza hoy."
               : "La nueva vigencia se suma al fin del período actual."}
@@ -120,18 +121,18 @@ export default function MembershipModal({
           <input type="hidden" name="tenantSlug" value={tenantSlug} />
           <input type="hidden" name="membershipId" value={membership.id} />
 
-          <label className="flex items-start gap-3 rounded-lg border border-slate-200 p-3">
+          <label className="flex items-start gap-3 rounded-lg border border-border p-3">
             <input
               type="checkbox"
               name="registerPayment"
               defaultChecked
-              className="mt-0.5 h-4 w-4 rounded border-slate-300 accent-indigo-600"
+              className="mt-0.5 h-4 w-4 rounded-md border-border accent-primary"
             />
             <span>
-              <span className="block text-sm font-medium text-slate-800">
+              <span className="block text-sm font-medium text-foreground/90">
                 Registrar cobro de la renovación
               </span>
-              <span className="block text-xs text-slate-500">
+              <span className="block text-xs text-muted-foreground">
                 Crea un pago aprobado por {formatCurrency(membership.price)}.
               </span>
             </span>
@@ -140,7 +141,7 @@ export default function MembershipModal({
           <div>
             <label
               htmlFor="renewal-provider"
-              className="text-sm font-medium text-slate-700"
+              className="text-sm font-medium text-foreground/80"
             >
               Método de pago
             </label>
@@ -150,10 +151,10 @@ export default function MembershipModal({
               defaultValue="CASH"
               aria-invalid={Boolean(errors.provider)}
               className={[
-                "mt-1 h-10 w-full rounded-lg border bg-white px-3 text-sm text-slate-900 transition focus:outline-2",
+                "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
                 errors.provider
-                  ? "border-rose-300 focus:border-rose-400 focus:outline-rose-500/30"
-                  : "border-slate-200 hover:border-slate-300 focus:border-indigo-400 focus:outline-indigo-500/30",
+                  ? "border-destructive focus:border-destructive focus:outline-destructive/30"
+                  : "border-border hover:border-ring/50 focus:border-ring focus:outline-ring/30",
               ].join(" ")}
             >
               {PAYMENT_METHODS.map((method) => (
@@ -163,7 +164,7 @@ export default function MembershipModal({
               ))}
             </select>
             {errors.provider ? (
-              <p role="alert" className="mt-1 text-xs text-rose-600">
+              <p role="alert" className="mt-1 text-xs text-destructive">
                 {errors.provider}
               </p>
             ) : null}
@@ -172,7 +173,7 @@ export default function MembershipModal({
           {state.status === "error" && state.message ? (
             <p
               role="alert"
-              className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700"
+              className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
             >
               {state.message}
             </p>
@@ -181,7 +182,7 @@ export default function MembershipModal({
           {state.status === "ok" ? (
             <p
               role="status"
-              className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700"
+              className="rounded-lg bg-success/10 px-3 py-2 text-sm text-success"
             >
               {state.message ?? "Renovación registrada."}
             </p>
@@ -192,17 +193,17 @@ export default function MembershipModal({
               type="button"
               disabled={isPending}
               onClick={onClose}
-              className="h-10 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+              className="h-10 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isPending ? (
-                <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+                <NLoader size={16} className="text-current" />
               ) : (
                 <RefreshCw aria-hidden="true" className="h-4 w-4" />
               )}

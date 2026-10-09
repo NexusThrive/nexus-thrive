@@ -4,11 +4,11 @@ import { cn } from "@/lib/cn";
 type KpiTone = "indigo" | "emerald" | "amber" | "rose" | "slate";
 
 const TONES: Record<KpiTone, string> = {
-  indigo: "bg-indigo-50 text-indigo-600",
-  emerald: "bg-emerald-50 text-emerald-600",
-  amber: "bg-amber-50 text-amber-700",
-  rose: "bg-rose-50 text-rose-700",
-  slate: "bg-slate-100 text-slate-600",
+  indigo: "bg-accent-subtle text-accent-text",
+  emerald: "bg-success/10 text-success",
+  amber: "bg-warning text-warning-foreground",
+  rose: "bg-destructive/10 text-destructive",
+  slate: "bg-muted text-muted-foreground",
 };
 
 /**
@@ -29,9 +29,9 @@ export default function KpiCard({
   tone?: KpiTone;
 }) {
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <article className="rounded-lg border border-border bg-card p-4 shadow-xs">
       <div className="flex items-start justify-between gap-2">
-        <p className="truncate text-sm font-medium text-slate-500">{title}</p>
+        <p className="truncate text-sm font-medium text-muted-foreground">{title}</p>
         <span
           aria-hidden="true"
           className={cn(
@@ -42,11 +42,11 @@ export default function KpiCard({
           <Icon className="h-4.5 w-4.5" />
         </span>
       </div>
-      <p className="mt-2 truncate text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">
+      <p className="mt-2 truncate text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
         {value}
       </p>
       {description ? (
-        <p className="mt-1 truncate text-xs text-slate-500">{description}</p>
+        <p className="mt-1 truncate text-xs text-muted-foreground">{description}</p>
       ) : null}
     </article>
   );

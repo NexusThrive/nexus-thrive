@@ -25,7 +25,7 @@ export default function ProfileTabs({
   return (
     <nav
       aria-label="Secciones de la ficha"
-      className="flex gap-1 overflow-x-auto rounded-xl border border-slate-200 bg-white p-1 shadow-sm"
+      className="flex gap-1 overflow-x-auto rounded-lg border border-border bg-card p-1 shadow-xs"
     >
       {tabs.map((tab) => {
         const isActive = tab.key === activeTab;
@@ -37,8 +37,8 @@ export default function ProfileTabs({
             className={cn(
               "whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors",
               isActive
-                ? "bg-slate-900 text-white shadow-sm"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
             {tab.label}

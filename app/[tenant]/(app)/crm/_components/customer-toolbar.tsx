@@ -33,7 +33,7 @@ export default function CustomerToolbar({
           <CustomerFilters status={status} sort={sort} />
           <p
             aria-live="polite"
-            className="text-xs font-medium text-slate-500 sm:ml-1"
+            className="text-xs font-medium text-muted-foreground sm:ml-1"
           >
             {total} {total === 1 ? terms.customer.toLowerCase() : terms.customers.toLowerCase()}
           </p>
@@ -42,7 +42,7 @@ export default function CustomerToolbar({
         <button
           type="button"
           onClick={() => setIsFormOpen(true)}
-          className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 lg:self-auto"
+          className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-xs transition hover:bg-primary/90 lg:self-auto"
         >
           <Plus aria-hidden="true" className="h-4 w-4" />
           {`Nuevo ${terms.customer.toLowerCase()}`}

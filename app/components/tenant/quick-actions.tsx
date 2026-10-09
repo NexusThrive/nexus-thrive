@@ -33,7 +33,7 @@ export default function QuickActions({ tenantSlug, terms }: QuickActionsProps) {
       hint: "Agregar un contacto",
       path: "/crm",
       icon: UserPlus,
-      tone: "bg-indigo-50 text-indigo-600 group-hover:bg-indigo-100",
+      tone: "bg-accent-subtle text-accent-text group-hover:bg-accent/20",
     },
     {
       id: "register-payment",
@@ -41,7 +41,7 @@ export default function QuickActions({ tenantSlug, terms }: QuickActionsProps) {
       hint: "Cobrar un movimiento",
       path: "/finance",
       icon: HandCoins,
-      tone: "bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100",
+      tone: "bg-success/10 text-success group-hover:bg-success/15",
     },
     {
       id: "register-expense",
@@ -49,7 +49,7 @@ export default function QuickActions({ tenantSlug, terms }: QuickActionsProps) {
       hint: "Anotar un egreso",
       path: "/finance",
       icon: Receipt,
-      tone: "bg-rose-50 text-rose-600 group-hover:bg-rose-100",
+      tone: "bg-destructive/10 text-destructive group-hover:bg-destructive/15",
     },
     {
       id: "new-membership",
@@ -57,7 +57,7 @@ export default function QuickActions({ tenantSlug, terms }: QuickActionsProps) {
       hint: "Registrar un plan",
       path: "/memberships",
       icon: CalendarCheck,
-      tone: "bg-amber-50 text-amber-600 group-hover:bg-amber-100",
+      tone: "bg-gold-100 text-gold-700 group-hover:bg-gold-100/70",
     },
     {
       id: "create-invoice",
@@ -65,23 +65,23 @@ export default function QuickActions({ tenantSlug, terms }: QuickActionsProps) {
       hint: "Generar un documento",
       path: "/finance",
       icon: FileText,
-      tone: "bg-slate-100 text-slate-600 group-hover:bg-slate-200",
+      tone: "bg-muted text-muted-foreground group-hover:bg-muted/70",
     },
   ];
 
   return (
     <section
       aria-labelledby="quick-actions-title"
-      className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+      className="rounded-lg border border-border bg-card p-5 shadow-xs"
     >
       <div className="mb-4">
         <h2
           id="quick-actions-title"
-          className="text-base font-semibold text-slate-900"
+          className="text-base font-semibold text-foreground"
         >
           Acciones rápidas
         </h2>
-        <p className="mt-0.5 text-xs text-slate-500">
+        <p className="mt-0.5 text-xs text-muted-foreground">
           Atajos para lo que haces cada día.
         </p>
       </div>
@@ -95,9 +95,9 @@ export default function QuickActions({ tenantSlug, terms }: QuickActionsProps) {
               key={action.id}
               href={`/${tenantSlug}${action.path}`}
               className={cn(
-                "group flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3 text-left transition-colors",
-                "hover:border-indigo-200 hover:bg-slate-50",
-                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500",
+                "group flex items-center gap-3 rounded-lg border border-border bg-card p-3 text-left transition-colors",
+                "hover:border-accent/40 hover:bg-muted",
+                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
               )}
             >
               <span
@@ -110,10 +110,10 @@ export default function QuickActions({ tenantSlug, terms }: QuickActionsProps) {
                 <Icon className="h-4 w-4" />
               </span>
               <span className="min-w-0">
-                <span className="block truncate text-sm font-medium text-slate-900">
+                <span className="block truncate text-sm font-medium text-foreground">
                   {action.label}
                 </span>
-                <span className="block truncate text-xs text-slate-500">
+                <span className="block truncate text-xs text-muted-foreground">
                   {action.hint}
                 </span>
               </span>

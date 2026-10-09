@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 import { completeAdaptiveOnboardingAction } from "../actions";
 import { validateAdaptiveOnboarding } from "@/lib/onboarding/validation";
 import {
@@ -180,20 +181,20 @@ export default function OnboardingWizard({
   const isSubmitting = isPending;
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="min-h-screen bg-background font-sans text-foreground">
       <main className="mx-auto flex w-full max-w-3xl flex-col px-4 py-10 sm:px-6">
         <header className="mb-8 text-center">
-          <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold tracking-wide text-amber-700 uppercase">
+          <span className="inline-flex items-center rounded-full bg-gold-100 px-3 py-1 text-xs font-semibold tracking-wide text-gold-700 uppercase">
             NEXUS
           </span>
-          <h1 className="mt-3 text-2xl font-bold text-slate-900">
+          <h1 className="mt-3 text-2xl font-bold text-foreground">
             {completedSlug
               ? "Listo"
               : prefill.mode === "resume"
                 ? `Termina de configurar ${prefill.tenantName ?? "tu espacio"}`
                 : "Crea tu espacio NEXUS"}
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             {prefill.mode === "resume"
               ? "Cuatro pasos y tu negocio queda operando."
               : "Cuatro pasos: perfil, información, módulos y listo."}
@@ -204,13 +205,13 @@ export default function OnboardingWizard({
 
         <section
           aria-live="polite"
-          className="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+          className="mt-8 rounded-lg border border-border bg-card p-5 shadow-xs sm:p-6"
         >
           {completedSlug ? (
             <OnboardingComplete draft={draft} slug={completedSlug} />
           ) : (
             <>
-              <h2 className="mb-5 text-base font-semibold text-slate-900">
+              <h2 className="mb-5 text-base font-semibold text-foreground">
                 {ONBOARDING_STEP_TITLES[viewing]}
               </h2>
 
@@ -225,7 +226,7 @@ export default function OnboardingWizard({
                   {showErrors && !draft.tenantType && (
                     <p
                       role="alert"
-                      className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700"
+                      className="mt-3 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
                     >
                       Elige un perfil para continuar.
                     </p>
@@ -262,7 +263,7 @@ export default function OnboardingWizard({
                     type="button"
                     onClick={goBack}
                     disabled={viewing === 1 || isSubmitting}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3.5 py-2 text-sm font-medium text-muted-foreground transition hover:border-foreground/20 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <ArrowLeft className="size-4" aria-hidden="true" />
                     Atrás
@@ -272,7 +273,7 @@ export default function OnboardingWizard({
                     type="button"
                     onClick={goNext}
                     disabled={isSubmitting}
-                    className="inline-flex items-center gap-2 rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-lg bg-gold-500 px-4 py-2 text-sm font-semibold text-ink shadow-xs transition hover:bg-gold-600 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     Continuar
                     <ArrowRight className="size-4" aria-hidden="true" />
@@ -284,8 +285,8 @@ export default function OnboardingWizard({
         </section>
 
         {isSubmitting && (
-          <p className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-400">
-            <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
+          <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+            <NLoader size={14} className="text-current" />
             Guardando tu configuración…
           </p>
         )}

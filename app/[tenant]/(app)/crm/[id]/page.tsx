@@ -175,7 +175,7 @@ export default async function CustomerPage({
       {activeTab === "resumen" ? (
         <section className="grid gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <h2 className="mb-3 text-lg font-semibold text-slate-900">
+            <h2 className="mb-3 text-lg font-semibold text-foreground">
               Timeline 360°
             </h2>
             <TimelinePanel
@@ -197,7 +197,7 @@ export default async function CustomerPage({
 
       {activeTab === "pagos" ? (
         <section>
-          <h2 className="mb-3 text-lg font-semibold text-slate-900">
+          <h2 className="mb-3 text-lg font-semibold text-foreground">
             Historial de pagos
           </h2>
           <PaymentsTable payments={payments} total={paymentsTotal} />
@@ -206,7 +206,7 @@ export default async function CustomerPage({
 
       {activeTab === "membresias" ? (
         <section>
-          <h2 className="mb-3 text-lg font-semibold text-slate-900">
+          <h2 className="mb-3 text-lg font-semibold text-foreground">
             {terms.items}
           </h2>
           <MembershipsTable memberships={memberships} terms={terms} />
@@ -215,7 +215,7 @@ export default async function CustomerPage({
 
       {activeTab === "notas" ? (
         <section>
-          <h2 className="mb-3 text-lg font-semibold text-slate-900">Notas</h2>
+          <h2 className="mb-3 text-lg font-semibold text-foreground">Notas</h2>
           <NotesPanel
             tenantSlug={tenantSlug}
             customerId={customer.id}

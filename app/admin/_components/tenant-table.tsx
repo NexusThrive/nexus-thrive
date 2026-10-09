@@ -88,7 +88,7 @@ export default function TenantTable({
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed bg-card px-6 py-14 text-center">
+      <div className="rounded-lg border border-dashed bg-card px-6 py-14 text-center">
         <p className="text-sm font-medium">No hay negocios que coincidan.</p>
         <p className="mt-1 text-xs text-muted-foreground">
           Ajusta la búsqueda o los filtros para ver resultados.
@@ -99,7 +99,7 @@ export default function TenantTable({
 
   return (
     <>
-      <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
+      <div className="overflow-hidden rounded-lg border bg-card shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[860px] border-collapse text-sm">
             <thead>
@@ -255,7 +255,7 @@ function OnboardingProgress({ row }: { row: TenantListRow }) {
         <span
           className={cn(
             "block h-full rounded-full",
-            done ? "bg-emerald-500" : "bg-amber-500",
+            done ? "bg-success" : "bg-gold-500",
           )}
           style={{ width: `${row.onboardingProgress}%` }}
         />

@@ -16,8 +16,8 @@ const ACTIVITY_ICONS: Record<ActivityType, LucideIcon> = {
 };
 
 const ACTIVITY_TONES: Record<ActivityType, string> = {
-  payment: "bg-emerald-50 text-emerald-600",
-  expense: "bg-rose-50 text-rose-600",
+  payment: "bg-success/10 text-success",
+  expense: "bg-destructive/10 text-destructive",
 };
 
 /**
@@ -29,31 +29,31 @@ export default function RecentActivity({ items }: RecentActivityProps) {
   return (
     <section
       aria-labelledby="recent-activity-title"
-      className="flex h-full flex-col rounded-xl border border-slate-200 bg-white shadow-sm"
+      className="flex h-full flex-col rounded-lg border border-border bg-card shadow-sm"
     >
-      <header className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+      <header className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
         <h2
           id="recent-activity-title"
-          className="text-base font-semibold text-slate-900"
+          className="font-display text-base font-semibold text-foreground"
         >
           Actividad reciente
         </h2>
-        <span className="shrink-0 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-500">
+        <span className="shrink-0 rounded-full border border-border bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
           Últimos movimientos
         </span>
       </header>
 
       {items.length === 0 ? (
         <div className="px-5 py-10 text-center">
-          <p className="text-sm font-medium text-slate-700">
+          <p className="text-sm font-medium text-foreground">
             No hay movimientos todavía
           </p>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-muted-foreground">
             Los pagos cobrados y los gastos de caja menor aparecerán aquí.
           </p>
         </div>
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-border">
           {items.map((item) => {
             const Icon = ACTIVITY_ICONS[item.type];
             const isExpense = item.type === "expense";
@@ -63,17 +63,17 @@ export default function RecentActivity({ items }: RecentActivityProps) {
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg",
+                    "mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-md",
                     ACTIVITY_TONES[item.type],
                   )}
                 >
                   <Icon className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-slate-900">
+                  <p className="text-sm font-medium text-foreground">
                     {item.title}
                   </p>
-                  <p className="mt-0.5 truncate text-xs text-slate-500">
+                  <p className="mt-0.5 truncate text-xs text-muted-foreground">
                     {item.description}
                   </p>
                 </div>
@@ -81,12 +81,12 @@ export default function RecentActivity({ items }: RecentActivityProps) {
                   <p
                     className={cn(
                       "text-sm font-semibold",
-                      isExpense ? "text-rose-600" : "text-emerald-600",
+                      isExpense ? "text-destructive" : "text-success",
                     )}
                   >
                     {item.amount}
                   </p>
-                  <p className="text-xs text-slate-400">{item.time}</p>
+                  <p className="text-xs text-muted-foreground/70">{item.time}</p>
                 </div>
               </li>
             );

@@ -18,55 +18,55 @@ const KIND_META: Record<
 > = {
   tenant_created: {
     icon: Building2,
-    className: "bg-sky-50 text-sky-600",
+    className: "bg-muted text-muted-foreground",
   },
   payment_approved: {
     icon: CheckCircle2,
-    className: "bg-emerald-50 text-emerald-600",
+    className: "bg-success/10 text-success",
   },
   payment_declined: {
     icon: MessageSquareWarning,
-    className: "bg-rose-50 text-rose-600",
+    className: "bg-destructive/10 text-destructive",
   },
   payment_pending: {
     icon: Wallet,
-    className: "bg-amber-50 text-amber-600",
+    className: "bg-gold-100 text-gold-700",
   },
   quote_created: {
     icon: FileText,
-    className: "bg-violet-50 text-violet-600",
+    className: "bg-muted text-muted-foreground",
   },
   quote_approved: {
     icon: CheckCircle2,
-    className: "bg-emerald-50 text-emerald-600",
+    className: "bg-success/10 text-success",
   },
   customer_created: {
     icon: UserPlus,
-    className: "bg-indigo-50 text-indigo-600",
+    className: "bg-accent-subtle text-accent-text",
   },
   membership_created: {
     icon: UsersRound,
-    className: "bg-teal-50 text-teal-600",
+    className: "bg-muted text-muted-foreground",
   },
   user_created: {
     icon: UsersRound,
-    className: "bg-slate-100 text-slate-600",
+    className: "bg-muted text-muted-foreground",
   },
   tenant_suspended: {
     icon: ShieldAlert,
-    className: "bg-rose-50 text-rose-600",
+    className: "bg-destructive/10 text-destructive",
   },
   tenant_activated: {
     icon: CheckCircle2,
-    className: "bg-emerald-50 text-emerald-600",
+    className: "bg-success/10 text-success",
   },
   module_toggled: {
     icon: Building2,
-    className: "bg-amber-50 text-amber-600",
+    className: "bg-gold-100 text-gold-700",
   },
   audit: {
     icon: ShieldAlert,
-    className: "bg-amber-50 text-amber-700",
+    className: "bg-gold-100 text-gold-700",
   },
 };
 

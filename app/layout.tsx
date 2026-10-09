@@ -1,17 +1,8 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Geist, Geist_Mono } from "next/font/google";
+import { fontVariables } from "@/lib/fonts";
+import { AppIntro } from "@/components/brand/app-intro";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Nexus Thrive",
@@ -27,9 +18,11 @@ export default function RootLayout({
     <ClerkProvider>
       <html
         lang="es"
-        className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+        className={`${fontVariables} h-full antialiased`}
+        suppressHydrationWarning
       >
         <body className="min-h-full flex flex-col">
+          <AppIntro />
           {children}
         </body>
       </html>

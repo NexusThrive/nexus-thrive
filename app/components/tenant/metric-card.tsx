@@ -13,16 +13,16 @@ type MetricCardProps = Pick<
 >;
 
 const ICON_TONES: Record<MetricTone, string> = {
-  indigo: "bg-indigo-50 text-indigo-600",
-  emerald: "bg-emerald-50 text-emerald-600",
-  rose: "bg-rose-50 text-rose-600",
-  slate: "bg-slate-100 text-slate-600",
+  indigo: "bg-muted text-foreground",
+  emerald: "bg-success/10 text-success",
+  rose: "bg-destructive/10 text-destructive",
+  slate: "bg-muted text-muted-foreground",
 };
 
 const TREND_TONES: Record<"positive" | "negative" | "neutral", string> = {
-  positive: "border-emerald-200 bg-emerald-50 text-emerald-700",
-  negative: "border-rose-200 bg-rose-50 text-rose-700",
-  neutral: "border-slate-200 bg-slate-50 text-slate-600",
+  positive: "border-success/20 bg-success/10 text-success",
+  negative: "border-destructive/20 bg-destructive/10 text-destructive",
+  neutral: "border-border bg-muted text-muted-foreground",
 };
 
 const TREND_ICONS: Record<TrendDirection, LucideIcon> = {
@@ -52,20 +52,20 @@ export default function MetricCard({
         : "neutral";
 
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
+    <article className="rounded-lg border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-slate-500">
+          <p className="truncate text-sm font-medium text-muted-foreground">
             {title}
           </p>
-          <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+          <p className="mt-2 font-display text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             {value}
           </p>
         </div>
         <span
           aria-hidden="true"
           className={cn(
-            "grid h-10 w-10 shrink-0 place-items-center rounded-lg",
+            "grid h-10 w-10 shrink-0 place-items-center rounded-md",
             ICON_TONES[iconTone],
           )}
         >
@@ -73,7 +73,7 @@ export default function MetricCard({
         </span>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-slate-100 pt-3">
+      <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-border/70 pt-3">
         <span
           className={cn(
             "inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium",
@@ -83,7 +83,7 @@ export default function MetricCard({
           <TrendIcon className="h-3.5 w-3.5" aria-hidden="true" />
           {trend.label}
         </span>
-        <p className="text-xs text-slate-500">{description}</p>
+        <p className="text-xs text-muted-foreground">{description}</p>
       </div>
     </article>
   );

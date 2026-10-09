@@ -11,10 +11,10 @@ import type { CustomerAccountStatus } from "@/lib/tenant-db";
 
 /** Tonos por estado de pago (PENDING / APPROVED / DECLINED / VOIDED). */
 const PAYMENT_TONES: Record<PaymentStatusValue, string> = {
-  APPROVED: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
-  PENDING: "bg-amber-50 text-amber-700 ring-amber-600/20",
-  DECLINED: "bg-rose-50 text-rose-700 ring-rose-600/20",
-  VOIDED: "bg-slate-100 text-slate-600 ring-slate-500/20",
+  APPROVED: "bg-success/10 text-success ring-success/20",
+  PENDING: "bg-warning text-warning-foreground ring-gold-600/20",
+  DECLINED: "bg-destructive/10 text-destructive ring-destructive/20",
+  VOIDED: "bg-muted text-muted-foreground ring-border",
 };
 
 export function PaymentStatusPill({ status }: { status: PaymentStatusValue }) {
@@ -32,9 +32,9 @@ export function PaymentStatusPill({ status }: { status: PaymentStatusValue }) {
 
 /** Tonos del estado DINÁMICO de membresía (mismo criterio del módulo). */
 const MEMBERSHIP_TONES: Record<MembershipStatusValue, string> = {
-  active: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
-  expiring: "bg-amber-50 text-amber-700 ring-amber-600/20",
-  expired: "bg-rose-50 text-rose-700 ring-rose-600/20",
+  active: "bg-success/10 text-success ring-success/20",
+  expiring: "bg-warning text-warning-foreground ring-gold-600/20",
+  expired: "bg-destructive/10 text-destructive ring-destructive/20",
 };
 
 export function MembershipStatusPill({
@@ -67,11 +67,11 @@ export const ACCOUNT_STATUS_LABELS: Record<CustomerAccountStatus, string> = {
 };
 
 const ACCOUNT_STATUS_TONES: Record<CustomerAccountStatus, string> = {
-  al_dia: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
-  pendiente: "bg-amber-50 text-amber-700 ring-amber-600/20",
-  vencido: "bg-rose-50 text-rose-700 ring-rose-600/20",
-  sin_actividad: "bg-slate-100 text-slate-600 ring-slate-500/20",
-  sin_datos: "bg-slate-100 text-slate-600 ring-slate-500/20",
+  al_dia: "bg-success/10 text-success ring-success/20",
+  pendiente: "bg-warning text-warning-foreground ring-gold-600/20",
+  vencido: "bg-destructive/10 text-destructive ring-destructive/20",
+  sin_actividad: "bg-muted text-muted-foreground ring-border",
+  sin_datos: "bg-muted text-muted-foreground ring-border",
 };
 
 export function AccountStatusPill({

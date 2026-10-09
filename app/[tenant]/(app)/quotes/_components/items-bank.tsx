@@ -3,7 +3,8 @@
 import { useEffect, useState, useTransition } from "react";
 import { useActionState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft, ChevronRight, FileUp, Loader2, Pencil, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileUp, Pencil, Plus } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 import { formatCurrency } from "@/lib/format";
 import {
   APU_ITEM_CATEGORIES,
@@ -39,7 +40,7 @@ const INITIAL_ITEM_STATE: ApuItemFormState = { status: "idle" };
 const INITIAL_IMPORT_STATE: ImportResultState = { status: "idle" };
 
 const inputClass =
-  "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 transition placeholder:text-slate-400 hover:border-slate-300 focus:border-indigo-400 focus:outline-2 focus:outline-indigo-500/30";
+  "h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-border-strong focus:border-accent focus:outline-2 focus:outline-accent/30";
 
 function fieldError(errors?: { [key: string]: string }, field?: string) {
   return errors?.[field ?? ""];
@@ -76,14 +77,14 @@ function ItemForm({
       {itemId ? <input type="hidden" name="itemId" value={itemId} /> : null}
 
       {state.status === "error" && state.message ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {state.message}
         </p>
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">
+          <span className="mb-1 block text-sm font-medium text-foreground/80">
             Código (opcional)
           </span>
           <input
@@ -93,13 +94,13 @@ function ItemForm({
             className={inputClass}
           />
           {fieldError(state.errors, "code") ? (
-            <span className="mt-1 block text-xs text-rose-600">
+            <span className="mt-1 block text-xs text-destructive">
               {fieldError(state.errors, "code")}
             </span>
           ) : null}
         </label>
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">
+          <span className="mb-1 block text-sm font-medium text-foreground/80">
             Unidad
           </span>
           <select
@@ -115,7 +116,7 @@ function ItemForm({
             ))}
           </select>
           {fieldError(state.errors, "unit") ? (
-            <span className="mt-1 block text-xs text-rose-600">
+            <span className="mt-1 block text-xs text-destructive">
               {fieldError(state.errors, "unit")}
             </span>
           ) : null}
@@ -123,7 +124,7 @@ function ItemForm({
       </div>
 
       <label className="block">
-        <span className="mb-1 block text-sm font-medium text-slate-700">
+        <span className="mb-1 block text-sm font-medium text-foreground/80">
           Nombre del insumo
         </span>
         <input
@@ -133,7 +134,7 @@ function ItemForm({
           className={inputClass}
         />
         {fieldError(state.errors, "name") ? (
-          <span className="mt-1 block text-xs text-rose-600">
+          <span className="mt-1 block text-xs text-destructive">
             {fieldError(state.errors, "name")}
           </span>
         ) : null}
@@ -141,7 +142,7 @@ function ItemForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">
+          <span className="mb-1 block text-sm font-medium text-foreground/80">
             Categoría
           </span>
           <select
@@ -157,13 +158,13 @@ function ItemForm({
             ))}
           </select>
           {fieldError(state.errors, "category") ? (
-            <span className="mt-1 block text-xs text-rose-600">
+            <span className="mt-1 block text-xs text-destructive">
               {fieldError(state.errors, "category")}
             </span>
           ) : null}
         </label>
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-slate-700">
+          <span className="mb-1 block text-sm font-medium text-foreground/80">
             Precio unitario (COP)
           </span>
           <input
@@ -174,7 +175,7 @@ function ItemForm({
             className={inputClass}
           />
           {fieldError(state.errors, "unitPrice") ? (
-            <span className="mt-1 block text-xs text-rose-600">
+            <span className="mt-1 block text-xs text-destructive">
               {fieldError(state.errors, "unitPrice")}
             </span>
           ) : null}
@@ -185,7 +186,7 @@ function ItemForm({
         <button
           type="submit"
           disabled={isPending}
-          className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isPending ? "Guardando…" : itemId ? "Guardar cambios" : "Crear insumo"}
         </button>
@@ -243,17 +244,17 @@ function ImportForm({
       <input type="hidden" name="importText" value={text} />
 
       {state.status === "error" && state.message ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {state.message}
         </p>
       ) : null}
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700">
+        <label className="mb-1 block text-sm font-medium text-foreground/80">
           Pegar CSV o subir archivo (.csv / .txt)
         </label>
         <div className="mb-2 flex items-center gap-2">
-          <label className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+          <label className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted">
             <FileUp aria-hidden="true" className="h-4 w-4" />
             Subir archivo
             <input
@@ -271,9 +272,9 @@ function ImportForm({
           placeholder={
             "code,name,unit,category,unitPrice\nCEM-02,Cemento gris 50 kg,BULTO,MATERIAL,35000"
           }
-          className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-900 transition placeholder:text-slate-400 focus:border-indigo-400 focus:outline-2 focus:outline-indigo-500/30"
+          className="w-full rounded-lg border border-border bg-card px-3 py-2 font-mono text-xs text-foreground transition placeholder:text-muted-foreground focus:border-accent focus:outline-2 focus:outline-accent/30"
         />
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="mt-1 text-xs text-muted-foreground">
           Columnas: código (opcional), nombre, unidad (M3, KG, BULTO, HR,
           UND, M2, ML, GLB, L, M, CM, PZA), categoría (Material, Mano de
           Obra, Equipo, Transporte), precio unitario.
@@ -282,8 +283,8 @@ function ImportForm({
           <p
             className={
               preview.ok
-                ? "mt-2 text-xs font-medium text-emerald-700"
-                : "mt-2 text-xs font-medium text-rose-600"
+                ? "mt-2 text-xs font-medium text-success"
+                : "mt-2 text-xs font-medium text-destructive"
             }
           >
             {previewMessage}
@@ -295,7 +296,7 @@ function ImportForm({
         <button
           type="submit"
           disabled={isPending || !preview.ok}
-          className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isPending ? "Importando…" : "Importar (upsert atómico)"}
         </button>
@@ -366,7 +367,7 @@ export default function ItemsBank({
           <button
             type="button"
             onClick={() => setModal({ type: "import" })}
-            className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted"
           >
             <FileUp aria-hidden="true" className="h-4 w-4" />
             Importar CSV
@@ -374,7 +375,7 @@ export default function ItemsBank({
           <button
             type="button"
             onClick={() => setModal({ type: "create" })}
-            className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-indigo-600 px-3 text-sm font-medium text-white transition hover:bg-indigo-700"
+            className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
           >
             <Plus aria-hidden="true" className="h-4 w-4" />
             Nuevo {itemLabel.toLowerCase()}
@@ -382,9 +383,9 @@ export default function ItemsBank({
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <table className="min-w-full divide-y divide-slate-100 text-sm">
-          <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+      <div className="overflow-hidden rounded-lg border border-border bg-card shadow-xs">
+        <table className="min-w-full divide-y divide-border text-sm">
+          <thead className="bg-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
             <tr>
               <th className="px-4 py-3 font-medium">Código</th>
               <th className="px-4 py-3 font-medium">Nombre</th>
@@ -396,34 +397,34 @@ export default function ItemsBank({
               <th className="px-4 py-3 text-right font-medium">Editar</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-50">
+          <tbody className="divide-y divide-border">
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-slate-400">
+                <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
                   Sin insumos por mostrar. Crea el primero o importa un CSV.
                 </td>
               </tr>
             ) : (
               rows.map((row) => (
-                <tr key={row.id} className="transition hover:bg-slate-50/60">
-                  <td className="px-4 py-3 font-mono text-xs font-medium text-indigo-600">
+                <tr key={row.id} className="transition hover:bg-muted/60">
+                  <td className="px-4 py-3 font-mono text-xs font-medium text-accent-text">
                     {row.code ?? "—"}
                   </td>
-                  <td className="px-4 py-3 font-medium text-slate-900">
+                  <td className="px-4 py-3 font-medium text-foreground">
                     {row.name}
                   </td>
                   <td className="px-4 py-3">
                     <ApuCategoryBadge category={row.category} />
                   </td>
-                  <td className="px-4 py-3 text-slate-600">{row.unit}</td>
-                  <td className="px-4 py-3 text-right font-semibold text-slate-900">
+                  <td className="px-4 py-3 text-muted-foreground">{row.unit}</td>
+                  <td className="px-4 py-3 text-right font-semibold text-foreground">
                     {formatCurrency(row.unitPrice)}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <button
                       type="button"
                       onClick={() => setModal({ type: "edit", row })}
-                      className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                      className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
                     >
                       <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
                       Editar
@@ -438,7 +439,7 @@ export default function ItemsBank({
 
       {total > pageSize ? (
         <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             Página {page} de {totalPages} · {total} {itemLabel.toLowerCase()}
           </p>
           <div className="flex items-center gap-2">
@@ -446,7 +447,7 @@ export default function ItemsBank({
               type="button"
               disabled={page <= 1 || isPending}
               onClick={() => navigatePage(page - 1)}
-              className="inline-flex h-9 items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-9 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
             >
               <ChevronLeft aria-hidden="true" className="h-4 w-4" />
               Anterior
@@ -455,10 +456,10 @@ export default function ItemsBank({
               type="button"
               disabled={page >= totalPages || isPending}
               onClick={() => navigatePage(page + 1)}
-              className="inline-flex h-9 items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-9 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isPending ? (
-                <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+                <NLoader size={16} className="text-current" />
               ) : null}
               Siguiente
               <ChevronRight aria-hidden="true" className="h-4 w-4" />

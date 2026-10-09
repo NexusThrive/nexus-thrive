@@ -40,11 +40,11 @@ function card(
   tone: string,
 ) {
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-slate-500">{title}</p>
-          <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+          <p className="truncate text-sm font-medium text-muted-foreground">{title}</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             {value}
           </p>
         </div>
@@ -58,7 +58,7 @@ function card(
           {icon}
         </span>
       </div>
-      <p className="mt-3 border-t border-slate-100 pt-2 text-xs text-slate-500">
+      <p className="mt-3 border-t border-border pt-2 text-xs text-muted-foreground">
         {description}
       </p>
     </article>
@@ -142,7 +142,7 @@ export default async function QuotesPage({
           </div>
           <Link
             href={`/${tenantSlug}/quotes/new`}
-            className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-indigo-600 px-3 text-sm font-medium text-white transition hover:bg-indigo-700"
+            className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
           >
             <Plus aria-hidden="true" className="h-4 w-4" />
             Nuevo {terms.quote.toLowerCase()}
@@ -208,19 +208,19 @@ export default async function QuotesPage({
     <div className="space-y-6">
       <header className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             {terms.quotes}
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             Presupuestos de obra, catálogo de análisis de precios unitarios y
             banco de insumos de{" "}
-            <span className="font-medium text-slate-700">{tenantRecord.name}</span>.
+            <span className="font-medium text-foreground/80">{tenantRecord.name}</span>.
           </p>
         </div>
         <div className="mt-3 flex shrink-0 items-center gap-2 sm:mt-0">
           <Link
             href={`/${tenantSlug}/quotes/import`}
-            className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-3 text-sm font-medium text-indigo-700 transition hover:border-indigo-300 hover:bg-indigo-100"
+            className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-accent/30 bg-accent-subtle px-3 text-sm font-medium text-accent-text transition hover:border-accent/40 hover:bg-accent-subtle"
           >
             <Upload aria-hidden="true" className="h-4 w-4" />
             Importar APU
@@ -230,35 +230,35 @@ export default async function QuotesPage({
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {card(
-          <FileText aria-hidden="true" className="h-5 w-5 text-indigo-600" />,
+          <FileText aria-hidden="true" className="h-5 w-5 text-accent-text" />,
           `Total ${terms.quotes.toLowerCase()}`,
           String(metrics.total),
           "Creados en este negocio",
-          "bg-indigo-50 text-indigo-600",
+          "bg-accent-subtle text-accent-text",
         )}
         {card(
           <CheckCircle2
             aria-hidden="true"
-            className="h-5 w-5 text-emerald-600"
+            className="h-5 w-5 text-success"
           />,
           `${terms.quotes.toLowerCase()} aprobados`,
           String(metrics.approved),
           "Aprobados por el cliente",
-          "bg-emerald-50 text-emerald-600",
+          "bg-success/10 text-success",
         )}
         {card(
-          <FileText aria-hidden="true" className="h-5 w-5 text-amber-600" />,
+          <FileText aria-hidden="true" className="h-5 w-5 text-gold-700" />,
           `${terms.quotes.toLowerCase()} en borrador`,
           String(metrics.draft),
           "Pendientes de enviar",
-          "bg-amber-50 text-amber-600",
+          "bg-gold-100 text-gold-700",
         )}
         {card(
-          <Wallet aria-hidden="true" className="h-5 w-5 text-slate-600" />,
+          <Wallet aria-hidden="true" className="h-5 w-5 text-muted-foreground" />,
           `Monto total cotizado`,
           formatCurrency(metrics.totalAmount),
           "Suma de todos los presupuestos",
-          "bg-slate-100 text-slate-600",
+          "bg-muted text-muted-foreground",
         )}
       </div>
 

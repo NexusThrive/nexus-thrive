@@ -26,9 +26,9 @@ export default function StepBusiness({
       <div>
         <label
           htmlFor="name"
-          className="text-sm font-medium text-slate-700"
+          className="text-sm font-medium text-foreground/80"
         >
-          Nombre del negocio <span className="text-rose-500">*</span>
+          Nombre del negocio <span className="text-destructive">*</span>
         </label>
         <input
           id="name"
@@ -36,19 +36,19 @@ export default function StepBusiness({
           type="text"
           defaultValue={defaults.name}
           placeholder="Ej. Gimnasio Carlos Fitness"
-          className="mt-1 block h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 transition focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+          className="mt-1 block h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-600/30"
         />
         {errors?.name && (
-          <p className="mt-1 text-xs text-rose-600">{errors.name}</p>
+          <p className="mt-1 text-xs text-destructive">{errors.name}</p>
         )}
       </div>
 
       <div>
         <label
           htmlFor="city"
-          className="text-sm font-medium text-slate-700"
+          className="text-sm font-medium text-foreground/80"
         >
-          Ciudad / región <span className="text-rose-500">*</span>
+          Ciudad / región <span className="text-destructive">*</span>
         </label>
         <input
           id="city"
@@ -56,19 +56,19 @@ export default function StepBusiness({
           type="text"
           defaultValue={defaults.city}
           placeholder="Ej. Bogotá"
-          className="mt-1 block h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 transition focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+          className="mt-1 block h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-600/30"
         />
         {errors?.city && (
-          <p className="mt-1 text-xs text-rose-600">{errors.city}</p>
+          <p className="mt-1 text-xs text-destructive">{errors.city}</p>
         )}
       </div>
 
       <div>
         <label
           htmlFor="whatsappNumber"
-          className="text-sm font-medium text-slate-700"
+          className="text-sm font-medium text-foreground/80"
         >
-          WhatsApp (con indicativo) <span className="text-rose-500">*</span>
+          WhatsApp (con indicativo) <span className="text-destructive">*</span>
         </label>
         <input
           id="whatsappNumber"
@@ -76,31 +76,31 @@ export default function StepBusiness({
           type="tel"
           defaultValue={defaults.whatsappNumber}
           placeholder="Ej. +57 300 123 4567"
-          className="mt-1 block h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 transition focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+          className="mt-1 block h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-600/30"
         />
         {errors?.whatsappNumber && (
-          <p className="mt-1 text-xs text-rose-600">{errors.whatsappNumber}</p>
+          <p className="mt-1 text-xs text-destructive">{errors.whatsappNumber}</p>
         )}
       </div>
 
       <div>
         <label
           htmlFor="tenantSlugDisplay"
-          className="text-sm font-medium text-slate-700"
+          className="text-sm font-medium text-foreground/80"
         >
           Dirección web de tu negocio
         </label>
-        <div className="mt-1 flex h-10 items-center rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-500">
+        <div className="mt-1 flex h-10 items-center rounded-lg border border-border bg-muted px-3 text-sm text-muted-foreground">
           <span aria-hidden="true">/</span>
           <input
             id="tenantSlugDisplay"
             value={tenantSlug}
             readOnly
             aria-label="Dirección del negocio (no editable)"
-            className="w-full bg-transparent font-medium text-slate-900 focus:outline-none"
+            className="w-full bg-transparent font-medium text-foreground focus:outline-none"
           />
         </div>
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="mt-1 text-xs text-muted-foreground">
           Es la URL pública de tu negocio en NEXUS; se define una sola vez.
         </p>
       </div>

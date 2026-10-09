@@ -81,20 +81,20 @@ export default async function TenantLayout({
 
 function AccessDenied({ tenantName }: { tenantName: string }) {
   return (
-    <div className="grid min-h-screen place-items-center bg-slate-50 px-4 font-sans">
-      <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+    <div className="grid min-h-screen place-items-center bg-background px-4 font-sans">
+      <div className="w-full max-w-md rounded-lg border border-border bg-card p-8 text-center shadow-sm">
         <span
           aria-hidden="true"
-          className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-rose-50 text-lg font-semibold text-rose-600"
+          className="mx-auto grid h-12 w-12 place-items-center rounded-md bg-destructive/10 text-lg font-semibold text-destructive"
         >
           !
         </span>
-        <h2 className="mt-4 text-lg font-semibold text-slate-900">
+        <h2 className="mt-4 text-lg font-semibold text-foreground">
           Sin acceso
         </h2>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
           Tu cuenta no está vinculada a{" "}
-          <strong className="font-semibold text-slate-700">
+          <strong className="font-semibold text-foreground">
             {tenantName}
           </strong>
           . Pide a un administrador que te invite antes de entrar.

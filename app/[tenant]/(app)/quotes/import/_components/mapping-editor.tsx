@@ -43,12 +43,12 @@ export default function MappingEditor({
 }) {
   if (blockMode) {
     return (
-      <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <article className="rounded-lg border border-border bg-card p-4 shadow-xs">
         <div className="flex items-center gap-2">
-          <Columns3 aria-hidden="true" className="h-4 w-4 text-slate-400" />
-          <p className="text-sm font-medium text-slate-700">Estructura APU detectada</p>
+          <Columns3 aria-hidden="true" className="h-4 w-4 text-muted-foreground" />
+          <p className="text-sm font-medium text-foreground/80">Estructura APU detectada</p>
         </div>
-        <p className="mt-1 text-xs leading-relaxed text-slate-500">
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
           El archivo tiene formato de pack APU (secciones MATERIALES / EQUIPO /
           MANO DE OBRA). Las columnas de la tabla de líneas ya se detectaron
           automáticamente; el editor de mapeo manual aplica a archivos planos.
@@ -57,9 +57,9 @@ export default function MappingEditor({
           {mapping.map((m) => (
             <span
               key={m.targetField}
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted px-2.5 py-1 text-xs text-muted-foreground"
             >
-              <CheckCircle2 aria-hidden="true" className="h-3.5 w-3.5 text-emerald-500" />
+              <CheckCircle2 aria-hidden="true" className="h-3.5 w-3.5 text-success" />
               {TARGET_LABELS[m.targetField]} ← “{m.sourceHeader}”
             </span>
           ))}
@@ -100,22 +100,22 @@ export default function MappingEditor({
   );
 
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <article className="rounded-lg border border-border bg-card p-4 shadow-xs">
       <div className="flex items-center gap-2">
-        <Columns3 aria-hidden="true" className="h-4 w-4 text-slate-400" />
-        <p className="text-sm font-medium text-slate-700">Mapeo de columnas</p>
-        <p className="text-xs text-slate-400">— ajusta si alguna columna quedó mal asignada</p>
+        <Columns3 aria-hidden="true" className="h-4 w-4 text-muted-foreground" />
+        <p className="text-sm font-medium text-foreground/80">Mapeo de columnas</p>
+        <p className="text-xs text-muted-foreground">— ajusta si alguna columna quedó mal asignada</p>
       </div>
       <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {ordered.map((field) => {
           const entry = mapping.find((m) => m.targetField === field);
           if (!entry) return null;
           return (
-            <label key={field} className="block rounded-lg border border-slate-100 bg-slate-50/60 p-2.5">
-              <span className="flex items-center justify-between gap-2 text-xs font-medium text-slate-600">
+            <label key={field} className="block rounded-lg border border-border bg-muted/60 p-2.5">
+              <span className="flex items-center justify-between gap-2 text-xs font-medium text-muted-foreground">
                 {TARGET_LABELS[field]}
                 {entry.needsAttention && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-gold-100 px-1.5 py-0.5 text-[10px] font-medium text-gold-700">
                     <AlertTriangle aria-hidden="true" className="h-3 w-3" />
                     difusa
                   </span>
@@ -124,7 +124,7 @@ export default function MappingEditor({
               <select
                 value={entry.sourceColumn}
                 onChange={(event) => updateField(field, Number(event.target.value))}
-                className="mt-1.5 w-full rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-700 focus:border-amber-400 focus:outline-none"
+                className="mt-1.5 w-full rounded-md border border-border bg-card px-2 py-1.5 text-sm text-foreground/80 focus:border-gold-500 focus:outline-none"
                 aria-label={`Columna para ${TARGET_LABELS[field]}`}
               >
                 <option value="-1">— Sin mapear —</option>
@@ -134,7 +134,7 @@ export default function MappingEditor({
                   </option>
                 ))}
               </select>
-              <span className="mt-1 block text-right text-[10px] text-slate-400">
+              <span className="mt-1 block text-right text-[10px] text-muted-foreground">
                 confianza {entry.confidence}
               </span>
             </label>

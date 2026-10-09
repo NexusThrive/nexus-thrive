@@ -7,7 +7,6 @@ import {
   Archive,
   ChevronLeft,
   ChevronRight,
-  Loader2,
   Mail,
   Pencil,
   Phone,
@@ -16,6 +15,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 import {
   archiveCustomerAction,
   deleteCustomersAction,
@@ -39,7 +39,7 @@ export type CustomerRow = {
 type Notice = { kind: "error" | "success"; text: string } | null;
 
 const ICON_BUTTON =
-  "inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700 disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition hover:border-foreground/20 hover:bg-muted hover:text-foreground/80 disabled:cursor-not-allowed disabled:opacity-50";
 
 /** Set de selección vacío compartido (solo lectura). */
 const EMPTY_SELECTION: ReadonlySet<string> = new Set();
@@ -188,8 +188,8 @@ export default function CustomerTable({
           className={[
             "flex items-center justify-between gap-3 rounded-lg border px-4 py-2.5 text-sm",
             notice.kind === "error"
-              ? "border-rose-200 bg-rose-50 text-rose-700"
-              : "border-emerald-200 bg-emerald-50 text-emerald-700",
+              ? "border-destructive/20 bg-destructive/10 text-destructive"
+              : "border-success/20 bg-success/10 text-success",
           ].join(" ")}
         >
           <span>{notice.text}</span>
@@ -206,8 +206,8 @@ export default function CustomerTable({
 
       {/* Barra de selección múltiple (solo archivados) */}
       {isArchivedView && selected.size > 0 ? (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3">
-          <p className="text-sm font-medium text-rose-800">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-destructive/20 bg-destructive/10 px-4 py-3">
+          <p className="text-sm font-medium text-destructive">
             {selected.size} {selected.size === 1 ? "seleccionado" : "seleccionados"}
           </p>
           <div className="flex items-center gap-2">
@@ -215,7 +215,7 @@ export default function CustomerTable({
               type="button"
               disabled={isPending}
               onClick={() => replaceSelection(new Set())}
-              className="h-9 rounded-lg border border-rose-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+              className="h-9 rounded-lg border border-destructive/20 bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
             >
               Cancelar
             </button>
@@ -223,10 +223,10 @@ export default function CustomerTable({
               type="button"
               disabled={isPending}
               onClick={() => setConfirmOpen(true)}
-              className="inline-flex h-9 items-center gap-2 rounded-lg bg-rose-600 px-3 text-sm font-medium text-white transition hover:bg-rose-700 disabled:opacity-60"
+              className="inline-flex h-9 items-center gap-2 rounded-lg bg-destructive px-3 text-sm font-medium text-destructive-foreground transition hover:bg-destructive/90 disabled:opacity-60"
             >
               {isPending ? (
-                <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+                <NLoader size={16} className="text-current" />
               ) : (
                 <Trash2 aria-hidden="true" className="h-4 w-4" />
               )}
@@ -238,18 +238,18 @@ export default function CustomerTable({
 
       {/* ---------- Estado vacío ---------- */}
       {rows.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white px-6 py-12 text-center shadow-sm">
-          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+        <div className="rounded-lg border border-border bg-card px-6 py-12 text-center shadow-xs">
+          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
             <Users aria-hidden="true" className="h-6 w-6" />
           </span>
-          <p className="mt-4 text-sm font-medium text-slate-900">
+          <p className="mt-4 text-sm font-medium text-foreground">
             {query
               ? `Sin coincidencias para «${query}»`
               : isArchivedView
                 ? `No hay ${customersLabel} archivados`
                 : `Aún no hay ${customersLabel} registrados`}
           </p>
-          <p className="mx-auto mt-1 max-w-sm text-sm text-slate-500">
+          <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
             {query
               ? "Prueba con otro término o limpia la búsqueda."
               : isArchivedView
@@ -260,12 +260,12 @@ export default function CustomerTable({
       ) : (
         <>
           {/* ---------- Tabla (desktop) ---------- */}
-          <div className="hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm sm:block">
+          <div className="hidden overflow-hidden rounded-lg border border-border bg-card shadow-xs sm:block">
             <table className="w-full text-left text-sm">
               <caption className="sr-only">
                 {terms.customers} de {tenantSlug}
               </caption>
-              <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <thead className="border-b border-border bg-muted text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <tr>
                   {isArchivedView ? (
                     <th scope="col" className="w-10 px-4 py-3">
@@ -279,7 +279,7 @@ export default function CustomerTable({
                           }
                         }}
                         onChange={toggleAllOnPage}
-                        className="h-4 w-4 cursor-pointer rounded accent-indigo-600"
+                        className="h-4 w-4 cursor-pointer rounded accent-gold-600"
                       />
                     </th>
                   ) : null}
@@ -297,9 +297,9 @@ export default function CustomerTable({
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-border">
                 {rows.map((row) => (
-                  <tr key={row.id} className="transition hover:bg-slate-50/60">
+                  <tr key={row.id} className="transition hover:bg-muted/60">
                     {isArchivedView ? (
                       <td className="px-4 py-3">
                         <input
@@ -307,7 +307,7 @@ export default function CustomerTable({
                           aria-label={`Seleccionar a ${row.name}`}
                           checked={selected.has(row.id)}
                           onChange={() => toggleRow(row.id)}
-                          className="h-4 w-4 cursor-pointer rounded accent-indigo-600"
+                          className="h-4 w-4 cursor-pointer rounded accent-gold-600"
                         />
                       </td>
                     ) : null}
@@ -315,27 +315,27 @@ export default function CustomerTable({
                       <div className="flex items-center gap-3">
                         <span
                           aria-hidden="true"
-                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700"
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-xs font-semibold text-accent-text"
                         >
                           {initialsOf(row.name)}
                         </span>
                         <div className="min-w-0">
-                          <p className="flex items-center gap-2 font-medium text-slate-900">
+                          <p className="flex items-center gap-2 font-medium text-foreground">
                             <Link
                               href={`/${tenantSlug}/crm/${row.id}`}
-                              className="truncate text-slate-900 transition-colors hover:text-indigo-600 hover:underline"
+                              className="truncate text-foreground transition-colors hover:text-accent-text hover:underline"
                               title={`Ver ficha de ${row.name}`}
                             >
                               {row.name}
                             </Link>
                             {isArchivedView ? (
-                              <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-slate-500">
+                              <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold uppercase text-muted-foreground">
                                 Archivado
                               </span>
                             ) : null}
                           </p>
                           {row.email ? (
-                            <p className="flex items-center gap-1 truncate text-xs text-slate-500">
+                            <p className="flex items-center gap-1 truncate text-xs text-muted-foreground">
                               <Mail aria-hidden="true" className="h-3 w-3 shrink-0" />
                               <span className="truncate">{row.email}</span>
                             </p>
@@ -345,15 +345,15 @@ export default function CustomerTable({
                     </td>
                     <td className="px-4 py-3">
                       {row.phone ? (
-                        <span className="flex items-center gap-1 text-slate-600">
-                          <Phone aria-hidden="true" className="h-3.5 w-3.5 text-slate-400" />
+                        <span className="flex items-center gap-1 text-muted-foreground">
+                          <Phone aria-hidden="true" className="h-3.5 w-3.5 text-muted-foreground" />
                           {row.phone}
                         </span>
                       ) : (
-                        <span className="text-slate-300">—</span>
+                        <span className="text-muted-foreground/50">—</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-slate-600">{row.createdAt}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{row.createdAt}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1.5">
                         {isArchivedView ? (
@@ -365,7 +365,7 @@ export default function CustomerTable({
                             onClick={() =>
                               runAction(() => restoreCustomerAction(tenantSlug, row.id))
                             }
-                            className={`${ICON_BUTTON} border-emerald-200 text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700`}
+                            className={`${ICON_BUTTON} border-success/20 text-success hover:border-success/40 hover:bg-success/10 hover:text-success`}
                           >
                             <RotateCcw aria-hidden="true" className="h-4 w-4" />
                           </button>
@@ -408,7 +408,7 @@ export default function CustomerTable({
             {rows.map((row) => (
               <li
                 key={row.id}
-                className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+                className="rounded-lg border border-border bg-card p-4 shadow-xs"
               >
                 <div className="flex items-start gap-3">
                   {isArchivedView ? (
@@ -417,39 +417,39 @@ export default function CustomerTable({
                       aria-label={`Seleccionar a ${row.name}`}
                       checked={selected.has(row.id)}
                       onChange={() => toggleRow(row.id)}
-                      className="mt-2 h-4 w-4 cursor-pointer rounded accent-indigo-600"
+                      className="mt-2 h-4 w-4 cursor-pointer rounded accent-gold-600"
                     />
                   ) : null}
                   <span
                     aria-hidden="true"
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-xs font-semibold text-accent-text"
                   >
                     {initialsOf(row.name)}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="flex flex-wrap items-center gap-2 font-medium text-slate-900">
+                    <p className="flex flex-wrap items-center gap-2 font-medium text-foreground">
                       <Link
                         href={`/${tenantSlug}/crm/${row.id}`}
-                        className="text-slate-900 transition-colors hover:text-indigo-600 hover:underline"
+                        className="text-foreground transition-colors hover:text-accent-text hover:underline"
                         title={`Ver ficha de ${row.name}`}
                       >
                         {row.name}
                       </Link>
                       {isArchivedView ? (
-                        <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-slate-500">
+                        <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold uppercase text-muted-foreground">
                           Archivado
                         </span>
                       ) : null}
                     </p>
                     {row.email ? (
-                      <p className="truncate text-xs text-slate-500">{row.email}</p>
+                      <p className="truncate text-xs text-muted-foreground">{row.email}</p>
                     ) : null}
-                    <p className="mt-0.5 text-xs text-slate-500">
+                    <p className="mt-0.5 text-xs text-muted-foreground">
                       {row.phone || "Sin teléfono"} · {row.createdAt}
                     </p>
                   </div>
                 </div>
-                <div className="mt-3 flex justify-end gap-1.5 border-t border-slate-100 pt-3">
+                <div className="mt-3 flex justify-end gap-1.5 border-t border-border/70 pt-3">
                   {isArchivedView ? (
                     <button
                       type="button"
@@ -457,7 +457,7 @@ export default function CustomerTable({
                       onClick={() =>
                         runAction(() => restoreCustomerAction(tenantSlug, row.id))
                       }
-                      className={`${ICON_BUTTON} border-emerald-200 text-emerald-600`}
+                      className={`${ICON_BUTTON} border-success/20 text-success`}
                     >
                       <RotateCcw aria-hidden="true" className="h-4 w-4" />
                       <span className="ml-1.5 text-xs font-medium">Restaurar</span>
@@ -496,7 +496,7 @@ export default function CustomerTable({
       {/* ---------- Paginación ---------- */}
       {totalPages > 1 ? (
         <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             Página {page} de {totalPages} · {total} en total
           </p>
           <div className="flex items-center gap-2">
@@ -504,7 +504,7 @@ export default function CustomerTable({
               type="button"
               disabled={page <= 1 || isPending}
               onClick={() => navigateToPage(page - 1)}
-              className="inline-flex h-9 items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-9 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
             >
               <ChevronLeft aria-hidden="true" className="h-4 w-4" />
               Anterior
@@ -513,7 +513,7 @@ export default function CustomerTable({
               type="button"
               disabled={page >= totalPages || isPending}
               onClick={() => navigateToPage(page + 1)}
-              className="inline-flex h-9 items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-9 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
             >
               Siguiente
               <ChevronRight aria-hidden="true" className="h-4 w-4" />

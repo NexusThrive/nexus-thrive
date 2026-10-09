@@ -5,9 +5,9 @@ import {
 } from "@/lib/memberships";
 
 const TONES: Record<MembershipStatusValue, string> = {
-  active: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
-  expiring: "bg-amber-50 text-amber-700 ring-amber-600/20",
-  expired: "bg-rose-50 text-rose-700 ring-rose-600/20",
+  active: "bg-success/10 text-success ring-success/20",
+  expiring: "bg-warning text-warning-foreground ring-gold-600/20",
+  expired: "bg-destructive/10 text-destructive ring-destructive/20",
 };
 
 /**

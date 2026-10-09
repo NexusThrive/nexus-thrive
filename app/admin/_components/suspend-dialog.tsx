@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Loader2, ShieldAlert } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 import {
   Dialog,
   DialogClose,
@@ -90,12 +91,12 @@ export default function SuspendDialog({
               maxLength={300}
               rows={3}
               placeholder="Ej. incumplimiento de pago, solicitud del cliente…"
-              className="w-full rounded-md border border-slate-200/80 bg-transparent px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+              className="w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
             />
           </div>
 
           {error ? (
-            <p role="alert" className="text-xs text-rose-600">
+            <p role="alert" className="text-xs text-destructive">
               {error}
             </p>
           ) : null}
@@ -108,7 +109,7 @@ export default function SuspendDialog({
             </DialogClose>
             <Button type="submit" variant="destructive" disabled={pending}>
               {pending ? (
-                <Loader2 aria-hidden="true" className="animate-spin" />
+                <NLoader size={16} className="text-current" />
               ) : (
                 <ShieldAlert aria-hidden="true" />
               )}

@@ -35,7 +35,7 @@ export default function QuotesWorkspace({
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap gap-1 border-b border-slate-200">
+      <div className="flex flex-wrap gap-1 border-b border-border">
         {tabs.map((tab) => (
           <button
             key={tab.value}
@@ -45,15 +45,15 @@ export default function QuotesWorkspace({
             className={cn(
               "-mb-px inline-flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition",
               activeTab === tab.value
-                ? "border-indigo-500 text-indigo-700"
-                : "border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700",
+                ? "border-accent text-accent-text"
+                : "border-transparent text-muted-foreground hover:border-border-strong hover:text-foreground/80",
             )}
           >
             {tab.label}
           </button>
         ))}
         {isPending ? (
-          <span className="ml-2 self-center text-xs text-slate-400">
+          <span className="ml-2 self-center text-xs text-muted-foreground">
             Cargando…
           </span>
         ) : null}

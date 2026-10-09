@@ -49,25 +49,25 @@ export default function FileDropzone({
           handleFile(event.dataTransfer.files?.[0]);
         }}
         className={cn(
-          "flex w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-6 py-10 text-center transition",
+          "flex w-full flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed px-6 py-10 text-center transition",
           dragOver
-            ? "border-amber-400 bg-amber-50"
-            : "border-slate-300 bg-white hover:border-amber-300 hover:bg-amber-50/40",
+            ? "border-gold-500 bg-gold-100"
+            : "border-border-strong bg-card hover:border-gold-300 hover:bg-gold-100/40",
           pending && "pointer-events-none opacity-60",
         )}
         aria-label="Subir archivo de insumos o APUs"
       >
-        <span className="grid h-12 w-12 place-items-center rounded-full bg-slate-100 text-slate-500">
+        <span className="grid h-12 w-12 place-items-center rounded-full bg-muted text-muted-foreground">
           {pending ? (
-            <span className="h-5 w-5 animate-spin rounded-full border-2 border-slate-300 border-t-slate-600" />
+            <span className="h-5 w-5 animate-spin rounded-full border-2 border-border-strong border-t-foreground/80" />
           ) : (
             <UploadCloud aria-hidden="true" className="h-6 w-6" />
           )}
         </span>
-        <span className="text-sm font-medium text-slate-700">
+        <span className="text-sm font-medium text-foreground/80">
           {pending ? "Analizando archivo…" : "Arrastra tu archivo o haz clic para elegirlo"}
         </span>
-        <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
+        <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
           <FileSpreadsheet aria-hidden="true" className="h-3.5 w-3.5" />
           .xlsx · .csv · .txt — máx 20 MB. Se aceptan insumos planos o packs APU completos.
         </span>

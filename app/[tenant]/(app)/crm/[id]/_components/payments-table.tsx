@@ -13,7 +13,7 @@ export default function PaymentsTable({
 }) {
   if (payments.length === 0) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 shadow-sm">
+      <div className="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground shadow-xs">
         Este cliente todavía no tiene pagos registrados.
       </div>
     );
@@ -22,10 +22,10 @@ export default function PaymentsTable({
   const truncated = total > payments.length;
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div className="rounded-lg border border-border bg-card shadow-xs">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-slate-200 text-sm">
-          <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <table className="min-w-full divide-y divide-border text-sm">
+          <thead className="bg-muted text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             <tr>
               <th scope="col" className="px-4 py-3">
                 Fecha
@@ -47,29 +47,29 @@ export default function PaymentsTable({
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-border">
             {payments.map((payment) => (
-              <tr key={payment.id} className="hover:bg-slate-50">
-                <td className="whitespace-nowrap px-4 py-3 text-slate-600">
+              <tr key={payment.id} className="hover:bg-muted">
+                <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                   {formatDateTime(payment.createdAt)}
                 </td>
-                <td className="whitespace-nowrap px-4 py-3 font-semibold text-slate-900">
+                <td className="whitespace-nowrap px-4 py-3 font-semibold text-foreground">
                   {formatCurrency(payment.amount)}
                 </td>
-                <td className="whitespace-nowrap px-4 py-3 text-slate-600">
+                <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                   {paymentMethodLabel(payment.provider)}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3">
                   <PaymentStatusPill status={payment.status} />
                 </td>
-                <td className="max-w-[10rem] truncate px-4 py-3 text-slate-500">
+                <td className="max-w-[10rem] truncate px-4 py-3 text-muted-foreground">
                   {payment.providerRefId || (
-                    <span className="text-slate-300">—</span>
+                    <span className="text-muted-foreground/50">—</span>
                   )}
                 </td>
-                <td className="max-w-[16rem] truncate px-4 py-3 text-slate-500">
+                <td className="max-w-[16rem] truncate px-4 py-3 text-muted-foreground">
                   {payment.description || (
-                    <span className="text-slate-300">—</span>
+                    <span className="text-muted-foreground/50">—</span>
                   )}
                 </td>
               </tr>
@@ -78,7 +78,7 @@ export default function PaymentsTable({
         </table>
       </div>
       {truncated ? (
-        <p className="border-t border-slate-100 px-4 py-2.5 text-xs text-slate-500">
+        <p className="border-t border-border/70 px-4 py-2.5 text-xs text-muted-foreground">
           Mostrando los {payments.length} pagos más recientes de {total}.
         </p>
       ) : null}

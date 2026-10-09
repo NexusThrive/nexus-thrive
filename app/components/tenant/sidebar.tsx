@@ -17,6 +17,7 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
+import { Brand } from "@/components/brand/brand";
 import { MODULES, type ModuleValue, type VerticalValue } from "@/lib/admin-catalogs";
 import { getVerticalTerms, type VerticalTerms } from "@/lib/vertical-terms";
 import { cn } from "@/lib/cn";
@@ -126,7 +127,8 @@ const MODULE_NAV: Record<
  *   `TenantModule` (resueltos en el layout padre) + Configuración, siempre
  *   visible porque no es un módulo del catálogo.
  * - Vocabulario adaptativo según `Tenant.vertical` (getVerticalTerms).
- * - Desktop: fija bajo el header, ancho 256px (`lg:w-64`).
+ * - Superficie Ink (negro marca); item activo con indicador dorado.
+ * - Desktop: fija bajo el header, ancho 256px.
  * - Mobile: drawer oculto inicialmente; se abre desde el Header mediante el
  *   estado compartido de `SidebarProvider` e incluye overlay + cierre con
  *   Escape, al navegar y al volver a desktop.
@@ -242,7 +244,7 @@ export default function Sidebar({
           type="button"
           aria-label="Cerrar menú"
           onClick={close}
-          className="fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-[1px] lg:hidden"
+          className="fixed inset-0 z-40 bg-ink/50 backdrop-blur-[1px] lg:hidden"
         />
       )}
 
@@ -250,7 +252,7 @@ export default function Sidebar({
         id="tenant-sidebar"
         aria-label="Navegación principal"
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col border-r border-slate-200 bg-white",
+          "fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col border-r border-graphite-800 bg-ink text-paper",
           "transition-[transform,visibility] duration-200 ease-out",
           "lg:top-16 lg:w-64 lg:max-w-none lg:translate-x-0 lg:transition-none",
           isOpen
@@ -259,24 +261,24 @@ export default function Sidebar({
         )}
       >
         {/* Espacio de trabajo (equivale al header en mobile) */}
-        <div className="flex h-14 shrink-0 items-center gap-3 border-b border-slate-200 px-4 sm:px-5">
+        <div className="flex h-14 shrink-0 items-center gap-3 border-b border-graphite-800 px-4 sm:px-5">
           <span
             aria-hidden="true"
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-indigo-600 text-sm font-semibold text-white"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-gold-500 text-sm font-semibold text-ink"
           >
             {workspaceInitial}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-slate-900">
+            <p className="truncate text-sm font-semibold text-paper">
               {tenantName}
             </p>
-            <p className="truncate text-xs text-slate-400">{tenantSlug}</p>
+            <p className="truncate text-xs text-paper/40">{tenantSlug}</p>
           </div>
           <button
             type="button"
             onClick={close}
             aria-label="Cerrar menú"
-            className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 lg:hidden"
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-paper/60 transition-colors hover:bg-white/5 hover:text-paper lg:hidden"
           >
             <svg
               aria-hidden="true"
@@ -294,11 +296,16 @@ export default function Sidebar({
           </button>
         </div>
 
+        {/* Marca (solo desktop: el header no la muestra en ese breakpoint) */}
+        <div className="hidden shrink-0 items-center gap-2.5 border-b border-graphite-800 px-5 py-4 lg:flex">
+          <Brand tone="on-ink" />
+        </div>
+
         {/* Navegación */}
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           {groups.map((group) => (
             <div key={group.label} className="mb-5 last:mb-0">
-              <p className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+              <p className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-paper/35">
                 {group.label}
               </p>
               <ul className="space-y-1">
@@ -315,29 +322,36 @@ export default function Sidebar({
                         onClick={close}
                         aria-current={active ? "page" : undefined}
                         className={cn(
-                          "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500",
+                          "group relative flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-[opacity,background-color] duration-120 ease-out",
+                          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-500",
                           active
-                            ? "bg-indigo-50 text-indigo-700"
-                            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+                            ? "bg-white/[0.08] text-paper opacity-100"
+                            : "text-paper opacity-[0.72] hover:bg-white/[0.06] hover:opacity-100",
                         )}
+                        style={
+                          active
+                            ? ({
+                                "--nx-active": "1",
+                              } as React.CSSProperties)
+                            : undefined
+                        }
                       >
+                        {active && (
+                          <span
+                            aria-hidden="true"
+                            className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-gold-500"
+                          />
+                        )}
                         <Icon
                           aria-hidden="true"
                           className={cn(
                             "h-5 w-5 shrink-0",
                             active
-                              ? "text-indigo-600"
-                              : "text-slate-400 group-hover:text-slate-600",
+                              ? "text-gold-500"
+                              : "text-paper/50 group-hover:text-paper/80",
                           )}
                         />
                         <span className="truncate">{item.label}</span>
-                        {active && (
-                          <span
-                            aria-hidden="true"
-                            className="ml-auto h-1.5 w-1.5 rounded-full bg-indigo-600"
-                          />
-                        )}
                       </Link>
                     </li>
                   );

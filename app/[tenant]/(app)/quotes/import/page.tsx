@@ -34,20 +34,20 @@ export default async function ImportPage({
       <header className="flex flex-col gap-1">
         <Link
           href={`/${tenantSlug}/quotes`}
-          className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-slate-700"
+          className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-foreground/80"
         >
           <ArrowLeft aria-hidden="true" className="h-4 w-4" />
           Volver a {terms.quotes.toLowerCase()}
         </Link>
         <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-amber-100 text-amber-700">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-gold-100 text-gold-700">
             <UploadCloud aria-hidden="true" className="h-5 w-5" />
           </span>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
               Importar catálogo
             </h1>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-muted-foreground">
               Sube un Excel o CSV de insumos (o un pack APU completo): el
               sistema detecta columnas, categorías y anomalías antes de escribir
               en la base, y todo se importa de una sola vez.

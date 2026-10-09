@@ -153,18 +153,18 @@ export default async function TenantDashboard({
       {/* Encabezado del dashboard */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             {greeting}, {greetingName}
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             Aquí tienes un resumen de{" "}
-            <span className="font-medium text-slate-700">
+            <span className="font-medium text-foreground">
               {tenantRecord.name}
             </span>
             .
           </p>
         </div>
-        <p className="shrink-0 text-sm text-slate-500">{formattedDate}</p>
+        <p className="shrink-0 text-sm text-muted-foreground">{formattedDate}</p>
       </div>
 
       {/* Métricas reales */}
@@ -186,18 +186,18 @@ export default async function TenantDashboard({
           <div>
             <h2
               id="dashboard-memberships-title"
-              className="text-base font-semibold text-slate-900"
+              className="text-base font-semibold text-foreground"
             >
               Membresías
             </h2>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-muted-foreground">
               Estado actual de los planes de tus{" "}
               {terms.customers.toLowerCase()}.
             </p>
           </div>
           <Link
             href={`/${tenantSlug}/memberships`}
-            className="text-sm font-medium text-indigo-600 transition hover:text-indigo-700"
+            className="text-sm font-medium text-accent-text transition hover:text-gold-600"
           >
             Ver módulo →
           </Link>

@@ -25,13 +25,13 @@ function metricCard(
   tone: string,
 ) {
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-slate-500">
+          <p className="truncate text-sm font-medium text-muted-foreground">
             {title}
           </p>
-          <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+          <p className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             {formatCurrency(cost)}
           </p>
         </div>
@@ -42,7 +42,7 @@ function metricCard(
           {icon}
         </span>
       </div>
-      <p className="mt-3 border-t border-slate-100 pt-2 text-xs text-slate-500">
+      <p className="mt-3 border-t border-border pt-2 text-xs text-muted-foreground">
         {count} {count === 1 ? "recurso distinto" : "recursos distintos"}
       </p>
     </article>
@@ -118,20 +118,20 @@ export default async function QuoteExplosionPage({
       <header className="flex flex-col gap-1">
         <Link
           href={`/${tenantSlug}/quotes/${quoteId}`}
-          className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-slate-700"
+          className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-foreground/80"
         >
           <ArrowLeft aria-hidden="true" className="h-4 w-4" />
           Volver a {terms.quote.toLowerCase()}
         </Link>
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             Explosión de Materiales
           </h1>
-          <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600">
+          <span className="rounded-full border border-border bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
             {explosion.quote.code} · {explosion.quote.title}
           </span>
         </div>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted-foreground">
           Insumos consolidados para ejecutar la obra: cantidades finales
           (desperdicio incluido) y costo estimado por categoría, listos para
           compras y programación.
@@ -140,48 +140,48 @@ export default async function QuoteExplosionPage({
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {metricCard(
-          <Boxes aria-hidden="true" className="h-5 w-5 text-indigo-600" />,
+          <Boxes aria-hidden="true" className="h-5 w-5 text-accent-text" />,
           "Materiales",
           explosion.materials.length,
           explosion.totals.materials,
-          "bg-indigo-50 text-indigo-600",
+          "bg-accent-subtle text-accent-text",
         )}
         {metricCard(
-          <HardHat aria-hidden="true" className="h-5 w-5 text-amber-600" />,
+          <HardHat aria-hidden="true" className="h-5 w-5 text-gold-700" />,
           "Mano de Obra",
           explosion.labor.length,
           explosion.totals.labor,
-          "bg-amber-50 text-amber-600",
+          "bg-gold-100 text-gold-700",
         )}
         {metricCard(
-          <Cog aria-hidden="true" className="h-5 w-5 text-violet-600" />,
+          <Cog aria-hidden="true" className="h-5 w-5 text-graphite-700" />,
           "Equipos",
           explosion.equipment.length,
           explosion.totals.equipment,
-          "bg-violet-50 text-violet-600",
+          "bg-graphite-100 text-graphite-700",
         )}
         {metricCard(
-          <Truck aria-hidden="true" className="h-5 w-5 text-cyan-600" />,
+          <Truck aria-hidden="true" className="h-5 w-5 text-graphite-500" />,
           "Transporte",
           explosion.transport.length,
           explosion.totals.transport,
-          "bg-cyan-50 text-cyan-600",
+          "bg-graphite-100 text-graphite-500",
         )}
       </div>
 
-      <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <article className="rounded-lg border border-border bg-card p-5 shadow-xs">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-sm font-medium text-slate-500">
+            <p className="text-sm font-medium text-muted-foreground">
               Costo Global de Insumos
             </p>
-            <p className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
+            <p className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
               {formatCurrency(explosion.totals.global)}
             </p>
           </div>
           <span
             aria-hidden="true"
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-600"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-muted text-muted-foreground"
           >
             <Wallet className="h-5 w-5" />
           </span>
@@ -189,12 +189,12 @@ export default async function QuoteExplosionPage({
       </article>
 
       {resourceCount === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
-          <p className="text-sm font-medium text-slate-700">
+        <div className="rounded-lg border border-border bg-card px-6 py-16 text-center shadow-xs">
+          <p className="text-sm font-medium text-foreground/80">
             No existen composiciones APU disponibles para generar la
             explosión.
           </p>
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-muted-foreground">
             Este {terms.quote.toLowerCase()} no tiene {terms.apuItems.toLowerCase()}{" "}
             asociados en su snapshot ni en el catálogo vigente.
           </p>

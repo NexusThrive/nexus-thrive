@@ -48,11 +48,11 @@ export default function MembershipTable({
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-10 text-center shadow-sm">
-        <p className="text-sm font-medium text-slate-700">
+      <div className="rounded-lg border border-border bg-card p-10 text-center shadow-xs">
+        <p className="text-sm font-medium text-foreground/80">
           No hay membresías{query ? " que coincidan con la búsqueda" : ""}.
         </p>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-muted-foreground">
           {query
             ? "Prueba con otro término o limpia los filtros."
             : "Crea la primera membresía con el botón “Nueva membresía”."}
@@ -64,9 +64,9 @@ export default function MembershipTable({
   return (
     <>
       {/* Desktop */}
-      <div className="hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm md:block">
+      <div className="hidden overflow-hidden rounded-lg border border-border bg-card shadow-xs md:block">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-slate-200 bg-slate-50 text-xs font-medium uppercase tracking-wide text-slate-500">
+          <thead className="border-b border-border bg-muted text-xs font-medium uppercase tracking-wide text-muted-foreground">
             <tr>
               <th scope="col" className="px-4 py-3">
                 Cliente
@@ -88,24 +88,24 @@ export default function MembershipTable({
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-border">
             {rows.map((row) => (
-              <tr key={row.id} className="transition hover:bg-slate-50/70">
+              <tr key={row.id} className="transition hover:bg-muted/60">
                 <td className="max-w-[14rem] px-4 py-3">
-                  <p className="truncate font-medium text-slate-900">
+                  <p className="truncate font-medium text-foreground">
                     {row.customerName}
                   </p>
-                  <p className="truncate text-xs text-slate-500">
+                  <p className="truncate text-xs text-muted-foreground">
                     {row.customerPhone ?? row.customerEmail ?? "Sin contacto"}
                   </p>
                 </td>
-                <td className="px-4 py-3 text-slate-700">
+                <td className="px-4 py-3 text-foreground/80">
                   {typeLabel(row.type)}
                 </td>
-                <td className="whitespace-nowrap px-4 py-3 text-slate-700">
+                <td className="whitespace-nowrap px-4 py-3 text-foreground/80">
                   {formatDateShort(row.startDate)} → {formatDateShort(row.endDate)}
                 </td>
-                <td className="whitespace-nowrap px-4 py-3 text-right font-medium text-slate-900">
+                <td className="whitespace-nowrap px-4 py-3 text-right font-medium text-foreground">
                   {formatCurrency(row.price)}
                 </td>
                 <td className="px-4 py-3">
@@ -128,7 +128,7 @@ export default function MembershipTable({
                     <Link
                       href={`/${tenantSlug}/crm?q=${encodeURIComponent(row.customerName)}`}
                       aria-label={`Ver a ${row.customerName} en el CRM`}
-                      className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                      className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
                     >
                       <UserRound aria-hidden="true" className="h-4 w-4" />
                     </Link>
@@ -145,27 +145,27 @@ export default function MembershipTable({
         {rows.map((row) => (
           <article
             key={row.id}
-            className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+            className="rounded-lg border border-border bg-card p-4 shadow-xs"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="truncate font-medium text-slate-900">
+                <p className="truncate font-medium text-foreground">
                   {row.customerName}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   {typeLabel(row.type)} · {formatCurrency(row.price)}
                 </p>
               </div>
               <MembershipStatusBadge status={row.status} />
             </div>
-            <p className="mt-2 text-xs text-slate-600">
+            <p className="mt-2 text-xs text-muted-foreground">
               {formatDateShort(row.startDate)} → {formatDateShort(row.endDate)}
             </p>
-            <div className="mt-3 flex items-center gap-2 border-t border-slate-100 pt-3">
+            <div className="mt-3 flex items-center gap-2 border-t border-border pt-3">
               <button
                 type="button"
                 onClick={() => setRenewTarget(row)}
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-indigo-600 px-3 text-xs font-medium text-white transition hover:bg-indigo-700"
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground transition hover:bg-primary/90"
               >
                 <RefreshCw aria-hidden="true" className="h-3.5 w-3.5" />
                 Renovar
@@ -173,7 +173,7 @@ export default function MembershipTable({
               <button
                 type="button"
                 onClick={() => setReminderTarget(row)}
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground/80 transition hover:bg-muted"
               >
                 <MessageCircle aria-hidden="true" className="h-3.5 w-3.5" />
                 Recordatorio
@@ -181,7 +181,7 @@ export default function MembershipTable({
               <Link
                 href={`/${tenantSlug}/crm?q=${encodeURIComponent(row.customerName)}`}
                 aria-label={`Ver a ${row.customerName} en el CRM`}
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground/80 transition hover:bg-muted"
               >
                 <UserRound aria-hidden="true" className="h-3.5 w-3.5" />
                 Cliente
@@ -232,7 +232,7 @@ function RowAction({
       aria-label={label}
       title={label}
       onClick={onClick}
-      className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+      className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
     >
       {children}
     </button>

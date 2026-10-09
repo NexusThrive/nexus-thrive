@@ -2,7 +2,8 @@
 
 import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 
 /**
  * Paginación genérica. `paramKey` es el parámetro de página de la sección
@@ -39,7 +40,7 @@ export default function PaginationLinks({
 
   return (
     <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-muted-foreground">
         Página {page} de {totalPages} · {totalLabel}
       </p>
       <div className="flex items-center gap-2">
@@ -47,7 +48,7 @@ export default function PaginationLinks({
           type="button"
           disabled={page <= 1 || isPending}
           onClick={() => navigateToPage(page - 1)}
-          className="inline-flex h-9 items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-9 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
         >
           <ChevronLeft aria-hidden="true" className="h-4 w-4" />
           Anterior
@@ -56,10 +57,10 @@ export default function PaginationLinks({
           type="button"
           disabled={page >= totalPages || isPending}
           onClick={() => navigateToPage(page + 1)}
-          className="inline-flex h-9 items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-9 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isPending ? (
-            <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+            <NLoader size={16} className="text-current" />
           ) : null}
           Siguiente
           <ChevronRight aria-hidden="true" className="h-4 w-4" />

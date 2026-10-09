@@ -4,11 +4,11 @@ import {
   Building2,
   Check,
   CreditCard,
-  Loader2,
   MapPin,
   Store,
   User,
 } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 import { VERTICAL_LABELS, sortModules } from "@/lib/admin-catalogs";
 import {
   TEAM_SIZE_LABELS,
@@ -28,12 +28,12 @@ function SummaryRow({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-500">
+      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-muted text-muted-foreground">
         <Icon className="size-4" aria-hidden="true" />
       </span>
       <div className="min-w-0">
-        <p className="text-xs text-slate-400">{label}</p>
-        <p className="truncate text-sm font-medium text-slate-900">{value}</p>
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="truncate text-sm font-medium text-foreground">{value}</p>
       </div>
     </div>
   );
@@ -59,13 +59,13 @@ export default function OnboardingSummary({
 
   return (
     <div className="space-y-5">
-      <div className="rounded-xl border border-slate-200 bg-white p-5">
-        <h3 className="text-sm font-semibold text-slate-900">
+      <div className="rounded-lg border border-border bg-card p-5">
+        <h3 className="text-sm font-semibold text-foreground">
           {prefill.mode === "resume"
             ? "Tu espacio queda así"
             : "Tu espacio NEXUS queda así"}
         </h3>
-        <p className="mt-0.5 text-xs text-slate-500">
+        <p className="mt-0.5 text-xs text-muted-foreground">
           Revisa los datos y finaliza: podrás cambiarlos después desde tu
           espacio.
         </p>
@@ -98,12 +98,12 @@ export default function OnboardingSummary({
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-5">
+      <div className="rounded-lg border border-border bg-card p-5">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-slate-900">
+          <h3 className="text-sm font-semibold text-foreground">
             Módulos activos
           </h3>
-          <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700">
+          <span className="rounded-full bg-gold-100 px-2 py-0.5 text-xs font-semibold text-gold-700">
             {modules.length}
           </span>
         </div>
@@ -111,9 +111,9 @@ export default function OnboardingSummary({
           {modules.map((moduleName) => (
             <span
               key={moduleName}
-              className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700"
+              className="inline-flex items-center gap-1 rounded-full border border-border bg-muted px-2.5 py-1 text-xs font-medium text-foreground/80"
             >
-              <Check className="size-3 text-amber-500" aria-hidden="true" />
+              <Check className="size-3 text-gold-500" aria-hidden="true" />
               {moduleLabel(moduleName)}
             </span>
           ))}
@@ -123,7 +123,7 @@ export default function OnboardingSummary({
       {actionResult?.status === "error" && (
         <div
           role="alert"
-          className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-700"
+          className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2.5 text-sm text-destructive"
         >
           {actionResult.message}
         </div>
@@ -133,11 +133,11 @@ export default function OnboardingSummary({
         type="button"
         onClick={onSubmit}
         disabled={isPending}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gold-500 px-4 py-2.5 text-sm font-semibold text-ink shadow-xs transition hover:bg-gold-600 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? (
           <>
-            <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+            <NLoader size={16} className="text-current" />
             Configurando tu espacio…
           </>
         ) : prefill.mode === "resume" ? (
@@ -146,7 +146,7 @@ export default function OnboardingSummary({
           <>Crear mi espacio NEXUS</>
         )}
       </button>
-      <p className="text-center text-xs text-slate-400">
+      <p className="text-center text-xs text-muted-foreground">
         Al finalizar aceptas que este espacio se abra con tu cuenta como
         administrador.
       </p>

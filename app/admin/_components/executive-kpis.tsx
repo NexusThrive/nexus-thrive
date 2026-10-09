@@ -47,8 +47,8 @@ export default function ExecutiveKpis({
               className={cn(
                 "inline-flex items-center gap-1 font-medium",
                 revenue.changePct >= 0
-                  ? "text-emerald-600"
-                  : "text-rose-600",
+                  ? "text-success"
+                  : "text-destructive",
               )}
             >
               {revenue.changePct >= 0 ? (
@@ -79,7 +79,7 @@ export default function ExecutiveKpis({
         </div>
         <Sparkline
           series={newTenants.series}
-          className="mt-3 h-12 w-full text-sky-500"
+          className="mt-3 h-12 w-full text-muted-foreground"
         />
       </KpiCard>
 
@@ -95,7 +95,7 @@ export default function ExecutiveKpis({
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
           {onboarding.stalled > 0 ? (
-            <span className="font-medium text-amber-600">
+            <span className="font-medium text-gold-700">
               {onboarding.stalled} detenidos hace más de 7 días
             </span>
           ) : (
@@ -142,11 +142,11 @@ export default function ExecutiveKpis({
 }
 
 const ACCENTS: Record<string, string> = {
-  amber: "bg-amber-50 text-amber-600 ring-amber-500/15",
-  sky: "bg-sky-50 text-sky-600 ring-sky-500/15",
-  violet: "bg-violet-50 text-violet-600 ring-violet-500/15",
-  emerald: "bg-emerald-50 text-emerald-600 ring-emerald-500/15",
-  rose: "bg-rose-50 text-rose-600 ring-rose-500/15",
+  amber: "bg-gold-100 text-gold-700 ring-gold-500/15",
+  sky: "bg-muted text-muted-foreground ring-border",
+  violet: "bg-muted text-muted-foreground ring-border",
+  emerald: "bg-success/10 text-success ring-success/15",
+  rose: "bg-destructive/10 text-destructive ring-destructive/15",
 };
 
 function KpiCard({
@@ -161,7 +161,7 @@ function KpiCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border bg-card p-4 shadow-sm">
+    <div className="rounded-lg border bg-card p-4 shadow-xs">
       <div className="flex items-center gap-2">
         <span
           className={cn(
@@ -187,7 +187,7 @@ function AlertRow({ label, value }: { label: string; value: number }) {
       <span
         className={cn(
           "font-medium tabular-nums",
-          value > 0 ? "text-rose-600" : "text-muted-foreground",
+          value > 0 ? "text-destructive" : "text-muted-foreground",
         )}
       >
         {value}

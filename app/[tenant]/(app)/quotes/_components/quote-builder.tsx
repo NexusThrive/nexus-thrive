@@ -20,7 +20,7 @@ const AIU_DEFAULTS = {
 type Line = { activityId: string; quantity: string };
 
 const inputClass =
-  "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 transition placeholder:text-slate-400 hover:border-slate-300 focus:border-indigo-400 focus:outline-2 focus:outline-indigo-500/30";
+  "h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-border-strong focus:border-accent focus:outline-2 focus:outline-accent/30";
 
 function fieldError(
   errors?: {
@@ -139,7 +139,7 @@ export default function QuoteBuilder({
       <input type="hidden" name="taxPercent" value={aiu.taxPercent} />
 
       {state.status === "error" && state.message ? (
-        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {state.message}
         </p>
       ) : null}
@@ -149,7 +149,7 @@ export default function QuoteBuilder({
         <div className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700">
+              <span className="mb-1 block text-sm font-medium text-foreground/80">
                 Nombre del {quoteLabel.toLowerCase()}
               </span>
               <input
@@ -160,13 +160,13 @@ export default function QuoteBuilder({
                 className={inputClass}
               />
               {fieldError(state.errors, "title") ? (
-                <span className="mt-1 block text-xs text-rose-600">
+                <span className="mt-1 block text-xs text-destructive">
                   {fieldError(state.errors, "title")}
                 </span>
               ) : null}
             </label>
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700">
+              <span className="mb-1 block text-sm font-medium text-foreground/80">
                 {customerLabel} (opcional)
               </span>
               <select
@@ -184,12 +184,12 @@ export default function QuoteBuilder({
             </label>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="rounded-lg border border-border bg-card p-4 shadow-xs">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-slate-900">
+              <h2 className="text-sm font-semibold text-foreground">
                 Actividades del {quoteLabel.toLowerCase()}
               </h2>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-muted-foreground">
                 Precios del catálogo APU
               </span>
             </div>
@@ -213,21 +213,21 @@ export default function QuoteBuilder({
                 type="button"
                 onClick={addLine}
                 disabled={!picker}
-                className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg bg-indigo-600 px-3 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Plus aria-hidden="true" className="h-4 w-4" />
                 Agregar
               </button>
             </div>
             {duplicateWarning ? (
-              <p className="mb-2 text-xs font-medium text-amber-600">
+              <p className="mb-2 text-xs font-medium text-gold-700">
                 Esa actividad ya está en el {quoteLabel.toLowerCase()}. Ajusta
                 su cantidad.
               </p>
             ) : null}
 
             {preview.rows.length === 0 ? (
-              <p className="rounded-lg border border-dashed border-slate-200 px-3 py-6 text-center text-sm text-slate-400">
+              <p className="rounded-lg border border-dashed border-border px-3 py-6 text-center text-sm text-muted-foreground">
                 Agrega actividades desde el catálogo APU para calcular el{" "}
                 {quoteLabel.toLowerCase()}.
               </p>
@@ -236,17 +236,17 @@ export default function QuoteBuilder({
                 {preview.rows.map((row, index) => (
                   <div
                     key={lines[index].activityId}
-                    className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-100 bg-slate-50/60 p-2"
+                    className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/60 p-2"
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-slate-900">
+                      <p className="truncate text-sm font-medium text-foreground">
                         {row.name}
                       </p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-muted-foreground">
                         {formatCurrency(row.unitCost)} / {row.unit}
                       </p>
                     </div>
-                    <label className="flex items-center gap-1 text-xs text-slate-500">
+                    <label className="flex items-center gap-1 text-xs text-muted-foreground">
                       Cant.
                       <input
                         value={lines[index].quantity}
@@ -255,17 +255,17 @@ export default function QuoteBuilder({
                         }
                         inputMode="decimal"
                         aria-label={`Cantidad de ${row.name}`}
-                        className="h-9 w-20 rounded-lg border border-slate-200 bg-white px-2 text-sm text-slate-900 focus:border-indigo-400 focus:outline-2 focus:outline-indigo-500/30"
+                        className="h-9 w-20 rounded-lg border border-border bg-card px-2 text-sm text-foreground focus:border-accent focus:outline-2 focus:outline-accent/30"
                       />
                     </label>
-                    <p className="w-28 text-right text-sm font-semibold text-slate-900">
+                    <p className="w-28 text-right text-sm font-semibold text-foreground">
                       {formatCurrency(row.total)}
                     </p>
                     <button
                       type="button"
                       aria-label={`Quitar ${row.name}`}
                       onClick={() => removeLine(index)}
-                      className="rounded-lg p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+                      className="rounded-lg p-2 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
                     >
                       <Trash2 aria-hidden="true" className="h-4 w-4" />
                     </button>
@@ -274,7 +274,7 @@ export default function QuoteBuilder({
               </div>
             )}
             {fieldError(state.errors, "items") ? (
-              <span className="mt-2 block text-xs text-rose-600">
+              <span className="mt-2 block text-xs text-destructive">
                 {fieldError(state.errors, "items")}
               </span>
             ) : null}
@@ -283,9 +283,9 @@ export default function QuoteBuilder({
 
         {/* Columna derecha: AIU + resumen financiero */}
         <aside className="space-y-4">
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-slate-900">
-              <Calculator aria-hidden="true" className="h-4 w-4 text-indigo-500" />
+          <div className="rounded-lg border border-border bg-card p-4 shadow-xs">
+            <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-foreground">
+              <Calculator aria-hidden="true" className="h-4 w-4 text-accent-text" />
               AIU (%)
             </h2>
             <div className="grid grid-cols-2 gap-3">
@@ -298,7 +298,7 @@ export default function QuoteBuilder({
                 ] as const
               ).map(([key, label]) => (
                 <label key={key} className="block">
-                  <span className="mb-1 block text-xs font-medium text-slate-600">
+                  <span className="mb-1 block text-xs font-medium text-muted-foreground">
                     {label}
                   </span>
                   <input
@@ -309,7 +309,7 @@ export default function QuoteBuilder({
                     className={inputClass}
                   />
                   {aiuError(key) ? (
-                    <span className="mt-1 block text-xs text-rose-600">
+                    <span className="mt-1 block text-xs text-destructive">
                       {fieldError(state.errors, key)}
                     </span>
                   ) : null}
@@ -318,45 +318,45 @@ export default function QuoteBuilder({
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h2 className="mb-3 text-sm font-semibold text-slate-900">
+          <div className="rounded-lg border border-border bg-card p-4 shadow-xs">
+            <h2 className="mb-3 text-sm font-semibold text-foreground">
               Resumen financiero
             </h2>
             <dl className="space-y-1.5 text-sm">
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-muted-foreground">
                 <dt>Costo directo</dt>
-                <dd className="font-medium text-slate-900">
+                <dd className="font-medium text-foreground">
                   {formatCurrency(preview.direct)}
                 </dd>
               </div>
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-muted-foreground">
                 <dt>Administración ({aiu.adminPercent}%)</dt>
                 <dd>{formatCurrency(preview.admin)}</dd>
               </div>
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-muted-foreground">
                 <dt>Imprevistos ({aiu.imprevPercent}%)</dt>
                 <dd>{formatCurrency(preview.contingency)}</dd>
               </div>
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-muted-foreground">
                 <dt>Utilidad ({aiu.utilPercent}%)</dt>
                 <dd>{formatCurrency(preview.utility)}</dd>
               </div>
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-muted-foreground">
                 <dt>Subtotal</dt>
-                <dd className="font-medium text-slate-900">
+                <dd className="font-medium text-foreground">
                   {formatCurrency(preview.subtotal)}
                 </dd>
               </div>
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-muted-foreground">
                 <dt>IVA ({aiu.taxPercent}% sobre utilidad)</dt>
                 <dd>{formatCurrency(preview.tax)}</dd>
               </div>
-              <div className="flex justify-between border-t border-slate-200 pt-2 text-base font-semibold text-slate-900">
+              <div className="flex justify-between border-t border-border pt-2 text-base font-semibold text-foreground">
                 <dt>Total</dt>
                 <dd>{formatCurrency(preview.total)}</dd>
               </div>
             </dl>
-            <p className="mt-3 border-t border-slate-100 pt-2 text-[11px] leading-relaxed text-slate-400">
+            <p className="mt-3 border-t border-border pt-2 text-[11px] leading-relaxed text-muted-foreground">
               Previsualización estimada. Al guardar, el servidor recalcula
               con precisión decimal exacta y congela el APU de cada actividad.
             </p>
@@ -365,7 +365,7 @@ export default function QuoteBuilder({
           <button
             type="submit"
             disabled={isPending || lines.length === 0}
-            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isPending
               ? "Guardando…"

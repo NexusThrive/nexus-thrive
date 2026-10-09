@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 
 /**
  * Select de filtro que mantiene la URL como única fuente de verdad.
@@ -48,7 +48,7 @@ export default function FilterSelect({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         disabled={isPending}
-        className="h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-3 text-sm text-slate-700 transition hover:border-slate-300 focus:border-indigo-400 focus:outline-2 focus:outline-indigo-500/30 disabled:opacity-60 sm:w-auto"
+        className="h-10 w-full appearance-none rounded-lg border border-border bg-card pr-8 pl-3 text-sm text-foreground/80 transition hover:border-ring/40 focus:border-ring focus:outline-2 focus:outline-ring/30 disabled:opacity-60 sm:w-auto"
       >
         <option value="">{allLabel}</option>
         {options.map((option) => (
@@ -59,13 +59,13 @@ export default function FilterSelect({
       </select>
       <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2">
         {isPending ? (
-          <Loader2 aria-hidden="true" className="h-3.5 w-3.5 animate-spin text-slate-400" />
+          <NLoader size={14} className="text-current" />
         ) : (
           <svg
             aria-hidden="true"
             viewBox="0 0 20 20"
             fill="currentColor"
-            className="h-4 w-4 text-slate-400"
+            className="h-4 w-4 text-muted-foreground"
           >
             <path
               fillRule="evenodd"

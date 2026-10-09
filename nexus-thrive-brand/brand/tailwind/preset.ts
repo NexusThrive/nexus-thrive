@@ -1,13 +1,13 @@
 import type { Config } from "tailwindcss";
 
 /**
- * Preset NEXUS THRIVE para Tailwind v3.
+ * Preset NEXUS THRIVE para Tailwind v3/v4.
  * En cada app: presets: [require("@nexus/brand/tailwind-preset").default]
  * Los colores semánticos (bg-background, text-muted, bg-accent...) cambian solos
  * entre modo claro y oscuro; no hace falta repetir `dark:` en cada clase.
  */
 const preset: Partial<Config> = {
-  darkMode: ["class"],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {

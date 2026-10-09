@@ -12,7 +12,7 @@ export type CustomerOption = {
 };
 
 const ACTION_BUTTON =
-  "inline-flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50";
+  "inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted";
 
 /**
  * Controles de registro (Server Actions vía `useActionState` en cada modal).
@@ -37,13 +37,13 @@ export default function FinanceActions({
           onClick={() => setExpenseOpen(true)}
           className={ACTION_BUTTON}
         >
-          <Plus aria-hidden="true" className="h-4 w-4 text-rose-500" />
+          <Plus aria-hidden="true" className="h-4 w-4 text-destructive" />
           Registrar gasto
         </button>
         <button
           type="button"
           onClick={() => setPaymentOpen(true)}
-          className="inline-flex h-10 items-center gap-2 rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white transition hover:bg-indigo-700"
+          className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
         >
           <Plus aria-hidden="true" className="h-4 w-4" />
           Registrar pago

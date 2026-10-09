@@ -117,29 +117,29 @@ export default function OnboardingComplete({
 
   return (
     <div className="space-y-5">
-      <div className="rounded-xl border border-slate-200 bg-white p-6 text-center sm:p-8">
-        <span className="mx-auto grid size-14 place-items-center rounded-full bg-amber-500 text-white ring-8 ring-amber-500/15">
+      <div className="rounded-lg border border-border bg-card p-6 text-center sm:p-8">
+        <span className="mx-auto grid size-14 place-items-center rounded-full bg-gold-500 text-ink ring-8 ring-gold-500/15">
           <Sparkles className="size-7" aria-hidden="true" />
         </span>
-        <h2 className="mt-4 text-xl font-bold text-slate-900">
+        <h2 className="mt-4 text-xl font-bold text-foreground">
           Tu espacio NEXUS está listo
         </h2>
-        <p className="mx-auto mt-1.5 max-w-md text-sm leading-6 text-slate-500">
+        <p className="mx-auto mt-1.5 max-w-md text-sm leading-6 text-muted-foreground">
           {draft.name}
           {verticalLabel ? ` · ${verticalLabel}` : ""} ya tiene su espacio. Lo
           puedes encontrar en{" "}
-          <span className="font-medium text-slate-700">
+          <span className="font-medium text-foreground/80">
             nexusthrive.co/{slug}
           </span>
           .
         </p>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-5">
-        <h3 className="text-sm font-semibold text-slate-900">
+      <div className="rounded-lg border border-border bg-card p-5">
+        <h3 className="text-sm font-semibold text-foreground">
           Tus primeros 3 minutos en NEXUS
         </h3>
-        <p className="mt-0.5 text-xs text-slate-500">
+        <p className="mt-0.5 text-xs text-muted-foreground">
           Tres pasos rápidos para dejar tu espacio andando.
         </p>
 
@@ -149,16 +149,16 @@ export default function OnboardingComplete({
             return (
               <li
                 key={`${action.module}-${index}`}
-                className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50/60 p-3"
+                className="flex items-center gap-3 rounded-lg border border-border bg-muted/60 p-3"
               >
-                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-amber-500/10 text-amber-600">
+                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-gold-500/10 text-gold-700">
                   <Icon className="size-4" aria-hidden="true" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-slate-900">
+                  <p className="text-sm font-semibold text-foreground">
                     {index + 1}. {action.title}
                   </p>
-                  <p className="mt-0.5 text-xs leading-5 text-slate-500">
+                  <p className="mt-0.5 text-xs leading-5 text-muted-foreground">
                     {action.description}
                   </p>
                 </div>
@@ -170,7 +170,7 @@ export default function OnboardingComplete({
 
       <Link
         href={`/${slug}`}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-600"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gold-500 px-4 py-2.5 text-sm font-semibold text-ink shadow-xs transition hover:bg-gold-600"
       >
         Entrar a mi espacio NEXUS
         <ArrowRight className="size-4" aria-hidden="true" />

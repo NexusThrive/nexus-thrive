@@ -18,10 +18,10 @@ export default function AdminHeader() {
     <>
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             Resumen general
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             Gestión global de negocios, verticales y módulos de la plataforma.
           </p>
         </div>
@@ -29,18 +29,18 @@ export default function AdminHeader() {
           <button
             type="button"
             onClick={() => setPaletteOpen(true)}
-            className="hidden h-10 items-center gap-2 rounded-lg border border-slate-200/80 bg-white px-3 text-sm text-slate-500 transition hover:bg-slate-50 md:inline-flex"
+            className="hidden h-10 items-center gap-2 rounded-lg border border-border bg-card px-3 text-sm text-muted-foreground transition hover:bg-muted md:inline-flex"
           >
             <Command className="h-4 w-4" aria-hidden />
             Buscar o comando
-            <kbd className="rounded border border-slate-200/80 bg-slate-50 px-1.5 py-0.5 font-mono text-[10px] text-slate-500">
+            <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
               ⌘K
             </kbd>
           </button>
           <Button
             type="button"
             onClick={() => setFormOpen(true)}
-            className="bg-amber-500 text-white hover:bg-amber-600"
+            className="bg-gold-500 text-ink hover:bg-gold-600"
           >
             <Plus aria-hidden />
             Nuevo negocio

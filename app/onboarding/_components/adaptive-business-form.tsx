@@ -32,7 +32,7 @@ function FieldError({
 }) {
   if (!show || !message) return null;
   return (
-    <p role="alert" className="mt-1 text-xs font-medium text-rose-600">
+    <p role="alert" className="mt-1 text-xs font-medium text-destructive">
       {message}
     </p>
   );
@@ -82,7 +82,7 @@ export default function AdaptiveBusinessForm({
       {isCompany && (
         <div>
           <Label htmlFor="onboarding-legal-name">
-            Razón social <span className="font-normal text-slate-400">(opcional)</span>
+            Razón social <span className="font-normal text-muted-foreground">(opcional)</span>
           </Label>
           <Input
             id="onboarding-legal-name"
@@ -100,12 +100,12 @@ export default function AdaptiveBusinessForm({
         <Label htmlFor="onboarding-tax-id">
           NIT / RUT
           {!isCompany && (
-            <span className="font-normal text-slate-400"> (opcional)</span>
+            <span className="font-normal text-muted-foreground"> (opcional)</span>
           )}
         </Label>
         <div className="relative">
           <Receipt
-            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden="true"
           />
           <Input
@@ -125,9 +125,9 @@ export default function AdaptiveBusinessForm({
       {/* Slug / enlace */}
       <div>
         <Label htmlFor="onboarding-slug">Tu enlace en NEXUS</Label>
-        <div className="flex items-center gap-2 rounded-md border border-input bg-slate-50 px-3 focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
-          <Link2 className="size-4 shrink-0 text-slate-400" aria-hidden="true" />
-          <span className="shrink-0 text-sm text-slate-500">
+        <div className="flex items-center gap-2 rounded-md border border-input bg-muted px-3 focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
+          <Link2 className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <span className="shrink-0 text-sm text-muted-foreground">
             nexusthrive.co/
           </span>
           <input
@@ -144,7 +144,7 @@ export default function AdaptiveBusinessForm({
           />
           {slugCheck.ok && (
             <Check
-              className="size-4 shrink-0 text-emerald-500"
+              className="size-4 shrink-0 text-success"
               aria-label="Enlace válido"
             />
           )}
@@ -159,7 +159,7 @@ export default function AdaptiveBusinessForm({
               }
             />
           )}
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-muted-foreground">
           Sin espacios ni mayúsculas. Solo letras, números y guiones.
         </p>
       </div>
@@ -185,8 +185,8 @@ export default function AdaptiveBusinessForm({
                 className={cn(
                   "flex items-center gap-2 rounded-lg border px-2.5 py-2 text-left transition",
                   isSelected
-                    ? "border-amber-400 bg-amber-50/60 ring-2 ring-amber-500/30"
-                    : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50",
+                    ? "border-gold-500 bg-gold-100/60 ring-2 ring-gold-600/30"
+                    : "border-border bg-card hover:border-foreground/20 hover:bg-muted",
                 )}
               >
                 <span
@@ -197,7 +197,7 @@ export default function AdaptiveBusinessForm({
                 >
                   <Icon className="size-4" aria-hidden="true" />
                 </span>
-                <span className="min-w-0 text-xs leading-tight font-medium text-slate-700">
+                <span className="min-w-0 text-xs leading-tight font-medium text-foreground/80">
                   {VERTICAL_LABELS[vertical]}
                 </span>
               </button>
@@ -224,8 +224,8 @@ export default function AdaptiveBusinessForm({
                   className={cn(
                     "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition",
                     isSelected
-                      ? "border-amber-400 bg-amber-50 text-amber-800 ring-2 ring-amber-500/20"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50",
+                      ? "border-gold-500 bg-gold-100 text-gold-700 ring-2 ring-gold-600/20"
+                      : "border-border bg-card text-muted-foreground hover:border-foreground/20 hover:bg-muted",
                   )}
                 >
                   <Users
@@ -248,7 +248,7 @@ export default function AdaptiveBusinessForm({
           <Label htmlFor="onboarding-address">Dirección del local</Label>
           <div className="relative">
             <MapPinned
-              className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400"
+              className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
               aria-hidden="true"
             />
             <Input
@@ -260,7 +260,7 @@ export default function AdaptiveBusinessForm({
               className="pl-9"
             />
           </div>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-muted-foreground">
             Escribe REMOTE si no tienes un local físico.
           </p>
           <FieldError show={showErrors} message={errors.address} />
@@ -272,7 +272,7 @@ export default function AdaptiveBusinessForm({
         <Label htmlFor="onboarding-city">Ciudad</Label>
         <div className="relative">
           <MapPin
-            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden="true"
           />
           <Input

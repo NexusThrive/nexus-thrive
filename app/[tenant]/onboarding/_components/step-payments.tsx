@@ -36,10 +36,10 @@ export default function StepPayments({
   return (
     <div className="space-y-4">
       <fieldset>
-        <legend className="text-sm font-medium text-slate-700">
-          ¿Cómo recibirás pagos? <span className="text-rose-500">*</span>
+        <legend className="text-sm font-medium text-foreground/80">
+          ¿Cómo recibirás pagos? <span className="text-destructive">*</span>
         </legend>
-        <p className="mt-0.5 text-xs text-slate-500">
+        <p className="mt-0.5 text-xs text-muted-foreground">
           Selecciona al menos uno. Puedes cambiarlos después.
         </p>
 
@@ -51,8 +51,8 @@ export default function StepPayments({
                 key={value}
                 className={`flex cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm transition ${
                   checked
-                    ? "border-indigo-400 bg-indigo-50 text-indigo-900"
-                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                    ? "border-gold-500 bg-accent-subtle text-accent-text"
+                    : "border-border bg-card text-foreground/80 hover:border-foreground/20 hover:bg-muted"
                 }`}
               >
                 <input
@@ -61,7 +61,7 @@ export default function StepPayments({
                   value={value}
                   checked={checked}
                   onChange={() => toggle(value)}
-                  className="h-4 w-4 rounded border-slate-300 accent-indigo-600"
+                  className="h-4 w-4 rounded border-foreground/20 accent-gold-600"
                 />
                 {PAYMENT_METHOD_LABELS[value]}
               </label>
@@ -70,15 +70,15 @@ export default function StepPayments({
         </div>
 
         {errors?.paymentMethods ? (
-          <p className="mt-1 text-xs text-rose-600">
+          <p className="mt-1 text-xs text-destructive">
             {errors.paymentMethods}
           </p>
         ) : selected.length === 0 ? (
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-muted-foreground">
             Aún no hay métodos seleccionados.
           </p>
         ) : (
-          <p className="mt-1 text-xs text-emerald-600">
+          <p className="mt-1 text-xs text-success">
             {selected.length}{" "}
             {selected.length === 1
               ? "método seleccionado"

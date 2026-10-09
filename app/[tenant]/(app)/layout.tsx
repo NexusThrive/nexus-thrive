@@ -56,7 +56,7 @@ export default async function AppLayout({
   return (
     <SidebarProvider>
       <VerticalTermsProvider terms={getVerticalTerms(tenantRecord.vertical)}>
-        <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+        <div className="min-h-screen bg-background font-sans text-foreground">
           <Header tenantName={tenantRecord.name} />
 
           <Sidebar
@@ -66,7 +66,7 @@ export default async function AppLayout({
             activeModules={activeModules}
           />
 
-          <main className="px-4 py-6 sm:px-6 lg:py-8 lg:pl-[18rem] lg:pr-8">
+          <main className="px-4 py-6 sm:px-6 lg:py-8 lg:pl-[17rem] lg:pr-8">
             {children}
           </main>
         </div>

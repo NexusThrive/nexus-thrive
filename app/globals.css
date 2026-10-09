@@ -3,56 +3,124 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ------------------------------------------------------------------ */
-/* Design tokens (shadcn/ui) — tema claro por defecto, `.dark` opcional */
-/* ------------------------------------------------------------------ */
+/* ==========================================================================
+   NEXUS THRIVE — Design tokens (Single Source of Truth)
+   Origen: el logo (bloque negro sólido, cortes diagonales blancos, esquinas
+   rectas). De ahí salen: negro dominante, oro como único acento, radios casi
+   nulos y bordes en lugar de sombras.
+   Proporción de uso: 60% neutros oscuros/Ink, 30% blanco/Paper, 10% oro.
+   ========================================================================== */
 
 :root {
-  --radius: 0.625rem;
+  /* --- Marca (primitivos) --- */
+  --nx-ink: #000000;
+  --nx-white: #ffffff;
+  --nx-paper: #f7f6f3;
 
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
+  --nx-gold-100: #f6ebc4;
+  --nx-gold-300: #e6cb74;
+  --nx-gold-500: #d4af37;
+  --nx-gold-600: #b8921f;
+  --nx-gold-700: #7f6210;
+
+  --nx-graphite-950: #0a0a0b;
+  --nx-graphite-900: #141416;
+  --nx-graphite-800: #1e1e21;
+  --nx-graphite-700: #2a2a2e;
+  --nx-graphite-500: #6b6b73;
+  --nx-graphite-400: #a1a1a8;
+  --nx-graphite-200: #e8e6e1;
+  --nx-graphite-100: #f2f1ee;
+
+  /* --- Estados: solo funcionales, nunca decorativos --- */
+  --nx-success: #2e7d5b;
+  --nx-danger: #b3261e;
+
+  /* --- Forma: esquinas casi rectas, como la N del logo --- */
+  --radius-none: 0;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+
+  /* --- Movimiento --- */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* --- Layout de la app --- */
+  --sidebar-width: 248px;
+  --sidebar-width-collapsed: 64px;
+  --topbar-height: 56px;
+  --content-max: 1280px;
+
+  /* --- Semánticos: MODO CLARO (por defecto) --- */
+  --background: var(--nx-paper);
+  --foreground: var(--nx-graphite-950);
+  --card: var(--nx-white);
+  --card-foreground: var(--nx-graphite-950);
+  --popover: var(--nx-white);
+  --popover-foreground: var(--nx-graphite-950);
+  --primary: var(--nx-ink);
+  --primary-foreground: var(--nx-paper);
+  --secondary: var(--nx-graphite-100);
+  --secondary-foreground: var(--nx-graphite-950);
+  --muted: var(--nx-graphite-100);
+  --muted-foreground: var(--nx-graphite-500);
+  --accent: var(--nx-gold-500);
+  --accent-foreground: var(--nx-ink);
+  --accent-text: var(--nx-gold-700);
+  --accent-subtle: var(--nx-gold-100);
+  --destructive: var(--nx-danger);
+  --destructive-foreground: var(--nx-white);
+  --border: var(--nx-graphite-200);
+  --border-strong: #cfcdc7;
+  --input: var(--nx-graphite-200);
+  --ring: var(--nx-gold-600);
+
+  --accent-text: var(--nx-gold-700);
+  --accent-subtle: var(--nx-gold-100);
+  --success: var(--nx-success);
+  --success-foreground: var(--nx-white);
+  --warning-bg: var(--nx-gold-100);
+  --warning-fg: var(--nx-gold-700);
+  --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
-.dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.92 0.004 286.32);
-  --primary-foreground: oklch(0.21 0.006 285.885);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.552 0.016 285.938);
+/* --- MODO OSCURO --- */
+.dark,
+[data-theme="dark"] {
+  --background: var(--nx-graphite-950);
+  --foreground: var(--nx-paper);
+  --card: var(--nx-graphite-900);
+  --card-foreground: var(--nx-paper);
+  --popover: var(--nx-graphite-900);
+  --popover-foreground: var(--nx-paper);
+  --primary: var(--nx-gold-500);
+  --primary-foreground: var(--nx-ink);
+  --secondary: var(--nx-graphite-800);
+  --secondary-foreground: var(--nx-paper);
+  --muted: var(--nx-graphite-800);
+  --muted-foreground: var(--nx-graphite-400);
+  --accent: var(--nx-gold-500);
+  --accent-foreground: var(--nx-ink);
+  --accent-text: var(--nx-gold-500);
+  --accent-subtle: color-mix(in oklab, var(--nx-gold-500) 14%, transparent);
+  --destructive: #e5564d;
+  --destructive-foreground: var(--nx-white);
+  --border: var(--nx-graphite-700);
+  --border-strong: #3a3a40;
+  --input: var(--nx-graphite-700);
+  --ring: var(--nx-gold-500);
+
+  --success: #3fa57a;
+  --warning-bg: rgba(212, 175, 55, 0.14);
+  --warning-fg: var(--nx-gold-300);
+  --success-foreground: var(--nx-ink);
+  --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
+/* --- Tailwind v4: mapeo de tokens a utilidades --- */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -68,30 +136,354 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-accent-text: var(--accent-text);
+  --color-accent-subtle: var(--accent-subtle);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-border-strong: var(--border-strong);
+  --color-accent-text: var(--accent-text);
+  --color-accent-subtle: var(--accent-subtle);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning-bg);
+  --color-warning-foreground: var(--warning-fg);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  /* Marca directa: bg-ink, text-gold-500, bg-paper, etc. */
+  --color-ink: var(--nx-ink);
+  --color-paper: var(--nx-paper);
+  --color-gold-100: var(--nx-gold-100);
+  --color-gold-300: var(--nx-gold-300);
+  --color-gold-500: var(--nx-gold-500);
+  --color-gold-600: var(--nx-gold-600);
+  --color-gold-700: var(--nx-gold-700);
+  --color-graphite-950: var(--nx-graphite-950);
+  --color-graphite-900: var(--nx-graphite-900);
+  --color-graphite-800: var(--nx-graphite-800);
+  --color-graphite-700: var(--nx-graphite-700);
+  --color-graphite-500: var(--nx-graphite-500);
+  --color-graphite-400: var(--nx-graphite-400);
+  --color-graphite-200: var(--nx-graphite-200);
+  --color-graphite-100: var(--nx-graphite-100);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  --font-sans: var(--font-inter), "Segoe UI", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --font-display: var(--font-montserrat), "Segoe UI", system-ui, sans-serif;
+  --font-stunt: var(--font-stunt), "Segoe UI", system-ui, sans-serif;
+
+  --shadow-popover: var(--shadow-popover);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
 }
 
+/* ==========================================================================
+   Base
+   ========================================================================== */
 @layer base {
   * {
     border-color: var(--color-border);
     outline-color: color-mix(in oklab, var(--color-ring) 50%, transparent);
   }
 
+  html {
+    -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+  }
+  html.dark,
+  html[data-theme="dark"] {
+    color-scheme: dark;
+  }
+
   body {
     background: var(--background);
     color: var(--foreground);
-    font-family: var(--font-geist-sans, Arial), Helvetica, sans-serif;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.5rem;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Cifras tabulares: imprescindible en finanzas, caja menor y presupuestos */
+  table,
+  .tabular,
+  input[type="number"] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Títulos: Montserrat, sentence case */
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-display {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  h1 {
+    font-size: 2.5rem;
+    line-height: 2.75rem;
+    font-weight: 700;
+  }
+  h2 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+  h3 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+  h4 {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  /* Foco visible siempre */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background: var(--nx-gold-500);
+    color: var(--nx-ink);
+  }
+}
+
+/* ==========================================================================
+   Motivo de marca: el corte diagonal de la N.
+   Uso: un solo elemento por pantalla (divisor, indicador, cierre de sección).
+   ========================================================================== */
+@utility nx-slash {
+  display: inline-block;
+  width: 4px;
+  height: 1.5em;
+  background: var(--accent);
+  transform: skewX(-24deg);
+}
+
+@utility nx-cut-corner {
+  clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+}
+
+/* Wordmark: ÚNICO lugar con mayúsculas y tracking amplio (como THRIVE en el logo) */
+@utility nx-wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+}
+
+/* ==========================================================================
+   Animaciones de marca (kit NEXUS THRIVE — Cargas de interfaz).
+   Todos los patrones de carga nacen de la N: el trazo recorre el contorno
+   y el texto entra con enfoque, como THRIVE en el logo.
+   ========================================================================== */
+
+/* --- N con trazo animado (spinner / progreso / done) --- */
+.nx-n {
+  display: block;
+  flex: none;
+  color: currentColor;
+  shape-rendering: geometricPrecision;
+}
+.nx-n .o {
+  fill: none;
+  stroke: currentColor;
+  stroke-opacity: 0.18;
+  stroke-width: 9;
+  stroke-linejoin: round;
+}
+.nx-n .f {
+  fill: currentColor;
+  fill-opacity: 0;
+  transition: fill-opacity 0.6s ease;
+}
+.nx-n .t {
+  fill: none;
+  stroke: var(--nx-gold-600);
+  stroke-width: var(--nx-sw, 22);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 0 1;
+  stroke-opacity: 0;
+  transition: stroke-opacity 0.4s ease;
+}
+.nx-n.loop .t {
+  stroke-opacity: 1;
+  stroke-dasharray: 0.16 0.84;
+  animation: nx-lp 1.6s linear infinite;
+}
+.nx-n.prog .t {
+  stroke-opacity: 1;
+}
+.nx-n.done .f {
+  fill-opacity: 1;
+}
+.nx-n.done .t {
+  stroke-opacity: 0;
+  animation: none;
+}
+@keyframes nx-lp {
+  to {
+    stroke-dashoffset: -1;
+  }
+}
+
+/* --- Texto con enfoque (el mismo de THRIVE en la intro) --- */
+.nx-fx {
+  display: grid;
+}
+.nx-fx .line {
+  grid-area: 1/1;
+  white-space: nowrap;
+  transition:
+    opacity 0.3s ease,
+    filter 0.3s ease;
+}
+.nx-fx .line.out {
+  opacity: 0;
+  filter: blur(6px);
+}
+.nx-fx .ch {
+  display: inline-block;
+  white-space: pre;
+  opacity: 0;
+  filter: blur(8px);
+  transform: translateY(4px);
+  transition:
+    opacity 0.55s ease-out,
+    filter 0.55s ease-out,
+    transform 0.55s ease-out;
+}
+.nx-fx .line.in .ch {
+  opacity: 1;
+  filter: blur(0);
+  transform: none;
+}
+
+/* --- Barra de ruta: borde delantero con el corte de la N --- */
+.nx-strip {
+  position: relative;
+  height: 4px;
+  width: 100%;
+  background: var(--border);
+  overflow: hidden;
+}
+.nx-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: var(--nx-gold-600);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+.nx-bar.ind {
+  width: 32%;
+  animation: nx-ind 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes nx-ind {
+  from {
+    left: -35%;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+/* --- Skeleton: brillo que cruza con el ángulo de la N --- */
+.nx-sk {
+  position: relative;
+  overflow: hidden;
+  background: var(--muted);
+  border-radius: var(--radius-sm);
+}
+.nx-sk::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 -40%;
+  width: 30%;
+  background: var(--card);
+  opacity: 0.7;
+  transform: skewX(-24deg);
+  animation: nx-sw 1.4s ease-in-out infinite;
+}
+@keyframes nx-sw {
+  to {
+    left: 120%;
+  }
+}
+
+/* --- Cortes pulsantes: esperas breves --- */
+.nx-sl {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+}
+.nx-sl i {
+  display: block;
+  width: 5px;
+  height: 18px;
+  margin: 0 3px;
+  background: var(--nx-gold-600);
+  transform: skewX(-24deg);
+  animation: nx-pl 1.1s ease-in-out infinite;
+}
+.nx-sl i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.nx-sl i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes nx-pl {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: skewX(-24deg) scaleY(0.6);
+  }
+  40% {
+    opacity: 1;
+    transform: skewX(-24deg) scaleY(1);
+  }
+}
+
+/* --- Filas que entran una a una (lista con revelado) --- */
+.nx-row {
+  opacity: 0;
+  filter: blur(8px);
+  transform: translateY(4px);
+  transition:
+    opacity 0.6s ease-out,
+    filter 0.6s ease-out,
+    transform 0.6s ease-out;
+}
+.nx-row.in {
+  opacity: 1;
+  filter: blur(0);
+  transform: none;
+}
+
+/* Movimiento reducido: respetar preferencia del usuario */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
   }
 }

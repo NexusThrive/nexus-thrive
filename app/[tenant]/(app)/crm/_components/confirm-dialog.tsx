@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Loader2, TriangleAlert } from "lucide-react";
+import { TriangleAlert } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 
 /**
  * Diálogo de confirmación genérico (role=dialog, cierra con Escape o clic
@@ -50,7 +51,7 @@ export default function ConfirmDialog({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-slate-950/45 backdrop-blur-[1px]"
+        className="absolute inset-0 bg-ink/45 backdrop-blur-xs"
         onClick={() => !pending && onCancel()}
       />
       <div
@@ -58,21 +59,21 @@ export default function ConfirmDialog({
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
         aria-describedby="confirm-dialog-description"
-        className="relative w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-xl"
+        className="relative w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-popover"
       >
         <div className="flex items-start gap-3">
-          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
             <TriangleAlert aria-hidden="true" className="h-5 w-5" />
           </span>
           <div className="min-w-0">
-            <h2 id="confirm-dialog-title" className="text-base font-semibold text-slate-900">
+            <h2 id="confirm-dialog-title" className="text-base font-semibold text-foreground">
               {title}
             </h2>
-            <p id="confirm-dialog-description" className="mt-1 text-sm text-slate-600">
+            <p id="confirm-dialog-description" className="mt-1 text-sm text-muted-foreground">
               {description}
             </p>
             {detail ? (
-              <p className="mt-2 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
+              <p className="mt-2 rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
                 {detail}
               </p>
             ) : null}
@@ -85,7 +86,7 @@ export default function ConfirmDialog({
             type="button"
             disabled={pending}
             onClick={onCancel}
-            className="h-9 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+            className="h-9 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
           >
             Cancelar
           </button>
@@ -93,10 +94,10 @@ export default function ConfirmDialog({
             type="button"
             disabled={pending}
             onClick={onConfirm}
-            className="inline-flex h-9 items-center gap-2 rounded-lg bg-rose-600 px-4 text-sm font-medium text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-9 items-center gap-2 rounded-lg bg-destructive px-4 text-sm font-medium text-destructive-foreground transition hover:bg-destructive/90 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {pending ? (
-              <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+              <NLoader size={16} className="text-current" />
             ) : null}
             {confirmLabel}
           </button>

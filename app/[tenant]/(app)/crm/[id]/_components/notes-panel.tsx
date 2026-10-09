@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
+import { NLoader } from "@/components/brand/n-loader";
 import type { Customer360Note } from "@/lib/tenant-db";
 import { formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/cn";
@@ -49,7 +50,7 @@ export default function NotesPanel({
 
         <label
           htmlFor="note-content"
-          className="block text-sm font-medium text-slate-700"
+          className="block text-sm font-medium text-foreground/80"
         >
           Nueva nota
         </label>
@@ -60,13 +61,13 @@ export default function NotesPanel({
           rows={4}
           maxLength={NOTE_MAX_LENGTH}
           placeholder="Observación interna sobre este cliente…"
-          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm text-foreground shadow-xs placeholder:text-muted-foreground focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-600/20"
         />
         <div className="flex items-center justify-between gap-3">
           <p
             className={cn(
               "text-xs",
-              state.status === "error" ? "text-rose-600" : "text-slate-400",
+              state.status === "error" ? "text-destructive" : "text-muted-foreground",
             )}
             aria-live="polite"
           >
@@ -81,9 +82,13 @@ export default function NotesPanel({
           <button
             type="submit"
             disabled={isPending}
-            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <Send aria-hidden="true" className="h-4 w-4" />
+            {isPending ? (
+              <NLoader size={16} className="text-current" />
+            ) : (
+              <Send aria-hidden="true" className="h-4 w-4" />
+            )}
             Guardar nota
           </button>
         </div>
@@ -91,24 +96,24 @@ export default function NotesPanel({
 
       <div className="space-y-3 lg:col-span-2">
         {initialNotes.length === 0 ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 shadow-sm">
+          <div className="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground shadow-xs">
             Todavía no hay notas sobre este cliente.
           </div>
         ) : (
           initialNotes.map((note) => (
             <article
               key={note.id}
-              className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+              className="rounded-lg border border-border bg-card p-4 shadow-xs"
             >
               <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-medium text-slate-900">
+                <p className="text-sm font-medium text-foreground">
                   {note.authorName ?? "Equipo"}
                 </p>
-                <time className="text-xs text-slate-400">
+                <time className="text-xs text-muted-foreground">
                   {formatDateTime(note.createdAt)}
                 </time>
               </div>
-              <p className="mt-2 whitespace-pre-wrap text-sm text-slate-600">
+              <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">
                 {note.content}
               </p>
             </article>
