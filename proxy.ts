@@ -4,17 +4,8 @@ import { NextResponse } from "next/server";
 export default clerkMiddleware(async (auth, request) => {
   const url = request.nextUrl;
   const pathname = url.pathname;
-  const hostname = request.headers.get("host") || "";
-  const host = hostname.split(":")[0];
 
-  let subdomain: string | null = null;
-
-  if (host.endsWith(".lvh.me")) {
-    subdomain = host.replace(".lvh.me", "");
-  } else if (host.endsWith(".localhost")) {
-    subdomain = host.replace(".localhost", "");
-  }
-
+  // Rutas reservadas que pasan directo
   const isReservedRoute =
     pathname.startsWith("/sign-in") ||
     pathname.startsWith("/sign-up") ||
@@ -27,45 +18,44 @@ export default clerkMiddleware(async (auth, request) => {
     return NextResponse.next();
   }
 
-  if (subdomain === "admin") {
-    return NextResponse.rewrite(
-      new URL(`/admin${pathname}`, request.url)
-    );
-  }
-
-  if (pathname === "/onboarding") {
-    // Onboarding adaptativo top-level: desde un subdominio de tenant NO se
-    // reescribe a /{tenant}/onboarding (wizard clásico). El gate de `(app)`
-    // reanuda el tenant pendiente vía ?tenant=<slug>.
+  // Admin panel: /admin/*
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) {
     return NextResponse.next();
   }
 
-  if (
-    subdomain &&
-    subdomain !== "app" &&
-    subdomain !== "www"
-  ) {
-    // Los enlaces internos del shell siempre son /{tenant}/... (multi-tenant).
-    // Si la ruta ya viene espaciada por el tenant, no se reescribe de nuevo:
-    // evita /gymcarlos/gymcarlos/crm (404) cuando se navega desde el
-    // subdominio. Cualquier otra ruta conserva la reescritura original.
-    const isTenantScoped =
-      pathname === `/${subdomain}` ||
-      pathname.startsWith(`/${subdomain}/`);
-
-    if (isTenantScoped) {
-      return NextResponse.next();
-    }
-
-    return NextResponse.rewrite(
-      new URL(`/${subdomain}${pathname}`, request.url)
-    );
+  // Onboarding top-level
+  if (pathname === "/onboarding") {
+    return NextResponse.next();
   }
 
-  if (!subdomain && pathname === "/") {
-    return NextResponse.redirect(
-      new URL("/sign-in", request.url)
-    );
+  // Tenant routes: /{tenant}/*
+  // Detecta primer segmento como tenant slug
+  const segments = pathname.split("/").filter(Boolean);
+  const firstSegment = segments[0];
+
+  if (firstSegment) {
+    // Rutas conocidas que NO son tenants
+    const nonTenantRoutes = ["admin", "onboarding", "sign-in", "sign-up", "api", "_next", "__clerk"];
+    
+    if (!nonTenantRoutes.includes(firstSegment)) {
+      // Es un tenant: /gymcarlos/... → reescribe a /gymcarlos/...
+      // Si ya viene con el tenant, pasa directo
+      const isTenantScoped = pathname === `/${firstSegment}` || pathname.startsWith(`/${firstSegment}/`);
+      
+      if (isTenantScoped) {
+        return NextResponse.next();
+      }
+      
+      // Reescribe añadiendo el tenant prefix
+      return NextResponse.rewrite(
+        new URL(`/${firstSegment}${pathname}`, request.url)
+      );
+    }
+  }
+
+  // Root → sign-in
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
   return NextResponse.next();
