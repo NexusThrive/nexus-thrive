@@ -20,6 +20,7 @@ export default clerkMiddleware(async (auth, request) => {
     pathname.startsWith("/sign-up") ||
     pathname.startsWith("/api") ||
     pathname.startsWith("/_next") ||
+    pathname.startsWith("/__clerk") ||
     pathname.includes(".");
 
   if (isReservedRoute) {

@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
     "lvh.me",
     "lvh.me:3000",
     "localhost:3000",
+    "localhost:3001",
     "archlinux-2026-08-08.tail07d332.ts.net",
     "archlinux-2026-08-08.tail07d332.ts.net:3000",
     "*.tail07d332.ts.net",
