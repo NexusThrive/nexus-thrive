@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NEXUS THRIVE — Impresora de comprobantes</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F7F6F3;--surface:#fff;--fg:#0A0A0B;--muted:#6B6B73;--line:#E8E6E1;--btn:#000;--btnfg:#F7F6F3;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-theme="dark"]{--bg:#0A0A0B;--surface:#141416;--fg:#F7F6F3;--muted:#A1A1A8;--line:#2A2A2E;--btn:#D4AF37;--btnfg:#000;color-scheme:dark}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font:400 14px/1.5 Inter,"Segoe UI",system-ui,sans-serif;padding:32px 20px 48px}
+.wrap{max-width:560px;margin:0 auto}
+h1{font:700 26px/1.2 Montserrat,"Segoe UI",sans-serif;letter-spacing:-.01em;margin:0 0 4px}
+p.sub{margin:0 0 20px;color:var(--muted)}
+.ctl{display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:28px}
+.seg{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.seg button{height:34px;padding:0 14px;border:0;background:transparent;color:var(--muted);font:500 13px Inter,sans-serif;cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--btn);color:var(--btnfg)}
+button:focus-visible{outline:2px solid #B8921F;outline-offset:2px}
+.btn{height:40px;padding:0 18px;border:0;border-radius:4px;background:var(--btn);color:var(--btnfg);font:600 13px Inter,sans-serif;cursor:pointer;white-space:nowrap}
+.out{height:40px;padding:0 18px;border:1px solid var(--line);border-radius:4px;background:transparent;color:var(--fg);font:500 13px Inter,sans-serif;cursor:pointer;white-space:nowrap}
+.actions{display:flex;justify-content:center;gap:8px;margin-top:20px;opacity:0;transform:translateY(4px);filter:blur(8px);transition:opacity .6s ease-out,filter .6s ease-out,transform .6s ease-out;pointer-events:none}
+.actions.on{opacity:1;transform:none;filter:none;pointer-events:auto}
+.note{text-align:center;color:var(--muted);font-size:12px;margin-top:16px}
+/* NEXUS THRIVE — Impresora de comprobantes
+   Adaptación de la animación "Receipt Printer" al sistema de marca:
+   cuerpo negro de esquinas casi rectas (sin plástico ni degradados), la N como indicador de estado
+   (trazo en bucle → se rellena), papel blanco con tipografía mono, cifras en Montserrat tabulares,
+   un solo acento dorado (el corte diagonal junto al total). */
+
+.rp{--rp-body:#000;--rp-edge:#2A2A2E;--rp-gold:#D4AF37;position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;width:100%;max-width:384px;margin:0 auto}
+.dark .rp,[data-theme="dark"] .rp{--rp-body:#141416}
+
+/* ---- Máquina ---- */
+.rp-machine{position:relative;isolation:isolate;width:100%;overflow:hidden;background:var(--rp-body);border:1px solid var(--rp-edge);border-radius:6px;padding:12px 12px 32px}
+.rp-header{position:relative;z-index:10;display:flex;align-items:flex-start;justify-content:space-between;height:44px}
+.rp-tag{font:500 11px/1 "JetBrains Mono",ui-monospace,monospace;color:#A1A1A8}
+.rp-screen{position:relative;z-index:10;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;background:#0A0A0B;border:1px solid var(--rp-edge);border-radius:4px;padding:16px;color:#F7F6F3}
+.rp-screen b{display:block;font:600 14px/1.3 Inter,sans-serif}
+.rp-screen small{display:block;font:400 12px/1.4 Inter,sans-serif;color:#A1A1A8}
+.rp-screen .rp-amount{font:700 22px/1 Montserrat,sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rp-slot{position:absolute;left:24px;right:24px;bottom:12px;z-index:40;height:8px;border:1px solid #3A3A40;border-radius:2px;background:#000}
+
+/* ---- Estado: la N es el indicador (bucle → relleno), el texto entra con enfoque ---- */
+.rp-status{display:flex;align-items:center;gap:8px;min-width:0;font:500 12px/1 Inter,sans-serif;color:#A1A1A8}
+.rp-n{display:block;flex:none;color:#F7F6F3}
+.rp-n .o{fill:none;stroke:currentColor;stroke-opacity:.25;stroke-width:9;stroke-linejoin:round}
+.rp-n .f{fill:currentColor;fill-opacity:0;transition:fill-opacity .6s ease}
+.rp-n .t{fill:none;stroke:var(--rp-gold);stroke-width:var(--sw,44);stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0 1;stroke-opacity:0;transition:stroke-opacity .4s ease}
+.rp-n.loop .t{stroke-opacity:1;stroke-dasharray:.16 .84;animation:rp-lp 1.6s linear infinite}
+.rp-n.done .f{fill-opacity:1}
+.rp-n.done .t{stroke-opacity:0;animation:none}
+@keyframes rp-lp{to{stroke-dashoffset:-1}}
+.rp-line{display:inline-block;white-space:nowrap}
+.rp-ch{display:inline-block;white-space:pre;animation:rp-in .55s ease-out both;animation-delay:calc(var(--i,0)*14ms)}
+@keyframes rp-in{from{opacity:0;filter:blur(8px);transform:translateY(4px)}to{opacity:1;filter:blur(0);transform:none}}
+
+/* ---- Salida del papel ---- */
+.rp-output{position:relative;z-index:50;margin-top:-16px;height:512px;width:calc(80% + 48px);max-width:100%;overflow:hidden;padding:0 24px}
+.rp-shade{position:absolute;left:24px;right:24px;top:-4px;z-index:20;height:8px;background:rgba(0,0,0,.75);filter:blur(6px);pointer-events:none;opacity:0;transition:opacity .16s ease-out}
+.rp[data-stage="printing"] .rp-shade,.rp[data-stage="complete"] .rp-shade{opacity:1}
+.rp-feed{position:relative;isolation:isolate;opacity:0;transform:translateY(calc(-100% + 2px));transition:opacity .16s ease-out}
+.rp-feed::before{content:"";position:absolute;left:12px;right:12px;top:12px;bottom:16px;z-index:0;border-radius:2px;box-shadow:0 8px 24px rgba(0,0,0,.2);pointer-events:none}
+.rp[data-stage="printing"] .rp-feed{opacity:1;animation:rp-step 1.75s linear forwards}
+.rp[data-feed="smooth"][data-stage="printing"] .rp-feed{animation:rp-smooth 1.75s cubic-bezier(.77,0,.175,1) forwards}
+.rp[data-stage="complete"] .rp-feed{opacity:1;transform:none}
+/* avance "por pasos": el papel sale a tirones, como una térmica de verdad */
+@keyframes rp-step{
+  0%{transform:translateY(calc(-100% + 2px))}7.5%{transform:translateY(-91%)}10.5%{transform:translateY(-91%)}
+  18%{transform:translateY(-81%)}21%{transform:translateY(-81%)}28.5%{transform:translateY(-70%)}31.5%{transform:translateY(-70%)}
+  39%{transform:translateY(-58%)}42%{transform:translateY(-58%)}49.5%{transform:translateY(-45%)}52.5%{transform:translateY(-45%)}
+  60%{transform:translateY(-32%)}63%{transform:translateY(-32%)}70.5%{transform:translateY(-20%)}73.5%{transform:translateY(-20%)}
+  81%{transform:translateY(-10%)}84%{transform:translateY(-10%)}91.5%{transform:translateY(-3%)}94.5%{transform:translateY(-3%)}
+  100%{transform:translateY(0)}}
+@keyframes rp-smooth{from{transform:translateY(calc(-100% + 2px))}to{transform:translateY(0)}}
+
+/* ---- Papel (blanco siempre, también en modo oscuro) ---- */
+.rp-paper{position:relative;z-index:10;min-height:320px;background:#fff;color:#0A0A0B;padding:24px 24px 32px;font:400 12px/1.5 "JetBrains Mono",ui-monospace,monospace}
+.rp-center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
+.rp-paper h3{margin:10px 0 0;font:600 14px/1.3 Montserrat,sans-serif;letter-spacing:-.01em}
+.rp-biz{margin:0;color:#6B6B73}
+.rp-hr{border:0;border-top:1px dashed #A1A1A8;margin:14px 0}
+.rp-row{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+.rp-row+.rp-row{margin-top:6px}
+.rp-row small{display:block;color:#6B6B73}
+.rp-total{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:10px}
+.rp-total span{font-weight:600}
+.rp-total b{font:700 20px/1 Montserrat,sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rp-slash{display:inline-block;width:3px;height:14px;margin-right:8px;vertical-align:-2px;background:var(--rp-gold);transform:skewX(-24deg)}
+.rp-meta{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0}
+.rp-meta dt{color:#6B6B73}.rp-meta dd{margin:0;text-align:right}
+.rp-dot{display:inline-block;width:6px;height:6px;margin-right:6px;background:#2E7D5B;vertical-align:1px}
+.rp-thanks{margin:16px 0 0;text-align:center;color:#6B6B73}
+
+@media (prefers-reduced-motion:reduce){
+  .rp[data-stage="printing"] .rp-feed{animation:none;transform:none}
+  .rp-n.loop .t{animation:none}.rp-ch{animation:none}
+}
+@media print{
+  .rp-machine,.rp-shade{display:none}
+  .rp-output{height:auto;overflow:visible;width:100%;margin:0;padding:0}
+  .rp-feed{transform:none!important;opacity:1!important;animation:none!important}
+  .rp-feed::before{display:none}
+  .rp-paper{clip-path:none!important}
+}
+
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="lk" viewBox="387.6 239.9 744.4 779.5" fill="currentColor"><path transform="translate(387.667002 1017.189804)" d="M 24.6875 -61.484375 L 0.4375 -61.484375 L 0.4375 -75.78125 L 66.46875 -75.78125 L 66.46875 -61.484375 L 42.21875 -61.484375 L 42.21875 0 L 24.6875 0 Z M 24.6875 -61.484375"/><path transform="translate(520.270223 1017.189804)" d="M 78.484375 -75.78125 L 78.484375 0 L 60.9375 0 L 60.9375 -31.0625 L 26.515625 -31.0625 L 26.515625 0 L 8.984375 0 L 8.984375 -75.78125 L 26.515625 -75.78125 L 26.515625 -45.890625 L 60.9375 -45.890625 L 60.9375 -75.78125 Z M 78.484375 -75.78125"/><path transform="translate(673.44019 1017.189804)" d="M 57.265625 0 L 42.65625 -21.109375 L 26.515625 -21.109375 L 26.515625 0 L 8.984375 0 L 8.984375 -75.78125 L 41.78125 -75.78125 C 48.5 -75.78125 54.328125 -74.660156 59.265625 -72.421875 C 64.210938 -70.179688 68.019531 -67.003906 70.6875 -62.890625 C 73.351562 -58.773438 74.6875 -53.90625 74.6875 -48.28125 C 74.6875 -42.65625 73.332031 -37.800781 70.625 -33.71875 C 67.925781 -29.644531 64.085938 -26.523438 59.109375 -24.359375 L 76.09375 0 Z M 56.9375 -48.28125 C 56.9375 -52.539062 55.566406 -55.804688 52.828125 -58.078125 C 50.085938 -60.347656 46.082031 -61.484375 40.8125 -61.484375 L 26.515625 -61.484375 L 26.515625 -35.078125 L 40.8125 -35.078125 C 46.082031 -35.078125 50.085938 -36.226562 52.828125 -38.53125 C 55.566406 -40.84375 56.9375 -44.09375 56.9375 -48.28125 Z M 56.9375 -48.28125"/><path transform="translate(818.708225 1017.189804)" d="M 8.984375 -75.78125 L 26.515625 -75.78125 L 26.515625 0 L 8.984375 0 Z M 8.984375 -75.78125"/><path transform="translate(919.487086 1017.189804)" d="M 81.84375 -75.78125 L 49.03125 0 L 31.71875 0 L -0.96875 -75.78125 L 17.96875 -75.78125 L 41.03125 -21.65625 L 64.40625 -75.78125 Z M 81.84375 -75.78125"/><path transform="translate(1064.322078 1017.189804)" d="M 67.65625 -14.078125 L 67.65625 0 L 8.984375 0 L 8.984375 -75.78125 L 66.25 -75.78125 L 66.25 -61.703125 L 26.40625 -61.703125 L 26.40625 -45.25 L 61.59375 -45.25 L 61.59375 -31.609375 L 26.40625 -31.609375 L 26.40625 -14.078125 Z M 67.65625 -14.078125"/></symbol></svg>
+<div class="wrap">
+  <h1>Impresora de comprobantes</h1>
+  <p class="sub">Al registrar un pago, una factura o un gasto, el comprobante se imprime con la marca de NEXUS THRIVE.</p>
+  <div class="ctl">
+    <div class="seg" id="sType" role="group" aria-label="Tipo"><button type="button" data-v="pago" aria-pressed="true">Pago</button><button type="button" data-v="factura" aria-pressed="false">Factura</button><button type="button" data-v="gasto" aria-pressed="false">Gasto</button></div>
+    <div class="seg" id="sFeed" role="group" aria-label="Avance del papel"><button type="button" data-v="stepped" aria-pressed="true">Por pasos</button><button type="button" data-v="smooth" aria-pressed="false">Continuo</button></div>
+    <div class="seg" id="sTheme" role="group" aria-label="Tema"><button type="button" data-v="light" aria-pressed="true">Claro</button><button type="button" data-v="dark" aria-pressed="false">Oscuro</button></div>
+    <button class="btn" id="replay" type="button">Repetir</button>
+  </div>
+
+  <section class="rp" id="rp" data-stage="processing" data-feed="stepped" aria-label="Impresora de comprobantes">
+    <div class="rp-machine">
+      <div class="rp-header"><div class="rp-status"><span id="sn"></span><div role="status" aria-live="polite" id="st"></div></div><span class="rp-tag" id="tag">Caja</span></div>
+      <div class="rp-screen"><div><b id="scT"></b><small id="scS"></small></div><span class="rp-amount" id="scA"></span></div>
+      <i class="rp-slot" aria-hidden="true"></i>
+    </div>
+    <div class="rp-output">
+      <div class="rp-shade" aria-hidden="true"></div>
+      <div class="rp-feed"><article class="rp-paper" id="paper"></article></div>
+    </div>
+  </section>
+  <div class="actions" id="actions"><button class="btn" type="button">Descargar PDF</button><button class="out" type="button">Enviar por WhatsApp</button></div>
+  <p class="note">Datos de ejemplo. Con "Por pasos" el papel sale a tirones, como una impresora térmica.</p>
+</div>
+
+<script>
+var $=function(s){return document.querySelector(s)};
+var P="M394.83 874.18 L394.83 239.93 L699.27 239.93 L837.22 525.34 L864.18 511.07 L799.96 371.52 L799.96 239.93 L1129.79 239.93 L1129.79 874.18 L815.82 874.18 L704.04 614.93 L677.87 630.79 L725.44 741.77 L725.44 874.18 Z";
+var DATA={
+ pago:{tag:"Caja",title:"Comprobante de pago",biz:"Juan · Cartagena",
+  items:[["Membresía mensual","Plan Gold · oct 2026","$ 120.000"]],sub:"$ 120.000",tax:"$ 22.800",totalLabel:"Total pagado",total:"$ 142.800",
+  meta:[["Recibo","REC-0001"],["Estado","@@Pagado"],["Pagado con","Nequi •••• 4321"],["Fecha","09 OCT 2026 · 14:32"]],thanks:"Gracias por tu pago",
+  scr:["Membresía mensual","Plan Gold"],st:["Procesando pago","Imprimiendo comprobante","Pago registrado"]},
+ factura:{tag:"Ventas",title:"Factura de venta",biz:"Juan · Cartagena",
+  items:[["Corte de cabello","2 × $ 35.000","$ 70.000"],["Tratamiento capilar","1 × $ 55.000","$ 55.000"]],sub:"$ 125.000",tax:"$ 23.750",totalLabel:"Total factura",total:"$ 148.750",
+  meta:[["Factura","FE-2048"],["Cliente","María Torres"],["Vence","23 OCT 2026"],["Fecha","09 OCT 2026 · 14:32"]],thanks:"Gracias por tu compra",
+  scr:["Factura FE-2048","2 servicios"],st:["Generando factura","Imprimiendo factura","Factura creada"]},
+ gasto:{tag:"Caja menor",title:"Comprobante de egreso",biz:"Juan · Cartagena",
+  items:[["Compra de materiales","Caja menor","$ 185.000"]],sub:"$ 185.000",tax:null,totalLabel:"Egreso registrado",total:"$ 185.000",
+  meta:[["Egreso","EGR-0017"],["Categoría","Insumos"],["Registrado por","Juan"],["Fecha","09 OCT 2026 · 14:32"]],thanks:"Descontado de caja menor",
+  scr:["Compra de materiales","Caja menor"],st:["Registrando gasto","Imprimiendo comprobante","Gasto registrado"]}
+};
+/* Borde de sierra del papel: 40 dientes, 7 px */
+(function(){var p=["0 0","100% 0","100% calc(100% - 7px)"];for(var i=1;i<=40;i++){var x=+(100-i*100/40).toFixed(3);p.push(x+"% 100%",x+"% calc(100% - 7px)")}$("#paper").style.clipPath="polygon("+p.join(", ")+")"})();
+
+/* Indicador de estado: la N (bucle -> relleno) */
+$("#sn").innerHTML='<svg class="rp-n loop" id="nn" viewBox="362 157 800 800" width="20" height="20" aria-hidden="true" style="--sw:44"><path class="o" d="'+P+'"/><path class="f" d="'+P+'"/><path class="t" d="'+P+'" pathLength="1"/></svg>';
+var nn=$("#nn"),rp=$("#rp"),cur="pago",lastTxt="";
+function focusText(el,t){el.innerHTML="";var l=document.createElement("span");l.className="rp-line";t.split("").forEach(function(c,i){var s=document.createElement("span");s.className="rp-ch";s.textContent=c;s.style.setProperty("--i",i);l.appendChild(s)});el.appendChild(l)}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+
+function render(){
+  var d=DATA[cur];
+  $("#tag").textContent=d.tag;$("#scT").textContent=d.scr[0];$("#scS").textContent=d.scr[1];$("#scA").textContent=d.total;
+  $("#paper").innerHTML=
+   '<div class="rp-center"><svg width="64" height="'+Math.round(64*779.5/744.4)+'" aria-label="NEXUS THRIVE" role="img"><use href="#lk"/></svg><h3>'+d.title+'</h3><p class="rp-biz">'+d.biz+'</p></div><hr class="rp-hr">'+
+   d.items.map(function(i){return '<div class="rp-row"><div>'+i[0]+'<small>'+i[1]+'</small></div><span>'+i[2]+'</span></div>'}).join("")+
+   '<hr class="rp-hr"><div class="rp-row"><span>Subtotal</span><span>'+d.sub+'</span></div>'+
+   (d.tax?'<div class="rp-row"><span>IVA 19 %</span><span>'+d.tax+'</span></div>':"")+
+   '<div class="rp-total"><span><i class="rp-slash"></i>'+d.totalLabel+'</span><b>'+d.total+'</b></div><hr class="rp-hr"><dl class="rp-meta">'+
+   d.meta.map(function(m){return '<dt>'+m[0]+'</dt><dd>'+(m[1]==="@@Pagado"?'<i class="rp-dot"></i>Pagado':m[1])+'</dd>'}).join("")+
+   '</dl><p class="rp-thanks">'+d.thanks+'</p>';
+}
+function setStage(s){
+  rp.dataset.stage=s;
+  nn.classList.toggle("loop",s!=="complete");nn.classList.toggle("done",s==="complete");
+  focusText($("#st"),DATA[cur].st[s==="processing"?0:s==="printing"?1:2]);
+  $("#actions").classList.toggle("on",s==="complete");
+}
+var run=0,reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+async function play(){
+  var id=++run;render();setStage("processing");await wait(2000);if(id!==run)return;
+  setStage("printing");await wait(reduce?0:1750);if(id!==run)return;
+  setStage("complete");
+}
+function seg(id,fn){var g=$(id);g.onclick=function(e){var b=e.target.closest("button");if(!b)return;g.querySelectorAll("button").forEach(function(x){x.setAttribute("aria-pressed",x===b)});fn(b.dataset.v)}}
+seg("#sType",function(v){cur=v;play()});
+seg("#sFeed",function(v){rp.dataset.feed=v;play()});
+seg("#sTheme",function(v){document.documentElement.dataset.theme=v});
+$("#replay").onclick=play;
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(play);
+</script>
+</body>
+</html>
