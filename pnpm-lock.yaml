@@ -163,6 +163,9 @@ importers:
       tailwind-merge:
         specifier: ^3.7.0
         version: 3.7.0
+      temporal-polyfill:
+        specifier: ^1.0.5
+        version: 1.0.5
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
