@@ -1537,6 +1537,35 @@ export function createTenantDb(tenantId: string) {
           .delete(),
     },
 
+    bookings: {
+      list: () => db.orm.public.Booking.where({ tenantId }).all(),
+      get: (id: string) =>
+        db.orm.public.Booking.where({ id, tenantId }).first(),
+      create: (data: {
+        customerId: string;
+        serviceName: string;
+        startDate: Temporal.Instant;
+        endDate: Temporal.Instant;
+        status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
+        totalAmount: bigint;
+        notes?: string;
+        createdAt?: Temporal.Instant;
+        updatedAt?: Temporal.Instant;
+      }) =>
+        db.orm.public.Booking.create({
+          ...data,
+          tenantId,
+        }),
+      update: (id: string, data: Record<string, unknown>) =>
+        db.orm.public.Booking
+          .where({ id, tenantId })
+          .update(data),
+      delete: (id: string) =>
+        db.orm.public.Booking
+          .where({ id, tenantId })
+          .delete(),
+    },
+
     expenses: {
       list: () => db.orm.public.Expense.where({ tenantId }).all(),
 

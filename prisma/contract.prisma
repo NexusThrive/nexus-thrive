@@ -326,6 +326,30 @@ model ApuActivityComposition {
   @@index([itemId])
 }
 
+model Booking {
+  id          String        @id @default(uuid())
+  tenantId    String
+  customerId  String
+  serviceName String
+  startDate   DateTime
+  endDate     DateTime
+  status      BookingStatus @default(PENDING)
+  totalAmount BigInt        @default(0)
+  notes       String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now())
+
+  @@index([tenantId])
+  @@index([customerId])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
 /// Encabezado de un presupuesto/cotización de obra.
 model Quote {
   id            String      @id @default(uuid())
