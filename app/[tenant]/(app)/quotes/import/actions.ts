@@ -256,8 +256,19 @@ export async function parseApuFromBlobAction(
     };
   }
 
+  const tStart = Date.now();
   try {
-    const res = await fetch(blobUrl);
+    console.log("[apu-importer] parseApuFromBlobAction:START", { blobUrl, fileName, size });
+
+    // Descarga con timeout (10s)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10_000);
+    let res: Response;
+    try {
+      res = await fetch(blobUrl, { signal: controller.signal });
+    } finally {
+      clearTimeout(timeoutId);
+    }
     if (!res.ok) {
       return {
         status: "error",
@@ -265,12 +276,14 @@ export async function parseApuFromBlobAction(
       };
     }
     const buffer = await res.arrayBuffer();
+    console.log("[apu-importer] parseApuFromBlobAction:DOWNLOAD_OK", { ms: Date.now() - tStart, bufferSize: buffer.byteLength });
 
     const preview = analyzeFile({
       buffer,
       fileName,
       fileSize: size,
     });
+    console.log("[apu-importer] parseApuFromBlobAction:PARSE_OK", { ms: Date.now() - tStart, rows: preview.rows.length });
 
     if (preview.errors.length > 0 && preview.rows.length === 0) {
       return {
@@ -279,9 +292,10 @@ export async function parseApuFromBlobAction(
         preview,
       };
     }
+    console.log("[apu-importer] parseApuFromBlobAction:TOTAL_OK", { ms: Date.now() - tStart });
     return { status: "ok", preview };
   } catch (error) {
-    console.error("[apu-importer] parseApuFromBlobAction", error);
+    console.error("[apu-importer] parseApuFromBlobAction:ERROR", { ms: Date.now() - tStart, error });
     return {
       status: "error",
       message:
