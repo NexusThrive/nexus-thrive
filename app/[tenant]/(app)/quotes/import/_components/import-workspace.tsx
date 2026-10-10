@@ -10,6 +10,7 @@ import {
   FileSpreadsheet,
   RefreshCw,
   Sparkles,
+  UploadCloud,
 } from "lucide-react";
 import { NLoader } from "@/components/brand/n-loader";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +18,7 @@ import FileDropzone from "./file-dropzone";
 import MetricsPanel from "./metrics-panel";
 import MappingEditor from "./mapping-editor";
 import PreviewTable from "./preview-table";
-import { parseApuFileAction, executeSmartImportAction } from "../actions";
+import { parseApuFileAction, parseApuFromBlobAction, executeSmartImportAction } from "../actions";
 import { recomputePreview } from "@/lib/apu-importer/recompute";
 import type {
   ColumnMapping,
@@ -29,12 +30,15 @@ import { cn } from "@/lib/cn";
 type Step = "upload" | "preview" | "done";
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20 MB (espejo del server)
+const VERCEL_BODY_LIMIT = 4.5 * 1024 * 1024; // 4.5 MB — límite de plataforma Vercel
 
 /**
  * Workspace del importador (cliente).
  *
- * Fase 1: el usuario sube un archivo → `parseApuFileAction` (server, sin DB)
- * devuelve el preview. Fase 2: confirmación → `executeSmartImportAction`
+ * Fase 1: el usuario sube un archivo → 
+ *   - ≤ 4.5 MB: `parseApuFileAction` (FormData directa)
+ *   - > 4.5 MB: subida a Vercel Blob (multipart) → `parseApuFromBlobAction`
+ * Fase 2: confirmación → `executeSmartImportAction`
  * (server, transaccional). El mapeo se puede editar; las filas se re-derivan
  * en cliente con `recomputePreview` y el servidor revalida todo al importar.
  */
@@ -59,17 +63,59 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
         );
         return;
       }
-      const formData = new FormData();
-      formData.set("file", file);
-      const response = await parseApuFileAction({ status: "idle" }, formData);
-      if (response.status === "ok" && response.preview) {
-        setPreview(response.preview);
-        setDraftMapping(response.preview.mapping);
-        setStep("preview");
+
+      let preview: ImportPreview | null = null;
+
+      if (file.size <= VERCEL_BODY_LIMIT) {
+        // Archivo pequeño: ruta directa vía FormData (Server Action)
+        const formData = new FormData();
+        formData.set("file", file);
+        const response = await parseApuFileAction({ status: "idle" }, formData);
+        if (response.status === "ok" && response.preview) {
+          preview = response.preview;
+        } else {
+          setParseError(response.message ?? "No se pudo analizar el archivo.");
+        }
       } else {
-        setParseError(response.message ?? "No se pudo analizar el archivo.");
+        // Archivo grande (> 4.5 MB): subir a Vercel Blob y procesar desde la URL
+        const token = process.env.NEXT_PUBLIC_BLOB_READ_WRITE_TOKEN;
+        if (!token) {
+          setParseError(
+            "Configuración incompleta: falta NEXT_PUBLIC_BLOB_READ_WRITE_TOKEN en el entorno. " +
+            "Agrega el token de Vercel Blob en las variables de entorno de Vercel y redeployea."
+          );
+          return;
+        }
+
+        // Subida multipart a Vercel Blob (soporta > 5 MB automáticamente)
+        const { put } = await import("@vercel/blob");
+        const blob = await put(`imports/${Date.now()}-${file.name}`, file, {
+          access: "public",
+          multipart: true,
+          token,
+        });
+
+        // Procesar desde la URL del Blob
+        const formData = new FormData();
+        formData.set("blobUrl", blob.url);
+        formData.set("fileName", file.name);
+        formData.set("fileSize", String(file.size));
+
+        const response = await parseApuFromBlobAction({ status: "idle" }, formData);
+        if (response.status === "ok" && response.preview) {
+          preview = response.preview;
+        } else {
+          setParseError(response.message ?? "No se pudo analizar el archivo desde Blob.");
+        }
       }
-    } catch {
+
+      if (preview) {
+        setPreview(preview);
+        setDraftMapping(preview.mapping);
+        setStep("preview");
+      }
+    } catch (error) {
+      console.error("[import-workspace] handleFile", error);
       setParseError(
         "No se pudo analizar el archivo. Verifica que sea un Excel o CSV válido e inténtalo de nuevo.",
       );

@@ -69,7 +69,7 @@ export default function FileDropzone({
         </span>
         <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
           <FileSpreadsheet aria-hidden="true" className="h-3.5 w-3.5" />
-          .xlsx · .csv · .txt — máx 20 MB. Se aceptan insumos planos o packs APU completos.
+          {".xlsx · .csv · .txt — máx 20 MB. Archivos > 4.5 MB usan subida directa a Blob. Se aceptan insumos planos o packs APU completos."}
         </span>
       </button>
     </div>

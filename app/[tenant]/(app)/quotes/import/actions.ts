@@ -203,3 +203,89 @@ export async function executeSmartImportAction(input: {
     };
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Fase 1b — Parse desde Vercel Blob (archivos > 4.5 MB)               */
+/* ------------------------------------------------------------------ */
+
+export type ParseBlobState = {
+  status: "idle" | "error" | "ok";
+  message?: string;
+  preview?: ImportPreview;
+};
+
+export async function parseApuFromBlobAction(
+  _prevState: ParseBlobState,
+  formData: FormData,
+): Promise<ParseBlobState> {
+  const { userId } = await auth();
+  if (!userId) {
+    return { status: "error", message: "Debes iniciar sesión para importar." };
+  }
+
+  const blobUrl = formData.get("blobUrl");
+  const fileName = formData.get("fileName");
+  const fileSize = formData.get("fileSize");
+
+  if (!blobUrl || typeof blobUrl !== "string") {
+    return { status: "error", message: "Falta la URL del archivo en Blob." };
+  }
+  if (!fileName || typeof fileName !== "string") {
+    return { status: "error", message: "Falta el nombre del archivo." };
+  }
+  if (!fileSize || typeof fileSize !== "string") {
+    return { status: "error", message: "Falta el tamaño del archivo." };
+  }
+
+  const size = Number.parseInt(fileSize, 10);
+  if (Number.isNaN(size) || size === 0) {
+    return { status: "error", message: "Tamaño de archivo inválido." };
+  }
+  if (size > MAX_FILE_SIZE) {
+    return {
+      status: "error",
+      message: `El archivo supera el límite de ${Math.round(MAX_FILE_SIZE / 1024 / 1024)} MB.`,
+    };
+  }
+
+  const extension = fileName.toLowerCase().split(".").pop() ?? "";
+  if (!ALLOWED_EXTENSIONS.has(extension)) {
+    return {
+      status: "error",
+      message: "Formato no soportado. Usa .xlsx, .csv o .txt.",
+    };
+  }
+
+  try {
+    const res = await fetch(blobUrl);
+    if (!res.ok) {
+      return {
+        status: "error",
+        message: `No se pudo descargar el archivo desde Blob (${res.status}).`,
+      };
+    }
+    const buffer = await res.arrayBuffer();
+
+    const preview = analyzeFile({
+      buffer,
+      fileName,
+      fileSize: size,
+    });
+
+    if (preview.errors.length > 0 && preview.rows.length === 0) {
+      return {
+        status: "error",
+        message: preview.errors.join(" "),
+        preview,
+      };
+    }
+    return { status: "ok", preview };
+  } catch (error) {
+    console.error("[apu-importer] parseApuFromBlobAction", error);
+    return {
+      status: "error",
+      message:
+        "No se pudo procesar el archivo desde Blob. Verifica que sea un Excel o CSV válido.",
+    };
+  }
+}
