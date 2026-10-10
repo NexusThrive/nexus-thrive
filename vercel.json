@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "app/**/*.ts": {
+      "maxRequestSize": "50mb",
+      "maxDuration": 30
+    }
+  }
+}
