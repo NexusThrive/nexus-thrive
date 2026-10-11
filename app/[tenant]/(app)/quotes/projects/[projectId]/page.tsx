@@ -87,15 +87,19 @@ export default async function ProjectDetailPage({
     tab === "presupuesto"
       ? await getOrCreateProjectBudgetAction(tenantSlug, projectId)
       : null;
+  const baselines =
+    tab === "presupuesto"
+      ? await tenantDb.budgets.listBaselines(projectId)
+      : [];
   const plan = tab === "planificador" ? await tenantDb.lean.getOrCreatePlan(projectId) : null;
   const fieldLog = tab === "bitacora" || tab === "campo"
     ? await tenantDb.fieldLog.getOrCreateLog(projectId)
     : null;
 
-  // Autor de la bitácora: se resuelve del usuario en sesión (no del formulario).
+  // Autor de la bitácora y rol D7 del presupuesto: del usuario en sesión.
   let currentUserName = "Usuario";
   let currentUserRole = "STAFF";
-  if (tab === "bitacora" || tab === "campo") {
+  if (tab === "bitacora" || tab === "campo" || tab === "presupuesto") {
     const { userId } = await auth();
     const member = userId
       ? await tenantDb.users.findByClerkUserId(userId)
@@ -103,6 +107,8 @@ export default async function ProjectDetailPage({
     currentUserName = member?.name?.trim() || member?.email || "Usuario";
     currentUserRole = member?.role ?? "STAFF";
   }
+  const canGovernBudget =
+    currentUserRole === "OWNER" || currentUserRole === "SUPERADMIN";
 
   return (
     <div className="space-y-6">
@@ -204,6 +210,8 @@ export default async function ProjectDetailPage({
               tenantSlug={tenantSlug}
               projectId={project.id}
               budget={budget}
+              baselines={baselines}
+              canGovern={canGovernBudget}
             />
           ) : (
             <div className="rounded-lg border border-dashed border-border bg-card p-8 text-center">

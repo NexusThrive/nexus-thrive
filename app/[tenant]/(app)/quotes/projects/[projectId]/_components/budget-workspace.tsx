@@ -2,12 +2,13 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Lock, LockOpen, Plus, Settings2, SlidersHorizontal, Trash2 } from "lucide-react";
+import { BadgeCheck, Lock, LockOpen, Plus, Settings2, SlidersHorizontal, Trash2 } from "lucide-react";
 import { microToPercent } from "@/lib/apu-engine";
 import { formatMoneyMicro, formatQuantityMicro } from "@/lib/format";
 import { NLoader } from "@/components/brand/n-loader";
-import type { ProjectBudgetData } from "@/lib/tenant-db";
+import type { BudgetBaselineData, ProjectBudgetData } from "@/lib/tenant-db";
 import {
+  approveBudgetBaselineAction,
   deleteBudgetItemAction,
   deleteChapterAction,
   toggleBudgetLockAction,
@@ -65,10 +66,14 @@ export default function BudgetWorkspace({
   tenantSlug,
   projectId,
   budget,
+  baselines,
+  canGovern,
 }: {
   tenantSlug: string;
   projectId: string;
   budget: ProjectBudgetData;
+  baselines: BudgetBaselineData[];
+  canGovern: boolean;
 }) {
   const [chapterOpen, setChapterOpen] = useState(false);
   const [aiuOpen, setAiuOpen] = useState(false);
@@ -80,6 +85,7 @@ export default function BudgetWorkspace({
   const router = useRouter();
   const [isToggling, startToggle] = useTransition();
   const [isDeleting, startDelete] = useTransition();
+  const [isApproving, startApprove] = useTransition();
 
   const totals = useMemo(() => {
     const adminImprev =
@@ -133,6 +139,22 @@ export default function BudgetWorkspace({
     });
   };
 
+  const onApproveBaseline = () => {
+    const note = window.prompt("Nota de la línea base (opcional):");
+    if (note === null) return;
+    startApprove(async () => {
+      const res = await approveBudgetBaselineAction(
+        tenantSlug,
+        projectId,
+        note.trim() ? note.trim() : undefined,
+      );
+      if (!res.ok) {
+        window.alert(res.message ?? "No se pudo aprobar la línea base.");
+      }
+      router.refresh();
+    });
+  };
+
   const itemCount = budget.chapters.reduce(
     (total, chapter) => total + chapter.items.length,
     0,
@@ -154,6 +176,64 @@ export default function BudgetWorkspace({
           hint={`Util ${aiuDefaults.utilidadPct} % · IVA ${aiuDefaults.ivaUtilidadPct} %`}
         />
         <KpiCard label="Valor total" value={totals.grand} strong />
+      </div>
+
+      {/* Línea base (D1) */}
+      <div className="rounded-lg border border-border bg-card p-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h2 className="text-sm font-semibold text-foreground">Línea base</h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {baselines.length === 0
+                ? "Sin línea base aprobada todavía."
+                : `${baselines.length} ${
+                    baselines.length === 1 ? "línea base" : "líneas base"
+                  }; vigente v${baselines[0].version}.`}
+            </p>
+          </div>
+          {canGovern ? (
+            <button
+              type="button"
+              onClick={onApproveBaseline}
+              disabled={isApproving}
+              className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-accent/40 bg-card px-3 text-sm font-medium text-accent-text transition hover:bg-accent/10 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isApproving ? (
+                <NLoader size={14} className="text-current" />
+              ) : (
+                <BadgeCheck aria-hidden="true" className="h-4 w-4" />
+              )}
+              Aprobar línea base
+            </button>
+          ) : null}
+        </div>
+        {baselines.length > 0 ? (
+          <ul className="mt-3 space-y-1.5 border-t border-border/60 pt-3">
+            {baselines.map((baseline) => (
+              <li
+                key={baseline.id}
+                className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs"
+              >
+                <span className="font-mono font-medium text-accent-text">
+                  v{baseline.version}
+                </span>
+                <span className="font-mono tabular-nums text-foreground">
+                  {formatMoneyMicro(baseline.grandTotal)}
+                </span>
+                <span className="text-muted-foreground">
+                  rev {baseline.budgetRevision} · {baseline.chapterCount} cap. ·{" "}
+                  {baseline.itemCount} part.
+                </span>
+                <span className="text-muted-foreground">
+                  {baseline.approvedByName} · {baseline.createdAt}
+                </span>
+                {baseline.note ? (
+                  <span className="text-muted-foreground">— {baseline.note}</span>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </div>
 
       {/* Barra de acciones */}

@@ -202,6 +202,7 @@ model Tenant {
   budgetChapters BudgetChapter[]
   budgetItems   BudgetItem[]
   budgetItemResources BudgetItemResource[]
+  budgetBaselines   BudgetBaseline[]
   projectPlans      ProjectPlan[]
   lookaheadTasks    LookaheadTask[]
   weeklyCommitments WeeklyCommitment[]
@@ -604,6 +605,7 @@ model ProjectBudget {
   updatedAt temporal.updatedAt()
 
   chapters BudgetChapter[]
+  baselines BudgetBaseline[]
 
   @@unique([tenantId, code])
   @@index([tenantId])
@@ -681,6 +683,48 @@ model BudgetItemResource {
 
   @@index([tenantId])
   @@index([itemId])
+}
+
+/// Línea base aprobada del presupuesto (D1 — revisiones baseline). Congela la
+/// revisión, los totales y los conteos del presupuesto en el instante de la
+/// aprobación para comparar después contra el avance y el costo real (FASE 5).
+/// Solo OWNER / SUPERADMIN pueden aprobar (D7). Un presupuesto puede acumular
+/// varias líneas base; la de mayor `version` es la vigente.
+model BudgetBaseline {
+  id        String        @id @default(uuid())
+  tenantId  String
+  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  budgetId  String
+  budget    ProjectBudget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+
+  /// Revisión del presupuesto capturada al aprobar (`ProjectBudget.revision`).
+  budgetRevision Int
+  /// Número de línea base dentro del presupuesto (1, 2, …).
+  version        Int
+
+  /// Snapshot de totales en micro-unidades al momento de aprobar.
+  directCostTotal  BigInt
+  adminTotal       BigInt
+  imprevTotal      BigInt
+  utilidadTotal    BigInt
+  ivaUtilidadTotal BigInt
+  grandTotal       BigInt
+
+  /// Conteos del estado congelado.
+  chapterCount Int
+  itemCount    Int
+  /// Snapshot informativo del árbol de capítulos ({ order, name, subtotal }).
+  snapshot Json?
+
+  note           String?
+  approvedById   String
+  approvedByName String
+
+  createdAt DateTime @default(now())
+
+  @@unique([budgetId, version])
+  @@index([tenantId])
+  @@index([budgetId])
 }
 
 /// Plan operativo Lean (Last Planner System) de un proyecto (FASE 3 — Tab 3).

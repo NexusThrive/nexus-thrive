@@ -301,3 +301,48 @@ export async function deleteBudgetItemAction(
   revalidatePath(`/${tenantSlug}/quotes/projects/${projectId}`);
   return { ok: true };
 }
+
+/* ------------------------------------------------------------------ */
+/* Línea base (D1)                                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Aprueba una línea base del presupuesto (congela revisión, totales y
+ * conteos). Solo OWNER o SUPERADMIN (D7). Permitido aunque esté bloqueado.
+ */
+export async function approveBudgetBaselineAction(
+  tenantSlug: string,
+  projectId: string,
+  note?: string,
+): Promise<{ ok: boolean; message?: string }> {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context || !projectId) {
+    return { ok: false, message: "No tienes acceso a este negocio." };
+  }
+  if (!canGovernBudget(context.role)) {
+    return {
+      ok: false,
+      message: "Solo OWNER o SUPERADMIN pueden aprobar la línea base.",
+    };
+  }
+  try {
+    const member = await context.tenantDb.users.findByClerkUserId(
+      context.userId,
+    );
+    await context.tenantDb.budgets.approveBaseline(projectId, {
+      userId: context.userId,
+      userName: member?.name?.trim() || member?.email || "Usuario",
+      note,
+    });
+  } catch (error) {
+    return {
+      ok: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "No se pudo aprobar la línea base.",
+    };
+  }
+  revalidatePath(`/${tenantSlug}/quotes/projects/${projectId}`);
+  return { ok: true };
+}

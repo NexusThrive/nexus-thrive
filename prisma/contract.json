@@ -24,6 +24,10 @@
       "model": "Booking",
       "namespace": "public"
     },
+    "BudgetBaseline": {
+      "model": "BudgetBaseline",
+      "namespace": "public"
+    },
     "BudgetChapter": {
       "model": "BudgetChapter",
       "namespace": "public"
@@ -1141,6 +1145,230 @@
               },
               "namespaceId": "public",
               "table": "Booking"
+            }
+          },
+          "BudgetBaseline": {
+            "fields": {
+              "adminTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int8@1",
+                  "kind": "scalar"
+                }
+              },
+              "approvedById": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "approvedByName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "budgetId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "budgetRevision": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "chapterCount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "directCostTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int8@1",
+                  "kind": "scalar"
+                }
+              },
+              "grandTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int8@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "imprevTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int8@1",
+                  "kind": "scalar"
+                }
+              },
+              "itemCount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "ivaUtilidadTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int8@1",
+                  "kind": "scalar"
+                }
+              },
+              "note": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "snapshot": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "utilidadTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int8@1",
+                  "kind": "scalar"
+                }
+              },
+              "version": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "budget": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "budgetId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ProjectBudget",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "adminTotal": {
+                  "column": "adminTotal"
+                },
+                "approvedById": {
+                  "column": "approvedById"
+                },
+                "approvedByName": {
+                  "column": "approvedByName"
+                },
+                "budgetId": {
+                  "column": "budgetId"
+                },
+                "budgetRevision": {
+                  "column": "budgetRevision"
+                },
+                "chapterCount": {
+                  "column": "chapterCount"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "directCostTotal": {
+                  "column": "directCostTotal"
+                },
+                "grandTotal": {
+                  "column": "grandTotal"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "imprevTotal": {
+                  "column": "imprevTotal"
+                },
+                "itemCount": {
+                  "column": "itemCount"
+                },
+                "ivaUtilidadTotal": {
+                  "column": "ivaUtilidadTotal"
+                },
+                "note": {
+                  "column": "note"
+                },
+                "snapshot": {
+                  "column": "snapshot"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "utilidadTotal": {
+                  "column": "utilidadTotal"
+                },
+                "version": {
+                  "column": "version"
+                }
+              },
+              "namespaceId": "public",
+              "table": "BudgetBaseline"
             }
           },
           "BudgetChapter": {
@@ -3246,6 +3474,21 @@
               }
             },
             "relations": {
+              "baselines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "budgetId"
+                  ]
+                },
+                "to": {
+                  "model": "BudgetBaseline",
+                  "namespace": "public"
+                }
+              },
               "chapters": {
                 "cardinality": "1:N",
                 "on": {
@@ -4287,6 +4530,21 @@
                 },
                 "to": {
                   "model": "ApuItem",
+                  "namespace": "public"
+                }
+              },
+              "budgetBaselines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "BudgetBaseline",
                   "namespace": "public"
                 }
               },
@@ -5515,6 +5773,171 @@
                 ]
               },
               "uniques": []
+            },
+            "BudgetBaseline": {
+              "columns": {
+                "adminTotal": {
+                  "codecId": "pg/int8@1",
+                  "nativeType": "int8",
+                  "nullable": false
+                },
+                "approvedById": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "approvedByName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "budgetId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "budgetRevision": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "chapterCount": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "directCostTotal": {
+                  "codecId": "pg/int8@1",
+                  "nativeType": "int8",
+                  "nullable": false
+                },
+                "grandTotal": {
+                  "codecId": "pg/int8@1",
+                  "nativeType": "int8",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "imprevTotal": {
+                  "codecId": "pg/int8@1",
+                  "nativeType": "int8",
+                  "nullable": false
+                },
+                "itemCount": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "ivaUtilidadTotal": {
+                  "codecId": "pg/int8@1",
+                  "nativeType": "int8",
+                  "nullable": false
+                },
+                "note": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "snapshot": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
+                  "nullable": true
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "utilidadTotal": {
+                  "codecId": "pg/int8@1",
+                  "nativeType": "int8",
+                  "nullable": false
+                },
+                "version": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "BudgetBaseline"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "budgetId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "BudgetBaseline"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProjectBudget"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "budgetId"
+                  ],
+                  "name": "BudgetBaseline_budgetId_idx_abbf614c",
+                  "prefix": "BudgetBaseline_budgetId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "BudgetBaseline_tenantId_idx_c93ed4f1",
+                  "prefix": "BudgetBaseline_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "budgetId",
+                    "version"
+                  ]
+                }
+              ]
             },
             "BudgetChapter": {
               "columns": {
@@ -8717,10 +9140,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "77c8ba7395a5ab33bb41159f8d3003dbd2bcaf220a24a16e2efaae30235dd4d8"
+    "storageHash": "07381774a799e22873af0cbf20aff2bc46ae1d20c2bd9e6b63a27eb935c8c335"
   },
   "execution": {
-    "executionHash": "a5d75e45f846778ea827c3c59d0e7682dd123c54eea06bd6b1f71efc8931230a",
+    "executionHash": "18644bea8ea7b5195e4f6c84a0dd37f0e22467d1c118f273322306e5ee699959",
     "mutations": {
       "defaults": [
         {
@@ -8804,6 +9227,17 @@
           },
           "ref": {
             "entry": "Booking",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "BudgetBaseline",
             "field": "id",
             "namespace": "public"
           }

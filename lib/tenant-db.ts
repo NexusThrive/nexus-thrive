@@ -1,6 +1,6 @@
 import { and, or } from "@prisma/orm-postgres/orm-client";
 import { db } from "@/prisma/db";
-import { formatDateShort, toNumber } from "@/lib/format";
+import { formatDateShort, formatDateTime, toNumber } from "@/lib/format";
 import {
   DEFAULT_MODULES_BY_VERTICAL,
   type VerticalValue,
@@ -506,6 +506,25 @@ export type BudgetTotalsCheck = {
   directCostTotal: string;
   grandTotal: string;
   mismatches: BudgetTotalsMismatch[];
+};
+
+/** Línea base aprobada del presupuesto, serializada para el cliente. */
+export type BudgetBaselineData = {
+  id: string;
+  version: number;
+  budgetRevision: number;
+  directCostTotal: string;
+  adminTotal: string;
+  imprevTotal: string;
+  utilidadTotal: string;
+  ivaUtilidadTotal: string;
+  grandTotal: string;
+  chapterCount: number;
+  itemCount: number;
+  note: string | null;
+  approvedById: string;
+  approvedByName: string;
+  createdAt: string;
 };
 
 /** Porcentajes AIU ya convertidos a micro-fracción (100_000 = 10 %). */
@@ -2714,6 +2733,118 @@ export function createTenantDb(tenantId: string) {
           grandTotal: computed.grandTotal.toString(),
           mismatches,
         };
+      },
+
+      /** Líneas base aprobadas del presupuesto, de la más reciente a la más vieja. */
+      listBaselines: async (
+        projectId: string,
+      ): Promise<BudgetBaselineData[]> => {
+        const budget = await db.orm.public.ProjectBudget
+          .where({ projectId, tenantId })
+          .first();
+        if (!budget) {
+          return [];
+        }
+        const rows = await db.orm.public.BudgetBaseline
+          .where({ budgetId: budget.id, tenantId })
+          .orderBy((baseline) => baseline.version.desc())
+          .all();
+        return rows.map((row) => ({
+          id: row.id,
+          version: row.version,
+          budgetRevision: row.budgetRevision,
+          directCostTotal: row.directCostTotal.toString(),
+          adminTotal: row.adminTotal.toString(),
+          imprevTotal: row.imprevTotal.toString(),
+          utilidadTotal: row.utilidadTotal.toString(),
+          ivaUtilidadTotal: row.ivaUtilidadTotal.toString(),
+          grandTotal: row.grandTotal.toString(),
+          chapterCount: row.chapterCount,
+          itemCount: row.itemCount,
+          note: row.note,
+          approvedById: row.approvedById,
+          approvedByName: row.approvedByName,
+          createdAt: formatDateTime(row.createdAt),
+        }));
+      },
+
+      /**
+       * Aprueba una línea base: congela la revisión, los totales recalculados y
+       * los conteos actuales del presupuesto. Permitido aunque esté bloqueado
+       * (aprobar no muta el contenido); el rol D7 lo exige la action.
+       */
+      approveBaseline: async (
+        projectId: string,
+        input: { userId: string; userName: string; note?: string },
+      ): Promise<{ id: string; version: number }> => {
+        const budget = await db.orm.public.ProjectBudget
+          .where({ projectId, tenantId })
+          .first();
+        if (!budget) {
+          throw new Error("Presupuesto no encontrado en este negocio.");
+        }
+        const created = await db.transaction(async (tx) => {
+          const direct = await sumBudgetDirect(tx, budget.id);
+          const totals = calculateBudgetTotals(
+            direct,
+            budget.aiuAdminPct,
+            budget.aiuImprevPct,
+            budget.aiuUtilidadPct,
+            budget.ivaUtilidadPct,
+          );
+          const chapters = await tx.orm.public.BudgetChapter
+            .where({ budgetId: budget.id })
+            .orderBy((chapter) => chapter.order.asc())
+            .select("id", "order", "name")
+            .all();
+          const chapterIds = chapters.map((chapter) => chapter.id);
+          const items = chapterIds.length
+            ? await tx.orm.public.BudgetItem
+                .where((item) => item.chapterId.in(chapterIds))
+                .select("chapterId", "totalCostDirect")
+                .all()
+            : [];
+          const subtotalByChapter = new Map<string, bigint>();
+          for (const item of items) {
+            subtotalByChapter.set(
+              item.chapterId,
+              (subtotalByChapter.get(item.chapterId) ?? BigInt(0)) +
+                BigInt(item.totalCostDirect),
+            );
+          }
+          const snapshot = chapters.map((chapter) => ({
+            order: chapter.order,
+            name: chapter.name,
+            subtotal: (
+              subtotalByChapter.get(chapter.id) ?? BigInt(0)
+            ).toString(),
+          }));
+          const last = await tx.orm.public.BudgetBaseline
+            .where({ budgetId: budget.id })
+            .orderBy((baseline) => baseline.version.desc())
+            .first();
+          const version = last ? last.version + 1 : 1;
+          const baseline = await tx.orm.public.BudgetBaseline.create({
+            tenantId,
+            budgetId: budget.id,
+            budgetRevision: budget.revision,
+            version,
+            directCostTotal: direct,
+            adminTotal: totals.adminTotal,
+            imprevTotal: totals.imprevTotal,
+            utilidadTotal: totals.utilidadTotal,
+            ivaUtilidadTotal: totals.ivaUtilidadTotal,
+            grandTotal: totals.grandTotal,
+            chapterCount: chapters.length,
+            itemCount: items.length,
+            snapshot: snapshot as never,
+            note: input.note?.trim() ? input.note.trim() : null,
+            approvedById: input.userId,
+            approvedByName: input.userName,
+          });
+          return baseline;
+        });
+        return { id: created.id, version: created.version };
       },
     },
 
