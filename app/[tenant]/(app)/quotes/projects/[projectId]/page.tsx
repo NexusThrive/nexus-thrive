@@ -10,6 +10,7 @@ import ProjectHeaderForm from "./_components/project-header-form";
 import BudgetWorkspace from "./_components/budget-workspace";
 import LeanWorkspace from "./_components/lean-workspace";
 import FieldLogWorkspace from "./_components/field-log-workspace";
+import { ReportsWorkspace } from "./_components/reports-workspace";
 import { getOrCreateProjectBudgetAction } from "./budget/actions";
 import { getOrCreateFieldLogAction } from "./field-log/actions";
 
@@ -217,6 +218,8 @@ export default async function ProjectDetailPage({
               <p className="text-sm font-medium text-foreground">No se pudo cargar la bitácora</p>
             </div>
           )
+        ) : tab === "informes" ? (
+          <ReportsWorkspace />
         ) : (
           <TabPlaceholder label={activeLabel} />
         )}
