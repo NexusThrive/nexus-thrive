@@ -493,6 +493,21 @@ export type ProjectBudgetData = {
   chapters: BudgetChapterData[];
 };
 
+/** Discrepancia entre un total persistido y el recalculado por el servidor. */
+export type BudgetTotalsMismatch = {
+  field: string;
+  expected: string;
+  found: string;
+};
+
+/** Resultado de `budgets.verifyTotals` (auditoría de integridad, solo lectura). */
+export type BudgetTotalsCheck = {
+  ok: boolean;
+  directCostTotal: string;
+  grandTotal: string;
+  mismatches: BudgetTotalsMismatch[];
+};
+
 /** Porcentajes AIU ya convertidos a micro-fracción (100_000 = 10 %). */
 export type AiuConfigInput = {
   adminPct: bigint;
@@ -888,9 +903,12 @@ async function loadBudgetTree(budget: BudgetRow): Promise<ProjectBudgetData> {
   };
 }
 
+/** Lector de filas: sirve tanto el cliente `db` como una transacción activa. */
+type TenantReader = Pick<TenantTx, "orm">;
+
 /** Suma de los costos directos de todas las partidas del presupuesto. */
 async function sumBudgetDirect(
-  tx: TenantTx,
+  tx: TenantReader,
   budgetId: string,
 ): Promise<bigint> {
   const chapters = await tx.orm.public.BudgetChapter
@@ -2625,6 +2643,77 @@ export function createTenantDb(tenantId: string) {
             .where({ id: budget.id })
             .update({ revision: budget.revision + 1 });
         });
+      },
+
+      /**
+       * Auditoría de integridad (solo lectura): recalcula la cascada AIU
+       * desde las partidas reales y la compara con los totales persistidos.
+       * No escribe nada; sirve para detectar deriva de datos (Etapa 1).
+       */
+      verifyTotals: async (projectId: string): Promise<BudgetTotalsCheck> => {
+        const budget = await db.orm.public.ProjectBudget
+          .where({ projectId, tenantId })
+          .first();
+        if (!budget) {
+          throw new Error("Presupuesto no encontrado en este negocio.");
+        }
+        const direct = await sumBudgetDirect(db, budget.id);
+        const computed = calculateBudgetTotals(
+          direct,
+          budget.aiuAdminPct,
+          budget.aiuImprevPct,
+          budget.aiuUtilidadPct,
+          budget.ivaUtilidadPct,
+        );
+        const pairs: Array<{
+          field: string;
+          expected: bigint;
+          found: bigint;
+        }> = [
+          {
+            field: "directCostTotal",
+            expected: direct,
+            found: budget.directCostTotal,
+          },
+          {
+            field: "adminTotal",
+            expected: computed.adminTotal,
+            found: budget.adminTotal,
+          },
+          {
+            field: "imprevTotal",
+            expected: computed.imprevTotal,
+            found: budget.imprevTotal,
+          },
+          {
+            field: "utilidadTotal",
+            expected: computed.utilidadTotal,
+            found: budget.utilidadTotal,
+          },
+          {
+            field: "ivaUtilidadTotal",
+            expected: computed.ivaUtilidadTotal,
+            found: budget.ivaUtilidadTotal,
+          },
+          {
+            field: "grandTotal",
+            expected: computed.grandTotal,
+            found: budget.grandTotal,
+          },
+        ];
+        const mismatches = pairs
+          .filter((pair) => pair.expected !== pair.found)
+          .map((pair) => ({
+            field: pair.field,
+            expected: pair.expected.toString(),
+            found: pair.found.toString(),
+          }));
+        return {
+          ok: mismatches.length === 0,
+          directCostTotal: direct.toString(),
+          grandTotal: computed.grandTotal.toString(),
+          mismatches,
+        };
       },
     },
 
