@@ -106,6 +106,26 @@ export function formatQuantityMicro(
   return negative ? `-${text}` : text;
 }
 
+/**
+ * Porcentaje en micro-fracción → string con 1 decimal
+ * (1_000_000 = 100 % → "100.0%", 100_000 = 10 % → "10.0%").
+ */
+export function formatPercentMicro(
+  micro: bigint | string | null | undefined,
+): string {
+  if (micro === null || micro === undefined || micro === "") {
+    return "0%";
+  }
+  try {
+    const value = typeof micro === "bigint" ? micro : BigInt(micro);
+    // 1_000_000 = 100 % → /10_000 = % con 2 decimales de precisión interna.
+    const percent = Number(value) / 10_000;
+    return `${percent.toFixed(1)}%`;
+  } catch {
+    return "0%";
+  }
+}
+
 /** Normaliza Temporal.Instant / Date / string ISO a un Date de JS. */
 function toDate(value: unknown): Date | null {
   if (value instanceof Date) {

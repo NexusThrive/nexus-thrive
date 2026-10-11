@@ -18,13 +18,10 @@ import {
   calculatePpc,
   getNonComplianceBreakdown,
   isoWeekOf,
+  isoWeekRange,
   isoWeekLabel,
-  mondayOf,
-  addDays,
   bogotaToday,
-  relativeWeekNumber,
-  parsePlainDate,
-  type PlainDate,
+  formatPlainDate,
   type PpcResult,
   type CncBreakdown,
   type CommitmentStatusValue,
@@ -32,8 +29,10 @@ import {
 } from "@/lib/lean-engine";
 
 import {
-  calculateBudgetTotals,
-} from "@/lib/apu-engine";
+  formatMoneyMicro,
+  formatQuantityMicro,
+  formatPercentMicro,
+} from "@/lib/format";
 
 import {
   type ProjectBudgetData,
@@ -100,25 +99,6 @@ export type FieldLogData = {
 // Utilidades de formato y serialización
 // ---------------------------------------------------------------------------
 
-/** Convierte micro-pesos (BigInt) a string con separador de miles y 0 decimales. */
-export function formatMoneyMicro(micro: bigint | string | null | undefined): string {
-  if (micro === null || micro === undefined || micro === "") {
-    return "$0";
-  }
-  let value: bigint;
-  try {
-    value = typeof micro === "bigint" ? micro : BigInt(micro);
-  } catch {
-    return "$0";
-  }
-  const negative = value < BigInt(0);
-  const abs = negative ? -value : value;
-  const pesos = (abs + BigInt(500_000)) / BigInt(1_000_000); // redondeo half-up a peso
-  const n = Number(pesos);
-  const formatted = new Intl.NumberFormat("es-CO").format(negative ? -n : n);
-  return `$${formatted}`;
-}
-
 /** Convierte micro-pesos a número para cálculos (con cuidado). */
 export function microToNumber(micro: bigint | string | null | undefined): number {
   if (micro === null || micro === undefined || micro === "") return 0;
@@ -126,18 +106,6 @@ export function microToNumber(micro: bigint | string | null | undefined): number
     return Number(typeof micro === "bigint" ? micro : BigInt(micro)) / 1_000_000;
   } catch {
     return 0;
-  }
-}
-
-/** Convierte porcentaje micro-fracción (1_000_000 = 100%) a string "10.0%". */
-export function formatPercentMicro(micro: bigint | string | null | undefined): string {
-  if (micro === null || micro === undefined || micro === "") return "0%";
-  try {
-    const value = typeof micro === "bigint" ? micro : BigInt(micro);
-    const percent = Number(value) / 10_000; // 1_000_000 = 100% -> /10_000 = % con 2 decimales
-    return `${percent.toFixed(1)}%`;
-  } catch {
-    return "0%";
   }
 }
 
@@ -165,20 +133,6 @@ export function formatDateTimeDisplay(isoDate: string): string {
   } catch {
     return "—";
   }
-}
-
-/** Devuelve el rango de fechas (lunes-domingo) para una semana ISO dada. */
-export function isoWeekRange(year: number, week: number): { start: PlainDate; end: PlainDate } {
-  // Enero 4 siempre está en la semana 1 ISO
-  const jan4 = { year, month: 1, day: 4 };
-  const week1Monday = mondayOf(jan4);
-  const targetMonday = addDays(week1Monday, (week - 1) * 7);
-  return { start: targetMonday, end: addDays(targetMonday, 6) };
-}
-
-/** Convierte PlainDate a ISO "YYYY-MM-DD". */
-export function plainDateToIso(d: PlainDate): string {
-  return `${d.year}-${String(d.month).padStart(2, "0")}-${String(d.day).padStart(2, "0")}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -347,23 +301,6 @@ export function buildInformeCeroData(
   };
 }
 
-/** Formatea cantidad micro (1_000_000 = 1.000000) a string legible. */
-export function formatQuantityMicro(micro: string | bigint | null | undefined): string {
-  if (micro === null || micro === undefined || micro === "") return "0";
-  let value: bigint;
-  try {
-    value = typeof micro === "bigint" ? micro : BigInt(micro);
-  } catch {
-    return "0";
-  }
-  const negative = value < BigInt(0);
-  const abs = negative ? -value : value;
-  const whole = abs / BigInt(1_000_000);
-  const frac = (abs % BigInt(1_000_000)).toString().padStart(6, "0").replace(/0+$/, "");
-  const text = frac ? `${whole}.${frac}` : `${whole}`;
-  return negative ? `-${text}` : text;
-}
-
 // ---------------------------------------------------------------------------
 // 2. INFORME SEMANAL DE OBRA
 // ---------------------------------------------------------------------------
@@ -516,8 +453,8 @@ export function buildWeeklyReportData(
   // Bitácora del período
   let fieldLogEntries: FieldLogEntryData[] = [];
   if (fieldLog) {
-    const periodStart = plainDateToIso(start);
-    const periodEnd = plainDateToIso(end);
+    const periodStart = formatPlainDate(start);
+    const periodEnd = formatPlainDate(end);
     fieldLogEntries = fieldLog.entries.filter(
       (e) => e.entryDate >= periodStart && e.entryDate <= periodEnd,
     );
@@ -535,8 +472,8 @@ export function buildWeeklyReportData(
     projectName: project.name,
     weekNumber,
     year,
-    periodStart: formatDateDisplay(plainDateToIso(start)),
-    periodEnd: formatDateDisplay(plainDateToIso(end)),
+    periodStart: formatDateDisplay(formatPlainDate(start)),
+    periodEnd: formatDateDisplay(formatPlainDate(end)),
     reportDate: formatDateDisplay(reportDate),
     budgetCode: budget?.code ?? null,
     ppc,
@@ -565,9 +502,6 @@ export function buildWeeklyReportData(
     hasFieldLog: !!fieldLog,
   };
 }
-
-/** Parsea "YYYY-MM-DD" a PlainDate. */
-export { parsePlainDate } from "@/lib/lean-engine";
 
 // ---------------------------------------------------------------------------
 // 3. EXPLOSIÓN DE COMPRAS (BOM) — EXPORTACIÓN CSV

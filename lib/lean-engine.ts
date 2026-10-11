@@ -187,6 +187,19 @@ export function isoWeekOf(date: PlainDate): { year: number; week: number } {
 }
 
 /**
+ * Rango de fechas (lunes–domingo) de una semana ISO-8601 dada. El 4 de enero
+ * siempre pertenece a la semana 1 ISO.
+ */
+export function isoWeekRange(
+  year: number,
+  week: number,
+): { start: PlainDate; end: PlainDate } {
+  const week1Monday = mondayOf({ year, month: 1, day: 4 });
+  const start = addDays(week1Monday, (week - 1) * 7);
+  return { start, end: addDays(start, 6) };
+}
+
+/**
  * Semana RELATIVA de una fecha dentro de la ventana Lookahead anclada en
  * `windowStart` (lunes de la semana relativa 1): puede dar ≤ 0 o > 6.
  */

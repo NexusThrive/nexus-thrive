@@ -4,6 +4,7 @@ import {
   calculatePpc,
   getNonComplianceBreakdown,
   isoWeekOf,
+  isoWeekRange,
   relativeWeekNumber,
   bogotaToday,
   mondayOf,
@@ -205,5 +206,21 @@ describe("lean-engine — helpers de fecha", () => {
     const b: PlainDate = { year: 2026, month: 1, day: 10 };
     expect(daysBetween(a, b)).toBe(9);
     expect(daysBetween(b, a)).toBe(-9);
+  });
+
+  test("isoWeekRange devuelve lunes–domingo de la semana ISO", () => {
+    // Semana 1 ISO de 2026: lunes 2025-12-29 .. domingo 2026-01-04.
+    expect(isoWeekRange(2026, 1)).toEqual({
+      start: { year: 2025, month: 12, day: 29 },
+      end: { year: 2026, month: 1, day: 4 },
+    });
+    // Semana 2: lunes 2026-01-05 .. domingo 2026-01-11.
+    expect(isoWeekRange(2026, 2)).toEqual({
+      start: { year: 2026, month: 1, day: 5 },
+      end: { year: 2026, month: 1, day: 11 },
+    });
+    // Inversa: isoWeekOf(mondayOf(semana)) recupera el año/semana.
+    const { start } = isoWeekRange(2026, 7);
+    expect(isoWeekOf(start)).toEqual({ year: 2026, week: 7 });
   });
 });
