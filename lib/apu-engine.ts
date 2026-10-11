@@ -64,6 +64,31 @@ export function moneyToString(micro: Money): string {
   return `${sign}${whole}.${fracText}`;
 }
 
+/**
+ * Convierte un decimal (string) a micro-unidades aplicando redondeo half-up a
+ * 6 decimales. A diferencia de `parseMoney` NO rechaza valores con más de 6
+ * decimales: los redondea (necesario para importar catálogos con precisión
+ * arbitraria). Rechaza negativos, vacíos, notación científica y cualquier
+ * entrada que no sea un decimal no negativo.
+ */
+export function decimalToMicro(raw: string): Money | null {
+  const value = raw.trim();
+  if (!value || value.length > 60 || !DECIMAL_PATTERN.test(value)) {
+    return null;
+  }
+  if (value.startsWith("-")) {
+    return null;
+  }
+  const [intPart, fracPart = ""] = value.split(".");
+  const base = BigInt(intPart || "0") * UNIT;
+  if (fracPart.length <= 6) {
+    return base + BigInt((fracPart + "000000").slice(0, 6));
+  }
+  const kept = BigInt(fracPart.slice(0, 6));
+  const roundsUp = fracPart.charCodeAt(6) - 48 >= 5;
+  return base + kept + (roundsUp ? BigInt(1) : BigInt(0));
+}
+
 /** División con redondeo half-up (valores no negativos). */
 function roundDiv(numerator: bigint, denominator: bigint): bigint {
   return (numerator + denominator / BigInt(2)) / denominator;

@@ -3,6 +3,7 @@ import { describe, test, expect } from "vitest";
 import {
   parseMoney,
   moneyToString,
+  decimalToMicro,
   lineTotal,
   componentCost,
   activityUnitCost,
@@ -43,6 +44,41 @@ describe("apu-engine — parseMoney / moneyToString", () => {
     expect(moneyToString(BigInt(1_234_567))).toBe("1.234567");
     expect(moneyToString(BigInt(0))).toBe("0");
     expect(moneyToString(-BigInt(1_500_000))).toBe("-1.5");
+  });
+});
+
+describe("apu-engine — decimalToMicro (half-up, rechaza negativos/inválidos)", () => {
+  test("valores con <=6 decimales son exactos", () => {
+    expect(decimalToMicro("1")).toBe(BigInt(1_000_000));
+    expect(decimalToMicro("1.234567")).toBe(BigInt(1_234_567));
+    expect(decimalToMicro("0")).toBe(BigInt(0));
+    expect(decimalToMicro("0.000001")).toBe(BigInt(1));
+  });
+
+  test("valores con >6 decimales redondean half-up", () => {
+    // 7mo dígito < 5 → hacia abajo
+    expect(decimalToMicro("1.2345674")).toBe(BigInt(1_234_567));
+    expect(decimalToMicro("0.0000004")).toBe(BigInt(0));
+    // 7mo dígito = 5 → hacia arriba (half-up)
+    expect(decimalToMicro("1.2345675")).toBe(BigInt(1_234_568));
+    expect(decimalToMicro("0.0000005")).toBe(BigInt(1));
+    // 7mo dígito > 5 → hacia arriba
+    expect(decimalToMicro("1.2345678")).toBe(BigInt(1_234_568));
+    // acarreo al entero
+    expect(decimalToMicro("0.9999999")).toBe(BigInt(1_000_000));
+  });
+
+  test("rechaza negativos", () => {
+    expect(decimalToMicro("-1")).toBeNull();
+    expect(decimalToMicro("-0.5")).toBeNull();
+  });
+
+  test("rechaza inválidos", () => {
+    expect(decimalToMicro("")).toBeNull();
+    expect(decimalToMicro("   ")).toBeNull();
+    expect(decimalToMicro("abc")).toBeNull();
+    expect(decimalToMicro("1e6")).toBeNull();
+    expect(decimalToMicro("1,5")).toBeNull();
   });
 });
 
