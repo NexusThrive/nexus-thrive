@@ -1,12 +1,11 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import { db } from "@/prisma/db";
+import { type ProjectBudgetData } from "@/lib/tenant-db";
 import {
-  createTenantDb,
-  type ProjectBudgetData,
-} from "@/lib/tenant-db";
+  canGovernBudget,
+  requireTenantContext,
+} from "@/lib/tenant-context";
 import {
   validateAiuConfig,
   validateCreateBudgetItem,
@@ -49,41 +48,10 @@ const ACCESS_DENIED_FORM = {
   message: "No tienes acceso a este negocio.",
 } as const;
 
-type TenantDb = ReturnType<typeof createTenantDb>;
-
-type TenantContext = {
-  tenantId: string;
-  tenantDb: TenantDb;
-};
-
-/**
- * Verifica sesión de Clerk + tenant activo + membresía del usuario.
- * Devuelve `null` cuando algo falla (el caller responde con error genérico).
- */
-async function requireTenantContext(
-  tenantSlug: string,
-): Promise<TenantContext | null> {
-  if (!tenantSlug || tenantSlug.trim() === "") {
-    return null;
-  }
-  const { userId } = await auth();
-  if (!userId) {
-    return null;
-  }
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    return null;
-  }
-  const tenantDb = createTenantDb(tenantRecord.id);
-  const member = await tenantDb.users.findByClerkUserId(userId);
-  if (!member) {
-    return null;
-  }
-  return { tenantId: tenantRecord.id, tenantDb };
-}
+const FORBIDDEN_FORM = {
+  status: "error",
+  message: "No tienes permisos para esta acción (solo OWNER o SUPERADMIN).",
+} as const;
 
 /* ------------------------------------------------------------------ */
 /* Lectura / creación del presupuesto                                  */
@@ -210,6 +178,9 @@ export async function updateAiuConfigAction(
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
+  if (!canGovernBudget(context.role)) {
+    return FORBIDDEN_FORM;
+  }
   if (!projectId) {
     return { status: "error", message: "Proyecto no válido." };
   }
@@ -252,6 +223,9 @@ export async function toggleBudgetLockAction(
   const context = await requireTenantContext(tenantSlug);
   if (!context || !projectId) {
     return { ok: false, message: "No tienes acceso a este negocio." };
+  }
+  if (!canGovernBudget(context.role)) {
+    return { ok: false, message: "Solo OWNER o SUPERADMIN pueden bloquear el presupuesto." };
   }
   try {
     await context.tenantDb.budgets.setLocked(projectId, isLocked);

@@ -2,8 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { requireTenantContext } from "@/lib/tenant-context";
 import { validateCreateFieldLogEntry } from "./validators";
 
 export type ActionState = {
@@ -12,41 +11,6 @@ export type ActionState = {
   errors?: Record<string, string[] | undefined>;
   values?: Record<string, unknown>;
 };
-
-type TenantContext = {
-  tenantId: string;
-  tenantDb: ReturnType<typeof createTenantDb>;
-};
-
-async function requireTenantContext(
-  tenantSlug: string,
-): Promise<TenantContext | null> {
-  if (!tenantSlug || tenantSlug.trim() === "") {
-    return null;
-  }
-  const { userId } = await auth();
-  if (!userId) {
-    return null;
-  }
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    return null;
-  }
-  const member = await db.orm.public.User.where({
-    clerkUserId: userId,
-    tenantId: tenantRecord.id,
-  }).first();
-  if (!member) {
-    return null;
-  }
-  return {
-    tenantId: tenantRecord.id,
-    tenantDb: createTenantDb(tenantRecord.id),
-  };
-}
 
 export async function getOrCreateFieldLogAction(
   tenantSlug: string,

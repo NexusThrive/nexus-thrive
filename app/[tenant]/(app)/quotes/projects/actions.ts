@@ -1,9 +1,8 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import { db } from "@/prisma/db";
-import { createTenantDb, type ProjectDetail } from "@/lib/tenant-db";
+import { type ProjectDetail } from "@/lib/tenant-db";
+import { requireTenantContext } from "@/lib/tenant-context";
 import {
   projectHeaderToInput,
   validateCreateProject,
@@ -38,45 +37,6 @@ const ACCESS_DENIED_FORM = {
   status: "error",
   message: "No tienes acceso a este negocio.",
 } as const;
-
-type TenantDb = ReturnType<typeof createTenantDb>;
-
-type TenantContext = {
-  tenantId: string;
-  tenantDb: TenantDb;
-};
-
-/**
- * Verifica sesión de Clerk + tenant activo + membresía del usuario.
- * Devuelve `null` cuando algo falla (el caller responde con mensaje genérico).
- */
-async function requireTenantContext(
-  tenantSlug: string,
-): Promise<TenantContext | null> {
-  if (!tenantSlug || tenantSlug.trim() === "") {
-    return null;
-  }
-  const { userId } = await auth();
-  if (!userId) {
-    return null;
-  }
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    return null;
-  }
-  const tenantDb = createTenantDb(tenantRecord.id);
-  const member = await tenantDb.users.findByClerkUserId(userId);
-  if (!member) {
-    return null;
-  }
-  return {
-    tenantId: tenantRecord.id,
-    tenantDb,
-  };
-}
 
 /** Detecta violación de clave única (código duplicado en el tenant). */
 function isUniqueViolation(error: unknown): boolean {
