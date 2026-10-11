@@ -2,12 +2,16 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Lock, LockOpen, Plus, Settings2, SlidersHorizontal } from "lucide-react";
+import { Lock, LockOpen, Plus, Settings2, SlidersHorizontal, Trash2 } from "lucide-react";
 import { microToPercent } from "@/lib/apu-engine";
 import { formatMoneyMicro, formatQuantityMicro } from "@/lib/format";
 import { NLoader } from "@/components/brand/n-loader";
 import type { ProjectBudgetData } from "@/lib/tenant-db";
-import { toggleBudgetLockAction } from "../budget/actions";
+import {
+  deleteBudgetItemAction,
+  deleteChapterAction,
+  toggleBudgetLockAction,
+} from "../budget/actions";
 import ChapterModal from "./chapter-modal";
 import ItemModal from "./item-modal";
 import AiuConfigModal from "./aiu-config-modal";
@@ -75,6 +79,7 @@ export default function BudgetWorkspace({
 
   const router = useRouter();
   const [isToggling, startToggle] = useTransition();
+  const [isDeleting, startDelete] = useTransition();
 
   const totals = useMemo(() => {
     const adminImprev =
@@ -102,6 +107,28 @@ export default function BudgetWorkspace({
   const onToggleLock = () => {
     startToggle(async () => {
       await toggleBudgetLockAction(tenantSlug, projectId, !budget.isLocked);
+      router.refresh();
+    });
+  };
+
+  const onDeleteChapter = (chapterId: string) => {
+    if (!window.confirm("¿Eliminar este capítulo y todas sus partidas?")) return;
+    startDelete(async () => {
+      const res = await deleteChapterAction(tenantSlug, projectId, chapterId);
+      if (!res.ok) {
+        window.alert(res.message ?? "No se pudo eliminar el capítulo.");
+      }
+      router.refresh();
+    });
+  };
+
+  const onDeleteItem = (itemId: string) => {
+    if (!window.confirm("¿Eliminar esta partida?")) return;
+    startDelete(async () => {
+      const res = await deleteBudgetItemAction(tenantSlug, projectId, itemId);
+      if (!res.ok) {
+        window.alert(res.message ?? "No se pudo eliminar la partida.");
+      }
       router.refresh();
     });
   };
@@ -236,19 +263,30 @@ export default function BudgetWorkspace({
                     {formatMoneyMicro(chapter.subtotal)}
                   </span>
                   {!budget.isLocked ? (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setItemChapter({
-                          id: chapter.id,
-                          label: `Capítulo ${chapter.order}`,
-                        })
-                      }
-                      className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
-                    >
-                      <Plus aria-hidden="true" className="h-3.5 w-3.5" />
-                      Partida
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setItemChapter({
+                            id: chapter.id,
+                            label: `Capítulo ${chapter.order}`,
+                          })
+                        }
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                      >
+                        <Plus aria-hidden="true" className="h-3.5 w-3.5" />
+                        Partida
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onDeleteChapter(chapter.id)}
+                        disabled={isDeleting}
+                        aria-label={`Eliminar capítulo ${chapter.order}`}
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-rose-400 transition hover:bg-rose-400/10 disabled:opacity-50"
+                      >
+                        <Trash2 aria-hidden="true" className="h-3.5 w-3.5" />
+                      </button>
+                    </>
                   ) : null}
                 </div>
               </header>
@@ -275,6 +313,9 @@ export default function BudgetWorkspace({
                         <th className="px-4 py-2 text-right font-medium">
                           Total
                         </th>
+                        {!budget.isLocked ? (
+                          <th className="w-12 px-4 py-2" aria-label="Acciones" />
+                        ) : null}
                       </tr>
                     </thead>
                     <tbody>
@@ -312,6 +353,19 @@ export default function BudgetWorkspace({
                           <td className="px-4 py-2 text-right font-mono font-medium tabular-nums text-foreground">
                             {formatMoneyMicro(item.totalCostDirect)}
                           </td>
+                          {!budget.isLocked ? (
+                            <td className="px-4 py-2 text-right">
+                              <button
+                                type="button"
+                                onClick={() => onDeleteItem(item.id)}
+                                disabled={isDeleting}
+                                aria-label={`Eliminar partida ${item.code || item.description}`}
+                                className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-card text-rose-400 transition hover:bg-rose-400/10 disabled:opacity-50"
+                              >
+                                <Trash2 aria-hidden="true" className="h-3.5 w-3.5" />
+                              </button>
+                            </td>
+                          ) : null}
                         </tr>
                       ))}
                     </tbody>

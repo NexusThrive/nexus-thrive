@@ -241,3 +241,63 @@ export async function toggleBudgetLockAction(
   revalidatePath(`/${tenantSlug}/quotes/projects/${projectId}`);
   return { ok: true };
 }
+
+/* ------------------------------------------------------------------ */
+/* Eliminación de capítulos / partidas                                 */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Elimina un capítulo (y sus partidas). Permitido a cualquier miembro
+ * mientras el presupuesto no esté bloqueado (guardas en tenant-db).
+ */
+export async function deleteChapterAction(
+  tenantSlug: string,
+  projectId: string,
+  chapterId: string,
+): Promise<{ ok: boolean; message?: string }> {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context || !projectId || !chapterId) {
+    return { ok: false, message: "No tienes acceso a este negocio." };
+  }
+  try {
+    await context.tenantDb.budgets.deleteChapter(projectId, chapterId);
+  } catch (error) {
+    return {
+      ok: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "No se pudo eliminar el capítulo.",
+    };
+  }
+  revalidatePath(`/${tenantSlug}/quotes/projects/${projectId}`);
+  return { ok: true };
+}
+
+/**
+ * Elimina una partida (y sus recursos). Permitido a cualquier miembro
+ * mientras el presupuesto no esté bloqueado (guardas en tenant-db).
+ */
+export async function deleteBudgetItemAction(
+  tenantSlug: string,
+  projectId: string,
+  itemId: string,
+): Promise<{ ok: boolean; message?: string }> {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context || !projectId || !itemId) {
+    return { ok: false, message: "No tienes acceso a este negocio." };
+  }
+  try {
+    await context.tenantDb.budgets.deleteItem(projectId, itemId);
+  } catch (error) {
+    return {
+      ok: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "No se pudo eliminar la partida.",
+    };
+  }
+  revalidatePath(`/${tenantSlug}/quotes/projects/${projectId}`);
+  return { ok: true };
+}

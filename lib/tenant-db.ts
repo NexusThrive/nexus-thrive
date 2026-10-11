@@ -2502,6 +2502,83 @@ export function createTenantDb(tenantId: string) {
           .where({ id: budget.id })
           .update({ isLocked });
       },
+
+      /**
+       * Elimina un capítulo (y sus partidas, en cascada). Rechaza si el
+       * presupuesto está bloqueado. Recalcula los totales en la transacción.
+       */
+      deleteChapter: async (
+        projectId: string,
+        chapterId: string,
+      ): Promise<void> => {
+        const budget = await db.orm.public.ProjectBudget
+          .where({ projectId, tenantId })
+          .first();
+        if (!budget) {
+          throw new Error("Presupuesto no encontrado en este negocio.");
+        }
+        if (budget.isLocked) {
+          throw new Error("El presupuesto está bloqueado.");
+        }
+        const chapter = await db.orm.public.BudgetChapter
+          .where({ id: chapterId, budgetId: budget.id })
+          .select("id")
+          .first();
+        if (!chapter) {
+          throw new Error("Capítulo no encontrado en este presupuesto.");
+        }
+        await db.transaction(async (tx) => {
+          await tx.orm.public.BudgetChapter
+            .where({ id: chapterId, budgetId: budget.id })
+            .delete();
+          await recalcBudgetTotals(tx, budget.id, {
+            admin: budget.aiuAdminPct,
+            imprev: budget.aiuImprevPct,
+            utilidad: budget.aiuUtilidadPct,
+            iva: budget.ivaUtilidadPct,
+          });
+        });
+      },
+
+      /**
+       * Elimina una partida (y sus recursos, en cascada). Valida pertenencia
+       * capítulo→presupuesto. Rechaza si el presupuesto está bloqueado.
+       */
+      deleteItem: async (projectId: string, itemId: string): Promise<void> => {
+        const budget = await db.orm.public.ProjectBudget
+          .where({ projectId, tenantId })
+          .first();
+        if (!budget) {
+          throw new Error("Presupuesto no encontrado en este negocio.");
+        }
+        if (budget.isLocked) {
+          throw new Error("El presupuesto está bloqueado.");
+        }
+        const item = await db.orm.public.BudgetItem
+          .where({ id: itemId, tenantId })
+          .first();
+        if (!item) {
+          throw new Error("Partida no encontrada en este presupuesto.");
+        }
+        const chapter = await db.orm.public.BudgetChapter
+          .where({ id: item.chapterId, budgetId: budget.id })
+          .select("id")
+          .first();
+        if (!chapter) {
+          throw new Error("Partida no encontrada en este presupuesto.");
+        }
+        await db.transaction(async (tx) => {
+          await tx.orm.public.BudgetItem
+            .where({ id: itemId, tenantId })
+            .delete();
+          await recalcBudgetTotals(tx, budget.id, {
+            admin: budget.aiuAdminPct,
+            imprev: budget.aiuImprevPct,
+            utilidad: budget.aiuUtilidadPct,
+            iva: budget.ivaUtilidadPct,
+          });
+        });
+      },
     },
 
     lean: {
