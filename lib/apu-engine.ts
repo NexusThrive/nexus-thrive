@@ -381,6 +381,19 @@ export function directCostOf(quantities: string[], unitCosts: string[]): string 
 export const SCALE = UNIT;
 
 /**
+ * Configuración AIU por defecto del vertical construcción: Admin 10 %,
+ * Imprevistos 5 %, Utilidad 5 %, IVA sobre utilidad 19 %. Es la fuente única
+ * en TypeScript — debe coincidir con los `@default` de `ProjectBudget` en
+ * `prisma/contract.prisma` (100_000 / 50_000 / 50_000 / 190_000).
+ */
+export const AIU_DEFAULTS = {
+  adminPct: BigInt(100_000),
+  imprevPct: BigInt(50_000),
+  utilidadPct: BigInt(50_000),
+  ivaUtilidadPct: BigInt(190_000),
+} as const;
+
+/**
  * Convierte un porcentaje legible ("10", "9.5", "19") a la micro-fracción
  * almacenada (100_000 = 10 %). Devuelve `null` si no es un decimal válido.
  * Nota: es una división exacta por 100 sobre el decimal ya parseado.

@@ -11,7 +11,9 @@ import {
   calculateQuoteTotals,
   isValidPercent,
   percentToMicro,
+  microToPercent,
   SCALE,
+  AIU_DEFAULTS,
   RESOURCE_TYPES,
   type ActivityComponentInput,
   type AiuConfig,
@@ -225,5 +227,16 @@ describe("apu-engine — constantes y tipos", () => {
     expect(RESOURCE_TYPES.length).toBe(4);
     const values = RESOURCE_TYPES.map((r) => r.value);
     expect(values).toEqual(["MATERIAL", "LABOR", "EQUIPMENT", "TRANSPORT"]);
+  });
+
+  test("AIU_DEFAULTS es 10/5/5/19 % (fuente única en TS, espejo del contrato)", () => {
+    expect(AIU_DEFAULTS.adminPct).toBe(BigInt(100_000));
+    expect(AIU_DEFAULTS.imprevPct).toBe(BigInt(50_000));
+    expect(AIU_DEFAULTS.utilidadPct).toBe(BigInt(50_000));
+    expect(AIU_DEFAULTS.ivaUtilidadPct).toBe(BigInt(190_000));
+    expect(microToPercent(AIU_DEFAULTS.adminPct)).toBe("10");
+    expect(microToPercent(AIU_DEFAULTS.imprevPct)).toBe("5");
+    expect(microToPercent(AIU_DEFAULTS.utilidadPct)).toBe("5");
+    expect(microToPercent(AIU_DEFAULTS.ivaUtilidadPct)).toBe("19");
   });
 });

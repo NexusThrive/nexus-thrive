@@ -23,6 +23,7 @@ import type {
   MembershipTypeValue,
 } from "@/lib/memberships";
 import {
+  AIU_DEFAULTS,
   activityUnitCost,
   buildApuSnapshot,
   calculateBudgetTotals,
@@ -2406,6 +2407,10 @@ export function createTenantDb(tenantId: string) {
             projectId,
             code,
             name: `Presupuesto — ${project.name}`,
+            aiuAdminPct: AIU_DEFAULTS.adminPct,
+            aiuImprevPct: AIU_DEFAULTS.imprevPct,
+            aiuUtilidadPct: AIU_DEFAULTS.utilidadPct,
+            ivaUtilidadPct: AIU_DEFAULTS.ivaUtilidadPct,
           });
           return loadBudgetTree(created);
         } catch (error) {
