@@ -48,6 +48,14 @@
       "model": "Expense",
       "namespace": "public"
     },
+    "FieldLog": {
+      "model": "FieldLog",
+      "namespace": "public"
+    },
+    "FieldLogEntry": {
+      "model": "FieldLogEntry",
+      "namespace": "public"
+    },
     "LookaheadTask": {
       "model": "LookaheadTask",
       "namespace": "public"
@@ -161,6 +169,27 @@
               {
                 "name": "FAILED",
                 "value": "FAILED"
+              }
+            ]
+          },
+          "FieldNoteType": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "ADVANCE",
+                "value": "ADVANCE"
+              },
+              {
+                "name": "OBSERVATION",
+                "value": "OBSERVATION"
+              },
+              {
+                "name": "AUTHORIZATION",
+                "value": "AUTHORIZATION"
+              },
+              {
+                "name": "INCIDENT",
+                "value": "INCIDENT"
               }
             ]
           },
@@ -489,6 +518,27 @@
               {
                 "name": "events",
                 "value": "events"
+              }
+            ]
+          },
+          "WeatherCondition": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "SUNNY",
+                "value": "SUNNY"
+              },
+              {
+                "name": "CLOUDY",
+                "value": "CLOUDY"
+              },
+              {
+                "name": "RAIN_LIGHT",
+                "value": "RAIN_LIGHT"
+              },
+              {
+                "name": "RAIN_HEAVY",
+                "value": "RAIN_HEAVY"
               }
             ]
           }
@@ -2002,6 +2052,322 @@
               "table": "Expense"
             }
           },
+          "FieldLog": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "projectId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "entries": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "logId"
+                  ]
+                },
+                "to": {
+                  "model": "FieldLogEntry",
+                  "namespace": "public"
+                }
+              },
+              "project": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "projectId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Project",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "projectId": {
+                  "column": "projectId"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "FieldLog"
+            }
+          },
+          "FieldLogEntry": {
+            "fields": {
+              "authorName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "authorRole": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "description": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "entryDate": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "laborCount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "logId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "photoUrls": {
+                "many": true,
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "title": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "type": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "FieldNoteType",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "weather": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "WeatherCondition",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              }
+            },
+            "relations": {
+              "log": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "logId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "FieldLog",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "authorName": {
+                  "column": "authorName"
+                },
+                "authorRole": {
+                  "column": "authorRole"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "description": {
+                  "column": "description"
+                },
+                "entryDate": {
+                  "column": "entryDate"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "laborCount": {
+                  "column": "laborCount"
+                },
+                "logId": {
+                  "column": "logId"
+                },
+                "photoUrls": {
+                  "column": "photoUrls"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "title": {
+                  "column": "title"
+                },
+                "type": {
+                  "column": "type"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "weather": {
+                  "column": "weather"
+                }
+              },
+              "namespaceId": "public",
+              "table": "FieldLogEntry"
+            }
+          },
           "LookaheadTask": {
             "fields": {
               "code": {
@@ -2641,6 +3007,22 @@
                 },
                 "to": {
                   "model": "Customer",
+                  "namespace": "public"
+                }
+              },
+              "fieldLog": {
+                "cardinality": "1:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "projectId"
+                  ]
+                },
+                "to": {
+                  "model": "FieldLog",
                   "namespace": "public"
                 }
               },
@@ -3985,6 +4367,21 @@
                 },
                 "to": {
                   "model": "Expense",
+                  "namespace": "public"
+                }
+              },
+              "fieldLogs": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "FieldLog",
                   "namespace": "public"
                 }
               },
@@ -5816,6 +6213,308 @@
                   ],
                   "name": "Expense_tenantId_idx_c93ed4f1",
                   "prefix": "Expense_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "FieldLog": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "Diario Oficial de Obra"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "projectId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "FieldLog"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "projectId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "FieldLog"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Project"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "FieldLog_tenantId_idx_c93ed4f1",
+                  "prefix": "FieldLog_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "projectId"
+                  ],
+                  "name": "FieldLog_tenantId_projectId_idx_e88197e4",
+                  "prefix": "FieldLog_tenantId_projectId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "projectId"
+                  ]
+                }
+              ]
+            },
+            "FieldLogEntry": {
+              "checks": [
+                {
+                  "expression": "array_position(\"photoUrls\", NULL) IS NULL",
+                  "name": "FieldLogEntry_photoUrls_elem_not_null_ad9c6091",
+                  "prefix": "FieldLogEntry_photoUrls_elem_not_null"
+                },
+                {
+                  "expression": "\"type\" IN ('ADVANCE', 'OBSERVATION', 'AUTHORIZATION', 'INCIDENT')",
+                  "name": "FieldLogEntry_type_check_41da5313",
+                  "prefix": "FieldLogEntry_type_check"
+                },
+                {
+                  "expression": "\"weather\" IN ('SUNNY', 'CLOUDY', 'RAIN_LIGHT', 'RAIN_HEAVY')",
+                  "name": "FieldLogEntry_weather_check_f78e4aba",
+                  "prefix": "FieldLogEntry_weather_check"
+                }
+              ],
+              "columns": {
+                "authorName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "authorRole": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "description": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "entryDate": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "laborCount": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "logId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "photoUrls": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": []
+                  },
+                  "many": true,
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "title": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "type": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "ADVANCE"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "FieldNoteType",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "weather": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "SUNNY"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "WeatherCondition",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "FieldLogEntry"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "logId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "FieldLogEntry"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "FieldLog"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "logId"
+                  ],
+                  "name": "FieldLogEntry_logId_idx_602c1cfa",
+                  "prefix": "FieldLogEntry_logId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "entryDate"
+                  ],
+                  "name": "FieldLogEntry_tenantId_entryDate_idx_d9bd4790",
+                  "prefix": "FieldLogEntry_tenantId_entryDate_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "FieldLogEntry_tenantId_idx_c93ed4f1",
+                  "prefix": "FieldLogEntry_tenantId_idx",
                   "unique": false
                 }
               ],
@@ -7848,6 +8547,15 @@
                 "FAILED"
               ]
             },
+            "FieldNoteType": {
+              "kind": "valueSet",
+              "values": [
+                "ADVANCE",
+                "OBSERVATION",
+                "AUTHORIZATION",
+                "INCIDENT"
+              ]
+            },
             "MembershipStatus": {
               "kind": "valueSet",
               "values": [
@@ -7974,6 +8682,15 @@
                 "tour_guides",
                 "events"
               ]
+            },
+            "WeatherCondition": {
+              "kind": "valueSet",
+              "values": [
+                "SUNNY",
+                "CLOUDY",
+                "RAIN_LIGHT",
+                "RAIN_HEAVY"
+              ]
             }
           }
         },
@@ -7981,10 +8698,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "23b06a7ddc83c4726d6553b837b7b732ab230aa02bc4a6d536ec8719f4a5ec48"
+    "storageHash": "390db12f061cf04fdfa355f9ec66c1e262cbe1756bc23119b3163cd5321c5011"
   },
   "execution": {
-    "executionHash": "f156ad537bb807666f7cddb2119e9436531a51f7bd240c62196aecf7d6e5c6e0",
+    "executionHash": "a5d75e45f846778ea827c3c59d0e7682dd123c54eea06bd6b1f71efc8931230a",
     "mutations": {
       "defaults": [
         {
@@ -8224,6 +8941,58 @@
           },
           "ref": {
             "entry": "Expense",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "FieldLog",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "FieldLog",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "FieldLogEntry",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "FieldLogEntry",
             "field": "updatedAt",
             "namespace": "public"
           }

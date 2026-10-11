@@ -51,6 +51,11 @@ import {
   type CommitmentStatusValue,
   type NonComplianceCauseValue,
 } from "@/lib/lean-engine";
+import {
+  normalizePhotoUrls,
+  type FieldNoteTypeValue,
+  type WeatherConditionValue,
+} from "@/lib/field-log-engine";
 
 /** Escapa los comodines de LIKE para que la búsqueda sea literal. */
 function escapeLike(input: string): string {
@@ -576,6 +581,98 @@ export type UpdateCommitmentStatusInput = {
   failureCause?: NonComplianceCauseValue | null;
   failureNotes?: string | null;
 };
+
+/* ------------------------------------------------------------------ */
+/* Bitácora de Campo — FASE 4 (Tab 4)                                  */
+/* ------------------------------------------------------------------ */
+
+/** Anotación de bitácora serializada (fechas como día calendario Bogotá). */
+export type FieldLogEntryData = {
+  id: string;
+  type: FieldNoteTypeValue;
+  title: string;
+  description: string;
+  weather: WeatherConditionValue;
+  laborCount: number;
+  authorName: string;
+  authorRole: string;
+  photoUrls: string[];
+  entryDate: string; // "YYYY-MM-DD" Bogotá
+};
+
+/** Bitácora serializada: cabecera + entradas. */
+export type FieldLogData = {
+  id: string;
+  projectId: string;
+  name: string;
+  entries: FieldLogEntryData[];
+};
+
+export type CreateFieldLogEntryInput = {
+  type: FieldNoteTypeValue;
+  entryDate: string; // "YYYY-MM-DD" Bogotá
+  title: string;
+  description: string;
+  weather: WeatherConditionValue;
+  laborCount: number;
+  authorName: string;
+  authorRole: string;
+  photoUrls: string[];
+};
+
+/** Fila mínima de `FieldLog` que necesita la serialización. */
+type FieldLogRow = {
+  id: string;
+  projectId: string;
+  name: string;
+};
+
+/** Fila mínima de `FieldLogEntry` que necesita la serialización. */
+type FieldLogEntryRow = {
+  id: string;
+  type: FieldNoteTypeValue;
+  entryDate: unknown;
+  title: string;
+  description: string;
+  weather: WeatherConditionValue;
+  laborCount: number;
+  authorName: string;
+  authorRole: string;
+  photoUrls: string[];
+};
+
+async function loadFieldLog(log: FieldLogRow, tenantId: string): Promise<FieldLogData> {
+  const entries = await db.orm.public.FieldLogEntry
+    .where({ logId: log.id, tenantId })
+    .orderBy((entry) => entry.entryDate.desc())
+    .all();
+
+  return {
+    id: log.id,
+    projectId: log.projectId,
+    name: log.name,
+    entries: entries.map((entry) => ({
+      id: entry.id,
+      type: entry.type as FieldNoteTypeValue,
+      entryDate: instantToBogotaIsoDate(entry.entryDate),
+      title: entry.title,
+      description: entry.description,
+      weather: entry.weather as WeatherConditionValue,
+      laborCount: entry.laborCount,
+      authorName: entry.authorName,
+      authorRole: entry.authorRole,
+      photoUrls: normalizePhotoUrls(entry.photoUrls),
+    })),
+  };
+}
+
+/** "YYYY-MM-DD" → Temporal.Instant 00:00 Bogotá. */
+function bogotaInstantFromEntryDate(iso: string): Temporal.Instant {
+  const [year, month, day] = iso.split("-").map(Number);
+  return Temporal.Instant.fromEpochMilliseconds(
+    Date.UTC(year, month - 1, day, 5, 0, 0),
+  );
+}
 
 /** Fila mínima de `ProjectPlan` que necesita la serialización. */
 type ProjectPlanRow = {
@@ -2604,6 +2701,108 @@ export function createTenantDb(tenantId: string) {
               .update({ weekNumber: relativeWeekNumber(newStart, taskStart) });
           }
         });
+      },
+    },
+
+    fieldLog: {
+      /** Bitácora del proyecto (con sus entradas), o null. */
+      getLog: async (projectId: string): Promise<FieldLogData | null> => {
+        const log = await db.orm.public.FieldLog
+          .where({ projectId, tenantId })
+          .first();
+        return log ? loadFieldLog(log, tenantId) : null;
+      },
+
+      /**
+       * Devuelve la bitácora del proyecto, creándola si no existe (1:1 vía
+       * `projectId @unique`). Idempotente ante concurrencia.
+       */
+      getOrCreateLog: async (projectId: string): Promise<FieldLogData> => {
+        const existing = await db.orm.public.FieldLog
+          .where({ projectId, tenantId })
+          .first();
+        if (existing) {
+          return loadFieldLog(existing, tenantId);
+        }
+
+        const project = await db.orm.public.Project
+          .where({ id: projectId, tenantId })
+          .first();
+        if (!project) {
+          throw new Error("Proyecto no encontrado en este negocio.");
+        }
+
+        try {
+          const created = await db.orm.public.FieldLog.create({
+            tenantId,
+            projectId,
+            name: `Diario Oficial de Obra — ${project.name}`,
+          });
+          return loadFieldLog(created, tenantId);
+        } catch (error) {
+          const raced = await db.orm.public.FieldLog
+            .where({ projectId, tenantId })
+            .first();
+          if (raced) {
+            return loadFieldLog(raced, tenantId);
+          }
+          throw error;
+        }
+      },
+
+      /**
+       * Crea una anotación en la bitácora. Valida coherencia de tenant y
+       * pertenencia al proyecto.
+       */
+      createEntry: async (
+        logId: string,
+        input: CreateFieldLogEntryInput,
+      ): Promise<{ id: string }> => {
+        const log = await db.orm.public.FieldLog
+          .where({ id: logId, tenantId })
+          .first();
+        if (!log) {
+          throw new Error("Bitácora no encontrada en este negocio.");
+        }
+
+        const created = await db.orm.public.FieldLogEntry.create({
+          tenantId,
+          logId,
+          type: input.type,
+          entryDate: bogotaInstantFromEntryDate(input.entryDate),
+          title: input.title,
+          description: input.description,
+          weather: input.weather,
+          laborCount: input.laborCount,
+          authorName: input.authorName,
+          authorRole: input.authorRole,
+          photoUrls: input.photoUrls,
+        });
+        return { id: created.id };
+      },
+
+      /**
+       * Elimina una anotación de la bitácora. Verifica pertenencia al tenant
+       * y a la bitácora correcta.
+       */
+      deleteEntry: async (logId: string, entryId: string): Promise<void> => {
+        const log = await db.orm.public.FieldLog
+          .where({ id: logId, tenantId })
+          .first();
+        if (!log) {
+          throw new Error("Bitácora no encontrada en este negocio.");
+        }
+
+        const entry = await db.orm.public.FieldLogEntry
+          .where({ id: entryId, logId, tenantId })
+          .first();
+        if (!entry) {
+          throw new Error("Anotación no encontrada en esta bitácora.");
+        }
+
+        await db.orm.public.FieldLogEntry
+          .where({ id: entry.id })
+          .delete();
       },
     },
 

@@ -62,6 +62,7 @@ export type ProjectTab =
   | "planificador"
   | "planificacion"
   | "bitacora"
+  | "campo"
   | "informes";
 
 export const PROJECT_TABS: ReadonlyArray<{
@@ -78,6 +79,9 @@ export const PROJECT_TABS: ReadonlyArray<{
 export function parseProjectTab(value: string): ProjectTab {
   if (value === "planificacion" || value === "planificador") {
     return "planificador";
+  }
+  if (value === "campo" || value === "bitacora") {
+    return "bitacora";
   }
   return PROJECT_TABS.some((tab) => tab.value === value)
     ? (value as ProjectTab)

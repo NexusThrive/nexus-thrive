@@ -9,7 +9,9 @@ import ProjectTabs from "./_components/project-tabs";
 import ProjectHeaderForm from "./_components/project-header-form";
 import BudgetWorkspace from "./_components/budget-workspace";
 import LeanWorkspace from "./_components/lean-workspace";
+import FieldLogWorkspace from "./_components/field-log-workspace";
 import { getOrCreateProjectBudgetAction } from "./budget/actions";
+import { getOrCreateFieldLogAction } from "./field-log/actions";
 
 function firstString(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
@@ -84,6 +86,9 @@ export default async function ProjectDetailPage({
       ? await getOrCreateProjectBudgetAction(tenantSlug, projectId)
       : null;
   const plan = tab === "planificador" ? await tenantDb.lean.getOrCreatePlan(projectId) : null;
+  const fieldLog = tab === "bitacora" || tab === "campo"
+    ? await tenantDb.fieldLog.getOrCreateLog(projectId)
+    : null;
 
   return (
     <div className="space-y-6">
@@ -202,6 +207,14 @@ export default async function ProjectDetailPage({
           ) : (
             <div className="rounded-lg border border-dashed border-border bg-card p-8 text-center">
               <p className="text-sm font-medium text-foreground">No se pudo cargar el plan operativo</p>
+            </div>
+          )
+        ) : tab === "bitacora" || tab === "campo" ? (
+          fieldLog ? (
+            <FieldLogWorkspace tenantSlug={tenantSlug} projectId={project.id} log={fieldLog} />
+          ) : (
+            <div className="rounded-lg border border-dashed border-border bg-card p-8 text-center">
+              <p className="text-sm font-medium text-foreground">No se pudo cargar la bitácora</p>
             </div>
           )
         ) : (
