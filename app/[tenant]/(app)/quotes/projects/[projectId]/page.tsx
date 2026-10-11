@@ -8,6 +8,7 @@ import { ProjectStatusBadge } from "../_components/project-status-badge";
 import ProjectTabs from "./_components/project-tabs";
 import ProjectHeaderForm from "./_components/project-header-form";
 import BudgetWorkspace from "./_components/budget-workspace";
+import LeanWorkspace from "./_components/lean-workspace";
 import { getOrCreateProjectBudgetAction } from "./budget/actions";
 
 function firstString(value: string | string[] | undefined): string {
@@ -82,6 +83,7 @@ export default async function ProjectDetailPage({
     tab === "presupuesto"
       ? await getOrCreateProjectBudgetAction(tenantSlug, projectId)
       : null;
+  const plan = tab === "planificador" ? await tenantDb.lean.getOrCreatePlan(projectId) : null;
 
   return (
     <div className="space-y-6">
@@ -192,6 +194,14 @@ export default async function ProjectDetailPage({
               <p className="mx-auto mt-1 max-w-md text-xs text-muted-foreground">
                 Verifica tus permisos sobre este negocio o vuelve a intentarlo.
               </p>
+            </div>
+          )
+        ) : tab === "planificador" ? (
+          plan ? (
+            <LeanWorkspace _tenantSlug={tenantSlug} _projectId={project.id} plan={plan} />
+          ) : (
+            <div className="rounded-lg border border-dashed border-border bg-card p-8 text-center">
+              <p className="text-sm font-medium text-foreground">No se pudo cargar el plan operativo</p>
             </div>
           )
         ) : (

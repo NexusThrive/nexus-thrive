@@ -109,6 +109,27 @@ enum ResourceType {
   TRANSPORT
 }
 
+/// Resultado evaluado de un compromiso semanal (Last Planner System). No
+/// representa el avance de una tarea: es el resultado del compromiso de la
+/// semana — pendiente de evaluar, cumplido o no cumplido (FASE 3 — Tab 3).
+enum CommitmentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+/// Causa de No Cumplimiento (CNC) de un compromiso fallido. Catálogo base
+/// del sistema CNC (Last Planner System).
+enum NonComplianceCause {
+  WEATHER
+  MATERIALS
+  LABOR
+  EQUIPMENT
+  DESIGN_CHANGE
+  PREVIOUS_WORK
+  OTHER
+}
+
 model Tenant {
   id           String   @id @default(uuid())
   name         String
@@ -165,6 +186,9 @@ model Tenant {
   budgetChapters BudgetChapter[]
   budgetItems   BudgetItem[]
   budgetItemResources BudgetItemResource[]
+  projectPlans  ProjectPlan[]
+  lookaheadTasks LookaheadTask[]
+  weeklyCommitments WeeklyCommitment[]
 
   @@index([slug])
 }
@@ -474,6 +498,8 @@ model Project {
   header   ProjectHeader?
   /// Presupuesto de obra del proyecto (1:1 en esta fase, Tab 2).
   budget   ProjectBudget?
+  /// Plan operativo Lean (Last Planner System) del proyecto (1:1, Tab 3).
+  plan     ProjectPlan?
 
   @@unique([tenantId, code])
   @@index([tenantId])
@@ -633,4 +659,97 @@ model BudgetItemResource {
 
   @@index([tenantId])
   @@index([itemId])
+}
+
+/// Plan operativo Lean (Last Planner System) de un proyecto (FASE 3 — Tab 3).
+/// Un proyecto tiene como máximo un plan en esta fase (1:1 vía `projectId
+/// @unique`, lo que impide duplicados ante creación concurrente).
+///
+/// Semántica de la ventana Lookahead: `windowStartDate` ancla el lunes (día
+/// calendario en America/Bogota) de la SEMANA RELATIVA 1 de la ventana de 6
+/// semanas. La posición de una tarea dentro de la ventana se calcula como
+/// `weekNumber = floor((startDate − windowStartDate) / 7 días) + 1`. Al
+/// avanzar la ventana operativa se desplaza `windowStartDate` y se recalcula
+/// `weekNumber` de cada tarea, de modo que la planificación no se queda
+/// "congelada" en semanas relativas fijas.
+model ProjectPlan {
+  id        String  @id @default(uuid())
+  tenantId  String
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  projectId String  @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  name      String @default("Plan Operativo de Obra")
+  /// Meta de cumplimiento (PPC) en porcentaje. Configurable, no universal.
+  targetPpc Int    @default(85)
+  /// Lunes (00:00 Bogotá) de la semana relativa 1 de la ventana Lookahead.
+  windowStartDate DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+
+  lookaheadTasks LookaheadTask[]
+  commitments    WeeklyCommitment[]
+
+  @@index([tenantId])
+  @@index([tenantId, projectId])
+}
+
+/// Tarea de la ventana Lookahead (6 semanas) de un plan operativo. `weekNumber`
+/// es la SEMANA RELATIVA dentro de la ventana (1..6 en la ventana vigente;
+/// puede quedar <= 0 cuando la ventana avanza y la tarea pasa al histórico).
+/// NO es una semana calendario (ver `WeeklyCommitment`).
+model LookaheadTask {
+  id          String      @id @default(uuid())
+  tenantId    String
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  planId      String
+  plan        ProjectPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  /// Código de la tarea dentro del plan (p. ej. LKA-01). No único.
+  code        String
+  description String
+  /// Semana relativa dentro de la ventana Lookahead.
+  weekNumber  Int
+  startDate   DateTime
+  endDate     DateTime
+  /// Responsable o cuadrilla.
+  responsible String
+  /// Restricción real identificada por el equipo (no decorativa).
+  isRestricted Boolean @default(false)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   temporal.updatedAt()
+
+  @@index([tenantId])
+  @@index([planId])
+  @@index([tenantId, weekNumber])
+}
+
+/// Compromiso del Plan de Trabajo Semanal (WWP). `weekNumber` y `year` son la
+/// SEMANA CALENDARIO ISO-8601 y su año ISO (en America/Bogota), NO la semana
+/// relativa del Lookahead. El estado refleja el RESULTADO evaluado del
+/// compromiso; `failureCause`/`failureNotes` solo existen mientras el estado
+/// es FAILED (se limpian al cambiar de estado).
+model WeeklyCommitment {
+  id           String           @id @default(uuid())
+  tenantId     String
+  tenant       Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  planId       String
+  plan         ProjectPlan      @relation(fields: [planId], references: [id], onDelete: Cascade)
+  /// Semana calendario ISO-8601 (1..53).
+  weekNumber   Int
+  /// Año ISO-8601 (puede diferir del año natural en los bordes de enero).
+  year         Int
+  description  String
+  responsible  String
+  status       CommitmentStatus  @default(PENDING)
+  /// Causa de no cumplimiento (solo cuando `status = FAILED`).
+  failureCause NonComplianceCause?
+  failureNotes String?
+  createdAt    DateTime          @default(now())
+  updatedAt    temporal.updatedAt()
+
+  @@index([tenantId])
+  @@index([planId])
+  @@index([tenantId, weekNumber, year])
 }

@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'546dd5631604115982de3d6624bd201ec0a5535f1297145c7a2498c85574729c'>;
+  StorageHashBase<'23b06a7ddc83c4726d6553b837b7b732ab230aa02bc4a6d536ec8719f4a5ec48'>;
 export type ExecutionHash =
-  ExecutionHashBase<'f9c02cd80279843b85cf6b9abfdca3261d6c1108eabae5f5741e15a9682fc238'>;
+  ExecutionHashBase<'f156ad537bb807666f7cddb2119e9436531a51f7bd240c62196aecf7d6e5c6e0'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -369,6 +369,21 @@ export type FieldOutputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
+    readonly LookaheadTask: {
+      readonly code: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly description: CodecTypes['pg/text@1']['output'];
+      readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly isRestricted: CodecTypes['pg/bool@1']['output'];
+      readonly notes: CodecTypes['pg/text@1']['output'] | null;
+      readonly planId: CodecTypes['pg/text@1']['output'];
+      readonly responsible: CodecTypes['pg/text@1']['output'];
+      readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly weekNumber: CodecTypes['pg/int4@1']['output'];
+    };
     readonly Membership: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly customerId: CodecTypes['pg/text@1']['output'];
@@ -449,6 +464,16 @@ export type FieldOutputTypes = {
       readonly technicalContact: CodecTypes['pg/text@1']['output'] | null;
       readonly technicalPhone: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly ProjectPlan: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+      readonly projectId: CodecTypes['pg/text@1']['output'];
+      readonly targetPpc: CodecTypes['pg/int4@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly windowStartDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly Quote: {
       readonly adminPercent: CodecTypes['pg/numeric@1']['output'];
@@ -545,6 +570,28 @@ export type FieldOutputTypes = {
       readonly role: 'SUPERADMIN' | 'OWNER' | 'STAFF';
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly WeeklyCommitment: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly description: CodecTypes['pg/text@1']['output'];
+      readonly failureCause:
+        | 'WEATHER'
+        | 'MATERIALS'
+        | 'LABOR'
+        | 'EQUIPMENT'
+        | 'DESIGN_CHANGE'
+        | 'PREVIOUS_WORK'
+        | 'OTHER'
+        | null;
+      readonly failureNotes: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly planId: CodecTypes['pg/text@1']['output'];
+      readonly responsible: CodecTypes['pg/text@1']['output'];
+      readonly status: 'PENDING' | 'COMPLETED' | 'FAILED';
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly weekNumber: CodecTypes['pg/int4@1']['output'];
+      readonly year: CodecTypes['pg/int4@1']['output'];
     };
   };
 };
@@ -669,6 +716,21 @@ export type FieldInputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
+    readonly LookaheadTask: {
+      readonly code: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly description: CodecTypes['pg/text@1']['input'];
+      readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly isRestricted: CodecTypes['pg/bool@1']['input'];
+      readonly notes: CodecTypes['pg/text@1']['input'] | null;
+      readonly planId: CodecTypes['pg/text@1']['input'];
+      readonly responsible: CodecTypes['pg/text@1']['input'];
+      readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly weekNumber: CodecTypes['pg/int4@1']['input'];
+    };
     readonly Membership: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly customerId: CodecTypes['pg/text@1']['input'];
@@ -749,6 +811,16 @@ export type FieldInputTypes = {
       readonly technicalContact: CodecTypes['pg/text@1']['input'] | null;
       readonly technicalPhone: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly ProjectPlan: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+      readonly projectId: CodecTypes['pg/text@1']['input'];
+      readonly targetPpc: CodecTypes['pg/int4@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly windowStartDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly Quote: {
       readonly adminPercent: CodecTypes['pg/numeric@1']['input'];
@@ -845,6 +917,28 @@ export type FieldInputTypes = {
       readonly role: 'SUPERADMIN' | 'OWNER' | 'STAFF';
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly WeeklyCommitment: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly description: CodecTypes['pg/text@1']['input'];
+      readonly failureCause:
+        | 'WEATHER'
+        | 'MATERIALS'
+        | 'LABOR'
+        | 'EQUIPMENT'
+        | 'DESIGN_CHANGE'
+        | 'PREVIOUS_WORK'
+        | 'OTHER'
+        | null;
+      readonly failureNotes: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly planId: CodecTypes['pg/text@1']['input'];
+      readonly responsible: CodecTypes['pg/text@1']['input'];
+      readonly status: 'PENDING' | 'COMPLETED' | 'FAILED';
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly weekNumber: CodecTypes['pg/int4@1']['input'];
+      readonly year: CodecTypes['pg/int4@1']['input'];
     };
   };
 };
@@ -969,6 +1063,21 @@ export type StorageColumnTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
+    readonly LookaheadTask: {
+      readonly code: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly description: CodecTypes['pg/text@1']['output'];
+      readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly isRestricted: CodecTypes['pg/bool@1']['output'];
+      readonly notes: CodecTypes['pg/text@1']['output'] | null;
+      readonly planId: CodecTypes['pg/text@1']['output'];
+      readonly responsible: CodecTypes['pg/text@1']['output'];
+      readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly weekNumber: CodecTypes['pg/int4@1']['output'];
+    };
     readonly Membership: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly customerId: CodecTypes['pg/text@1']['output'];
@@ -1049,6 +1158,16 @@ export type StorageColumnTypes = {
       readonly technicalContact: CodecTypes['pg/text@1']['output'] | null;
       readonly technicalPhone: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly ProjectPlan: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+      readonly projectId: CodecTypes['pg/text@1']['output'];
+      readonly targetPpc: CodecTypes['pg/int4@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly windowStartDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly Quote: {
       readonly adminPercent: CodecTypes['pg/numeric@1']['output'];
@@ -1145,6 +1264,28 @@ export type StorageColumnTypes = {
       readonly role: 'SUPERADMIN' | 'OWNER' | 'STAFF';
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly WeeklyCommitment: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly description: CodecTypes['pg/text@1']['output'];
+      readonly failureCause:
+        | 'WEATHER'
+        | 'MATERIALS'
+        | 'LABOR'
+        | 'EQUIPMENT'
+        | 'DESIGN_CHANGE'
+        | 'PREVIOUS_WORK'
+        | 'OTHER'
+        | null;
+      readonly failureNotes: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly planId: CodecTypes['pg/text@1']['output'];
+      readonly responsible: CodecTypes['pg/text@1']['output'];
+      readonly status: 'PENDING' | 'COMPLETED' | 'FAILED';
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly weekNumber: CodecTypes['pg/int4@1']['output'];
+      readonly year: CodecTypes['pg/int4@1']['output'];
     };
   };
 };
@@ -1269,6 +1410,21 @@ export type StorageColumnInputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
+    readonly LookaheadTask: {
+      readonly code: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly description: CodecTypes['pg/text@1']['input'];
+      readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly isRestricted: CodecTypes['pg/bool@1']['input'];
+      readonly notes: CodecTypes['pg/text@1']['input'] | null;
+      readonly planId: CodecTypes['pg/text@1']['input'];
+      readonly responsible: CodecTypes['pg/text@1']['input'];
+      readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly weekNumber: CodecTypes['pg/int4@1']['input'];
+    };
     readonly Membership: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly customerId: CodecTypes['pg/text@1']['input'];
@@ -1349,6 +1505,16 @@ export type StorageColumnInputTypes = {
       readonly technicalContact: CodecTypes['pg/text@1']['input'] | null;
       readonly technicalPhone: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly ProjectPlan: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+      readonly projectId: CodecTypes['pg/text@1']['input'];
+      readonly targetPpc: CodecTypes['pg/int4@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly windowStartDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly Quote: {
       readonly adminPercent: CodecTypes['pg/numeric@1']['input'];
@@ -1445,6 +1611,28 @@ export type StorageColumnInputTypes = {
       readonly role: 'SUPERADMIN' | 'OWNER' | 'STAFF';
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly WeeklyCommitment: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly description: CodecTypes['pg/text@1']['input'];
+      readonly failureCause:
+        | 'WEATHER'
+        | 'MATERIALS'
+        | 'LABOR'
+        | 'EQUIPMENT'
+        | 'DESIGN_CHANGE'
+        | 'PREVIOUS_WORK'
+        | 'OTHER'
+        | null;
+      readonly failureNotes: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly planId: CodecTypes['pg/text@1']['input'];
+      readonly responsible: CodecTypes['pg/text@1']['input'];
+      readonly status: 'PENDING' | 'COMPLETED' | 'FAILED';
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly weekNumber: CodecTypes['pg/int4@1']['input'];
+      readonly year: CodecTypes['pg/int4@1']['input'];
     };
   };
 };
@@ -1606,6 +1794,24 @@ export namespace Models {
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'tenant';
   };
+  export type public_LookaheadTask = {
+    code: CodecTypes['pg/text@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    description: CodecTypes['pg/text@1']['output'];
+    endDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    isRestricted: CodecTypes['pg/bool@1']['output'];
+    notes: CodecTypes['pg/text@1']['output'] | null;
+    planId: CodecTypes['pg/text@1']['output'];
+    responsible: CodecTypes['pg/text@1']['output'];
+    startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    weekNumber: CodecTypes['pg/int4@1']['output'];
+    plan: public_ProjectPlan;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'plan' | 'tenant';
+  };
   export type public_Membership = {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     customerId: CodecTypes['pg/text@1']['output'];
@@ -1653,8 +1859,9 @@ export namespace Models {
     budget: public_ProjectBudget | null;
     customer: public_Customer;
     header: public_ProjectHeader | null;
+    plan: public_ProjectPlan | null;
     tenant: public_Tenant;
-    readonly [RelationKeys]?: 'budget' | 'customer' | 'header' | 'tenant';
+    readonly [RelationKeys]?: 'budget' | 'customer' | 'header' | 'plan' | 'tenant';
   };
   export type public_ProjectBudget = {
     adminTotal: CodecTypes['pg/int8@1']['output'];
@@ -1704,6 +1911,21 @@ export namespace Models {
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     project: public_Project;
     readonly [RelationKeys]?: 'project';
+  };
+  export type public_ProjectPlan = {
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    name: CodecTypes['pg/text@1']['output'];
+    projectId: CodecTypes['pg/text@1']['output'];
+    targetPpc: CodecTypes['pg/int4@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    windowStartDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    commitments: public_WeeklyCommitment[];
+    lookaheadTasks: public_LookaheadTask[];
+    project: public_Project;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'commitments' | 'lookaheadTasks' | 'project' | 'tenant';
   };
   export type public_Quote = {
     adminPercent: CodecTypes['pg/numeric@1']['output'];
@@ -1786,13 +2008,16 @@ export namespace Models {
     customerNotes: public_CustomerNote[];
     customers: public_Customer[];
     expenses: public_Expense[];
+    lookaheadTasks: public_LookaheadTask[];
     memberships: public_Membership[];
     modules: public_TenantModule[];
     payments: public_Payment[];
     projectBudgets: public_ProjectBudget[];
+    projectPlans: public_ProjectPlan[];
     projects: public_Project[];
     quotes: public_Quote[];
     users: public_User[];
+    weeklyCommitments: public_WeeklyCommitment[];
     readonly [RelationKeys]?:
       | 'apuActivities'
       | 'apuItems'
@@ -1802,13 +2027,16 @@ export namespace Models {
       | 'customerNotes'
       | 'customers'
       | 'expenses'
+      | 'lookaheadTasks'
       | 'memberships'
       | 'modules'
       | 'payments'
       | 'projectBudgets'
+      | 'projectPlans'
       | 'projects'
       | 'quotes'
-      | 'users';
+      | 'users'
+      | 'weeklyCommitments';
   };
   export type public_TenantModule = {
     active: CodecTypes['pg/bool@1']['output'];
@@ -1844,6 +2072,31 @@ export namespace Models {
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'customerNotes' | 'tenant';
   };
+  export type public_WeeklyCommitment = {
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    description: CodecTypes['pg/text@1']['output'];
+    failureCause:
+      | 'WEATHER'
+      | 'MATERIALS'
+      | 'LABOR'
+      | 'EQUIPMENT'
+      | 'DESIGN_CHANGE'
+      | 'PREVIOUS_WORK'
+      | 'OTHER'
+      | null;
+    failureNotes: CodecTypes['pg/text@1']['output'] | null;
+    id: CodecTypes['pg/text@1']['output'];
+    planId: CodecTypes['pg/text@1']['output'];
+    responsible: CodecTypes['pg/text@1']['output'];
+    status: 'PENDING' | 'COMPLETED' | 'FAILED';
+    tenantId: CodecTypes['pg/text@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    weekNumber: CodecTypes['pg/int4@1']['output'];
+    year: CodecTypes['pg/int4@1']['output'];
+    plan: public_ProjectPlan;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'plan' | 'tenant';
+  };
 }
 
 export declare const models: {
@@ -1859,16 +2112,19 @@ export declare const models: {
     Customer: Models.public_Customer;
     CustomerNote: Models.public_CustomerNote;
     Expense: Models.public_Expense;
+    LookaheadTask: Models.public_LookaheadTask;
     Membership: Models.public_Membership;
     Payment: Models.public_Payment;
     Project: Models.public_Project;
     ProjectBudget: Models.public_ProjectBudget;
     ProjectHeader: Models.public_ProjectHeader;
+    ProjectPlan: Models.public_ProjectPlan;
     Quote: Models.public_Quote;
     QuoteItem: Models.public_QuoteItem;
     Tenant: Models.public_Tenant;
     TenantModule: Models.public_TenantModule;
     User: Models.public_User;
+    WeeklyCommitment: Models.public_WeeklyCommitment;
   };
 };
 
@@ -2830,6 +3086,128 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly LookaheadTask: {
+              columns: {
+                readonly code: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly description: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly endDate: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly isRestricted: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+                  };
+                };
+                readonly notes: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly planId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly responsible: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly startDate: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly weekNumber: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'LookaheadTask_planId_idx_5b32079a';
+                  readonly prefix: 'LookaheadTask_planId_idx';
+                  readonly columns: readonly ['planId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'LookaheadTask_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'LookaheadTask_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'LookaheadTask_tenantId_weekNumber_idx_bbf8add1';
+                  readonly prefix: 'LookaheadTask_tenantId_weekNumber_idx';
+                  readonly columns: readonly ['tenantId', 'weekNumber'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'LookaheadTask';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'LookaheadTask';
+                    readonly columns: readonly ['planId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ProjectPlan';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly Membership: {
               columns: {
                 readonly createdAt: {
@@ -3490,6 +3868,101 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly ProjectPlan: {
+              columns: {
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly name: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'Plan Operativo de Obra'>;
+                  };
+                };
+                readonly projectId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly targetPpc: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 85>;
+                  };
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly windowStartDate: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['projectId'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'ProjectPlan_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'ProjectPlan_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ProjectPlan_tenantId_projectId_idx_e88197e4';
+                  readonly prefix: 'ProjectPlan_tenantId_projectId_idx';
+                  readonly columns: readonly ['tenantId', 'projectId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ProjectPlan';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ProjectPlan';
+                    readonly columns: readonly ['projectId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Project';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly Quote: {
               columns: {
                 readonly adminPercent: {
@@ -4001,6 +4474,123 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly WeeklyCommitment: {
+              columns: {
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly description: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly failureCause: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly failureNotes: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly planId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly responsible: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'PENDING'>;
+                  };
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly weekNumber: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly year: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'WeeklyCommitment_planId_idx_5b32079a';
+                  readonly prefix: 'WeeklyCommitment_planId_idx';
+                  readonly columns: readonly ['planId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'WeeklyCommitment_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'WeeklyCommitment_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'WeeklyCommitment_tenantId_weekNumber_year_idx_07f7a3c9';
+                  readonly prefix: 'WeeklyCommitment_tenantId_weekNumber_year_idx';
+                  readonly columns: readonly ['tenantId', 'weekNumber', 'year'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'WeeklyCommitment';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'WeeklyCommitment';
+                    readonly columns: readonly ['planId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ProjectPlan';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
           };
           readonly valueSet: {
             readonly ApuItemCategory: {
@@ -4010,6 +4600,10 @@ type ContractBase = Omit<
             readonly BookingStatus: {
               readonly kind: 'valueSet';
               readonly values: readonly ['PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED'];
+            };
+            readonly CommitmentStatus: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['PENDING', 'COMPLETED', 'FAILED'];
             };
             readonly MembershipStatus: {
               readonly kind: 'valueSet';
@@ -4033,6 +4627,18 @@ type ContractBase = Omit<
                 'memberships',
                 'orders',
                 'quotes',
+              ];
+            };
+            readonly NonComplianceCause: {
+              readonly kind: 'valueSet';
+              readonly values: readonly [
+                'WEATHER',
+                'MATERIALS',
+                'LABOR',
+                'EQUIPMENT',
+                'DESIGN_CHANGE',
+                'PREVIOUS_WORK',
+                'OTHER',
               ];
             };
             readonly PaymentProvider: {
@@ -4131,6 +4737,10 @@ type ContractBase = Omit<
       readonly model: 'CustomerNote';
     };
     readonly Expense: { readonly namespace: 'public' & NamespaceId; readonly model: 'Expense' };
+    readonly LookaheadTask: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'LookaheadTask';
+    };
     readonly Membership: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'Membership';
@@ -4145,6 +4755,10 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'ProjectHeader';
     };
+    readonly ProjectPlan: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'ProjectPlan';
+    };
     readonly Quote: { readonly namespace: 'public' & NamespaceId; readonly model: 'Quote' };
     readonly QuoteItem: { readonly namespace: 'public' & NamespaceId; readonly model: 'QuoteItem' };
     readonly Tenant: { readonly namespace: 'public' & NamespaceId; readonly model: 'Tenant' };
@@ -4153,6 +4767,10 @@ type ContractBase = Omit<
       readonly model: 'TenantModule';
     };
     readonly User: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+    readonly WeeklyCommitment: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'WeeklyCommitment';
+    };
   };
   readonly domain: {
     readonly namespaces: {
@@ -5123,6 +5741,119 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly LookaheadTask: {
+            readonly fields: {
+              readonly code: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly description: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly endDate: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly isRestricted: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly notes: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly planId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly responsible: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly startDate: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly weekNumber: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+            };
+            readonly relations: {
+              readonly plan: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ProjectPlan';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['planId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'LookaheadTask';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly code: { readonly column: 'code' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly description: { readonly column: 'description' };
+                readonly endDate: { readonly column: 'endDate' };
+                readonly id: { readonly column: 'id' };
+                readonly isRestricted: { readonly column: 'isRestricted' };
+                readonly notes: { readonly column: 'notes' };
+                readonly planId: { readonly column: 'planId' };
+                readonly responsible: { readonly column: 'responsible' };
+                readonly startDate: { readonly column: 'startDate' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+                readonly weekNumber: { readonly column: 'weekNumber' };
+              };
+            };
+          };
           readonly Membership: {
             readonly fields: {
               readonly createdAt: {
@@ -5420,6 +6151,18 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'ProjectHeader';
+                };
+                readonly cardinality: '1:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['projectId'];
+                };
+              };
+              readonly plan: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ProjectPlan';
                 };
                 readonly cardinality: '1:1';
                 readonly nullable: true;
@@ -5734,6 +6477,113 @@ type ContractBase = Omit<
                 readonly technicalContact: { readonly column: 'technicalContact' };
                 readonly technicalPhone: { readonly column: 'technicalPhone' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly ProjectPlan: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly projectId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly targetPpc: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly windowStartDate: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly commitments: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'WeeklyCommitment';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['planId'];
+                };
+              };
+              readonly lookaheadTasks: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'LookaheadTask';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['planId'];
+                };
+              };
+              readonly project: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Project';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['projectId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'ProjectPlan';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly id: { readonly column: 'id' };
+                readonly name: { readonly column: 'name' };
+                readonly projectId: { readonly column: 'projectId' };
+                readonly targetPpc: { readonly column: 'targetPpc' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+                readonly windowStartDate: { readonly column: 'windowStartDate' };
               };
             };
           };
@@ -6131,6 +6981,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly lookaheadTasks: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'LookaheadTask';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly memberships: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -6175,6 +7036,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly projectPlans: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ProjectPlan';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly projects: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -6199,6 +7071,17 @@ type ContractBase = Omit<
               };
               readonly users: {
                 readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly weeklyCommitments: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'WeeklyCommitment';
+                };
                 readonly cardinality: '1:N';
                 readonly on: {
                   readonly localFields: readonly ['id'];
@@ -6376,6 +7259,108 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly WeeklyCommitment: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly description: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly failureCause: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly failureNotes: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly planId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly responsible: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly weekNumber: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly year: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+            };
+            readonly relations: {
+              readonly plan: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ProjectPlan';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['planId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'WeeklyCommitment';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly description: { readonly column: 'description' };
+                readonly failureCause: { readonly column: 'failureCause' };
+                readonly failureNotes: { readonly column: 'failureNotes' };
+                readonly id: { readonly column: 'id' };
+                readonly planId: { readonly column: 'planId' };
+                readonly responsible: { readonly column: 'responsible' };
+                readonly status: { readonly column: 'status' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+                readonly weekNumber: { readonly column: 'weekNumber' };
+                readonly year: { readonly column: 'year' };
+              };
+            };
+          };
         };
         readonly enum: {
           readonly ApuItemCategory: {
@@ -6394,6 +7379,14 @@ type ContractBase = Omit<
               { readonly name: 'CONFIRMED'; readonly value: 'CONFIRMED' },
               { readonly name: 'COMPLETED'; readonly value: 'COMPLETED' },
               { readonly name: 'CANCELLED'; readonly value: 'CANCELLED' },
+            ];
+          };
+          readonly CommitmentStatus: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'PENDING'; readonly value: 'PENDING' },
+              { readonly name: 'COMPLETED'; readonly value: 'COMPLETED' },
+              { readonly name: 'FAILED'; readonly value: 'FAILED' },
             ];
           };
           readonly MembershipStatus: {
@@ -6426,6 +7419,18 @@ type ContractBase = Omit<
               { readonly name: 'memberships'; readonly value: 'memberships' },
               { readonly name: 'orders'; readonly value: 'orders' },
               { readonly name: 'quotes'; readonly value: 'quotes' },
+            ];
+          };
+          readonly NonComplianceCause: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'WEATHER'; readonly value: 'WEATHER' },
+              { readonly name: 'MATERIALS'; readonly value: 'MATERIALS' },
+              { readonly name: 'LABOR'; readonly value: 'LABOR' },
+              { readonly name: 'EQUIPMENT'; readonly value: 'EQUIPMENT' },
+              { readonly name: 'DESIGN_CHANGE'; readonly value: 'DESIGN_CHANGE' },
+              { readonly name: 'PREVIOUS_WORK'; readonly value: 'PREVIOUS_WORK' },
+              { readonly name: 'OTHER'; readonly value: 'OTHER' },
             ];
           };
           readonly PaymentProvider: {
@@ -6703,6 +7708,23 @@ type ContractBase = Omit<
         {
           readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
           readonly ref: {
+            readonly entry: 'LookaheadTask';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'LookaheadTask';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
             readonly entry: 'Membership';
             readonly field: 'id';
             readonly namespace: 'public';
@@ -6781,6 +7803,23 @@ type ContractBase = Omit<
           readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'ProjectHeader';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'ProjectPlan';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'ProjectPlan';
             readonly field: 'updatedAt';
             readonly namespace: 'public';
           };
@@ -6857,6 +7896,23 @@ type ContractBase = Omit<
           readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'User';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'WeeklyCommitment';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'WeeklyCommitment';
             readonly field: 'updatedAt';
             readonly namespace: 'public';
           };

@@ -39,6 +39,18 @@ import {
   type ResourceTypeValue,
 } from "@/lib/apu-engine";
 import type { ProjectStatusValue } from "@/lib/projects";
+import {
+  addDays,
+  bogotaToday,
+  currentWindowStart,
+  daysBetween,
+  formatPlainDate,
+  isoWeekOf,
+  relativeWeekNumber,
+  WINDOW_WEEKS,
+  type CommitmentStatusValue,
+  type NonComplianceCauseValue,
+} from "@/lib/lean-engine";
 
 /** Escapa los comodines de LIKE para que la búsqueda sea literal. */
 function escapeLike(input: string): string {
@@ -493,6 +505,152 @@ export type CreateBudgetItemInput = {
   /** Costo unitario directo en micro-pesos. */
   unitCostDirect: bigint;
 };
+
+/* ------------------------------------------------------------------ */
+/* Planificador Lean — Last Planner System (FASE 3 — Tab 3)            */
+/* ------------------------------------------------------------------ */
+
+/** Tarea del Lookahead serializada (fechas como día calendario Bogotá). */
+export type LookaheadTaskData = {
+  id: string;
+  code: string;
+  description: string;
+  /** Semana relativa dentro de la ventana (1..6). */
+  weekNumber: number;
+  /** "YYYY-MM-DD" (America/Bogota). */
+  startDate: string;
+  /** "YYYY-MM-DD" (America/Bogota). */
+  endDate: string;
+  responsible: string;
+  isRestricted: boolean;
+  notes: string | null;
+};
+
+/** Compromiso del plan de trabajo semanal serializado. */
+export type WeeklyCommitmentData = {
+  id: string;
+  /** Semana calendario ISO-8601 (1..53). */
+  weekNumber: number;
+  /** Año ISO-8601. */
+  year: number;
+  description: string;
+  responsible: string;
+  status: CommitmentStatusValue;
+  failureCause: NonComplianceCauseValue | null;
+  failureNotes: string | null;
+};
+
+/** Plan Lean serializado: cabecera + tareas del Lookahead + compromisos. */
+export type ProjectPlanData = {
+  id: string;
+  projectId: string;
+  name: string;
+  targetPpc: number;
+  /** Lunes (día calendario Bogotá) de la semana relativa 1 de la ventana. */
+  windowStart: string;
+  lookaheadTasks: LookaheadTaskData[];
+  commitments: WeeklyCommitmentData[];
+};
+
+export type CreateLookaheadTaskInput = {
+  code: string;
+  description: string;
+  weekNumber: number;
+  /** Día calendario Bogotá "YYYY-MM-DD". */
+  startDate: string;
+  endDate: string;
+  responsible: string;
+  isRestricted: boolean;
+  notes?: string | null;
+};
+
+export type CreateCommitmentInput = {
+  description: string;
+  responsible: string;
+  /** Lunes de la semana operativa a la que pertenece ("YYYY-MM-DD"). */
+  weekStartDate: string;
+};
+
+export type UpdateCommitmentStatusInput = {
+  status: CommitmentStatusValue;
+  failureCause?: NonComplianceCauseValue | null;
+  failureNotes?: string | null;
+};
+
+/** Fila mínima de `ProjectPlan` que necesita la serialización. */
+type ProjectPlanRow = {
+  id: string;
+  projectId: string;
+  name: string;
+  targetPpc: number;
+  windowStartDate: unknown;
+};
+
+/**
+ * Convierte "YYYY-MM-DD" al `Temporal.Instant` de las 00:00 en America/Bogota
+ * (UTC-5 fijo, sin horario de verano) — formato que exige el codec temporal de
+ * Prisma 8 para escribir `timestamptz`.
+ */
+function bogotaInstantFromIsoDate(iso: string): Temporal.Instant {
+  const [year, month, day] = iso.split("-").map(Number);
+  return Temporal.Instant.fromEpochMilliseconds(
+    Date.UTC(year, month - 1, day, 5, 0, 0),
+  );
+}
+
+/** `Temporal.Instant` (o ISO) → día calendario "YYYY-MM-DD" en Bogotá. */
+function instantToBogotaIsoDate(value: unknown): string {
+  return formatPlainDate(bogotaToday(String(value)));
+}
+
+async function loadLeanPlan(plan: ProjectPlanRow): Promise<ProjectPlanData> {
+  const [tasks, commitments] = await Promise.all([
+    db.orm.public.LookaheadTask
+      .where({ planId: plan.id })
+      .orderBy((task) => task.weekNumber.asc())
+      .all(),
+    db.orm.public.WeeklyCommitment
+      .where({ planId: plan.id })
+      .orderBy((commitment) => commitment.weekNumber.asc())
+      .all(),
+  ]);
+
+  commitments.sort((a, b) => {
+    if (a.year !== b.year) {
+      return b.year - a.year;
+    }
+    return a.weekNumber - b.weekNumber;
+  });
+
+  return {
+    id: plan.id,
+    projectId: plan.projectId,
+    name: plan.name,
+    targetPpc: plan.targetPpc,
+    windowStart: instantToBogotaIsoDate(plan.windowStartDate),
+    lookaheadTasks: tasks.map((task) => ({
+      id: task.id,
+      code: task.code,
+      description: task.description,
+      weekNumber: task.weekNumber,
+      startDate: instantToBogotaIsoDate(task.startDate),
+      endDate: instantToBogotaIsoDate(task.endDate),
+      responsible: task.responsible,
+      isRestricted: task.isRestricted,
+      notes: task.notes,
+    })),
+    commitments: commitments.map((commitment) => ({
+      id: commitment.id,
+      weekNumber: commitment.weekNumber,
+      year: commitment.year,
+      description: commitment.description,
+      responsible: commitment.responsible,
+      status: commitment.status as CommitmentStatusValue,
+      failureCause: commitment.failureCause as NonComplianceCauseValue | null,
+      failureNotes: commitment.failureNotes,
+    })),
+  };
+}
 
 /** Fila mínima de `ProjectBudget` que necesita la capa de lectura/escritura. */
 type BudgetRow = {
@@ -2241,6 +2399,211 @@ export function createTenantDb(tenantId: string) {
         await db.orm.public.ProjectBudget
           .where({ id: budget.id })
           .update({ isLocked });
+      },
+    },
+
+    lean: {
+      /** Plan Lean del proyecto (con tareas y compromisos), o null. */
+      getPlan: async (projectId: string): Promise<ProjectPlanData | null> => {
+        const plan = await db.orm.public.ProjectPlan
+          .where({ projectId, tenantId })
+          .first();
+        return plan ? loadLeanPlan(plan) : null;
+      },
+
+      /**
+       * Devuelve el plan Lean del proyecto, creándolo si no existe (1:1 vía
+       * `projectId @unique`). La ventana se ancla al lunes de la semana
+       * operativa actual (America/Bogota). Idempotente ante concurrencia.
+       */
+      getOrCreatePlan: async (projectId: string): Promise<ProjectPlanData> => {
+        const existing = await db.orm.public.ProjectPlan
+          .where({ projectId, tenantId })
+          .first();
+        if (existing) {
+          return loadLeanPlan(existing);
+        }
+
+        const project = await db.orm.public.Project
+          .where({ id: projectId, tenantId })
+          .first();
+        if (!project) {
+          throw new Error("Proyecto no encontrado en este negocio.");
+        }
+
+        const windowStart = formatPlainDate(currentWindowStart());
+        try {
+          const created = await db.orm.public.ProjectPlan.create({
+            tenantId,
+            projectId,
+            name: `Plan Operativo — ${project.name}`,
+            windowStartDate: bogotaInstantFromIsoDate(windowStart),
+          });
+          return loadLeanPlan(created);
+        } catch (error) {
+          const raced = await db.orm.public.ProjectPlan
+            .where({ projectId, tenantId })
+            .first();
+          if (raced) {
+            return loadLeanPlan(raced);
+          }
+          throw error;
+        }
+      },
+
+      /**
+       * Crea una tarea del Lookahead. La semana relativa se DERIVA de la fecha
+       * de inicio respecto al ancla de la ventana (no se confía en el cliente)
+       * y se exige que coincida con la semana declarada y caiga en 1..6.
+       */
+      createLookaheadTask: async (
+        projectId: string,
+        input: CreateLookaheadTaskInput,
+      ): Promise<{ id: string }> => {
+        const plan = await db.orm.public.ProjectPlan
+          .where({ projectId, tenantId })
+          .first();
+        if (!plan) {
+          throw new Error("Plan no encontrado en este negocio.");
+        }
+
+        const startDate = bogotaToday(`${input.startDate}T12:00:00Z`);
+        const endDate = bogotaToday(`${input.endDate}T12:00:00Z`);
+        const windowStart = bogotaToday(String(plan.windowStartDate));
+        const derivedWeek = relativeWeekNumber(windowStart, startDate);
+        if (derivedWeek !== input.weekNumber) {
+          throw new Error(
+            "Las fechas no corresponden a la semana de la ventana indicada.",
+          );
+        }
+        if (derivedWeek < 1 || derivedWeek > WINDOW_WEEKS) {
+          throw new Error(
+            `La semana debe estar entre 1 y ${WINDOW_WEEKS}.`,
+          );
+        }
+        if (daysBetween(startDate, endDate) < 0) {
+          throw new Error("La fecha de fin no puede ser anterior a la de inicio.");
+        }
+
+        const created = await db.orm.public.LookaheadTask.create({
+          tenantId,
+          planId: plan.id,
+          code: input.code,
+          description: input.description,
+          weekNumber: derivedWeek,
+          startDate: bogotaInstantFromIsoDate(input.startDate),
+          endDate: bogotaInstantFromIsoDate(input.endDate),
+          responsible: input.responsible,
+          isRestricted: input.isRestricted,
+          notes: input.notes ?? null,
+        });
+        return { id: created.id };
+      },
+
+      /**
+       * Crea un compromiso semanal. La semana calendario ISO y su año se
+       * DERIVAN de `weekStartDate` en el servidor; el estado inicial es
+       * PENDING y sin datos de fallo.
+       */
+      createCommitment: async (
+        projectId: string,
+        input: CreateCommitmentInput,
+      ): Promise<{ id: string }> => {
+        const plan = await db.orm.public.ProjectPlan
+          .where({ projectId, tenantId })
+          .first();
+        if (!plan) {
+          throw new Error("Plan no encontrado en este negocio.");
+        }
+
+        const weekStart = bogotaToday(`${input.weekStartDate}T12:00:00Z`);
+        const { year, week } = isoWeekOf(weekStart);
+
+        const created = await db.orm.public.WeeklyCommitment.create({
+          tenantId,
+          planId: plan.id,
+          weekNumber: week,
+          year,
+          description: input.description,
+          responsible: input.responsible,
+          status: "PENDING",
+          failureCause: null,
+          failureNotes: null,
+        });
+        return { id: created.id };
+      },
+
+      /**
+       * Cambia el resultado de un compromiso. Si pasa a FAILED se admite causa
+       * CNC (y notas); en cualquier otro estado se limpian los datos de fallo
+       * para no dejar información obsoleta.
+       */
+      updateCommitmentStatus: async (
+        projectId: string,
+        commitmentId: string,
+        input: UpdateCommitmentStatusInput,
+      ): Promise<void> => {
+        const plan = await db.orm.public.ProjectPlan
+          .where({ projectId, tenantId })
+          .select("id")
+          .first();
+        if (!plan) {
+          throw new Error("Plan no encontrado en este negocio.");
+        }
+        const commitment = await db.orm.public.WeeklyCommitment
+          .where({ id: commitmentId, planId: plan.id })
+          .first();
+        if (!commitment) {
+          throw new Error("Compromiso no encontrado en este plan.");
+        }
+
+        const isFailed = input.status === "FAILED";
+        await db.orm.public.WeeklyCommitment
+          .where({ id: commitment.id })
+          .update({
+            status: input.status,
+            failureCause: input.status === "FAILED" ? (input.failureCause ?? null) : null,
+            failureNotes: input.status === "FAILED" ? (input.failureNotes ?? null) : null,
+          });
+        void isFailed;
+      },
+
+      /**
+       * Desplaza la ventana operativa `deltaWeeks` semanas (positivo = futuro)
+       * y recalcula la semana relativa de cada tarea desde su fecha real.
+       * Permite que la planificación avance sin quedar "congelada".
+       */
+      advanceWindow: async (
+        projectId: string,
+        deltaWeeks: number,
+      ): Promise<void> => {
+        const plan = await db.orm.public.ProjectPlan
+          .where({ projectId, tenantId })
+          .first();
+        if (!plan) {
+          throw new Error("Plan no encontrado en este negocio.");
+        }
+        if (!Number.isInteger(deltaWeeks) || deltaWeeks === 0) {
+          return;
+        }
+
+        const currentStart = bogotaToday(String(plan.windowStartDate));
+        const newStart = addDays(currentStart, deltaWeeks * 7);
+
+        await db.transaction(async (tx) => {
+          await tx.orm.public.ProjectPlan.where({ id: plan.id }).update({
+            windowStartDate: bogotaInstantFromIsoDate(formatPlainDate(newStart)),
+          });
+          const tasks = await tx.orm.public.LookaheadTask
+            .where({ planId: plan.id })
+            .all();
+          for (const task of tasks) {
+            const taskStart = bogotaToday(String(task.startDate));
+            await tx.orm.public.LookaheadTask
+              .where({ id: task.id })
+              .update({ weekNumber: relativeWeekNumber(newStart, taskStart) });
+          }
+        });
       },
     },
 

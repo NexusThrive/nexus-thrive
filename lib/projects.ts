@@ -59,6 +59,7 @@ export const PROJECT_TYPE_OPTIONS: ReadonlyArray<{
 export type ProjectTab =
   | "ficha"
   | "presupuesto"
+  | "planificador"
   | "planificacion"
   | "bitacora"
   | "informes";
@@ -69,12 +70,15 @@ export const PROJECT_TABS: ReadonlyArray<{
 }> = [
   { value: "ficha", label: "Ficha y cliente" },
   { value: "presupuesto", label: "Presupuestador" },
-  { value: "planificacion", label: "Planificador Lean" },
+  { value: "planificador", label: "Planificador Lean" },
   { value: "bitacora", label: "Bitácora y campo" },
   { value: "informes", label: "Informes y exportación" },
 ];
 
 export function parseProjectTab(value: string): ProjectTab {
+  if (value === "planificacion" || value === "planificador") {
+    return "planificador";
+  }
   return PROJECT_TABS.some((tab) => tab.value === value)
     ? (value as ProjectTab)
     : "ficha";
