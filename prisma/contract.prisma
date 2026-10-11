@@ -597,6 +597,9 @@ model ProjectBudget {
 
   /// Bloqueo básico: la capa de negocio rechaza mutaciones ordinarias.
   isLocked  Boolean  @default(false)
+  /// Versión optimista: se incrementa en cada mutación del presupuesto para
+  /// detectar ediciones concurrentes (STALE_REVISION).
+  revision  Int      @default(1)
   createdAt DateTime @default(now())
   updatedAt temporal.updatedAt()
 

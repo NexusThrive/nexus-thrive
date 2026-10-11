@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'390db12f061cf04fdfa355f9ec66c1e262cbe1756bc23119b3163cd5321c5011'>;
+  StorageHashBase<'77c8ba7395a5ab33bb41159f8d3003dbd2bcaf220a24a16e2efaae30235dd4d8'>;
 export type ExecutionHash =
   ExecutionHashBase<'a5d75e45f846778ea827c3c59d0e7682dd123c54eea06bd6b1f71efc8931230a'>;
 export type ProfileHash =
@@ -462,6 +462,7 @@ export type FieldOutputTypes = {
       readonly ivaUtilidadTotal: CodecTypes['pg/int8@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly projectId: CodecTypes['pg/text@1']['output'];
+      readonly revision: CodecTypes['pg/int4@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly utilidadTotal: CodecTypes['pg/int8@1']['output'];
@@ -833,6 +834,7 @@ export type FieldInputTypes = {
       readonly ivaUtilidadTotal: CodecTypes['pg/int8@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly projectId: CodecTypes['pg/text@1']['input'];
+      readonly revision: CodecTypes['pg/int4@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly utilidadTotal: CodecTypes['pg/int8@1']['input'];
@@ -1204,6 +1206,7 @@ export type StorageColumnTypes = {
       readonly ivaUtilidadTotal: CodecTypes['pg/int8@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly projectId: CodecTypes['pg/text@1']['output'];
+      readonly revision: CodecTypes['pg/int4@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly utilidadTotal: CodecTypes['pg/int8@1']['output'];
@@ -1575,6 +1578,7 @@ export type StorageColumnInputTypes = {
       readonly ivaUtilidadTotal: CodecTypes['pg/int8@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly projectId: CodecTypes['pg/text@1']['input'];
+      readonly revision: CodecTypes['pg/int4@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly utilidadTotal: CodecTypes['pg/int8@1']['input'];
@@ -2007,6 +2011,7 @@ export namespace Models {
     ivaUtilidadTotal: CodecTypes['pg/int8@1']['output'];
     name: CodecTypes['pg/text@1']['output'];
     projectId: CodecTypes['pg/text@1']['output'];
+    revision: CodecTypes['pg/int4@1']['output'];
     tenantId: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     utilidadTotal: CodecTypes['pg/int8@1']['output'];
@@ -4025,6 +4030,15 @@ type ContractBase = Omit<
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                };
+                readonly revision: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 1>;
+                  };
                 };
                 readonly tenantId: {
                   readonly nativeType: 'text';
@@ -6841,6 +6855,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly revision: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
               readonly tenantId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -6913,6 +6931,7 @@ type ContractBase = Omit<
                 readonly ivaUtilidadTotal: { readonly column: 'ivaUtilidadTotal' };
                 readonly name: { readonly column: 'name' };
                 readonly projectId: { readonly column: 'projectId' };
+                readonly revision: { readonly column: 'revision' };
                 readonly tenantId: { readonly column: 'tenantId' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
                 readonly utilidadTotal: { readonly column: 'utilidadTotal' };

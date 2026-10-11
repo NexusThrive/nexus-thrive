@@ -3216,6 +3216,13 @@
                   "kind": "scalar"
                 }
               },
+              "revision": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "tenantId": {
                 "nullable": false,
                 "type": {
@@ -3333,6 +3340,9 @@
                 },
                 "projectId": {
                   "column": "projectId"
+                },
+                "revision": {
+                  "column": "revision"
                 },
                 "tenantId": {
                   "column": "tenantId"
@@ -7292,6 +7302,15 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "revision": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 1
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
                 "tenantId": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -8698,7 +8717,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "390db12f061cf04fdfa355f9ec66c1e262cbe1756bc23119b3163cd5321c5011"
+    "storageHash": "77c8ba7395a5ab33bb41159f8d3003dbd2bcaf220a24a16e2efaae30235dd4d8"
   },
   "execution": {
     "executionHash": "a5d75e45f846778ea827c3c59d0e7682dd123c54eea06bd6b1f71efc8931230a",

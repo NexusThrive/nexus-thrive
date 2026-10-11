@@ -489,6 +489,7 @@ export type ProjectBudgetData = {
   ivaUtilidadTotal: string;
   grandTotal: string;
   isLocked: boolean;
+  revision: number;
   chapters: BudgetChapterData[];
 };
 
@@ -772,7 +773,21 @@ type BudgetRow = {
   ivaUtilidadTotal: bigint;
   grandTotal: bigint;
   isLocked: boolean;
+  revision: number;
 };
+
+/**
+ * Concurrencia optimista: si el llamador aporta la revisión que vio, la
+ * mutación se rechaza cuando el presupuesto ya cambió (`STALE_REVISION`).
+ */
+function assertRevision(
+  budget: BudgetRow,
+  expectedRevision?: number,
+): void {
+  if (expectedRevision !== undefined && budget.revision !== expectedRevision) {
+    throw new Error("STALE_REVISION");
+  }
+}
 
 /** Transacción de Prisma 8 (misma forma que el `db` pero ligada a la tx). */
 type TenantTx = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -868,6 +883,7 @@ async function loadBudgetTree(budget: BudgetRow): Promise<ProjectBudgetData> {
     ivaUtilidadTotal: budget.ivaUtilidadTotal.toString(),
     grandTotal: budget.grandTotal.toString(),
     isLocked: budget.isLocked,
+    revision: budget.revision,
     chapters: chapterData,
   };
 }
@@ -2370,6 +2386,7 @@ export function createTenantDb(tenantId: string) {
       createChapter: async (
         projectId: string,
         input: CreateChapterInput,
+        expectedRevision?: number,
       ): Promise<{ id: string }> => {
         const budget = await db.orm.public.ProjectBudget
           .where({ projectId, tenantId })
@@ -2380,17 +2397,24 @@ export function createTenantDb(tenantId: string) {
         if (budget.isLocked) {
           throw new Error("El presupuesto está bloqueado.");
         }
-        const last = await db.orm.public.BudgetChapter
-          .where({ budgetId: budget.id })
-          .orderBy((chapter) => chapter.order.desc())
-          .first();
-        const order = last ? last.order + 1 : 1;
-        const chapter = await db.orm.public.BudgetChapter.create({
-          tenantId,
-          budgetId: budget.id,
-          order,
-          name: input.name,
-          description: input.description ?? null,
+        assertRevision(budget, expectedRevision);
+        const chapter = await db.transaction(async (tx) => {
+          const last = await tx.orm.public.BudgetChapter
+            .where({ budgetId: budget.id })
+            .orderBy((chapter) => chapter.order.desc())
+            .first();
+          const order = last ? last.order + 1 : 1;
+          const created = await tx.orm.public.BudgetChapter.create({
+            tenantId,
+            budgetId: budget.id,
+            order,
+            name: input.name,
+            description: input.description ?? null,
+          });
+          await tx.orm.public.ProjectBudget
+            .where({ id: budget.id })
+            .update({ revision: budget.revision + 1 });
+          return created;
         });
         return { id: chapter.id };
       },
@@ -2403,6 +2427,7 @@ export function createTenantDb(tenantId: string) {
       createItem: async (
         projectId: string,
         input: CreateBudgetItemInput,
+        expectedRevision?: number,
       ): Promise<{ id: string }> => {
         const budget = await db.orm.public.ProjectBudget
           .where({ projectId, tenantId })
@@ -2413,6 +2438,7 @@ export function createTenantDb(tenantId: string) {
         if (budget.isLocked) {
           throw new Error("El presupuesto está bloqueado.");
         }
+        assertRevision(budget, expectedRevision);
         const chapter = await db.orm.public.BudgetChapter
           .where({ id: input.chapterId, budgetId: budget.id })
           .select("id")
@@ -2449,6 +2475,9 @@ export function createTenantDb(tenantId: string) {
             utilidad: budget.aiuUtilidadPct,
             iva: budget.ivaUtilidadPct,
           });
+          await tx.orm.public.ProjectBudget
+            .where({ id: budget.id })
+            .update({ revision: budget.revision + 1 });
           return item;
         });
         return { id: created.id };
@@ -2461,6 +2490,7 @@ export function createTenantDb(tenantId: string) {
       updateAiu: async (
         projectId: string,
         config: AiuConfigInput,
+        expectedRevision?: number,
       ): Promise<void> => {
         const budget = await db.orm.public.ProjectBudget
           .where({ projectId, tenantId })
@@ -2471,12 +2501,14 @@ export function createTenantDb(tenantId: string) {
         if (budget.isLocked) {
           throw new Error("El presupuesto está bloqueado.");
         }
+        assertRevision(budget, expectedRevision);
         await db.transaction(async (tx) => {
           await tx.orm.public.ProjectBudget.where({ id: budget.id }).update({
             aiuAdminPct: config.adminPct,
             aiuImprevPct: config.imprevPct,
             aiuUtilidadPct: config.utilidadPct,
             ivaUtilidadPct: config.ivaUtilidadPct,
+            revision: budget.revision + 1,
           });
           await recalcBudgetTotals(tx, budget.id, {
             admin: config.adminPct,
@@ -2491,6 +2523,7 @@ export function createTenantDb(tenantId: string) {
       setLocked: async (
         projectId: string,
         isLocked: boolean,
+        expectedRevision?: number,
       ): Promise<void> => {
         const budget = await db.orm.public.ProjectBudget
           .where({ projectId, tenantId })
@@ -2498,9 +2531,10 @@ export function createTenantDb(tenantId: string) {
         if (!budget) {
           throw new Error("Presupuesto no encontrado en este negocio.");
         }
+        assertRevision(budget, expectedRevision);
         await db.orm.public.ProjectBudget
           .where({ id: budget.id })
-          .update({ isLocked });
+          .update({ isLocked, revision: budget.revision + 1 });
       },
 
       /**
@@ -2510,6 +2544,7 @@ export function createTenantDb(tenantId: string) {
       deleteChapter: async (
         projectId: string,
         chapterId: string,
+        expectedRevision?: number,
       ): Promise<void> => {
         const budget = await db.orm.public.ProjectBudget
           .where({ projectId, tenantId })
@@ -2520,6 +2555,7 @@ export function createTenantDb(tenantId: string) {
         if (budget.isLocked) {
           throw new Error("El presupuesto está bloqueado.");
         }
+        assertRevision(budget, expectedRevision);
         const chapter = await db.orm.public.BudgetChapter
           .where({ id: chapterId, budgetId: budget.id })
           .select("id")
@@ -2537,6 +2573,9 @@ export function createTenantDb(tenantId: string) {
             utilidad: budget.aiuUtilidadPct,
             iva: budget.ivaUtilidadPct,
           });
+          await tx.orm.public.ProjectBudget
+            .where({ id: budget.id })
+            .update({ revision: budget.revision + 1 });
         });
       },
 
@@ -2544,7 +2583,11 @@ export function createTenantDb(tenantId: string) {
        * Elimina una partida (y sus recursos, en cascada). Valida pertenencia
        * capítulo→presupuesto. Rechaza si el presupuesto está bloqueado.
        */
-      deleteItem: async (projectId: string, itemId: string): Promise<void> => {
+      deleteItem: async (
+        projectId: string,
+        itemId: string,
+        expectedRevision?: number,
+      ): Promise<void> => {
         const budget = await db.orm.public.ProjectBudget
           .where({ projectId, tenantId })
           .first();
@@ -2554,6 +2597,7 @@ export function createTenantDb(tenantId: string) {
         if (budget.isLocked) {
           throw new Error("El presupuesto está bloqueado.");
         }
+        assertRevision(budget, expectedRevision);
         const item = await db.orm.public.BudgetItem
           .where({ id: itemId, tenantId })
           .first();
@@ -2577,6 +2621,9 @@ export function createTenantDb(tenantId: string) {
             utilidad: budget.aiuUtilidadPct,
             iva: budget.ivaUtilidadPct,
           });
+          await tx.orm.public.ProjectBudget
+            .where({ id: budget.id })
+            .update({ revision: budget.revision + 1 });
         });
       },
     },
