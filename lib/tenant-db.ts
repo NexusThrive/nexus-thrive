@@ -2391,37 +2391,60 @@ export function createTenantDb(tenantId: string) {
         }
 
         const prefix = `PRES-${currentYearBogota()}-`;
-        const latest = await db.orm.public.ProjectBudget
-          .where({ tenantId })
-          .where((budget) => budget.code.like(`${prefix}%`))
-          .orderBy((budget) => budget.code.desc())
-          .first();
-        const sequence = latest
-          ? Number(latest.code.slice(prefix.length)) + 1
-          : 1;
-        const code = `${prefix}${String(sequence).padStart(3, "0")}`;
-
-        try {
-          const created = await db.orm.public.ProjectBudget.create({
-            tenantId,
-            projectId,
-            code,
-            name: `Presupuesto — ${project.name}`,
-            aiuAdminPct: AIU_DEFAULTS.adminPct,
-            aiuImprevPct: AIU_DEFAULTS.imprevPct,
-            aiuUtilidadPct: AIU_DEFAULTS.utilidadPct,
-            ivaUtilidadPct: AIU_DEFAULTS.ivaUtilidadPct,
-          });
-          return loadBudgetTree(created);
-        } catch (error) {
-          const raced = await db.orm.public.ProjectBudget
-            .where({ projectId, tenantId })
-            .first();
-          if (raced) {
-            return loadBudgetTree(raced);
+        const sequenceFrom = (code?: string | null): number => {
+          if (!code || !code.startsWith(prefix)) {
+            return 0;
           }
-          throw error;
+          const digits = Number(code.slice(prefix.length));
+          return Number.isFinite(digits) ? digits : 0;
+        };
+
+        // El código humano PRES-AAAA-NNN es único en TODO el tenant: Quote y
+        // ProjectBudget comparten la numeración (etapa 1, ajuste F). Se toma el
+        // máximo de ambas tablas y se reintenta si una carrera lo ocupa.
+        let lastError: unknown = null;
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          const [latestBudget, latestQuote] = await Promise.all([
+            db.orm.public.ProjectBudget
+              .where({ tenantId })
+              .where((budget) => budget.code.like(`${prefix}%`))
+              .orderBy((budget) => budget.code.desc())
+              .first(),
+            db.orm.public.Quote
+              .where({ tenantId })
+              .where((quote) => quote.code.like(`${prefix}%`))
+              .orderBy((quote) => quote.code.desc())
+              .first(),
+          ]);
+          const sequence =
+            Math.max(
+              sequenceFrom(latestBudget?.code),
+              sequenceFrom(latestQuote?.code),
+            ) + 1;
+          const code = `${prefix}${String(sequence).padStart(3, "0")}`;
+          try {
+            const created = await db.orm.public.ProjectBudget.create({
+              tenantId,
+              projectId,
+              code,
+              name: `Presupuesto — ${project.name}`,
+              aiuAdminPct: AIU_DEFAULTS.adminPct,
+              aiuImprevPct: AIU_DEFAULTS.imprevPct,
+              aiuUtilidadPct: AIU_DEFAULTS.utilidadPct,
+              ivaUtilidadPct: AIU_DEFAULTS.ivaUtilidadPct,
+            });
+            return loadBudgetTree(created);
+          } catch (error) {
+            lastError = error;
+            const raced = await db.orm.public.ProjectBudget
+              .where({ projectId, tenantId })
+              .first();
+            if (raced) {
+              return loadBudgetTree(raced);
+            }
+          }
         }
+        throw lastError ?? new Error("No se pudo crear el presupuesto.");
       },
 
       /** Crea un capítulo al final del presupuesto. Rechaza si está bloqueado. */
