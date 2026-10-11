@@ -389,12 +389,8 @@ export type WeeklyReportData = {
     scheduled: WeeklyCommitmentData[];
   };
   cnc: CncBreakdown;
-  // Avance planeado vs real (simplificado)
-  plannedProgressPct: number | null;
-  actualProgressPct: number | null;
-  progressVariance: number | null;
-  // EVM (si hay datos suficientes)
-  evm: EvmData | null;
+  // EVM (honesto: no medible sin avance físico ni costo real)
+  evm: EvmData;
   // Bitácora del período
   fieldLog: {
     totalEntries: number;
@@ -412,22 +408,73 @@ export type WeeklyReportData = {
   hasFieldLog: boolean;
 };
 
-export type EvmData = {
-  available: boolean;
+/**
+ * Un indicador EVM. `measurable` solo es `true` cuando existe la fuente de
+ * dato real necesaria; en caso contrario `value` es `null` y `reason` explica
+ * por qué NO es medible. Nunca se rellena con 0 ni con estimaciones.
+ */
+export type EvmMetric = {
+  value: string | null;
+  measurable: boolean;
   reason?: string;
-  // Valor planificado (PV) = % planeado × Presupuesto total
-  pv: string | null;
-  // Valor ganado (EV) = % avance físico real × Presupuesto total
-  ev: string | null;
-  // Costo real (AC) = costos reales incurridos
-  ac: string | null;
-  // Índices
-  spi: number | null; // EV / PV
-  cpi: number | null; // EV / AC
-  // Variaciones
-  sv: string | null; // EV - PV
-  cv: string | null; // EV - AC
 };
+
+/**
+ * Indicadores EVM honestos. El esquema actual NO registra avance físico de
+ * obra ni costo real incurrido ni línea base de cronograma, por lo que
+ * PV/EV/AC/SPI/SV/CPI/CV se reportan como "No medible" hasta que esos datos
+ * existan. El PPC de Lean NO es avance físico y no se usa aquí.
+ */
+export type EvmData = {
+  /** `true` solo si todos los indicadores son medibles. */
+  available: boolean;
+  /** Motivo general (el de mayor jerarquía) cuando algo no es medible. */
+  reason?: string;
+  /** Avance físico real de obra (0–100). Nunca el PPC de Lean. */
+  physicalProgressPct: number | null;
+  pv: EvmMetric; // Valor planificado
+  ev: EvmMetric; // Valor ganado
+  ac: EvmMetric; // Costo real
+  spi: EvmMetric; // EV / PV
+  cpi: EvmMetric; // EV / AC
+  sv: EvmMetric; // EV - PV
+  cv: EvmMetric; // EV - AC
+};
+
+/**
+ * Construye los indicadores EVM de forma honesta. Solo calcula un indicador
+ * cuando existe su dato fuente real; los demás quedan como no medibles con su
+ * razón. Con el esquema actual (sin avance físico ni costo real ni línea base)
+ * el resultado es siempre `available: false`.
+ *
+ * @param _budget presupuesto (reservado para cuando exista línea base)
+ * @param physicalProgressPct avance físico real 0–100, o `null` si no hay fuente
+ * @param _actualCostMicro costo real incurrido en micro, o `null` si no hay fuente
+ */
+export function buildEvm(
+  _budget: ProjectBudgetData | null,
+  physicalProgressPct: number | null,
+  _actualCostMicro: bigint | null,
+): EvmData {
+  const mm = (reason: string): EvmMetric => ({ value: null, measurable: false, reason });
+
+  // No existe en el esquema ninguna fuente de PV (línea base de cronograma),
+  // EV (avance físico) ni AC (costo real): el EVM no es medible todavía.
+  const reason = "No medible: sin avance físico ni costo real registrados";
+
+  return {
+    available: false,
+    reason,
+    physicalProgressPct,
+    pv: mm("No medible: sin línea base de cronograma aprobada"),
+    ev: mm("No medible: sin registro de avance físico de obra"),
+    ac: mm("No medible: sin registro de costo real incurrido"),
+    spi: mm("No medible: requiere EV y PV"),
+    cpi: mm("No medible: requiere EV y AC"),
+    sv: mm("No medible: requiere EV y PV"),
+    cv: mm("No medible: requiere EV y AC"),
+  };
+}
 
 /**
  * Construye el Informe Semanal consolidando plan, bitácora y presupuesto.
@@ -458,74 +505,13 @@ export function buildWeeklyReportData(
   // Compromisos programados (todos los de esa semana, independientemente del estado)
   const scheduled = commitments;
 
-  // Avance planeado vs real
-  // Planeado: basado en Lookahead tasks de la semana relativa correspondiente
-  // Real: basado en compromisos COMPLETED vs total evaluados
-  let plannedProgressPct: number | null = null;
-  let actualProgressPct: number | null = null;
-  let progressVariance: number | null = null;
+  // Avance físico de obra: el esquema NO registra avance físico real. El PPC
+  // mide cumplimiento de compromisos (Lean), NO avance de obra, así que nunca
+  // se usa como avance físico. Sin fuente real, queda en `null`.
+  const physicalProgressPct: number | null = null;
 
-  if (plan && plan.lookaheadTasks.length > 0) {
-    // Mapear semana ISO a semana relativa del Lookahead
-    const windowStart = plan.windowStart ? parsePlainDate(plan.windowStart) : null;
-    if (windowStart) {
-      const periodStart = isoWeekRange(year, weekNumber).start;
-      const relWeek = relativeWeekNumber(windowStart, periodStart);
-      const lookaheadTasks = plan.lookaheadTasks.filter((t) => t.weekNumber === relWeek);
-      if (lookaheadTasks.length > 0) {
-        plannedProgressPct = 100; // Planeado = 100% de las tareas programadas
-      }
-    }
-  }
-
-  if (ppc.evaluated > 0) {
-    actualProgressPct = ppc.ppc; // PPC ya es %
-  }
-
-  if (plannedProgressPct !== null && actualProgressPct !== null) {
-    progressVariance = actualProgressPct - plannedProgressPct;
-  }
-
-  // EVM - solo disponible si hay presupuesto, plan y avance real
-  let evm: EvmData | null = null;
-  if (budget && plan && ppc.evaluated > 0) {
-    const budgetTotal = microToNumber(budget.grandTotal);
-    const pv = (plannedProgressPct ?? 0) / 100 * budgetTotal;
-    const ev = (actualProgressPct ?? 0) / 100 * budgetTotal;
-    // AC no disponible en esquema actual (no hay costos reales registrados)
-    const ac = null;
-
-    const spi = pv > 0 ? ev / pv : null;
-    const cpi = ac && ac > 0 ? ev / ac : null;
-
-    evm = {
-      available: true,
-      reason: "AC no disponible (requiere registro de costos reales)",
-      pv: pv > 0 ? formatMoneyMicro(BigInt(Math.round(pv * 1_000_000))) : null,
-      ev: ev > 0 ? formatMoneyMicro(BigInt(Math.round(ev * 1_000_000))) : null,
-      ac: ac ? formatMoneyMicro(BigInt(Math.round(ac * 1_000_000))) : null,
-      spi: spi !== null ? Math.round(spi * 100) / 100 : null,
-      cpi: cpi !== null ? Math.round(cpi * 100) / 100 : null,
-      sv: pv > 0 && ev !== null ? formatMoneyMicro(BigInt(Math.round((ev - pv) * 1_000_000))) : null,
-      cv: ac && ev !== null ? formatMoneyMicro(BigInt(Math.round(ev - ac) * 1_000_000)) : null,
-    };
-  } else {
-    evm = {
-      available: false,
-      reason: !budget
-        ? "Sin presupuesto asociado al proyecto"
-        : !plan
-        ? "Sin plan operativo (Lean)"
-        : "Sin compromisos evaluados en el período",
-      pv: null,
-      ev: null,
-      ac: null,
-      spi: null,
-      cpi: null,
-      sv: null,
-      cv: null,
-    };
-  }
+  // EVM honesto: no medible mientras no existan avance físico ni costo real.
+  const evm = buildEvm(budget, physicalProgressPct, null);
 
   // Bitácora del período
   let fieldLogEntries: FieldLogEntryData[] = [];
@@ -563,9 +549,6 @@ export function buildWeeklyReportData(
       scheduled,
     },
     cnc,
-    plannedProgressPct,
-    actualProgressPct,
-    progressVariance,
     evm,
     fieldLog: {
       totalEntries: fieldLogEntries.length,

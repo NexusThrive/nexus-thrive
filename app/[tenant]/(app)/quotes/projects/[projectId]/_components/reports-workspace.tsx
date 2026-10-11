@@ -66,8 +66,12 @@ export function ReportsWorkspace() {
   const informeCero = infState.status === "ok" ? infState.data : null;
   const semanal = semState.status === "ok" ? semState.data : null;
 
-  const evm = semanal?.evm;
-  const hasEvm = evm?.available;
+  const evm = semanal?.evm ?? null;
+  // Un indicador EVM solo muestra valor si es medible; si no, "No medible".
+  const evmValue = (m?: { value: string | null; measurable: boolean }): string =>
+    m && m.measurable ? (m.value ?? "—") : "No medible";
+  const evmHint = (m?: { measurable: boolean; reason?: string }): string | undefined =>
+    m && !m.measurable ? m.reason : undefined;
 
   return (
     <div className="space-y-6">
@@ -180,27 +184,34 @@ export function ReportsWorkspace() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-5">
-              <KpiCard label="PPC" value={`${(semanal?.ppc?.value ?? 0).toFixed(1)} %`} hint="Completados/(Completados+Fallidos)" />
+              <KpiCard label="PPC" value={`${(semanal?.ppc?.ppc ?? 0).toFixed(1)} %`} hint="Cumplimiento de compromisos (no es avance físico)" />
               <KpiCard label="Completados" value={String(semanal?.ppc?.completed ?? 0)} />
               <KpiCard label="Fallidos" value={String(semanal?.ppc?.failed ?? 0)} />
               <KpiCard label="Pendientes" value={String(semanal?.ppc?.pending ?? 0)} />
               <KpiCard label="No conformidades" value={String(semanal?.cnc?.total ?? 0)} />
             </div>
 
-            <div className="grid gap-4 md:grid-cols-3">
-              <KpiCard label="SPI" value={hasEvm ? semanal!.evm!.spi.toFixed(3) : "N/D"} hint={evm?.available ? undefined : evm?.reason} />
-              <KpiCard label="CPI" value={hasEvm ? semanal!.evm!.cpi.toFixed(3) : "N/D"} hint={evm?.available ? undefined : evm?.reason} />
-              <KpiCard label="SV (COP)" value={hasEvm ? semanal!.evm!.sv.toLocaleString("es-CO", { style: "currency", currency: "COP", minimumFractionDigits: 0 }) : "N/D"} />
+            <div className="grid gap-4 md:grid-cols-4">
+              <KpiCard label="PV (COP)" value={evmValue(evm?.pv)} hint={evmHint(evm?.pv)} />
+              <KpiCard label="EV (COP)" value={evmValue(evm?.ev)} hint={evmHint(evm?.ev)} />
+              <KpiCard label="AC (COP)" value={evmValue(evm?.ac)} hint={evmHint(evm?.ac)} />
+              <KpiCard label="SPI" value={evmValue(evm?.spi)} hint={evmHint(evm?.spi)} />
+              <KpiCard label="CPI" value={evmValue(evm?.cpi)} hint={evmHint(evm?.cpi)} />
+              <KpiCard label="SV (COP)" value={evmValue(evm?.sv)} hint={evmHint(evm?.sv)} />
+              <KpiCard label="CV (COP)" value={evmValue(evm?.cv)} hint={evmHint(evm?.cv)} />
             </div>
+            {evm && !evm.available ? (
+              <p className="text-xs text-muted-foreground">{evm.reason}</p>
+            ) : null}
 
             <div className="rounded-md border">
               <div className="p-3 text-sm font-medium">Causas de No Conformidad (CNC)</div>
               <div className="divide-y">
-                {semanal?.cnc?.items?.length ? (
-                  semanal.cnc.items.map((i: any, idx: number) => (
+                {semanal?.cnc?.entries?.length ? (
+                  semanal.cnc.entries.map((entry: { label: string; count: number }, idx: number) => (
                     <div key={idx} className="flex items-center justify-between p-3 text-sm">
-                      <div>{i.causeLabel}</div>
-                      <div className="font-medium">{i.count}</div>
+                      <div>{entry.label}</div>
+                      <div className="font-medium">{entry.count}</div>
                     </div>
                   ))
                 ) : (
