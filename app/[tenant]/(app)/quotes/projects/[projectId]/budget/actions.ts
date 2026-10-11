@@ -53,6 +53,27 @@ const FORBIDDEN_FORM = {
   message: "No tienes permisos para esta acción (solo OWNER o SUPERADMIN).",
 } as const;
 
+/**
+ * Lee la revisión esperada del formulario (token de concurrencia optimista).
+ * Devuelve `undefined` si el campo falta o no es un entero positivo, para no
+ * bloquear envíos legítimos de formularios antiguos.
+ */
+function readExpectedRevision(formData: FormData): number | undefined {
+  const raw = Number(formData.get("expectedRevision"));
+  return Number.isInteger(raw) && raw > 0 ? raw : undefined;
+}
+
+/** Traduce los errores del tenant-db a mensajes de formulario legibles. */
+function toFormError(error: unknown, fallback: string): string {
+  if (error instanceof Error && error.message) {
+    if (error.message === "STALE_REVISION") {
+      return "El presupuesto cambió desde que abriste esta página. Recargá e intentá de nuevo.";
+    }
+    return error.message;
+  }
+  return fallback;
+}
+
 /* ------------------------------------------------------------------ */
 /* Lectura / creación del presupuesto                                  */
 /* ------------------------------------------------------------------ */
@@ -120,6 +141,53 @@ export async function createChapterAction(
   return { status: "ok", message: "Capítulo creado." };
 }
 
+export async function updateChapterAction(
+  _prevState: ChapterFormState,
+  formData: FormData,
+): Promise<ChapterFormState> {
+  const tenantSlug = String(formData.get("tenantSlug") ?? "");
+  const projectId = String(formData.get("projectId") ?? "");
+  const chapterId = String(formData.get("chapterId") ?? "");
+  const expectedRevision = readExpectedRevision(formData);
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return ACCESS_DENIED_FORM;
+  }
+  if (!projectId || !chapterId) {
+    return { status: "error", message: "Capítulo no válido." };
+  }
+
+  const validation = validateCreateChapter(formData);
+  if (!validation.ok) {
+    return {
+      status: "error",
+      errors: validation.errors,
+      values: validation.values,
+    };
+  }
+
+  try {
+    await context.tenantDb.budgets.updateChapter(
+      projectId,
+      chapterId,
+      {
+        name: validation.input.name,
+        description: validation.input.description ?? null,
+      },
+      expectedRevision,
+    );
+  } catch (error) {
+    return {
+      status: "error",
+      message: toFormError(error, "No se pudo actualizar el capítulo."),
+      values: validation.values,
+    };
+  }
+
+  revalidatePath(`/${tenantSlug}/quotes/projects/${projectId}`);
+  return { status: "ok", message: "Capítulo actualizado." };
+}
+
 /* ------------------------------------------------------------------ */
 /* Partidas                                                            */
 /* ------------------------------------------------------------------ */
@@ -162,6 +230,56 @@ export async function createBudgetItemAction(
 
   revalidatePath(`/${tenantSlug}/quotes/projects/${projectId}`);
   return { status: "ok", message: "Partida creada." };
+}
+
+export async function updateBudgetItemAction(
+  _prevState: BudgetItemFormState,
+  formData: FormData,
+): Promise<BudgetItemFormState> {
+  const tenantSlug = String(formData.get("tenantSlug") ?? "");
+  const projectId = String(formData.get("projectId") ?? "");
+  const itemId = String(formData.get("itemId") ?? "");
+  const expectedRevision = readExpectedRevision(formData);
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return ACCESS_DENIED_FORM;
+  }
+  if (!projectId || !itemId) {
+    return { status: "error", message: "Partida no válida." };
+  }
+
+  const validation = validateCreateBudgetItem(formData);
+  if (!validation.ok) {
+    return {
+      status: "error",
+      errors: validation.errors,
+      values: validation.values,
+    };
+  }
+
+  try {
+    await context.tenantDb.budgets.updateItem(
+      projectId,
+      itemId,
+      {
+        code: validation.input.code,
+        description: validation.input.description,
+        unit: validation.input.unit,
+        quantity: validation.input.quantity,
+        unitCostDirect: validation.input.unitCostDirect,
+      },
+      expectedRevision,
+    );
+  } catch (error) {
+    return {
+      status: "error",
+      message: toFormError(error, "No se pudo actualizar la partida."),
+      values: validation.values,
+    };
+  }
+
+  revalidatePath(`/${tenantSlug}/quotes/projects/${projectId}`);
+  return { status: "ok", message: "Partida actualizada." };
 }
 
 /* ------------------------------------------------------------------ */

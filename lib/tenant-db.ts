@@ -552,6 +552,21 @@ export type CreateBudgetItemInput = {
   unitCostDirect: bigint;
 };
 
+export type UpdateChapterInput = {
+  name: string;
+  description?: string | null;
+};
+
+export type UpdateBudgetItemInput = {
+  code: string;
+  description: string;
+  unit: string;
+  /** Cantidad en micro-unidades (1_000_000 = 1.000000). */
+  quantity: bigint;
+  /** Costo unitario directo en micro-pesos. */
+  unitCostDirect: bigint;
+};
+
 /* ------------------------------------------------------------------ */
 /* Planificador Lean — Last Planner System (FASE 3 — Tab 3)            */
 /* ------------------------------------------------------------------ */
@@ -2680,6 +2695,107 @@ export function createTenantDb(tenantId: string) {
           await tx.orm.public.BudgetItem
             .where({ id: itemId, tenantId })
             .delete();
+          await recalcBudgetTotals(tx, budget.id, {
+            admin: budget.aiuAdminPct,
+            imprev: budget.aiuImprevPct,
+            utilidad: budget.aiuUtilidadPct,
+            iva: budget.ivaUtilidadPct,
+          });
+          await tx.orm.public.ProjectBudget
+            .where({ id: budget.id })
+            .update({ revision: budget.revision + 1 });
+        });
+      },
+
+      /**
+       * Renombra o re-describe un capítulo. Valida capítulo→presupuesto,
+       * rechaza si está bloqueado y avanza la revisión del presupuesto.
+       */
+      updateChapter: async (
+        projectId: string,
+        chapterId: string,
+        input: UpdateChapterInput,
+        expectedRevision?: number,
+      ): Promise<void> => {
+        const budget = await db.orm.public.ProjectBudget
+          .where({ projectId, tenantId })
+          .first();
+        if (!budget) {
+          throw new Error("Presupuesto no encontrado en este negocio.");
+        }
+        if (budget.isLocked) {
+          throw new Error("El presupuesto está bloqueado.");
+        }
+        assertRevision(budget, expectedRevision);
+        const chapter = await db.orm.public.BudgetChapter
+          .where({ id: chapterId, budgetId: budget.id })
+          .select("id")
+          .first();
+        if (!chapter) {
+          throw new Error("Capítulo no encontrado en este presupuesto.");
+        }
+        await db.transaction(async (tx) => {
+          await tx.orm.public.BudgetChapter
+            .where({ id: chapterId, budgetId: budget.id })
+            .update({
+              name: input.name,
+              description: input.description ?? null,
+            });
+          await tx.orm.public.ProjectBudget
+            .where({ id: budget.id })
+            .update({ revision: budget.revision + 1 });
+        });
+      },
+
+      /**
+       * Edita una partida: el servidor recalcula su total directo y toda la
+       * cascada AIU en la misma transacción. Valida pertenencia
+       * partida→capítulo→presupuesto. Rechaza si está bloqueado.
+       */
+      updateItem: async (
+        projectId: string,
+        itemId: string,
+        input: UpdateBudgetItemInput,
+        expectedRevision?: number,
+      ): Promise<void> => {
+        const budget = await db.orm.public.ProjectBudget
+          .where({ projectId, tenantId })
+          .first();
+        if (!budget) {
+          throw new Error("Presupuesto no encontrado en este negocio.");
+        }
+        if (budget.isLocked) {
+          throw new Error("El presupuesto está bloqueado.");
+        }
+        assertRevision(budget, expectedRevision);
+        const item = await db.orm.public.BudgetItem
+          .where({ id: itemId, tenantId })
+          .first();
+        if (!item) {
+          throw new Error("Partida no encontrada en este presupuesto.");
+        }
+        const chapter = await db.orm.public.BudgetChapter
+          .where({ id: item.chapterId, budgetId: budget.id })
+          .select("id")
+          .first();
+        if (!chapter) {
+          throw new Error("Partida no encontrada en este presupuesto.");
+        }
+        const totalCostDirect = calculateItemTotal(
+          input.quantity,
+          input.unitCostDirect,
+        );
+        await db.transaction(async (tx) => {
+          await tx.orm.public.BudgetItem
+            .where({ id: itemId, tenantId })
+            .update({
+              code: input.code,
+              description: input.description,
+              unit: input.unit,
+              quantity: input.quantity,
+              unitCostDirect: input.unitCostDirect,
+              totalCostDirect,
+            });
           await recalcBudgetTotals(tx, budget.id, {
             admin: budget.aiuAdminPct,
             imprev: budget.aiuImprevPct,

@@ -6,6 +6,7 @@ import { NLoader } from "@/components/brand/n-loader";
 import Modal from "../../../_components/modal";
 import {
   createChapterAction,
+  updateChapterAction,
   type ChapterFormState,
 } from "../budget/actions";
 
@@ -19,20 +20,32 @@ const FIELD_CLASS = (hasError: boolean) =>
       : "border-border hover:border-foreground/20 focus:border-gold-500 focus:outline-gold-600/30",
   ].join(" ");
 
-/** Modal para crear un capítulo al final del presupuesto. */
+/** Valores serializables de un capítulo para el modo edición. */
+export type EditableChapter = {
+  id: string;
+  name: string;
+  description: string;
+};
+
+/** Modal para crear o editar un capítulo del presupuesto. */
 export default function ChapterModal({
   open,
   onClose,
   tenantSlug,
   projectId,
+  expectedRevision,
+  chapter,
 }: {
   open: boolean;
   onClose: () => void;
   tenantSlug: string;
   projectId: string;
+  expectedRevision: number;
+  chapter?: EditableChapter;
 }) {
+  const isEditing = Boolean(chapter);
   const [state, formAction, isPending] = useActionState(
-    createChapterAction,
+    isEditing ? updateChapterAction : createChapterAction,
     IDLE_STATE,
   );
   const router = useRouter();
@@ -45,6 +58,10 @@ export default function ChapterModal({
   }, [state, onClose, router]);
 
   const errors = state.errors ?? {};
+  const defaults = {
+    name: state.values?.name ?? chapter?.name ?? "",
+    description: state.values?.description ?? chapter?.description ?? "",
+  };
 
   return (
     <Modal
@@ -54,11 +71,19 @@ export default function ChapterModal({
           onClose();
         }
       }}
-      title="Nuevo capítulo"
+      title={isEditing ? "Editar capítulo" : "Nuevo capítulo"}
     >
       <form action={formAction} className="space-y-4" noValidate>
         <input type="hidden" name="tenantSlug" value={tenantSlug} />
         <input type="hidden" name="projectId" value={projectId} />
+        <input
+          type="hidden"
+          name="expectedRevision"
+          value={String(expectedRevision)}
+        />
+        {chapter ? (
+          <input type="hidden" name="chapterId" value={chapter.id} />
+        ) : null}
 
         <div>
           <label
@@ -70,7 +95,7 @@ export default function ChapterModal({
           <input
             id="chapter-name"
             name="name"
-            defaultValue={state.values?.name ?? ""}
+            defaultValue={defaults.name}
             placeholder="Ej. Preliminares"
             aria-invalid={Boolean(errors.name)}
             className={FIELD_CLASS(Boolean(errors.name))}
@@ -93,7 +118,7 @@ export default function ChapterModal({
             id="chapter-description"
             name="description"
             rows={2}
-            defaultValue={state.values?.description ?? ""}
+            defaultValue={defaults.description}
             placeholder="Notas del capítulo (opcional)."
             aria-invalid={Boolean(errors.description)}
             className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-foreground/20 focus:border-gold-500 focus:outline-2 focus:outline-gold-600/30"
@@ -131,7 +156,13 @@ export default function ChapterModal({
             {isPending ? (
               <NLoader size={16} className="text-current" />
             ) : null}
-            {isPending ? "Creando…" : "Crear capítulo"}
+            {isPending
+              ? isEditing
+                ? "Guardando…"
+                : "Creando…"
+              : isEditing
+                ? "Guardar cambios"
+                : "Crear capítulo"}
           </button>
         </div>
       </form>

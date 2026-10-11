@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { BadgeCheck, Lock, LockOpen, Plus, Settings2, SlidersHorizontal, Trash2 } from "lucide-react";
+import { BadgeCheck, Lock, LockOpen, Pencil, Plus, Settings2, SlidersHorizontal, Trash2 } from "lucide-react";
 import { microToPercent } from "@/lib/apu-engine";
 import { formatMoneyMicro, formatQuantityMicro } from "@/lib/format";
 import { NLoader } from "@/components/brand/n-loader";
@@ -13,8 +13,8 @@ import {
   deleteChapterAction,
   toggleBudgetLockAction,
 } from "../budget/actions";
-import ChapterModal from "./chapter-modal";
-import ItemModal from "./item-modal";
+import ChapterModal, { type EditableChapter } from "./chapter-modal";
+import ItemModal, { type EditableBudgetItem } from "./item-modal";
 import AiuConfigModal from "./aiu-config-modal";
 
 /** Tarjeta KPI del resumen financiero del presupuesto. */
@@ -76,10 +76,18 @@ export default function BudgetWorkspace({
   canGovern: boolean;
 }) {
   const [chapterOpen, setChapterOpen] = useState(false);
+  const [editingChapter, setEditingChapter] = useState<EditableChapter | null>(
+    null,
+  );
   const [aiuOpen, setAiuOpen] = useState(false);
   const [itemChapter, setItemChapter] = useState<{
     id: string;
     label: string;
+  } | null>(null);
+  const [editingItem, setEditingItem] = useState<{
+    chapterId: string;
+    chapterLabel: string;
+    item: EditableBudgetItem;
   } | null>(null);
 
   const router = useRouter();
@@ -275,7 +283,10 @@ export default function BudgetWorkspace({
           </button>
           <button
             type="button"
-            onClick={() => setChapterOpen(true)}
+            onClick={() => {
+              setEditingChapter(null);
+              setChapterOpen(true);
+            }}
             disabled={budget.isLocked}
             className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
@@ -309,7 +320,10 @@ export default function BudgetWorkspace({
           {!budget.isLocked ? (
             <button
               type="button"
-              onClick={() => setChapterOpen(true)}
+              onClick={() => {
+              setEditingChapter(null);
+              setChapterOpen(true);
+            }}
               className="mt-4 inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
             >
               <Plus aria-hidden="true" className="h-4 w-4" />
@@ -356,6 +370,20 @@ export default function BudgetWorkspace({
                       >
                         <Plus aria-hidden="true" className="h-3.5 w-3.5" />
                         Partida
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setEditingChapter({
+                            id: chapter.id,
+                            name: chapter.name,
+                            description: chapter.description ?? "",
+                          })
+                        }
+                        aria-label={`Editar capítulo ${chapter.order}`}
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                      >
+                        <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
                       </button>
                       <button
                         type="button"
@@ -434,16 +462,39 @@ export default function BudgetWorkspace({
                             {formatMoneyMicro(item.totalCostDirect)}
                           </td>
                           {!budget.isLocked ? (
-                            <td className="px-4 py-2 text-right">
-                              <button
-                                type="button"
-                                onClick={() => onDeleteItem(item.id)}
-                                disabled={isDeleting}
-                                aria-label={`Eliminar partida ${item.code || item.description}`}
-                                className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-card text-rose-400 transition hover:bg-rose-400/10 disabled:opacity-50"
-                              >
-                                <Trash2 aria-hidden="true" className="h-3.5 w-3.5" />
-                              </button>
+                            <td className="px-4 py-2">
+                              <div className="flex items-center justify-end gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setEditingItem({
+                                      chapterId: chapter.id,
+                                      chapterLabel: `Capítulo ${chapter.order}`,
+                                      item: {
+                                        id: item.id,
+                                        code: item.code,
+                                        description: item.description,
+                                        unit: item.unit,
+                                        quantity: item.quantity,
+                                        unitCost: item.unitCostDirect,
+                                      },
+                                    })
+                                  }
+                                  aria-label={`Editar partida ${item.code || item.description}`}
+                                  className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-card text-foreground/70 transition hover:bg-muted disabled:opacity-50"
+                                >
+                                  <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => onDeleteItem(item.id)}
+                                  disabled={isDeleting}
+                                  aria-label={`Eliminar partida ${item.code || item.description}`}
+                                  className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-card text-rose-400 transition hover:bg-rose-400/10 disabled:opacity-50"
+                                >
+                                  <Trash2 aria-hidden="true" className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
                             </td>
                           ) : null}
                         </tr>
@@ -458,20 +509,32 @@ export default function BudgetWorkspace({
       )}
 
       <ChapterModal
-        open={chapterOpen}
-        onClose={() => setChapterOpen(false)}
+        open={chapterOpen || editingChapter !== null}
+        onClose={() => {
+          setChapterOpen(false);
+          setEditingChapter(null);
+        }}
         tenantSlug={tenantSlug}
         projectId={projectId}
+        expectedRevision={budget.revision}
+        chapter={editingChapter ?? undefined}
       />
 
-      {itemChapter ? (
+      {itemChapter || editingItem ? (
         <ItemModal
-          open={itemChapter !== null}
-          onClose={() => setItemChapter(null)}
+          open
+          onClose={() => {
+            setItemChapter(null);
+            setEditingItem(null);
+          }}
           tenantSlug={tenantSlug}
           projectId={projectId}
-          chapterId={itemChapter.id}
-          chapterLabel={itemChapter.label}
+          chapterId={itemChapter?.id ?? editingItem?.chapterId ?? ""}
+          chapterLabel={
+            itemChapter?.label ?? editingItem?.chapterLabel ?? ""
+          }
+          expectedRevision={budget.revision}
+          item={editingItem?.item}
         />
       ) : null}
 
