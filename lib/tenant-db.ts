@@ -25,6 +25,8 @@ import type {
 import {
   activityUnitCost,
   buildApuSnapshot,
+  calculateBudgetTotals,
+  calculateItemTotal,
   calculateQuoteTotals,
   componentCost,
   currentYearBogota,
@@ -34,6 +36,7 @@ import {
   type ApuSnapshot,
   type QuoteStatusValue,
   type QuoteTotals,
+  type ResourceTypeValue,
 } from "@/lib/apu-engine";
 import type { ProjectStatusValue } from "@/lib/projects";
 
@@ -411,6 +414,254 @@ export type ProjectListInput = {
   page?: number;
   limit?: number;
 };
+
+/* ------------------------------------------------------------------ */
+/* Presupuesto de proyecto (FASE 2 — Tab 2)                            */
+/* ------------------------------------------------------------------ */
+
+export type BudgetResourceData = {
+  id: string;
+  type: ResourceTypeValue;
+  name: string;
+  unit: string;
+  performance: string;
+  unitPrice: string;
+  totalPrice: string;
+  imageUrl: string | null;
+};
+
+export type BudgetItemData = {
+  id: string;
+  order: number;
+  code: string;
+  description: string;
+  unit: string;
+  quantity: string;
+  unitCostDirect: string;
+  totalCostDirect: string;
+  resources: BudgetResourceData[];
+};
+
+export type BudgetChapterData = {
+  id: string;
+  order: number;
+  name: string;
+  description: string | null;
+  subtotal: string;
+  items: BudgetItemData[];
+};
+
+export type ProjectBudgetData = {
+  id: string;
+  projectId: string;
+  code: string;
+  name: string;
+  aiuAdminPct: string;
+  aiuImprevPct: string;
+  aiuUtilidadPct: string;
+  ivaUtilidadPct: string;
+  directCostTotal: string;
+  adminTotal: string;
+  imprevTotal: string;
+  utilidadTotal: string;
+  ivaUtilidadTotal: string;
+  grandTotal: string;
+  isLocked: boolean;
+  chapters: BudgetChapterData[];
+};
+
+/** Porcentajes AIU ya convertidos a micro-fracción (100_000 = 10 %). */
+export type AiuConfigInput = {
+  adminPct: bigint;
+  imprevPct: bigint;
+  utilidadPct: bigint;
+  ivaUtilidadPct: bigint;
+};
+
+export type CreateChapterInput = {
+  name: string;
+  description?: string;
+};
+
+export type CreateBudgetItemInput = {
+  chapterId: string;
+  code: string;
+  description: string;
+  unit: string;
+  /** Cantidad en micro-unidades (1_000_000 = 1.000000). */
+  quantity: bigint;
+  /** Costo unitario directo en micro-pesos. */
+  unitCostDirect: bigint;
+};
+
+/** Fila mínima de `ProjectBudget` que necesita la capa de lectura/escritura. */
+type BudgetRow = {
+  id: string;
+  tenantId: string;
+  projectId: string;
+  code: string;
+  name: string;
+  aiuAdminPct: bigint;
+  aiuImprevPct: bigint;
+  aiuUtilidadPct: bigint;
+  ivaUtilidadPct: bigint;
+  directCostTotal: bigint;
+  adminTotal: bigint;
+  imprevTotal: bigint;
+  utilidadTotal: bigint;
+  ivaUtilidadTotal: bigint;
+  grandTotal: bigint;
+  isLocked: boolean;
+};
+
+/** Transacción de Prisma 8 (misma forma que el `db` pero ligada a la tx). */
+type TenantTx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+/**
+ * Lee el presupuesto con su estructura completa (capítulos → ítems →
+ * recursos), ordenada, con montos serializados a string (los `BigInt` no
+ * cruzan el límite server/client de React).
+ */
+async function loadBudgetTree(budget: BudgetRow): Promise<ProjectBudgetData> {
+  const chapters = await db.orm.public.BudgetChapter
+    .where({ budgetId: budget.id })
+    .orderBy((chapter) => chapter.order.asc())
+    .all();
+  const chapterIds = chapters.map((chapter) => chapter.id);
+
+  const items = chapterIds.length
+    ? await db.orm.public.BudgetItem
+        .where((item) => item.chapterId.in(chapterIds))
+        .orderBy((item) => item.order.asc())
+        .all()
+    : [];
+  const itemIds = items.map((item) => item.id);
+
+  const resources = itemIds.length
+    ? await db.orm.public.BudgetItemResource
+        .where((resource) => resource.itemId.in(itemIds))
+        .all()
+    : [];
+
+  const resourcesByItem = new Map<string, BudgetResourceData[]>();
+  for (const resource of resources) {
+    const list = resourcesByItem.get(resource.itemId) ?? [];
+    list.push({
+      id: resource.id,
+      type: resource.type as ResourceTypeValue,
+      name: resource.name,
+      unit: resource.unit,
+      performance: String(resource.performance),
+      unitPrice: String(resource.unitPrice),
+      totalPrice: String(resource.totalPrice),
+      imageUrl: resource.imageUrl,
+    });
+    resourcesByItem.set(resource.itemId, list);
+  }
+
+  const itemsByChapter = new Map<string, BudgetItemData[]>();
+  for (const item of items) {
+    const list = itemsByChapter.get(item.chapterId) ?? [];
+    list.push({
+      id: item.id,
+      order: item.order,
+      code: item.code,
+      description: item.description,
+      unit: item.unit,
+      quantity: String(item.quantity),
+      unitCostDirect: String(item.unitCostDirect),
+      totalCostDirect: String(item.totalCostDirect),
+      resources: resourcesByItem.get(item.id) ?? [],
+    });
+    itemsByChapter.set(item.chapterId, list);
+  }
+
+  const chapterData: BudgetChapterData[] = chapters.map((chapter) => {
+    const chapterItems = itemsByChapter.get(chapter.id) ?? [];
+    let subtotal = BigInt(0);
+    for (const item of chapterItems) {
+      subtotal += BigInt(item.totalCostDirect);
+    }
+    return {
+      id: chapter.id,
+      order: chapter.order,
+      name: chapter.name,
+      description: chapter.description,
+      subtotal: subtotal.toString(),
+      items: chapterItems,
+    };
+  });
+
+  return {
+    id: budget.id,
+    projectId: budget.projectId,
+    code: budget.code,
+    name: budget.name,
+    aiuAdminPct: budget.aiuAdminPct.toString(),
+    aiuImprevPct: budget.aiuImprevPct.toString(),
+    aiuUtilidadPct: budget.aiuUtilidadPct.toString(),
+    ivaUtilidadPct: budget.ivaUtilidadPct.toString(),
+    directCostTotal: budget.directCostTotal.toString(),
+    adminTotal: budget.adminTotal.toString(),
+    imprevTotal: budget.imprevTotal.toString(),
+    utilidadTotal: budget.utilidadTotal.toString(),
+    ivaUtilidadTotal: budget.ivaUtilidadTotal.toString(),
+    grandTotal: budget.grandTotal.toString(),
+    isLocked: budget.isLocked,
+    chapters: chapterData,
+  };
+}
+
+/** Suma de los costos directos de todas las partidas del presupuesto. */
+async function sumBudgetDirect(
+  tx: TenantTx,
+  budgetId: string,
+): Promise<bigint> {
+  const chapters = await tx.orm.public.BudgetChapter
+    .where({ budgetId })
+    .select("id")
+    .all();
+  const chapterIds = chapters.map((chapter) => chapter.id);
+  if (chapterIds.length === 0) {
+    return BigInt(0);
+  }
+  const items = await tx.orm.public.BudgetItem
+    .where((item) => item.chapterId.in(chapterIds))
+    .select("totalCostDirect")
+    .all();
+  let total = BigInt(0);
+  for (const item of items) {
+    total += BigInt(item.totalCostDirect);
+  }
+  return total;
+}
+
+/**
+ * Recalcula el costo directo desde las partidas reales y toda la cascada AIU
+ * del presupuesto. El servidor NUNCA confía en totales del navegador.
+ */
+async function recalcBudgetTotals(
+  tx: TenantTx,
+  budgetId: string,
+  pcts: { admin: bigint; imprev: bigint; utilidad: bigint; iva: bigint },
+): Promise<void> {
+  const direct = await sumBudgetDirect(tx, budgetId);
+  const totals = calculateBudgetTotals(
+    direct,
+    pcts.admin,
+    pcts.imprev,
+    pcts.utilidad,
+    pcts.iva,
+  );
+  await tx.orm.public.ProjectBudget.where({ id: budgetId }).update({
+    directCostTotal: direct,
+    adminTotal: totals.adminTotal,
+    imprevTotal: totals.imprevTotal,
+    utilidadTotal: totals.utilidadTotal,
+    ivaUtilidadTotal: totals.ivaUtilidadTotal,
+    grandTotal: totals.grandTotal,
+  });
+}
 
 /** Subconjunto de columnas del ProjectHeader que serializamos. */
 type ProjectHeaderRow = {
@@ -1792,6 +2043,204 @@ export function createTenantDb(tenantId: string) {
           .where({ projectId })
           .first();
         return header ? serializeProjectHeader(header) : null;
+      },
+    },
+
+    budgets: {
+      /** Presupuesto del proyecto (con árbol completo) o `null` si no existe. */
+      get: async (projectId: string): Promise<ProjectBudgetData | null> => {
+        const budget = await db.orm.public.ProjectBudget
+          .where({ projectId, tenantId })
+          .first();
+        return budget ? loadBudgetTree(budget) : null;
+      },
+
+      /**
+       * Devuelve el presupuesto del proyecto creándolo si no existe (1:1 con
+       * Project). Idempotente ante concurrencia: si otro request lo creó
+       * primero, la restricción única por `projectId` aborta el INSERT y se
+       * relee la fila ganadora.
+       */
+      getOrCreate: async (projectId: string): Promise<ProjectBudgetData> => {
+        const existing = await db.orm.public.ProjectBudget
+          .where({ projectId, tenantId })
+          .first();
+        if (existing) {
+          return loadBudgetTree(existing);
+        }
+
+        const project = await db.orm.public.Project
+          .where({ id: projectId, tenantId })
+          .first();
+        if (!project) {
+          throw new Error("Proyecto no encontrado en este negocio.");
+        }
+
+        const prefix = `PRES-${currentYearBogota()}-`;
+        const latest = await db.orm.public.ProjectBudget
+          .where({ tenantId })
+          .where((budget) => budget.code.like(`${prefix}%`))
+          .orderBy((budget) => budget.code.desc())
+          .first();
+        const sequence = latest
+          ? Number(latest.code.slice(prefix.length)) + 1
+          : 1;
+        const code = `${prefix}${String(sequence).padStart(3, "0")}`;
+
+        try {
+          const created = await db.orm.public.ProjectBudget.create({
+            tenantId,
+            projectId,
+            code,
+            name: `Presupuesto — ${project.name}`,
+          });
+          return loadBudgetTree(created);
+        } catch (error) {
+          const raced = await db.orm.public.ProjectBudget
+            .where({ projectId, tenantId })
+            .first();
+          if (raced) {
+            return loadBudgetTree(raced);
+          }
+          throw error;
+        }
+      },
+
+      /** Crea un capítulo al final del presupuesto. Rechaza si está bloqueado. */
+      createChapter: async (
+        projectId: string,
+        input: CreateChapterInput,
+      ): Promise<{ id: string }> => {
+        const budget = await db.orm.public.ProjectBudget
+          .where({ projectId, tenantId })
+          .first();
+        if (!budget) {
+          throw new Error("Presupuesto no encontrado en este negocio.");
+        }
+        if (budget.isLocked) {
+          throw new Error("El presupuesto está bloqueado.");
+        }
+        const last = await db.orm.public.BudgetChapter
+          .where({ budgetId: budget.id })
+          .orderBy((chapter) => chapter.order.desc())
+          .first();
+        const order = last ? last.order + 1 : 1;
+        const chapter = await db.orm.public.BudgetChapter.create({
+          tenantId,
+          budgetId: budget.id,
+          order,
+          name: input.name,
+          description: input.description ?? null,
+        });
+        return { id: chapter.id };
+      },
+
+      /**
+       * Crea una partida bajo un capítulo y recalcula los totales del
+       * presupuesto en la misma transacción. El costo total lo computa el
+       * servidor (nunca se confía en el cliente).
+       */
+      createItem: async (
+        projectId: string,
+        input: CreateBudgetItemInput,
+      ): Promise<{ id: string }> => {
+        const budget = await db.orm.public.ProjectBudget
+          .where({ projectId, tenantId })
+          .first();
+        if (!budget) {
+          throw new Error("Presupuesto no encontrado en este negocio.");
+        }
+        if (budget.isLocked) {
+          throw new Error("El presupuesto está bloqueado.");
+        }
+        const chapter = await db.orm.public.BudgetChapter
+          .where({ id: input.chapterId, budgetId: budget.id })
+          .select("id")
+          .first();
+        if (!chapter) {
+          throw new Error("Capítulo no encontrado en este presupuesto.");
+        }
+
+        const totalCostDirect = calculateItemTotal(
+          input.quantity,
+          input.unitCostDirect,
+        );
+
+        const created = await db.transaction(async (tx) => {
+          const last = await tx.orm.public.BudgetItem
+            .where({ chapterId: input.chapterId })
+            .orderBy((item) => item.order.desc())
+            .first();
+          const order = last ? last.order + 1 : 1;
+          const item = await tx.orm.public.BudgetItem.create({
+            tenantId,
+            chapterId: input.chapterId,
+            order,
+            code: input.code,
+            description: input.description,
+            unit: input.unit,
+            quantity: input.quantity,
+            unitCostDirect: input.unitCostDirect,
+            totalCostDirect,
+          });
+          await recalcBudgetTotals(tx, budget.id, {
+            admin: budget.aiuAdminPct,
+            imprev: budget.aiuImprevPct,
+            utilidad: budget.aiuUtilidadPct,
+            iva: budget.ivaUtilidadPct,
+          });
+          return item;
+        });
+        return { id: created.id };
+      },
+
+      /**
+       * Actualiza la configuración AIU y recalcula toda la cascada en la
+       * misma transacción.
+       */
+      updateAiu: async (
+        projectId: string,
+        config: AiuConfigInput,
+      ): Promise<void> => {
+        const budget = await db.orm.public.ProjectBudget
+          .where({ projectId, tenantId })
+          .first();
+        if (!budget) {
+          throw new Error("Presupuesto no encontrado en este negocio.");
+        }
+        if (budget.isLocked) {
+          throw new Error("El presupuesto está bloqueado.");
+        }
+        await db.transaction(async (tx) => {
+          await tx.orm.public.ProjectBudget.where({ id: budget.id }).update({
+            aiuAdminPct: config.adminPct,
+            aiuImprevPct: config.imprevPct,
+            aiuUtilidadPct: config.utilidadPct,
+            ivaUtilidadPct: config.ivaUtilidadPct,
+          });
+          await recalcBudgetTotals(tx, budget.id, {
+            admin: config.adminPct,
+            imprev: config.imprevPct,
+            utilidad: config.utilidadPct,
+            iva: config.ivaUtilidadPct,
+          });
+        });
+      },
+
+      /** Bloquea / desbloquea el presupuesto (impide crear capítulos/ítems). */
+      setLocked: async (
+        projectId: string,
+        isLocked: boolean,
+      ): Promise<void> => {
+        const budget = await db.orm.public.ProjectBudget
+          .where({ projectId, tenantId })
+          .first();
+        if (!budget) {
+          throw new Error("Presupuesto no encontrado en este negocio.");
+        }
+        await db.orm.public.ProjectBudget
+          .where({ id: budget.id })
+          .update({ isLocked });
       },
     },
 

@@ -7,6 +7,8 @@ import { PROJECT_TABS, parseProjectTab } from "@/lib/projects";
 import { ProjectStatusBadge } from "../_components/project-status-badge";
 import ProjectTabs from "./_components/project-tabs";
 import ProjectHeaderForm from "./_components/project-header-form";
+import BudgetWorkspace from "./_components/budget-workspace";
+import { getOrCreateProjectBudgetAction } from "./budget/actions";
 
 function firstString(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
@@ -74,6 +76,12 @@ export default async function ProjectDetailPage({
 
   const activeLabel =
     PROJECT_TABS.find((entry) => entry.value === tab)?.label ?? "";
+
+  // El presupuesto (Tab 2) se asegura/crea solo cuando se visita esa pestaña.
+  const budget =
+    tab === "presupuesto"
+      ? await getOrCreateProjectBudgetAction(tenantSlug, projectId)
+      : null;
 
   return (
     <div className="space-y-6">
@@ -169,6 +177,23 @@ export default async function ProjectDetailPage({
               </div>
             </aside>
           </div>
+        ) : tab === "presupuesto" ? (
+          budget ? (
+            <BudgetWorkspace
+              tenantSlug={tenantSlug}
+              projectId={project.id}
+              budget={budget}
+            />
+          ) : (
+            <div className="rounded-lg border border-dashed border-border bg-card p-8 text-center">
+              <p className="text-sm font-medium text-foreground">
+                No se pudo cargar el presupuesto
+              </p>
+              <p className="mx-auto mt-1 max-w-md text-xs text-muted-foreground">
+                Verifica tus permisos sobre este negocio o vuelve a intentarlo.
+              </p>
+            </div>
+          )
         ) : (
           <TabPlaceholder label={activeLabel} />
         )}

@@ -99,6 +99,16 @@ enum ProjectStatus {
   CANCELLED
 }
 
+/// Categoría de un recurso que compone la actividad (APU) de una partida
+/// presupuestaria (FASE 2 — Tab 2). Distinto de `ApuItemCategory` (banco de
+/// insumos reutilizable): aquí es la clasificación dentro de un presupuesto.
+enum ResourceType {
+  MATERIAL
+  LABOR
+  EQUIPMENT
+  TRANSPORT
+}
+
 model Tenant {
   id           String   @id @default(uuid())
   name         String
@@ -151,6 +161,10 @@ model Tenant {
   apuActivities ApuActivity[]
   quotes        Quote[]
   projects      Project[]
+  projectBudgets ProjectBudget[]
+  budgetChapters BudgetChapter[]
+  budgetItems   BudgetItem[]
+  budgetItemResources BudgetItemResource[]
 
   @@index([slug])
 }
@@ -458,6 +472,8 @@ model Project {
   updatedAt  temporal.updatedAt()
 
   header   ProjectHeader?
+  /// Presupuesto de obra del proyecto (1:1 en esta fase, Tab 2).
+  budget   ProjectBudget?
 
   @@unique([tenantId, code])
   @@index([tenantId])
@@ -500,4 +516,121 @@ model ProjectHeader {
   updatedAt temporal.updatedAt()
 
   @@index([projectId])
+}
+
+/// Presupuesto de obra de un proyecto (FASE 2 — Tab 2). Un proyecto tiene
+/// como máximo un presupuesto en esta fase (1:1 vía `projectId @unique`).
+///
+/// Montos y porcentajes en micro-unidades `BigInt` (6 decimales):
+///   · dinero/cantidad: 1_000_000 = 1.000000
+///   · porcentajes:     1_000_000 = 1.000000 = 100 % (100_000 = 10 %)
+/// El servidor SIEMPRE recalcula los totales con `lib/apu-engine.ts`;
+/// nunca se persisten totales enviados por el navegador.
+model ProjectBudget {
+  id        String  @id @default(uuid())
+  tenantId  String
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  projectId String  @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  /// Código de negocio: PRES-2026-001 (único dentro del tenant).
+  code      String
+  name      String
+
+  /// Configuración AIU (fracción × 1e6). Por defecto 10 % / 5 % / 5 % / 19 %.
+  aiuAdminPct     BigInt @default(100000)
+  aiuImprevPct    BigInt @default(50000)
+  aiuUtilidadPct  BigInt @default(50000)
+  ivaUtilidadPct  BigInt @default(190000)
+
+  /// Totales derivados (recalculados por el servidor en cada mutación).
+  directCostTotal  BigInt @default(0)
+  adminTotal       BigInt @default(0)
+  imprevTotal      BigInt @default(0)
+  utilidadTotal    BigInt @default(0)
+  ivaUtilidadTotal BigInt @default(0)
+  grandTotal       BigInt @default(0)
+
+  /// Bloqueo básico: la capa de negocio rechaza mutaciones ordinarias.
+  isLocked  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+
+  chapters BudgetChapter[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+}
+
+/// Capítulo (grupo de partidas) dentro de un presupuesto. `order` es el
+/// orden de presentación; se asigna como `max + 1` al final del presupuesto.
+model BudgetChapter {
+  id        String        @id @default(uuid())
+  tenantId  String
+  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  budgetId  String
+  budget    ProjectBudget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  order     Int
+  name      String
+  description String?
+  createdAt DateTime      @default(now())
+  updatedAt temporal.updatedAt()
+
+  items BudgetItem[]
+
+  @@unique([budgetId, order])
+  @@index([tenantId])
+  @@index([budgetId])
+}
+
+/// Partida / actividad presupuestaria dentro de un capítulo. Cantidad y
+/// costos en micro-unidades `BigInt` (6 decimales).
+model BudgetItem {
+  id          String        @id @default(uuid())
+  tenantId    String
+  tenant      Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  chapterId   String
+  chapter     BudgetChapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  order       Int
+  /// Código de actividad (puede repetirse entre capítulos).
+  code        String
+  description String
+  unit        String
+  /// Cantidad escalada (1_000_000 = 1.000000).
+  quantity        BigInt @default(1000000)
+  /// Costo unitario directo (micro-pesos).
+  unitCostDirect  BigInt @default(0)
+  /// Costo directo total de la partida = quantity × unitCostDirect.
+  totalCostDirect BigInt @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   temporal.updatedAt()
+
+  resources BudgetItemResource[]
+
+  @@unique([chapterId, order])
+  @@index([tenantId])
+  @@index([chapterId])
+}
+
+/// Recurso que compone la actividad (APU) de una partida. El editor
+/// avanzado de composición queda para una fase posterior (N1 solo persiste
+/// el modelo y lo muestra); `imageUrl` es opcional y sin integración externa.
+model BudgetItemResource {
+  id        String     @id @default(uuid())
+  tenantId  String
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  itemId    String
+  item      BudgetItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  type      ResourceType
+  name      String
+  unit      String
+  /// Rendimiento del recurso por unidad de actividad (1_000_000 = 1.0).
+  performance BigInt @default(1000000)
+  unitPrice   BigInt @default(0)
+  totalPrice  BigInt @default(0)
+  imageUrl    String?
+  createdAt DateTime   @default(now())
+  updatedAt temporal.updatedAt()
+
+  @@index([tenantId])
+  @@index([itemId])
 }

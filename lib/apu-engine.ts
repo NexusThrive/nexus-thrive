@@ -343,6 +343,114 @@ export function directCostOf(quantities: string[], unitCosts: string[]): string 
 }
 
 /* ------------------------------------------------------------------ */
+/* Presupuesto de proyecto — motor BigInt (FASE 2, Tab 2)              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Escala de punto fijo (6 decimales), la que exige el contrato de
+ * `ProjectBudget` (columnas `BigInt`).
+ *   · DINERO/CANTIDAD: 1_000_000 = 1.000000
+ *   · PORCENTAJES almacenados: 1_000_000 = 1.000000 = 100 %
+ *     (100_000 = 10 %, 50_000 = 5 %, 190_000 = 19 %)
+ */
+export const SCALE = UNIT;
+
+/**
+ * Convierte un porcentaje legible ("10", "9.5", "19") a la micro-fracción
+ * almacenada (100_000 = 10 %). Devuelve `null` si no es un decimal válido.
+ * Nota: es una división exacta por 100 sobre el decimal ya parseado.
+ */
+export function percentToMicro(raw: string): bigint | null {
+  const value = parseMoney(raw);
+  if (value === null) {
+    return null;
+  }
+  return value / BigInt(100);
+}
+
+/** Inverso de `percentToMicro`: 100_000 → "10", 190_000 → "19". */
+export function microToPercent(micro: bigint): string {
+  return moneyToString(micro * BigInt(100));
+}
+
+/**
+ * Costo directo total de una partida: `quantity × unitCostDirect`, ambos en
+ * micro-unidades. Redondeo half-up al micro (misma regla del motor).
+ * Rechaza valores negativos.
+ */
+export function calculateItemTotal(quantity: bigint, unitCost: bigint): bigint {
+  if (quantity < BigInt(0) || unitCost < BigInt(0)) {
+    throw new Error("calculateItemTotal: valores negativos no permitidos.");
+  }
+  return roundDiv(quantity * unitCost, SCALE);
+}
+
+export type BudgetTotals = {
+  adminTotal: bigint;
+  imprevTotal: bigint;
+  utilidadTotal: bigint;
+  ivaUtilidadTotal: bigint;
+  grandTotal: bigint;
+};
+
+/**
+ * Cascada financiera del presupuesto: administración, imprevistos y utilidad
+ * se aplican sobre el costo directo; el IVA SOLO sobre la utilidad.
+ * Todos los operandos están en micro-unidades y los porcentajes con
+ * 1_000_000 = 100 %. Aritmética `BigInt` pura, redondeo half-up, sin punto
+ * flotante. Determinístico.
+ */
+export function calculateBudgetTotals(
+  directCostTotal: bigint,
+  adminPct: bigint,
+  imprevPct: bigint,
+  utilidadPct: bigint,
+  ivaUtilidadPct: bigint,
+): BudgetTotals {
+  if (
+    directCostTotal < BigInt(0) ||
+    adminPct < BigInt(0) ||
+    imprevPct < BigInt(0) ||
+    utilidadPct < BigInt(0) ||
+    ivaUtilidadPct < BigInt(0)
+  ) {
+    throw new Error("calculateBudgetTotals: valores negativos no permitidos.");
+  }
+
+  const adminTotal = roundDiv(directCostTotal * adminPct, SCALE);
+  const imprevTotal = roundDiv(directCostTotal * imprevPct, SCALE);
+  const utilidadTotal = roundDiv(directCostTotal * utilidadPct, SCALE);
+  const ivaUtilidadTotal = roundDiv(utilidadTotal * ivaUtilidadPct, SCALE);
+  const grandTotal =
+    directCostTotal +
+    adminTotal +
+    imprevTotal +
+    utilidadTotal +
+    ivaUtilidadTotal;
+
+  return { adminTotal, imprevTotal, utilidadTotal, ivaUtilidadTotal, grandTotal };
+}
+
+/** Catálogo de tipos de recurso de una partida (espejo del enum del contrato). */
+export const RESOURCE_TYPES = [
+  { value: "MATERIAL", label: "Material" },
+  { value: "LABOR", label: "Mano de obra" },
+  { value: "EQUIPMENT", label: "Equipo" },
+  { value: "TRANSPORT", label: "Transporte" },
+] as const;
+export type ResourceTypeValue = (typeof RESOURCE_TYPES)[number]["value"];
+
+export function resourceTypeLabel(type: ResourceTypeValue): string {
+  return RESOURCE_TYPES.find((option) => option.value === type)?.label ?? type;
+}
+
+export function isValidResourceType(raw: string): raw is ResourceTypeValue {
+  return (RESOURCE_TYPES as readonly { value: string }[]).some(
+    (option) => option.value === raw,
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* Snapshot del APU (inmutable al cotizar)                             */
 /* ------------------------------------------------------------------ */
 
