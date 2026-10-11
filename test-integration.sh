@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ -z "${TEST_DATABASE_URL:-}" ]; then
+  echo "Error: TEST_DATABASE_URL no definida."
+  echo "Crea una base aparte y exporta TEST_DATABASE_URL."
+  exit 1
+fi
+
+# Normalizar URLs quitando parámetros de query
+normalize() { echo "${1%%\?*}"; }
+if [ "$(normalize "$DATABASE_URL")" != "$(normalize "$TEST_DATABASE_URL")" ]; then
+  echo "Error: DATABASE_URL debe apuntar a la misma base que TEST_DATABASE_URL."
+  echo "Ejecuta: DATABASE_URL=\$TEST_DATABASE_URL TEST_DATABASE_URL=\$TEST_DATABASE_URL pnpm test:integration"
+  exit 1
+fi
+
+pnpm exec vitest run lib/tenant-db.integration.test.ts
