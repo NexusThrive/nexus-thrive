@@ -1,0 +1,1052 @@
+[
+  {
+    "id": "table.ApuActivity",
+    "label": "Create table \"ApuActivity\"",
+    "summary": "Creates table \"ApuActivity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ApuActivity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ApuActivity\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ApuActivity\"",
+        "sql": "CREATE TABLE \"public\".\"ApuActivity\" (\n  \"code\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"unit\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ApuActivity\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ApuActivityComposition",
+    "label": "Create table \"ApuActivityComposition\"",
+    "summary": "Creates table \"ApuActivityComposition\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ApuActivityComposition\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivityComposition\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ApuActivityComposition\"",
+        "sql": "CREATE TABLE \"public\".\"ApuActivityComposition\" (\n  \"activityId\" text NOT NULL,\n  \"consumption\" numeric NOT NULL,\n  \"id\" text NOT NULL,\n  \"itemId\" text NOT NULL,\n  \"wastePercent\" numeric NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ApuActivityComposition\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivityComposition\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ApuItem",
+    "label": "Create table \"ApuItem\"",
+    "summary": "Creates table \"ApuItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ApuItem\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ApuItem\"",
+        "sql": "CREATE TABLE \"public\".\"ApuItem\" (\n  \"category\" text NOT NULL,\n  \"code\" text,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"unit\" text NOT NULL,\n  \"unitPrice\" numeric NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"ApuItem_category_check_cb615411\" CHECK (\"category\" IN ('MATERIAL', 'MANO_DE_OBRA', 'EQUIPO', 'TRANSPORTE'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ApuItem\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Quote",
+    "label": "Create table \"Quote\"",
+    "summary": "Creates table \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Quote\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Quote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Quote\"",
+        "sql": "CREATE TABLE \"public\".\"Quote\" (\n  \"adminPercent\" numeric DEFAULT '15'::numeric NOT NULL,\n  \"code\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"customerId\" text,\n  \"directCost\" numeric NOT NULL,\n  \"id\" text NOT NULL,\n  \"imprevPercent\" numeric DEFAULT '5'::numeric NOT NULL,\n  \"status\" text DEFAULT 'DRAFT' NOT NULL,\n  \"taxPercent\" numeric DEFAULT '19'::numeric NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"title\" text NOT NULL,\n  \"totalAmount\" numeric NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"utilPercent\" numeric DEFAULT '10'::numeric NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"Quote_status_check_58e78406\" CHECK (\"status\" IN ('DRAFT', 'SENT', 'APPROVED', 'REJECTED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Quote\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Quote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.QuoteItem",
+    "label": "Create table \"QuoteItem\"",
+    "summary": "Creates table \"QuoteItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "QuoteItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"QuoteItem\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"QuoteItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"QuoteItem\"",
+        "sql": "CREATE TABLE \"public\".\"QuoteItem\" (\n  \"activityId\" text,\n  \"apuSnapshot\" json,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"quantity\" numeric NOT NULL,\n  \"quoteId\" text NOT NULL,\n  \"totalCost\" numeric NOT NULL,\n  \"unit\" text NOT NULL,\n  \"unitCost\" numeric NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"QuoteItem\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"QuoteItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ApuActivity.ApuActivity_tenantId_code_key",
+    "label": "Add unique constraint on \"ApuActivity\" (tenantId, code)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ApuActivity_tenantId_code_key",
+        "table": "ApuActivity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ApuActivity_tenantId_code_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuActivity_tenantId_code_key",
+          "public",
+          "\"public\".\"ApuActivity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ApuActivity_tenantId_code_key\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivity\" ADD CONSTRAINT \"ApuActivity_tenantId_code_key\" UNIQUE (\"tenantId\", \"code\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ApuActivity_tenantId_code_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuActivity_tenantId_code_key",
+          "public",
+          "\"public\".\"ApuActivity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ApuActivityComposition.ApuActivityComposition_activityId_itemId_key",
+    "label": "Add unique constraint on \"ApuActivityComposition\" (activityId, itemId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ApuActivityComposition_activityId_itemId_key",
+        "table": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ApuActivityComposition_activityId_itemId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuActivityComposition_activityId_itemId_key",
+          "public",
+          "\"public\".\"ApuActivityComposition\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ApuActivityComposition_activityId_itemId_key\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivityComposition\" ADD CONSTRAINT \"ApuActivityComposition_activityId_itemId_key\" UNIQUE (\"activityId\", \"itemId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ApuActivityComposition_activityId_itemId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuActivityComposition_activityId_itemId_key",
+          "public",
+          "\"public\".\"ApuActivityComposition\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ApuItem.ApuItem_tenantId_code_key",
+    "label": "Add unique constraint on \"ApuItem\" (tenantId, code)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ApuItem_tenantId_code_key",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ApuItem_tenantId_code_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItem_tenantId_code_key",
+          "public",
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ApuItem_tenantId_code_key\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItem\" ADD CONSTRAINT \"ApuItem_tenantId_code_key\" UNIQUE (\"tenantId\", \"code\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ApuItem_tenantId_code_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItem_tenantId_code_key",
+          "public",
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Quote.Quote_tenantId_code_key",
+    "label": "Add unique constraint on \"Quote\" (tenantId, code)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Quote_tenantId_code_key",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Quote_tenantId_code_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Quote_tenantId_code_key",
+          "public",
+          "\"public\".\"Quote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Quote_tenantId_code_key\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\" ADD CONSTRAINT \"Quote_tenantId_code_key\" UNIQUE (\"tenantId\", \"code\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Quote_tenantId_code_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Quote_tenantId_code_key",
+          "public",
+          "\"public\".\"Quote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ApuActivity.ApuActivity_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ApuActivity_tenantId_idx_c93ed4f1\" on \"ApuActivity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ApuActivity_tenantId_idx_c93ed4f1",
+        "table": "ApuActivity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ApuActivity_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivity_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ApuActivity_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ApuActivity_tenantId_idx_c93ed4f1\" ON \"public\".\"ApuActivity\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ApuActivity_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivity_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ApuActivityComposition.ApuActivityComposition_activityId_idx_bf2a659e",
+    "label": "Create index \"ApuActivityComposition_activityId_idx_bf2a659e\" on \"ApuActivityComposition\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ApuActivityComposition_activityId_idx_bf2a659e",
+        "table": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ApuActivityComposition_activityId_idx_bf2a659e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivityComposition_activityId_idx_bf2a659e\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ApuActivityComposition_activityId_idx_bf2a659e\"",
+        "sql": "CREATE INDEX \"ApuActivityComposition_activityId_idx_bf2a659e\" ON \"public\".\"ApuActivityComposition\" (\"activityId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ApuActivityComposition_activityId_idx_bf2a659e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivityComposition_activityId_idx_bf2a659e\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ApuActivityComposition.ApuActivityComposition_itemId_idx_41357140",
+    "label": "Create index \"ApuActivityComposition_itemId_idx_41357140\" on \"ApuActivityComposition\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ApuActivityComposition_itemId_idx_41357140",
+        "table": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ApuActivityComposition_itemId_idx_41357140\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivityComposition_itemId_idx_41357140\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ApuActivityComposition_itemId_idx_41357140\"",
+        "sql": "CREATE INDEX \"ApuActivityComposition_itemId_idx_41357140\" ON \"public\".\"ApuActivityComposition\" (\"itemId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ApuActivityComposition_itemId_idx_41357140\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivityComposition_itemId_idx_41357140\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ApuItem.ApuItem_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ApuItem_tenantId_idx_c93ed4f1\" on \"ApuItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ApuItem_tenantId_idx_c93ed4f1",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ApuItem_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItem_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ApuItem_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ApuItem_tenantId_idx_c93ed4f1\" ON \"public\".\"ApuItem\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ApuItem_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItem_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Quote.Quote_customerId_idx_b2a8a46c",
+    "label": "Create index \"Quote_customerId_idx_b2a8a46c\" on \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Quote_customerId_idx_b2a8a46c",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Quote_customerId_idx_b2a8a46c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Quote_customerId_idx_b2a8a46c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Quote_customerId_idx_b2a8a46c\"",
+        "sql": "CREATE INDEX \"Quote_customerId_idx_b2a8a46c\" ON \"public\".\"Quote\" (\"customerId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Quote_customerId_idx_b2a8a46c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Quote_customerId_idx_b2a8a46c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Quote.Quote_tenantId_idx_c93ed4f1",
+    "label": "Create index \"Quote_tenantId_idx_c93ed4f1\" on \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Quote_tenantId_idx_c93ed4f1",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Quote_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Quote_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Quote_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"Quote_tenantId_idx_c93ed4f1\" ON \"public\".\"Quote\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Quote_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Quote_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Quote.Quote_tenantId_status_idx_d3d04256",
+    "label": "Create index \"Quote_tenantId_status_idx_d3d04256\" on \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Quote_tenantId_status_idx_d3d04256",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Quote_tenantId_status_idx_d3d04256\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Quote_tenantId_status_idx_d3d04256\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Quote_tenantId_status_idx_d3d04256\"",
+        "sql": "CREATE INDEX \"Quote_tenantId_status_idx_d3d04256\" ON \"public\".\"Quote\" (\"tenantId\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Quote_tenantId_status_idx_d3d04256\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Quote_tenantId_status_idx_d3d04256\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.QuoteItem.QuoteItem_activityId_idx_bf2a659e",
+    "label": "Create index \"QuoteItem_activityId_idx_bf2a659e\" on \"QuoteItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "QuoteItem_activityId_idx_bf2a659e",
+        "table": "QuoteItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"QuoteItem_activityId_idx_bf2a659e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"QuoteItem_activityId_idx_bf2a659e\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"QuoteItem_activityId_idx_bf2a659e\"",
+        "sql": "CREATE INDEX \"QuoteItem_activityId_idx_bf2a659e\" ON \"public\".\"QuoteItem\" (\"activityId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"QuoteItem_activityId_idx_bf2a659e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"QuoteItem_activityId_idx_bf2a659e\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.QuoteItem.QuoteItem_quoteId_idx_a7628ce5",
+    "label": "Create index \"QuoteItem_quoteId_idx_a7628ce5\" on \"QuoteItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "QuoteItem_quoteId_idx_a7628ce5",
+        "table": "QuoteItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"QuoteItem_quoteId_idx_a7628ce5\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"QuoteItem_quoteId_idx_a7628ce5\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"QuoteItem_quoteId_idx_a7628ce5\"",
+        "sql": "CREATE INDEX \"QuoteItem_quoteId_idx_a7628ce5\" ON \"public\".\"QuoteItem\" (\"quoteId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"QuoteItem_quoteId_idx_a7628ce5\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"QuoteItem_quoteId_idx_a7628ce5\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ApuActivity.ApuActivity_tenantId_fkey",
+    "label": "Add foreign key \"ApuActivity_tenantId_fkey\" on \"ApuActivity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ApuActivity_tenantId_fkey",
+        "table": "ApuActivity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ApuActivity_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuActivity_tenantId_fkey",
+          "public",
+          "\"public\".\"ApuActivity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ApuActivity_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivity\"\nADD CONSTRAINT \"ApuActivity_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ApuActivity_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuActivity_tenantId_fkey",
+          "public",
+          "\"public\".\"ApuActivity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ApuActivityComposition.ApuActivityComposition_activityId_fkey",
+    "label": "Add foreign key \"ApuActivityComposition_activityId_fkey\" on \"ApuActivityComposition\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ApuActivityComposition_activityId_fkey",
+        "table": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ApuActivityComposition_activityId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuActivityComposition_activityId_fkey",
+          "public",
+          "\"public\".\"ApuActivityComposition\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ApuActivityComposition_activityId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivityComposition\"\nADD CONSTRAINT \"ApuActivityComposition_activityId_fkey\"\nFOREIGN KEY (\"activityId\")\nREFERENCES \"public\".\"ApuActivity\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ApuActivityComposition_activityId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuActivityComposition_activityId_fkey",
+          "public",
+          "\"public\".\"ApuActivityComposition\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ApuActivityComposition.ApuActivityComposition_itemId_fkey",
+    "label": "Add foreign key \"ApuActivityComposition_itemId_fkey\" on \"ApuActivityComposition\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ApuActivityComposition_itemId_fkey",
+        "table": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ApuActivityComposition_itemId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuActivityComposition_itemId_fkey",
+          "public",
+          "\"public\".\"ApuActivityComposition\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ApuActivityComposition_itemId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivityComposition\"\nADD CONSTRAINT \"ApuActivityComposition_itemId_fkey\"\nFOREIGN KEY (\"itemId\")\nREFERENCES \"public\".\"ApuItem\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ApuActivityComposition_itemId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuActivityComposition_itemId_fkey",
+          "public",
+          "\"public\".\"ApuActivityComposition\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ApuItem.ApuItem_tenantId_fkey",
+    "label": "Add foreign key \"ApuItem_tenantId_fkey\" on \"ApuItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ApuItem_tenantId_fkey",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ApuItem_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItem_tenantId_fkey",
+          "public",
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ApuItem_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItem\"\nADD CONSTRAINT \"ApuItem_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ApuItem_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItem_tenantId_fkey",
+          "public",
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Quote.Quote_tenantId_fkey",
+    "label": "Add foreign key \"Quote_tenantId_fkey\" on \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Quote_tenantId_fkey",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Quote_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Quote_tenantId_fkey",
+          "public",
+          "\"public\".\"Quote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Quote_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\"\nADD CONSTRAINT \"Quote_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Quote_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Quote_tenantId_fkey",
+          "public",
+          "\"public\".\"Quote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Quote.Quote_customerId_fkey",
+    "label": "Add foreign key \"Quote_customerId_fkey\" on \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Quote_customerId_fkey",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Quote_customerId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Quote_customerId_fkey",
+          "public",
+          "\"public\".\"Quote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Quote_customerId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\"\nADD CONSTRAINT \"Quote_customerId_fkey\"\nFOREIGN KEY (\"customerId\")\nREFERENCES \"public\".\"Customer\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Quote_customerId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Quote_customerId_fkey",
+          "public",
+          "\"public\".\"Quote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.QuoteItem.QuoteItem_quoteId_fkey",
+    "label": "Add foreign key \"QuoteItem_quoteId_fkey\" on \"QuoteItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "QuoteItem_quoteId_fkey",
+        "table": "QuoteItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"QuoteItem_quoteId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "QuoteItem_quoteId_fkey",
+          "public",
+          "\"public\".\"QuoteItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"QuoteItem_quoteId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"QuoteItem\"\nADD CONSTRAINT \"QuoteItem_quoteId_fkey\"\nFOREIGN KEY (\"quoteId\")\nREFERENCES \"public\".\"Quote\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"QuoteItem_quoteId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "QuoteItem_quoteId_fkey",
+          "public",
+          "\"public\".\"QuoteItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.QuoteItem.QuoteItem_activityId_fkey",
+    "label": "Add foreign key \"QuoteItem_activityId_fkey\" on \"QuoteItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "QuoteItem_activityId_fkey",
+        "table": "QuoteItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"QuoteItem_activityId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "QuoteItem_activityId_fkey",
+          "public",
+          "\"public\".\"QuoteItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"QuoteItem_activityId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"QuoteItem\"\nADD CONSTRAINT \"QuoteItem_activityId_fkey\"\nFOREIGN KEY (\"activityId\")\nREFERENCES \"public\".\"ApuActivity\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"QuoteItem_activityId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "QuoteItem_activityId_fkey",
+          "public",
+          "\"public\".\"QuoteItem\""
+        ]
+      }
+    ]
+  }
+]

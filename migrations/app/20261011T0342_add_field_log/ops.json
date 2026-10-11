@@ -1,0 +1,485 @@
+[
+  {
+    "id": "table.FieldLog",
+    "label": "Create table \"FieldLog\"",
+    "summary": "Creates table \"FieldLog\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "FieldLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"FieldLog\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FieldLog\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"FieldLog\"",
+        "sql": "CREATE TABLE \"public\".\"FieldLog\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text DEFAULT 'Diario Oficial de Obra' NOT NULL,\n  \"projectId\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"FieldLog\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FieldLog\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.FieldLogEntry",
+    "label": "Create table \"FieldLogEntry\"",
+    "summary": "Creates table \"FieldLogEntry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "FieldLogEntry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"FieldLogEntry\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FieldLogEntry\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"FieldLogEntry\"",
+        "sql": "CREATE TABLE \"public\".\"FieldLogEntry\" (\n  \"authorName\" text NOT NULL,\n  \"authorRole\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text NOT NULL,\n  \"entryDate\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"laborCount\" int4 DEFAULT 0 NOT NULL,\n  \"logId\" text NOT NULL,\n  \"photoUrls\" text[] DEFAULT '{}' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"title\" text NOT NULL,\n  \"type\" text DEFAULT 'ADVANCE' NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"weather\" text DEFAULT 'SUNNY' NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"FieldLogEntry_photoUrls_elem_not_null_ad9c6091\" CHECK (array_position(\"photoUrls\", NULL) IS NULL),\n  CONSTRAINT \"FieldLogEntry_type_check_41da5313\" CHECK (\"type\" IN ('ADVANCE', 'OBSERVATION', 'AUTHORIZATION', 'INCIDENT')),\n  CONSTRAINT \"FieldLogEntry_weather_check_f78e4aba\" CHECK (\"weather\" IN ('SUNNY', 'CLOUDY', 'RAIN_LIGHT', 'RAIN_HEAVY'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"FieldLogEntry\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FieldLogEntry\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.FieldLog.FieldLog_projectId_key",
+    "label": "Add unique constraint on \"FieldLog\" (projectId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "FieldLog_projectId_key",
+        "table": "FieldLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"FieldLog_projectId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FieldLog_projectId_key",
+          "public",
+          "\"public\".\"FieldLog\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"FieldLog_projectId_key\"",
+        "sql": "ALTER TABLE \"public\".\"FieldLog\" ADD CONSTRAINT \"FieldLog_projectId_key\" UNIQUE (\"projectId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"FieldLog_projectId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FieldLog_projectId_key",
+          "public",
+          "\"public\".\"FieldLog\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.FieldLog.FieldLog_tenantId_idx_c93ed4f1",
+    "label": "Create index \"FieldLog_tenantId_idx_c93ed4f1\" on \"FieldLog\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "FieldLog_tenantId_idx_c93ed4f1",
+        "table": "FieldLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"FieldLog_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FieldLog_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"FieldLog_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"FieldLog_tenantId_idx_c93ed4f1\" ON \"public\".\"FieldLog\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"FieldLog_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FieldLog_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.FieldLog.FieldLog_tenantId_projectId_idx_e88197e4",
+    "label": "Create index \"FieldLog_tenantId_projectId_idx_e88197e4\" on \"FieldLog\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "FieldLog_tenantId_projectId_idx_e88197e4",
+        "table": "FieldLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"FieldLog_tenantId_projectId_idx_e88197e4\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FieldLog_tenantId_projectId_idx_e88197e4\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"FieldLog_tenantId_projectId_idx_e88197e4\"",
+        "sql": "CREATE INDEX \"FieldLog_tenantId_projectId_idx_e88197e4\" ON \"public\".\"FieldLog\" (\"tenantId\", \"projectId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"FieldLog_tenantId_projectId_idx_e88197e4\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FieldLog_tenantId_projectId_idx_e88197e4\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.FieldLogEntry.FieldLogEntry_logId_idx_602c1cfa",
+    "label": "Create index \"FieldLogEntry_logId_idx_602c1cfa\" on \"FieldLogEntry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "FieldLogEntry_logId_idx_602c1cfa",
+        "table": "FieldLogEntry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"FieldLogEntry_logId_idx_602c1cfa\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FieldLogEntry_logId_idx_602c1cfa\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"FieldLogEntry_logId_idx_602c1cfa\"",
+        "sql": "CREATE INDEX \"FieldLogEntry_logId_idx_602c1cfa\" ON \"public\".\"FieldLogEntry\" (\"logId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"FieldLogEntry_logId_idx_602c1cfa\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FieldLogEntry_logId_idx_602c1cfa\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.FieldLogEntry.FieldLogEntry_tenantId_entryDate_idx_d9bd4790",
+    "label": "Create index \"FieldLogEntry_tenantId_entryDate_idx_d9bd4790\" on \"FieldLogEntry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "FieldLogEntry_tenantId_entryDate_idx_d9bd4790",
+        "table": "FieldLogEntry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"FieldLogEntry_tenantId_entryDate_idx_d9bd4790\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FieldLogEntry_tenantId_entryDate_idx_d9bd4790\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"FieldLogEntry_tenantId_entryDate_idx_d9bd4790\"",
+        "sql": "CREATE INDEX \"FieldLogEntry_tenantId_entryDate_idx_d9bd4790\" ON \"public\".\"FieldLogEntry\" (\"tenantId\", \"entryDate\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"FieldLogEntry_tenantId_entryDate_idx_d9bd4790\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FieldLogEntry_tenantId_entryDate_idx_d9bd4790\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.FieldLogEntry.FieldLogEntry_tenantId_idx_c93ed4f1",
+    "label": "Create index \"FieldLogEntry_tenantId_idx_c93ed4f1\" on \"FieldLogEntry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "FieldLogEntry_tenantId_idx_c93ed4f1",
+        "table": "FieldLogEntry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"FieldLogEntry_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FieldLogEntry_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"FieldLogEntry_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"FieldLogEntry_tenantId_idx_c93ed4f1\" ON \"public\".\"FieldLogEntry\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"FieldLogEntry_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FieldLogEntry_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.FieldLog.FieldLog_tenantId_fkey",
+    "label": "Add foreign key \"FieldLog_tenantId_fkey\" on \"FieldLog\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "FieldLog_tenantId_fkey",
+        "table": "FieldLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"FieldLog_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FieldLog_tenantId_fkey",
+          "public",
+          "\"public\".\"FieldLog\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"FieldLog_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"FieldLog\"\nADD CONSTRAINT \"FieldLog_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"FieldLog_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FieldLog_tenantId_fkey",
+          "public",
+          "\"public\".\"FieldLog\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.FieldLog.FieldLog_projectId_fkey",
+    "label": "Add foreign key \"FieldLog_projectId_fkey\" on \"FieldLog\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "FieldLog_projectId_fkey",
+        "table": "FieldLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"FieldLog_projectId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FieldLog_projectId_fkey",
+          "public",
+          "\"public\".\"FieldLog\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"FieldLog_projectId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"FieldLog\"\nADD CONSTRAINT \"FieldLog_projectId_fkey\"\nFOREIGN KEY (\"projectId\")\nREFERENCES \"public\".\"Project\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"FieldLog_projectId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FieldLog_projectId_fkey",
+          "public",
+          "\"public\".\"FieldLog\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.FieldLogEntry.FieldLogEntry_tenantId_fkey",
+    "label": "Add foreign key \"FieldLogEntry_tenantId_fkey\" on \"FieldLogEntry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "FieldLogEntry_tenantId_fkey",
+        "table": "FieldLogEntry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"FieldLogEntry_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FieldLogEntry_tenantId_fkey",
+          "public",
+          "\"public\".\"FieldLogEntry\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"FieldLogEntry_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"FieldLogEntry\"\nADD CONSTRAINT \"FieldLogEntry_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"FieldLogEntry_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FieldLogEntry_tenantId_fkey",
+          "public",
+          "\"public\".\"FieldLogEntry\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.FieldLogEntry.FieldLogEntry_logId_fkey",
+    "label": "Add foreign key \"FieldLogEntry_logId_fkey\" on \"FieldLogEntry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "FieldLogEntry_logId_fkey",
+        "table": "FieldLogEntry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"FieldLogEntry_logId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FieldLogEntry_logId_fkey",
+          "public",
+          "\"public\".\"FieldLogEntry\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"FieldLogEntry_logId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"FieldLogEntry\"\nADD CONSTRAINT \"FieldLogEntry_logId_fkey\"\nFOREIGN KEY (\"logId\")\nREFERENCES \"public\".\"FieldLog\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"FieldLogEntry_logId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FieldLogEntry_logId_fkey",
+          "public",
+          "\"public\".\"FieldLogEntry\""
+        ]
+      }
+    ]
+  }
+]
