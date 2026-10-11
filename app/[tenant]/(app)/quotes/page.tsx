@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   CheckCircle2,
   FileText,
+  FolderKanban,
   Plus,
   Upload,
   Wallet,
@@ -218,6 +219,13 @@ export default async function QuotesPage({
           </p>
         </div>
         <div className="mt-3 flex shrink-0 items-center gap-2 sm:mt-0">
+          <Link
+            href={`/${tenantSlug}/quotes/projects`}
+            className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted"
+          >
+            <FolderKanban aria-hidden="true" className="h-4 w-4" />
+            Proyectos de obra
+          </Link>
           <Link
             href={`/${tenantSlug}/quotes/import`}
             className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-accent/30 bg-accent-subtle px-3 text-sm font-medium text-accent-text transition hover:border-accent/40 hover:bg-accent-subtle"

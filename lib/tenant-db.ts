@@ -35,6 +35,7 @@ import {
   type QuoteStatusValue,
   type QuoteTotals,
 } from "@/lib/apu-engine";
+import type { ProjectStatusValue } from "@/lib/projects";
 
 /** Escapa los comodines de LIKE para que la búsqueda sea literal. */
 function escapeLike(input: string): string {
@@ -353,6 +354,106 @@ export type QuoteDetail = {
   updatedAt: string;
   items: QuoteItemRow[];
 };
+
+/** Fila serializable de proyecto (lista). */
+export type ProjectRow = {
+  id: string;
+  code: string;
+  name: string;
+  description: string | null;
+  customerId: string;
+  customerName: string;
+  status: ProjectStatusValue;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** Métricas de la portada del módulo Proyectos (datos reales). */
+export type ProjectMetrics = {
+  total: number;
+  inExecution: number;
+  approved: number;
+  completed: number;
+};
+
+/** Forma serializable del ProjectHeader (ficha del proyecto). */
+export type ProjectHeaderData = {
+  clientTaxName: string | null;
+  clientTaxId: string | null;
+  clientTaxDv: string | null;
+  clientAddress: string | null;
+  clientCity: string | null;
+  clientBillingEmail: string | null;
+  legalRepName: string | null;
+  siteAddress: string | null;
+  siteCity: string | null;
+  siteDepartment: string | null;
+  projectType: string | null;
+  siteAccessNotes: string | null;
+  technicalContact: string | null;
+  technicalPhone: string | null;
+  projectLeaderName: string | null;
+  projectLeaderProfessionalId: string | null;
+  supervisorName: string | null;
+};
+
+/** Payload de actualización de la ficha (todos los campos opcionales). */
+export type ProjectHeaderInput = Partial<ProjectHeaderData>;
+
+/** Detalle de proyecto: cabecera + ficha (ProjectHeader). */
+export type ProjectDetail = ProjectRow & {
+  header: ProjectHeaderData | null;
+};
+
+export type ProjectListInput = {
+  q?: string;
+  status?: ProjectStatusValue;
+  page?: number;
+  limit?: number;
+};
+
+/** Subconjunto de columnas del ProjectHeader que serializamos. */
+type ProjectHeaderRow = {
+  clientTaxName: string | null;
+  clientTaxId: string | null;
+  clientTaxDv: string | null;
+  clientAddress: string | null;
+  clientCity: string | null;
+  clientBillingEmail: string | null;
+  legalRepName: string | null;
+  siteAddress: string | null;
+  siteCity: string | null;
+  siteDepartment: string | null;
+  projectType: string | null;
+  siteAccessNotes: string | null;
+  technicalContact: string | null;
+  technicalPhone: string | null;
+  projectLeaderName: string | null;
+  projectLeaderProfessionalId: string | null;
+  supervisorName: string | null;
+};
+
+function serializeProjectHeader(header: ProjectHeaderRow): ProjectHeaderData {
+  return {
+    clientTaxName: header.clientTaxName,
+    clientTaxId: header.clientTaxId,
+    clientTaxDv: header.clientTaxDv,
+    clientAddress: header.clientAddress,
+    clientCity: header.clientCity,
+    clientBillingEmail: header.clientBillingEmail,
+    legalRepName: header.legalRepName,
+    siteAddress: header.siteAddress,
+    siteCity: header.siteCity,
+    siteDepartment: header.siteDepartment,
+    projectType: header.projectType,
+    siteAccessNotes: header.siteAccessNotes,
+    technicalContact: header.technicalContact,
+    technicalPhone: header.technicalPhone,
+    projectLeaderName: header.projectLeaderName,
+    projectLeaderProfessionalId: header.projectLeaderProfessionalId,
+    supervisorName: header.supervisorName,
+  };
+}
 
 /** Último ISO mayor (fecha ISO-8601 de ancho fijo: orden lexicográfico = cronológico). */
 function maxIso(a: string | null, b: string | null): string | null {
@@ -1465,6 +1566,232 @@ export function createTenantDb(tenantId: string) {
             apuSnapshot: (item.apuSnapshot as ApuSnapshot | null) ?? null,
           })),
         };
+      },
+    },
+
+    projects: {
+      list: async ({
+        q,
+        status,
+        page = 1,
+        limit = 10,
+      }: ProjectListInput = {}): Promise<{ rows: ProjectRow[]; total: number }> => {
+        const text = (q ?? "").trim();
+        const pattern = text ? `%${escapeLike(text)}%` : null;
+        const safePage = Math.max(1, Math.trunc(page));
+        const safeLimit = Math.min(100, Math.max(1, Math.trunc(limit)));
+
+        let filtered = db.orm.public.Project.where({ tenantId });
+        if (text) {
+          filtered = filtered.where((project) =>
+            or(project.code.ilike(pattern!), project.name.ilike(pattern!)),
+          );
+        }
+        if (status) {
+          filtered = filtered.where((project) => project.status.eq(status));
+        }
+
+        const [rows, { total }] = await Promise.all([
+          filtered
+            .orderBy((project) => project.createdAt.desc())
+            .limit(safeLimit)
+            .offset((safePage - 1) * safeLimit)
+            .all(),
+          filtered.aggregate((aggregate) => ({ total: aggregate.count() })),
+        ]);
+
+        const customerIds = [...new Set(rows.map((row) => row.customerId))];
+        const customers =
+          customerIds.length === 0
+            ? []
+            : await db.orm.public.Customer
+                .where({ tenantId })
+                .where((customer) => customer.id.in(customerIds))
+                .all();
+        const customerById = new Map(
+          customers.map((customer) => [customer.id, customer]),
+        );
+
+        return {
+          rows: rows.map((row) => ({
+            id: row.id,
+            code: row.code,
+            name: row.name,
+            description: row.description,
+            customerId: row.customerId,
+            customerName:
+              customerById.get(row.customerId)?.name ?? "Cliente eliminado",
+            status: row.status as ProjectStatusValue,
+            createdAt: String(row.createdAt),
+            updatedAt: String(row.updatedAt),
+          })),
+          total,
+        };
+      },
+
+      /** Métricas de portada (datos reales, no mock). */
+      getMetrics: async (): Promise<ProjectMetrics> => {
+        const [totalAgg, inExecutionAgg, approvedAgg, completedAgg] =
+          await Promise.all([
+            db.orm.public.Project
+              .where({ tenantId })
+              .aggregate((aggregate) => ({ total: aggregate.count() })),
+            db.orm.public.Project
+              .where({ tenantId })
+              .where((project) => project.status.eq("IN_EXECUTION"))
+              .aggregate((aggregate) => ({ total: aggregate.count() })),
+            db.orm.public.Project
+              .where({ tenantId })
+              .where((project) => project.status.eq("APPROVED"))
+              .aggregate((aggregate) => ({ total: aggregate.count() })),
+            db.orm.public.Project
+              .where({ tenantId })
+              .where((project) => project.status.eq("COMPLETED"))
+              .aggregate((aggregate) => ({ total: aggregate.count() })),
+          ]);
+
+        return {
+          total: totalAgg.total,
+          inExecution: inExecutionAgg.total,
+          approved: approvedAgg.total,
+          completed: completedAgg.total,
+        };
+      },
+
+      /** Detalle completo: proyecto + ficha (ProjectHeader). */
+      get: async (id: string): Promise<ProjectDetail | null> => {
+        const project = await db.orm.public.Project
+          .where({ id, tenantId })
+          .first();
+        if (!project) {
+          return null;
+        }
+
+        const [header, customer] = await Promise.all([
+          db.orm.public.ProjectHeader.where({ projectId: id }).first(),
+          db.orm.public.Customer
+            .where({ id: project.customerId, tenantId })
+            .select("name")
+            .first(),
+        ]);
+
+        return {
+          id: project.id,
+          code: project.code,
+          name: project.name,
+          description: project.description,
+          customerId: project.customerId,
+          customerName: customer?.name ?? "Cliente eliminado",
+          status: project.status as ProjectStatusValue,
+          createdAt: String(project.createdAt),
+          updatedAt: String(project.updatedAt),
+          header: header ? serializeProjectHeader(header) : null,
+        };
+      },
+
+      /**
+       * Crea un proyecto DRAFT + su ficha (ProjectHeader) en una transacción.
+       * El cliente se resuelve DENTRO del tenant (aislamiento multi-tenant):
+       * si no existe en este negocio, error. El header arranca como snapshot
+       * fiscal del Customer del CRM (maestro — no es segunda fuente maestra).
+       * Código correlativo PROY-<año>-NNN por tenant.
+       */
+      create: async (data: {
+        customerId: string;
+        name: string;
+        description?: string;
+      }): Promise<ProjectDetail> => {
+        const customer = await db.orm.public.Customer
+          .where({ id: data.customerId, tenantId })
+          .first();
+        if (!customer) {
+          throw new Error("Cliente no encontrado en este negocio.");
+        }
+
+        const year = currentYearBogota();
+        const prefix = `PROY-${year}-`;
+        const latest = await db.orm.public.Project
+          .where({ tenantId })
+          .where((project) => project.code.like(`${prefix}%`))
+          .orderBy((project) => project.code.desc())
+          .first();
+        const sequence = latest
+          ? Number(latest.code.slice(prefix.length)) + 1
+          : 1;
+        const code = `${prefix}${String(sequence).padStart(3, "0")}`;
+
+        const created = await db.transaction(async (tx) => {
+          const project = await tx.orm.public.Project.create({
+            tenantId,
+            customerId: data.customerId,
+            code,
+            name: data.name,
+            description: data.description ?? null,
+            status: "DRAFT",
+          });
+          const header = await tx.orm.public.ProjectHeader.create({
+            projectId: project.id,
+            clientTaxName: customer.name,
+          });
+          return { project, header };
+        });
+
+        return {
+          id: created.project.id,
+          code: created.project.code,
+          name: created.project.name,
+          description: created.project.description,
+          customerId: created.project.customerId,
+          customerName: customer.name,
+          status: "DRAFT",
+          createdAt: String(created.project.createdAt),
+          updatedAt: String(created.project.updatedAt),
+          header: serializeProjectHeader(created.header),
+        };
+      },
+
+      /** Cambio de estado (ciclo de vida DRAFT → … → COMPLETED/CANCELLED). */
+      updateStatus: (id: string, status: ProjectStatusValue) =>
+        db.orm.public.Project.where({ id, tenantId }).update({ status }),
+
+      /** Elimina el proyecto (la ficha se borra en cascada). */
+      delete: (id: string) =>
+        db.orm.public.Project.where({ id, tenantId }).delete(),
+    },
+
+    projectHeaders: {
+      /** Lee la ficha solo si el proyecto pertenece a este tenant. */
+      get: async (projectId: string): Promise<ProjectHeaderData | null> => {
+        const project = await db.orm.public.Project
+          .where({ id: projectId, tenantId })
+          .select("id")
+          .first();
+        if (!project) {
+          return null;
+        }
+        const header = await db.orm.public.ProjectHeader
+          .where({ projectId })
+          .first();
+        return header ? serializeProjectHeader(header) : null;
+      },
+
+      /** Actualiza la ficha validando el tenant del proyecto. */
+      update: async (
+        projectId: string,
+        data: ProjectHeaderInput,
+      ): Promise<ProjectHeaderData | null> => {
+        const project = await db.orm.public.Project
+          .where({ id: projectId, tenantId })
+          .select("id")
+          .first();
+        if (!project) {
+          return null;
+        }
+        await db.orm.public.ProjectHeader.where({ projectId }).update(data);
+        const header = await db.orm.public.ProjectHeader
+          .where({ projectId })
+          .first();
+        return header ? serializeProjectHeader(header) : null;
       },
     },
 
