@@ -51,10 +51,15 @@ export default function FieldLogWorkspace({
   tenantSlug,
   projectId,
   log,
+  currentUserName,
+  currentUserRole,
 }: {
   tenantSlug: string;
   projectId: string;
   log: FieldLogData;
+  /** Nombre y rol del usuario en sesión (autor de las anotaciones). */
+  currentUserName: string;
+  currentUserRole: string;
 }) {
   const [, init] = useState(() => {
     // Trigger initial load via action if needed
@@ -143,6 +148,8 @@ export default function FieldLogWorkspace({
         <NewEntryModal
           tenantSlug={tenantSlug}
           projectId={projectId}
+          currentUserName={currentUserName}
+          currentUserRole={currentUserRole}
           onClose={() => setShowModal(false)}
           onCreated={handleEntryCreated}
         />
@@ -229,11 +236,15 @@ function PhotoThumbnail({ url }: { url: string }) {
 function NewEntryModal({
   tenantSlug,
   projectId,
+  currentUserName,
+  currentUserRole,
   onClose,
   onCreated,
 }: {
   tenantSlug: string;
   projectId: string;
+  currentUserName: string;
+  currentUserRole: string;
   onClose: () => void;
   onCreated: (entry: FieldLogEntryData) => void;
 }) {
@@ -245,8 +256,6 @@ function NewEntryModal({
     description: string;
     weather: "SUNNY" | "CLOUDY" | "RAIN_LIGHT" | "RAIN_HEAVY";
     laborCount: number;
-    authorName: string;
-    authorRole: string;
     photoUrls: string;
   }>({
     type: "ADVANCE",
@@ -255,8 +264,6 @@ function NewEntryModal({
     description: "",
     weather: "SUNNY",
     laborCount: 0,
-    authorName: "",
-    authorRole: "",
     photoUrls: "",
   });
   const [errors, setErrors] = useState<Record<string, string[] | undefined>>({});
@@ -280,8 +287,6 @@ function NewEntryModal({
     formData.append("description", formState.description);
     formData.append("weather", formState.weather);
     formData.append("laborCount", String(formState.laborCount));
-    formData.append("authorName", formState.authorName);
-    formData.append("authorRole", formState.authorRole);
     urls.forEach((u) => formData.append("photoUrls", u));
 
     try {
@@ -305,8 +310,8 @@ function NewEntryModal({
           description: formState.description,
           weather: formState.weather,
           laborCount: formState.laborCount,
-          authorName: formState.authorName,
-          authorRole: formState.authorRole,
+          authorName: currentUserName,
+          authorRole: currentUserRole,
           photoUrls: urls,
         };
         onCreated(newEntry);
@@ -319,8 +324,6 @@ function NewEntryModal({
           description: "",
           weather: "SUNNY",
           laborCount: 0,
-          authorName: "",
-          authorRole: "",
           photoUrls: "",
         });
       } else {
@@ -412,7 +415,7 @@ function NewEntryModal({
             )}
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">
                 Clima *
@@ -448,56 +451,22 @@ function NewEntryModal({
                 <p className="mt-1 text-xs text-destructive">{errors.laborCount[0]}</p>
               )}
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Autor *
-              </label>
-              <input
-                type="text"
-                value={formState.authorName}
-                onChange={(e) => setFormState({ ...formState, authorName: e.target.value })}
-                maxLength={120}
-                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
-              />
-              {errors.authorName && (
-                <p className="mt-1 text-xs text-destructive">{errors.authorName[0]}</p>
-              )}
-            </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Rol *
-              </label>
-              <input
-                type="text"
-                value={formState.authorRole}
-                onChange={(e) => setFormState({ ...formState, authorRole: e.target.value })}
-                maxLength={80}
-                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
-              />
-              {errors.authorRole && (
-                <p className="mt-1 text-xs text-destructive">{errors.authorRole[0]}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                URLs de fotos (HTTPS, una por línea, máx 10)
-              </label>
-              <textarea
-                value={formState.photoUrls}
-                onChange={(e) => setFormState({ ...formState, photoUrls: e.target.value })}
-                rows={3}
-                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm font-mono text-xs"
-                placeholder="https://ejemplo.com/foto1.jpg&#10;https://ejemplo.com/foto2.jpg"
-              />
-              {errors.photoUrls && (
-                <p className="mt-1 text-xs text-destructive">{errors.photoUrls[0]}</p>
-              )}
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">
+              URLs de fotos (HTTPS, una por línea, máx 10)
+            </label>
+            <textarea
+              value={formState.photoUrls}
+              onChange={(e) => setFormState({ ...formState, photoUrls: e.target.value })}
+              rows={3}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm font-mono text-xs"
+              placeholder="https://ejemplo.com/foto1.jpg&#10;https://ejemplo.com/foto2.jpg"
+            />
+            {errors.photoUrls && (
+              <p className="mt-1 text-xs text-destructive">{errors.photoUrls[0]}</p>
+            )}
           </div>
 
           {errors._form && (

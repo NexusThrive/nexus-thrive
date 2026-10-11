@@ -66,6 +66,9 @@ export async function createFieldLogEntryAction(
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
+    // El autor se deriva de la sesión, nunca del formulario (anti-suplantación).
+    const member = await context.tenantDb.users.findByClerkUserId(context.userId);
+    const authorName = member?.name?.trim() || member?.email || "Usuario";
     // Obtener la bitácora del proyecto
     const log = await context.tenantDb.fieldLog.getOrCreateLog(projectId);
     await context.tenantDb.fieldLog.createEntry(log.id, {
@@ -75,8 +78,8 @@ export async function createFieldLogEntryAction(
       description: values.description,
       weather: values.weather,
       laborCount: values.laborCount,
-      authorName: values.authorName,
-      authorRole: values.authorRole,
+      authorName,
+      authorRole: context.role,
       photoUrls: values.photoUrls,
     });
     revalidatePath(`/${tenantSlug}/quotes/projects/${projectId}`);

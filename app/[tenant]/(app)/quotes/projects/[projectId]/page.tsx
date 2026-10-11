@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { ArrowLeft, CalendarDays, Construction, User } from "lucide-react";
 import { db } from "@/prisma/db";
@@ -90,6 +91,18 @@ export default async function ProjectDetailPage({
   const fieldLog = tab === "bitacora" || tab === "campo"
     ? await tenantDb.fieldLog.getOrCreateLog(projectId)
     : null;
+
+  // Autor de la bitácora: se resuelve del usuario en sesión (no del formulario).
+  let currentUserName = "Usuario";
+  let currentUserRole = "STAFF";
+  if (tab === "bitacora" || tab === "campo") {
+    const { userId } = await auth();
+    const member = userId
+      ? await tenantDb.users.findByClerkUserId(userId)
+      : null;
+    currentUserName = member?.name?.trim() || member?.email || "Usuario";
+    currentUserRole = member?.role ?? "STAFF";
+  }
 
   return (
     <div className="space-y-6">
@@ -212,7 +225,13 @@ export default async function ProjectDetailPage({
           )
         ) : tab === "bitacora" || tab === "campo" ? (
           fieldLog ? (
-            <FieldLogWorkspace tenantSlug={tenantSlug} projectId={project.id} log={fieldLog} />
+            <FieldLogWorkspace
+              tenantSlug={tenantSlug}
+              projectId={project.id}
+              log={fieldLog}
+              currentUserName={currentUserName}
+              currentUserRole={currentUserRole}
+            />
           ) : (
             <div className="rounded-lg border border-dashed border-border bg-card p-8 text-center">
               <p className="text-sm font-medium text-foreground">No se pudo cargar la bitácora</p>

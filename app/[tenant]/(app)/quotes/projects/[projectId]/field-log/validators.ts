@@ -5,8 +5,6 @@ export type CreateFieldLogEntryValues = {
   description: string;
   weather: "SUNNY" | "CLOUDY" | "RAIN_LIGHT" | "RAIN_HEAVY";
   laborCount: number;
-  authorName: string;
-  authorRole: string;
   photoUrls: string[];
 };
 
@@ -57,14 +55,6 @@ export function validateCreateFieldLogEntry(input: unknown) {
     errors.laborCount = ["El número de operarios debe estar entre 0 y 1000."];
   }
 
-  const authorName = String(raw.authorName ?? "").trim();
-  if (authorName.length === 0) errors.authorName = ["El autor es requerido."];
-  else if (authorName.length > 120) errors.authorName = ["Máximo 120 caracteres."];
-
-  const authorRole = String(raw.authorRole ?? "").trim();
-  if (authorRole.length === 0) errors.authorRole = ["El rol es requerido."];
-  else if (authorRole.length > 80) errors.authorRole = ["Máximo 80 caracteres."];
-
   let photoUrls: string[] = [];
   const rawUrls = raw.photoUrls;
   if (Array.isArray(rawUrls)) {
@@ -98,8 +88,6 @@ export function validateCreateFieldLogEntry(input: unknown) {
       description,
       weather: weather as CreateFieldLogEntryValues["weather"],
       laborCount,
-      authorName,
-      authorRole,
       photoUrls,
     },
   };
