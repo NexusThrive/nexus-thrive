@@ -78,6 +78,51 @@ export function validateCreateProject(
 }
 
 /* ------------------------------------------------------------------ */
+/* Edición del proyecto (nombre/descripción — Etapa 1, ajuste C)       */
+/* ------------------------------------------------------------------ */
+
+export type UpdateProjectFormValues = {
+  name: string;
+  description: string;
+};
+
+export type UpdateProjectFieldErrors = Partial<
+  Record<keyof UpdateProjectFormValues, string>
+>;
+
+export type UpdateProjectValidation =
+  | { ok: true; values: UpdateProjectFormValues }
+  | {
+      ok: false;
+      errors: UpdateProjectFieldErrors;
+      values: UpdateProjectFormValues;
+    };
+
+export function validateUpdateProject(
+  formData: FormData,
+): UpdateProjectValidation {
+  const values: UpdateProjectFormValues = {
+    name: String(formData.get("name") ?? "").trim(),
+    description: String(formData.get("description") ?? "").trim(),
+  };
+  const errors: UpdateProjectFieldErrors = {};
+
+  if (!required(values.name, "nombre")) {
+    errors.name = "Ingresa un nombre para el proyecto.";
+  } else if (!within(values.name, PROJECT_NAME_MAX)) {
+    errors.name = `Máximo ${PROJECT_NAME_MAX} caracteres.`;
+  }
+  if (!within(values.description, PROJECT_DESCRIPTION_MAX)) {
+    errors.description = `Máximo ${PROJECT_DESCRIPTION_MAX} caracteres.`;
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return { ok: false, errors, values };
+  }
+  return { ok: true, values };
+}
+
+/* ------------------------------------------------------------------ */
 /* Ficha del proyecto (ProjectHeader)                                  */
 /* ------------------------------------------------------------------ */
 

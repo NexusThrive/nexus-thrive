@@ -39,7 +39,15 @@ import {
   type QuoteTotals,
   type ResourceTypeValue,
 } from "@/lib/apu-engine";
-import type { ProjectStatusValue } from "@/lib/projects";
+import {
+  canTransitionProjectStatus,
+  type ProjectStatusValue,
+} from "@/lib/projects";
+import {
+  isUnchangedAiu,
+  isUnchangedChapter,
+  isUnchangedItem,
+} from "@/lib/budget-guards";
 import {
   addDays,
   bogotaToday,
@@ -436,6 +444,20 @@ export type ProjectListInput = {
   status?: ProjectStatusValue;
   page?: number;
   limit?: number;
+};
+
+/**
+ * Actualización del proyecto (Etapa 1, ajuste C). `name`/`description` son
+ * última-escritura-gana; el cambio de estado usa compare-and-set: solo se
+ * aplica si el estado en BD sigue siendo `expectedStatus`.
+ */
+export type UpdateProjectInput = {
+  name?: string;
+  description?: string | null;
+  /** Estado que el usuario vio al pedir la transición (token CAS). */
+  expectedStatus?: ProjectStatusValue;
+  /** Estado destino. */
+  status?: ProjectStatusValue;
 };
 
 /* ------------------------------------------------------------------ */
@@ -838,6 +860,13 @@ function assertRevision(
     throw new Error("STALE_REVISION");
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Guardados sin cambios (Etapa 1)                                     */
+/* ------------------------------------------------------------------ */
+
+// Las guardas no-op viven en un módulo puro (lib/budget-guards.ts) para poder
+// probarlas sin abrir conexión a base de datos.
 
 /** Transacción de Prisma 8 (misma forma que el `db` pero ligada a la tx). */
 type TenantTx = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -2330,9 +2359,87 @@ export function createTenantDb(tenantId: string) {
         };
       },
 
-      /** Cambio de estado (ciclo de vida DRAFT → … → COMPLETED/CANCELLED). */
-      updateStatus: (id: string, status: ProjectStatusValue) =>
-        db.orm.public.Project.where({ id, tenantId }).update({ status }),
+      /**
+       * Actualiza el proyecto (nombre/descripción: última escritura gana) y/o
+       * cambia su estado con compare-and-set, sin migración: el token de
+       * concurrencia es el propio estado, no una revisión.
+       *
+       * Reglas: la transición se valida contra el grafo del dominio
+       * (`canTransitionProjectStatus`); el UPDATE lleva `status =
+       * expectedStatus` en su WHERE, así que si otro request cambió el estado
+       * entretanto no toca la fila y se responde `STALE_STATUS`. Los estados
+       * terminales (COMPLETED/CANCELLED) no admiten salida. Un guardado sin
+       * cambios no escribe nada.
+       *
+       * Errores tipados: `NOT_FOUND`, `MISSING_EXPECTED_STATUS`,
+       * `INVALID_TRANSITION`, `STALE_STATUS`.
+       */
+      updateProject: async (
+        id: string,
+        input: UpdateProjectInput,
+      ): Promise<ProjectStatusValue> => {
+        const project = await db.orm.public.Project
+          .where({ id, tenantId })
+          .select("id", "status")
+          .first();
+        if (!project) {
+          throw new Error("NOT_FOUND");
+        }
+        const current = project.status as ProjectStatusValue;
+
+        const patch: {
+          name?: string;
+          description?: string | null;
+          status?: ProjectStatusValue;
+        } = {};
+        if (input.name !== undefined) {
+          patch.name = input.name;
+        }
+        if (input.description !== undefined) {
+          patch.description = input.description;
+        }
+
+        if (input.status !== undefined && input.status !== current) {
+          if (!input.expectedStatus) {
+            throw new Error("MISSING_EXPECTED_STATUS");
+          }
+          if (input.expectedStatus !== current) {
+            throw new Error("STALE_STATUS");
+          }
+          if (!canTransitionProjectStatus(current, input.status)) {
+            throw new Error("INVALID_TRANSITION");
+          }
+          patch.status = input.status;
+        }
+
+        // Sin cambios: no escribe.
+        if (Object.keys(patch).length === 0) {
+          return current;
+        }
+
+        await db.transaction(async (tx) => {
+          if (patch.status === undefined) {
+            await tx.orm.public.Project.where({ id, tenantId }).update(patch);
+            return;
+          }
+          // Compare-and-set: el WHERE incluye el estado esperado.
+          await tx.orm.public.Project
+            .where({ id, tenantId, status: input.expectedStatus })
+            .update(patch);
+          const after = await tx.orm.public.Project
+            .where({ id, tenantId })
+            .select("status")
+            .first();
+          if (
+            !after ||
+            (after.status as ProjectStatusValue) !== patch.status
+          ) {
+            throw new Error("STALE_STATUS");
+          }
+        });
+
+        return patch.status ?? current;
+      },
 
       /** Elimina el proyecto (la ficha se borra en cascada). */
       delete: (id: string) =>
@@ -2582,6 +2689,10 @@ export function createTenantDb(tenantId: string) {
           throw new Error("El presupuesto está bloqueado.");
         }
         assertRevision(budget, expectedRevision);
+        // Sin cambios: no se escribe ni se avanza la revisión.
+        if (isUnchangedAiu(budget, config)) {
+          return;
+        }
         await db.transaction(async (tx) => {
           await tx.orm.public.ProjectBudget.where({ id: budget.id }).update({
             aiuAdminPct: config.adminPct,
@@ -2729,10 +2840,14 @@ export function createTenantDb(tenantId: string) {
         assertRevision(budget, expectedRevision);
         const chapter = await db.orm.public.BudgetChapter
           .where({ id: chapterId, budgetId: budget.id })
-          .select("id")
+          .select("id", "name", "description")
           .first();
         if (!chapter) {
           throw new Error("Capítulo no encontrado en este presupuesto.");
+        }
+        // Sin cambios: no se escribe ni se avanza la revisión.
+        if (isUnchangedChapter(chapter, input)) {
+          return;
         }
         await db.transaction(async (tx) => {
           await tx.orm.public.BudgetChapter
@@ -2780,6 +2895,10 @@ export function createTenantDb(tenantId: string) {
           .first();
         if (!chapter) {
           throw new Error("Partida no encontrada en este presupuesto.");
+        }
+        // Sin cambios: no se escribe ni se avanza la revisión.
+        if (isUnchangedItem(item, input)) {
+          return;
         }
         const totalCostDirect = calculateItemTotal(
           input.quantity,

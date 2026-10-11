@@ -8,6 +8,7 @@ import { PROJECT_TABS, parseProjectTab } from "@/lib/projects";
 import { ProjectStatusBadge } from "../_components/project-status-badge";
 import ProjectTabs from "./_components/project-tabs";
 import ProjectHeaderForm from "./_components/project-header-form";
+import ProjectLifecycle from "./_components/project-lifecycle";
 import BudgetWorkspace from "./_components/budget-workspace";
 import LeanWorkspace from "./_components/lean-workspace";
 import FieldLogWorkspace from "./_components/field-log-workspace";
@@ -87,28 +88,21 @@ export default async function ProjectDetailPage({
     tab === "presupuesto"
       ? await getOrCreateProjectBudgetAction(tenantSlug, projectId)
       : null;
-  const baselines =
-    tab === "presupuesto"
-      ? await tenantDb.budgets.listBaselines(projectId)
-      : [];
+  const baselines = await tenantDb.budgets.listBaselines(projectId);
+  const hasApprovedBaseline = baselines.length > 0;
   const plan = tab === "planificador" ? await tenantDb.lean.getOrCreatePlan(projectId) : null;
   const fieldLog = tab === "bitacora" || tab === "campo"
     ? await tenantDb.fieldLog.getOrCreateLog(projectId)
     : null;
 
-  // Autor de la bitácora y rol D7 del presupuesto: del usuario en sesión.
-  let currentUserName = "Usuario";
-  let currentUserRole = "STAFF";
-  if (tab === "bitacora" || tab === "campo" || tab === "presupuesto") {
-    const { userId } = await auth();
-    const member = userId
-      ? await tenantDb.users.findByClerkUserId(userId)
-      : null;
-    currentUserName = member?.name?.trim() || member?.email || "Usuario";
-    currentUserRole = member?.role ?? "STAFF";
-  }
+  // Autor de la bitácora y rol D7: del usuario en sesión (todas las pestañas).
+  const { userId } = await auth();
+  const member = userId ? await tenantDb.users.findByClerkUserId(userId) : null;
+  const currentUserName = member?.name?.trim() || member?.email || "Usuario";
+  const currentUserRole = member?.role ?? "STAFF";
   const canGovernBudget =
     currentUserRole === "OWNER" || currentUserRole === "SUPERADMIN";
+  const canChangeStatus = canGovernBudget;
 
   return (
     <div className="space-y-6">
@@ -145,6 +139,17 @@ export default async function ProjectDetailPage({
                 <CalendarDays aria-hidden="true" className="h-3.5 w-3.5" />
                 Creado el {formatDate(project.createdAt)}
               </span>
+            </div>
+            <div className="mt-3">
+              <ProjectLifecycle
+                tenantSlug={tenantSlug}
+                projectId={project.id}
+                name={project.name}
+                description={project.description ?? ""}
+                status={project.status}
+                canChangeStatus={canChangeStatus}
+                hasApprovedBaseline={hasApprovedBaseline}
+              />
             </div>
           </div>
         </div>

@@ -38,6 +38,76 @@ export function isValidProjectStatus(
   return PROJECT_STATUSES.some((entry) => entry.value === value);
 }
 
+/* ------------------------------------------------------------------ */
+/* Ciclo de vida del proyecto (Etapa 1, ajuste C)                      */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Grafo de transiciones válidas: el proyecto avanza en cadena
+ * DRAFT → BIDDING → APPROVED → IN_EXECUTION → COMPLETED, y puede cancelarse
+ * desde cualquier estado no terminal. COMPLETED y CANCELLED son terminales.
+ */
+export const PROJECT_STATUS_TRANSITIONS: Readonly<
+  Record<ProjectStatusValue, ReadonlyArray<ProjectStatusValue>>
+> = {
+  DRAFT: ["BIDDING", "CANCELLED"],
+  BIDDING: ["APPROVED", "CANCELLED"],
+  APPROVED: ["IN_EXECUTION", "CANCELLED"],
+  IN_EXECUTION: ["COMPLETED", "CANCELLED"],
+  COMPLETED: [],
+  CANCELLED: [],
+};
+
+/** Estados terminales: no admiten ninguna transición posterior. */
+export const TERMINAL_PROJECT_STATUSES: ReadonlyArray<ProjectStatusValue> = [
+  "COMPLETED",
+  "CANCELLED",
+];
+
+export function isTerminalProjectStatus(status: ProjectStatusValue): boolean {
+  return TERMINAL_PROJECT_STATUSES.includes(status);
+}
+
+export function canTransitionProjectStatus(
+  from: ProjectStatusValue,
+  to: ProjectStatusValue,
+): boolean {
+  return PROJECT_STATUS_TRANSITIONS[from].includes(to);
+}
+
+/** Siguientes estados posibles desde `status` (vacío si es terminal). */
+export function nextProjectStatuses(
+  status: ProjectStatusValue,
+): ReadonlyArray<ProjectStatusValue> {
+  return PROJECT_STATUS_TRANSITIONS[status];
+}
+
+/**
+ * Transiciones que conviene advertir antes de aplicar: pasar a APPROVED o a
+ * IN_EXECUTION sin una línea base de presupuesto aprobada. No bloquea.
+ */
+export function projectStatusNeedsBaselineWarning(
+  status: ProjectStatusValue,
+): boolean {
+  return status === "APPROVED" || status === "IN_EXECUTION";
+}
+
+/** Roles de la organización (espejo de `TenantRole` de tenant-context). */
+export type NexusRole = "SUPERADMIN" | "OWNER" | "STAFF";
+
+/**
+ * D7 — El cambio de estado de un proyecto lo gobierna solo el OWNER
+ * (y SUPERADMIN). El contenido (nombre/descripción) lo edita cualquier
+ * miembro con sesión válida (OWNER y STAFF).
+ */
+export function canChangeProjectStatus(role: NexusRole): boolean {
+  return role === "OWNER" || role === "SUPERADMIN";
+}
+
+export function canEditProjectContent(role: NexusRole): boolean {
+  return role === "SUPERADMIN" || role === "OWNER" || role === "STAFF";
+}
+
 /** Tipos de obra (ficha del proyecto, sección B). */
 export const PROJECT_TYPE_OPTIONS: ReadonlyArray<{
   value: string;

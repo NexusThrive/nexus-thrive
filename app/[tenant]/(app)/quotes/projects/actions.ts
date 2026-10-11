@@ -1,16 +1,27 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import {
+  canChangeProjectStatus,
+  canEditProjectContent,
+  isValidProjectStatus,
+  projectStatusLabel,
+  projectStatusNeedsBaselineWarning,
+  type ProjectStatusValue,
+} from "@/lib/projects";
 import { type ProjectDetail } from "@/lib/tenant-db";
 import { requireTenantContext } from "@/lib/tenant-context";
 import {
   projectHeaderToInput,
   validateCreateProject,
   validateProjectHeader,
+  validateUpdateProject,
   type CreateProjectFieldErrors,
   type CreateProjectFormValues,
   type ProjectHeaderFieldErrors,
   type ProjectHeaderFormValues,
+  type UpdateProjectFieldErrors,
+  type UpdateProjectFormValues,
 } from "./validators";
 
 /* ------------------------------------------------------------------ */
@@ -144,4 +155,150 @@ export async function updateProjectHeaderAction(
 
   revalidatePath(`/${tenantSlug}/quotes/projects/${projectId}`);
   return { status: "ok", message: "Ficha guardada." };
+}
+
+/* ------------------------------------------------------------------ */
+/* Ciclo de vida del proyecto (Etapa 1, ajuste C)                      */
+/* ------------------------------------------------------------------ */
+
+export type UpdateProjectFormState = {
+  status: "idle" | "error" | "ok";
+  message?: string;
+  errors?: UpdateProjectFieldErrors;
+  values?: UpdateProjectFormValues;
+};
+
+export type ProjectStatusActionResult = {
+  ok: boolean;
+  /** Error legible si `ok` es `false`. */
+  message?: string;
+  /** Advertencia no bloqueante (p. ej. estado sin línea base aprobada). */
+  warning?: string;
+  /** Estado resultante cuando la transición se aplicó. */
+  status?: ProjectStatusValue;
+};
+
+/** Traduce los errores tipados del dominio a mensajes legibles. */
+function projectErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof Error && error.message) {
+    switch (error.message) {
+      case "NOT_FOUND":
+        return "No se encontró el proyecto en este negocio.";
+      case "STALE_STATUS":
+        return "El estado del proyecto cambió desde que abriste esta página. Recargá e intentá de nuevo.";
+      case "INVALID_TRANSITION":
+        return "Esa transición de estado no está permitida.";
+      case "MISSING_EXPECTED_STATUS":
+        return "Falta el estado esperado para validar el cambio.";
+      default:
+        return error.message;
+    }
+  }
+  return fallback;
+}
+
+/** Nombre y descripción del proyecto (última escritura gana). OWNER y STAFF. */
+export async function updateProjectAction(
+  _prevState: UpdateProjectFormState,
+  formData: FormData,
+): Promise<UpdateProjectFormState> {
+  const tenantSlug = String(formData.get("tenantSlug") ?? "");
+  const projectId = String(formData.get("projectId") ?? "");
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return ACCESS_DENIED_FORM;
+  }
+  if (!canEditProjectContent(context.role)) {
+    return ACCESS_DENIED_FORM;
+  }
+  if (!projectId) {
+    return { status: "error", message: "Proyecto no válido." };
+  }
+
+  const validation = validateUpdateProject(formData);
+  if (!validation.ok) {
+    return {
+      status: "error",
+      errors: validation.errors,
+      values: validation.values,
+    };
+  }
+
+  try {
+    await context.tenantDb.projects.updateProject(projectId, {
+      name: validation.values.name,
+      description:
+        validation.values.description === ""
+          ? null
+          : validation.values.description,
+    });
+  } catch (error) {
+    return {
+      status: "error",
+      message: projectErrorMessage(error, "No se pudo actualizar el proyecto."),
+      values: validation.values,
+    };
+  }
+
+  revalidatePath(`/${tenantSlug}/quotes/projects`);
+  revalidatePath(`/${tenantSlug}/quotes/projects/${projectId}`);
+  return { status: "ok", message: "Proyecto actualizado." };
+}
+
+/**
+ * Cambia el estado del proyecto (compare-and-set sobre `expectedStatus`).
+ * Solo OWNER/SUPERADMIN. Si el estado destino es APPROVED o IN_EXECUTION y no
+ * hay línea base aprobada, devuelve una advertencia — no bloquea.
+ */
+export async function updateProjectStatusAction(
+  tenantSlug: string,
+  projectId: string,
+  expectedStatus: string,
+  status: string,
+): Promise<ProjectStatusActionResult> {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return { ok: false, message: "No tienes acceso a este negocio." };
+  }
+  if (!canChangeProjectStatus(context.role)) {
+    return {
+      ok: false,
+      message: "Solo el OWNER puede cambiar el estado del proyecto.",
+    };
+  }
+  if (
+    !projectId ||
+    !isValidProjectStatus(expectedStatus) ||
+    !isValidProjectStatus(status)
+  ) {
+    return { ok: false, message: "Transición de estado no válida." };
+  }
+
+  let applied: ProjectStatusValue;
+  try {
+    applied = await context.tenantDb.projects.updateProject(projectId, {
+      expectedStatus,
+      status,
+    });
+  } catch (error) {
+    return {
+      ok: false,
+      message: projectErrorMessage(
+        error,
+        "No se pudo cambiar el estado del proyecto.",
+      ),
+    };
+  }
+
+  let warning: string | undefined;
+  if (projectStatusNeedsBaselineWarning(applied)) {
+    const baselines = await context.tenantDb.budgets.listBaselines(projectId);
+    if (baselines.length === 0) {
+      warning = `El proyecto pasó a “${projectStatusLabel(applied)}” sin una línea base de presupuesto aprobada.`;
+    }
+  }
+
+  revalidatePath(`/${tenantSlug}/quotes/projects`);
+  revalidatePath(`/${tenantSlug}/quotes/projects/${projectId}`);
+  return { ok: true, status: applied, warning };
 }
