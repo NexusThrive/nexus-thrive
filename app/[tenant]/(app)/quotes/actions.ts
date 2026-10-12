@@ -614,6 +614,20 @@ export async function getActivityDetailAction(
   return tenantDb.apu.getActivity(activityId);
 }
 
+/** Umbrales p99 globales del catálogo (no por página). */
+export async function getP99ThresholdsAction(
+  tenantSlug: string,
+): Promise<{
+  activityUnitCost: Record<string, string>;
+  itemConsumption: Record<string, string>;
+} | null> {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return null;
+  }
+  return context.tenantDb.apu.getP99Thresholds();
+}
+
 /* ------------------------------------------------------------------ */
 /* Import CSV/Excel (atómico: upsert en transacción)                   */
 /* ------------------------------------------------------------------ */
