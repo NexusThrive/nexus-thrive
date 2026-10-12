@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { auth } from "@clerk/nextjs/server";
 import {
   CheckCircle2,
   FileText,
@@ -10,6 +11,7 @@ import {
 } from "lucide-react";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
+import { canGovernBudget, type TenantRole } from "@/lib/tenant-context";
 import { getQuoteTerms } from "@/lib/vertical-terms";
 import { formatCurrency } from "@/lib/format";
 import {
@@ -98,6 +100,17 @@ export default async function QuotesPage({
   const tenantDb = createTenantDb(tenantRecord.id);
   const [metrics] = await Promise.all([tenantDb.quotes.getMetrics()]);
 
+  // Rol del miembro actual: habilita las acciones destructivas del catálogo
+  // (archivar/borrar) solo para OWNER/SUPERADMIN. La membresía ya está
+  // garantizada por el layout del tenant.
+  const { userId } = await auth();
+  const member = userId
+    ? await tenantDb.users.findByClerkUserId(userId)
+    : null;
+  const canManageCatalog = canGovernBudget(
+    (member?.role ?? "STAFF") as TenantRole,
+  );
+
   const terms = getQuoteTerms(tenantRecord.vertical);
 
   let quotesSection: React.ReactNode = null;
@@ -182,12 +195,20 @@ export default async function QuotesPage({
     const category = isValidCategory(categoryRaw)
       ? categoryRaw
       : undefined;
+    const activeRaw = firstString(sp.ia);
+    const active =
+      activeRaw === "active"
+        ? true
+        : activeRaw === "archived"
+          ? false
+          : undefined;
     const pageRaw = Number.parseInt(firstString(sp.ipage), 10);
     const requestedPage = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
 
     const result = await tenantDb.apu.listItems({
       q,
       category,
+      active,
       page: requestedPage,
       limit: ITEMS_PAGE_SIZE,
     });
@@ -201,6 +222,8 @@ export default async function QuotesPage({
         total={result.total}
         page={safePage}
         itemLabel={terms.apuItem}
+        canManage={canManageCatalog}
+        activeFilter={activeRaw}
       />
     );
   }

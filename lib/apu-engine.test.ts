@@ -15,6 +15,7 @@ import {
   SCALE,
   AIU_DEFAULTS,
   RESOURCE_TYPES,
+  formatApuUnit,
   type ActivityComponentInput,
   type AiuConfig,
   type QuoteLineInput,
@@ -238,5 +239,19 @@ describe("apu-engine — constantes y tipos", () => {
     expect(microToPercent(AIU_DEFAULTS.imprevPct)).toBe("5");
     expect(microToPercent(AIU_DEFAULTS.utilidadPct)).toBe("5");
     expect(microToPercent(AIU_DEFAULTS.ivaUtilidadPct)).toBe("19");
+  });
+});
+
+describe("apu-engine — formatApuUnit (presentación, no almacenamiento)", () => {
+  test("mapea M2→m² y M3→m³ sin cambiar el valor almacenado", () => {
+    expect(formatApuUnit("M2")).toBe("m²");
+    expect(formatApuUnit("M3")).toBe("m³");
+  });
+
+  test("cae al código cuando no hay mapeo (y vacío para null/undefined)", () => {
+    expect(formatApuUnit("KG")).toBe("KG");
+    expect(formatApuUnit("UND")).toBe("UND");
+    expect(formatApuUnit(null)).toBe("");
+    expect(formatApuUnit(undefined)).toBe("");
   });
 });

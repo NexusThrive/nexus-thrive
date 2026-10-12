@@ -9,6 +9,7 @@ import { formatCurrency } from "@/lib/format";
 import {
   APU_ITEM_CATEGORIES,
   APU_UNITS,
+  formatApuUnit,
   type ApuItemCategoryValue,
 } from "@/lib/apu-engine";
 import SearchInput from "@/app/components/tenant/search-input";
@@ -19,10 +20,14 @@ import {
   type ApuItemFormValues,
 } from "../validators";
 import {
+  archiveApuItemAction,
   createApuItemAction,
+  deleteApuItemAction,
   importApuItemsAction,
+  restoreApuItemAction,
   updateApuItemAction,
   type ApuItemFormState,
+  type ApuMutationState,
   type ImportResultState,
 } from "../actions";
 import Modal from "./modal";
@@ -34,10 +39,12 @@ const EMPTY_ITEM: ApuItemFormValues = {
   unit: "",
   category: "",
   unitPrice: "",
+  imageUrl: "",
 };
 
 const INITIAL_ITEM_STATE: ApuItemFormState = { status: "idle" };
 const INITIAL_IMPORT_STATE: ImportResultState = { status: "idle" };
+const INITIAL_MUTATION_STATE: ApuMutationState = { status: "idle" };
 
 const inputClass =
   "h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-border-strong focus:border-accent focus:outline-2 focus:outline-accent/30";
@@ -111,7 +118,7 @@ function ItemForm({
             <option value="">Selecciona…</option>
             {APU_UNITS.map((unit) => (
               <option key={unit} value={unit}>
-                {unit}
+                {formatApuUnit(unit)}
               </option>
             ))}
           </select>
@@ -181,6 +188,25 @@ function ItemForm({
           ) : null}
         </label>
       </div>
+
+      <label className="block">
+        <span className="mb-1 block text-sm font-medium text-foreground/80">
+          Imagen (URL https, opcional)
+        </span>
+        <input
+          name="imageUrl"
+          type="url"
+          inputMode="url"
+          defaultValue={defaults.imageUrl ?? ""}
+          placeholder="https://…/insumo.jpg"
+          className={inputClass}
+        />
+        {fieldError(state.errors, "imageUrl") ? (
+          <span className="mt-1 block text-xs text-destructive">
+            {fieldError(state.errors, "imageUrl")}
+          </span>
+        ) : null}
+      </label>
 
       <div className="flex justify-end gap-2 pt-1">
         <button
@@ -306,6 +332,92 @@ function ImportForm({
 }
 
 /**
+ * Acciones por fila del banco: editar (para todos) + archivar/restaurar y
+ * borrar (solo OWNER/SUPERADMIN). El borrado pide confirmación y el servidor
+ * lo bloquea si el insumo está en uso.
+ */
+function RowActions({
+  tenantSlug,
+  row,
+}: {
+  tenantSlug: string;
+  row: ApuItemRow;
+}) {
+  const router = useRouter();
+  const [archiveState, archiveAction, archiving] = useActionState(
+    archiveApuItemAction,
+    INITIAL_MUTATION_STATE,
+  );
+  const [restoreState, restoreAction, restoring] = useActionState(
+    restoreApuItemAction,
+    INITIAL_MUTATION_STATE,
+  );
+  const [deleteState, deleteAction, deleting] = useActionState(
+    deleteApuItemAction,
+    INITIAL_MUTATION_STATE,
+  );
+  const busy = archiving || restoring || deleting;
+  const errorMessage = [archiveState, restoreState, deleteState].find(
+    (state) => state.status === "error",
+  )?.message;
+
+  useEffect(() => {
+    if (
+      archiveState.status === "ok" ||
+      restoreState.status === "ok" ||
+      deleteState.status === "ok"
+    ) {
+      router.refresh();
+    }
+  }, [archiveState.status, restoreState.status, deleteState.status, router]);
+
+  return (
+    <div className="flex flex-col items-end gap-1">
+      <div className="flex items-center gap-1.5">
+        <form action={row.active ? archiveAction : restoreAction}>
+          <input type="hidden" name="tenantSlug" value={tenantSlug} />
+          <input type="hidden" name="itemId" value={row.id} />
+          <button
+            type="submit"
+            disabled={busy}
+            className="inline-flex h-8 items-center rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {row.active ? "Archivar" : "Restaurar"}
+          </button>
+        </form>
+        <form
+          action={deleteAction}
+          onSubmit={(event) => {
+            if (
+              !window.confirm(
+                "¿Borrar este insumo definitivamente? Solo es posible si no está en uso en ninguna actividad.",
+              )
+            ) {
+              event.preventDefault();
+            }
+          }}
+        >
+          <input type="hidden" name="tenantSlug" value={tenantSlug} />
+          <input type="hidden" name="itemId" value={row.id} />
+          <button
+            type="submit"
+            disabled={busy}
+            className="inline-flex h-8 items-center rounded-lg border border-destructive/30 bg-destructive/10 px-2.5 text-xs font-medium text-destructive transition hover:bg-destructive/20 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Borrar
+          </button>
+        </form>
+      </div>
+      {errorMessage ? (
+        <span className="max-w-[16rem] text-right text-[10px] leading-tight text-destructive">
+          {errorMessage}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+/**
  * Banco de insumos: buscador/filtro en la URL, tabla, edición y CSV.
  */
 export default function ItemsBank({
@@ -314,12 +426,18 @@ export default function ItemsBank({
   total,
   page,
   itemLabel,
+  canManage = false,
+  activeFilter = "",
 }: {
   tenantSlug: string;
   rows: ApuItemRow[];
   total: number;
   page: number;
   itemLabel: string;
+  /** OWNER/SUPERADMIN: habilitan archivar/restaurar/borrar. */
+  canManage?: boolean;
+  /** "" = todos, "active" = vigentes, "archived" = archivados. */
+  activeFilter?: string;
 }) {
   const [modal, setModal] = useState<
     | { type: "create" }
@@ -362,6 +480,16 @@ export default function ItemsBank({
             options={APU_ITEM_CATEGORIES}
             value=""
           />
+          <FilterSelect
+            paramKey="ia"
+            pageParam="ipage"
+            allLabel="Vigentes y archivados"
+            options={[
+              { value: "active", label: "Solo vigentes" },
+              { value: "archived", label: "Solo archivados" },
+            ]}
+            value={activeFilter}
+          />
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -394,13 +522,14 @@ export default function ItemsBank({
               <th className="px-4 py-3 text-right font-medium">
                 Precio unitario
               </th>
-              <th className="px-4 py-3 text-right font-medium">Editar</th>
+              <th className="px-4 py-3 font-medium">Estado</th>
+              <th className="px-4 py-3 text-right font-medium">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
+                <td colSpan={7} className="px-4 py-10 text-center text-muted-foreground">
                   Sin insumos por mostrar. Crea el primero o importa un CSV.
                 </td>
               </tr>
@@ -416,19 +545,37 @@ export default function ItemsBank({
                   <td className="px-4 py-3">
                     <ApuCategoryBadge category={row.category} />
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">{row.unit}</td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {formatApuUnit(row.unit)}
+                  </td>
                   <td className="px-4 py-3 text-right font-semibold text-foreground">
                     {formatCurrency(row.unitPrice)}
                   </td>
-                  <td className="px-4 py-3 text-right">
-                    <button
-                      type="button"
-                      onClick={() => setModal({ type: "edit", row })}
-                      className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                  <td className="px-4 py-3">
+                    <span
+                      className={
+                        row.active
+                          ? "inline-flex items-center rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success"
+                          : "inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground"
+                      }
                     >
-                      <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
-                      Editar
-                    </button>
+                      {row.active ? "Vigente" : "Archivado"}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-col items-end gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setModal({ type: "edit", row })}
+                        className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                      >
+                        <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
+                        Editar
+                      </button>
+                      {canManage ? (
+                        <RowActions tenantSlug={tenantSlug} row={row} />
+                      ) : null}
+                    </div>
                   </td>
                 </tr>
               ))
@@ -495,6 +642,7 @@ export default function ItemsBank({
               unit: modal.row.unit,
               category: modal.row.category as ApuItemCategoryValue,
               unitPrice: modal.row.unitPrice,
+              imageUrl: modal.row.imageUrl ?? "",
             }}
             onDone={() => setModal(null)}
           />

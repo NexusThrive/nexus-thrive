@@ -189,6 +189,24 @@ export const APU_UNITS = [
 ] as const;
 export type ApuUnitValue = (typeof APU_UNITS)[number];
 
+/**
+ * Mapeo de PRESENTACIÓN de unidades: la base guarda el código técnico
+ * (`M2`, `M3`) y la UI muestra el símbolo (`m²`, `m³`). No altera lo
+ * almacenado — es solo capa de visualización.
+ */
+const APU_UNIT_LABELS: Record<string, string> = {
+  M2: "m²",
+  M3: "m³",
+};
+
+/** Devuelve la etiqueta visual de una unidad (cae al código si no hay mapeo). */
+export function formatApuUnit(unit: string | null | undefined): string {
+  if (!unit) {
+    return "";
+  }
+  return APU_UNIT_LABELS[unit] ?? unit;
+}
+
 export function apuCategoryLabel(category: ApuItemCategoryValue): string {
   return (
     APU_ITEM_CATEGORIES.find((option) => option.value === category)?.label ??

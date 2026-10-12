@@ -306,6 +306,7 @@ export type ApuItemRow = {
   category: ApuItemCategoryValue;
   unitPrice: string;
   active: boolean;
+  imageUrl: string | null;
   updatedAt: string;
 };
 
@@ -1692,6 +1693,7 @@ export function createTenantDb(tenantId: string) {
             category: row.category,
             unitPrice: String(row.unitPrice),
             active: row.active,
+            imageUrl: row.imageUrl,
             updatedAt: String(row.updatedAt),
           })),
           total,
