@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, Layers, Pencil, Plus, X } from "lucide-react";
+import { Eye, Layers, Pencil, Plus, X, AlertTriangle } from "lucide-react";
 import { NLoader } from "@/components/brand/n-loader";
 import { formatCurrency } from "@/lib/format";
-import { APU_UNITS } from "@/lib/apu-engine";
+import { APU_UNITS, formatApuUnit } from "@/lib/apu-engine";
 import SearchInput from "@/app/components/tenant/search-input";
 import type {
   ApuActivityDetail,
@@ -14,15 +14,24 @@ import type {
   ApuItemRow,
 } from "@/lib/tenant-db";
 import {
+  addCompositionAction,
   createApuActivityAction,
   getActivityDetailAction,
+  removeCompositionAction,
   updateApuActivityAction,
   type ApuActivityFormState,
+  type ApuMutationState,
 } from "../actions";
 import Modal from "./modal";
 import { ApuCategoryBadge } from "./quote-badges";
 
+type P99Thresholds = {
+  activityUnitCost: Record<string, string>;
+  itemConsumption: Record<string, string>;
+};
+
 const INITIAL_ACTIVITY_STATE: ApuActivityFormState = { status: "idle" };
+const INITIAL_MUTATION_STATE: ApuMutationState = { status: "idle" };
 
 const inputClass =
   "h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-border-strong focus:border-accent focus:outline-2 focus:outline-accent/30";
@@ -86,7 +95,7 @@ function CompositionEditor({
                   <option value="">Selecciona insumo…</option>
                   {items.map((item) => (
                     <option key={item.id} value={item.id}>
-                      {item.name} ({item.unit})
+                      {item.name} ({formatApuUnit(item.unit)})
                     </option>
                   ))}
                 </select>
@@ -239,7 +248,7 @@ function ActivityForm({
             <option value="">Selecciona…</option>
             {APU_UNITS.map((unit) => (
               <option key={unit} value={unit}>
-                {unit}
+                {formatApuUnit(unit)}
               </option>
             ))}
           </select>
@@ -318,12 +327,36 @@ function ActivityForm({
   );
 }
 
-/** Modal de lectura de la composición con costos calculados. */
+/** Modal de composición editable: lectura + add/remove insumo. */
 function ActivityDetail({
   detail,
+  tenantSlug,
+  items,
+  p99Thresholds,
 }: {
   detail: ApuActivityDetail | null;
+  tenantSlug: string;
+  items: ApuItemRow[];
+  p99Thresholds: P99Thresholds | null;
 }) {
+  const router = useRouter();
+  const [addState, addAction, adding] = useActionState(
+    addCompositionAction,
+    INITIAL_MUTATION_STATE,
+  );
+  const [removeState, removeAction, removing] = useActionState(
+    removeCompositionAction,
+    INITIAL_MUTATION_STATE,
+  );
+  const busy = adding || removing;
+  const errorMessage = [addState, removeState].find((s) => s.status === "error")?.message;
+
+  useEffect(() => {
+    if (addState.status === "ok" || removeState.status === "ok") {
+      router.refresh();
+    }
+  }, [addState.status, removeState.status, router]);
+
   if (!detail) {
     return (
       <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted-foreground">
@@ -332,6 +365,11 @@ function ActivityDetail({
       </div>
     );
   }
+
+  const activityP99 = p99Thresholds?.activityUnitCost[detail.unit];
+  const isActivityOutlier =
+    activityP99 && parseFloat(detail.unitCost) > parseFloat(activityP99);
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -339,54 +377,170 @@ function ActivityDetail({
           {detail.code ? <span className="font-mono text-xs text-accent-text">{detail.code} · </span> : null}
           {detail.description}
         </p>
-        <p className="text-sm font-semibold text-foreground">
-          Costo unitario: {formatCurrency(detail.unitCost)}
-          <span className="ml-1 text-xs font-normal text-muted-foreground">
-            / {detail.unit}
-          </span>
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-semibold text-foreground">
+            Costo unitario: {formatCurrency(detail.unitCost)}
+            <span className="ml-1 text-xs font-normal text-muted-foreground">
+              / {formatApuUnit(detail.unit)}
+            </span>
+          </p>
+          {isActivityOutlier && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber/10 px-2 py-0.5 text-xs font-medium text-amber" title={`Costo > p99 (${activityP99}) para actividades en ${detail.unit}`}>
+              <AlertTriangle aria-hidden="true" className="h-3 w-3" />
+              Revisar
+            </span>
+          )}
+        </div>
+      </div>
+
+      <CompositionEditorDetail
+        items={items}
+        detail={detail}
+        tenantSlug={tenantSlug}
+        p99Thresholds={p99Thresholds}
+        addAction={addAction}
+        removeAction={removeAction}
+        busy={busy}
+      />
+
+      {errorMessage && (
+        <p className="text-xs text-destructive">{errorMessage}</p>
+      )}
+    </div>
+  );
+}
+
+function CompositionEditorDetail({
+  items,
+  detail,
+  tenantSlug,
+  p99Thresholds,
+  addAction,
+  removeAction,
+  busy,
+}: {
+  items: ApuItemRow[];
+  detail: ApuActivityDetail;
+  tenantSlug: string;
+  p99Thresholds: P99Thresholds | null;
+  addAction: (formData: FormData) => void;
+  removeAction: (formData: FormData) => void;
+  busy: boolean;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-foreground/80">
+          Composición (insumos de la actividad)
+        </span>
+        <form action={addAction}>
+          <input type="hidden" name="tenantSlug" value={tenantSlug} />
+          <input type="hidden" name="activityId" value={detail.id} />
+          <div className="flex flex-wrap gap-2">
+            <select
+              name="itemId"
+              required
+              disabled={busy}
+              className="min-w-[16rem] h-9 rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-accent focus:outline-2 focus:outline-accent/30 disabled:opacity-50"
+            >
+              <option value="">Selecciona insumo…</option>
+              {items.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name} ({formatApuUnit(item.unit)})
+                </option>
+              ))}
+            </select>
+            <input
+              name="consumption"
+              type="number"
+              step="0.001"
+              min="0.001"
+              required
+              placeholder="Rendimiento"
+              disabled={busy}
+              className="w-28 h-9 rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-accent focus:outline-2 focus:outline-accent/30 disabled:opacity-50"
+            />
+            <input
+              name="wastePercent"
+              type="number"
+              step="0.01"
+              min="0"
+              max="50"
+              value="0"
+              placeholder="Desp. %"
+              disabled={busy}
+              className="w-24 h-9 rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-accent focus:outline-2 focus:outline-accent/30 disabled:opacity-50"
+            />
+            <button
+              type="submit"
+              disabled={busy}
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Plus aria-hidden="true" className="h-3.5 w-3.5" />
+              Agregar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {detail.compositions.length === 0 ? (
+        <p className="rounded-lg border border-dashed border-border px-3 py-4 text-center text-xs text-muted-foreground">
+          Sin insumos. Agrega al menos uno para poder cotizar esta actividad.
         </p>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-border text-sm">
-          <thead className="bg-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
-            <tr>
-              <th className="px-3 py-2 font-medium">Insumo</th>
-              <th className="px-3 py-2 font-medium">Categoría</th>
-              <th className="px-3 py-2 text-right font-medium">Precio</th>
-              <th className="px-3 py-2 text-right font-medium">Rendim.</th>
-              <th className="px-3 py-2 text-right font-medium">Desp. %</th>
-              <th className="px-3 py-2 text-right font-medium">Costo</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {detail.compositions.map((composition) => (
-              <tr key={composition.id}>
-                <td className="px-3 py-2 font-medium text-foreground">
-                  {composition.itemName}
-                  <span className="ml-1 text-xs text-muted-foreground">
-                    {composition.itemUnit}
+      ) : (
+        <div className="space-y-2">
+          {detail.compositions.map((composition) => {
+            const itemP99 = p99Thresholds?.itemConsumption[composition.itemUnit];
+            const isConsumptionOutlier =
+              itemP99 && parseFloat(composition.consumption) > parseFloat(itemP99);
+            return (
+              <form key={composition.id} action={removeAction} className="grid grid-cols-[1fr_auto] gap-2 rounded-lg border border-border bg-muted/60 p-2">
+                <input type="hidden" name="tenantSlug" value={tenantSlug} />
+                <input type="hidden" name="activityId" value={detail.id} />
+                <input type="hidden" name="itemId" value={composition.itemId} />
+                <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_5.5rem] items-center">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-foreground">
+                      {composition.itemName}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      ({formatApuUnit(composition.itemUnit)})
+                    </span>
+                    {isConsumptionOutlier && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber/10 px-1.5 py-0.5 text-[10px] font-medium text-amber" title={`Consumo > p99 (${itemP99}) para insumos en ${composition.itemUnit}`}>
+                        <AlertTriangle aria-hidden="true" className="h-2.5 w-2.5" />
+                        Revisar
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-right text-sm text-muted-foreground font-mono">
+                    {formatCurrency(composition.unitPrice)}
                   </span>
-                </td>
-                <td className="px-3 py-2">
-                  <ApuCategoryBadge category={composition.category} />
-                </td>
-                <td className="px-3 py-2 text-right text-muted-foreground">
-                  {formatCurrency(composition.unitPrice)}
-                </td>
-                <td className="px-3 py-2 text-right text-muted-foreground">
-                  {composition.consumption}
-                </td>
-                <td className="px-3 py-2 text-right text-muted-foreground">
-                  {composition.wastePercent}%
-                </td>
-                <td className="px-3 py-2 text-right font-semibold text-foreground">
-                  {formatCurrency(composition.cost)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                  <span className="text-right text-sm text-muted-foreground font-mono">
+                    {composition.consumption}
+                    {isConsumptionOutlier && " ⚠"}
+                  </span>
+                  <span className="text-right text-sm text-muted-foreground font-mono">
+                    {composition.wastePercent}%
+                  </span>
+                </div>
+                <button
+                  type="submit"
+                  disabled={busy}
+                  className="self-start rounded-lg p-2 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
+                  aria-label={`Quitar ${composition.itemName}`}
+                >
+                  <X aria-hidden="true" className="h-4 w-4" />
+                </button>
+              </form>
+            );
+          })}
+        </div>
+      )}
+      <p className="text-xs text-muted-foreground">
+        Rendimiento = cantidad por unidad de actividad (ej. 0.25 M3 por M2
+        de muro). Desperdicio en % (0-50). Badge "Revisar" = p99 del catálogo.
+      </p>
     </div>
   );
 }
@@ -400,11 +554,13 @@ export default function ActivityCatalog({
   rows,
   items,
   activityLabel,
+  p99Thresholds = null,
 }: {
   tenantSlug: string;
   rows: ApuActivityRow[];
   items: ApuItemRow[];
   activityLabel: string;
+  p99Thresholds?: P99Thresholds | null;
 }) {
   const [modal, setModal] = useState<
     | { type: "create" }
@@ -455,56 +611,70 @@ export default function ActivityCatalog({
               <th className="px-4 py-3 text-right font-medium">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
-            {rows.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
-                  Sin {activityLabel.toLowerCase()} por mostrar.
-                </td>
-              </tr>
-            ) : (
-              rows.map((row) => (
-                <tr key={row.id} className="transition hover:bg-muted/60">
-                  <td className="px-4 py-3 font-mono text-xs font-medium text-accent-text">
-                    {row.code ?? "—"}
-                  </td>
-                  <td className="px-4 py-3 font-medium text-foreground">
-                    {row.name}
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">{row.unit}</td>
-                  <td className="px-4 py-3 text-right font-semibold text-foreground">
-                    {formatCurrency(row.unitCost)}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                      <Layers aria-hidden="true" className="h-3.5 w-3.5" />
-                      {row.itemCount}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="inline-flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => void openDetail(row, "detail")}
-                        className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
-                      >
-                        <Eye aria-hidden="true" className="h-3.5 w-3.5" />
-                        Ver
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => void openDetail(row, "edit")}
-                        className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
-                      >
-                        <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
-                        Editar
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
+<tbody className="divide-y divide-border">
+             {rows.length === 0 ? (
+               <tr>
+                 <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
+                   Sin {activityLabel.toLowerCase()} por mostrar.
+                 </td>
+               </tr>
+             ) : (
+               rows.map((row) => {
+                 const p99 = p99Thresholds?.activityUnitCost[row.unit];
+                 const isOutlier = p99 && parseFloat(row.unitCost) > parseFloat(p99);
+                 return (
+                   <tr key={row.id} className="transition hover:bg-muted/60">
+                     <td className="px-4 py-3 font-mono text-xs font-medium text-accent-text">
+                       {row.code ?? "—"}
+                     </td>
+                     <td className="px-4 py-3 font-medium text-foreground">
+                       {row.name}
+                     </td>
+                     <td className="px-4 py-3 text-muted-foreground">
+                       {formatApuUnit(row.unit)}
+                     </td>
+                     <td className="px-4 py-3 text-right font-semibold text-foreground">
+                       <div className="flex items-center justify-end gap-1.5">
+                         {formatCurrency(row.unitCost)}
+                         {isOutlier && (
+                           <span className="inline-flex items-center gap-1 rounded-full bg-amber/10 px-2 py-0.5 text-xs font-medium text-amber" title={`Costo > p99 (${p99}) para actividades en ${row.unit}`}>
+                             <AlertTriangle aria-hidden="true" className="h-3 w-3" />
+                             Revisar
+                           </span>
+                         )}
+                       </div>
+                     </td>
+                     <td className="px-4 py-3 text-right">
+                       <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                         <Layers aria-hidden="true" className="h-3.5 w-3.5" />
+                         {row.itemCount}
+                       </span>
+                     </td>
+                     <td className="px-4 py-3 text-right">
+                       <div className="inline-flex items-center gap-1">
+                         <button
+                           type="button"
+                           onClick={() => void openDetail(row, "detail")}
+                           className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                         >
+                           <Eye aria-hidden="true" className="h-3.5 w-3.5" />
+                           Ver
+                         </button>
+                         <button
+                           type="button"
+                           onClick={() => void openDetail(row, "edit")}
+                           className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                         >
+                           <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
+                           Editar
+                         </button>
+                       </div>
+                     </td>
+                   </tr>
+                 );
+               })
+             )}
+           </tbody>
         </table>
       </div>
 
@@ -514,7 +684,12 @@ export default function ActivityCatalog({
         title={modal?.type === "detail" ? modal.row.name : activityLabel}
         wide
       >
-        <ActivityDetail detail={detail} />
+        <ActivityDetail
+          detail={detail}
+          tenantSlug={tenantSlug}
+          items={items}
+          p99Thresholds={p99Thresholds}
+        />
       </Modal>
 
       <Modal
