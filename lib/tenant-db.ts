@@ -2020,6 +2020,92 @@ export function createTenantDb(tenantId: string) {
         const { affectedRows } = await db.runtime().execute(plan);
         return affectedRows;
       },
+
+      /**
+       * Calcula umbrales p99 (atípicos) sobre TODO el catálogo (no por página):
+       * - p99 del costo unitario de actividades, agrupado por unidad de actividad
+       * - p99 del consumo por insumo, agrupado por unidad del insumo
+       * No modifica datos; se usa para badges "revisar" en la UI.
+       */
+      getP99Thresholds: async (): Promise<{
+        activityUnitCost: Record<string, string>;
+        itemConsumption: Record<string, string>;
+      }> => {
+        // p99 costo unitario de actividades por unidad
+        const allActivities = await db.orm.public.ApuActivity
+          .where({ tenantId })
+          .all();
+        const activityIds = allActivities.map((a) => a.id);
+        const activityComps = await db.orm.public.ApuActivityComposition
+          .where((comp) => comp.activityId.in(activityIds))
+          .include("item", (item) =>
+            item.select("id", "unitPrice", "unit"),
+          )
+          .all();
+
+        const compsByActivity = new Map<string, typeof activityComps>();
+        for (const comp of activityComps) {
+          const list = compsByActivity.get(comp.activityId) ?? [];
+          list.push(comp);
+          compsByActivity.set(comp.activityId, list);
+        }
+
+        const costByUnit: Map<string, number[]> = new Map();
+        for (const activity of allActivities) {
+          const comps = compsByActivity.get(activity.id) ?? [];
+          const costStr = activityUnitCost(
+            comps.map((c) => ({
+              unitPrice: String(c.item!.unitPrice),
+              consumption: String(c.consumption),
+              wastePercent: String(c.wastePercent),
+            })),
+          );
+          const cost = parseFloat(costStr);
+          if (!isNaN(cost)) {
+            const arr = costByUnit.get(activity.unit) ?? [];
+            arr.push(cost);
+            costByUnit.set(activity.unit, arr);
+          }
+        }
+
+        const p99ActivityUnitCost: Record<string, string> = {};
+        for (const [unit, values] of costByUnit) {
+          if (values.length >= 2) {
+            const sorted = values.sort((a, b) => a - b);
+            const idx = Math.min(sorted.length - 1, Math.ceil(0.99 * sorted.length) - 1);
+            p99ActivityUnitCost[unit] = sorted[Math.max(0, idx)].toFixed(2);
+          } else if (values.length === 1) {
+            p99ActivityUnitCost[unit] = values[0].toFixed(2);
+          }
+        }
+
+        // p99 consumo por insumo agrupado por unidad del insumo
+        const consumptionByItemUnit: Map<string, number[]> = new Map();
+        for (const comp of activityComps) {
+          const consumption = parseFloat(String(comp.consumption));
+          if (!isNaN(consumption) && comp.item?.unit) {
+            const arr = consumptionByItemUnit.get(comp.item.unit) ?? [];
+            arr.push(consumption);
+            consumptionByItemUnit.set(comp.item.unit, arr);
+          }
+        }
+
+        const p99ItemConsumption: Record<string, string> = {};
+        for (const [unit, values] of consumptionByItemUnit) {
+          if (values.length >= 2) {
+            const sorted = values.sort((a, b) => a - b);
+            const idx = Math.min(sorted.length - 1, Math.ceil(0.99 * sorted.length) - 1);
+            p99ItemConsumption[unit] = sorted[Math.max(0, idx)].toFixed(4);
+          } else if (values.length === 1) {
+            p99ItemConsumption[unit] = values[0].toFixed(4);
+          }
+        }
+
+        return {
+          activityUnitCost: p99ActivityUnitCost,
+          itemConsumption: p99ItemConsumption,
+        };
+      },
     },
 
     /* -------------------------------------------------------------- */
