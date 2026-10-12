@@ -79,6 +79,17 @@ export function createAuth(context: AuthContext) {
       ? { ok: true }
       : { ok: false, reason: "FORBIDDEN" };
 
+  // --- Catálogo Construcción & APU ---
+  /** Crear/editar insumos, actividades y sus composiciones: todo el equipo. */
+  const canEditApuCatalog = (): AuthResult =>
+    canGovernBudget(role) || role === "STAFF"
+      ? { ok: true }
+      : { ok: false, reason: "FORBIDDEN" };
+
+  /** Archivar y borrar del catálogo: solo OWNER/SUPERADMIN (acción destructiva). */
+  const canManageApuCatalogDestructive = (): AuthResult =>
+    canGovernBudget(role) ? { ok: true } : { ok: false, reason: "FORBIDDEN" };
+
   // --- Proyecto ---
   const canChangeProjectStatus = (): AuthResult =>
     Projects.canChangeProjectStatus(role) ? { ok: true } : { ok: false, reason: "NOT_OWNER" };
@@ -118,6 +129,9 @@ export function createAuth(context: AuthContext) {
     canDeleteChapter,
     canDeleteItem,
     canVerifyTotals,
+    // Catálogo APU
+    canEditApuCatalog,
+    canManageApuCatalogDestructive,
     // Proyecto
     canChangeProjectStatus,
     canEditProjectContent,
@@ -149,6 +163,8 @@ export const ACTION_DESCRIPTIONS: Record<string, string> = {
   deleteChapter: "borrar capítulo",
   deleteItem: "borrar partida",
   verifyTotals: "verificar totales",
+  editApuCatalog: "crear/editar insumos, actividades y composiciones",
+  manageApuCatalogDestructive: "archivar/borrar del catálogo APU",
   changeProjectStatus: "cambiar estado del proyecto",
   editProjectContent: "editar nombre/descripción del proyecto",
   createProject: "crear proyecto",

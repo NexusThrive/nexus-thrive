@@ -31,6 +31,8 @@ import {
   calculateQuoteTotals,
   componentCost,
   currentYearBogota,
+  isStrictlyPositive,
+  isValidPercent,
   lineTotal,
   moneyToString,
   type ApuItemCategoryValue,
@@ -1238,6 +1240,30 @@ async function getApuActivityDetail(
   };
 }
 
+/**
+ * ¿Cuántas composiciones de actividades usan este insumo? La FK
+ * `ApuActivityComposition.itemId` es `onDelete: Cascade`, así que un borrado
+ * ciego alteraría silenciosamente las actividades: lo usamos para bloquearlo.
+ */
+async function countItemCompositionUsage(itemId: string): Promise<number> {
+  const { total } = await db.orm.public.ApuActivityComposition
+    .where({ itemId })
+    .aggregate((aggregate) => ({ total: aggregate.count() }));
+  return total;
+}
+
+/**
+ * ¿Cuántas partidas de presupuesto referencian esta actividad? La FK
+ * `QuoteItem.activityId` es `onDelete: SetNull`, así que borrar dejaría
+ * partidas históricas sin su actividad: lo usamos para bloquearlo.
+ */
+async function countActivityQuoteUsage(activityId: string): Promise<number> {
+  const { total } = await db.orm.public.QuoteItem
+    .where({ activityId })
+    .aggregate((aggregate) => ({ total: aggregate.count() }));
+  return total;
+}
+
 export function createTenantDb(tenantId: string) {
   if (!tenantId || tenantId.trim() === "") {
     throw new Error(
@@ -1857,6 +1883,140 @@ export function createTenantDb(tenantId: string) {
           return activity;
         });
         return getApuActivityDetail(tenantId, updated.id);
+      },
+
+      /* --- Insumos: archivado y borrado seguro ---------------------- */
+
+      /** Archiva un insumo (soft delete): deja de ofrecerse para composiciones. */
+      archiveItem: (id: string) =>
+        db.orm.public.ApuItem.where({ id, tenantId }).update({ active: false }),
+
+      /** Revierte la archivación de un insumo. */
+      restoreItem: (id: string) =>
+        db.orm.public.ApuItem.where({ id, tenantId }).update({ active: true }),
+
+      /** Cuántas composiciones de actividades usan este insumo. */
+      countItemUsage: (id: string) => countItemCompositionUsage(id),
+
+      /**
+       * Borrado definitivo de un insumo. Se bloquea si está EN USO (alguna
+       * composición lo referencia): `ApuActivityComposition.itemId` es
+       * `onDelete: Cascade` y un borrado ciego alteraría las actividades.
+       * El caller debe preferir `archiveItem`.
+       */
+      deleteItem: async (id: string): Promise<void> => {
+        const item = await db.orm.public.ApuItem.where({ id, tenantId }).first();
+        if (!item) {
+          throw new Error("APU_NOT_FOUND");
+        }
+        if ((await countItemCompositionUsage(id)) > 0) {
+          throw new Error("APU_IN_USE");
+        }
+        await db.orm.public.ApuItem.where({ id, tenantId }).delete();
+      },
+
+      /* --- Actividades: archivado y borrado seguro ------------------ */
+
+      /** Archiva una actividad (soft delete). */
+      archiveActivity: (id: string) =>
+        db.orm.public.ApuActivity.where({ id, tenantId }).update({ active: false }),
+
+      /** Revierte la archivación de una actividad. */
+      restoreActivity: (id: string) =>
+        db.orm.public.ApuActivity.where({ id, tenantId }).update({ active: true }),
+
+      /** Cuántas partidas de presupuesto referencian esta actividad. */
+      countActivityUsage: (id: string) => countActivityQuoteUsage(id),
+
+      /**
+       * Borrado definitivo de una actividad. Se bloquea si está EN USO (alguna
+       * partida la referencia): `QuoteItem.activityId` es `onDelete: SetNull`
+       * y borrar dejaría presupuestos históricos sin su actividad.
+       */
+      deleteActivity: async (id: string): Promise<void> => {
+        const activity = await db.orm.public.ApuActivity
+          .where({ id, tenantId })
+          .first();
+        if (!activity) {
+          throw new Error("APU_NOT_FOUND");
+        }
+        if ((await countActivityQuoteUsage(id)) > 0) {
+          throw new Error("APU_IN_USE");
+        }
+        await db.orm.public.ApuActivity.where({ id, tenantId }).delete();
+      },
+
+      /* --- Composición: agregar / quitar insumo --------------------- */
+
+      /**
+       * Agrega un insumo a la composición de una actividad. Verifica que la
+       * actividad y el insumo pertenezcan al MISMO tenant, que no se repita el
+       * par (activityId, itemId) y que el rendimiento/desperdicio sean válidos
+       * (defensa en profundidad: la Server Action ya validó, pero la capa de
+       * datos no confía en el caller).
+       */
+      addComposition: async (
+        activityId: string,
+        data: { itemId: string; consumption: string; wastePercent: string },
+      ): Promise<{ id: string }> => {
+        const activity = await db.orm.public.ApuActivity
+          .where({ id: activityId, tenantId })
+          .first();
+        if (!activity) {
+          throw new Error("APU_NOT_FOUND");
+        }
+        const item = await db.orm.public.ApuItem
+          .where({ id: data.itemId, tenantId })
+          .first();
+        if (!item) {
+          throw new Error("APU_FOREIGN_ITEM");
+        }
+        if (!isStrictlyPositive(data.consumption)) {
+          throw new Error("APU_INVALID_CONSUMPTION");
+        }
+        if (!isValidPercent(data.wastePercent, 50)) {
+          throw new Error("APU_INVALID_WASTE");
+        }
+        const existing = await db.orm.public.ApuActivityComposition
+          .where({ activityId, itemId: data.itemId })
+          .first();
+        if (existing) {
+          throw new Error("APU_DUPLICATE");
+        }
+        const created = await db.orm.public.ApuActivityComposition.create({
+          activityId,
+          itemId: data.itemId,
+          consumption: data.consumption,
+          wastePercent: data.wastePercent,
+        });
+        return { id: created.id };
+      },
+
+      /**
+       * Quita un insumo de la composición de una actividad (idempotente).
+       * Devuelve cuántas filas se eliminaron.
+       */
+      removeComposition: async (
+        activityId: string,
+        itemId: string,
+      ): Promise<number> => {
+        const activity = await db.orm.public.ApuActivity
+          .where({ id: activityId, tenantId })
+          .first();
+        if (!activity) {
+          throw new Error("APU_NOT_FOUND");
+        }
+        const plan = db.sql.public.ApuActivityComposition
+          .delete()
+          .where((field, fns) =>
+            fns.and(
+              fns.eq(field.activityId, activityId),
+              fns.eq(field.itemId, itemId),
+            ),
+          )
+          .build();
+        const { affectedRows } = await db.runtime().execute(plan);
+        return affectedRows;
       },
     },
 

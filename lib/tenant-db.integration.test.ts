@@ -850,3 +850,199 @@ describe.skipIf(!enabled)(
     });
   },
 );
+
+describe.skipIf(!enabled)(
+  "apu: archivado, borrado seguro y composición (integración)",
+  () => {
+    const slugA = `test-apu-mut-a-${Date.now().toString(36)}`;
+    const slugB = `test-apu-mut-b-${Date.now().toString(36)}`;
+    let tenantIdA = "";
+    let tenantIdB = "";
+    let tenantDbA: ReturnType<typeof createTenantDb>;
+    let itemUsedId = "";
+    let itemFreeId = "";
+    let itemForeignId = "";
+    let activityId = "";
+    let activityInQuoteId = "";
+    let activityFreeId = "";
+
+    beforeAll(async () => {
+      if (normalize(process.env.DATABASE_URL) !== normalize(TEST_URL)) {
+        throw new Error(
+          "Estas pruebas exigen una base aparte: exportá TEST_DATABASE_URL y ejecutá con DATABASE_URL=$TEST_DATABASE_URL.",
+        );
+      }
+
+      const tenantA = await db.orm.public.Tenant.create({
+        name: "Tenant APU mutaciones A",
+        slug: slugA,
+        vertical: "construction",
+      });
+      const tenantB = await db.orm.public.Tenant.create({
+        name: "Tenant APU mutaciones B",
+        slug: slugB,
+        vertical: "construction",
+      });
+      tenantIdA = tenantA.id;
+      tenantIdB = tenantB.id;
+      tenantDbA = createTenantDb(tenantIdA);
+
+      const mkItem = async (
+        tenantId: string,
+        code: string,
+        name: string,
+      ): Promise<string> => {
+        const row = await db.orm.public.ApuItem.create({
+          tenantId,
+          code,
+          name,
+          unit: "UN",
+          category: "MATERIAL",
+          unitPrice: "1000",
+        });
+        return row.id;
+      };
+      itemUsedId = await mkItem(tenantIdA, "M-USE", "Insumo usado");
+      itemFreeId = await mkItem(tenantIdA, "M-FREE", "Insumo libre");
+      itemForeignId = await mkItem(tenantIdB, "M-B", "Insumo de otro negocio");
+
+      const mkActivity = async (
+        code: string,
+        name: string,
+      ): Promise<string> => {
+        const row = await db.orm.public.ApuActivity.create({
+          tenantId: tenantIdA,
+          code,
+          name,
+          unit: "M2",
+        });
+        return row.id;
+      };
+      activityId = await mkActivity("ACT-1", "Actividad con composición");
+      activityInQuoteId = await mkActivity("ACT-2", "Actividad en presupuesto");
+      activityFreeId = await mkActivity("ACT-3", "Actividad sin uso");
+
+      // Partida que referencia activityInQuoteId (actividad "en uso").
+      const quote = await db.orm.public.Quote.create({
+        tenantId: tenantIdA,
+        title: "Presupuesto de prueba",
+        code: `PRES-${Date.now().toString(36)}`,
+        directCost: "0",
+        totalAmount: "0",
+      });
+      await db.orm.public.QuoteItem.create({
+        quoteId: quote.id,
+        activityId: activityInQuoteId,
+        name: "Partida vinculada",
+        unit: "M2",
+        quantity: "1",
+        unitCost: "0",
+        totalCost: "0",
+      });
+    });
+
+    afterAll(async () => {
+      if (tenantIdA) {
+        await db.orm.public.Tenant.where({ id: tenantIdA }).delete();
+      }
+      if (tenantIdB) {
+        await db.orm.public.Tenant.where({ id: tenantIdB }).delete();
+      }
+    });
+
+    test("archiveItem / restoreItem alternan `active` sin borrar", async () => {
+      await tenantDbA.apu.archiveItem(itemFreeId);
+      expect((await tenantDbA.apu.getItem(itemFreeId))?.active).toBe(false);
+
+      await tenantDbA.apu.restoreItem(itemFreeId);
+      expect((await tenantDbA.apu.getItem(itemFreeId))?.active).toBe(true);
+    });
+
+    test("addComposition: crea la línea con rendimiento y desperdicio válidos", async () => {
+      const created = await tenantDbA.apu.addComposition(activityId, {
+        itemId: itemUsedId,
+        consumption: "2.5",
+        wastePercent: "10",
+      });
+      expect(created.id).toBeTruthy();
+
+      const detail = await tenantDbA.apu.getActivity(activityId);
+      expect(detail?.compositions).toHaveLength(1);
+      expect(detail?.compositions[0]?.itemId).toBe(itemUsedId);
+      expect(detail?.compositions[0]?.consumption).toBe("2.5");
+    });
+
+    test("addComposition: rechaza insumo duplicado (unicidad activityId+itemId)", async () => {
+      await expect(
+        tenantDbA.apu.addComposition(activityId, {
+          itemId: itemUsedId,
+          consumption: "1",
+          wastePercent: "0",
+        }),
+      ).rejects.toThrow("APU_DUPLICATE");
+    });
+
+    test("addComposition: rechaza insumo de otro tenant", async () => {
+      await expect(
+        tenantDbA.apu.addComposition(activityId, {
+          itemId: itemForeignId,
+          consumption: "1",
+          wastePercent: "0",
+        }),
+      ).rejects.toThrow("APU_FOREIGN_ITEM");
+    });
+
+    test("addComposition: rechaza rendimiento y desperdicio fuera de rango", async () => {
+      await expect(
+        tenantDbA.apu.addComposition(activityId, {
+          itemId: itemFreeId,
+          consumption: "0",
+          wastePercent: "0",
+        }),
+      ).rejects.toThrow("APU_INVALID_CONSUMPTION");
+
+      await expect(
+        tenantDbA.apu.addComposition(activityId, {
+          itemId: itemFreeId,
+          consumption: "1",
+          wastePercent: "60",
+        }),
+      ).rejects.toThrow("APU_INVALID_WASTE");
+    });
+
+    test("removeComposition: quita la línea (idempotente)", async () => {
+      const affected = await tenantDbA.apu.removeComposition(activityId, itemUsedId);
+      expect(affected).toBe(1);
+      expect((await tenantDbA.apu.getActivity(activityId))?.compositions).toHaveLength(0);
+
+      // Segunda vez: nada que borrar.
+      expect(await tenantDbA.apu.removeComposition(activityId, itemUsedId)).toBe(0);
+    });
+
+    test("deleteItem: bloqueado si el insumo está EN USO, permitido si no", async () => {
+      // Lo usamos otra vez y probamos que el borrado se rechaza.
+      await tenantDbA.apu.addComposition(activityId, {
+        itemId: itemUsedId,
+        consumption: "1",
+        wastePercent: "0",
+      });
+      await expect(tenantDbA.apu.deleteItem(itemUsedId)).rejects.toThrow("APU_IN_USE");
+      expect(await tenantDbA.apu.getItem(itemUsedId)).not.toBeNull();
+
+      // Lo quitamos de la composición y ahora sí se puede borrar.
+      await tenantDbA.apu.removeComposition(activityId, itemUsedId);
+      await tenantDbA.apu.deleteItem(itemUsedId);
+      expect(await tenantDbA.apu.getItem(itemUsedId)).toBeNull();
+    });
+
+    test("deleteActivity: bloqueada si figura en un presupuesto, permitida si no", async () => {
+      await expect(tenantDbA.apu.deleteActivity(activityInQuoteId)).rejects.toThrow(
+        "APU_IN_USE",
+      );
+      expect(await tenantDbA.apu.getActivity(activityInQuoteId)).not.toBeNull();
+
+      await tenantDbA.apu.deleteActivity(activityFreeId);
+      expect(await tenantDbA.apu.getActivity(activityFreeId)).toBeNull();
+    });
+  },
+);
