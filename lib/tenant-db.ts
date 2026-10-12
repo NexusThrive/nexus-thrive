@@ -1898,16 +1898,14 @@ export function createTenantDb(tenantId: string) {
       /* --- Insumos: archivado y borrado seguro ---------------------- */
 
       /** Archiva un insumo (soft delete): deja de ofrecerse para composiciones. */
-      archiveItem: async (id: string) => {
+      archiveItem: async function(id: string) {
         await db.orm.public.ApuItem.where({ id, tenantId }).update({ active: false });
-        // @ts-ignore
-        if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
+        if (typeof this.invalidateP99 === "function") { this.invalidateP99(); }
       },
 
       /** Revierte la archivación de un insumo. */
-      restoreItem: async (id: string) => {
+      restoreItem: async function(id: string) {
         await db.orm.public.ApuItem.where({ id, tenantId }).update({ active: true });
-        // @ts-ignore
         if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
       },
 
@@ -1920,7 +1918,7 @@ export function createTenantDb(tenantId: string) {
        * `onDelete: Cascade` y un borrado ciego alteraría las actividades.
        * El caller debe preferir `archiveItem`.
        */
-      deleteItem: async (id: string): Promise<void> => {
+      deleteItem: async function(id: string): Promise<void> {
         const item = await db.orm.public.ApuItem.where({ id, tenantId }).first();
         if (!item) {
           throw new Error("APU_NOT_FOUND");
@@ -1973,10 +1971,10 @@ export function createTenantDb(tenantId: string) {
        * (defensa en profundidad: la Server Action ya validó, pero la capa de
        * datos no confía en el caller).
        */
-      addComposition: async (
+      addComposition: async function(
         activityId: string,
         data: { itemId: string; consumption: string; wastePercent: string },
-      ): Promise<{ id: string }> => {
+      ): Promise<{ id: string }> {
         const activity = await db.orm.public.ApuActivity
           .where({ id: activityId, tenantId })
           .first();
@@ -2010,7 +2008,6 @@ export function createTenantDb(tenantId: string) {
           consumption: data.consumption,
           wastePercent: data.wastePercent,
         });
-        // @ts-ignore
         if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
         return { id: created.id };
       },
@@ -2019,10 +2016,10 @@ export function createTenantDb(tenantId: string) {
        * Quita un insumo de la composición de una actividad (idempotente).
        * Devuelve cuántas filas se eliminaron.
        */
-      removeComposition: async (
+      removeComposition: async function(
         activityId: string,
         itemId: string,
-      ): Promise<number> => {
+      ): Promise<number> {
         const activity = await db.orm.public.ApuActivity
           .where({ id: activityId, tenantId })
           .first();
@@ -2039,7 +2036,6 @@ export function createTenantDb(tenantId: string) {
           )
           .build();
         const { affectedRows } = await db.runtime().execute(plan);
-        // @ts-ignore
         if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
         return affectedRows;
       },
