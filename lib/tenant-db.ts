@@ -2715,6 +2715,8 @@ export function createTenantDb(tenantId: string) {
         projectId: string,
         isLocked: boolean,
         expectedRevision?: number,
+        reason?: string,
+        userId?: string,
       ): Promise<void> => {
         const budget = await db.orm.public.ProjectBudget
           .where({ projectId, tenantId })
@@ -2722,10 +2724,23 @@ export function createTenantDb(tenantId: string) {
         if (!budget) {
           throw new Error("Presupuesto no encontrado en este negocio.");
         }
+        if (!isLocked && (reason === undefined || reason.trim() === "")) {
+          throw new Error("Desbloqueo requiere un motivo.");
+        }
         assertRevision(budget, expectedRevision);
-        await db.orm.public.ProjectBudget
-          .where({ id: budget.id })
-          .update({ isLocked, revision: budget.revision + 1 });
+        const action = isLocked ? "LOCK" : "UNLOCK";
+        await db.transaction(async (tx) => {
+          await tx.orm.public.ProjectBudget
+            .where({ id: budget.id })
+            .update({ isLocked, revision: budget.revision + 1 });
+          await tx.orm.public.BudgetLockEvent.create({
+            tenantId,
+            budgetId: budget.id,
+            action,
+            reason: reason?.trim() || null,
+            userId: userId ?? "system",
+          });
+        });
       },
 
       /**

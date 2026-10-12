@@ -40,6 +40,10 @@
       "model": "BudgetItemResource",
       "namespace": "public"
     },
+    "BudgetLockEvent": {
+      "model": "BudgetLockEvent",
+      "namespace": "public"
+    },
     "Customer": {
       "model": "Customer",
       "namespace": "public"
@@ -550,6 +554,13 @@
         "models": {
           "ApuActivity": {
             "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "code": {
                 "nullable": true,
                 "type": {
@@ -657,6 +668,9 @@
             },
             "storage": {
               "fields": {
+                "active": {
+                  "column": "active"
+                },
                 "code": {
                   "column": "code"
                 },
@@ -782,6 +796,13 @@
           },
           "ApuItem": {
             "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "category": {
                 "nullable": false,
                 "type": {
@@ -802,8 +823,22 @@
                   "kind": "scalar"
                 }
               },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "imageUrl": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -880,14 +915,23 @@
             },
             "storage": {
               "fields": {
+                "active": {
+                  "column": "active"
+                },
                 "category": {
                   "column": "category"
                 },
                 "code": {
                   "column": "code"
                 },
+                "createdAt": {
+                  "column": "createdAt"
+                },
                 "id": {
                   "column": "id"
+                },
+                "imageUrl": {
+                  "column": "imageUrl"
                 },
                 "name": {
                   "column": "name"
@@ -1857,6 +1901,120 @@
               },
               "namespaceId": "public",
               "table": "BudgetItemResource"
+            }
+          },
+          "BudgetLockEvent": {
+            "fields": {
+              "action": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "budgetId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "reason": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "budget": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "budgetId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ProjectBudget",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "action": {
+                  "column": "action"
+                },
+                "budgetId": {
+                  "column": "budgetId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "reason": {
+                  "column": "reason"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "BudgetLockEvent"
             }
           },
           "Customer": {
@@ -5287,6 +5445,15 @@
           "table": {
             "ApuActivity": {
               "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
                 "code": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -5480,6 +5647,15 @@
                 }
               ],
               "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
                 "category": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -5496,10 +5672,24 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
                 "id": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "imageUrl": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "name": {
                   "codecId": "pg/text@1",
@@ -6344,6 +6534,118 @@
                   ],
                   "name": "BudgetItemResource_tenantId_idx_c93ed4f1",
                   "prefix": "BudgetItemResource_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "BudgetLockEvent": {
+              "columns": {
+                "action": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "budgetId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "reason": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "userId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "BudgetLockEvent"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "budgetId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "BudgetLockEvent"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProjectBudget"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "budgetId",
+                    "createdAt"
+                  ],
+                  "name": "BudgetLockEvent_budgetId_createdAt_idx_81273a2c",
+                  "prefix": "BudgetLockEvent_budgetId_createdAt_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "budgetId"
+                  ],
+                  "name": "BudgetLockEvent_budgetId_idx_abbf614c",
+                  "prefix": "BudgetLockEvent_budgetId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "BudgetLockEvent_tenantId_idx_c93ed4f1",
+                  "prefix": "BudgetLockEvent_tenantId_idx",
                   "unique": false
                 }
               ],
@@ -9140,10 +9442,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "07381774a799e22873af0cbf20aff2bc46ae1d20c2bd9e6b63a27eb935c8c335"
+    "storageHash": "b100b157f7297f6043043d056fafc20140e29a737cec0d416fb9862d89abf4e7"
   },
   "execution": {
-    "executionHash": "18644bea8ea7b5195e4f6c84a0dd37f0e22467d1c118f273322306e5ee699959",
+    "executionHash": "3304e4cb5cf375cce3d134b699be42b681880ab36538dc1b5d16b14ba96a675a",
     "mutations": {
       "defaults": [
         {
@@ -9317,6 +9619,17 @@
           "ref": {
             "entry": "BudgetItemResource",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "BudgetLockEvent",
+            "field": "id",
             "namespace": "public"
           }
         },

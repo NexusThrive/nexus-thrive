@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma skills sync || exit 0",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:integration": "bash ./test-integration.sh"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.11",

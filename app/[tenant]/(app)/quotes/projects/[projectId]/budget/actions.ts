@@ -337,6 +337,7 @@ export async function toggleBudgetLockAction(
   tenantSlug: string,
   projectId: string,
   isLocked: boolean,
+  reason?: string,
 ): Promise<{ ok: boolean; message?: string }> {
   const context = await requireTenantContext(tenantSlug);
   if (!context || !projectId) {
@@ -345,8 +346,11 @@ export async function toggleBudgetLockAction(
   if (!canGovernBudget(context.role)) {
     return { ok: false, message: "Solo OWNER o SUPERADMIN pueden bloquear el presupuesto." };
   }
+  if (!isLocked && (reason === undefined || reason.trim() === "")) {
+    return { ok: false, message: "Desbloqueo requiere un motivo." };
+  }
   try {
-    await context.tenantDb.budgets.setLocked(projectId, isLocked);
+    await context.tenantDb.budgets.setLocked(projectId, isLocked, undefined, reason?.trim(), context.userId);
   } catch (error) {
     return {
       ok: false,

@@ -348,6 +348,10 @@ model ApuItem {
   unit      String
   category  ApuItemCategory
   unitPrice Decimal
+  /// Etapa 2: campos aditivos (no rompen datos existentes).
+  active    Boolean        @default(true)
+  imageUrl  String?
+  createdAt DateTime       @default(now())
   updatedAt temporal.updatedAt()
 
   compositions ApuActivityComposition[]
@@ -366,6 +370,8 @@ model ApuActivity {
   name        String
   unit        String
   description String?
+  /// Etapa 2: campo aditivo (no rompe datos existentes).
+  active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   temporal.updatedAt()
 
@@ -697,9 +703,11 @@ model BudgetBaseline {
   budgetId  String
   budget    ProjectBudget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
 
-  /// Revisión del presupuesto capturada al aprobar (`ProjectBudget.revision`).
+  /// Revisión del presupuesto (`ProjectBudget.revision`) **en el momento de aprobar**.
+  /// No cambia aunque el presupuesto se edite después; congela la revisión histórica.
   budgetRevision Int
-  /// Número de línea base dentro del presupuesto (1, 2, …).
+  /// Número de secuencia de la línea base dentro del presupuesto (1, 2, 3…).
+  /// Se auto-incrementa por presupuesto (`@@unique([budgetId, version])`).
   version        Int
 
   /// Snapshot de totales en micro-unidades al momento de aprobar.
@@ -725,6 +733,24 @@ model BudgetBaseline {
   @@unique([budgetId, version])
   @@index([tenantId])
   @@index([budgetId])
+}
+
+/// Evento de bloqueo/desbloqueo del presupuesto (solo agregar).
+/// Se crea en la misma transacción que el cambio de `isLocked`.
+model BudgetLockEvent {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  budgetId  String
+  budget    ProjectBudget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  action    String   // "LOCK" | "UNLOCK"
+  reason    String?
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([budgetId])
+  @@index([budgetId, createdAt])
 }
 
 /// Plan operativo Lean (Last Planner System) de un proyecto (FASE 3 — Tab 3).
