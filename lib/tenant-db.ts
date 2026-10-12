@@ -1715,19 +1715,29 @@ export function createTenantDb(tenantId: string) {
       getItem: (id: string) =>
         db.orm.public.ApuItem.where({ id, tenantId }).first(),
 
-      createItem: (
+      createItem: async (
         data: Omit<
           Parameters<typeof db.orm.public.ApuItem.create>[0],
           "tenantId"
         >,
-      ) =>
-        db.orm.public.ApuItem.create({
+      ) => {
+        const res = await db.orm.public.ApuItem.create({
           ...data,
           tenantId,
-        }),
+        });
+        if (typeof (this as any).invalidateP99 === "function") {
+          (this as any).invalidateP99();
+        }
+        return res;
+      },
 
-      updateItem: (id: string, data: Record<string, unknown>) =>
-        db.orm.public.ApuItem.where({ id, tenantId }).update(data),
+      updateItem: async (id: string, data: Record<string, unknown>) => {
+        const res = await db.orm.public.ApuItem.where({ id, tenantId }).update(data);
+        if (typeof (this as any).invalidateP99 === "function") {
+          (this as any).invalidateP99();
+        }
+        return res;
+      },
 
       /** Actividades con costo unitario calculado (precios actuales). */
       listActivities: async ({
@@ -1890,12 +1900,20 @@ export function createTenantDb(tenantId: string) {
       /* --- Insumos: archivado y borrado seguro ---------------------- */
 
       /** Archiva un insumo (soft delete): deja de ofrecerse para composiciones. */
-      archiveItem: (id: string) =>
-        db.orm.public.ApuItem.where({ id, tenantId }).update({ active: false }),
+      archiveItem: async (id: string) => {
+        await db.orm.public.ApuItem.where({ id, tenantId }).update({ active: false });
+        if (typeof (this as any).invalidateP99 === "function") {
+          (this as any).invalidateP99();
+        }
+      },
 
       /** Revierte la archivación de un insumo. */
-      restoreItem: (id: string) =>
-        db.orm.public.ApuItem.where({ id, tenantId }).update({ active: true }),
+      restoreItem: async (id: string) => {
+        await db.orm.public.ApuItem.where({ id, tenantId }).update({ active: true });
+        if (typeof (this as any).invalidateP99 === "function") {
+          (this as any).invalidateP99();
+        }
+      },
 
       /** Cuántas composiciones de actividades usan este insumo. */
       countItemUsage: (id: string) => countItemCompositionUsage(id),
@@ -1915,6 +1933,9 @@ export function createTenantDb(tenantId: string) {
           throw new Error("APU_IN_USE");
         }
         await db.orm.public.ApuItem.where({ id, tenantId }).delete();
+        if (typeof (this as any).invalidateP99 === "function") {
+          (this as any).invalidateP99();
+        }
       },
 
       /* --- Actividades: archivado y borrado seguro ------------------ */
@@ -1991,6 +2012,9 @@ export function createTenantDb(tenantId: string) {
           consumption: data.consumption,
           wastePercent: data.wastePercent,
         });
+        if (typeof (this as any).invalidateP99 === "function") {
+          (this as any).invalidateP99();
+        }
         return { id: created.id };
       },
 
@@ -2018,6 +2042,9 @@ export function createTenantDb(tenantId: string) {
           )
           .build();
         const { affectedRows } = await db.runtime().execute(plan);
+        if (typeof (this as any).invalidateP99 === "function") {
+          (this as any).invalidateP99();
+        }
         return affectedRows;
       },
 
@@ -2027,10 +2054,19 @@ export function createTenantDb(tenantId: string) {
        * - p99 del consumo por insumo, agrupado por unidad del insumo
        * No modifica datos; se usa para badges "revisar" en la UI.
        */
-      getP99Thresholds: async (): Promise<{
+      _p99Cache: null as null | { ts: number; data: { activityUnitCost: Record<string, string>; itemConsumption: Record<string, string> } },
+      _p99CacheTtlMs: 60_000,
+      invalidateP99: function () {
+        this._p99Cache = null;
+      },
+      getP99Thresholds: async function (): Promise<{
         activityUnitCost: Record<string, string>;
         itemConsumption: Record<string, string>;
-      }> => {
+      }> {
+        const now = Date.now();
+        if (this._p99Cache && now - this._p99Cache.ts < this._p99CacheTtlMs) {
+          return this._p99Cache.data;
+        }
         // p99 costo unitario de actividades por unidad
         const allActivities = await db.orm.public.ApuActivity
           .where({ tenantId })
@@ -2101,10 +2137,12 @@ export function createTenantDb(tenantId: string) {
           }
         }
 
-        return {
+        const data = {
           activityUnitCost: p99ActivityUnitCost,
           itemConsumption: p99ItemConsumption,
         };
+        this._p99Cache = { ts: Date.now(), data };
+        return data;
       },
 
       /**
