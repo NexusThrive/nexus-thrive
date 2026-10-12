@@ -2062,6 +2062,10 @@ export function createTenantDb(tenantId: string) {
       getP99Thresholds: async function (): Promise<{
         activityUnitCost: Record<string, string>;
         itemConsumption: Record<string, string>;
+        activityUnitCostMedian?: Record<string, string>;
+        itemConsumptionMedian?: Record<string, string>;
+        activityUnitCostP99?: Record<string, string>;
+        itemConsumptionP99?: Record<string, string>;
       }> {
         const now = Date.now();
         if (this._p99Cache && now - this._p99Cache.ts < this._p99CacheTtlMs) {
@@ -2136,10 +2140,34 @@ export function createTenantDb(tenantId: string) {
             p99ItemConsumption[unit] = values[0].toFixed(4);
           }
         }
+        const median = (vals: number[]): number => {
+          if (vals.length === 0) return 0;
+          const sorted = [...vals].sort((a,b)=>a-b);
+          const mid = Math.floor(sorted.length/2);
+          if (sorted.length % 2 === 1) return sorted[mid];
+          return (sorted[mid-1] + sorted[mid]) / 2;
+        };
+        const p99ActivityUnitCostMedian: Record<string, string> = {};
+        for (const [unit, values] of costByUnit) {
+          if (values.length > 0) {
+            p99ActivityUnitCostMedian[unit] = median(values).toFixed(2);
+          }
+        }
+        const p99ItemConsumptionMedian: Record<string, string> = {};
+        for (const [unit, values] of consumptionByItemUnit) {
+          if (values.length > 0) {
+            p99ItemConsumptionMedian[unit] = median(values).toFixed(4);
+          }
+        }
+
 
         const data = {
           activityUnitCost: p99ActivityUnitCost,
           itemConsumption: p99ItemConsumption,
+          activityUnitCostMedian: p99ActivityUnitCostMedian,
+          itemConsumptionMedian: p99ItemConsumptionMedian,
+          activityUnitCostP99: p99ActivityUnitCost,
+          itemConsumptionP99: p99ItemConsumption,
         };
         this._p99Cache = { ts: Date.now(), data };
         return data;

@@ -620,6 +620,10 @@ export async function getP99ThresholdsAction(
 ): Promise<{
   activityUnitCost: Record<string, string>;
   itemConsumption: Record<string, string>;
+  activityUnitCostMedian?: Record<string, string>;
+  itemConsumptionMedian?: Record<string, string>;
+  activityUnitCostP99?: Record<string, string>;
+  itemConsumptionP99?: Record<string, string>;
 } | null> {
   const context = await requireTenantContext(tenantSlug);
   if (!context) {
