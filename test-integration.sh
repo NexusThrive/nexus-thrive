@@ -15,4 +15,4 @@ if [ "$(normalize "$DATABASE_URL")" != "$(normalize "$TEST_DATABASE_URL")" ]; th
   exit 1
 fi
 
-pnpm exec vitest run lib/tenant-db.integration.test.ts
+pnpm exec vitest run lib/tenant-db.integration.test.ts lib/prisma8-query-patterns.integration.test.ts
