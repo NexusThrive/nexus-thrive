@@ -506,6 +506,22 @@ export function isValidResourceType(raw: string): raw is ResourceTypeValue {
   );
 }
 
+/**
+ * Convierte una categoría de insumo APU al tipo de recurso del presupuesto.
+ * Mapeo 1:1 determinista, sin efectos colaterales (función pura).
+ */
+export function apuItemCategoryToResourceType(
+  category: ApuItemCategoryValue,
+): ResourceTypeValue {
+  const map: Record<ApuItemCategoryValue, ResourceTypeValue> = {
+    MATERIAL: "MATERIAL",
+    MANO_DE_OBRA: "LABOR",
+    EQUIPO: "EQUIPMENT",
+    TRANSPORTE: "TRANSPORT",
+  };
+  return map[category];
+}
+
 /* ------------------------------------------------------------------ */
 /* Snapshot del APU (inmutable al cotizar)                             */
 /* ------------------------------------------------------------------ */

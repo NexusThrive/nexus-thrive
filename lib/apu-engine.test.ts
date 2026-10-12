@@ -16,6 +16,7 @@ import {
   AIU_DEFAULTS,
   RESOURCE_TYPES,
   formatApuUnit,
+  apuItemCategoryToResourceType,
   type ActivityComponentInput,
   type AiuConfig,
   type QuoteLineInput,
@@ -253,5 +254,21 @@ describe("apu-engine — formatApuUnit (presentación, no almacenamiento)", () =
     expect(formatApuUnit("UND")).toBe("UND");
     expect(formatApuUnit(null)).toBe("");
     expect(formatApuUnit(undefined)).toBe("");
+  });
+});
+
+describe("apu-engine — apuItemCategoryToResourceType (función pura)", () => {
+  test("mapea cada categoría APU a su ResourceType correspondiente", () => {
+    expect(apuItemCategoryToResourceType("MATERIAL")).toBe("MATERIAL");
+    expect(apuItemCategoryToResourceType("MANO_DE_OBRA")).toBe("LABOR");
+    expect(apuItemCategoryToResourceType("EQUIPO")).toBe("EQUIPMENT");
+    expect(apuItemCategoryToResourceType("TRANSPORTE")).toBe("TRANSPORT");
+  });
+
+  test("es determinista y sin efectos colaterales", () => {
+    for (let i = 0; i < 10; i++) {
+      expect(apuItemCategoryToResourceType("MATERIAL")).toBe("MATERIAL");
+      expect(apuItemCategoryToResourceType("MANO_DE_OBRA")).toBe("LABOR");
+    }
   });
 });
