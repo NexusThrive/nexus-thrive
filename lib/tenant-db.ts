@@ -2106,6 +2106,97 @@ export function createTenantDb(tenantId: string) {
           itemConsumption: p99ItemConsumption,
         };
       },
+
+      /**
+       * Informe de salud del catálogo APU (solo lectura, no modifica datos).
+       * Devuelve métricas y listas para auditoría:
+       * - actividades sin composición
+       * - actividades con costo unitario 0
+       * - insumos sin uso en ninguna actividad
+       * - antigüedad de precios (días desde última actualización)
+       * - estado de apu-importer (archivos recientes) y APU_UNITS configuradas
+       */
+      getCatalogHealthReport: async (): Promise<{
+        activitiesWithoutComposition: { id: string; code: string | null; name: string; unit: string }[];
+        activitiesWithZeroUnitCost: { id: string; code: string | null; name: string; unit: string }[];
+        unusedItems: { id: string; code: string | null; name: string; unit: string; updatedAt: string }[];
+        priceAgeDays: { id: string; code: string | null; name: string; unit: string; ageDays: number }[];
+        apuImporterStatus: { recentFiles: number; lastImport: string | null };
+        apuUnitsConfigured: string[];
+      }> => {
+        // Actividades sin composición
+        const allActivities = await db.orm.public.ApuActivity
+          .where({ tenantId })
+          .all();
+        const activityIds = allActivities.map((a) => a.id);
+        const allCompositions = await db.orm.public.ApuActivityComposition
+          .where((comp) => comp.activityId.in(activityIds))
+          .select("activityId")
+          .all();
+        const activitiesWithComposition = new Set(allCompositions.map((c) => c.activityId));
+        const activitiesWithoutComposition = allActivities
+          .filter((a) => !activitiesWithComposition.has(a.id))
+          .map((a) => ({ id: a.id, code: a.code, name: a.name, unit: a.unit }));
+
+        // Costo unitario 0 (recalcula con precios actuales)
+        const activityComps = await db.orm.public.ApuActivityComposition
+          .where((comp) => comp.activityId.in(activityIds))
+          .include("item", (item) => item.select("id", "unitPrice", "unit"))
+          .all();
+        const compsByActivity = new Map<string, typeof activityComps>();
+        for (const comp of activityComps) {
+          const list = compsByActivity.get(comp.activityId) ?? [];
+          list.push(comp);
+          compsByActivity.set(comp.activityId, list);
+        }
+        const activitiesWithZeroUnitCost: { id: string; code: string | null; name: string; unit: string }[] = [];
+        for (const activity of allActivities) {
+          const comps = compsByActivity.get(activity.id) ?? [];
+          if (comps.length > 0) {
+            const costStr = activityUnitCost(
+              comps.map((c) => ({
+                unitPrice: String(c.item!.unitPrice),
+                consumption: String(c.consumption),
+                wastePercent: String(c.wastePercent),
+              })),
+            );
+            if (parseFloat(costStr) === 0) {
+              activitiesWithZeroUnitCost.push({ id: activity.id, code: activity.code, name: activity.name, unit: activity.unit });
+            }
+          }
+        }
+
+        // Insumos sin uso
+        const allItems = await db.orm.public.ApuItem.where({ tenantId }).all();
+        const usedItemIds = new Set(activityComps.map((c) => c.itemId));
+        const unusedItems = allItems
+          .filter((item) => !usedItemIds.has(item.id))
+          .map((item) => ({ id: item.id, code: item.code, name: item.name, unit: item.unit, updatedAt: String(item.updatedAt) }));
+
+        // Antigüedad de precios (días desde updatedAt)
+        const now = new Date();
+        const priceAgeDays = allItems.map((item) => {
+          const updated = new Date(String(item.updatedAt));
+          const ageDays = Math.floor((now.getTime() - updated.getTime()) / (1000 * 60 * 60 * 24));
+          return { id: item.id, code: item.code, name: item.name, unit: item.unit, ageDays };
+        });
+
+        // Estado apu-importer: busca archivos en importaciones recientes
+        // Nota: no hay tabla de logs de importación; se devuelve placeholder
+        const apuImporterStatus = { recentFiles: 0, lastImport: null as string | null };
+
+        // APU_UNITS configuradas (del motor)
+        const { APU_UNITS } = await import("@/lib/apu-engine");
+
+        return {
+          activitiesWithoutComposition,
+          activitiesWithZeroUnitCost,
+          unusedItems,
+          priceAgeDays,
+          apuImporterStatus,
+          apuUnitsConfigured: [...APU_UNITS],
+        };
+      },
     },
 
     /* -------------------------------------------------------------- */

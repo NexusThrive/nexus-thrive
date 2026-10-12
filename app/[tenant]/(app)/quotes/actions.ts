@@ -628,6 +628,24 @@ export async function getP99ThresholdsAction(
   return context.tenantDb.apu.getP99Thresholds();
 }
 
+/** Informe de salud del catálogo APU (solo lectura). */
+export async function getCatalogHealthReportAction(
+  tenantSlug: string,
+): Promise<{
+  activitiesWithoutComposition: { id: string; code: string | null; name: string; unit: string }[];
+  activitiesWithZeroUnitCost: { id: string; code: string | null; name: string; unit: string }[];
+  unusedItems: { id: string; code: string | null; name: string; unit: string; updatedAt: string }[];
+  priceAgeDays: { id: string; code: string | null; name: string; unit: string; ageDays: number }[];
+  apuImporterStatus: { recentFiles: number; lastImport: string | null };
+  apuUnitsConfigured: string[];
+} | null> {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return null;
+  }
+  return context.tenantDb.apu.getCatalogHealthReport();
+}
+
 /* ------------------------------------------------------------------ */
 /* Import CSV/Excel (atómico: upsert en transacción)                   */
 /* ------------------------------------------------------------------ */
