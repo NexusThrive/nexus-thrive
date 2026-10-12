@@ -497,9 +497,9 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
     expect(b2?.budgetRevision).toBeGreaterThan(revAfterFirst);
   });
 
-  test("1.10: desbloqueo con motivo - setLocked(false) no requiere motivo en la capa de datos (acción sí)", async () => {
-    // La capa de datos solo expone setLocked(projectId, boolean)
-    // El "motivo" vive en la action (toggleBudgetLockAction)
+  test("1.10: desbloqueo con motivo funciona - setLocked(false, reason) sí desbloquea", async () => {
+    // La capa de datos EXIGE motivo para desbloquear (ver setLocked en
+    // tenant-db); aquí se verifica que con motivo el desbloqueo funciona.
     await tenantDb.budgets.setLocked(projectId, true);
     const locked = await db.orm.public.ProjectBudget
       .where({ id: budgetId })
@@ -512,6 +512,34 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
       .select("isLocked")
       .first();
     expect(unlocked?.isLocked).toBe(false);
+  });
+
+  test("2.0: desbloqueo sin motivo falla - setLocked(false) sin reason lanza error y no desbloquea", async () => {
+    await tenantDb.budgets.setLocked(projectId, true);
+    await expect(
+      tenantDb.budgets.setLocked(projectId, false),
+    ).rejects.toThrow("Desbloqueo requiere un motivo.");
+    const locked = await db.orm.public.ProjectBudget
+      .where({ id: budgetId })
+      .select("isLocked")
+      .first();
+    expect(locked?.isLocked).toBe(true);
+    // Dejar desbloqueado para no contaminar los demás tests.
+    await tenantDb.budgets.setLocked(projectId, false, undefined, "PASO 0 unlock");
+  });
+
+  test("2.0: bloquear y desbloquear NO borra líneas base (solo añade BudgetLockEvent)", async () => {
+    const before = await tenantDb.budgets.listBaselines(projectId);
+    expect(before.length).toBeGreaterThanOrEqual(1);
+    await tenantDb.budgets.setLocked(projectId, true);
+    await tenantDb.budgets.setLocked(projectId, false, undefined, "PASO 0 unlock");
+    const after = await tenantDb.budgets.listBaselines(projectId);
+    expect(after.length).toBe(before.length);
+    // El bloqueo/desbloqueo queda registrado como eventos, no toca baselines.
+    const events = await db.orm.public.BudgetLockEvent
+      .where({ budgetId })
+      .all();
+    expect(events.length).toBeGreaterThanOrEqual(2);
   });
 
   test("1.10: Informe Cero lee la última línea base o muestra 'Sin línea base aprobada'", async () => {

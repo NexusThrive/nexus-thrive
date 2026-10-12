@@ -42,3 +42,6 @@ next-env.d.ts
 
 # prisma
 /prisma/migrations
+
+# transcripts de sesión (no se versionan)
+/conversations
