@@ -1725,17 +1725,15 @@ export function createTenantDb(tenantId: string) {
           ...data,
           tenantId,
         });
-        if (typeof (this as any).invalidateP99 === "function") {
-          (this as any).invalidateP99();
-        }
+        // @ts-ignore
+        if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
         return res;
       },
 
       updateItem: async (id: string, data: Record<string, unknown>) => {
         const res = await db.orm.public.ApuItem.where({ id, tenantId }).update(data);
-        if (typeof (this as any).invalidateP99 === "function") {
-          (this as any).invalidateP99();
-        }
+        // @ts-ignore
+        if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
         return res;
       },
 
@@ -1902,17 +1900,15 @@ export function createTenantDb(tenantId: string) {
       /** Archiva un insumo (soft delete): deja de ofrecerse para composiciones. */
       archiveItem: async (id: string) => {
         await db.orm.public.ApuItem.where({ id, tenantId }).update({ active: false });
-        if (typeof (this as any).invalidateP99 === "function") {
-          (this as any).invalidateP99();
-        }
+        // @ts-ignore
+        if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
       },
 
       /** Revierte la archivación de un insumo. */
       restoreItem: async (id: string) => {
         await db.orm.public.ApuItem.where({ id, tenantId }).update({ active: true });
-        if (typeof (this as any).invalidateP99 === "function") {
-          (this as any).invalidateP99();
-        }
+        // @ts-ignore
+        if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
       },
 
       /** Cuántas composiciones de actividades usan este insumo. */
@@ -1933,9 +1929,8 @@ export function createTenantDb(tenantId: string) {
           throw new Error("APU_IN_USE");
         }
         await db.orm.public.ApuItem.where({ id, tenantId }).delete();
-        if (typeof (this as any).invalidateP99 === "function") {
-          (this as any).invalidateP99();
-        }
+        // @ts-ignore
+        if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
       },
 
       /* --- Actividades: archivado y borrado seguro ------------------ */
@@ -2015,9 +2010,8 @@ export function createTenantDb(tenantId: string) {
           consumption: data.consumption,
           wastePercent: data.wastePercent,
         });
-        if (typeof (this as any).invalidateP99 === "function") {
-          (this as any).invalidateP99();
-        }
+        // @ts-ignore
+        if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
         return { id: created.id };
       },
 
@@ -2045,9 +2039,8 @@ export function createTenantDb(tenantId: string) {
           )
           .build();
         const { affectedRows } = await db.runtime().execute(plan);
-        if (typeof (this as any).invalidateP99 === "function") {
-          (this as any).invalidateP99();
-        }
+        // @ts-ignore
+        if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
         return affectedRows;
       },
 

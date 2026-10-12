@@ -28,6 +28,10 @@ import { ApuCategoryBadge } from "./quote-badges";
 type P99Thresholds = {
   activityUnitCost: Record<string, string>;
   itemConsumption: Record<string, string>;
+  activityUnitCostMedian?: Record<string, string>;
+  itemConsumptionMedian?: Record<string, string>;
+  activityUnitCostP99?: Record<string, string>;
+  itemConsumptionP99?: Record<string, string>;
 };
 
 const INITIAL_ACTIVITY_STATE: ApuActivityFormState = { status: "idle" };
