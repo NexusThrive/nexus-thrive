@@ -4,11 +4,13 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
+import { createAuth, type NexusRole } from "@/lib/authorization";
 import { getQuoteTerms, type QuoteTerms } from "@/lib/vertical-terms";
 import type { ApuItemCategoryValue } from "@/lib/apu-engine";
 import {
   validateApuActivity,
   validateApuItem,
+  validateComposition,
   validateQuote,
   parseImportCsv,
   type ApuActivityFieldErrors,
@@ -51,13 +53,26 @@ export type ImportResultState = {
   updated?: number;
 };
 
+/** Estado de las acciones de mutación del catálogo (archivar, borrar, composición). */
+export type ApuMutationState = {
+  status: "idle" | "error" | "ok";
+  message?: string;
+};
+
 const ACCESS_DENIED_FORM = { status: "error", message: "No tienes acceso a este negocio." } as const;
+
+const FORBIDDEN_FORM = {
+  status: "error",
+  message: "No tienes permisos para esta acción (solo OWNER o SUPERADMIN).",
+} as const;
 
 type TenantDb = ReturnType<typeof createTenantDb>;
 
-/** DB del tenant + vocabulario cotizaciones (mensajes adaptativos). */
+/** DB del tenant + rol + vocabulario cotizaciones (mensajes adaptativos). */
 type TenantContext = {
+  userId: string;
   tenantId: string;
+  role: NexusRole;
   tenantDb: TenantDb;
   terms: QuoteTerms;
 };
@@ -89,7 +104,9 @@ async function requireTenantContext(
     return null;
   }
   return {
+    userId,
     tenantId: tenantRecord.id,
+    role: member.role as NexusRole,
     tenantDb,
     terms: getQuoteTerms(tenantRecord.vertical),
   };
@@ -106,6 +123,40 @@ function isUniqueViolation(error: unknown): boolean {
 const DUPLICATE_CODE_MESSAGE =
   "Ya existe un ítem con ese código en este negocio. Usa otro código o déjalo vacío.";
 
+/** Códigos de error de la capa de datos APU → mensajes de UI. */
+const APU_ERROR_MESSAGES: Record<string, string> = {
+  APU_NOT_FOUND: "No se encontró el registro en este negocio.",
+  APU_IN_USE:
+    "No se puede borrar: está en uso en actividades o presupuestos. Archívalo en su lugar.",
+  APU_FOREIGN_ITEM: "El insumo no pertenece a este negocio.",
+  APU_DUPLICATE: "Ese insumo ya está en la composición de la actividad.",
+  APU_INVALID_CONSUMPTION: "El rendimiento debe ser mayor a cero.",
+  APU_INVALID_WASTE: "El desperdicio debe estar entre 0% y 50%.",
+};
+
+/** Traduce un error de la capa de datos APU a un mensaje legible. */
+function apuErrorMessage(error: unknown): string {
+  if (error instanceof Error && APU_ERROR_MESSAGES[error.message]) {
+    return APU_ERROR_MESSAGES[error.message];
+  }
+  if (isUniqueViolation(error)) {
+    return "Registro duplicado (código o composición ya existente).";
+  }
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+  return "No se pudo completar la operación.";
+}
+
+/** Fábrica de autorización a partir del contexto resuelto. */
+function authFor(context: TenantContext) {
+  return createAuth({
+    userId: context.userId,
+    tenantId: context.tenantId,
+    role: context.role,
+  });
+}
+
 /* ------------------------------------------------------------------ */
 /* Banco de insumos — ítems                                            */
 /* ------------------------------------------------------------------ */
@@ -120,6 +171,9 @@ export async function createApuItemAction(
     return ACCESS_DENIED_FORM;
   }
   const { tenantDb } = context;
+  if (!authFor(context).canEditApuCatalog().ok) {
+    return FORBIDDEN_FORM;
+  }
 
   const validation = validateApuItem(formData);
   if (!validation.ok) {
@@ -133,6 +187,7 @@ export async function createApuItemAction(
       unit: validation.values.unit,
       category: validation.values.category as ApuItemCategoryValue,
       unitPrice: validation.values.unitPrice,
+      imageUrl: validation.values.imageUrl || undefined,
     });
   } catch (error) {
     if (isUniqueViolation(error)) {
@@ -156,6 +211,9 @@ export async function updateApuItemAction(
     return ACCESS_DENIED_FORM;
   }
   const { tenantDb } = context;
+  if (!authFor(context).canEditApuCatalog().ok) {
+    return FORBIDDEN_FORM;
+  }
 
   if (!itemId) {
     return { status: "error", message: "Ítem no válido." };
@@ -173,6 +231,7 @@ export async function updateApuItemAction(
       unit: validation.values.unit,
       category: validation.values.category as ApuItemCategoryValue,
       unitPrice: validation.values.unitPrice,
+      imageUrl: validation.values.imageUrl || undefined,
     });
   } catch (error) {
     if (isUniqueViolation(error)) {
@@ -199,6 +258,9 @@ export async function createApuActivityAction(
     return ACCESS_DENIED_FORM;
   }
   const { tenantDb } = context;
+  if (!authFor(context).canEditApuCatalog().ok) {
+    return FORBIDDEN_FORM;
+  }
 
   const validation = validateApuActivity(formData);
   if (!validation.ok) {
@@ -239,6 +301,9 @@ export async function updateApuActivityAction(
     return ACCESS_DENIED_FORM;
   }
   const { tenantDb } = context;
+  if (!authFor(context).canEditApuCatalog().ok) {
+    return FORBIDDEN_FORM;
+  }
 
   if (!activityId) {
     return { status: "error", message: "Actividad no válida." };
@@ -270,6 +335,217 @@ export async function updateApuActivityAction(
 
   revalidatePath(`/${tenantSlug}/quotes`);
   return { status: "ok" };
+}
+
+/* ------------------------------------------------------------------ */
+/* Catálogo APU — archivado, borrado y composición                     */
+/* ------------------------------------------------------------------ */
+
+export async function archiveApuItemAction(
+  _prevState: ApuMutationState,
+  formData: FormData,
+): Promise<ApuMutationState> {
+  const tenantSlug = String(formData.get("tenantSlug") ?? "");
+  const itemId = String(formData.get("itemId") ?? "");
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return ACCESS_DENIED_FORM;
+  }
+  if (!authFor(context).canManageApuCatalogDestructive().ok) {
+    return FORBIDDEN_FORM;
+  }
+  if (!itemId) {
+    return { status: "error", message: "Ítem no válido." };
+  }
+  try {
+    await context.tenantDb.apu.archiveItem(itemId);
+  } catch (error) {
+    return { status: "error", message: apuErrorMessage(error) };
+  }
+  revalidatePath(`/${tenantSlug}/quotes`);
+  return { status: "ok", message: "Insumo archivado." };
+}
+
+export async function restoreApuItemAction(
+  _prevState: ApuMutationState,
+  formData: FormData,
+): Promise<ApuMutationState> {
+  const tenantSlug = String(formData.get("tenantSlug") ?? "");
+  const itemId = String(formData.get("itemId") ?? "");
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return ACCESS_DENIED_FORM;
+  }
+  if (!authFor(context).canManageApuCatalogDestructive().ok) {
+    return FORBIDDEN_FORM;
+  }
+  if (!itemId) {
+    return { status: "error", message: "Ítem no válido." };
+  }
+  try {
+    await context.tenantDb.apu.restoreItem(itemId);
+  } catch (error) {
+    return { status: "error", message: apuErrorMessage(error) };
+  }
+  revalidatePath(`/${tenantSlug}/quotes`);
+  return { status: "ok", message: "Insumo restaurado." };
+}
+
+export async function deleteApuItemAction(
+  _prevState: ApuMutationState,
+  formData: FormData,
+): Promise<ApuMutationState> {
+  const tenantSlug = String(formData.get("tenantSlug") ?? "");
+  const itemId = String(formData.get("itemId") ?? "");
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return ACCESS_DENIED_FORM;
+  }
+  if (!authFor(context).canManageApuCatalogDestructive().ok) {
+    return FORBIDDEN_FORM;
+  }
+  if (!itemId) {
+    return { status: "error", message: "Ítem no válido." };
+  }
+  try {
+    await context.tenantDb.apu.deleteItem(itemId);
+  } catch (error) {
+    return { status: "error", message: apuErrorMessage(error) };
+  }
+  revalidatePath(`/${tenantSlug}/quotes`);
+  return { status: "ok", message: "Insumo eliminado." };
+}
+
+export async function archiveApuActivityAction(
+  _prevState: ApuMutationState,
+  formData: FormData,
+): Promise<ApuMutationState> {
+  const tenantSlug = String(formData.get("tenantSlug") ?? "");
+  const activityId = String(formData.get("activityId") ?? "");
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return ACCESS_DENIED_FORM;
+  }
+  if (!authFor(context).canManageApuCatalogDestructive().ok) {
+    return FORBIDDEN_FORM;
+  }
+  if (!activityId) {
+    return { status: "error", message: "Actividad no válida." };
+  }
+  try {
+    await context.tenantDb.apu.archiveActivity(activityId);
+  } catch (error) {
+    return { status: "error", message: apuErrorMessage(error) };
+  }
+  revalidatePath(`/${tenantSlug}/quotes`);
+  return { status: "ok", message: "Actividad archivada." };
+}
+
+export async function restoreApuActivityAction(
+  _prevState: ApuMutationState,
+  formData: FormData,
+): Promise<ApuMutationState> {
+  const tenantSlug = String(formData.get("tenantSlug") ?? "");
+  const activityId = String(formData.get("activityId") ?? "");
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return ACCESS_DENIED_FORM;
+  }
+  if (!authFor(context).canManageApuCatalogDestructive().ok) {
+    return FORBIDDEN_FORM;
+  }
+  if (!activityId) {
+    return { status: "error", message: "Actividad no válida." };
+  }
+  try {
+    await context.tenantDb.apu.restoreActivity(activityId);
+  } catch (error) {
+    return { status: "error", message: apuErrorMessage(error) };
+  }
+  revalidatePath(`/${tenantSlug}/quotes`);
+  return { status: "ok", message: "Actividad restaurada." };
+}
+
+export async function deleteApuActivityAction(
+  _prevState: ApuMutationState,
+  formData: FormData,
+): Promise<ApuMutationState> {
+  const tenantSlug = String(formData.get("tenantSlug") ?? "");
+  const activityId = String(formData.get("activityId") ?? "");
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return ACCESS_DENIED_FORM;
+  }
+  if (!authFor(context).canManageApuCatalogDestructive().ok) {
+    return FORBIDDEN_FORM;
+  }
+  if (!activityId) {
+    return { status: "error", message: "Actividad no válida." };
+  }
+  try {
+    await context.tenantDb.apu.deleteActivity(activityId);
+  } catch (error) {
+    return { status: "error", message: apuErrorMessage(error) };
+  }
+  revalidatePath(`/${tenantSlug}/quotes`);
+  return { status: "ok", message: "Actividad eliminada." };
+}
+
+export async function addCompositionAction(
+  _prevState: ApuMutationState,
+  formData: FormData,
+): Promise<ApuMutationState> {
+  const tenantSlug = String(formData.get("tenantSlug") ?? "");
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return ACCESS_DENIED_FORM;
+  }
+  if (!authFor(context).canEditApuCatalog().ok) {
+    return FORBIDDEN_FORM;
+  }
+
+  const validation = validateComposition(formData);
+  if (!validation.ok) {
+    return { status: "error", message: validation.error };
+  }
+  const { activityId, itemId, consumption, wastePercent } = validation.values;
+  try {
+    await context.tenantDb.apu.addComposition(activityId, {
+      itemId,
+      consumption,
+      wastePercent,
+    });
+  } catch (error) {
+    return { status: "error", message: apuErrorMessage(error) };
+  }
+  revalidatePath(`/${tenantSlug}/quotes`);
+  return { status: "ok", message: "Insumo agregado a la composición." };
+}
+
+export async function removeCompositionAction(
+  _prevState: ApuMutationState,
+  formData: FormData,
+): Promise<ApuMutationState> {
+  const tenantSlug = String(formData.get("tenantSlug") ?? "");
+  const activityId = String(formData.get("activityId") ?? "");
+  const itemId = String(formData.get("itemId") ?? "");
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return ACCESS_DENIED_FORM;
+  }
+  if (!authFor(context).canEditApuCatalog().ok) {
+    return FORBIDDEN_FORM;
+  }
+  if (!activityId || !itemId) {
+    return { status: "error", message: "Composición no válida." };
+  }
+  try {
+    await context.tenantDb.apu.removeComposition(activityId, itemId);
+  } catch (error) {
+    return { status: "error", message: apuErrorMessage(error) };
+  }
+  revalidatePath(`/${tenantSlug}/quotes`);
+  return { status: "ok", message: "Insumo quitado de la composición." };
 }
 
 /* ------------------------------------------------------------------ */

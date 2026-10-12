@@ -31,6 +31,8 @@ export type ApuItemFormValues = {
   unit: string;
   category: string;
   unitPrice: string;
+  /** URL de imagen opcional (solo https). */
+  imageUrl?: string;
 };
 
 export type ApuItemFieldErrors = Partial<
@@ -48,6 +50,7 @@ export function validateApuItem(formData: FormData): ApuItemValidation {
     unit: String(formData.get("unit") ?? "").trim(),
     category: String(formData.get("category") ?? "").trim(),
     unitPrice: String(formData.get("unitPrice") ?? "").trim(),
+    imageUrl: String(formData.get("imageUrl") ?? "").trim(),
   };
   const errors: ApuItemFieldErrors = {};
 
@@ -71,6 +74,16 @@ export function validateApuItem(formData: FormData): ApuItemValidation {
 
   if (!isNonNegative(values.unitPrice)) {
     errors.unitPrice = "Precio unitario inválido.";
+  }
+
+  // Imagen opcional: si viene, debe ser https y no exceder 500 caracteres.
+  const imageUrl = values.imageUrl ?? "";
+  if (imageUrl.length > 0) {
+    if (!/^https:\/\/\S+$/i.test(imageUrl)) {
+      errors.imageUrl = "La imagen debe ser una URL https:// válida.";
+    } else if (imageUrl.length > 500) {
+      errors.imageUrl = "Máximo 500 caracteres.";
+    }
   }
 
   if (Object.keys(errors).length > 0) {
@@ -187,6 +200,57 @@ export function validateApuActivity(
   if (Object.keys(errors).length > 0) {
     return { ok: false, errors, values };
   }
+  return { ok: true, values };
+}
+
+/* ------------------------------------------------------------------ */
+/* Composición APU (agregar / quitar insumo de una actividad)          */
+/* ------------------------------------------------------------------ */
+
+export type CompositionFormValues = {
+  activityId: string;
+  itemId: string;
+  consumption: string;
+  wastePercent: string;
+};
+
+export type CompositionValidation =
+  | { ok: true; values: CompositionFormValues }
+  | { ok: false; error: string; values: CompositionFormValues };
+
+/**
+ * Valida una línea de composición suelta (insumo + rendimiento + desperdicio).
+ * Reglas de negocio: rendimiento > 0 y desperdicio entre 0% y 50%. El
+ * desperdicio vacío se interpreta como 0 (insumo sin pérdida).
+ */
+export function validateComposition(
+  formData: FormData,
+): CompositionValidation {
+  const wasteRaw = String(formData.get("wastePercent") ?? "").trim();
+  const values: CompositionFormValues = {
+    activityId: String(formData.get("activityId") ?? "").trim(),
+    itemId: String(formData.get("itemId") ?? "").trim(),
+    consumption: String(formData.get("consumption") ?? "").trim(),
+    wastePercent: wasteRaw === "" ? "0" : wasteRaw,
+  };
+
+  if (!values.activityId) {
+    return { ok: false, error: "Actividad no indicada.", values };
+  }
+  if (!values.itemId) {
+    return { ok: false, error: "Selecciona un insumo.", values };
+  }
+  if (!isStrictlyPositive(values.consumption)) {
+    return { ok: false, error: "El rendimiento debe ser mayor a cero.", values };
+  }
+  if (!isValidPercent(values.wastePercent, 50)) {
+    return {
+      ok: false,
+      error: "El desperdicio debe estar entre 0% y 50%.",
+      values,
+    };
+  }
+
   return { ok: true, values };
 }
 
