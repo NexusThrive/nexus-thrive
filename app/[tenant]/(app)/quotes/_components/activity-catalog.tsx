@@ -366,9 +366,13 @@ function ActivityDetail({
     );
   }
 
-  const activityP99 = p99Thresholds?.activityUnitCost[detail.unit];
+  const activityP99 = p99Thresholds?.activityUnitCost[detail.unit] ?? p99Thresholds?.activityUnitCostP99?.[detail.unit];
+  const activityMedian = p99Thresholds?.activityUnitCostMedian?.[detail.unit];
   const isActivityOutlier =
-    activityP99 && parseFloat(detail.unitCost) > parseFloat(activityP99);
+    activityP99 &&
+    activityMedian &&
+    parseFloat(detail.unitCost) > parseFloat(activityP99) &&
+    parseFloat(detail.unitCost) > parseFloat(activityMedian) * 2;
 
   return (
     <div className="space-y-4">
@@ -490,9 +494,13 @@ function CompositionEditorDetail({
       ) : (
         <div className="space-y-2">
           {detail.compositions.map((composition) => {
-            const itemP99 = p99Thresholds?.itemConsumption[composition.itemUnit];
+            const itemP99 = p99Thresholds?.itemConsumption[composition.itemUnit] ?? p99Thresholds?.itemConsumptionP99?.[composition.itemUnit];
+            const itemMedian = p99Thresholds?.itemConsumptionMedian?.[composition.itemUnit];
             const isConsumptionOutlier =
-              itemP99 && parseFloat(composition.consumption) > parseFloat(itemP99);
+              itemP99 &&
+              itemMedian &&
+              parseFloat(composition.consumption) > parseFloat(itemP99) &&
+              parseFloat(composition.consumption) > parseFloat(itemMedian) * 2;
             return (
               <form key={composition.id} action={removeAction} className="grid grid-cols-[1fr_auto] gap-2 rounded-lg border border-border bg-muted/60 p-2">
                 <input type="hidden" name="tenantSlug" value={tenantSlug} />
@@ -620,8 +628,9 @@ export default function ActivityCatalog({
                </tr>
              ) : (
                rows.map((row) => {
-                 const p99 = p99Thresholds?.activityUnitCost[row.unit];
-                 const isOutlier = p99 && parseFloat(row.unitCost) > parseFloat(p99);
+                 const p99 = p99Thresholds?.activityUnitCost[row.unit] ?? p99Thresholds?.activityUnitCostP99?.[row.unit];
+                 const median = p99Thresholds?.activityUnitCostMedian?.[row.unit];
+                 const isOutlier = p99 && median && parseFloat(row.unitCost) > parseFloat(p99) && parseFloat(row.unitCost) > parseFloat(median) * 2;
                  return (
                    <tr key={row.id} className="transition hover:bg-muted/60">
                      <td className="px-4 py-3 font-mono text-xs font-medium text-accent-text">
