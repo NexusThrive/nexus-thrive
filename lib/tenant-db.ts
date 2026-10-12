@@ -1994,6 +1994,9 @@ export function createTenantDb(tenantId: string) {
         if (!item) {
           throw new Error("APU_FOREIGN_ITEM");
         }
+        if (activity.active === false || item.active === false) {
+          throw new Error("APU_INVALID");
+        }
         if (!isStrictlyPositive(data.consumption)) {
           throw new Error("APU_INVALID_CONSUMPTION");
         }
