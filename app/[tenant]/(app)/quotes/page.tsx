@@ -175,9 +175,10 @@ export default async function QuotesPage({
 
   if (activeTab === "activities") {
     const q = firstString(sp.aq).trim();
-    const [catalog, itemsResult] = await Promise.all([
+    const [catalog, itemsResult, p99] = await Promise.all([
       tenantDb.apu.listActivities({ q }),
       tenantDb.apu.listItems({ limit: 400 }),
+      tenantDb.apu.getP99Thresholds(),
     ]);
     activitiesSection = (
       <ActivityCatalog
@@ -185,6 +186,7 @@ export default async function QuotesPage({
         rows={catalog.rows}
         items={itemsResult.rows}
         activityLabel={terms.apuActivity}
+        p99Thresholds={p99}
       />
     );
   }
