@@ -749,3 +749,104 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
     expect(Number(after?.revision ?? 0)).toBe(revBefore);
   });
 });
+
+describe.skipIf(!enabled)(
+  "apu: listado paginado de insumos y actividades (integración)",
+  () => {
+    const slug = `test-apu-list-${Date.now().toString(36)}`;
+    let tenantId = "";
+    let tenantDb: ReturnType<typeof createTenantDb>;
+
+    beforeAll(async () => {
+      if (normalize(process.env.DATABASE_URL) !== normalize(TEST_URL)) {
+        throw new Error(
+          "Estas pruebas exigen una base aparte: exportá TEST_DATABASE_URL y ejecutá con DATABASE_URL=$TEST_DATABASE_URL.",
+        );
+      }
+
+      const tenant = await db.orm.public.Tenant.create({
+        name: "Tenant de prueba listados APU",
+        slug,
+        vertical: "construction",
+      });
+      tenantId = tenant.id;
+      tenantDb = createTenantDb(tenantId);
+
+      const items: Array<
+        Omit<Parameters<typeof db.orm.public.ApuItem.create>[0], "tenantId">
+      > = [
+        { code: "L-MAT-1", name: "Cemento gris", unit: "BOLSA", category: "MATERIAL", unitPrice: "28000" },
+        { code: "L-MAT-2", name: "Arena gruesa", unit: "M3", category: "MATERIAL", unitPrice: "45000" },
+        { code: "L-MO-1", name: "Maestro de obra", unit: "HORA", category: "MANO_DE_OBRA", unitPrice: "15000" },
+        { code: "L-EQ-1", name: "Mezcladora 1 saco", unit: "HORA", category: "EQUIPO", unitPrice: "9000" },
+        { code: null, name: "Insumo archivado", unit: "UN", category: "MATERIAL", unitPrice: "500", active: false },
+      ];
+      for (const item of items) {
+        await db.orm.public.ApuItem.create({ tenantId, ...item });
+      }
+
+      const activities: Array<
+        Omit<Parameters<typeof db.orm.public.ApuActivity.create>[0], "tenantId">
+      > = [
+        { code: "A-1", name: "Muro en bloque", unit: "M2" },
+        { code: "A-2", name: "Piso en concreto", unit: "M2" },
+        { code: "A-3", name: "Instalación eléctrica", unit: "UN", active: false },
+      ];
+      for (const activity of activities) {
+        await db.orm.public.ApuActivity.create({ tenantId, ...activity });
+      }
+    });
+
+    afterAll(async () => {
+      if (tenantId) {
+        await db.orm.public.Tenant.where({ id: tenantId }).delete();
+      }
+    });
+
+    test("listItems: paginación + total (page 1 y última)", async () => {
+      const page1 = await tenantDb.apu.listItems({ page: 1, limit: 2 });
+      expect(page1.total).toBe(5);
+      expect(page1.rows).toHaveLength(2);
+      const page3 = await tenantDb.apu.listItems({ page: 3, limit: 2 });
+      expect(page3.rows).toHaveLength(1);
+      expect(page3.total).toBe(5);
+    });
+
+    test("listItems: búsqueda por nombre y por código (ilike insensible)", async () => {
+      const porNombre = await tenantDb.apu.listItems({ q: "cemento" });
+      expect(porNombre.rows.map((r) => r.name)).toEqual(["Cemento gris"]);
+      const porCodigo = await tenantDb.apu.listItems({ q: "l-mo-1" });
+      expect(porCodigo.rows.map((r) => r.code)).toEqual(["L-MO-1"]);
+    });
+
+    test("listItems: filtros categoría / unidad / activo + listUnits", async () => {
+      expect((await tenantDb.apu.listItems({ category: "MATERIAL" })).total).toBe(3);
+      expect((await tenantDb.apu.listItems({ unit: "HORA" })).total).toBe(2);
+      expect((await tenantDb.apu.listItems({ active: true })).total).toBe(4);
+      expect((await tenantDb.apu.listItems({ active: false })).total).toBe(1);
+      expect(await tenantDb.apu.listUnits()).toEqual(["BOLSA", "HORA", "M3", "UN"]);
+    });
+
+    test("listActivities: paginación + total + filtros unidad/activo + búsqueda", async () => {
+      const all = await tenantDb.apu.listActivities({ limit: 200 });
+      expect(all.total).toBe(3);
+      expect(all.rows.every((r) => typeof r.active === "boolean")).toBe(true);
+
+      const page1 = await tenantDb.apu.listActivities({ page: 1, limit: 2 });
+      expect(page1.rows).toHaveLength(2);
+      expect(page1.total).toBe(3);
+
+      expect((await tenantDb.apu.listActivities({ unit: "M2" })).total).toBe(2);
+      expect(
+        (await tenantDb.apu.listActivities({ active: false })).rows.map((r) => r.name),
+      ).toEqual(["Instalación eléctrica"]);
+
+      expect(
+        (await tenantDb.apu.listActivities({ q: "piso" })).rows.map((r) => r.name),
+      ).toEqual(["Piso en concreto"]);
+      expect(
+        (await tenantDb.apu.listActivities({ q: "A-1" })).rows.map((r) => r.code),
+      ).toEqual(["A-1"]);
+    });
+  },
+);

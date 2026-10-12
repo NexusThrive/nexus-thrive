@@ -276,6 +276,21 @@ export type Customer360Details = {
 export type ApuListInput = {
   q?: string;
   category?: ApuItemCategoryValue;
+  /** Filtro por unidad exacta (p. ej. "M2"). */
+  unit?: string;
+  /** `true` = vigentes; `false` = archivados; omitido = todos. */
+  active?: boolean;
+  page?: number;
+  limit?: number;
+};
+
+/** Entrada del listado paginado de actividades. */
+export type ApuActivityListInput = {
+  q?: string;
+  /** Filtro por unidad exacta (p. ej. "M2"). */
+  unit?: string;
+  /** `true` = vigentes; `false` = archivadas; omitido = todas. */
+  active?: boolean;
   page?: number;
   limit?: number;
 };
@@ -288,6 +303,7 @@ export type ApuItemRow = {
   unit: string;
   category: ApuItemCategoryValue;
   unitPrice: string;
+  active: boolean;
   updatedAt: string;
 };
 
@@ -301,6 +317,7 @@ export type ApuActivityRow = {
   /** Σ componentes (precios + rendimientos actuales del banco). */
   unitCost: string;
   itemCount: number;
+  active: boolean;
   updatedAt: string;
 };
 
@@ -1215,6 +1232,7 @@ async function getApuActivityDetail(
     description: activity.description,
     unitCost: activityUnitCost(rows),
     itemCount: rows.length,
+    active: activity.active,
     updatedAt: String(activity.updatedAt),
     compositions: rows,
   };
@@ -1604,6 +1622,8 @@ export function createTenantDb(tenantId: string) {
       listItems: async ({
         q,
         category,
+        unit,
+        active,
         page = 1,
         limit = 10,
       }: ApuListInput = {}): Promise<{ rows: ApuItemRow[]; total: number }> => {
@@ -1620,6 +1640,12 @@ export function createTenantDb(tenantId: string) {
         }
         if (category) {
           filtered = filtered.where((item) => item.category.eq(category));
+        }
+        if (unit) {
+          filtered = filtered.where((item) => item.unit.eq(unit));
+        }
+        if (typeof active === "boolean") {
+          filtered = filtered.where((item) => item.active.eq(active));
         }
 
         const [rows, { total }] = await Promise.all([
@@ -1639,10 +1665,23 @@ export function createTenantDb(tenantId: string) {
             unit: row.unit,
             category: row.category,
             unitPrice: String(row.unitPrice),
+            active: row.active,
             updatedAt: String(row.updatedAt),
           })),
           total,
         };
+      },
+
+      /** Unidades distintas presentes en el banco (para el filtro de la UI). */
+      listUnits: async (): Promise<string[]> => {
+        const rows = await db.orm.public.ApuItem
+          .where({ tenantId })
+          .distinct("unit")
+          .all();
+        return rows
+          .map((row) => row.unit)
+          .filter((unit): unit is string => Boolean(unit))
+          .sort((a, b) => a.localeCompare(b));
       },
 
       getItem: (id: string) =>
@@ -1665,13 +1704,17 @@ export function createTenantDb(tenantId: string) {
       /** Actividades con costo unitario calculado (precios actuales). */
       listActivities: async ({
         q,
+        unit,
+        active,
+        page = 1,
         limit = 200,
-      }: {
-        q?: string;
-        limit?: number;
-      } = {}): Promise<{ rows: ApuActivityRow[]; total: number }> => {
+      }: ApuActivityListInput = {}): Promise<{
+        rows: ApuActivityRow[];
+        total: number;
+      }> => {
         const text = (q ?? "").trim();
         const pattern = text ? `%${escapeLike(text)}%` : null;
+        const safePage = Math.max(1, Math.trunc(page));
         const safeLimit = Math.min(500, Math.max(1, Math.trunc(limit)));
 
         let filtered = db.orm.public.ApuActivity.where({ tenantId });
@@ -1683,11 +1726,18 @@ export function createTenantDb(tenantId: string) {
             ),
           );
         }
+        if (unit) {
+          filtered = filtered.where((activity) => activity.unit.eq(unit));
+        }
+        if (typeof active === "boolean") {
+          filtered = filtered.where((activity) => activity.active.eq(active));
+        }
 
         const [rows, { total }] = await Promise.all([
           filtered
             .orderBy((activity) => activity.name.asc())
             .limit(safeLimit)
+            .offset((safePage - 1) * safeLimit)
             .all(),
           filtered.aggregate((aggregate) => ({ total: aggregate.count() })),
         ]);
@@ -1733,6 +1783,7 @@ export function createTenantDb(tenantId: string) {
                 })),
               ),
               itemCount: activityCompositions.length,
+              active: row.active,
               updatedAt: String(row.updatedAt),
             };
           }),
