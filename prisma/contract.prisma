@@ -641,24 +641,28 @@ model BudgetChapter {
 /// Partida / actividad presupuestaria dentro de un capítulo. Cantidad y
 /// costos en micro-unidades `BigInt` (6 decimales).
 model BudgetItem {
-  id          String        @id @default(uuid())
-  tenantId    String
-  tenant      Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  chapterId   String
-  chapter     BudgetChapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-  order       Int
+  id             String        @id @default(uuid())
+  tenantId       String
+  tenant         Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  chapterId      String
+  chapter        BudgetChapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  order          Int
   /// Código de actividad (puede repetirse entre capítulos).
-  code        String
-  description String
-  unit        String
+  code           String
+  description    String
+  unit           String
   /// Cantidad escalada (1_000_000 = 1.000000).
-  quantity        BigInt @default(1000000)
+  quantity       BigInt @default(1000000)
   /// Costo unitario directo (micro-pesos).
-  unitCostDirect  BigInt @default(0)
+  unitCostDirect BigInt @default(0)
   /// Costo directo total de la partida = quantity × unitCostDirect.
   totalCostDirect BigInt @default(0)
-  createdAt   DateTime      @default(now())
-  updatedAt   temporal.updatedAt()
+  /// Porcentaje de desperdicio (micro, 1_000_000 = 100%). Default 0.
+  wastePct       BigInt @default(0)
+  /// Origen: ID de actividad del catálogo APU desde la que se importó esta partida.
+  sourceActivityId String?
+  createdAt      DateTime      @default(now())
+  updatedAt      temporal.updatedAt()
 
   resources BudgetItemResource[]
 
@@ -671,21 +675,23 @@ model BudgetItem {
 /// avanzado de composición queda para una fase posterior (N1 solo persiste
 /// el modelo y lo muestra); `imageUrl` es opcional y sin integración externa.
 model BudgetItemResource {
-  id        String     @id @default(uuid())
-  tenantId  String
-  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  itemId    String
-  item      BudgetItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  type      ResourceType
-  name      String
-  unit      String
+  id            String     @id @default(uuid())
+  tenantId      String
+  tenant        Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  itemId        String
+  item          BudgetItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  type          ResourceType
+  name          String
+  unit          String
   /// Rendimiento del recurso por unidad de actividad (1_000_000 = 1.0).
-  performance BigInt @default(1000000)
-  unitPrice   BigInt @default(0)
-  totalPrice  BigInt @default(0)
-  imageUrl    String?
-  createdAt DateTime   @default(now())
-  updatedAt temporal.updatedAt()
+  performance   BigInt @default(1000000)
+  unitPrice     BigInt @default(0)
+  totalPrice    BigInt @default(0)
+  imageUrl      String?
+  /// Origen: ID de insumo del catálogo APU desde el que se importó este recurso.
+  sourceItemId  String?
+  createdAt     DateTime   @default(now())
+  updatedAt     temporal.updatedAt()
 
   @@index([tenantId])
   @@index([itemId])
