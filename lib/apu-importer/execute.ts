@@ -14,7 +14,7 @@ import { db } from "@/prisma/db";
 import type { ApuItemCategoryValue } from "@/lib/apu-engine";
 import { inferCategory } from "./category-classifier";
 import type { ExecutionPlan } from "./index";
-import type { ImportResult } from "./types";
+import type { ImportResult, PriceChange } from "./types";
 
 type ItemRow = {
   id: string;
@@ -43,6 +43,7 @@ function itemByNameKey(item: ItemRow): string {
 export async function executeImport(
   tenantId: string,
   plan: ExecutionPlan,
+  updatePrices: boolean = false,
 ): Promise<ImportResult> {
   const result: ImportResult = {
     createdItems: 0,
@@ -54,6 +55,7 @@ export async function executeImport(
     warnings: plan.warnings.length,
     errors: [],
     totalProcessed: plan.items.length + plan.activities.length,
+    priceChanges: [],
   };
 
   const [existingItems, existingActivities] = await Promise.all([
@@ -100,6 +102,26 @@ export async function executeImport(
         : itemsByName.get(nameKey);
 
       if (existing) {
+        const currentPrice = String(existing.unitPrice);
+        const newPrice = item.unitPrice;
+        let priceChanged = false;
+        let variationPct = 0;
+        if (currentPrice !== newPrice) {
+          priceChanged = true;
+          const curr = Number(currentPrice);
+          const nw = Number(newPrice);
+          if (curr !== 0) {
+            variationPct = ((nw - curr) / curr) * 100;
+          }
+          result.priceChanges.push({
+            itemId: existing.id,
+            code: existing.code,
+            name: existing.name,
+            currentPrice,
+            newPrice,
+            variationPct,
+          });
+        }
         await tx.orm.public.ApuItem.where({
           id: existing.id,
           tenantId,
@@ -108,7 +130,7 @@ export async function executeImport(
           name: item.name,
           unit: item.unit,
           category: item.category ?? "MATERIAL",
-          unitPrice: item.unitPrice,
+          ...(updatePrices ? { unitPrice: item.unitPrice } : {}),
         });
         result.updatedItems += 1;
       } else {

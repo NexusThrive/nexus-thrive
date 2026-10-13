@@ -145,6 +145,7 @@ export async function executeSmartImportAction(input: {
   mapping: ColumnMapping[];
   rows: ParsedRow[];
   fileName?: string;
+  updatePrices?: boolean;
 }): Promise<ExecuteImportState> {
   const context = await requireTenantContext(input.tenantSlug);
   if (!context) return ACCESS_DENIED_FORM;
@@ -175,7 +176,7 @@ export async function executeSmartImportAction(input: {
       };
     }
 
-    const result = await executeImport(tenantId, plan);
+    const result = await executeImport(tenantId, plan, input.updatePrices === true);
     const warnings = plan.warnings.length + result.warnings;
 
     revalidatePath(`/${input.tenantSlug}/quotes`, "page");
@@ -189,9 +190,13 @@ export async function executeSmartImportAction(input: {
     if (result.updatedActivities > 0)
       summary.push(`${result.updatedActivities} actividades actualizadas`);
 
+    const priceChangeCount = result.priceChanges?.length ?? 0;
+    const priceChangeMsg = priceChangeCount > 0
+      ? ` (${priceChangeCount} precios ${input.updatePrices ? "actualizados" : "detectados, no aplicados"})`
+      : "";
     return {
       status: "ok",
-      message: `Importación completada: ${summary.join(", ") || "sin cambios"}.`,
+      message: `Importación completada: ${summary.join(", ") || "sin cambios"}.${priceChangeMsg}`,
       result: { ...result, warnings },
     };
   } catch (error) {

@@ -134,6 +134,16 @@ export interface ImportPreview {
   errors: string[];
 }
 
+/** Cambio de precio detectado en insumo existente. */
+export interface PriceChange {
+  itemId: string;
+  code: string | null;
+  name: string;
+  currentPrice: string;
+  newPrice: string;
+  variationPct: number; // (new - current) / current * 100
+}
+
 /** Reporte de la Fase 2 — IMPORTACIÓN (transaccional). */
 export interface ImportResult {
   createdItems: number;
@@ -145,4 +155,5 @@ export interface ImportResult {
   warnings: number;
   errors: string[];
   totalProcessed: number;
+  priceChanges: PriceChange[];
 }

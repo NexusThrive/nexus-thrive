@@ -1272,6 +1272,13 @@ export function createTenantDb(tenantId: string) {
     );
   }
 
+  // --- APU p99 cache (closure-scoped, avoids 'this') ---
+  let _p99Cache: { ts: number; data: { activityUnitCost: Record<string, string>; itemConsumption: Record<string, string>; activityUnitCostMedian: Record<string, string>; itemConsumptionMedian: Record<string, string>; activityUnitCostP99: Record<string, string>; itemConsumptionP99: Record<string, string> } } | null = null;
+  const _p99CacheTtlMs = 60_000;
+  function invalidateP99(): void {
+    _p99Cache = null;
+  }
+
   return {
     customers: {
       list: () => db.orm.public.Customer.where({ tenantId }).all(),
@@ -1715,25 +1722,23 @@ export function createTenantDb(tenantId: string) {
       getItem: (id: string) =>
         db.orm.public.ApuItem.where({ id, tenantId }).first(),
 
-      createItem: async (
+      createItem: async function(
         data: Omit<
           Parameters<typeof db.orm.public.ApuItem.create>[0],
           "tenantId"
         >,
-      ) => {
+      ) {
         const res = await db.orm.public.ApuItem.create({
           ...data,
           tenantId,
         });
-        // @ts-ignore
-        if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
+        invalidateP99();
         return res;
       },
 
-      updateItem: async (id: string, data: Record<string, unknown>) => {
+      updateItem: async function(id: string, data: Record<string, unknown>) {
         const res = await db.orm.public.ApuItem.where({ id, tenantId }).update(data);
-        // @ts-ignore
-        if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
+        invalidateP99();
         return res;
       },
 
@@ -1900,13 +1905,13 @@ export function createTenantDb(tenantId: string) {
       /** Archiva un insumo (soft delete): deja de ofrecerse para composiciones. */
       archiveItem: async function(id: string) {
         await db.orm.public.ApuItem.where({ id, tenantId }).update({ active: false });
-        if (typeof this.invalidateP99 === "function") { this.invalidateP99(); }
+        invalidateP99();
       },
 
       /** Revierte la archivación de un insumo. */
       restoreItem: async function(id: string) {
         await db.orm.public.ApuItem.where({ id, tenantId }).update({ active: true });
-        if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
+        invalidateP99();
       },
 
       /** Cuántas composiciones de actividades usan este insumo. */
@@ -1927,19 +1932,22 @@ export function createTenantDb(tenantId: string) {
           throw new Error("APU_IN_USE");
         }
         await db.orm.public.ApuItem.where({ id, tenantId }).delete();
-        // @ts-ignore
-        if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
+        invalidateP99();
       },
 
       /* --- Actividades: archivado y borrado seguro ------------------ */
 
       /** Archiva una actividad (soft delete). */
-      archiveActivity: (id: string) =>
-        db.orm.public.ApuActivity.where({ id, tenantId }).update({ active: false }),
+      archiveActivity: async function(id: string) {
+        await db.orm.public.ApuActivity.where({ id, tenantId }).update({ active: false });
+        invalidateP99();
+      },
 
       /** Revierte la archivación de una actividad. */
-      restoreActivity: (id: string) =>
-        db.orm.public.ApuActivity.where({ id, tenantId }).update({ active: true }),
+      restoreActivity: async function(id: string) {
+        await db.orm.public.ApuActivity.where({ id, tenantId }).update({ active: true });
+        invalidateP99();
+      },
 
       /** Cuántas partidas de presupuesto referencian esta actividad. */
       countActivityUsage: (id: string) => countActivityQuoteUsage(id),
@@ -2008,7 +2016,7 @@ export function createTenantDb(tenantId: string) {
           consumption: data.consumption,
           wastePercent: data.wastePercent,
         });
-        if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
+        // No invalidar caché aquí: TTL 60s maneja la expiración natural
         return { id: created.id };
       },
 
@@ -2036,7 +2044,7 @@ export function createTenantDb(tenantId: string) {
           )
           .build();
         const { affectedRows } = await db.runtime().execute(plan);
-        if (typeof (this as any).invalidateP99 === "function") { (this as any).invalidateP99(); }
+        // No invalidar caché aquí: TTL 60s maneja la expiración natural
         return affectedRows;
       },
 
@@ -2046,11 +2054,6 @@ export function createTenantDb(tenantId: string) {
        * - p99 del consumo por insumo, agrupado por unidad del insumo
        * No modifica datos; se usa para badges "revisar" en la UI.
        */
-      _p99Cache: null as null | { ts: number; data: { activityUnitCost: Record<string, string>; itemConsumption: Record<string, string> } },
-      _p99CacheTtlMs: 60_000,
-      invalidateP99: function () {
-        this._p99Cache = null;
-      },
       getP99Thresholds: async function (): Promise<{
         activityUnitCost: Record<string, string>;
         itemConsumption: Record<string, string>;
@@ -2060,8 +2063,8 @@ export function createTenantDb(tenantId: string) {
         itemConsumptionP99?: Record<string, string>;
       }> {
         const now = Date.now();
-        if (this._p99Cache && now - this._p99Cache.ts < this._p99CacheTtlMs) {
-          return this._p99Cache.data;
+        if (_p99Cache && now - _p99Cache.ts < _p99CacheTtlMs) {
+          return _p99Cache.data;
         }
         // p99 costo unitario de actividades por unidad
         const allActivities = await db.orm.public.ApuActivity
@@ -2161,8 +2164,12 @@ export function createTenantDb(tenantId: string) {
           activityUnitCostP99: p99ActivityUnitCost,
           itemConsumptionP99: p99ItemConsumption,
         };
-        this._p99Cache = { ts: Date.now(), data };
+        _p99Cache = { ts: Date.now(), data };
         return data;
+      },
+
+      invalidateP99: function () {
+        _p99Cache = null;
       },
 
       /**

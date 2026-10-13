@@ -9,7 +9,8 @@
     "lint": "eslint",
     "postinstall": "prisma skills sync || exit 0",
     "test": "vitest run",
-    "test:integration": "bash ./test-integration.sh"
+    "test:integration": "bash ./test-integration.sh",
+    "verify": "pnpm exec tsc --noEmit && pnpm test --run 2>&1 | tail -3 && pnpm test:integration 2>&1 | tail -3 && pnpm build 2>&1 | grep -E '\u25cb|\u0192' | tail -2"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.11",
