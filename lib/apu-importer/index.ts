@@ -22,6 +22,7 @@ import type {
   ImportTargetField,
   ApuImportLine,
 } from "./types";
+import type { FieldChange, PriceChange } from "./types";
 
 import { classify } from "./category-classifier";
 import { detectRowAnomaly, detectPriceOutliers } from "./anomaly-detector";
@@ -697,4 +698,99 @@ function mappingRowFromRaw(row: ParsedRow, mapping: ColumnMapping[]): string[] {
     out[Number(col)] = value;
   }
   return out;
+}
+/**
+ * Computa los cambios de campo y precio comparando un plan de importación con insumos existentes.
+ */
+export function computeImportChangesFromPlan(
+  existingItems: Array<{ id: string; code: string | null; name: string; unit: string; category: string; unitPrice: string }>,
+  plan: ExecutionPlan,
+): { fieldChanges: FieldChange[]; priceChanges: PriceChange[] } {
+  // Normalize existing items' units for fair comparison
+  const normalizeItem = (item: typeof existingItems[0]) => ({
+    ...item,
+    unit: normalizeUnit(item.unit) || item.unit,
+  });
+
+  const itemsByCode = new Map<string, typeof existingItems[0]>();
+  const itemsByName = new Map<string, typeof existingItems[0]>();
+  for (const item of existingItems) {
+    const norm = normalizeItem(item);
+    if (item.code) itemsByCode.set(item.code.trim().toUpperCase(), norm);
+    const nameKey = normalizeTextKey(item.name);
+    if (nameKey && !itemsByName.has(nameKey)) itemsByName.set(nameKey, norm);
+  }
+
+  const fieldChanges: FieldChange[] = [];
+  const priceChanges: PriceChange[] = [];
+
+  for (const item of plan.items) {
+    if (item.skipReason) continue;
+    const codeKey = item.code ? item.code.trim().toUpperCase() : null;
+    const nameKey = normalizeTextKey(item.name);
+    
+    const existing = codeKey
+      ? itemsByCode.get(codeKey)
+      : itemsByName.get(nameKey);
+
+    if (existing) {
+      // Check field changes
+      if (item.name && existing.name !== item.name) {
+        fieldChanges.push({
+          itemId: existing.id,
+          code: existing.code,
+          field: "name",
+          currentValue: existing.name,
+          newValue: item.name,
+        });
+      }
+      if (item.unit && existing.unit !== item.unit) {
+        fieldChanges.push({
+          itemId: existing.id,
+          code: existing.code,
+          field: "unit",
+          currentValue: existing.unit,
+          newValue: item.unit,
+        });
+      }
+      if (item.category && existing.category !== item.category) {
+        fieldChanges.push({
+          itemId: existing.id,
+          code: existing.code,
+          field: "category",
+          currentValue: existing.category,
+          newValue: item.category,
+        });
+      }
+      // Price change
+      if (item.unitPrice && String(existing.unitPrice) !== item.unitPrice) {
+        const curr = Number(existing.unitPrice);
+        const nw = Number(item.unitPrice);
+        let variationPct = 0;
+        if (curr !== 0) variationPct = ((nw - curr) / curr) * 100;
+        priceChanges.push({
+          itemId: existing.id,
+          code: existing.code,
+          name: existing.name,
+          currentPrice: String(existing.unitPrice),
+          newPrice: item.unitPrice,
+          variationPct,
+        });
+      }
+    }
+  }
+
+  return { fieldChanges, priceChanges };
+}
+
+/**
+ * Versión legacy que usa preview (para compatibilidad).
+ * Convierte el preview a plan y delega en computeImportChangesFromPlan.
+ */
+export function computeImportChanges(
+  existingItems: Array<{ id: string; code: string | null; name: string; unit: string; category: string; unitPrice: string }>,
+  preview: ImportPreview,
+): { fieldChanges: FieldChange[]; priceChanges: PriceChange[] } {
+  const plan = buildExecutionPlan({ mapping: preview.mapping, rows: preview.rows });
+  return computeImportChangesFromPlan(existingItems, plan);
 }

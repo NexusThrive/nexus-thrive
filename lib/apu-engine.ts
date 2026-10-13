@@ -593,3 +593,40 @@ export function buildApuSnapshot(input: {
     })),
   };
 }
+/**
+ * Determina si un valor debe mostrar badge "Revisar":
+ * SOLO si supera p99 Y es mayor a 2x la mediana de su unidad.
+ * Función pura, sin efectos colaterales.
+ */
+export function shouldShowReviewBadge(
+  value: number,
+  p99: number | undefined,
+  median: number | undefined,
+): boolean {
+  if (p99 === undefined || median === undefined) return false;
+  return value > p99 && value > median * 2;
+}
+
+/**
+ * Variante para costo unitario de actividad (ya parseado a number).
+ */
+export function shouldReviewActivityUnitCost(
+  unitCost: number,
+  p99ByUnit: Record<string, number>,
+  medianByUnit: Record<string, number>,
+  unit: string,
+): boolean {
+  return shouldShowReviewBadge(unitCost, p99ByUnit[unit], medianByUnit[unit]);
+}
+
+/**
+ * Variante para consumo de insumo (ya parseado a number).
+ */
+export function shouldReviewItemConsumption(
+  consumption: number,
+  p99ByUnit: Record<string, number>,
+  medianByUnit: Record<string, number>,
+  itemUnit: string,
+): boolean {
+  return shouldShowReviewBadge(consumption, p99ByUnit[itemUnit], medianByUnit[itemUnit]);
+}

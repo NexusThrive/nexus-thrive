@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "verify": "pnpm exec tsc --noEmit && pnpm test --run 2>&1 | grep -E 'Test Files|Tests' | head -2 && pnpm test:integration 2>&1 | grep -E 'Test Files|Tests' | head -1 && pnpm build 2>&1 | grep -E '○|ƒ' | wc -l && echo 'verify: OK'"
+  }
+}

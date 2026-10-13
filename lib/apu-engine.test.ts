@@ -272,3 +272,54 @@ describe("apu-engine — apuItemCategoryToResourceType (función pura)", () => {
     }
   });
 });
+
+import { shouldShowReviewBadge, shouldReviewActivityUnitCost, shouldReviewItemConsumption } from "./apu-engine";
+
+describe("apu-engine — badge rule (pure functions)", () => {
+  describe("shouldShowReviewBadge", () => {
+    test("false cuando p99 o median undefined", () => {
+      expect(shouldShowReviewBadge(100, undefined, 50)).toBe(false);
+      expect(shouldShowReviewBadge(100, 200, undefined)).toBe(false);
+      expect(shouldShowReviewBadge(100, undefined, undefined)).toBe(false);
+    });
+
+    test("false cuando no supera p99", () => {
+      expect(shouldShowReviewBadge(150, 200, 100)).toBe(false);
+      expect(shouldShowReviewBadge(200, 200, 100)).toBe(false);
+    });
+
+    test("false cuando supera p99 pero no 2x median", () => {
+      expect(shouldShowReviewBadge(250, 200, 150)).toBe(false);
+      expect(shouldShowReviewBadge(300, 200, 150)).toBe(false);
+    });
+
+    test("true cuando supera p99 Y > 2x median", () => {
+      expect(shouldShowReviewBadge(301, 200, 150)).toBe(true);
+      expect(shouldShowReviewBadge(500, 200, 100)).toBe(true);
+    });
+  });
+
+  describe("shouldReviewActivityUnitCost", () => {
+    const p99 = { M2: 200, M3: 300 };
+    const median = { M2: 100, M3: 150 };
+
+    test("usa unidad correcta", () => {
+      expect(shouldReviewActivityUnitCost(301, p99, median, "M2")).toBe(true);
+      expect(shouldReviewActivityUnitCost(301, p99, median, "M3")).toBe(true);
+    });
+
+    test("false si unidad no existe en p99/median", () => {
+      expect(shouldReviewActivityUnitCost(1000, p99, median, "KG")).toBe(false);
+    });
+  });
+
+  describe("shouldReviewItemConsumption", () => {
+    const p99 = { M2: 0.5, KG: 10 };
+    const median = { M2: 0.25, KG: 5 };
+
+    test("usa unidad del insumo", () => {
+      expect(shouldReviewItemConsumption(0.6, p99, median, "M2")).toBe(true);
+      expect(shouldReviewItemConsumption(0.5, p99, median, "M2")).toBe(false);
+    });
+  });
+});
