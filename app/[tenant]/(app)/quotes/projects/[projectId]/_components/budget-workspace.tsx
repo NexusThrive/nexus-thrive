@@ -2,10 +2,11 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { BadgeCheck, Lock, LockOpen, Pencil, Plus, Settings2, SlidersHorizontal, Trash2 } from "lucide-react";
+import { BadgeCheck, Layers, Lock, LockOpen, Pencil, Plus, Settings2, SlidersHorizontal, Trash2 } from "lucide-react";
 import { microToPercent } from "@/lib/apu-engine";
 import { formatMoneyMicro, formatQuantityMicro } from "@/lib/format";
 import { NLoader } from "@/components/brand/n-loader";
+import { ToastProvider } from "@/components/brand/toast";
 import type { BudgetBaselineData, ProjectBudgetData } from "@/lib/tenant-db";
 import {
   approveBudgetBaselineAction,
@@ -16,6 +17,7 @@ import {
 import ChapterModal, { type EditableChapter } from "./chapter-modal";
 import ItemModal, { type EditableBudgetItem } from "./item-modal";
 import AiuConfigModal from "./aiu-config-modal";
+import CatalogImportModal from "./catalog-import-modal";
 
 /** Tarjeta KPI del resumen financiero del presupuesto. */
 function KpiCard({
@@ -81,6 +83,10 @@ export default function BudgetWorkspace({
   );
   const [aiuOpen, setAiuOpen] = useState(false);
   const [itemChapter, setItemChapter] = useState<{
+    id: string;
+    label: string;
+  } | null>(null);
+  const [importChapter, setImportChapter] = useState<{
     id: string;
     label: string;
   } | null>(null);
@@ -361,6 +367,19 @@ export default function BudgetWorkspace({
                       <button
                         type="button"
                         onClick={() =>
+                          setImportChapter({
+                            id: chapter.id,
+                            label: `Capítulo ${chapter.order}`,
+                          })
+                        }
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                      >
+                        <Layers aria-hidden="true" className="h-3.5 w-3.5" />
+                        Importar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
                           setItemChapter({
                             id: chapter.id,
                             label: `Capítulo ${chapter.order}`,
@@ -547,6 +566,21 @@ export default function BudgetWorkspace({
           directCostTotal={budget.directCostTotal}
         />
       ) : null}
+
+      {/* ToastProvider siempre montado: el toast de éxito sobrevive al cierre
+          del modal de importación (el contenedor vive lo que el workspace). */}
+      <ToastProvider>
+        {importChapter ? (
+          <CatalogImportModal
+            tenantSlug={tenantSlug}
+            projectId={projectId}
+            chapterId={importChapter.id}
+            chapterLabel={importChapter.label}
+            expectedRevision={budget.revision}
+            onClose={() => setImportChapter(null)}
+          />
+        ) : null}
+      </ToastProvider>
     </div>
   );
 }

@@ -1,7 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { type ProjectBudgetData } from "@/lib/tenant-db";
+import { decimalToMicro } from "@/lib/apu-engine";
+import type {
+  ApuActivityDetail,
+  ApuActivityRow,
+  ProjectBudgetData,
+} from "@/lib/tenant-db";
 import {
   canGovernBudget,
   requireTenantContext,
@@ -467,4 +472,95 @@ export async function approveBudgetBaselineAction(
   }
   revalidatePath(`/${tenantSlug}/quotes/projects/${projectId}`);
   return { ok: true };
+}
+
+/* ------------------------------------------------------------------ */
+/* Importación desde el catálogo APU (Etapa 3)                         */
+/* ------------------------------------------------------------------ */
+
+/** Cantidad por defecto de una partida importada: 1.000000 unidad. */
+const DEFAULT_QUANTITY_MICRO = BigInt(1_000_000);
+
+/**
+ * Busca actividades **vigentes** del catálogo APU para el importador del
+ * presupuesto. Lee el catálogo del mismo tenant (aislado por `requireTenantContext`).
+ * Devuelve `null` cuando no hay acceso (el caller trata como error genérico).
+ */
+export async function searchCatalogActivitiesAction(
+  tenantSlug: string,
+  query: string,
+  unit?: string,
+): Promise<ApuActivityRow[] | null> {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return null;
+  }
+  const { rows } = await context.tenantDb.apu.listActivities({
+    q: query,
+    unit: unit && unit.trim() !== "" ? unit.trim() : undefined,
+    active: true,
+    limit: 50,
+  });
+  return rows;
+}
+
+/** Detalle de una actividad del catálogo (composición para la vista previa). */
+export async function getCatalogActivityDetailAction(
+  tenantSlug: string,
+  activityId: string,
+): Promise<ApuActivityDetail | null> {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context || !activityId) {
+    return null;
+  }
+  return context.tenantDb.apu.getActivity(activityId);
+}
+
+/**
+ * Importa una actividad del catálogo como partida del presupuesto: crea el
+ * `BudgetItem` y congela su composición como recursos (`BudgetItemResource`)
+ * con los precios del catálogo en este instante. La cantidad llega como
+ * decimal legible (p. ej. "12.5") y se escala a micro-unidades; vacía = 1.
+ *
+ * El presupuesto se deriva del proyecto (relación 1:1) — no se recibe `budgetId`.
+ */
+export async function importActivityFromCatalogAction(
+  tenantSlug: string,
+  projectId: string,
+  chapterId: string,
+  activityId: string,
+  quantity: string,
+  expectedRevision?: number,
+): Promise<{ ok: boolean; message?: string; itemId?: string }> {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return { ok: false, message: "No tienes acceso a este negocio." };
+  }
+  if (!projectId || !chapterId || !activityId) {
+    return { ok: false, message: "Datos de importación incompletos." };
+  }
+
+  const rawQuantity = quantity.trim();
+  const quantityMicro =
+    rawQuantity === "" ? DEFAULT_QUANTITY_MICRO : decimalToMicro(rawQuantity);
+  if (quantityMicro === null || quantityMicro <= BigInt(0)) {
+    return { ok: false, message: "La cantidad debe ser mayor a cero." };
+  }
+
+  try {
+    const { id } = await context.tenantDb.budgets.importActivityFromCatalog(
+      projectId,
+      chapterId,
+      activityId,
+      quantityMicro,
+      expectedRevision,
+    );
+    revalidatePath(`/${tenantSlug}/quotes/projects/${projectId}`);
+    return { ok: true, itemId: id };
+  } catch (error) {
+    return {
+      ok: false,
+      message: toFormError(error, "No se pudo importar la actividad."),
+    };
+  }
 }
