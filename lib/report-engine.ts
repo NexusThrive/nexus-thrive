@@ -537,10 +537,11 @@ export function buildBomExportData(budget: ProjectBudgetData | null): BomResourc
       for (const resource of item.resources) {
         const perf = microToNumber(resource.performance);
         const qtyItem = microToNumber(item.quantity);
-        const wastePctMicro = BigInt(item.wastePct || "0");
-        // qty = performance * quantity * (1 + wastePct/1_000_000)
-        const wasteFactor = (BigInt(1_000_000) + BigInt(item.wastePct || "0")) / BigInt(1_000_000);
-        const qty = perf * microToNumber(item.quantity) * Number(wasteFactor);
+const wastePctMicro = BigInt(resource.wastePct || "0");
+        // qty = performance * quantity * (1 + wastePct/1_000_000) - per resource line
+        // Use floating point division to avoid BigInt integer division truncation
+        const wasteFactor = Number(BigInt(1_000_000) + wastePctMicro) / 1_000_000;
+        const qty = perf * microToNumber(item.quantity) * wasteFactor;        console.log("[BOM DEBUG] qty:", qty);
         const unitPrice = microToNumber(resource.unitPrice);
         const totalCost = qty * unitPrice;
 

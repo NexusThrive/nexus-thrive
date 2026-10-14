@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'55ff59f96a0459588e0d594f1756ab42e89b303f46891c84963125389c1400f2'>;
+  StorageHashBase<'d4509c335e914a2bda4c5a19954c47cc84007ba0fd294a7ca4f5a2d05e71d931'>;
 export type ExecutionHash =
   ExecutionHashBase<'3304e4cb5cf375cce3d134b699be42b681880ab36538dc1b5d16b14ba96a675a'>;
 export type ProfileHash =
@@ -366,6 +366,7 @@ export type FieldOutputTypes = {
       readonly unit: CodecTypes['pg/text@1']['output'];
       readonly unitPrice: CodecTypes['pg/int8@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly wastePct: CodecTypes['pg/int8@1']['output'];
     };
     readonly BudgetLockEvent: {
       readonly action: CodecTypes['pg/text@1']['output'];
@@ -774,6 +775,7 @@ export type FieldInputTypes = {
       readonly unit: CodecTypes['pg/text@1']['input'];
       readonly unitPrice: CodecTypes['pg/int8@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly wastePct: CodecTypes['pg/int8@1']['input'];
     };
     readonly BudgetLockEvent: {
       readonly action: CodecTypes['pg/text@1']['input'];
@@ -1182,6 +1184,7 @@ export type StorageColumnTypes = {
       readonly unit: CodecTypes['pg/text@1']['output'];
       readonly unitPrice: CodecTypes['pg/int8@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly wastePct: CodecTypes['pg/int8@1']['output'];
     };
     readonly BudgetLockEvent: {
       readonly action: CodecTypes['pg/text@1']['output'];
@@ -1590,6 +1593,7 @@ export type StorageColumnInputTypes = {
       readonly unit: CodecTypes['pg/text@1']['input'];
       readonly unitPrice: CodecTypes['pg/int8@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly wastePct: CodecTypes['pg/int8@1']['input'];
     };
     readonly BudgetLockEvent: {
       readonly action: CodecTypes['pg/text@1']['input'];
@@ -2021,6 +2025,7 @@ export namespace Models {
     unit: CodecTypes['pg/text@1']['output'];
     unitPrice: CodecTypes['pg/int8@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    wastePct: CodecTypes['pg/int8@1']['output'];
     item: public_BudgetItem;
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'item' | 'tenant';
@@ -3311,6 +3316,15 @@ type ContractBase = Omit<
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: false;
+                };
+                readonly wastePct: {
+                  readonly nativeType: 'int8';
+                  readonly codecId: 'pg/int8@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int8@1', '0'>;
+                  };
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
@@ -6428,6 +6442,10 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/timestamptz-temporal@1';
                 };
               };
+              readonly wastePct: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+              };
             };
             readonly relations: {
               readonly item: {
@@ -6472,6 +6490,7 @@ type ContractBase = Omit<
                 readonly unit: { readonly column: 'unit' };
                 readonly unitPrice: { readonly column: 'unitPrice' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
+                readonly wastePct: { readonly column: 'wastePct' };
               };
             };
           };

@@ -1851,6 +1851,13 @@
                   "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
+              },
+              "wastePct": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int8@1",
+                  "kind": "scalar"
+                }
               }
             },
             "relations": {
@@ -1927,6 +1934,9 @@
                 },
                 "updatedAt": {
                   "column": "updatedAt"
+                },
+                "wastePct": {
+                  "column": "wastePct"
                 }
               },
               "namespaceId": "public",
@@ -6530,6 +6540,15 @@
                   "codecId": "pg/timestamptz-temporal@1",
                   "nativeType": "timestamptz",
                   "nullable": false
+                },
+                "wastePct": {
+                  "codecId": "pg/int8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "int8",
+                  "nullable": false
                 }
               },
               "foreignKeys": [
@@ -9491,7 +9510,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "55ff59f96a0459588e0d594f1756ab42e89b303f46891c84963125389c1400f2"
+    "storageHash": "d4509c335e914a2bda4c5a19954c47cc84007ba0fd294a7ca4f5a2d05e71d931"
   },
   "execution": {
     "executionHash": "3304e4cb5cf375cce3d134b699be42b681880ab36538dc1b5d16b14ba96a675a",

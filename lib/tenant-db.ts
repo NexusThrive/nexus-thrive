@@ -493,6 +493,8 @@ export type BudgetResourceData = {
   unitPrice: string;
   totalPrice: string;
   imageUrl: string | null;
+  /** Porcentaje de desperdicio de esta línea (micro, 1_000_000 = 100%). Default 0. */
+  wastePct: string;
 };
 
 export type BudgetItemData = {
@@ -916,6 +918,7 @@ async function loadBudgetTree(budget: BudgetRow): Promise<ProjectBudgetData> {
   const resources = itemIds.length
     ? await db.orm.public.BudgetItemResource
         .where((resource) => resource.itemId.in(itemIds))
+        .select("id", "itemId", "type", "name", "unit", "performance", "unitPrice", "totalPrice", "imageUrl", "wastePct")
         .all()
     : [];
 
@@ -931,6 +934,7 @@ async function loadBudgetTree(budget: BudgetRow): Promise<ProjectBudgetData> {
       unitPrice: String(resource.unitPrice),
       totalPrice: String(resource.totalPrice),
       imageUrl: resource.imageUrl,
+      wastePct: String(resource.wastePct),
     });
     resourcesByItem.set(resource.itemId, list);
   }

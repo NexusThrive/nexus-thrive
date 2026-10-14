@@ -690,6 +690,8 @@ model BudgetItemResource {
   imageUrl      String?
   /// Origen: ID de insumo del catálogo APU desde el que se importó este recurso.
   sourceItemId  String?
+  /// Porcentaje de desperdicio de esta línea (micro, 1_000_000 = 100%). Default 0.
+  wastePct      BigInt @default(0)
   createdAt     DateTime   @default(now())
   updatedAt     temporal.updatedAt()
 
