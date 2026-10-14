@@ -3586,6 +3586,107 @@ export function createTenantDb(tenantId: string) {
         });
         return { id: created.id, version: created.version };
       },
+      /**
+       * Actualiza un recurso de una partida (incluye wastePct). Valida
+       * pertenencia proyecto->capítulo->partida->presupuesto. Rechaza si está
+       * bloqueado. Recalcula los totales en la misma transacción.
+       */
+updateResource: async (
+         projectId: string,
+         resourceId: string,
+         updates: { wastePct?: bigint | string },
+         expectedRevision?: number,
+       ): Promise<void> => {
+        const budget = await db.orm.public.ProjectBudget
+          .where({ projectId, tenantId })
+          .first();
+        if (!budget) {
+          throw new Error("Presupuesto no encontrado en este negocio.");
+        }
+        if (budget.isLocked) {
+          throw new Error("El presupuesto está bloqueado.");
+        }
+        assertRevision(budget, expectedRevision);
+
+        const resource = await db.orm.public.BudgetItemResource
+          .where({ id: resourceId, tenantId })
+          .first();
+        if (!resource) {
+          throw new Error("Recurso no encontrado en esta negocio.");
+        }
+
+        const item = await db.orm.public.BudgetItem
+          .where({ id: resource.itemId, tenantId })
+          .first();
+        if (!item) {
+          throw new Error("Partida no encontrada en esta negocio.");
+        }
+        if (item.chapterId) {
+          const chapter = await db.orm.public.BudgetChapter
+            .where({ id: item.chapterId, budgetId: budget.id })
+            .select("id")
+            .first();
+          if (!chapter) {
+            throw new Error("Partida no encontrada en este presupuesto.");
+          }
+        }
+
+        const updateData: Record<string, unknown> = {};
+        if (updates.wastePct !== undefined) {
+          updateData.wastePct = typeof updates.wastePct === "bigint"
+            ? updates.wastePct
+            : BigInt(updates.wastePct);
+        }
+
+await db.transaction(async (tx) => {
+          // Actualiza el wastePct de la línea de recurso
+          if (Object.keys(updateData).length > 0) {
+            await tx.orm.public.BudgetItemResource
+              .where({ id: resourceId, tenantId })
+              .update(updateData);
+          }
+
+          // Recalcula el costo total de la partida considerando el desperdicio
+          // actualizado en el recurso. Se obtienen todas las líneas de recurso
+          // del ítem y se aplica la aritmética de punto fijo del proyecto:
+          //   cost = performance × (SCALE + wastePct) × unitPrice / (SCALE²)
+          const allResources = await tx.orm.public.BudgetItemResource
+            .where({ itemId: resource.itemId, tenantId })
+            .all();
+
+          let totalCostDirect = BigInt(0);
+          for (const res of allResources) {
+            // Fórmula: performance × (SCALE + wastePct) × unitPrice / (SCALE × SCALE)
+            // Redondeo half-up: (n + d/2) / d
+            const resTotalPrice = (res.performance * (BigInt(1_000_000) + res.wastePct) * res.unitPrice + BigInt(1_000_000) * BigInt(1_000_000) / BigInt(2)) / (BigInt(1_000_000) * BigInt(1_000_000));
+            totalCostDirect += resTotalPrice;
+          }
+
+          // Unit cost direct = cost total / quantity (ambos en micro-unidades)
+          const unitCostDirect = totalCostDirect !== BigInt(0)
+            ? (totalCostDirect * BigInt(item.quantity) + BigInt(1_000_000) / BigInt(2)) / BigInt(item.quantity)
+            : BigInt(0);
+
+          await tx.orm.public.BudgetItem
+            .where({ id: item.id, tenantId })
+            .update({
+              unitCostDirect,
+              totalCostDirect,
+            });
+
+          await recalcBudgetTotals(tx, budget.id, {
+            admin: budget.aiuAdminPct,
+            imprev: budget.aiuImprevPct,
+            utilidad: budget.aiuUtilidadPct,
+            iva: budget.ivaUtilidadPct,
+          });
+          await tx.orm.public.ProjectBudget
+            .where({ id: budget.id })
+            .update({ revision: budget.revision + 1 });
+        });
+      },
+
+
     },
 
     lean: {

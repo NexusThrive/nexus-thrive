@@ -20,4 +20,5 @@ pnpm exec vitest run \
   lib/prisma8-query-patterns.integration.test.ts \
   lib/tenant-db.cache-invalidation.test.ts \
   lib/tenant-db.archived-rejection.test.ts \
-  lib/apu-importer.price-behavior.test.ts
+  lib/apu-importer.price-behavior.test.ts \
+  lib/apu-importer.field-changes.test.ts
