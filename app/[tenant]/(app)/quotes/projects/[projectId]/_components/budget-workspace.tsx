@@ -2,12 +2,16 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { BadgeCheck, Layers, Lock, LockOpen, Pencil, Plus, Settings2, SlidersHorizontal, Trash2 } from "lucide-react";
+import { BadgeCheck, Boxes, Layers, Lock, LockOpen, Pencil, Plus, Settings2, SlidersHorizontal, Trash2 } from "lucide-react";
 import { microToPercent } from "@/lib/apu-engine";
 import { formatMoneyMicro, formatQuantityMicro } from "@/lib/format";
 import { NLoader } from "@/components/brand/n-loader";
 import { ToastProvider } from "@/components/brand/toast";
-import type { BudgetBaselineData, ProjectBudgetData } from "@/lib/tenant-db";
+import type {
+  BudgetBaselineData,
+  BudgetItemData,
+  ProjectBudgetData,
+} from "@/lib/tenant-db";
 import {
   approveBudgetBaselineAction,
   deleteBudgetItemAction,
@@ -18,6 +22,7 @@ import ChapterModal, { type EditableChapter } from "./chapter-modal";
 import ItemModal, { type EditableBudgetItem } from "./item-modal";
 import AiuConfigModal from "./aiu-config-modal";
 import CatalogImportModal from "./catalog-import-modal";
+import ApuEditorModal from "./apu-editor-modal";
 
 /** Tarjeta KPI del resumen financiero del presupuesto. */
 function KpiCard({
@@ -95,6 +100,7 @@ export default function BudgetWorkspace({
     chapterLabel: string;
     item: EditableBudgetItem;
   } | null>(null);
+  const [apuItem, setApuItem] = useState<BudgetItemData | null>(null);
 
   const router = useRouter();
   const [isToggling, startToggle] = useTransition();
@@ -463,9 +469,18 @@ export default function BudgetWorkspace({
                               </span>
                             </div>
                             {item.resources.length > 0 ? (
-                              <p className="mt-0.5 text-xs text-muted-foreground">
-                                {item.resources.length} recursos (APU)
-                              </p>
+                              <button
+                                type="button"
+                                onClick={() => setApuItem(item)}
+                                className="mt-0.5 inline-flex items-center gap-1 text-xs text-muted-foreground transition hover:text-accent-text"
+                              >
+                                <Boxes aria-hidden="true" className="h-3 w-3" />
+                                {item.resources.length}{" "}
+                                {item.resources.length === 1
+                                  ? "recurso"
+                                  : "recursos"}{" "}
+                                (APU)
+                              </button>
                             ) : null}
                           </td>
                           <td className="px-4 py-2 text-right font-mono text-xs text-muted-foreground">
@@ -483,6 +498,16 @@ export default function BudgetWorkspace({
                           {!budget.isLocked ? (
                             <td className="px-4 py-2">
                               <div className="flex items-center justify-end gap-1.5">
+                                {item.resources.length > 0 ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => setApuItem(item)}
+                                    aria-label={`Editar APU de ${item.code || item.description}`}
+                                    className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border bg-card text-accent-text transition hover:bg-accent/10"
+                                  >
+                                    <Boxes aria-hidden="true" className="h-3.5 w-3.5" />
+                                  </button>
+                                ) : null}
                                 <button
                                   type="button"
                                   onClick={() =>
@@ -567,8 +592,8 @@ export default function BudgetWorkspace({
         />
       ) : null}
 
-      {/* ToastProvider siempre montado: el toast de éxito sobrevive al cierre
-          del modal de importación (el contenedor vive lo que el workspace). */}
+      {/* ToastProvider siempre montado: los toasts de los modales (importación
+          y compositor APU) sobreviven al cierre del modal. */}
       <ToastProvider>
         {importChapter ? (
           <CatalogImportModal
@@ -578,6 +603,15 @@ export default function BudgetWorkspace({
             chapterLabel={importChapter.label}
             expectedRevision={budget.revision}
             onClose={() => setImportChapter(null)}
+          />
+        ) : null}
+        {apuItem ? (
+          <ApuEditorModal
+            tenantSlug={tenantSlug}
+            projectId={projectId}
+            item={apuItem}
+            expectedRevision={budget.revision}
+            onClose={() => setApuItem(null)}
           />
         ) : null}
       </ToastProvider>

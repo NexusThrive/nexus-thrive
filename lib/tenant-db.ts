@@ -37,6 +37,7 @@ import {
   isValidPercent,
   lineTotal,
   moneyToString,
+  resourceLineCostMicro,
   type ApuItemCategoryValue,
   type ApuSnapshot,
   type QuoteStatusValue,
@@ -613,6 +614,13 @@ export type UpdateBudgetItemInput = {
   quantity: bigint;
   /** Costo unitario directo en micro-pesos. */
   unitCostDirect: bigint;
+};
+
+export type UpdateResourceInput = {
+  /** Rendimiento en micro-unidades (1_000_000 = 1.000000). */
+  performance: bigint;
+  /** Desperdicio como fracción en micro (100_000 = 10 %). */
+  wastePct: bigint;
 };
 
 /**
@@ -3224,8 +3232,6 @@ export function createTenantDb(tenantId: string) {
           throw new Error("La actividad no tiene composición APU para importar.");
         }
 
-        const SCALE_MICRO = BigInt(1_000_000);
-        const HALF_SCALE_SQ = (SCALE_MICRO * SCALE_MICRO) / BigInt(2);
         const resources: {
           type: ResourceTypeValue;
           name: string;
@@ -3259,9 +3265,11 @@ export function createTenantDb(tenantId: string) {
           }
           // Porcentaje del catálogo (10 = 10 %) → fracción almacenada (100_000 = 10 %).
           const wastePct = wastePercentMicro / BigInt(100);
-          const lineCost =
-            (performance * (SCALE_MICRO + wastePct) * unitPrice + HALF_SCALE_SQ) /
-            (SCALE_MICRO * SCALE_MICRO);
+          const lineCost = resourceLineCostMicro({
+            performance,
+            wastePct,
+            unitPrice,
+          });
           unitCostDirect += lineCost;
           resources.push({
             type: apuItemCategoryToResourceType(item.category),
@@ -3784,16 +3792,22 @@ export function createTenantDb(tenantId: string) {
         return { id: created.id, version: created.version };
       },
       /**
-       * Actualiza un recurso de una partida (incluye wastePct). Valida
-       * pertenencia proyecto->capítulo->partida->presupuesto. Rechaza si está
-       * bloqueado. Recalcula los totales en la misma transacción.
+       * Actualiza un recurso de una partida: rendimiento (`performance`) y/o
+       * porcentaje de desperdicio (`wastePct`, fracción en micro). Valida la
+       * pertenencia proyecto → capítulo → partida → recurso y rechaza si el
+       * presupuesto está bloqueado (concurrencia optimista vía `expectedRevision`).
+       *
+       * Recalcula en la misma transacción el `totalPrice` de cada línea, el
+       * costo unitario directo de la partida (Σ de líneas) y el total
+       * (`quantity × unitCostDirect`), más la cascada AIU. Devuelve la nueva
+       * revisión para encadenar ediciones sin caer en `STALE_REVISION`.
        */
-updateResource: async (
-         projectId: string,
-         resourceId: string,
-         updates: { wastePct?: bigint | string },
-         expectedRevision?: number,
-       ): Promise<void> => {
+      updateResource: async (
+        projectId: string,
+        resourceId: string,
+        updates: { performance?: bigint | string; wastePct?: bigint | string },
+        expectedRevision?: number,
+      ): Promise<{ revision: number }> => {
         const budget = await db.orm.public.ProjectBudget
           .where({ projectId, tenantId })
           .first();
@@ -3809,14 +3823,14 @@ updateResource: async (
           .where({ id: resourceId, tenantId })
           .first();
         if (!resource) {
-          throw new Error("Recurso no encontrado en esta negocio.");
+          throw new Error("Recurso no encontrado en este negocio.");
         }
 
         const item = await db.orm.public.BudgetItem
           .where({ id: resource.itemId, tenantId })
           .first();
         if (!item) {
-          throw new Error("Partida no encontrada en esta negocio.");
+          throw new Error("Partida no encontrada en este negocio.");
         }
         if (item.chapterId) {
           const chapter = await db.orm.public.BudgetChapter
@@ -3828,48 +3842,67 @@ updateResource: async (
           }
         }
 
-        const updateData: Record<string, unknown> = {};
+        const updateData: { performance?: bigint; wastePct?: bigint } = {};
+        if (updates.performance !== undefined) {
+          const performance =
+            typeof updates.performance === "bigint"
+              ? updates.performance
+              : BigInt(updates.performance);
+          if (performance <= BigInt(0)) {
+            throw new Error("El rendimiento debe ser mayor a cero.");
+          }
+          updateData.performance = performance;
+        }
         if (updates.wastePct !== undefined) {
-          updateData.wastePct = typeof updates.wastePct === "bigint"
-            ? updates.wastePct
-            : BigInt(updates.wastePct);
+          const wastePct =
+            typeof updates.wastePct === "bigint"
+              ? updates.wastePct
+              : BigInt(updates.wastePct);
+          if (wastePct < BigInt(0)) {
+            throw new Error("El desperdicio no puede ser negativo.");
+          }
+          updateData.wastePct = wastePct;
         }
 
-await db.transaction(async (tx) => {
-          // Actualiza el wastePct de la línea de recurso
+        const revision = await db.transaction(async (tx) => {
           if (Object.keys(updateData).length > 0) {
             await tx.orm.public.BudgetItemResource
               .where({ id: resourceId, tenantId })
               .update(updateData);
           }
 
-          // Recalcula el costo total de la partida considerando el desperdicio
-          // actualizado en el recurso. Se obtienen todas las líneas de recurso
-          // del ítem y se aplica la aritmética de punto fijo del proyecto:
-          //   cost = performance × (SCALE + wastePct) × unitPrice / (SCALE²)
+          // Se recalculan TODAS las líneas del ítem: el `totalPrice` de cada
+          // una se refresca (para que la vista previa del APU no quede
+          // desincronizada) y el costo unitario directo de la partida es la
+          // Σ de las líneas, con la aritmética de punto fijo del proyecto.
           const allResources = await tx.orm.public.BudgetItemResource
             .where({ itemId: resource.itemId, tenantId })
             .all();
 
-          let totalCostDirect = BigInt(0);
+          let unitCostDirect = BigInt(0);
           for (const res of allResources) {
-            // Fórmula: performance × (SCALE + wastePct) × unitPrice / (SCALE × SCALE)
-            // Redondeo half-up: (n + d/2) / d
-            const resTotalPrice = (res.performance * (BigInt(1_000_000) + res.wastePct) * res.unitPrice + BigInt(1_000_000) * BigInt(1_000_000) / BigInt(2)) / (BigInt(1_000_000) * BigInt(1_000_000));
-            totalCostDirect += resTotalPrice;
+            const lineCost = resourceLineCostMicro({
+              performance: res.performance,
+              wastePct: res.wastePct,
+              unitPrice: res.unitPrice,
+            });
+            unitCostDirect += lineCost;
+            if (BigInt(res.totalPrice) !== lineCost) {
+              await tx.orm.public.BudgetItemResource
+                .where({ id: res.id, tenantId })
+                .update({ totalPrice: lineCost });
+            }
           }
 
-          // Unit cost direct = cost total / quantity (ambos en micro-unidades)
-          const unitCostDirect = totalCostDirect !== BigInt(0)
-            ? (totalCostDirect * BigInt(item.quantity) + BigInt(1_000_000) / BigInt(2)) / BigInt(item.quantity)
-            : BigInt(0);
+          // Costo directo total de la partida = quantity × unitCostDirect.
+          const totalCostDirect = calculateItemTotal(
+            item.quantity,
+            unitCostDirect,
+          );
 
           await tx.orm.public.BudgetItem
             .where({ id: item.id, tenantId })
-            .update({
-              unitCostDirect,
-              totalCostDirect,
-            });
+            .update({ unitCostDirect, totalCostDirect });
 
           await recalcBudgetTotals(tx, budget.id, {
             admin: budget.aiuAdminPct,
@@ -3880,7 +3913,11 @@ await db.transaction(async (tx) => {
           await tx.orm.public.ProjectBudget
             .where({ id: budget.id })
             .update({ revision: budget.revision + 1 });
+
+          return budget.revision + 1;
         });
+
+        return { revision };
       },
 
 

@@ -441,6 +441,32 @@ export function calculateItemTotal(quantity: bigint, unitCost: bigint): bigint {
   return roundDiv(quantity * unitCost, SCALE);
 }
 
+/**
+ * Costo de UNA línea de recurso del presupuesto, todo en micro-unidades:
+ *   performance × (SCALE + wastePct) × unitPrice / SCALE²
+ * `wastePct` es la fracción de desperdicio en micro (1_000_000 = 100 %).
+ * Redondeo half-up, idéntico a `updateResource` e `importActivityFromCatalog`.
+ * Rechaza valores negativos.
+ */
+export function resourceLineCostMicro(params: {
+  performance: bigint;
+  wastePct: bigint;
+  unitPrice: bigint;
+}): Money {
+  const { performance, wastePct, unitPrice } = params;
+  if (
+    performance < BigInt(0) ||
+    wastePct < BigInt(0) ||
+    unitPrice < BigInt(0)
+  ) {
+    throw new Error("resourceLineCostMicro: valores negativos no permitidos.");
+  }
+  return roundDiv(
+    performance * (SCALE + wastePct) * unitPrice,
+    SCALE * SCALE,
+  );
+}
+
 export type BudgetTotals = {
   adminTotal: bigint;
   imprevTotal: bigint;

@@ -15,6 +15,7 @@ import {
   validateAiuConfig,
   validateCreateBudgetItem,
   validateCreateChapter,
+  validateUpdateResource,
   type AiuFieldErrors,
   type AiuFormValues,
   type BudgetItemFieldErrors,
@@ -561,6 +562,57 @@ export async function importActivityFromCatalogAction(
     return {
       ok: false,
       message: toFormError(error, "No se pudo importar la actividad."),
+    };
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Compositor de APU — edición de líneas de recurso (Etapa 3)          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Actualiza una línea de APU (`performance` y `wastePct`) desde el compositor
+ * interactivo. Los valores llegan como decimales legibles (p. ej. "1.5" y
+ * "10"); vacíos se rechazan (el modal valida antes). Devuelve la nueva
+ * revisión del presupuesto para encadenar ediciones sin `STALE_REVISION`.
+ */
+export async function updateResourceAction(
+  tenantSlug: string,
+  projectId: string,
+  resourceId: string,
+  performance: string,
+  wastePct: string,
+  expectedRevision?: number,
+): Promise<{ ok: boolean; message?: string; revision?: number }> {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) {
+    return { ok: false, message: "No tienes acceso a este negocio." };
+  }
+  if (!projectId || !resourceId) {
+    return { ok: false, message: "Línea de APU no válida." };
+  }
+
+  const validation = validateUpdateResource(performance, wastePct);
+  if (!validation.ok) {
+    const firstError =
+      Object.values(validation.errors).find((msg) => Boolean(msg)) ??
+      "Revisá el rendimiento y el desperdicio.";
+    return { ok: false, message: firstError };
+  }
+
+  try {
+    const { revision } = await context.tenantDb.budgets.updateResource(
+      projectId,
+      resourceId,
+      validation.input,
+      expectedRevision,
+    );
+    revalidatePath(`/${tenantSlug}/quotes/projects/${projectId}`);
+    return { ok: true, revision };
+  } catch (error) {
+    return {
+      ok: false,
+      message: toFormError(error, "No se pudo actualizar la línea de APU."),
     };
   }
 }

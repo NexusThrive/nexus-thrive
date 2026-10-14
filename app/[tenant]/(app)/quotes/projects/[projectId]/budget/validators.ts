@@ -10,6 +10,7 @@ import type {
   AiuConfigInput,
   CreateBudgetItemInput,
   CreateChapterInput,
+  UpdateResourceInput,
 } from "@/lib/tenant-db";
 
 export const CHAPTER_NAME_MAX = 120;
@@ -244,4 +245,71 @@ export function validateAiuConfig(formData: FormData): AiuValidation {
     values,
     input: { adminPct, imprevPct, utilidadPct, ivaUtilidadPct },
   };
+}
+
+/* ------------------------------------------------------------------ */
+/* Recursos APU (rendimiento / desperdicio)                            */
+/* ------------------------------------------------------------------ */
+
+/** Tope de rendimiento de una línea de recurso (unidades por unidad). */
+export const PERFORMANCE_MAX = 1_000_000;
+/** Tope de desperdicio de una línea de recurso (%). */
+export const WASTE_PCT_MAX = 100;
+
+export type ResourceFormValues = {
+  performance: string;
+  wastePct: string;
+};
+
+export type ResourceFieldErrors = Partial<
+  Record<keyof ResourceFormValues, string>
+>;
+
+export type ResourceValidation =
+  | { ok: true; values: ResourceFormValues; input: UpdateResourceInput }
+  | {
+      ok: false;
+      errors: ResourceFieldErrors;
+      values: ResourceFormValues;
+    };
+
+/**
+ * Valida la edición de una línea de APU desde el compositor: rendimiento
+ * (> 0) y desperdicio (0–100 %). Devuelve siempre los valores leídos (para
+ * repintar) y, si pasa, las micro-unidades listas para `updateResource`.
+ */
+export function validateUpdateResource(
+  performanceRaw: string,
+  wastePctRaw: string,
+): ResourceValidation {
+  const values: ResourceFormValues = {
+    performance: performanceRaw.trim(),
+    wastePct: wastePctRaw.trim(),
+  };
+  const errors: ResourceFieldErrors = {};
+
+  const performance = parseMoney(values.performance);
+  if (performance === null) {
+    errors.performance = "Rendimiento inválido (máx. 6 decimales).";
+  } else if (performance <= BigInt(0)) {
+    errors.performance = "El rendimiento debe ser mayor que cero.";
+  } else if (performance > BigInt(PERFORMANCE_MAX) * BigInt(1_000_000)) {
+    errors.performance = `El rendimiento no puede superar ${PERFORMANCE_MAX.toLocaleString("es-CO")}.`;
+  }
+
+  if (values.wastePct.length === 0) {
+    errors.wastePct = "Ingresa el % de desperdicio (0 si no aplica).";
+  } else if (!isValidPercent(values.wastePct, WASTE_PCT_MAX)) {
+    errors.wastePct = `Desperdicio inválido (0 a ${WASTE_PCT_MAX} %, máx. 6 decimales).`;
+  }
+  const wastePct = percentToMicro(values.wastePct);
+
+  if (
+    Object.keys(errors).length > 0 ||
+    performance === null ||
+    wastePct === null
+  ) {
+    return { ok: false, errors, values };
+  }
+  return { ok: true, values, input: { performance, wastePct } };
 }

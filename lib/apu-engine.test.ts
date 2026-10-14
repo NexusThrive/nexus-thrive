@@ -9,6 +9,8 @@ import {
   activityUnitCost,
   calculateBudgetTotals,
   calculateQuoteTotals,
+  calculateItemTotal,
+  resourceLineCostMicro,
   isValidPercent,
   percentToMicro,
   microToPercent,
@@ -92,6 +94,71 @@ describe("apu-engine — lineTotal (quantity × unitCost)", () => {
     expect(lineTotal("2.5", "100000")).toBe(BigInt(250_000_000_000));
     // 12.5 × 449500 = 5,618,750 (caso dorado unitario)
     expect(lineTotal("12.5", "449500")).toBe(BigInt(5_618_750_000_000));
+  });
+});
+
+describe("apu-engine — resourceLineCostMicro (línea del compositor APU)", () => {
+  test("rendimiento × precio, sin desperdicio", () => {
+    // 7 bultos × 28.000 = 196.000
+    expect(
+      resourceLineCostMicro({
+        performance: parseMoney("7")!,
+        wastePct: BigInt(0),
+        unitPrice: parseMoney("28000")!,
+      }),
+    ).toBe(BigInt(196_000_000_000));
+  });
+
+  test("aplica el desperdicio como fracción en micro (5 % = 50_000)", () => {
+    // 7 × (1 + 0.05) × 28.000 = 205.800
+    expect(
+      resourceLineCostMicro({
+        performance: parseMoney("7")!,
+        wastePct: percentToMicro("5")!,
+        unitPrice: parseMoney("28000")!,
+      }),
+    ).toBe(BigInt(205_800_000_000));
+  });
+
+  test("redondea half-up al micro", () => {
+    // 1 micro × 1.5 micro / UNIT² = 1.5 → 2 micro
+    expect(
+      resourceLineCostMicro({
+        performance: BigInt(1),
+        wastePct: BigInt(0),
+        unitPrice: parseMoney("1.5")!,
+      }),
+    ).toBe(BigInt(2));
+  });
+
+  test("rechaza valores negativos", () => {
+    expect(() =>
+      resourceLineCostMicro({
+        performance: BigInt(-1),
+        wastePct: BigInt(0),
+        unitPrice: parseMoney("100")!,
+      }),
+    ).toThrow();
+  });
+
+  test("coincide con la fórmula histórica inline de updateResource/import", () => {
+    const performance = parseMoney("1.234567")!;
+    const wastePct = percentToMicro("12.5")!;
+    const unitPrice = parseMoney("98765.4321")!;
+    const legacy =
+      (performance * (SCALE + wastePct) * unitPrice + SCALE * SCALE / BigInt(2)) /
+      (SCALE * SCALE);
+    expect(resourceLineCostMicro({ performance, wastePct, unitPrice })).toBe(
+      legacy,
+    );
+  });
+
+  test("el total de la partida es cantidad × costo unitario directo", () => {
+    // 3 × 196.000 = 588.000
+    const unitCost = BigInt(196_000_000_000);
+    expect(calculateItemTotal(parseMoney("3")!, unitCost)).toBe(
+      BigInt(588_000_000_000),
+    );
   });
 });
 
