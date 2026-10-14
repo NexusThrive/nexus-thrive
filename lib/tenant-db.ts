@@ -25,12 +25,14 @@ import type {
 import {
   AIU_DEFAULTS,
   activityUnitCost,
+  apuItemCategoryToResourceType,
   buildApuSnapshot,
   calculateBudgetTotals,
   calculateItemTotal,
   calculateQuoteTotals,
   componentCost,
   currentYearBogota,
+  decimalToMicro,
   isStrictlyPositive,
   isValidPercent,
   lineTotal,
@@ -611,6 +613,26 @@ export type UpdateBudgetItemInput = {
   quantity: bigint;
   /** Costo unitario directo en micro-pesos. */
   unitCostDirect: bigint;
+};
+
+/**
+ * Fila de composición APU leída con su insumo mediante `include("item")`.
+ * El driver de Prisma materializa los `Decimal` como strings y el insumo
+ * puede faltar (`null`) si la fila quedó huérfana; el importador lo omite.
+ */
+type ImportCompositionRow = {
+  activityId: string;
+  item: {
+    id: string;
+    tenantId: string;
+    name: string;
+    unit: string;
+    category: ApuItemCategoryValue;
+    unitPrice: string;
+    imageUrl: string | null;
+  } | null;
+  consumption: string;
+  wastePercent: string;
 };
 
 /* ------------------------------------------------------------------ */
@@ -3118,6 +3140,181 @@ export function createTenantDb(tenantId: string) {
             unitCostDirect: input.unitCostDirect,
             totalCostDirect,
           });
+          await recalcBudgetTotals(tx, budget.id, {
+            admin: budget.aiuAdminPct,
+            imprev: budget.aiuImprevPct,
+            utilidad: budget.aiuUtilidadPct,
+            iva: budget.ivaUtilidadPct,
+          });
+          await tx.orm.public.ProjectBudget
+            .where({ id: budget.id })
+            .update({ revision: budget.revision + 1 });
+          return item;
+        });
+        return { id: created.id };
+      },
+
+      /**
+       * Importa una actividad de la Biblioteca Maestra APU (`ApuActivity`)
+       * como una NUEVA partida (`BudgetItem`) del presupuesto del proyecto,
+       * con sus recursos congelados como snapshot inmutable.
+       *
+       * Congelado de precios: se COPIAN nombre, unidad, rendimiento, precio y
+       * desperdicio de cada insumo, más el costo unitario resultante. La
+       * partida NO depende del catálogo: si la actividad o sus insumos cambian
+       * después, la partida importada no se altera. La trazabilidad se conserva
+       * con `sourceActivityId` / `sourceItemId`.
+       *
+       * Aritmética de punto fijo `BigInt` (6 decimales), idéntica al motor y a
+       * `updateResource`:
+       *   totalPrice_línea = performance × (SCALE + wastePct) × unitPrice / SCALE²
+       * con redondeo half-up y `wastePct` como fracción (1_000_000 = 100 %).
+       * El desperdicio del catálogo es un porcentaje (10 = 10 %) y se convierte
+       * a la fracción almacenada dividiendo por 100.
+       */
+      importActivityFromCatalog: async (
+        projectId: string,
+        chapterId: string,
+        activityId: string,
+        quantity: bigint = BigInt(1_000_000),
+        expectedRevision?: number,
+      ): Promise<{ id: string }> => {
+        const budget = await db.orm.public.ProjectBudget
+          .where({ projectId, tenantId })
+          .first();
+        if (!budget) {
+          throw new Error("Presupuesto no encontrado en este negocio.");
+        }
+        if (budget.isLocked) {
+          throw new Error("El presupuesto está bloqueado.");
+        }
+        assertRevision(budget, expectedRevision);
+
+        const chapter = await db.orm.public.BudgetChapter
+          .where({ id: chapterId, budgetId: budget.id })
+          .select("id")
+          .first();
+        if (!chapter) {
+          throw new Error("Capítulo no encontrado en este presupuesto.");
+        }
+
+        const activity = await db.orm.public.ApuActivity
+          .where({ id: activityId, tenantId })
+          .first();
+        if (!activity) {
+          throw new Error("Actividad del catálogo no encontrada.");
+        }
+
+        const compositions = (await db.orm.public.ApuActivityComposition
+          .where({ activityId })
+          .include("item", (item) =>
+            item.select(
+              "id",
+              "tenantId",
+              "name",
+              "unit",
+              "category",
+              "unitPrice",
+              "imageUrl",
+            ),
+          )
+          .all()) as unknown as ImportCompositionRow[];
+
+        if (compositions.length === 0) {
+          throw new Error("La actividad no tiene composición APU para importar.");
+        }
+
+        const SCALE_MICRO = BigInt(1_000_000);
+        const HALF_SCALE_SQ = (SCALE_MICRO * SCALE_MICRO) / BigInt(2);
+        const resources: {
+          type: ResourceTypeValue;
+          name: string;
+          unit: string;
+          performance: bigint;
+          unitPrice: bigint;
+          totalPrice: bigint;
+          wastePct: bigint;
+          imageUrl: string | null;
+          sourceItemId: string;
+        }[] = [];
+        let unitCostDirect = BigInt(0);
+
+        for (const composition of compositions) {
+          const item = composition.item;
+          // Defensa en profundidad: un insumo de otro tenant jamás entra.
+          if (!item || item.tenantId !== tenantId) {
+            continue;
+          }
+          const unitPrice = decimalToMicro(String(item.unitPrice));
+          const performance = decimalToMicro(String(composition.consumption));
+          const wastePercentMicro = decimalToMicro(
+            String(composition.wastePercent),
+          );
+          if (
+            unitPrice === null ||
+            performance === null ||
+            wastePercentMicro === null
+          ) {
+            throw new Error(`Insumo con valores decimales inválidos: ${item.name}.`);
+          }
+          // Porcentaje del catálogo (10 = 10 %) → fracción almacenada (100_000 = 10 %).
+          const wastePct = wastePercentMicro / BigInt(100);
+          const lineCost =
+            (performance * (SCALE_MICRO + wastePct) * unitPrice + HALF_SCALE_SQ) /
+            (SCALE_MICRO * SCALE_MICRO);
+          unitCostDirect += lineCost;
+          resources.push({
+            type: apuItemCategoryToResourceType(item.category),
+            name: item.name,
+            unit: item.unit,
+            performance,
+            unitPrice,
+            totalPrice: lineCost,
+            wastePct,
+            imageUrl: item.imageUrl ?? null,
+            sourceItemId: item.id,
+          });
+        }
+
+        if (resources.length === 0) {
+          throw new Error("La actividad no tiene insumos válidos para importar.");
+        }
+
+        const totalCostDirect = calculateItemTotal(quantity, unitCostDirect);
+
+        const created = await db.transaction(async (tx) => {
+          const last = await tx.orm.public.BudgetItem
+            .where({ chapterId })
+            .orderBy((item) => item.order.desc())
+            .first();
+          const order = last ? last.order + 1 : 1;
+          const item = await tx.orm.public.BudgetItem.create({
+            tenantId,
+            chapterId,
+            order,
+            code: activity.code ?? activity.name,
+            description: activity.name,
+            unit: activity.unit,
+            quantity,
+            unitCostDirect,
+            totalCostDirect,
+            sourceActivityId: activity.id,
+          });
+          for (const resource of resources) {
+            await tx.orm.public.BudgetItemResource.create({
+              tenantId,
+              itemId: item.id,
+              type: resource.type,
+              name: resource.name,
+              unit: resource.unit,
+              performance: resource.performance,
+              unitPrice: resource.unitPrice,
+              totalPrice: resource.totalPrice,
+              imageUrl: resource.imageUrl,
+              wastePct: resource.wastePct,
+              sourceItemId: resource.sourceItemId,
+            });
+          }
           await recalcBudgetTotals(tx, budget.id, {
             admin: budget.aiuAdminPct,
             imprev: budget.aiuImprevPct,
