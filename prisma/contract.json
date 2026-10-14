@@ -1605,6 +1605,13 @@
                   "kind": "scalar"
                 }
               },
+              "sourceActivityId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "tenantId": {
                 "nullable": false,
                 "type": {
@@ -1637,6 +1644,13 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "wastePct": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int8@1",
                   "kind": "scalar"
                 }
               }
@@ -1713,6 +1727,9 @@
                 "quantity": {
                   "column": "quantity"
                 },
+                "sourceActivityId": {
+                  "column": "sourceActivityId"
+                },
                 "tenantId": {
                   "column": "tenantId"
                 },
@@ -1727,6 +1744,9 @@
                 },
                 "updatedAt": {
                   "column": "updatedAt"
+                },
+                "wastePct": {
+                  "column": "wastePct"
                 }
               },
               "namespaceId": "public",
@@ -1774,6 +1794,13 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int8@1",
+                  "kind": "scalar"
+                }
+              },
+              "sourceItemId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -1879,6 +1906,9 @@
                 },
                 "performance": {
                   "column": "performance"
+                },
+                "sourceItemId": {
+                  "column": "sourceItemId"
                 },
                 "tenantId": {
                   "column": "tenantId"
@@ -6289,6 +6319,11 @@
                   "nativeType": "int8",
                   "nullable": false
                 },
+                "sourceActivityId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "tenantId": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -6320,6 +6355,15 @@
                 "updatedAt": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "wastePct": {
+                  "codecId": "pg/int8@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "int8",
                   "nullable": false
                 }
               },
@@ -6437,6 +6481,11 @@
                   },
                   "nativeType": "int8",
                   "nullable": false
+                },
+                "sourceItemId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "tenantId": {
                   "codecId": "pg/text@1",
@@ -9442,7 +9491,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "b100b157f7297f6043043d056fafc20140e29a737cec0d416fb9862d89abf4e7"
+    "storageHash": "55ff59f96a0459588e0d594f1756ab42e89b303f46891c84963125389c1400f2"
   },
   "execution": {
     "executionHash": "3304e4cb5cf375cce3d134b699be42b681880ab36538dc1b5d16b14ba96a675a",

@@ -535,7 +535,12 @@ export function buildBomExportData(budget: ProjectBudgetData | null): BomResourc
   for (const chapter of budget.chapters) {
     for (const item of chapter.items) {
       for (const resource of item.resources) {
-        const qty = microToNumber(resource.performance) * microToNumber(item.quantity);
+        const perf = microToNumber(resource.performance);
+        const qtyItem = microToNumber(item.quantity);
+        const wastePctMicro = BigInt(item.wastePct || "0");
+        // qty = performance * quantity * (1 + wastePct/1_000_000)
+        const wasteFactor = (BigInt(1_000_000) + BigInt(item.wastePct || "0")) / BigInt(1_000_000);
+        const qty = perf * microToNumber(item.quantity) * Number(wasteFactor);
         const unitPrice = microToNumber(resource.unitPrice);
         const totalCost = qty * unitPrice;
 

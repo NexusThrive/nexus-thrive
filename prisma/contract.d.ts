@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'b100b157f7297f6043043d056fafc20140e29a737cec0d416fb9862d89abf4e7'>;
+  StorageHashBase<'55ff59f96a0459588e0d594f1756ab42e89b303f46891c84963125389c1400f2'>;
 export type ExecutionHash =
   ExecutionHashBase<'3304e4cb5cf375cce3d134b699be42b681880ab36538dc1b5d16b14ba96a675a'>;
 export type ProfileHash =
@@ -344,11 +344,13 @@ export type FieldOutputTypes = {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly order: CodecTypes['pg/int4@1']['output'];
       readonly quantity: CodecTypes['pg/int8@1']['output'];
+      readonly sourceActivityId: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly totalCostDirect: CodecTypes['pg/int8@1']['output'];
       readonly unit: CodecTypes['pg/text@1']['output'];
       readonly unitCostDirect: CodecTypes['pg/int8@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly wastePct: CodecTypes['pg/int8@1']['output'];
     };
     readonly BudgetItemResource: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -357,6 +359,7 @@ export type FieldOutputTypes = {
       readonly itemId: CodecTypes['pg/text@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly performance: CodecTypes['pg/int8@1']['output'];
+      readonly sourceItemId: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly totalPrice: CodecTypes['pg/int8@1']['output'];
       readonly type: 'MATERIAL' | 'LABOR' | 'EQUIPMENT' | 'TRANSPORT';
@@ -749,11 +752,13 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly order: CodecTypes['pg/int4@1']['input'];
       readonly quantity: CodecTypes['pg/int8@1']['input'];
+      readonly sourceActivityId: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly totalCostDirect: CodecTypes['pg/int8@1']['input'];
       readonly unit: CodecTypes['pg/text@1']['input'];
       readonly unitCostDirect: CodecTypes['pg/int8@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly wastePct: CodecTypes['pg/int8@1']['input'];
     };
     readonly BudgetItemResource: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -762,6 +767,7 @@ export type FieldInputTypes = {
       readonly itemId: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly performance: CodecTypes['pg/int8@1']['input'];
+      readonly sourceItemId: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly totalPrice: CodecTypes['pg/int8@1']['input'];
       readonly type: 'MATERIAL' | 'LABOR' | 'EQUIPMENT' | 'TRANSPORT';
@@ -1154,11 +1160,13 @@ export type StorageColumnTypes = {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly order: CodecTypes['pg/int4@1']['output'];
       readonly quantity: CodecTypes['pg/int8@1']['output'];
+      readonly sourceActivityId: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly totalCostDirect: CodecTypes['pg/int8@1']['output'];
       readonly unit: CodecTypes['pg/text@1']['output'];
       readonly unitCostDirect: CodecTypes['pg/int8@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly wastePct: CodecTypes['pg/int8@1']['output'];
     };
     readonly BudgetItemResource: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -1167,6 +1175,7 @@ export type StorageColumnTypes = {
       readonly itemId: CodecTypes['pg/text@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly performance: CodecTypes['pg/int8@1']['output'];
+      readonly sourceItemId: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly totalPrice: CodecTypes['pg/int8@1']['output'];
       readonly type: 'MATERIAL' | 'LABOR' | 'EQUIPMENT' | 'TRANSPORT';
@@ -1559,11 +1568,13 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly order: CodecTypes['pg/int4@1']['input'];
       readonly quantity: CodecTypes['pg/int8@1']['input'];
+      readonly sourceActivityId: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly totalCostDirect: CodecTypes['pg/int8@1']['input'];
       readonly unit: CodecTypes['pg/text@1']['input'];
       readonly unitCostDirect: CodecTypes['pg/int8@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly wastePct: CodecTypes['pg/int8@1']['input'];
     };
     readonly BudgetItemResource: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -1572,6 +1583,7 @@ export type StorageColumnInputTypes = {
       readonly itemId: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly performance: CodecTypes['pg/int8@1']['input'];
+      readonly sourceItemId: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly totalPrice: CodecTypes['pg/int8@1']['input'];
       readonly type: 'MATERIAL' | 'LABOR' | 'EQUIPMENT' | 'TRANSPORT';
@@ -1983,11 +1995,13 @@ export namespace Models {
     id: CodecTypes['pg/text@1']['output'];
     order: CodecTypes['pg/int4@1']['output'];
     quantity: CodecTypes['pg/int8@1']['output'];
+    sourceActivityId: CodecTypes['pg/text@1']['output'] | null;
     tenantId: CodecTypes['pg/text@1']['output'];
     totalCostDirect: CodecTypes['pg/int8@1']['output'];
     unit: CodecTypes['pg/text@1']['output'];
     unitCostDirect: CodecTypes['pg/int8@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    wastePct: CodecTypes['pg/int8@1']['output'];
     chapter: public_BudgetChapter;
     resources: public_BudgetItemResource[];
     tenant: public_Tenant;
@@ -2000,6 +2014,7 @@ export namespace Models {
     itemId: CodecTypes['pg/text@1']['output'];
     name: CodecTypes['pg/text@1']['output'];
     performance: CodecTypes['pg/int8@1']['output'];
+    sourceItemId: CodecTypes['pg/text@1']['output'] | null;
     tenantId: CodecTypes['pg/text@1']['output'];
     totalPrice: CodecTypes['pg/int8@1']['output'];
     type: 'MATERIAL' | 'LABOR' | 'EQUIPMENT' | 'TRANSPORT';
@@ -3126,6 +3141,11 @@ type ContractBase = Omit<
                     readonly value: DefaultLiteralValue<'pg/int8@1', '1000000'>;
                   };
                 };
+                readonly sourceActivityId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly tenantId: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -3158,6 +3178,15 @@ type ContractBase = Omit<
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: false;
+                };
+                readonly wastePct: {
+                  readonly nativeType: 'int8';
+                  readonly codecId: 'pg/int8@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int8@1', '0'>;
+                  };
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
@@ -3239,6 +3268,11 @@ type ContractBase = Omit<
                     readonly kind: 'literal';
                     readonly value: DefaultLiteralValue<'pg/int8@1', '1000000'>;
                   };
+                };
+                readonly sourceItemId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                 };
                 readonly tenantId: {
                   readonly nativeType: 'text';
@@ -6244,6 +6278,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
               };
+              readonly sourceActivityId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly tenantId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -6266,6 +6304,10 @@ type ContractBase = Omit<
                   readonly kind: 'scalar';
                   readonly codecId: 'pg/timestamptz-temporal@1';
                 };
+              };
+              readonly wastePct: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
               };
             };
             readonly relations: {
@@ -6316,11 +6358,13 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly order: { readonly column: 'order' };
                 readonly quantity: { readonly column: 'quantity' };
+                readonly sourceActivityId: { readonly column: 'sourceActivityId' };
                 readonly tenantId: { readonly column: 'tenantId' };
                 readonly totalCostDirect: { readonly column: 'totalCostDirect' };
                 readonly unit: { readonly column: 'unit' };
                 readonly unitCostDirect: { readonly column: 'unitCostDirect' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
+                readonly wastePct: { readonly column: 'wastePct' };
               };
             };
           };
@@ -6352,6 +6396,10 @@ type ContractBase = Omit<
               readonly performance: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+              };
+              readonly sourceItemId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly tenantId: {
                 readonly nullable: false;
@@ -6417,6 +6465,7 @@ type ContractBase = Omit<
                 readonly itemId: { readonly column: 'itemId' };
                 readonly name: { readonly column: 'name' };
                 readonly performance: { readonly column: 'performance' };
+                readonly sourceItemId: { readonly column: 'sourceItemId' };
                 readonly tenantId: { readonly column: 'tenantId' };
                 readonly totalPrice: { readonly column: 'totalPrice' };
                 readonly type: { readonly column: 'type' };
