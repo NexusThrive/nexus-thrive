@@ -541,7 +541,7 @@ const wastePctMicro = BigInt(resource.wastePct || "0");
         // qty = performance * quantity * (1 + wastePct/1_000_000) - per resource line
         // Use floating point division to avoid BigInt integer division truncation
         const wasteFactor = Number(BigInt(1_000_000) + wastePctMicro) / 1_000_000;
-        const qty = perf * microToNumber(item.quantity) * wasteFactor;        console.log("[BOM DEBUG] qty:", qty);
+        const qty = perf * microToNumber(item.quantity) * wasteFactor;
         const unitPrice = microToNumber(resource.unitPrice);
         const totalCost = qty * unitPrice;
 
