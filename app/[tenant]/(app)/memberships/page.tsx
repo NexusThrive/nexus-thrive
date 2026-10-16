@@ -112,7 +112,7 @@ export default async function MembershipsPage({
       {/* Encabezado */}
       <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          <h1 className="font-display text-[clamp(24px,4.4vw,34px)] font-bold leading-[1.12] tracking-[-0.02em] text-foreground">
             Membresías
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">

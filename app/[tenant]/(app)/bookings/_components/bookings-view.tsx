@@ -12,6 +12,7 @@ import {
   type BookingFormState,
   type BookingStatusFormState,
 } from "../actions";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 export type BookingStatusValue =
   | "PENDING"
@@ -172,7 +173,7 @@ function BookingsContent({
         <button
           type="button"
           onClick={() => setShowForm((prev) => !prev)}
-          className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+          className={buttonVariants()}
         >
           {showForm ? (
             <X aria-hidden="true" className="h-4 w-4" />
@@ -334,14 +335,14 @@ function BookingsContent({
               type="button"
               onClick={() => setShowForm(false)}
               disabled={isCreatePending}
-              className="h-10 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
+              className={buttonVariants({ variant: "outline" })}
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isCreatePending || noCustomers}
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className={buttonVariants()}
             >
               {isCreatePending && <NLoader size={16} className="text-current" />}
               {isCreatePending ? "Creando…" : "Crear reserva"}
@@ -358,7 +359,7 @@ function BookingsContent({
         <div className="overflow-x-auto rounded-lg border border-border bg-card">
           <table className="w-full border-collapse text-sm">
             <thead>
-              <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+              <tr className="border-b border-border-strong text-left text-xs font-semibold text-muted-foreground">
                 <th className="px-4 py-3 font-medium">Cliente</th>
                 <th className="px-4 py-3 font-medium">Servicio</th>
                 <th className="px-4 py-3 font-medium">Fechas</th>

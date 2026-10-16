@@ -22,11 +22,13 @@ import {
   importActivityFromCatalogAction,
   searchCatalogActivitiesAction,
 } from "../budget/actions";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { inputClasses } from "@/components/atoms/input";
 
 const DEBOUNCE_MS = 250;
 
 const inputClass =
-  "h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-border-strong focus:border-accent focus:outline-2 focus:outline-accent/30";
+  inputClasses;
 
 /**
  * Importador de actividades del catálogo APU al presupuesto.
@@ -400,7 +402,7 @@ export default function CatalogImportModal({
                 type="button"
                 onClick={onClose}
                 disabled={importing}
-                className="h-10 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
+                className={buttonVariants({ variant: "outline" })}
               >
                 Cancelar
               </button>
@@ -408,7 +410,7 @@ export default function CatalogImportModal({
                 type="button"
                 onClick={onImport}
                 disabled={!selectedId || importing}
-                className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+                className={buttonVariants()}
               >
                 {importing ? (
                   <NLoader size={16} className="text-current" />

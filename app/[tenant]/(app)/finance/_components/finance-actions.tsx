@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import PaymentForm from "./payment-form";
 import ExpenseForm from "./expense-form";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 export type CustomerOption = {
   id: string;
@@ -43,7 +44,7 @@ export default function FinanceActions({
         <button
           type="button"
           onClick={() => setPaymentOpen(true)}
-          className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+          className={buttonVariants()}
         >
           <Plus aria-hidden="true" className="h-4 w-4" />
           Registrar pago

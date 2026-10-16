@@ -18,6 +18,7 @@ import StepVertical from "./step-vertical";
 import StepEcosystem, { type EcosystemDefaults } from "./step-ecosystem";
 import StepPayments from "./step-payments";
 import StepStart from "./step-start";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 export type OnboardingInitial = StepDefaults &
   EcosystemDefaults & {
@@ -148,7 +149,7 @@ export default function OnboardingShell({
                 )
               }
               disabled={viewing === 1 || isPending}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3.5 py-2 text-sm font-medium text-muted-foreground transition hover:border-foreground/20 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+              className={buttonVariants({ variant: "outline" })}
             >
               <ArrowLeft className="h-4 w-4" />
               Atrás
@@ -157,7 +158,7 @@ export default function OnboardingShell({
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className={buttonVariants()}
             >
               {isPending && <NLoader size={16} className="text-current" />}
               {submitLabel}

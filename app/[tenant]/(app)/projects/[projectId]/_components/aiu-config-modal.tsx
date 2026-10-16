@@ -13,6 +13,7 @@ import {
   updateAiuConfigAction,
   type AiuFormState,
 } from "../budget/actions";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 const IDLE_STATE: AiuFormState = { status: "idle" };
 
@@ -188,7 +189,7 @@ export default function AiuConfigModal({
         {state.status === "error" && state.message ? (
           <p
             role="alert"
-            className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+            className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
           >
             {state.message}
           </p>
@@ -199,14 +200,14 @@ export default function AiuConfigModal({
             type="button"
             disabled={isPending}
             onClick={onClose}
-            className="h-10 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
+            className={buttonVariants({ variant: "outline" })}
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={isPending}
-            className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+            className={buttonVariants()}
           >
             {isPending ? (
               <NLoader size={16} className="text-current" />

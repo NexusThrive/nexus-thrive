@@ -6,6 +6,7 @@ import CustomerSearch from "./customer-search";
 import CustomerFilters, { type CustomerSort, type CustomerStatus } from "./customer-filters";
 import CustomerForm from "./customer-form";
 import { useVerticalTerms } from "../../vertical-terms-context";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 /**
  * Barra superior del CRM: búsqueda + filtros + contador + botón de alta.
@@ -42,7 +43,7 @@ export default function CustomerToolbar({
         <button
           type="button"
           onClick={() => setIsFormOpen(true)}
-          className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 lg:self-auto"
+          className={`${buttonVariants()} self-start lg:self-auto`}
         >
           <Plus aria-hidden="true" className="h-4 w-4" />
           {`Nuevo ${terms.customer.toLowerCase()}`}

@@ -21,6 +21,7 @@ import AdaptiveBusinessForm from "./adaptive-business-form";
 import ModuleSelection from "./module-selection";
 import OnboardingSummary from "./onboarding-summary";
 import OnboardingComplete from "./onboarding-complete";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 function storageKey(prefill: OnboardingPrefill): string {
   return prefill.tenantId
@@ -263,7 +264,7 @@ export default function OnboardingWizard({
                     type="button"
                     onClick={goBack}
                     disabled={viewing === 1 || isSubmitting}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3.5 py-2 text-sm font-medium text-muted-foreground transition hover:border-foreground/20 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+                    className={buttonVariants({ variant: "outline" })}
                   >
                     <ArrowLeft className="size-4" aria-hidden="true" />
                     Atrás

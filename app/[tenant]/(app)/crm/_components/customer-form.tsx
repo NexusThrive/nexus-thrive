@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useActionState, useRef } from "react";
-import { X } from "lucide-react";
+import { useEffect, useActionState } from "react";
+
 import { NLoader } from "@/components/atoms/n-loader";
 import {
   createCustomerAction,
@@ -9,6 +9,8 @@ import {
   type CustomerFormState,
 } from "../actions";
 import { useVerticalTerms } from "../../vertical-terms-context";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 
 type CustomerToEdit = {
   id: string;
@@ -39,32 +41,12 @@ export default function CustomerForm({
   const [state, formAction, isPending] = useActionState(action, IDLE_STATE);
   const terms = useVerticalTerms();
 
-  const dialogRef = useRef<HTMLDivElement | null>(null);
-
   // Cierra cuando el servidor confirma la escritura.
   useEffect(() => {
     if (state.status === "ok") {
       onClose();
     }
   }, [state, onClose]);
-
-  // Escape + scroll bloqueado mientras el modal está abierto.
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !isPending) {
-        onClose();
-      }
-    };
-    document.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [onClose, isPending]);
 
   const errors = state.errors ?? {};
   // Los valores del servidor son el respaldo si React remonta el formulario.
@@ -81,47 +63,13 @@ export default function CustomerForm({
     ].join(" ");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center">
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 bg-ink/45 backdrop-blur-xs"
-        onClick={() => !isPending && onClose()}
-      />
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="customer-form-title"
-        className="relative mt-10 w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-popover sm:mt-0"
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2
-              id="customer-form-title"
-              className="text-lg font-semibold text-foreground"
-            >
-              {mode === "create"
-                ? `Nuevo ${terms.customer.toLowerCase()}`
-                : `Editar ${terms.customer.toLowerCase()}`}
-            </h2>
-            <p className="mt-0.5 text-sm text-muted-foreground">
-              {mode === "create"
-                ? `Registra los datos de contacto del ${terms.customer.toLowerCase()}.`
-                : `Actualiza los datos del ${terms.customer.toLowerCase()}.`}
-            </p>
-          </div>
-          <button
-            type="button"
-            aria-label="Cerrar"
-            disabled={isPending}
-            onClick={onClose}
-            className="-m-1 rounded-lg p-1 text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-50"
-          >
-            <X aria-hidden="true" className="h-5 w-5" />
-          </button>
-        </div>
-
-        <form action={formAction} className="mt-5 space-y-4" noValidate>
+    <ResponsiveSheet
+      open
+      onOpenChange={(open) => { if (!open && !isPending) onClose(); }}
+      title={<>{mode === "create" ? `Nuevo ${terms.customer.toLowerCase()}` : `Editar ${terms.customer.toLowerCase()}`}</>}
+      description={<>{mode === "create" ? `Registra los datos de contacto del ${terms.customer.toLowerCase()}.` : `Actualiza los datos del ${terms.customer.toLowerCase()}.`}</>}
+    >
+        <form action={formAction} className="space-y-4" noValidate>
           <input type="hidden" name="tenantSlug" value={tenantSlug} />
           {mode === "edit" ? (
             <input type="hidden" name="customerId" value={customer?.id ?? ""} />
@@ -202,7 +150,7 @@ export default function CustomerForm({
           {state.status === "error" && state.message ? (
             <p
               role="alert"
-              className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
             >
               {state.message}
             </p>
@@ -213,14 +161,14 @@ export default function CustomerForm({
               type="button"
               disabled={isPending}
               onClick={onClose}
-              className="h-10 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
+              className={buttonVariants({ variant: "outline" })}
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className={buttonVariants()}
             >
               {isPending ? (
                 <NLoader size={16} className="text-current" />
@@ -233,7 +181,7 @@ export default function CustomerForm({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      
+    </ResponsiveSheet>
   );
 }

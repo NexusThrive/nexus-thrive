@@ -10,6 +10,8 @@ import {
   type ProjectHeaderFormState,
 } from "../../actions";
 import type { ProjectHeaderFormValues } from "../../validators";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { fieldClasses } from "@/components/atoms/input";
 
 const IDLE_STATE: ProjectHeaderFormState = { status: "idle" };
 
@@ -240,7 +242,7 @@ export default function ProjectHeaderForm({
             defaultValue={val("siteAccessNotes")}
             aria-invalid={Boolean(errors.siteAccessNotes)}
             placeholder="Horarios, permisos, restricciones del sitio…"
-            className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-foreground/20 focus:border-gold-500 focus:outline-2 focus:outline-gold-600/30"
+            className={`mt-1 ${fieldClasses} py-2`}
           />
           {errors.siteAccessNotes ? (
             <p role="alert" className="mt-1 text-xs text-destructive">
@@ -295,7 +297,7 @@ export default function ProjectHeaderForm({
       {state.status === "error" && state.message ? (
         <p
           role="alert"
-          className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
         >
           {state.message}
         </p>
@@ -313,7 +315,7 @@ export default function ProjectHeaderForm({
         <button
           type="submit"
           disabled={isPending}
-          className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+          className={buttonVariants()}
         >
           {isPending ? (
             <NLoader size={16} className="text-current" />

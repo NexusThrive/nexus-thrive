@@ -22,6 +22,8 @@ import {
   type TeamSizeValue,
 } from "@/lib/onboarding/types";
 import { getOnboardingModulePreset } from "@/lib/onboarding/presets";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 
 const IDLE_STATE: AdminFormState = { status: "idle" };
 const SLUG_DEBOUNCE_MS = 350;
@@ -101,23 +103,6 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
     return () => clearTimeout(timer);
   }, [state, onClose]);
 
-  // Bloquea el scroll de fondo mientras el modal está abierto.
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !isPending) {
-        onClose();
-      }
-    };
-    document.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [onClose, isPending]);
 
   const errors = state.errors ?? {};
 
@@ -184,42 +169,13 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
         : "text-muted-foreground";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center">
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 bg-ink/50 backdrop-blur-[1px]"
-        onClick={() => !isPending && onClose()}
-      />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="tenant-form-title"
-        className="relative mt-10 w-full max-w-lg rounded-lg border border-border bg-card p-6 shadow-popover sm:mt-0"
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2
-              id="tenant-form-title"
-              className="text-lg font-semibold text-foreground"
-            >
-              Nuevo negocio
-            </h2>
-            <p className="mt-0.5 text-sm text-muted-foreground">
-              Crea el tenant con su vertical y módulos iniciales.
-            </p>
-          </div>
-          <button
-            type="button"
-            aria-label="Cerrar"
-            disabled={isPending}
-            onClick={onClose}
-            className="-m-1 rounded-lg p-1 text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-50"
-          >
-            <X aria-hidden="true" className="h-5 w-5" />
-          </button>
-        </div>
-
-        <form action={formAction} className="mt-5 space-y-4" noValidate>
+    <ResponsiveSheet
+      open
+      onOpenChange={(open) => { if (!open && !isPending) onClose(); }}
+      title="Nuevo negocio"
+      description="Crea el tenant con su vertical y módulos iniciales."
+    >
+        <form action={formAction} className="space-y-4" noValidate>
           {/* Perfil del onboarding (Empresa / Persona individual) */}
           <fieldset>
             <legend className="text-sm font-medium text-foreground/80">
@@ -563,7 +519,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
           {state.status === "error" && state.message ? (
             <p
               role="alert"
-              className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
             >
               {state.message}
             </p>
@@ -584,14 +540,14 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
               type="button"
               disabled={isPending}
               onClick={onClose}
-              className="h-10 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
+              className={buttonVariants({ variant: "outline" })}
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className={buttonVariants()}
             >
               {isPending ? (
                 <NLoader size={16} className="text-current" />
@@ -602,7 +558,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      
+    </ResponsiveSheet>
   );
 }

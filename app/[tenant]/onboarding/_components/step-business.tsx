@@ -1,4 +1,5 @@
 import type { OnboardingFormState } from "../actions";
+import { inputClasses } from "@/components/atoms/input";
 
 export type StepDefaults = {
   name: string;
@@ -36,7 +37,7 @@ export default function StepBusiness({
           type="text"
           defaultValue={defaults.name}
           placeholder="Ej. Gimnasio Carlos Fitness"
-          className="mt-1 block h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-600/30"
+          className={`mt-1 ${inputClasses}`}
         />
         {errors?.name && (
           <p className="mt-1 text-xs text-destructive">{errors.name}</p>
@@ -56,7 +57,7 @@ export default function StepBusiness({
           type="text"
           defaultValue={defaults.city}
           placeholder="Ej. Bogotá"
-          className="mt-1 block h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-600/30"
+          className={`mt-1 ${inputClasses}`}
         />
         {errors?.city && (
           <p className="mt-1 text-xs text-destructive">{errors.city}</p>
@@ -76,7 +77,7 @@ export default function StepBusiness({
           type="tel"
           defaultValue={defaults.whatsappNumber}
           placeholder="Ej. +57 300 123 4567"
-          className="mt-1 block h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-600/30"
+          className={`mt-1 ${inputClasses}`}
         />
         {errors?.whatsappNumber && (
           <p className="mt-1 text-xs text-destructive">{errors.whatsappNumber}</p>

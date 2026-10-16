@@ -109,7 +109,7 @@ export default async function CrmPage({
   return (
     <div className="space-y-6">
       <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+        <h1 className="font-display text-[clamp(24px,4.4vw,34px)] font-bold leading-[1.12] tracking-[-0.02em] text-foreground">
           {terms.customers}
         </h1>
         <p className="text-sm text-muted-foreground">

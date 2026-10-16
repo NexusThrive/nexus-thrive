@@ -113,7 +113,7 @@ export default async function ProjectsPage({
     <div className="space-y-6">
       <header className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          <h1 className="font-display text-[clamp(24px,4.4vw,34px)] font-bold leading-[1.12] tracking-[-0.02em] text-foreground">
             Proyectos de obra
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">

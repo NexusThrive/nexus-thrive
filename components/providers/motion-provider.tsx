@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { motionOff, spring } from "@/lib/motion";
 
 /** Elementos que se hunden al presionarlos y vuelven con un resorte. */
-const PRESS_SELECTOR = "[data-press]";
+const PRESS_SELECTOR = "[data-press], .nx-press";
 const CARD_PRESS = 0.985;
 const CONTROL_PRESS = 0.94;
 

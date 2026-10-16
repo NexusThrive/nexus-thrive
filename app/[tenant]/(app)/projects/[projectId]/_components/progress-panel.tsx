@@ -13,9 +13,10 @@ import {
   recordProgressAction,
   type ProgressActionResult,
 } from "../progress/actions";
+import { inputClasses, labelClasses } from "@/components/atoms/input";
 
 const inputClass =
-  "h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-border-strong focus:border-accent focus:outline-2 focus:outline-accent/30";
+  inputClasses;
 
 function bogotaTodayIso(): string {
   return new Date(Date.now() - 5 * 3600 * 1000).toISOString().slice(0, 10);
@@ -81,7 +82,7 @@ export default function ProgressPanel({
             action={(formData) => run(() => recordProgressAction(tenantSlug, projectId, formData), () => setFormKey((k) => k + 1))}
           >
             <label htmlFor="progress-item" className="block">
-              <span className="mb-1 block text-xs font-medium text-foreground/80">Partida</span>
+              <span className={labelClasses}>Partida</span>
               <select id="progress-item" name="budgetItemId" required defaultValue="" className={inputClass}>
                 <option value="">Elige la partida…</option>
                 {items.map((item) => (
@@ -92,15 +93,15 @@ export default function ProgressPanel({
               </select>
             </label>
             <label htmlFor="progress-date" className="block">
-              <span className="mb-1 block text-xs font-medium text-foreground/80">Fecha de corte</span>
+              <span className={labelClasses}>Fecha de corte</span>
               <input id="progress-date" name="cutoffDate" type="date" required defaultValue={bogotaTodayIso()} max={bogotaTodayIso()} className={inputClass} />
             </label>
             <label htmlFor="progress-qty" className="block">
-              <span className="mb-1 block text-xs font-medium text-foreground/80">Cantidad ejecutada</span>
+              <span className={labelClasses}>Cantidad ejecutada</span>
               <input id="progress-qty" name="executedQuantity" inputMode="decimal" required placeholder="12.5" className={inputClass} />
             </label>
             <label htmlFor="progress-note" className="block">
-              <span className="mb-1 block text-xs font-medium text-foreground/80">Nota (opcional)</span>
+              <span className={labelClasses}>Nota (opcional)</span>
               <input id="progress-note" name="note" maxLength={300} className={inputClass} />
             </label>
             <Button type="submit" disabled={pending}>
@@ -119,7 +120,7 @@ export default function ProgressPanel({
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+                <tr className="border-b border-border-strong text-left text-xs font-semibold text-muted-foreground">
                   <th className="px-3 py-2 font-medium">Partida</th>
                   <th className="px-3 py-2 text-right font-medium">Presupuestado</th>
                   <th className="px-3 py-2 text-right font-medium">Ejecutado</th>

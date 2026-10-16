@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, FolderOpen } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
 import type { ProjectRow } from "@/lib/tenant-db";
 import { ProjectStatusBadge } from "./project-status-badge";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 const PAGE_SIZE = 12;
 
@@ -122,7 +123,7 @@ export default function ProjectsTable({
                   <td className="px-4 py-3 text-right">
                     <Link
                       href={`/${tenantSlug}/projects/${row.id}`}
-                      className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                      className={buttonVariants({ variant: "outline", size: "sm" })}
                     >
                       <FolderOpen aria-hidden="true" className="h-3.5 w-3.5" />
                       Ver
@@ -145,7 +146,7 @@ export default function ProjectsTable({
               type="button"
               disabled={page <= 1 || isPending}
               onClick={() => navigate("ppage", String(page - 1))}
-              className="inline-flex h-9 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
             >
               <ChevronLeft aria-hidden="true" className="h-4 w-4" />
               Anterior
@@ -154,7 +155,7 @@ export default function ProjectsTable({
               type="button"
               disabled={page >= totalPages || isPending}
               onClick={() => navigate("ppage", String(page + 1))}
-              className="inline-flex h-9 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
             >
               {isPending ? (
                 <NLoader size={16} className="text-current" />

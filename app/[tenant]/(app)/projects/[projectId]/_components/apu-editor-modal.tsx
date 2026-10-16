@@ -22,6 +22,8 @@ import type { BudgetItemData, BudgetResourceData } from "@/lib/tenant-db";
 import Modal from "@/components/organisms/modal";
 import { ApuCategoryBadge } from "@/components/molecules/quote-badges";
 import { updateResourceAction } from "../budget/actions";
+import { fieldClasses } from "@/components/atoms/input";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 /**
  * Mapeo del tipo de recurso almacenado al bloque de presentación del
@@ -40,7 +42,7 @@ const RESOURCE_TO_CATEGORY: Record<
 };
 
 const inputClass =
-  "h-9 w-full rounded-lg border border-border bg-card px-2 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-border-strong focus:border-accent focus:outline-2 focus:outline-accent/30 disabled:opacity-60";
+  `${fieldClasses} h-9 px-2`;
 
 /** Estado editable de una línea de APU (strings legibles para los inputs). */
 type RowState = {
@@ -411,7 +413,7 @@ export default function ApuEditorModal({
         <button
           type="button"
           onClick={onClose}
-          className="inline-flex h-9 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+          className={buttonVariants({ size: "sm" })}
         >
           <Check aria-hidden="true" className="h-4 w-4" />
           Cerrar

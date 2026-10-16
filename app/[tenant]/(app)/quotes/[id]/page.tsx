@@ -13,6 +13,7 @@ import { createTenantDb } from "@/lib/tenant-db";
 import { getQuoteTerms, getVerticalTerms } from "@/lib/vertical-terms";
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import { QuoteStatusBadge } from "@/components/molecules/quote-badges";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 /**
  * Detalle de una cotización.
@@ -77,7 +78,7 @@ export default async function QuoteDetailPage({
           Volver a cotizaciones anteriores
         </Link>
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          <h1 className="font-display text-[clamp(24px,4.4vw,34px)] font-bold leading-[1.12] tracking-[-0.02em] text-foreground">
             {quote.code} · {quote.title}
           </h1>
           <QuoteStatusBadge status={quote.status} />
@@ -98,7 +99,7 @@ export default async function QuoteDetailPage({
         </Link>
         <Link
           href={`/${tenantSlug}/quotes?folder=anteriores`}
-          className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted"
+          className={buttonVariants({ variant: "outline" })}
         >
           Pasar a una obra
         </Link>

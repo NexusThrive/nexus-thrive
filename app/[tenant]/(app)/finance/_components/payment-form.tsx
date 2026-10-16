@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useActionState, useRef } from "react";
-import { X } from "lucide-react";
+import { useEffect, useActionState } from "react";
+
 import { NLoader } from "@/components/atoms/n-loader";
 import { createPaymentAction, type PaymentFormState } from "../actions";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import type { CustomerOption } from "./finance-actions";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 
 const IDLE_STATE: PaymentFormState = { status: "idle" };
 
@@ -28,30 +30,11 @@ export default function PaymentForm({
     IDLE_STATE,
   );
 
-  const dialogRef = useRef<HTMLDivElement | null>(null);
-
   useEffect(() => {
     if (state.status === "ok") {
       onClose();
     }
   }, [state, onClose]);
-
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !isPending) {
-        onClose();
-      }
-    };
-    document.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [onClose, isPending]);
 
   const errors = state.errors ?? {};
   const customerIdValue = state.values?.customerId ?? "";
@@ -70,43 +53,13 @@ export default function PaymentForm({
     ].join(" ");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center">
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 bg-ink/45 backdrop-blur-[1px]"
-        onClick={() => !isPending && onClose()}
-      />
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="payment-form-title"
-        className="relative mt-10 w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-popover sm:mt-0"
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2
-              id="payment-form-title"
-              className="text-lg font-semibold text-foreground"
-            >
-              Registrar pago
-            </h2>
-            <p className="mt-0.5 text-sm text-muted-foreground">
-              Registra un cobro recibido por el negocio.
-            </p>
-          </div>
-          <button
-            type="button"
-            aria-label="Cerrar"
-            disabled={isPending}
-            onClick={onClose}
-            className="-m-1 rounded-lg p-1 text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-50"
-          >
-            <X aria-hidden="true" className="h-5 w-5" />
-          </button>
-        </div>
-
-        <form action={formAction} className="mt-5 space-y-4" noValidate>
+    <ResponsiveSheet
+      open
+      onOpenChange={(open) => { if (!open && !isPending) onClose(); }}
+      title="Registrar pago"
+      description="Registra un cobro recibido por el negocio."
+    >
+        <form action={formAction} className="space-y-4" noValidate>
           <input type="hidden" name="tenantSlug" value={tenantSlug} />
           <input type="hidden" name="status" value={statusValue} />
 
@@ -242,7 +195,7 @@ export default function PaymentForm({
           {state.status === "error" && state.message ? (
             <p
               role="alert"
-              className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
             >
               {state.message}
             </p>
@@ -253,14 +206,14 @@ export default function PaymentForm({
               type="button"
               disabled={isPending}
               onClick={onClose}
-              className="h-10 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
+              className={buttonVariants({ variant: "outline" })}
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className={buttonVariants()}
             >
               {isPending ? (
                 <NLoader size={16} className="text-current" />
@@ -269,7 +222,7 @@ export default function PaymentForm({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      
+    </ResponsiveSheet>
   );
 }

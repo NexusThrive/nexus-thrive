@@ -23,6 +23,7 @@ import ItemModal, { type EditableBudgetItem } from "./item-modal";
 import AiuConfigModal from "./aiu-config-modal";
 import CatalogImportModal from "./catalog-import-modal";
 import ApuEditorModal from "./apu-editor-modal";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 /** Tarjeta KPI del resumen financiero del presupuesto. */
 function KpiCard({
@@ -296,7 +297,7 @@ export default function BudgetWorkspace({
             type="button"
             onClick={onExport}
             disabled={isExporting || itemCount === 0}
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
           >
             {isExporting ? <NLoader size={14} className="text-current" /> : <FileSpreadsheet aria-hidden="true" className="h-4 w-4" />}
             Exportar Excel
@@ -305,7 +306,7 @@ export default function BudgetWorkspace({
             type="button"
             onClick={() => setAiuOpen(true)}
             disabled={budget.isLocked}
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
           >
             <SlidersHorizontal aria-hidden="true" className="h-4 w-4" />
             Configurar AIU
@@ -314,7 +315,7 @@ export default function BudgetWorkspace({
             type="button"
             onClick={onToggleLock}
             disabled={isToggling}
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
           >
             {isToggling ? (
               <NLoader size={14} className="text-current" />
@@ -332,7 +333,7 @@ export default function BudgetWorkspace({
               setChapterOpen(true);
             }}
             disabled={budget.isLocked}
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+            className={buttonVariants({ size: "sm" })}
           >
             <Plus aria-hidden="true" className="h-4 w-4" />
             Nuevo capítulo
@@ -340,7 +341,7 @@ export default function BudgetWorkspace({
         </div>
       </div>
       {exportError ? (
-        <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <p role="alert" className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger">
           {exportError}
         </p>
       ) : null}
@@ -373,7 +374,7 @@ export default function BudgetWorkspace({
               setEditingChapter(null);
               setChapterOpen(true);
             }}
-              className="mt-4 inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+              className={`${buttonVariants({ size: "sm" })} mt-4`}
             >
               <Plus aria-hidden="true" className="h-4 w-4" />
               Crear primer capítulo
@@ -415,7 +416,7 @@ export default function BudgetWorkspace({
                             label: `Capítulo ${chapter.order}`,
                           })
                         }
-                        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                        className={buttonVariants({ variant: "outline", size: "sm" })}
                       >
                         <Layers aria-hidden="true" className="h-3.5 w-3.5" />
                         Importar
@@ -428,7 +429,7 @@ export default function BudgetWorkspace({
                             label: `Capítulo ${chapter.order}`,
                           })
                         }
-                        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                        className={buttonVariants({ variant: "outline", size: "sm" })}
                       >
                         <Plus aria-hidden="true" className="h-3.5 w-3.5" />
                         Partida
@@ -443,7 +444,7 @@ export default function BudgetWorkspace({
                           })
                         }
                         aria-label={`Editar capítulo ${chapter.order}`}
-                        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                        className={buttonVariants({ variant: "outline", size: "sm" })}
                       >
                         <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
                       </button>

@@ -29,6 +29,8 @@ import {
 } from "../actions";
 import Modal from "@/components/organisms/modal";
 import { ApuCategoryBadge } from "@/components/molecules/quote-badges";
+import { fieldClasses, inputClasses, labelClasses } from "@/components/atoms/input";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 type P99Thresholds = {
   activityUnitCost: Record<string, string>;
@@ -43,7 +45,7 @@ const INITIAL_ACTIVITY_STATE: ApuActivityFormState = { status: "idle" };
 const INITIAL_MUTATION_STATE: ApuMutationState = { status: "idle" };
 
 const inputClass =
-  "h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-border-strong focus:border-accent focus:outline-2 focus:outline-accent/30";
+  inputClasses;
 
 type CompRow = { itemId: string; consumption: string; wastePercent: string };
 
@@ -163,7 +165,7 @@ function CompositionEditor({
           onClick={() =>
             onChange([...comps, { itemId: "", consumption: "", wastePercent: "0" }])
           }
-          className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+          className={buttonVariants({ variant: "outline", size: "sm" })}
         >
           <Plus aria-hidden="true" className="h-3.5 w-3.5" />
           Agregar insumo
@@ -304,14 +306,14 @@ function ActivityForm({
       />
 
       {state.status === "error" && state.message ? (
-        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <p className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger">
           {state.message}
         </p>
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-foreground/80">
+          <span className={labelClasses}>
             Código (opcional)
           </span>
           <input
@@ -327,7 +329,7 @@ function ActivityForm({
           ) : null}
         </label>
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-foreground/80">
+          <span className={labelClasses}>
             Unidad
           </span>
           <select name="unit" defaultValue={defaults.unit} className={inputClass}>
@@ -347,7 +349,7 @@ function ActivityForm({
       </div>
 
       <label className="block">
-        <span className="mb-1 block text-sm font-medium text-foreground/80">
+        <span className={labelClasses}>
           Nombre de la actividad
         </span>
         <input
@@ -364,14 +366,14 @@ function ActivityForm({
       </label>
 
       <label className="block">
-        <span className="mb-1 block text-sm font-medium text-foreground/80">
+        <span className={labelClasses}>
           Descripción (opcional)
         </span>
         <textarea
           name="description"
           defaultValue={defaults.description}
           rows={2}
-          className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground transition placeholder:text-muted-foreground focus:border-accent focus:outline-2 focus:outline-accent/30"
+          className={`${fieldClasses} py-2 w-full`}
         />
         {fieldError(state.errors, "description") ? (
           <span className="mt-1 block text-xs text-destructive">
@@ -400,7 +402,7 @@ function ActivityForm({
         <button
           type="submit"
           disabled={isPending || loadingComps}
-          className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+          className={buttonVariants({ size: "sm" })}
         >
           {isPending
             ? "Guardando…"
@@ -547,7 +549,7 @@ function CompositionEditorDetail({
               required
               placeholder="Rendimiento"
               disabled={busy}
-              className="w-28 h-9 rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-accent focus:outline-2 focus:outline-accent/30 disabled:opacity-50"
+              className={`${fieldClasses} h-9 w-28`}
             />
             <input
               name="wastePercent"
@@ -558,12 +560,12 @@ function CompositionEditorDetail({
               defaultValue="0"
               placeholder="Desp. %"
               disabled={busy}
-              className="w-24 h-9 rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-accent focus:outline-2 focus:outline-accent/30 disabled:opacity-50"
+              className={`${fieldClasses} h-9 w-24`}
             />
             <button
               type="submit"
               disabled={busy}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className={buttonVariants({ size: "sm" })}
             >
               <Plus aria-hidden="true" className="h-3.5 w-3.5" />
               Agregar
@@ -736,7 +738,7 @@ export default function ActivityCatalog({
         <button
           type="button"
           onClick={() => setModal({ type: "create" })}
-          className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+          className={buttonVariants()}
         >
           <Plus aria-hidden="true" className="h-4 w-4" />
           Nueva {activityLabel.toLowerCase()}
@@ -810,7 +812,7 @@ export default function ActivityCatalog({
                          <button
                            type="button"
                            onClick={() => void openDetail(row, "detail")}
-                           className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                           className={buttonVariants({ variant: "outline", size: "sm" })}
                          >
                            <Eye aria-hidden="true" className="h-3.5 w-3.5" />
                            Ver
@@ -818,7 +820,7 @@ export default function ActivityCatalog({
                          <button
                            type="button"
                            onClick={() => void openDetail(row, "edit")}
-                           className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                           className={buttonVariants({ variant: "outline", size: "sm" })}
                          >
                            <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
                            Editar

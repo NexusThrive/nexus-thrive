@@ -5,6 +5,7 @@ import { ProjectStatusBadge } from "../../projects/_components/project-status-ba
 import { formatDateShort, formatMoneyMicro } from "@/lib/format";
 import type { QuoteFolderRow } from "@/lib/construction/project-quotes";
 import type { ProjectStatusValue } from "@/lib/projects";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 /**
  * Directorio de cotizaciones: una carpeta por obra, con el nombre de la obra
@@ -31,7 +32,7 @@ export default function QuoteFolders({
         </p>
         <Link
           href={`/${tenantSlug}/projects`}
-          className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+          className={`${buttonVariants()} mt-4`}
         >
           Ir a obras
         </Link>

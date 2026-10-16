@@ -10,6 +10,7 @@ import SearchInput from "@/components/molecules/search-input";
 import FilterSelect from "@/components/molecules/filter-select";
 import QuoteFolders from "./_components/quote-folders";
 import LegacyQuotes from "./_components/legacy-quotes";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 function firstString(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
@@ -63,7 +64,7 @@ export default async function QuotesPage({
             <ArrowLeft aria-hidden="true" className="h-4 w-4" />
             Volver a las carpetas
           </Link>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          <h1 className="font-display text-[clamp(24px,4.4vw,34px)] font-bold leading-[1.12] tracking-[-0.02em] text-foreground">
             Cotizaciones anteriores
           </h1>
         </header>
@@ -81,14 +82,14 @@ export default async function QuotesPage({
     <div className="space-y-6">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Cotizaciones</h1>
+          <h1 className="font-display text-[clamp(24px,4.4vw,34px)] font-bold leading-[1.12] tracking-[-0.02em] text-foreground">Cotizaciones</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
             Una carpeta por obra con sus versiones emitidas y los seguimientos al cliente.
           </p>
         </div>
         <Link
           href={`/${tenantSlug}/projects`}
-          className="inline-flex h-10 shrink-0 items-center gap-1.5 self-start rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted"
+          className={`${buttonVariants({ variant: "outline" })} shrink-0 self-start`}
         >
           <Building2 aria-hidden="true" className="h-4 w-4" />
           Obras

@@ -7,6 +7,7 @@ import { getQuoteTerms, getVerticalTerms } from "@/lib/vertical-terms";
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import PrintButton from "./_components/print-button";
 import QuoteDocumentSheet from "@/components/organisms/quote-document-sheet";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 /**
  * Documento comercial para el cliente — Fase 3.
@@ -46,7 +47,7 @@ export default async function QuotePrintPage({
         <div className="mx-auto mb-6 flex max-w-[210mm] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between print:hidden">
           <Link
             href={`/${tenantSlug}/projects/${versioned.projectId}?tab=cotizaciones`}
-            className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-border-strong bg-card px-3 py-2 text-sm font-medium text-foreground/80 transition hover:bg-muted"
+            className={`${buttonVariants({ variant: "outline" })} w-fit`}
           >
             <ArrowLeft aria-hidden="true" className="h-4 w-4" />
             Volver a la obra
@@ -82,7 +83,7 @@ export default async function QuotePrintPage({
       <div className="mx-auto mb-6 flex max-w-[210mm] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between print:hidden">
         <Link
           href={`/${tenantSlug}/quotes/${quoteId}`}
-          className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-border-strong bg-card px-3 py-2 text-sm font-medium text-foreground/80 transition hover:bg-muted"
+          className={`${buttonVariants({ variant: "outline" })} w-fit`}
         >
           <ArrowLeft aria-hidden="true" className="h-4 w-4" />
           Volver al detalle
@@ -171,7 +172,7 @@ export default async function QuotePrintPage({
           ) : (
             <table className="mt-3 w-full border-collapse text-sm">
               <thead>
-                <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+                <tr className="border-b border-border-strong text-left text-xs font-semibold text-muted-foreground">
                   <th className="py-2 pr-2 font-medium">#</th>
                   <th className="py-2 pr-2 font-medium">
                     {terms.quoteItem}

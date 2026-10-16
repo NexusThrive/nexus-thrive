@@ -9,6 +9,7 @@ import { QuoteStatusBadge } from "@/components/molecules/quote-badges";
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import type { QuoteStatusValue } from "@/lib/apu-engine";
 import { migrateLegacyQuoteAction, type MigrateLegacyResult } from "../actions";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 type LegacyQuote = {
   id: string;
@@ -87,7 +88,7 @@ export default function LegacyQuotes({
               <div className="flex flex-wrap items-center gap-2">
                 <Link
                   href={`/${tenantSlug}/quotes/${quote.id}`}
-                  className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                  className={buttonVariants({ variant: "outline", size: "sm" })}
                 >
                   Ver
                 </Link>
@@ -123,7 +124,7 @@ export default function LegacyQuotes({
                     <button
                       type="submit"
                       disabled={pending}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition hover:bg-primary/90 disabled:opacity-60"
+                      className={buttonVariants({ size: "sm" })}
                     >
                       {busyId === quote.id ? (
                         <NLoader size={12} className="text-current" />

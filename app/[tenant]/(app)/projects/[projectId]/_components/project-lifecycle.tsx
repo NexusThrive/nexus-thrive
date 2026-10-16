@@ -16,6 +16,8 @@ import {
   updateProjectStatusAction,
   type UpdateProjectFormState,
 } from "../../actions";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { fieldClasses } from "@/components/atoms/input";
 
 const IDLE_STATE: UpdateProjectFormState = { status: "idle" };
 
@@ -126,7 +128,7 @@ export default function ProjectLifecycle({
         <button
           type="button"
           onClick={() => setEditing((value) => !value)}
-          className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+          className={buttonVariants({ variant: "outline", size: "sm" })}
         >
           <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
           {editing ? "Cerrar" : "Editar nombre y descripción"}
@@ -156,7 +158,7 @@ export default function ProjectLifecycle({
               id="project-name"
               name="name"
               defaultValue={state.values?.name ?? name}
-              className="mt-1 h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-foreground/20 focus:border-gold-500 focus:outline-2 focus:outline-gold-600/30"
+              className={`${fieldClasses} h-[var(--control-h)] mt-1 w-full`}
             />
             {state.errors?.name ? (
               <p role="alert" className="mt-1 text-xs text-destructive">
@@ -177,7 +179,7 @@ export default function ProjectLifecycle({
               name="description"
               rows={2}
               defaultValue={state.values?.description ?? description}
-              className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-foreground/20 focus:border-gold-500 focus:outline-2 focus:outline-gold-600/30"
+              className={`mt-1 ${fieldClasses} py-2`}
             />
             {state.errors?.description ? (
               <p role="alert" className="mt-1 text-xs text-destructive">
@@ -189,7 +191,7 @@ export default function ProjectLifecycle({
           {state.status === "error" && state.message ? (
             <p
               role="alert"
-              className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
             >
               {state.message}
             </p>
@@ -200,14 +202,14 @@ export default function ProjectLifecycle({
               type="button"
               disabled={isPending}
               onClick={() => setEditing(false)}
-              className="h-9 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className={buttonVariants({ size: "sm" })}
             >
               {isPending ? (
                 <NLoader size={16} className="text-current" />

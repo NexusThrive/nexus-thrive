@@ -33,6 +33,8 @@ import {
 } from "../actions";
 import Modal from "@/components/organisms/modal";
 import { ApuCategoryBadge } from "@/components/molecules/quote-badges";
+import { fieldClasses, inputClasses, labelClasses } from "@/components/atoms/input";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 const EMPTY_ITEM: ApuItemFormValues = {
   code: "",
@@ -48,7 +50,7 @@ const INITIAL_IMPORT_STATE: ImportResultState = { status: "idle" };
 const INITIAL_MUTATION_STATE: ApuMutationState = { status: "idle" };
 
 const inputClass =
-  "h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-border-strong focus:border-accent focus:outline-2 focus:outline-accent/30";
+  inputClasses;
 
 function fieldError(errors?: { [key: string]: string }, field?: string) {
   return errors?.[field ?? ""];
@@ -89,14 +91,14 @@ function ItemForm({
       {itemId ? <input type="hidden" name="itemId" value={itemId} /> : null}
 
       {state.status === "error" && state.message ? (
-        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <p className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger">
           {state.message}
         </p>
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-foreground/80">
+          <span className={labelClasses}>
             Código (opcional)
           </span>
           <input
@@ -112,7 +114,7 @@ function ItemForm({
           ) : null}
         </label>
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-foreground/80">
+          <span className={labelClasses}>
             Unidad
           </span>
           <select
@@ -136,7 +138,7 @@ function ItemForm({
       </div>
 
       <label className="block">
-        <span className="mb-1 block text-sm font-medium text-foreground/80">
+        <span className={labelClasses}>
           Nombre del insumo
         </span>
         <input
@@ -154,7 +156,7 @@ function ItemForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-foreground/80">
+          <span className={labelClasses}>
             Categoría
           </span>
           <select
@@ -176,7 +178,7 @@ function ItemForm({
           ) : null}
         </label>
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-foreground/80">
+          <span className={labelClasses}>
             Precio unitario (COP)
           </span>
           <input
@@ -202,7 +204,7 @@ function ItemForm({
           <span aria-hidden="true" className="h-16 w-16 shrink-0 rounded-md border border-dashed border-border" />
         )}
         <label htmlFor={`item-photo-${itemId ?? "new"}`} className="block min-w-0 flex-1">
-          <span className="mb-1 block text-sm font-medium text-foreground/80">
+          <span className={labelClasses}>
             Foto del insumo (PNG, JPG, GIF o WEBP, máx. 2 MB)
           </span>
           <input
@@ -233,7 +235,7 @@ function ItemForm({
         <button
           type="submit"
           disabled={isPending}
-          className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+          className={buttonVariants({ size: "sm" })}
         >
           {isPending ? "Guardando…" : itemId ? "Guardar cambios" : "Crear insumo"}
         </button>
@@ -291,17 +293,17 @@ function ImportForm({
       <input type="hidden" name="importText" value={text} />
 
       {state.status === "error" && state.message ? (
-        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <p className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger">
           {state.message}
         </p>
       ) : null}
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-foreground/80">
+        <label className={labelClasses}>
           Pegar CSV o subir archivo (.csv / .txt)
         </label>
         <div className="mb-2 flex items-center gap-2">
-          <label className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted">
+          <label className={`${buttonVariants({ variant: "outline", size: "sm" })} cursor-pointer`}>
             <FileUp aria-hidden="true" className="h-4 w-4" />
             Subir archivo
             <input
@@ -319,7 +321,7 @@ function ImportForm({
           placeholder={
             "code,name,unit,category,unitPrice\nCEM-02,Cemento gris 50 kg,BULTO,MATERIAL,35000"
           }
-          className="w-full rounded-lg border border-border bg-card px-3 py-2 font-mono text-xs text-foreground transition placeholder:text-muted-foreground focus:border-accent focus:outline-2 focus:outline-accent/30"
+          className={`${fieldClasses} py-2 w-full font-mono text-xs`}
         />
         <p className="mt-1 text-xs text-muted-foreground">
           Columnas: código (opcional), nombre, unidad (M3, KG, BULTO, HR,
@@ -343,7 +345,7 @@ function ImportForm({
         <button
           type="submit"
           disabled={isPending || !preview.ok}
-          className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className={buttonVariants({ size: "sm" })}
         >
           {isPending ? "Importando…" : "Importar (upsert atómico)"}
         </button>
@@ -401,7 +403,7 @@ function RowActions({
           <button
             type="submit"
             disabled={busy}
-            className="inline-flex h-8 items-center rounded-lg border border-border bg-card px-2.5 text-xs font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
           >
             {row.active ? "Archivar" : "Restaurar"}
           </button>
@@ -516,7 +518,7 @@ export default function ItemsBank({
           <button
             type="button"
             onClick={() => setModal({ type: "import" })}
-            className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted"
+            className={buttonVariants({ variant: "outline" })}
           >
             <FileUp aria-hidden="true" className="h-4 w-4" />
             Importar CSV
@@ -524,7 +526,7 @@ export default function ItemsBank({
           <button
             type="button"
             onClick={() => setModal({ type: "create" })}
-            className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+            className={buttonVariants()}
           >
             <Plus aria-hidden="true" className="h-4 w-4" />
             Nuevo {itemLabel.toLowerCase()}
@@ -596,7 +598,7 @@ export default function ItemsBank({
                       <button
                         type="button"
                         onClick={() => setModal({ type: "edit", row })}
-                        className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                        className={buttonVariants({ variant: "outline", size: "sm" })}
                       >
                         <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
                         Editar
@@ -623,7 +625,7 @@ export default function ItemsBank({
               type="button"
               disabled={page <= 1 || isPending}
               onClick={() => navigatePage(page - 1)}
-              className="inline-flex h-9 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
             >
               <ChevronLeft aria-hidden="true" className="h-4 w-4" />
               Anterior
@@ -632,7 +634,7 @@ export default function ItemsBank({
               type="button"
               disabled={page >= totalPages || isPending}
               onClick={() => navigatePage(page + 1)}
-              className="inline-flex h-9 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
             >
               {isPending ? (
                 <NLoader size={16} className="text-current" />

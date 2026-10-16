@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useVerticalTerms } from "../../vertical-terms-context";
+import { fieldClasses } from "@/components/atoms/input";
 
 export type CustomerStatus = "active" | "archived";
 export type CustomerSort = "recent" | "name_asc" | "name_desc";
@@ -83,7 +84,7 @@ export default function CustomerFilters({
             updateParams((params) => params.set("sort", next));
           }
         }}
-        className="h-9 cursor-pointer rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground/80 transition hover:border-foreground/20 focus:border-gold-500 focus:outline-2 focus:outline-gold-600/30"
+        className={`${fieldClasses} h-9 cursor-pointer text-xs`}
       >
         {SORT_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>

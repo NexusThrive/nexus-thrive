@@ -31,3 +31,16 @@ export function DataTable({
     </div>
   );
 }
+
+/** Celda de encabezado: Inter 600 12 px muted, sin salto de línea. */
+export const tableHeadClasses =
+  "h-11 whitespace-nowrap border-b border-border-strong bg-card px-3.5 text-left text-xs font-semibold text-muted-foreground";
+
+/** Celda de cuerpo: alto de fila por densidad (56 px; 46 en compacta). */
+export const tableCellClasses = "h-[var(--row-h)] whitespace-nowrap border-b border-border px-3.5";
+
+/** Fila con fondo al pasar el cursor. */
+export const tableRowClasses = "transition-colors duration-200 hover:bg-surface-muted";
+
+/** Contenedor con borde y scroll horizontal (la tabla nunca se corta). */
+export const tableWrapClasses = "overflow-x-auto rounded-lg border border-border bg-card";
