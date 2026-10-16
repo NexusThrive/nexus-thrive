@@ -1,0 +1,24 @@
+import { Meta, ColorPalette, ColorItem } from "@storybook/addon-docs/blocks";
+
+<Meta title="Fundamentos/Colores" />
+
+# Colores
+
+Proporción **60 % neutros e Ink, 30 % Paper, 10 % oro**. El oro marca lo importante (el CTA,
+lo activo, el corte de la N); el rojo y el verde son funcionales, nunca decorativos. Los
+estados se muestran con un punto cuadrado de 6 px, no con píldoras de color.
+
+Usa siempre el token semántico (`bg-surface`, `text-muted-foreground`): cambia solo entre
+claro y oscuro. Cambia el tema arriba para ver los valores oscuros.
+
+<ColorPalette>
+  <ColorItem title="Marca" subtitle="--nx-ink · --nx-paper · --nx-white" colors={{ Ink: "#000000", Paper: "#F7F6F3", Blanco: "#FFFFFF" }} />
+  <ColorItem title="Oro" subtitle="--nx-gold-100…700" colors={{ "100": "#F6EBC4", "300": "#E6CB74", "500": "#D4AF37", "600": "#B8921F", "700": "#7F6210" }} />
+  <ColorItem title="Grafito" subtitle="--nx-graphite-*" colors={{ "950": "#0A0A0B", "900": "#141416", "800": "#1E1E21", "700": "#2A2A2E", "500": "#6B6B73", "400": "#A1A1A8", "200": "#E8E6E1", "100": "#F2F1EE" }} />
+  <ColorItem title="Superficies" subtitle="background · surface · surface-muted · surface-hover" colors={{ background: "var(--background)", surface: "var(--surface)", muted: "var(--surface-muted)", hover: "var(--surface-hover)" }} />
+  <ColorItem title="Bordes" subtitle="border · border-strong · border-input (AA)" colors={{ border: "var(--border)", strong: "var(--border-strong)", input: "var(--border-input)" }} />
+  <ColorItem title="Texto" subtitle="foreground · foreground-muted · accent-text" colors={{ foreground: "var(--foreground)", muted: "var(--foreground-muted)", "accent-text": "var(--accent-text)" }} />
+  <ColorItem title="Acción" subtitle="primary (tinta en claro, oro en oscuro) · accent · ring" colors={{ primary: "var(--primary)", accent: "var(--accent)", ring: "var(--ring)" }} />
+  <ColorItem title="Estados" subtitle="success · danger · y sus fondos suaves" colors={{ success: "var(--success)", "success-subtle": "var(--success-subtle)", danger: "var(--danger)", "danger-subtle": "var(--danger-subtle)" }} />
+  <ColorItem title="Niveles de precio" subtitle="Essential · Elite (azul Nexus) · Signature" colors={{ Essential: "#6B6B73", Elite: "#1E3A6E", Signature: "#D4AF37" }} />
+</ColorPalette>

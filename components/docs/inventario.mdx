@@ -1,0 +1,28 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Introducción/Inventario" />
+
+# Inventario y plan de división
+
+**Sistema compartido (`components/`), documentado aquí en Storybook:** 27 átomos,
+30 moléculas, 19 organismos, 4 plantillas y 3 proveedores.
+
+**Componentes de módulo (`app/**/_components`): 89.** Son organismos de dominio: cargan o
+mutan datos con Server Actions, así que viven junto a su ruta. Ya usan los átomos y
+moléculas del sistema; en el rediseño de cada módulo se dividen así:
+
+| Módulo | Componentes | Prioridad | Qué se extrae al sistema |
+| --- | --- | --- | --- |
+| Construcción · obra | budget-workspace (655), lean-workspace (505), project-quotes-workspace (462), apu-editor-modal (422), catalog-import-modal (426), reports-workspace (366), field-log-workspace (356) + 9 | Alta | `DataTable` con selección y orden, `MoneyCell`, `ChapterGroup`, `StepperField`, `FileDrop` |
+| Catálogo APU | activity-catalog (894), items-bank (691), import-workspace (460) + 5 | Alta | `FilterBar` (búsqueda + chips + orden), `ThumbnailCell`, `ImportProgress` |
+| CRM | customer-table (552), customer-form (239) + 13 | Media | `SwipeRow` (acciones al deslizar en móvil), `BulkBar` (barra de selección), `Timeline` |
+| Finanzas | payment-form (274), expense-form (210) + 4 | Media | `AmountKeypad` y `Receipt` (impresora de recibo del artifact) |
+| Membresías | membership-form (376), membership-table (240) + 5 | Media | reutiliza `SwipeRow`, `BulkBar`, `StatTile` |
+| Reservas | bookings-view (476) | Media | `WeekStrip` (semana con indicador), `MonthCalendar`, `TimeSlots` |
+| Configuración | profile-tab (226) + 3 | Baja | `SettingsRow`; pestañas de Apariencia (tema, densidad, movimiento) |
+| Onboarding | 12 | Baja | `StepIndicator`, `BootSteps` ya existe |
+| Admin | tenant-form (608), tenant-drawer (564), tenant-table (347) + 10 | Baja | usa `ResponsiveSheet drawer` y `DataTable` |
+
+**Criterio:** un componente sube a `components/` cuando un segundo módulo lo necesita o
+cuando es un patrón del sistema (como los de la columna derecha, que salen del artifact de la
+app). Cada uno llega con su historia.

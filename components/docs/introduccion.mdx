@@ -1,0 +1,60 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Introducción/Sistema de diseño" />
+
+# NEXUS THRIVE · Sistema de diseño
+
+El logo manda: **negro dominante, oro como único acento (≤ 10 %), esquinas casi rectas,
+bordes en lugar de sombras y un solo ángulo, 24°**, el corte de la N. Todo lo que ves aquí
+es el código real de la app: cada historia importa el mismo componente que usan las páginas.
+
+## Cómo se trabaja
+
+```bash
+pnpm storybook        # http://localhost:6006
+pnpm build-storybook  # build estático (lo valida el CI)
+```
+
+Cada componente vive junto a su historia (`button.tsx` + `button.stories.tsx`). La pestaña
+**Docs** de cada uno se arma sola con su JSDoc, sus props y sus variantes; arriba a la
+derecha puedes cambiar entre tema claro y oscuro y probar el tamaño móvil.
+
+## Niveles (diseño atómico)
+
+| Nivel | Carpeta | Qué es | Ejemplos |
+| --- | --- | --- | --- |
+| Átomos | `components/atoms` | Una sola pieza visual; no conoce el negocio | Button, Input, Badge, Chip, NMark, Odometer |
+| Moléculas | `components/molecules` | Pocos átomos con un propósito | Field, KpiCard, SegmentedControl, Toast |
+| Organismos | `components/organisms` | Secciones completas, pueden leer contexto | AppSidebar, ResponsiveSheet, PriceSummary |
+| Plantillas | `components/templates` | Esqueleto de página sin datos | TenantShell, AuthLayout, PublicLayout |
+| Páginas | `app/**/page.tsx` | Rutas de Next: cargan datos y llenan plantillas | Inicio, Precios, Acceso |
+| Proveedores | `components/providers` | Contexto y efectos globales, sin UI | ShellProvider, MotionProvider, Preferences |
+
+Reglas de dependencia: un nivel solo importa de niveles **inferiores** (un átomo nunca importa
+una molécula). Los componentes de un solo módulo viven junto a su ruta
+(`app/[tenant]/(app)/crm/_components`) hasta que un segundo módulo los necesite; entonces
+suben a `components/`. Ver **Introducción/Inventario**.
+
+## Convenciones
+
+- **Lógica fuera de la UI.** Reglas y cálculos van en `lib/` como funciones puras con pruebas
+  (`lib/pricing`, `lib/navigation`, `lib/dashboard`, `lib/motion`). Los componentes solo
+  pintan y llaman.
+- **Servidor por defecto.** `"use client"` solo donde hay estado, efectos o eventos.
+- **Estilos.** Tailwind con los tokens de marca (`bg-surface`, `text-muted-foreground`,
+  `border-border-input`…). Cuando la animación o el estado no caben en clases, un CSS Module
+  junto al componente (`responsive-sheet.module.css`, `pricing.module.css`).
+- **Movimiento.** Sin librerías de animación: CSS primero; lo que necesita física (resortes,
+  contadores, partículas) sale de `lib/motion` y se reproduce con la Web Animations API.
+  Todo respeta *Reducir movimiento*. Ver **Fundamentos/Movimiento**.
+- **Accesibilidad.** Foco visible con `--ring`, roles ARIA en controles propios
+  (`radiogroup`, `aria-pressed`), textos alternativos en animaciones (`aria-label` en
+  RevealText y Odometer). El panel **Accessibility** de cada historia corre axe.
+- **Textos** en español de Colombia, con tuteo y sin jerga técnica.
+
+## Añadir un componente
+
+1. Decide el nivel con la tabla de arriba y crea `nombre.tsx` en su carpeta.
+2. Documenta el diseño en el JSDoc (medidas, estados, por qué).
+3. Crea `nombre.stories.tsx` con `title: "Nivel/Nombre"` y una historia por estado.
+4. `pnpm exec tsc --noEmit && pnpm lint && pnpm build-storybook`.

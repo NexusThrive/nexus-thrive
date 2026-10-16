@@ -61,6 +61,11 @@ jobs:
         env:
           TEST_DATABASE_URL: ""
 
+      # El catálogo de componentes también se valida: una historia rota
+      # rompe el build de Storybook.
+      - name: Storybook
+        run: pnpm build-storybook
+
       - name: Migraciones sobre base limpia
         run: |
           psql "$DATABASE_URL" -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"

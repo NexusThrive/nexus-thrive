@@ -1,0 +1,26 @@
+import { Meta, Typeset } from "@storybook/addon-docs/blocks";
+
+<Meta title="Fundamentos/Tipografía" />
+
+# Tipografía
+
+| Familia | Uso | Clase |
+| --- | --- | --- |
+| **Montserrat** 600–700 | Títulos, cifras grandes, la marca | `font-display` |
+| **Inter** 400–600 | Interfaz, formularios, tablas | `font-sans` (por defecto) |
+| **JetBrains Mono** 400–500 | Códigos, IDs, atajos, contadores | `font-mono` |
+
+Las cifras siempre con `tabular-nums` para que no bailen al cambiar. Las mayúsculas con
+tracking amplio son solo para la marca y los antetítulos (`Eyebrow`).
+
+## Montserrat (títulos)
+
+<Typeset fontFamily="var(--font-montserrat), Montserrat" fontWeight={700} fontSizes={[48, 34, 28, 22, 17, 15]} sampleText="Tu negocio te espera donde lo dejaste" />
+
+## Inter (interfaz)
+
+<Typeset fontFamily="var(--font-inter), Inter" fontSizes={[16, 14, 13, 12, 11]} sampleText="Clientes, agenda, finanzas y WhatsApp en un solo sistema" />
+
+## JetBrains Mono (datos)
+
+<Typeset fontFamily="var(--font-jetbrains), 'JetBrains Mono'" fontSizes={[14, 12, 11]} sampleText="COT-2026-031 · OB-2026-014 · Ctrl K" />

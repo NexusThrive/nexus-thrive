@@ -26,7 +26,9 @@ const preview: Preview = {
       storySort: {
         order: [
           "Introducción",
+          ["Sistema de diseño", "Inventario"],
           "Fundamentos",
+          ["Colores", "Tipografía", "Movimiento"],
           "Átomos",
           "Moléculas",
           "Organismos",
