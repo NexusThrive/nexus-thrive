@@ -1,3 +1,4 @@
+import { copAmountExceeds, parseCopAmount } from "@/lib/cop-amount";
 import {
   EXPENSE_CATEGORIES,
   PAYMENT_METHODS,
@@ -6,6 +7,9 @@ import {
   type PaymentMethodValue,
   type PaymentStatusValue,
 } from "@/lib/finance";
+
+/** Tope por movimiento, en pesos enteros. */
+const MAX_AMOUNT_COP = BigInt(100_000_000);
 
 export type PaymentFormValues = {
   customerId: string;
@@ -69,13 +73,14 @@ export function validatePayment(formData: FormData): PaymentValidation {
     errors.status = "Estado de pago no válido.";
   }
 
-  // El separador decimal se acepta con coma o punto.
-  const amountNumber = Number(values.amount.replace(",", "."));
+  // Miles con punto o coma ("150.000") y decimales con coma o punto; ver
+  // `parseCopAmount`. El valor normalizado es el que se persiste.
+  const amount = parseCopAmount(values.amount);
   if (!values.amount) {
     errors.amount = "Ingresa el monto.";
-  } else if (!Number.isFinite(amountNumber) || amountNumber <= 0) {
+  } else if (amount === null) {
     errors.amount = "El monto debe ser mayor que cero.";
-  } else if (amountNumber > 100_000_000) {
+  } else if (copAmountExceeds(amount, MAX_AMOUNT_COP)) {
     errors.amount = "El monto no puede superar $100.000.000.";
   }
 
@@ -99,7 +104,7 @@ export function validatePayment(formData: FormData): PaymentValidation {
       customerId: values.customerId,
       provider: values.provider as PaymentMethodValue,
       status: values.status as PaymentStatusValue,
-      amount: values.amount,
+      amount: amount as string,
       providerRefId: values.providerRefId,
       description: values.description,
     },
@@ -149,12 +154,14 @@ export function validateExpense(formData: FormData): ExpenseValidation {
     errors.description = "Máximo 300 caracteres.";
   }
 
-  const amountNumber = Number(values.amount.replace(",", "."));
+  // Miles con punto o coma ("150.000") y decimales con coma o punto; ver
+  // `parseCopAmount`. El valor normalizado es el que se persiste.
+  const amount = parseCopAmount(values.amount);
   if (!values.amount) {
     errors.amount = "Ingresa el monto.";
-  } else if (!Number.isFinite(amountNumber) || amountNumber <= 0) {
+  } else if (amount === null) {
     errors.amount = "El monto debe ser mayor que cero.";
-  } else if (amountNumber > 100_000_000) {
+  } else if (copAmountExceeds(amount, MAX_AMOUNT_COP)) {
     errors.amount = "El monto no puede superar $100.000.000.";
   }
 
@@ -168,7 +175,7 @@ export function validateExpense(formData: FormData): ExpenseValidation {
     values: {
       category: values.category as ExpenseCategory,
       description: values.description,
-      amount: values.amount,
+      amount: amount as string,
     },
   };
 }

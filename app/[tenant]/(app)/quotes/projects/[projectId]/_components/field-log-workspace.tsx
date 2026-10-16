@@ -13,9 +13,9 @@ import {
   type FieldLogEntryData,
 } from "@/lib/field-log-engine";
 import type { FieldLogData } from "@/lib/tenant-db";
-import { getOrCreateFieldLogAction } from "../field-log/actions";
+import { getOrCreateFieldLogAction, type ActionState } from "../field-log/actions";
 
-const IDLE: any = { status: "idle" };
+const IDLE: ActionState = { status: "idle" };
 
 function typeBadge(type: FieldLogEntryData["type"]) {
   switch (type) {

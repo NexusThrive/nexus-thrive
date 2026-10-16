@@ -45,3 +45,7 @@ next-env.d.ts
 
 # transcripts de sesión (no se versionan)
 /conversations
+
+# contract emitido viejo (el vigente vive en prisma/) y volcado manual de esquema
+/generated
+/migration.sql

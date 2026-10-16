@@ -49,9 +49,18 @@ export default function ProjectLifecycle({
   );
   const [isTransitioning, startTransition] = useTransition();
 
-  useEffect(() => {
+  // Cerrar el editor al guardar con éxito se ajusta durante el render (no en
+  // un efecto) para no encadenar renders; el refresh sí es un efecto externo.
+  const [handledState, setHandledState] = useState(state);
+  if (state !== handledState) {
+    setHandledState(state);
     if (state.status === "ok") {
       setEditing(false);
+    }
+  }
+
+  useEffect(() => {
+    if (state.status === "ok") {
       router.refresh();
     }
   }, [state, router]);

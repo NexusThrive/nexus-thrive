@@ -551,7 +551,7 @@ function CompositionEditorDetail({
       )}
       <p className="text-xs text-muted-foreground">
         Rendimiento = cantidad por unidad de actividad (ej. 0.25 M3 por M2
-        de muro). Desperdicio en % (0-50). Badge "Revisar" = p99 del catálogo.
+        de muro). Desperdicio en % (0-50). Badge &quot;Revisar&quot; = p99 del catálogo.
       </p>
     </div>
   );

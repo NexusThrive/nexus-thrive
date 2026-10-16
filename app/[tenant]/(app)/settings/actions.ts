@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
@@ -61,33 +61,14 @@ const FORBIDDEN_MODULES: ModulesFormState = {
 async function requireTenantContext(
   tenantSlug: string,
 ): Promise<{ tenantDb: TenantDb; tenantId: string; role: RoleValue } | null> {
-  if (!tenantSlug || tenantSlug.trim() === "") {
+  const context = await requireSharedTenantContext(tenantSlug);
+  if (!context) {
     return null;
   }
-
-  const { userId } = await auth();
-  if (!userId) {
-    return null;
-  }
-
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    return null;
-  }
-
-  const tenantDb = createTenantDb(tenantRecord.id);
-  const localUser = await tenantDb.users.findByClerkUserId(userId);
-  if (!localUser) {
-    return null;
-  }
-
   return {
-    tenantDb,
-    tenantId: tenantRecord.id,
-    role: localUser.role as RoleValue,
+    tenantDb: context.tenantDb,
+    tenantId: context.tenantId,
+    role: context.role as RoleValue,
   };
 }
 

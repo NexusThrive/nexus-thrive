@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
@@ -44,30 +44,11 @@ type TenantDb = ReturnType<typeof createTenantDb>;
  * Devuelve `null` cuando algo falla (el caller responde con mensaje genérico).
  */
 async function requireTenantDb(tenantSlug: string): Promise<TenantDb | null> {
-  if (!tenantSlug || tenantSlug.trim() === "") {
+  const context = await requireSharedTenantContext(tenantSlug);
+  if (!context) {
     return null;
   }
-
-  const { userId } = await auth();
-  if (!userId) {
-    return null;
-  }
-
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    return null;
-  }
-
-  const tenantDb = createTenantDb(tenantRecord.id);
-  const member = await tenantDb.users.findByClerkUserId(userId);
-  if (!member) {
-    return null;
-  }
-
-  return tenantDb;
+  return context.tenantDb;
 }
 
 // ---------------------------------------------------------------------------
@@ -134,7 +115,7 @@ export async function createPaymentAction(
     customerId: customerId || null,
     provider,
     status,
-    amount: String(Number(amount.replace(",", "."))),
+    amount,
     providerRefId: providerRefId || null,
     description: description || null,
   });
@@ -169,7 +150,7 @@ export async function createExpenseAction(
   await tenantDb.expenses.create({
     category,
     description,
-    amount: String(Number(amount.replace(",", "."))),
+    amount,
   });
 
   revalidatePath(`/${tenantSlug}/finance`);

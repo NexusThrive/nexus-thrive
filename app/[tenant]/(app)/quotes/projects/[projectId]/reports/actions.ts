@@ -1,7 +1,7 @@
 "use server";
 
+import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
 
 export type ActionState = {
@@ -38,31 +38,11 @@ type TenantContext = {
 async function requireTenantContext(
   tenantSlug: string,
 ): Promise<TenantContext | null> {
-  if (!tenantSlug || tenantSlug.trim() === "") {
+  const context = await requireSharedTenantContext(tenantSlug);
+  if (!context) {
     return null;
   }
-  const { userId } = await auth();
-  if (!userId) {
-    return null;
-  }
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    return null;
-  }
-  const member = await db.orm.public.User.where({
-    clerkUserId: userId,
-    tenantId: tenantRecord.id,
-  }).first();
-  if (!member) {
-    return null;
-  }
-  return {
-    tenantId: tenantRecord.id,
-    tenantDb: createTenantDb(tenantRecord.id),
-  };
+  return { tenantId: context.tenantId, tenantDb: context.tenantDb };
 }
 
 export async function getInformeCeroDataAction(

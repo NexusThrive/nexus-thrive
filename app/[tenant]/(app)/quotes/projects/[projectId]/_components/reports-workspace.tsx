@@ -10,10 +10,22 @@ import {
   exportBomCsvAction,
   getInformeCeroDataAction,
   getWeeklyReportDataAction,
+  type BomExportResult,
+  type InformeCeroResult,
+  type WeeklyReportResult,
 } from "../reports/actions";
 import { isoWeekOf, bogotaToday, isoWeekLabel } from "@/lib/lean-engine";
 
 type ReportTab = "informe-cero" | "informe-semanal" | "bom";
+
+// Estado inicial de los useActionState; "idle" no pertenece a los tipos de
+// resultado del servidor (que solo devuelve "ok" | "error").
+type Idle = { status: "idle" };
+const IDLE: Idle = { status: "idle" };
+
+// Las actions ligadas reciben (prevState, formData); se tipan con el estado
+// que realmente maneja el hook (resultado del servidor o el Idle inicial).
+type BoundAction<R> = (prev: R | Idle, formData: FormData) => Promise<R | Idle>;
 
 export function ReportsWorkspace() {
   const params = useParams<{ tenant: string; projectId: string }>();
@@ -28,16 +40,16 @@ export function ReportsWorkspace() {
   const [year, setYear] = useState<number>(iw.year);
 
   const [infState, infAction, infPending] = useActionState(
-    getInformeCeroDataAction.bind(null, tenantSlug, projectId),
-    { status: "idle" } as any,
+    getInformeCeroDataAction.bind(null, tenantSlug, projectId) as BoundAction<InformeCeroResult>,
+    IDLE,
   );
   const [semState, semAction, semPending] = useActionState(
-    getWeeklyReportDataAction.bind(null, tenantSlug, projectId, weekNumber, year),
-    { status: "idle" } as any,
+    getWeeklyReportDataAction.bind(null, tenantSlug, projectId, weekNumber, year) as BoundAction<WeeklyReportResult>,
+    IDLE,
   );
   const [bomState, bomAction, bomPending] = useActionState(
-    exportBomCsvAction.bind(null, tenantSlug, projectId),
-    { status: "idle" } as any,
+    exportBomCsvAction.bind(null, tenantSlug, projectId) as BoundAction<BomExportResult>,
+    IDLE,
   );
 
   useEffect(() => {
@@ -139,33 +151,46 @@ export function ReportsWorkspace() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold">{informeCero?.project?.name ?? "Proyecto"}</h2>
-                <p className="text-sm text-muted-foreground">{informeCero?.project?.code ?? "-"}</p>
+                <h2 className="text-lg font-semibold">{informeCero.projectName}</h2>
+                <p className="text-sm text-muted-foreground">
+                  {informeCero.projectCode}
+                  {informeCero.budgetCode ? ` • Presupuesto ${informeCero.budgetCode}` : ""}
+                </p>
               </div>
               <Badge variant="outline">INFORME CERO — LÍNEA BASE</Badge>
             </div>
 
             <div className="grid gap-4 md:grid-cols-4">
-              <KpiCard label="Valor Presupuestado" value={informeCero.presupuesto?.totales?.presupuestoTotal?.toLocaleString("es-CO", { style: "currency", currency: "COP", minimumFractionDigits: 0 }) ?? "-"} hint="COP" />
-              <KpiCard label="A.I.U." value={`${((informeCero.presupuesto?.totales?.aiuPorcentaje ?? 0) / 1_000_000).toFixed(2)} %`} hint="Sobre costo directo" />
-              <KpiCard label="Costos Directos" value={informeCero.presupuesto?.totales?.directoTotal?.toLocaleString("es-CO", { style: "currency", currency: "COP", minimumFractionDigits: 0 }) ?? "-"} hint="COP" />
-              <KpiCard label="A.I.U. Total" value={informeCero.presupuesto?.totales?.aiuTotal?.toLocaleString("es-CO", { style: "currency", currency: "COP", minimumFractionDigits: 0 }) ?? "-"} hint="COP" />
+              <KpiCard label="Valor Presupuestado" value={informeCero.grandTotal} hint="COP" />
+              <KpiCard label="Costos Directos" value={informeCero.directCostTotal} hint="COP" />
+              <KpiCard
+                label="A.I.U."
+                value={`${informeCero.aiuAdminPct} / ${informeCero.aiuImprevPct} / ${informeCero.aiuUtilidadPct}`}
+                hint="Administración / Imprevistos / Utilidad sobre costo directo"
+              />
+              <KpiCard
+                label="IVA sobre utilidad"
+                value={informeCero.ivaUtilidadTotal}
+                hint={`${informeCero.ivaUtilidadPct} de la utilidad`}
+              />
             </div>
 
             <div className="rounded-md border">
               <div className="p-3 text-sm font-medium">Capítulos del Presupuesto</div>
               <div className="divide-y">
-                {informeCero.presupuesto?.capitulos?.map((c: any) => (
-                  <div key={c.id} className="flex items-center justify-between p-3 text-sm">
-                    <div>
-                      <div className="font-medium">{c.code} — {c.title}</div>
-                      {c.description && <div className="text-muted-foreground">{c.description}</div>}
+                {informeCero.chapters.length ? (
+                  informeCero.chapters.map((c) => (
+                    <div key={c.order} className="flex items-center justify-between p-3 text-sm">
+                      <div>
+                        <div className="font-medium">{c.order}. {c.name}</div>
+                        {c.description && <div className="text-muted-foreground">{c.description}</div>}
+                      </div>
+                      <div className="text-right font-medium">{c.subtotal}</div>
                     </div>
-                    <div className="text-right font-medium">
-                      {c.total.toLocaleString("es-CO", { style: "currency", currency: "COP", minimumFractionDigits: 0 })}
-                    </div>
-                  </div>
-                )) || <div className="p-3 text-sm text-muted-foreground">Sin capítulos registrados.</div>}
+                  ))
+                ) : (
+                  <div className="p-3 text-sm text-muted-foreground">Sin capítulos registrados.</div>
+                )}
               </div>
             </div>
           </div>
@@ -177,7 +202,7 @@ export function ReportsWorkspace() {
               <div>
                 <h2 className="text-lg font-semibold">INFORME SEMANAL DE OBRA</h2>
                 <p className="text-sm text-muted-foreground">
-                  {isoWeekLabel(weekNumber, year)} • {semanal?.periodo?.startDate ?? ""} → {semanal?.periodo?.endDate ?? ""}
+                  {isoWeekLabel(weekNumber, year)} • {semanal?.periodStart ?? ""} → {semanal?.periodEnd ?? ""}
                 </p>
               </div>
               <Badge variant="outline">PPC / CNC / EVM (N1)</Badge>

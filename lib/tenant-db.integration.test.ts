@@ -474,7 +474,7 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
       note: "Primera",
     });
     expect(r1.version).toBe(1);
-    let b1 = await latestBaselineFor(pid);
+    const b1 = await latestBaselineFor(pid);
     expect(b1?.version).toBe(1);
     expect(b1?.budgetRevision).toBeGreaterThan(0);
     const revAfterFirst = b1?.budgetRevision ?? 0;

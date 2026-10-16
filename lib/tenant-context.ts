@@ -14,7 +14,11 @@ export type TenantRole = "SUPERADMIN" | "OWNER" | "STAFF";
 
 export type TenantContext = {
   tenantId: string;
+  /** Vertical del tenant (para la terminología de la UI). */
+  vertical: string;
   userId: string;
+  /** Id del `User` local (miembro del tenant), distinto del id de Clerk. */
+  memberId: string;
   role: TenantRole;
   tenantDb: ReturnType<typeof createTenantDb>;
 };
@@ -22,6 +26,9 @@ export type TenantContext = {
 /**
  * Verifica sesión de Clerk + tenant activo + membresía del usuario.
  * Devuelve `null` cuando algo falla (el caller responde con error genérico).
+ *
+ * Es la ÚNICA implementación de esta verificación: las actions no deben
+ * duplicarla (cada copia es un punto donde la regla puede divergir).
  */
 export async function requireTenantContext(
   tenantSlug: string,
@@ -47,7 +54,9 @@ export async function requireTenantContext(
   }
   return {
     tenantId: tenantRecord.id,
+    vertical: tenantRecord.vertical,
     userId,
+    memberId: member.id,
     role: member.role as TenantRole,
     tenantDb,
   };

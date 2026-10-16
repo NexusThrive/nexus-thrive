@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/prisma/db";
@@ -39,26 +39,11 @@ const ACCESS_DENIED: OnboardingFormState = {
 async function requireTenantDb(
   tenantSlug: string,
 ): Promise<{ tenantDb: TenantDb; tenantId: string } | null> {
-  const { userId } = await auth();
-  if (!userId) {
+  const context = await requireSharedTenantContext(tenantSlug);
+  if (!context) {
     return null;
   }
-
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    return null;
-  }
-
-  const tenantDb = createTenantDb(tenantRecord.id);
-  const localUser = await tenantDb.users.findByClerkUserId(userId as string);
-  if (!localUser) {
-    return null;
-  }
-
-  return { tenantDb, tenantId: tenantRecord.id };
+  return { tenantDb: context.tenantDb, tenantId: context.tenantId };
 }
 
 function parseStep(raw: FormDataEntryValue | null): OnboardingStep | null {
