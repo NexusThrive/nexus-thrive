@@ -9,6 +9,7 @@ import ProfileTab from "./profile-tab";
 import ModulesTab from "./modules-tab";
 import TeamTab from "./team-tab";
 import { PageHeader } from "@/components/molecules/page-header";
+import { AppearanceSettings } from "@/components/organisms/appearance-settings";
 
 export type RoleValue = "SUPERADMIN" | "OWNER" | "STAFF";
 
@@ -35,12 +36,13 @@ export type TeamMember = {
 
 export type SystemInfoItem = { label: string; value: string };
 
-type Tab = "profile" | "modules" | "team";
+type Tab = "profile" | "modules" | "team" | "appearance";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "profile", label: "Perfil del negocio" },
   { id: "modules", label: "Módulos activos" },
   { id: "team", label: "Equipo" },
+  { id: "appearance", label: "Apariencia" },
 ];
 
 /**
@@ -70,14 +72,14 @@ export default function SettingsShell({
   const [tab, setTab] = useState<Tab>("profile");
 
   return (
-    <div className="mx-auto w-full max-w-4xl">
+    <div className="w-full">
         <PageHeader
           eyebrow="Sistema"
           title="Ajustes"
-          description="Configura el perfil, los módulos y el equipo de tu negocio."
+          description="Configura el perfil, los módulos, el equipo y la apariencia de tu negocio."
         />
 
-        <div className="mb-6 flex gap-1 border-b border-border">
+        <div className="mb-6 flex gap-1 overflow-x-auto border-b border-border [scrollbar-width:none]">
           {TABS.map((item) => (
             <button
               key={item.id}
@@ -85,9 +87,9 @@ export default function SettingsShell({
               onClick={() => setTab(item.id)}
               aria-current={tab === item.id ? "page" : undefined}
               className={cn(
-                "border-b-2 px-4 py-2.5 text-sm font-medium transition-colors",
+                "-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors",
                 tab === item.id
-                  ? "border-primary text-foreground"
+                  ? "border-accent text-foreground"
                   : "border-transparent text-muted-foreground hover:text-foreground",
               )}
             >
@@ -112,6 +114,7 @@ export default function SettingsShell({
           />
         )}
         {tab === "team" && <TeamTab members={team} />}
+        {tab === "appearance" && <AppearanceSettings />}
     </div>
   );
 }

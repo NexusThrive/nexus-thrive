@@ -156,7 +156,7 @@ function FieldLogEntryCard({
         <span className="text-xs text-muted-foreground">{formatDateShort(entry.entryDate)}</span>
       </div>
 
-      <h3 className="font-medium text-foreground">{entry.title}</h3>
+      <h3 className="font-display text-[15px] font-medium text-foreground">{entry.title}</h3>
       <p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{entry.description}</p>
 
       <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">

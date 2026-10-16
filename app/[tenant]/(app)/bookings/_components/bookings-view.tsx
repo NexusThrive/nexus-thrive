@@ -7,6 +7,7 @@ import { cn } from "@/lib/cn";
 import { NLoader } from "@/components/atoms/n-loader";
 import { useToast } from "@/components/molecules/toast";
 import { StatTile } from "@/components/molecules/stat-tile";
+import { EmptyState } from "@/components/molecules/empty-state";
 import {
   createBookingAction,
   updateBookingStatusAction,
@@ -162,7 +163,7 @@ function BookingsContent({
   const noCustomers = customers.length === 0;
 
   return (
-    <div className="mx-auto w-full max-w-5xl">
+    <div className="w-full">
       <PageHeader
         eyebrow="Gestión"
         title="Reservas"
@@ -195,7 +196,7 @@ function BookingsContent({
           className="mb-6 rounded-lg border border-border bg-card p-6"
         >
           <input type="hidden" name="tenantSlug" value={tenantSlug} />
-          <h2 className="mb-4 font-semibold text-foreground">Nueva reserva</h2>
+          <h2 className="font-display text-[15px] mb-4 font-semibold text-foreground">Nueva reserva</h2>
 
           {noCustomers && (
             <p className="mb-4 rounded-lg bg-warning/10 px-3 py-2 text-sm text-warning-foreground">
@@ -349,9 +350,11 @@ function BookingsContent({
       )}
 
       {bookings.length === 0 ? (
-        <p className="rounded-lg border border-border bg-card py-12 text-center text-sm text-muted-foreground">
-          Aún no tienes reservas. Crea la primera con “Nueva reserva”.
-        </p>
+        <EmptyState
+          className="rounded-lg border border-border bg-card"
+          title="Aún no tienes reservas"
+          description="Crea la primera con “Nueva reserva”."
+        />
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border bg-card">
           <table className="w-full border-collapse text-sm">

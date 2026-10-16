@@ -3,21 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  CalendarClock,
-  Check,
-  CheckCircle2,
-  FileText,
-  Mail,
-  MapPin,
-  MessageSquare,
-  Phone,
-  Printer,
-  Send,
-  Trash2,
-  Users,
-  XCircle,
-} from "lucide-react";
+import { CalendarClock, Check, CheckCircle2, Mail, MapPin, MessageSquare, Phone, Printer, Send, Trash2, Users, XCircle } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
 import { QuoteStatusBadge } from "@/components/molecules/quote-badges";
 import { formatDateShort, formatMoneyMicro } from "@/lib/format";
@@ -170,7 +156,6 @@ export default function ProjectQuotesWorkspace({
             className="rounded-lg border border-border bg-card"
             title="Todavía no hay cotizaciones"
             description="Arma el presupuesto en la pestaña Presupuestador y emite la primera versión para el cliente."
-            action={<><FileText aria-hidden="true" className="mx-auto h-8 w-8 text-muted-foreground" /></>}
           />
         ) : (
           <ol className="space-y-3">

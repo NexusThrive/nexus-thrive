@@ -13,7 +13,8 @@ import {
   type OnboardingPrefill,
   type OnboardingStep,
 } from "@/lib/onboarding/types";
-import OnboardingProgress, {
+import {
+  ONBOARDING_STEP_LABELS,
   ONBOARDING_STEP_TITLES,
 } from "./onboarding-progress";
 import ProfileSelection from "./profile-selection";
@@ -22,6 +23,8 @@ import ModuleSelection from "./module-selection";
 import OnboardingSummary from "./onboarding-summary";
 import OnboardingComplete from "./onboarding-complete";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { StepIndicator } from "@/components/molecules/step-indicator";
+import { OnboardingLayout } from "@/components/templates/onboarding-layout";
 
 function storageKey(prefill: OnboardingPrefill): string {
   return prefill.tenantId
@@ -182,37 +185,37 @@ export default function OnboardingWizard({
   const isSubmitting = isPending;
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
-      <main className="mx-auto flex w-full max-w-3xl flex-col px-4 py-10 sm:px-6">
-        <header className="mb-8 text-center">
-          <span className="inline-flex items-center rounded-sm bg-gold-100 px-3 py-1 text-xs font-semibold tracking-wide text-gold-700 uppercase">
-            NEXUS
-          </span>
-          <h1 className="mt-3 text-2xl font-bold text-foreground">
-            {completedSlug
-              ? "Listo"
-              : prefill.mode === "resume"
-                ? `Termina de configurar ${prefill.tenantName ?? "tu espacio"}`
-                : "Crea tu espacio NEXUS"}
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {prefill.mode === "resume"
-              ? "Cuatro pasos y tu negocio queda operando."
-              : "Cuatro pasos: perfil, información, módulos y listo."}
-          </p>
-        </header>
+    <OnboardingLayout
+      eyebrow={completedSlug ? "Configuración completa" : `Paso ${viewing} de 4`}
+      title={
+        completedSlug
+          ? "Listo"
+          : prefill.mode === "resume"
+            ? `Termina de configurar ${prefill.tenantName ?? "tu espacio"}`
+            : "Crea tu espacio NEXUS"
+      }
+      description={
+        prefill.mode === "resume"
+          ? "Cuatro pasos y tu negocio queda operando."
+          : "Cuatro pasos: perfil, información, módulos y listo."
+      }
+      progress={
+        !completedSlug ? (
+          <StepIndicator steps={[1, 2, 3, 4].map((n) => ONBOARDING_STEP_LABELS[n as 1 | 2 | 3 | 4])} current={viewing} />
+        ) : null
+      }
+    >
 
-        {!completedSlug && <OnboardingProgress current={viewing} />}
 
         <section
           aria-live="polite"
-          className="mt-8 rounded-lg border border-border bg-card p-5 sm:p-6"
+          className="mt-6 rounded-lg border border-border bg-card p-5 sm:p-6"
         >
           {completedSlug ? (
             <OnboardingComplete draft={draft} slug={completedSlug} />
           ) : (
             <>
-              <h2 className="mb-5 text-base font-semibold text-foreground">
+              <h2 className="mb-5 font-display text-lg font-semibold text-foreground">
                 {ONBOARDING_STEP_TITLES[viewing]}
               </h2>
 
@@ -274,7 +277,8 @@ export default function OnboardingWizard({
                     type="button"
                     onClick={goNext}
                     disabled={isSubmitting}
-                    className="inline-flex items-center gap-2 rounded-lg bg-gold-500 px-4 py-2 text-sm font-semibold text-ink transition hover:bg-gold-600 disabled:cursor-not-allowed disabled:opacity-60"
+                    className={buttonVariants({ variant: "accent" })}
+                    data-mag=""
                   >
                     Continuar
                     <ArrowRight className="size-4" aria-hidden="true" />
@@ -291,7 +295,6 @@ export default function OnboardingWizard({
             Guardando tu configuración…
           </p>
         )}
-      </main>
-    </div>
+    </OnboardingLayout>
   );
 }

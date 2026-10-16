@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { BadgeCheck, Boxes, FileSpreadsheet, Layers, Lock, LockOpen, Pencil, Plus, Settings2, SlidersHorizontal, Trash2 } from "lucide-react";
+import { BadgeCheck, Boxes, FileSpreadsheet, Layers, Lock, LockOpen, Pencil, Plus, SlidersHorizontal, Trash2 } from "lucide-react";
 import { microToPercent } from "@/lib/apu-engine";
 import { formatMoneyMicro, formatQuantityMicro } from "@/lib/format";
 import { NLoader } from "@/components/atoms/n-loader";
@@ -360,10 +360,7 @@ export default function BudgetWorkspace({
           className="rounded-lg border border-border bg-card"
           title="El presupuesto está vacío"
           description="Crea el primer capítulo para empezar a desglosar las partidas de la obra. Los totales se recalculan automáticamente con cada partida."
-          action={<><Settings2
-            aria-hidden="true"
-            className="mx-auto h-6 w-6 text-muted-foreground"
-          />{!budget.isLocked ? (
+          action={<>{!budget.isLocked ? (
             <button
               type="button"
               onClick={() => {

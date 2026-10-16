@@ -4,12 +4,14 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 # Inventario y plan de división
 
-**Sistema compartido (`components/`), documentado aquí en Storybook:** 27 átomos,
-30 moléculas, 19 organismos, 4 plantillas y 3 proveedores.
+**Sistema compartido (`components/`), documentado aquí en Storybook:** 28 átomos,
+33 moléculas, 20 organismos, 5 plantillas y 3 proveedores.
 
-**Componentes de módulo (`app/**/_components`): 89.** Son organismos de dominio: cargan o
-mutan datos con Server Actions, así que viven junto a su ruta. Ya usan los átomos y
-moléculas del sistema; en el rediseño de cada módulo se dividen así:
+**Componentes de módulo (`app/**/_components`).** Son organismos de dominio: cargan o
+mutan datos con Server Actions, así que viven junto a su ruta. Todos usan ya el sistema:
+botones (`buttonVariants`), campos (`inputClasses`, `selectClasses`, `labelClasses`),
+`PageHeader`, `KpiCard`/`StatTile`, `EmptyState`, `ResponsiveSheet` para sus modales y el
+mismo shell (también el panel CEO). Lo que falta es extraer piezas de dominio repetidas:
 
 | Módulo | Componentes | Prioridad | Qué se extrae al sistema |
 | --- | --- | --- | --- |

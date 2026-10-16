@@ -43,7 +43,7 @@ export default function TeamTab({ members }: { members: TeamMember[] }) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-semibold text-foreground">Equipo del negocio</h2>
+        <h2 className="font-display text-[15px] font-semibold text-foreground">Equipo del negocio</h2>
         <p className="mt-0.5 text-sm text-muted-foreground">
           Usuarios vinculados a este negocio y sus roles.
         </p>

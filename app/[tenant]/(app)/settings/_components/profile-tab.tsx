@@ -76,7 +76,7 @@ export default function ProfileTab({
         <input type="hidden" name="tenantSlug" value={tenantSlug} />
 
         <div className="mb-4">
-          <h2 className="font-semibold text-foreground">Datos del negocio</h2>
+          <h2 className="font-display text-[15px] font-semibold text-foreground">Datos del negocio</h2>
           <p className="mt-0.5 text-sm text-muted-foreground">
             Estos datos identifican tu negocio dentro de la plataforma.
           </p>
@@ -212,7 +212,7 @@ export default function ProfileTab({
       </form>
 
       <div className="rounded-lg border border-border bg-card p-6">
-        <h3 className="mb-3 font-semibold text-foreground">Información del sistema</h3>
+        <h3 className="font-display text-[15px] mb-3 font-semibold text-foreground">Información del sistema</h3>
         <dl className="grid grid-cols-2 gap-4 text-sm">
           {systemInfo.map((item) => (
             <div key={item.label}>

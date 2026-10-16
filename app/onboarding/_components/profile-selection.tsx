@@ -45,6 +45,7 @@ export default function ProfileSelection({
               type="button"
               onClick={() => onChange(profile.value)}
               aria-pressed={isSelected}
+              data-press="card"
               className={cn(
                 "group rounded-lg border p-5 text-left transition",
                 isSelected

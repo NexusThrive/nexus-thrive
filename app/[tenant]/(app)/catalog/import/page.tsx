@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, UploadCloud } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { buttonVariants } from "@/components/atoms/button-variants";
 import { db } from "@/prisma/db";
 import ImportWorkspace from "./_components/import-workspace";
 import { PageHeader } from "@/components/molecules/page-header";
@@ -35,15 +36,12 @@ export default async function ImportPage({
         description="Sube un Excel o CSV de insumos (o un pack APU completo): el
               sistema detecta columnas, categorías y anomalías antes de escribir
               en la base, y todo se importa de una sola vez."
-        actions={<><Link
-          href={`/${tenantSlug}/catalog`}
-          className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-foreground/80"
-        >
-          <ArrowLeft aria-hidden="true" className="h-4 w-4" />
-          Volver al catálogo APU
-        </Link><span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-gold-100 text-gold-700">
-            <UploadCloud aria-hidden="true" className="h-5 w-5" />
-          </span></>}
+        actions={
+          <Link href={`/${tenantSlug}/catalog`} className={buttonVariants({ variant: "outline" })}>
+            <ArrowLeft aria-hidden="true" className="h-4 w-4" />
+            Volver al catálogo APU
+          </Link>
+        }
       />
 
       <ImportWorkspace tenantSlug={tenantSlug} />

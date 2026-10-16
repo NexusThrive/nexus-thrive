@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
-import { ArrowLeft, CalendarDays, Construction, User } from "lucide-react";
+import { ArrowLeft, CalendarDays, User } from "lucide-react";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
 import { PROJECT_TABS, parseProjectTab } from "@/lib/projects";
@@ -42,10 +42,6 @@ function TabPlaceholder({ label }: { label: string }) {
       className="rounded-lg border border-border bg-card"
       title={label}
       description="Esta sección llega en una próxima fase del vertical de construcción. FASE 1 entrega el contenedor y la ficha del proyecto (tab “Ficha y cliente”)."
-      action={<><Construction
-        aria-hidden="true"
-        className="mx-auto h-6 w-6 text-muted-foreground"
-      /></>}
     />
   );
 }

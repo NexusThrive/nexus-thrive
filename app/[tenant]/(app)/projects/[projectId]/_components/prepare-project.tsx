@@ -27,7 +27,7 @@ export default function PrepareProject({
       className="rounded-lg border border-border bg-card"
       title="Esta obra todavía no tiene presupuesto, plan ni bitácora"
       description="Se creó antes de que se generaran automáticamente. Prepárala una vez y todas las pestañas quedan disponibles."
-      action={<><form action={action} className="mt-4">
+      action={<><form action={action}>
         <SubmitButton />
       </form></>}
     />

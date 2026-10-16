@@ -65,7 +65,7 @@ export default function ModulesTab({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-semibold text-foreground">Módulos activos</h2>
+          <h2 className="font-display text-[15px] font-semibold text-foreground">Módulos activos</h2>
           <p className="mt-0.5 text-sm text-muted-foreground">
             {activeCount} de {modules.length} módulos habilitados. Se reflejan en
             la navegación del negocio.
