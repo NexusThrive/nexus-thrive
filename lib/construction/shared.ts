@@ -270,8 +270,6 @@ export type BudgetItemData = {
   quantity: string;
   unitCostDirect: string;
   totalCostDirect: string;
-  /** Porcentaje de desperdicio (micro, 1_000_000 = 100%). Default 0. */
-  wastePct: string;
   resources: BudgetResourceData[];
 };
 
@@ -799,7 +797,6 @@ export async function loadBudgetTree(budget: BudgetRow): Promise<ProjectBudgetDa
       quantity: String(item.quantity),
       unitCostDirect: String(item.unitCostDirect),
       totalCostDirect: String(item.totalCostDirect),
-      wastePct: String(item.wastePct),
       resources: resourcesByItem.get(item.id) ?? [],
     });
     itemsByChapter.set(item.chapterId, list);

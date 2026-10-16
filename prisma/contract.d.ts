@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'d4509c335e914a2bda4c5a19954c47cc84007ba0fd294a7ca4f5a2d05e71d931'>;
+  StorageHashBase<'02a82f1994702b55c06a1ec7a4cc38025a325ad28de3b02824adcf3c16c97038'>;
 export type ExecutionHash =
-  ExecutionHashBase<'3304e4cb5cf375cce3d134b699be42b681880ab36538dc1b5d16b14ba96a675a'>;
+  ExecutionHashBase<'6438324cc1097801d91f7fdd8f8976f526d018304c64e9aa533f85f09f98d778'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -252,11 +252,17 @@ export type FieldOutputTypes = {
   readonly public: {
     readonly ApuActivity: {
       readonly active: CodecTypes['pg/bool@1']['output'];
+      readonly chapterId: CodecTypes['pg/text@1']['output'] | null;
       readonly code: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly description: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
+      readonly importedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly isAuxiliary: CodecTypes['pg/bool@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
+      readonly referenceUnitPrice: CodecTypes['pg/numeric@1']['output'] | null;
+      readonly sortKey: CodecTypes['pg/text@1']['output'] | null;
+      readonly sourceKey: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly unit: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -266,20 +272,68 @@ export type FieldOutputTypes = {
       readonly consumption: CodecTypes['pg/numeric@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly itemId: CodecTypes['pg/text@1']['output'];
+      readonly linePartial: CodecTypes['pg/numeric@1']['output'] | null;
+      readonly lineQuantity: CodecTypes['pg/numeric@1']['output'] | null;
+      readonly lineUnit: CodecTypes['pg/text@1']['output'] | null;
+      readonly lineUnitPrice: CodecTypes['pg/numeric@1']['output'] | null;
+      readonly order: CodecTypes['pg/int4@1']['output'];
+      readonly origin: 'IMPORT' | 'MANUAL';
+      readonly section: CodecTypes['pg/text@1']['output'] | null;
       readonly wastePercent: CodecTypes['pg/numeric@1']['output'];
+    };
+    readonly ApuChapter: {
+      readonly code: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+      readonly order: CodecTypes['pg/int4@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly ApuImage: {
+      readonly byteSize: CodecTypes['pg/int4@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly data: CodecTypes['pg/bytea@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly mimeType: CodecTypes['pg/text@1']['output'];
+      readonly sha256: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly ApuImportRun: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly fileName: CodecTypes['pg/text@1']['output'];
+      readonly fileSha256: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly importedBy: CodecTypes['pg/text@1']['output'] | null;
+      readonly stats: CodecTypes['pg/json@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
     readonly ApuItem: {
       readonly active: CodecTypes['pg/bool@1']['output'];
-      readonly category: 'MATERIAL' | 'MANO_DE_OBRA' | 'EQUIPO' | 'TRANSPORTE';
+      readonly auxiliaryActivityId: CodecTypes['pg/text@1']['output'] | null;
+      readonly category:
+        'MATERIAL' | 'MANO_DE_OBRA' | 'EQUIPO' | 'TRANSPORTE' | 'OTRO' | 'SUBCONTRATO';
       readonly code: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
+      readonly imageId: CodecTypes['pg/text@1']['output'] | null;
       readonly imageUrl: CodecTypes['pg/text@1']['output'] | null;
+      readonly importedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly name: CodecTypes['pg/text@1']['output'];
+      readonly sourceKey: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly unit: CodecTypes['pg/text@1']['output'];
       readonly unitPrice: CodecTypes['pg/numeric@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly ApuItemPriceHistory: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly importRunId: CodecTypes['pg/text@1']['output'] | null;
+      readonly itemId: CodecTypes['pg/text@1']['output'];
+      readonly price: CodecTypes['pg/numeric@1']['output'];
+      readonly source: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
     readonly AuditLog: {
       readonly action: CodecTypes['pg/text@1']['output'];
@@ -350,19 +404,21 @@ export type FieldOutputTypes = {
       readonly unit: CodecTypes['pg/text@1']['output'];
       readonly unitCostDirect: CodecTypes['pg/int8@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-      readonly wastePct: CodecTypes['pg/int8@1']['output'];
     };
     readonly BudgetItemResource: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
+      readonly imageId: CodecTypes['pg/text@1']['output'] | null;
       readonly imageUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly itemId: CodecTypes['pg/text@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
+      readonly order: CodecTypes['pg/int4@1']['output'];
       readonly performance: CodecTypes['pg/int8@1']['output'];
+      readonly section: CodecTypes['pg/text@1']['output'] | null;
       readonly sourceItemId: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly totalPrice: CodecTypes['pg/int8@1']['output'];
-      readonly type: 'MATERIAL' | 'LABOR' | 'EQUIPMENT' | 'TRANSPORT';
+      readonly type: 'MATERIAL' | 'LABOR' | 'EQUIPMENT' | 'TRANSPORT' | 'OTHER' | 'SUBCONTRACT';
       readonly unit: CodecTypes['pg/text@1']['output'];
       readonly unitPrice: CodecTypes['pg/int8@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -661,11 +717,17 @@ export type FieldInputTypes = {
   readonly public: {
     readonly ApuActivity: {
       readonly active: CodecTypes['pg/bool@1']['input'];
+      readonly chapterId: CodecTypes['pg/text@1']['input'] | null;
       readonly code: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly description: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
+      readonly importedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly isAuxiliary: CodecTypes['pg/bool@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
+      readonly referenceUnitPrice: CodecTypes['pg/numeric@1']['input'] | null;
+      readonly sortKey: CodecTypes['pg/text@1']['input'] | null;
+      readonly sourceKey: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly unit: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -675,20 +737,68 @@ export type FieldInputTypes = {
       readonly consumption: CodecTypes['pg/numeric@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly itemId: CodecTypes['pg/text@1']['input'];
+      readonly linePartial: CodecTypes['pg/numeric@1']['input'] | null;
+      readonly lineQuantity: CodecTypes['pg/numeric@1']['input'] | null;
+      readonly lineUnit: CodecTypes['pg/text@1']['input'] | null;
+      readonly lineUnitPrice: CodecTypes['pg/numeric@1']['input'] | null;
+      readonly order: CodecTypes['pg/int4@1']['input'];
+      readonly origin: 'IMPORT' | 'MANUAL';
+      readonly section: CodecTypes['pg/text@1']['input'] | null;
       readonly wastePercent: CodecTypes['pg/numeric@1']['input'];
+    };
+    readonly ApuChapter: {
+      readonly code: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+      readonly order: CodecTypes['pg/int4@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly ApuImage: {
+      readonly byteSize: CodecTypes['pg/int4@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly data: CodecTypes['pg/bytea@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly mimeType: CodecTypes['pg/text@1']['input'];
+      readonly sha256: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly ApuImportRun: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly fileName: CodecTypes['pg/text@1']['input'];
+      readonly fileSha256: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly importedBy: CodecTypes['pg/text@1']['input'] | null;
+      readonly stats: CodecTypes['pg/json@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
     readonly ApuItem: {
       readonly active: CodecTypes['pg/bool@1']['input'];
-      readonly category: 'MATERIAL' | 'MANO_DE_OBRA' | 'EQUIPO' | 'TRANSPORTE';
+      readonly auxiliaryActivityId: CodecTypes['pg/text@1']['input'] | null;
+      readonly category:
+        'MATERIAL' | 'MANO_DE_OBRA' | 'EQUIPO' | 'TRANSPORTE' | 'OTRO' | 'SUBCONTRATO';
       readonly code: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
+      readonly imageId: CodecTypes['pg/text@1']['input'] | null;
       readonly imageUrl: CodecTypes['pg/text@1']['input'] | null;
+      readonly importedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly name: CodecTypes['pg/text@1']['input'];
+      readonly sourceKey: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly unit: CodecTypes['pg/text@1']['input'];
       readonly unitPrice: CodecTypes['pg/numeric@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly ApuItemPriceHistory: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly importRunId: CodecTypes['pg/text@1']['input'] | null;
+      readonly itemId: CodecTypes['pg/text@1']['input'];
+      readonly price: CodecTypes['pg/numeric@1']['input'];
+      readonly source: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
     readonly AuditLog: {
       readonly action: CodecTypes['pg/text@1']['input'];
@@ -759,19 +869,21 @@ export type FieldInputTypes = {
       readonly unit: CodecTypes['pg/text@1']['input'];
       readonly unitCostDirect: CodecTypes['pg/int8@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
-      readonly wastePct: CodecTypes['pg/int8@1']['input'];
     };
     readonly BudgetItemResource: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
+      readonly imageId: CodecTypes['pg/text@1']['input'] | null;
       readonly imageUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly itemId: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
+      readonly order: CodecTypes['pg/int4@1']['input'];
       readonly performance: CodecTypes['pg/int8@1']['input'];
+      readonly section: CodecTypes['pg/text@1']['input'] | null;
       readonly sourceItemId: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly totalPrice: CodecTypes['pg/int8@1']['input'];
-      readonly type: 'MATERIAL' | 'LABOR' | 'EQUIPMENT' | 'TRANSPORT';
+      readonly type: 'MATERIAL' | 'LABOR' | 'EQUIPMENT' | 'TRANSPORT' | 'OTHER' | 'SUBCONTRACT';
       readonly unit: CodecTypes['pg/text@1']['input'];
       readonly unitPrice: CodecTypes['pg/int8@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -1070,11 +1182,17 @@ export type StorageColumnTypes = {
   readonly public: {
     readonly ApuActivity: {
       readonly active: CodecTypes['pg/bool@1']['output'];
+      readonly chapterId: CodecTypes['pg/text@1']['output'] | null;
       readonly code: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly description: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
+      readonly importedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly isAuxiliary: CodecTypes['pg/bool@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
+      readonly referenceUnitPrice: CodecTypes['pg/numeric@1']['output'] | null;
+      readonly sortKey: CodecTypes['pg/text@1']['output'] | null;
+      readonly sourceKey: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly unit: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -1084,20 +1202,68 @@ export type StorageColumnTypes = {
       readonly consumption: CodecTypes['pg/numeric@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly itemId: CodecTypes['pg/text@1']['output'];
+      readonly linePartial: CodecTypes['pg/numeric@1']['output'] | null;
+      readonly lineQuantity: CodecTypes['pg/numeric@1']['output'] | null;
+      readonly lineUnit: CodecTypes['pg/text@1']['output'] | null;
+      readonly lineUnitPrice: CodecTypes['pg/numeric@1']['output'] | null;
+      readonly order: CodecTypes['pg/int4@1']['output'];
+      readonly origin: 'IMPORT' | 'MANUAL';
+      readonly section: CodecTypes['pg/text@1']['output'] | null;
       readonly wastePercent: CodecTypes['pg/numeric@1']['output'];
+    };
+    readonly ApuChapter: {
+      readonly code: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+      readonly order: CodecTypes['pg/int4@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly ApuImage: {
+      readonly byteSize: CodecTypes['pg/int4@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly data: CodecTypes['pg/bytea@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly mimeType: CodecTypes['pg/text@1']['output'];
+      readonly sha256: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly ApuImportRun: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly fileName: CodecTypes['pg/text@1']['output'];
+      readonly fileSha256: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly importedBy: CodecTypes['pg/text@1']['output'] | null;
+      readonly stats: CodecTypes['pg/json@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
     readonly ApuItem: {
       readonly active: CodecTypes['pg/bool@1']['output'];
-      readonly category: 'MATERIAL' | 'MANO_DE_OBRA' | 'EQUIPO' | 'TRANSPORTE';
+      readonly auxiliaryActivityId: CodecTypes['pg/text@1']['output'] | null;
+      readonly category:
+        'MATERIAL' | 'MANO_DE_OBRA' | 'EQUIPO' | 'TRANSPORTE' | 'OTRO' | 'SUBCONTRATO';
       readonly code: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
+      readonly imageId: CodecTypes['pg/text@1']['output'] | null;
       readonly imageUrl: CodecTypes['pg/text@1']['output'] | null;
+      readonly importedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly name: CodecTypes['pg/text@1']['output'];
+      readonly sourceKey: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly unit: CodecTypes['pg/text@1']['output'];
       readonly unitPrice: CodecTypes['pg/numeric@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly ApuItemPriceHistory: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly importRunId: CodecTypes['pg/text@1']['output'] | null;
+      readonly itemId: CodecTypes['pg/text@1']['output'];
+      readonly price: CodecTypes['pg/numeric@1']['output'];
+      readonly source: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
     readonly AuditLog: {
       readonly action: CodecTypes['pg/text@1']['output'];
@@ -1168,19 +1334,21 @@ export type StorageColumnTypes = {
       readonly unit: CodecTypes['pg/text@1']['output'];
       readonly unitCostDirect: CodecTypes['pg/int8@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-      readonly wastePct: CodecTypes['pg/int8@1']['output'];
     };
     readonly BudgetItemResource: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
+      readonly imageId: CodecTypes['pg/text@1']['output'] | null;
       readonly imageUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly itemId: CodecTypes['pg/text@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
+      readonly order: CodecTypes['pg/int4@1']['output'];
       readonly performance: CodecTypes['pg/int8@1']['output'];
+      readonly section: CodecTypes['pg/text@1']['output'] | null;
       readonly sourceItemId: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly totalPrice: CodecTypes['pg/int8@1']['output'];
-      readonly type: 'MATERIAL' | 'LABOR' | 'EQUIPMENT' | 'TRANSPORT';
+      readonly type: 'MATERIAL' | 'LABOR' | 'EQUIPMENT' | 'TRANSPORT' | 'OTHER' | 'SUBCONTRACT';
       readonly unit: CodecTypes['pg/text@1']['output'];
       readonly unitPrice: CodecTypes['pg/int8@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -1479,11 +1647,17 @@ export type StorageColumnInputTypes = {
   readonly public: {
     readonly ApuActivity: {
       readonly active: CodecTypes['pg/bool@1']['input'];
+      readonly chapterId: CodecTypes['pg/text@1']['input'] | null;
       readonly code: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly description: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
+      readonly importedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly isAuxiliary: CodecTypes['pg/bool@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
+      readonly referenceUnitPrice: CodecTypes['pg/numeric@1']['input'] | null;
+      readonly sortKey: CodecTypes['pg/text@1']['input'] | null;
+      readonly sourceKey: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly unit: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -1493,20 +1667,68 @@ export type StorageColumnInputTypes = {
       readonly consumption: CodecTypes['pg/numeric@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly itemId: CodecTypes['pg/text@1']['input'];
+      readonly linePartial: CodecTypes['pg/numeric@1']['input'] | null;
+      readonly lineQuantity: CodecTypes['pg/numeric@1']['input'] | null;
+      readonly lineUnit: CodecTypes['pg/text@1']['input'] | null;
+      readonly lineUnitPrice: CodecTypes['pg/numeric@1']['input'] | null;
+      readonly order: CodecTypes['pg/int4@1']['input'];
+      readonly origin: 'IMPORT' | 'MANUAL';
+      readonly section: CodecTypes['pg/text@1']['input'] | null;
       readonly wastePercent: CodecTypes['pg/numeric@1']['input'];
+    };
+    readonly ApuChapter: {
+      readonly code: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+      readonly order: CodecTypes['pg/int4@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly ApuImage: {
+      readonly byteSize: CodecTypes['pg/int4@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly data: CodecTypes['pg/bytea@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly mimeType: CodecTypes['pg/text@1']['input'];
+      readonly sha256: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly ApuImportRun: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly fileName: CodecTypes['pg/text@1']['input'];
+      readonly fileSha256: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly importedBy: CodecTypes['pg/text@1']['input'] | null;
+      readonly stats: CodecTypes['pg/json@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
     readonly ApuItem: {
       readonly active: CodecTypes['pg/bool@1']['input'];
-      readonly category: 'MATERIAL' | 'MANO_DE_OBRA' | 'EQUIPO' | 'TRANSPORTE';
+      readonly auxiliaryActivityId: CodecTypes['pg/text@1']['input'] | null;
+      readonly category:
+        'MATERIAL' | 'MANO_DE_OBRA' | 'EQUIPO' | 'TRANSPORTE' | 'OTRO' | 'SUBCONTRATO';
       readonly code: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
+      readonly imageId: CodecTypes['pg/text@1']['input'] | null;
       readonly imageUrl: CodecTypes['pg/text@1']['input'] | null;
+      readonly importedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly name: CodecTypes['pg/text@1']['input'];
+      readonly sourceKey: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly unit: CodecTypes['pg/text@1']['input'];
       readonly unitPrice: CodecTypes['pg/numeric@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly ApuItemPriceHistory: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly importRunId: CodecTypes['pg/text@1']['input'] | null;
+      readonly itemId: CodecTypes['pg/text@1']['input'];
+      readonly price: CodecTypes['pg/numeric@1']['input'];
+      readonly source: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
     readonly AuditLog: {
       readonly action: CodecTypes['pg/text@1']['input'];
@@ -1577,19 +1799,21 @@ export type StorageColumnInputTypes = {
       readonly unit: CodecTypes['pg/text@1']['input'];
       readonly unitCostDirect: CodecTypes['pg/int8@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
-      readonly wastePct: CodecTypes['pg/int8@1']['input'];
     };
     readonly BudgetItemResource: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
+      readonly imageId: CodecTypes['pg/text@1']['input'] | null;
       readonly imageUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly itemId: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
+      readonly order: CodecTypes['pg/int4@1']['input'];
       readonly performance: CodecTypes['pg/int8@1']['input'];
+      readonly section: CodecTypes['pg/text@1']['input'] | null;
       readonly sourceItemId: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly totalPrice: CodecTypes['pg/int8@1']['input'];
-      readonly type: 'MATERIAL' | 'LABOR' | 'EQUIPMENT' | 'TRANSPORT';
+      readonly type: 'MATERIAL' | 'LABOR' | 'EQUIPMENT' | 'TRANSPORT' | 'OTHER' | 'SUBCONTRACT';
       readonly unit: CodecTypes['pg/text@1']['input'];
       readonly unitPrice: CodecTypes['pg/int8@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -1888,44 +2112,117 @@ export type StorageColumnInputTypes = {
 export namespace Models {
   export type public_ApuActivity = {
     active: CodecTypes['pg/bool@1']['output'];
+    chapterId: CodecTypes['pg/text@1']['output'] | null;
     code: CodecTypes['pg/text@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     description: CodecTypes['pg/text@1']['output'] | null;
     id: CodecTypes['pg/text@1']['output'];
+    importedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    isAuxiliary: CodecTypes['pg/bool@1']['output'];
     name: CodecTypes['pg/text@1']['output'];
+    referenceUnitPrice: CodecTypes['pg/numeric@1']['output'] | null;
+    sortKey: CodecTypes['pg/text@1']['output'] | null;
+    sourceKey: CodecTypes['pg/text@1']['output'] | null;
     tenantId: CodecTypes['pg/text@1']['output'];
     unit: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    auxiliaryItems: public_ApuItem[];
+    chapter: public_ApuChapter | null;
     compositions: public_ApuActivityComposition[];
     quoteItems: public_QuoteItem[];
     tenant: public_Tenant;
-    readonly [RelationKeys]?: 'compositions' | 'quoteItems' | 'tenant';
+    readonly [RelationKeys]?:
+      'auxiliaryItems' | 'chapter' | 'compositions' | 'quoteItems' | 'tenant';
   };
   export type public_ApuActivityComposition = {
     activityId: CodecTypes['pg/text@1']['output'];
     consumption: CodecTypes['pg/numeric@1']['output'];
     id: CodecTypes['pg/text@1']['output'];
     itemId: CodecTypes['pg/text@1']['output'];
+    linePartial: CodecTypes['pg/numeric@1']['output'] | null;
+    lineQuantity: CodecTypes['pg/numeric@1']['output'] | null;
+    lineUnit: CodecTypes['pg/text@1']['output'] | null;
+    lineUnitPrice: CodecTypes['pg/numeric@1']['output'] | null;
+    order: CodecTypes['pg/int4@1']['output'];
+    origin: 'IMPORT' | 'MANUAL';
+    section: CodecTypes['pg/text@1']['output'] | null;
     wastePercent: CodecTypes['pg/numeric@1']['output'];
     activity: public_ApuActivity;
     item: public_ApuItem;
     readonly [RelationKeys]?: 'activity' | 'item';
   };
+  export type public_ApuChapter = {
+    code: CodecTypes['pg/text@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    name: CodecTypes['pg/text@1']['output'];
+    order: CodecTypes['pg/int4@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    activities: public_ApuActivity[];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'activities' | 'tenant';
+  };
+  export type public_ApuImage = {
+    byteSize: CodecTypes['pg/int4@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    data: CodecTypes['pg/bytea@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    mimeType: CodecTypes['pg/text@1']['output'];
+    sha256: CodecTypes['pg/text@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    items: public_ApuItem[];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'items' | 'tenant';
+  };
+  export type public_ApuImportRun = {
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    fileName: CodecTypes['pg/text@1']['output'];
+    fileSha256: CodecTypes['pg/text@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    importedBy: CodecTypes['pg/text@1']['output'] | null;
+    stats: CodecTypes['pg/json@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    priceChanges: public_ApuItemPriceHistory[];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'priceChanges' | 'tenant';
+  };
   export type public_ApuItem = {
     active: CodecTypes['pg/bool@1']['output'];
-    category: 'MATERIAL' | 'MANO_DE_OBRA' | 'EQUIPO' | 'TRANSPORTE';
+    auxiliaryActivityId: CodecTypes['pg/text@1']['output'] | null;
+    category: 'MATERIAL' | 'MANO_DE_OBRA' | 'EQUIPO' | 'TRANSPORTE' | 'OTRO' | 'SUBCONTRATO';
     code: CodecTypes['pg/text@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     id: CodecTypes['pg/text@1']['output'];
+    imageId: CodecTypes['pg/text@1']['output'] | null;
     imageUrl: CodecTypes['pg/text@1']['output'] | null;
+    importedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     name: CodecTypes['pg/text@1']['output'];
+    sourceKey: CodecTypes['pg/text@1']['output'] | null;
     tenantId: CodecTypes['pg/text@1']['output'];
     unit: CodecTypes['pg/text@1']['output'];
     unitPrice: CodecTypes['pg/numeric@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    auxiliaryActivity: public_ApuActivity | null;
     compositions: public_ApuActivityComposition[];
+    image: public_ApuImage | null;
+    priceHistory: public_ApuItemPriceHistory[];
     tenant: public_Tenant;
-    readonly [RelationKeys]?: 'compositions' | 'tenant';
+    readonly [RelationKeys]?:
+      'auxiliaryActivity' | 'compositions' | 'image' | 'priceHistory' | 'tenant';
+  };
+  export type public_ApuItemPriceHistory = {
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    importRunId: CodecTypes['pg/text@1']['output'] | null;
+    itemId: CodecTypes['pg/text@1']['output'];
+    price: CodecTypes['pg/numeric@1']['output'];
+    source: CodecTypes['pg/text@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    importRun: public_ApuImportRun | null;
+    item: public_ApuItem;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'importRun' | 'item' | 'tenant';
   };
   export type public_AuditLog = {
     action: CodecTypes['pg/text@1']['output'];
@@ -2005,7 +2302,6 @@ export namespace Models {
     unit: CodecTypes['pg/text@1']['output'];
     unitCostDirect: CodecTypes['pg/int8@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-    wastePct: CodecTypes['pg/int8@1']['output'];
     chapter: public_BudgetChapter;
     resources: public_BudgetItemResource[];
     tenant: public_Tenant;
@@ -2014,14 +2310,17 @@ export namespace Models {
   export type public_BudgetItemResource = {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     id: CodecTypes['pg/text@1']['output'];
+    imageId: CodecTypes['pg/text@1']['output'] | null;
     imageUrl: CodecTypes['pg/text@1']['output'] | null;
     itemId: CodecTypes['pg/text@1']['output'];
     name: CodecTypes['pg/text@1']['output'];
+    order: CodecTypes['pg/int4@1']['output'];
     performance: CodecTypes['pg/int8@1']['output'];
+    section: CodecTypes['pg/text@1']['output'] | null;
     sourceItemId: CodecTypes['pg/text@1']['output'] | null;
     tenantId: CodecTypes['pg/text@1']['output'];
     totalPrice: CodecTypes['pg/int8@1']['output'];
-    type: 'MATERIAL' | 'LABOR' | 'EQUIPMENT' | 'TRANSPORT';
+    type: 'MATERIAL' | 'LABOR' | 'EQUIPMENT' | 'TRANSPORT' | 'OTHER' | 'SUBCONTRACT';
     unit: CodecTypes['pg/text@1']['output'];
     unitPrice: CodecTypes['pg/int8@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -2326,7 +2625,11 @@ export namespace Models {
     websiteUrl: CodecTypes['pg/text@1']['output'] | null;
     whatsappNumber: CodecTypes['pg/text@1']['output'] | null;
     apuActivities: public_ApuActivity[];
+    apuChapters: public_ApuChapter[];
+    apuImages: public_ApuImage[];
+    apuImportRuns: public_ApuImportRun[];
     apuItems: public_ApuItem[];
+    apuPriceHistory: public_ApuItemPriceHistory[];
     budgetBaselines: public_BudgetBaseline[];
     budgetChapters: public_BudgetChapter[];
     budgetItemResources: public_BudgetItemResource[];
@@ -2347,7 +2650,11 @@ export namespace Models {
     weeklyCommitments: public_WeeklyCommitment[];
     readonly [RelationKeys]?:
       | 'apuActivities'
+      | 'apuChapters'
+      | 'apuImages'
+      | 'apuImportRuns'
       | 'apuItems'
+      | 'apuPriceHistory'
       | 'budgetBaselines'
       | 'budgetChapters'
       | 'budgetItemResources'
@@ -2432,7 +2739,11 @@ export declare const models: {
   public: {
     ApuActivity: Models.public_ApuActivity;
     ApuActivityComposition: Models.public_ApuActivityComposition;
+    ApuChapter: Models.public_ApuChapter;
+    ApuImage: Models.public_ApuImage;
+    ApuImportRun: Models.public_ApuImportRun;
     ApuItem: Models.public_ApuItem;
+    ApuItemPriceHistory: Models.public_ApuItemPriceHistory;
     AuditLog: Models.public_AuditLog;
     Booking: Models.public_Booking;
     BudgetBaseline: Models.public_BudgetBaseline;
@@ -2490,6 +2801,11 @@ type ContractBase = Omit<
                     readonly value: DefaultLiteralValue<'pg/bool@1', true>;
                   };
                 };
+                readonly chapterId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly code: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -2511,10 +2827,39 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
+                readonly importedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly isAuxiliary: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+                  };
+                };
                 readonly name: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                };
+                readonly referenceUnitPrice: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: true;
+                };
+                readonly sortKey: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly sourceKey: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                 };
                 readonly tenantId: {
                   readonly nativeType: 'text';
@@ -2536,6 +2881,12 @@ type ContractBase = Omit<
               uniques: readonly [{ readonly columns: readonly ['tenantId', 'code'] }];
               indexes: readonly [
                 {
+                  readonly name: 'ApuActivity_chapterId_idx_411dd3d6';
+                  readonly prefix: 'ApuActivity_chapterId_idx';
+                  readonly columns: readonly ['chapterId'];
+                  readonly unique: false;
+                },
+                {
                   readonly name: 'ApuActivity_tenantId_idx_c93ed4f1';
                   readonly prefix: 'ApuActivity_tenantId_idx';
                   readonly columns: readonly ['tenantId'];
@@ -2552,6 +2903,18 @@ type ContractBase = Omit<
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuActivity';
+                    readonly columns: readonly ['chapterId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuChapter';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -2579,6 +2942,49 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
+                readonly linePartial: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: true;
+                };
+                readonly lineQuantity: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: true;
+                };
+                readonly lineUnit: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly lineUnitPrice: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: true;
+                };
+                readonly order: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+                  };
+                };
+                readonly origin: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'MANUAL'>;
+                  };
+                };
+                readonly section: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly wastePercent: {
                   readonly nativeType: 'numeric';
                   readonly codecId: 'pg/numeric@1';
@@ -2586,12 +2992,18 @@ type ContractBase = Omit<
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [{ readonly columns: readonly ['activityId', 'itemId'] }];
+              uniques: readonly [];
               indexes: readonly [
                 {
                   readonly name: 'ApuActivityComposition_activityId_idx_bf2a659e';
                   readonly prefix: 'ApuActivityComposition_activityId_idx';
                   readonly columns: readonly ['activityId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ApuActivityComposition_activityId_order_idx_82e665b3';
+                  readonly prefix: 'ApuActivityComposition_activityId_order_idx';
+                  readonly columns: readonly ['activityId', 'order'];
                   readonly unique: false;
                 },
                 {
@@ -2628,6 +3040,204 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly ApuChapter: {
+              columns: {
+                readonly code: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly name: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly order: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['tenantId', 'code'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'ApuChapter_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'ApuChapter_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuChapter';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly ApuImage: {
+              columns: {
+                readonly byteSize: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly data: {
+                  readonly nativeType: 'bytea';
+                  readonly codecId: 'pg/bytea@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly mimeType: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly sha256: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['tenantId', 'sha256'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'ApuImage_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'ApuImage_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuImage';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly ApuImportRun: {
+              columns: {
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly fileName: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly fileSha256: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly importedBy: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly stats: {
+                  readonly nativeType: 'json';
+                  readonly codecId: 'pg/json@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'ApuImportRun_tenantId_createdAt_idx_88162366';
+                  readonly prefix: 'ApuImportRun_tenantId_createdAt_idx';
+                  readonly columns: readonly ['tenantId', 'createdAt'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ApuImportRun_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'ApuImportRun_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuImportRun';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly ApuItem: {
               columns: {
                 readonly active: {
@@ -2638,6 +3248,11 @@ type ContractBase = Omit<
                     readonly kind: 'literal';
                     readonly value: DefaultLiteralValue<'pg/bool@1', true>;
                   };
+                };
+                readonly auxiliaryActivityId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                 };
                 readonly category: {
                   readonly nativeType: 'text';
@@ -2660,15 +3275,30 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
+                readonly imageId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly imageUrl: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly importedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: true;
                 };
                 readonly name: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                };
+                readonly sourceKey: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                 };
                 readonly tenantId: {
                   readonly nativeType: 'text';
@@ -2692,8 +3322,23 @@ type ContractBase = Omit<
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [{ readonly columns: readonly ['tenantId', 'code'] }];
+              uniques: readonly [
+                { readonly columns: readonly ['tenantId', 'code'] },
+                { readonly columns: readonly ['tenantId', 'sourceKey'] },
+              ];
               indexes: readonly [
+                {
+                  readonly name: 'ApuItem_auxiliaryActivityId_idx_c2d09703';
+                  readonly prefix: 'ApuItem_auxiliaryActivityId_idx';
+                  readonly columns: readonly ['auxiliaryActivityId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ApuItem_imageId_idx_9d3c09ba';
+                  readonly prefix: 'ApuItem_imageId_idx';
+                  readonly columns: readonly ['imageId'];
+                  readonly unique: false;
+                },
                 {
                   readonly name: 'ApuItem_tenantId_idx_c93ed4f1';
                   readonly prefix: 'ApuItem_tenantId_idx';
@@ -2711,6 +3356,136 @@ type ContractBase = Omit<
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuItem';
+                    readonly columns: readonly ['imageId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuImage';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuItem';
+                    readonly columns: readonly ['auxiliaryActivityId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuActivity';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly ApuItemPriceHistory: {
+              columns: {
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly importRunId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly itemId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly price: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+                readonly source: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'ApuItemPriceHistory_importRunId_idx_99a94f3f';
+                  readonly prefix: 'ApuItemPriceHistory_importRunId_idx';
+                  readonly columns: readonly ['importRunId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ApuItemPriceHistory_itemId_createdAt_idx_d577e708';
+                  readonly prefix: 'ApuItemPriceHistory_itemId_createdAt_idx';
+                  readonly columns: readonly ['itemId', 'createdAt'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ApuItemPriceHistory_itemId_idx_41357140';
+                  readonly prefix: 'ApuItemPriceHistory_itemId_idx';
+                  readonly columns: readonly ['itemId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ApuItemPriceHistory_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'ApuItemPriceHistory_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuItemPriceHistory';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuItemPriceHistory';
+                    readonly columns: readonly ['itemId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuItem';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuItemPriceHistory';
+                    readonly columns: readonly ['importRunId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApuImportRun';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -3184,15 +3959,6 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: false;
                 };
-                readonly wastePct: {
-                  readonly nativeType: 'int8';
-                  readonly codecId: 'pg/int8@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/int8@1', '0'>;
-                  };
-                };
               };
               primaryKey: { readonly columns: readonly ['id'] };
               uniques: readonly [{ readonly columns: readonly ['chapterId', 'order'] }];
@@ -3250,6 +4016,11 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
+                readonly imageId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly imageUrl: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -3265,6 +4036,15 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
+                readonly order: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+                  };
+                };
                 readonly performance: {
                   readonly nativeType: 'int8';
                   readonly codecId: 'pg/int8@1';
@@ -3273,6 +4053,11 @@ type ContractBase = Omit<
                     readonly kind: 'literal';
                     readonly value: DefaultLiteralValue<'pg/int8@1', '1000000'>;
                   };
+                };
+                readonly section: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                 };
                 readonly sourceItemId: {
                   readonly nativeType: 'text';
@@ -5439,7 +6224,14 @@ type ContractBase = Omit<
           readonly valueSet: {
             readonly ApuItemCategory: {
               readonly kind: 'valueSet';
-              readonly values: readonly ['MATERIAL', 'MANO_DE_OBRA', 'EQUIPO', 'TRANSPORTE'];
+              readonly values: readonly [
+                'MATERIAL',
+                'MANO_DE_OBRA',
+                'EQUIPO',
+                'TRANSPORTE',
+                'OTRO',
+                'SUBCONTRATO',
+              ];
             };
             readonly BookingStatus: {
               readonly kind: 'valueSet';
@@ -5448,6 +6240,10 @@ type ContractBase = Omit<
             readonly CommitmentStatus: {
               readonly kind: 'valueSet';
               readonly values: readonly ['PENDING', 'COMPLETED', 'FAILED'];
+            };
+            readonly CompositionOrigin: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['IMPORT', 'MANUAL'];
             };
             readonly FieldNoteType: {
               readonly kind: 'valueSet';
@@ -5514,7 +6310,14 @@ type ContractBase = Omit<
             };
             readonly ResourceType: {
               readonly kind: 'valueSet';
-              readonly values: readonly ['MATERIAL', 'LABOR', 'EQUIPMENT', 'TRANSPORT'];
+              readonly values: readonly [
+                'MATERIAL',
+                'LABOR',
+                'EQUIPMENT',
+                'TRANSPORT',
+                'OTHER',
+                'SUBCONTRACT',
+              ];
             };
             readonly Role: {
               readonly kind: 'valueSet';
@@ -5568,7 +6371,20 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'ApuActivityComposition';
     };
+    readonly ApuChapter: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'ApuChapter';
+    };
+    readonly ApuImage: { readonly namespace: 'public' & NamespaceId; readonly model: 'ApuImage' };
+    readonly ApuImportRun: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'ApuImportRun';
+    };
     readonly ApuItem: { readonly namespace: 'public' & NamespaceId; readonly model: 'ApuItem' };
+    readonly ApuItemPriceHistory: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'ApuItemPriceHistory';
+    };
     readonly AuditLog: { readonly namespace: 'public' & NamespaceId; readonly model: 'AuditLog' };
     readonly Booking: { readonly namespace: 'public' & NamespaceId; readonly model: 'Booking' };
     readonly BudgetBaseline: {
@@ -5647,6 +6463,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
               };
+              readonly chapterId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly code: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -5666,8 +6486,31 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly importedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly isAuxiliary: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
               readonly name: {
                 readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly referenceUnitPrice: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly sortKey: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly sourceKey: {
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly tenantId: {
@@ -5687,6 +6530,29 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
+              readonly auxiliaryItems: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuItem';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['auxiliaryActivityId'];
+                };
+              };
+              readonly chapter: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuChapter';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['chapterId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
               readonly compositions: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -5727,11 +6593,17 @@ type ContractBase = Omit<
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly active: { readonly column: 'active' };
+                readonly chapterId: { readonly column: 'chapterId' };
                 readonly code: { readonly column: 'code' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly description: { readonly column: 'description' };
                 readonly id: { readonly column: 'id' };
+                readonly importedAt: { readonly column: 'importedAt' };
+                readonly isAuxiliary: { readonly column: 'isAuxiliary' };
                 readonly name: { readonly column: 'name' };
+                readonly referenceUnitPrice: { readonly column: 'referenceUnitPrice' };
+                readonly sortKey: { readonly column: 'sortKey' };
+                readonly sourceKey: { readonly column: 'sourceKey' };
                 readonly tenantId: { readonly column: 'tenantId' };
                 readonly unit: { readonly column: 'unit' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
@@ -5754,6 +6626,34 @@ type ContractBase = Omit<
               };
               readonly itemId: {
                 readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly linePartial: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly lineQuantity: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly lineUnit: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly lineUnitPrice: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly order: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly origin: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly section: {
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly wastePercent: {
@@ -5795,7 +6695,236 @@ type ContractBase = Omit<
                 readonly consumption: { readonly column: 'consumption' };
                 readonly id: { readonly column: 'id' };
                 readonly itemId: { readonly column: 'itemId' };
+                readonly linePartial: { readonly column: 'linePartial' };
+                readonly lineQuantity: { readonly column: 'lineQuantity' };
+                readonly lineUnit: { readonly column: 'lineUnit' };
+                readonly lineUnitPrice: { readonly column: 'lineUnitPrice' };
+                readonly order: { readonly column: 'order' };
+                readonly origin: { readonly column: 'origin' };
+                readonly section: { readonly column: 'section' };
                 readonly wastePercent: { readonly column: 'wastePercent' };
+              };
+            };
+          };
+          readonly ApuChapter: {
+            readonly fields: {
+              readonly code: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly order: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly activities: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuActivity';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['chapterId'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'ApuChapter';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly code: { readonly column: 'code' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly id: { readonly column: 'id' };
+                readonly name: { readonly column: 'name' };
+                readonly order: { readonly column: 'order' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly ApuImage: {
+            readonly fields: {
+              readonly byteSize: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly data: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bytea@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly mimeType: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly sha256: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly items: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuItem';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['imageId'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'ApuImage';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly byteSize: { readonly column: 'byteSize' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly data: { readonly column: 'data' };
+                readonly id: { readonly column: 'id' };
+                readonly mimeType: { readonly column: 'mimeType' };
+                readonly sha256: { readonly column: 'sha256' };
+                readonly tenantId: { readonly column: 'tenantId' };
+              };
+            };
+          };
+          readonly ApuImportRun: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly fileName: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly fileSha256: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly importedBy: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly stats: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/json@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly priceChanges: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuItemPriceHistory';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['importRunId'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'ApuImportRun';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly fileName: { readonly column: 'fileName' };
+                readonly fileSha256: { readonly column: 'fileSha256' };
+                readonly id: { readonly column: 'id' };
+                readonly importedBy: { readonly column: 'importedBy' };
+                readonly stats: { readonly column: 'stats' };
+                readonly tenantId: { readonly column: 'tenantId' };
               };
             };
           };
@@ -5804,6 +6933,10 @@ type ContractBase = Omit<
               readonly active: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly auxiliaryActivityId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly category: {
                 readonly nullable: false;
@@ -5824,12 +6957,27 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly imageId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly imageUrl: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly importedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
               readonly name: {
                 readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly sourceKey: {
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly tenantId: {
@@ -5853,10 +7001,45 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
+              readonly auxiliaryActivity: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuActivity';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['auxiliaryActivityId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
               readonly compositions: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'ApuActivityComposition';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['itemId'];
+                };
+              };
+              readonly image: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuImage';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['imageId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly priceHistory: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuItemPriceHistory';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -5882,16 +7065,106 @@ type ContractBase = Omit<
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly active: { readonly column: 'active' };
+                readonly auxiliaryActivityId: { readonly column: 'auxiliaryActivityId' };
                 readonly category: { readonly column: 'category' };
                 readonly code: { readonly column: 'code' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly id: { readonly column: 'id' };
+                readonly imageId: { readonly column: 'imageId' };
                 readonly imageUrl: { readonly column: 'imageUrl' };
+                readonly importedAt: { readonly column: 'importedAt' };
                 readonly name: { readonly column: 'name' };
+                readonly sourceKey: { readonly column: 'sourceKey' };
                 readonly tenantId: { readonly column: 'tenantId' };
                 readonly unit: { readonly column: 'unit' };
                 readonly unitPrice: { readonly column: 'unitPrice' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly ApuItemPriceHistory: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly importRunId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly itemId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly price: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly source: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly importRun: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuImportRun';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['importRunId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly item: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuItem';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['itemId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'ApuItemPriceHistory';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly id: { readonly column: 'id' };
+                readonly importRunId: { readonly column: 'importRunId' };
+                readonly itemId: { readonly column: 'itemId' };
+                readonly price: { readonly column: 'price' };
+                readonly source: { readonly column: 'source' };
+                readonly tenantId: { readonly column: 'tenantId' };
               };
             };
           };
@@ -6319,10 +7592,6 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/timestamptz-temporal@1';
                 };
               };
-              readonly wastePct: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
-              };
             };
             readonly relations: {
               readonly chapter: {
@@ -6378,7 +7647,6 @@ type ContractBase = Omit<
                 readonly unit: { readonly column: 'unit' };
                 readonly unitCostDirect: { readonly column: 'unitCostDirect' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
-                readonly wastePct: { readonly column: 'wastePct' };
               };
             };
           };
@@ -6395,6 +7663,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly imageId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly imageUrl: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -6407,9 +7679,17 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly order: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
               readonly performance: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+              };
+              readonly section: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly sourceItemId: {
                 readonly nullable: true;
@@ -6479,10 +7759,13 @@ type ContractBase = Omit<
               readonly fields: {
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly id: { readonly column: 'id' };
+                readonly imageId: { readonly column: 'imageId' };
                 readonly imageUrl: { readonly column: 'imageUrl' };
                 readonly itemId: { readonly column: 'itemId' };
                 readonly name: { readonly column: 'name' };
+                readonly order: { readonly column: 'order' };
                 readonly performance: { readonly column: 'performance' };
+                readonly section: { readonly column: 'section' };
                 readonly sourceItemId: { readonly column: 'sourceItemId' };
                 readonly tenantId: { readonly column: 'tenantId' };
                 readonly totalPrice: { readonly column: 'totalPrice' };
@@ -8242,10 +9525,54 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly apuChapters: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuChapter';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly apuImages: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuImage';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly apuImportRuns: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuImportRun';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly apuItems: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'ApuItem';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly apuPriceHistory: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApuItemPriceHistory';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -8730,6 +10057,8 @@ type ContractBase = Omit<
               { readonly name: 'MANO_DE_OBRA'; readonly value: 'MANO_DE_OBRA' },
               { readonly name: 'EQUIPO'; readonly value: 'EQUIPO' },
               { readonly name: 'TRANSPORTE'; readonly value: 'TRANSPORTE' },
+              { readonly name: 'OTRO'; readonly value: 'OTRO' },
+              { readonly name: 'SUBCONTRATO'; readonly value: 'SUBCONTRATO' },
             ];
           };
           readonly BookingStatus: {
@@ -8747,6 +10076,13 @@ type ContractBase = Omit<
               { readonly name: 'PENDING'; readonly value: 'PENDING' },
               { readonly name: 'COMPLETED'; readonly value: 'COMPLETED' },
               { readonly name: 'FAILED'; readonly value: 'FAILED' },
+            ];
+          };
+          readonly CompositionOrigin: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'IMPORT'; readonly value: 'IMPORT' },
+              { readonly name: 'MANUAL'; readonly value: 'MANUAL' },
             ];
           };
           readonly FieldNoteType: {
@@ -8847,6 +10183,8 @@ type ContractBase = Omit<
               { readonly name: 'LABOR'; readonly value: 'LABOR' },
               { readonly name: 'EQUIPMENT'; readonly value: 'EQUIPMENT' },
               { readonly name: 'TRANSPORT'; readonly value: 'TRANSPORT' },
+              { readonly name: 'OTHER'; readonly value: 'OTHER' },
+              { readonly name: 'SUBCONTRACT'; readonly value: 'SUBCONTRACT' },
             ];
           };
           readonly Role: {
@@ -8951,6 +10289,39 @@ type ContractBase = Omit<
         {
           readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
           readonly ref: {
+            readonly entry: 'ApuChapter';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'ApuChapter';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'ApuImage';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'ApuImportRun';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
             readonly entry: 'ApuItem';
             readonly field: 'id';
             readonly namespace: 'public';
@@ -8962,6 +10333,14 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'ApuItem';
             readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'ApuItemPriceHistory';
+            readonly field: 'id';
             readonly namespace: 'public';
           };
         },

@@ -12,8 +12,24 @@
       "model": "ApuActivityComposition",
       "namespace": "public"
     },
+    "ApuChapter": {
+      "model": "ApuChapter",
+      "namespace": "public"
+    },
+    "ApuImage": {
+      "model": "ApuImage",
+      "namespace": "public"
+    },
+    "ApuImportRun": {
+      "model": "ApuImportRun",
+      "namespace": "public"
+    },
     "ApuItem": {
       "model": "ApuItem",
+      "namespace": "public"
+    },
+    "ApuItemPriceHistory": {
+      "model": "ApuItemPriceHistory",
       "namespace": "public"
     },
     "AuditLog": {
@@ -139,6 +155,14 @@
               {
                 "name": "TRANSPORTE",
                 "value": "TRANSPORTE"
+              },
+              {
+                "name": "OTRO",
+                "value": "OTRO"
+              },
+              {
+                "name": "SUBCONTRATO",
+                "value": "SUBCONTRATO"
               }
             ]
           },
@@ -177,6 +201,19 @@
               {
                 "name": "FAILED",
                 "value": "FAILED"
+              }
+            ]
+          },
+          "CompositionOrigin": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "IMPORT",
+                "value": "IMPORT"
+              },
+              {
+                "name": "MANUAL",
+                "value": "MANUAL"
               }
             ]
           },
@@ -427,6 +464,14 @@
               {
                 "name": "TRANSPORT",
                 "value": "TRANSPORT"
+              },
+              {
+                "name": "OTHER",
+                "value": "OTHER"
+              },
+              {
+                "name": "SUBCONTRACT",
+                "value": "SUBCONTRACT"
               }
             ]
           },
@@ -561,6 +606,13 @@
                   "kind": "scalar"
                 }
               },
+              "chapterId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "code": {
                 "nullable": true,
                 "type": {
@@ -589,8 +641,43 @@
                   "kind": "scalar"
                 }
               },
+              "importedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "isAuxiliary": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "name": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "referenceUnitPrice": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "sortKey": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sourceKey": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -619,6 +706,37 @@
               }
             },
             "relations": {
+              "auxiliaryItems": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "auxiliaryActivityId"
+                  ]
+                },
+                "to": {
+                  "model": "ApuItem",
+                  "namespace": "public"
+                }
+              },
+              "chapter": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "chapterId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ApuChapter",
+                  "namespace": "public"
+                }
+              },
               "compositions": {
                 "cardinality": "1:N",
                 "on": {
@@ -671,6 +789,9 @@
                 "active": {
                   "column": "active"
                 },
+                "chapterId": {
+                  "column": "chapterId"
+                },
                 "code": {
                   "column": "code"
                 },
@@ -683,8 +804,23 @@
                 "id": {
                   "column": "id"
                 },
+                "importedAt": {
+                  "column": "importedAt"
+                },
+                "isAuxiliary": {
+                  "column": "isAuxiliary"
+                },
                 "name": {
                   "column": "name"
+                },
+                "referenceUnitPrice": {
+                  "column": "referenceUnitPrice"
+                },
+                "sortKey": {
+                  "column": "sortKey"
+                },
+                "sourceKey": {
+                  "column": "sourceKey"
                 },
                 "tenantId": {
                   "column": "tenantId"
@@ -725,6 +861,61 @@
               },
               "itemId": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "linePartial": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "lineQuantity": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "lineUnit": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "lineUnitPrice": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "order": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "origin": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "CompositionOrigin",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "section": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -786,6 +977,27 @@
                 "itemId": {
                   "column": "itemId"
                 },
+                "linePartial": {
+                  "column": "linePartial"
+                },
+                "lineQuantity": {
+                  "column": "lineQuantity"
+                },
+                "lineUnit": {
+                  "column": "lineUnit"
+                },
+                "lineUnitPrice": {
+                  "column": "lineUnitPrice"
+                },
+                "order": {
+                  "column": "order"
+                },
+                "origin": {
+                  "column": "origin"
+                },
+                "section": {
+                  "column": "section"
+                },
                 "wastePercent": {
                   "column": "wastePercent"
                 }
@@ -794,12 +1006,358 @@
               "table": "ApuActivityComposition"
             }
           },
+          "ApuChapter": {
+            "fields": {
+              "code": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "order": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "activities": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "chapterId"
+                  ]
+                },
+                "to": {
+                  "model": "ApuActivity",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "code": {
+                  "column": "code"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "order": {
+                  "column": "order"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "ApuChapter"
+            }
+          },
+          "ApuImage": {
+            "fields": {
+              "byteSize": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "data": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bytea@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "mimeType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sha256": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "items": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "imageId"
+                  ]
+                },
+                "to": {
+                  "model": "ApuItem",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "byteSize": {
+                  "column": "byteSize"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "data": {
+                  "column": "data"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "mimeType": {
+                  "column": "mimeType"
+                },
+                "sha256": {
+                  "column": "sha256"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "ApuImage"
+            }
+          },
+          "ApuImportRun": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "fileName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "fileSha256": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "importedBy": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "stats": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "priceChanges": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "importRunId"
+                  ]
+                },
+                "to": {
+                  "model": "ApuItemPriceHistory",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "fileName": {
+                  "column": "fileName"
+                },
+                "fileSha256": {
+                  "column": "fileSha256"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "importedBy": {
+                  "column": "importedBy"
+                },
+                "stats": {
+                  "column": "stats"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "ApuImportRun"
+            }
+          },
           "ApuItem": {
             "fields": {
               "active": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "auxiliaryActivityId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -837,6 +1395,13 @@
                   "kind": "scalar"
                 }
               },
+              "imageId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "imageUrl": {
                 "nullable": true,
                 "type": {
@@ -844,8 +1409,22 @@
                   "kind": "scalar"
                 }
               },
+              "importedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
               "name": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sourceKey": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -881,6 +1460,22 @@
               }
             },
             "relations": {
+              "auxiliaryActivity": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "auxiliaryActivityId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ApuActivity",
+                  "namespace": "public"
+                }
+              },
               "compositions": {
                 "cardinality": "1:N",
                 "on": {
@@ -893,6 +1488,37 @@
                 },
                 "to": {
                   "model": "ApuActivityComposition",
+                  "namespace": "public"
+                }
+              },
+              "image": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "imageId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ApuImage",
+                  "namespace": "public"
+                }
+              },
+              "priceHistory": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "itemId"
+                  ]
+                },
+                "to": {
+                  "model": "ApuItemPriceHistory",
                   "namespace": "public"
                 }
               },
@@ -918,6 +1544,9 @@
                 "active": {
                   "column": "active"
                 },
+                "auxiliaryActivityId": {
+                  "column": "auxiliaryActivityId"
+                },
                 "category": {
                   "column": "category"
                 },
@@ -930,11 +1559,20 @@
                 "id": {
                   "column": "id"
                 },
+                "imageId": {
+                  "column": "imageId"
+                },
                 "imageUrl": {
                   "column": "imageUrl"
                 },
+                "importedAt": {
+                  "column": "importedAt"
+                },
                 "name": {
                   "column": "name"
+                },
+                "sourceKey": {
+                  "column": "sourceKey"
                 },
                 "tenantId": {
                   "column": "tenantId"
@@ -951,6 +1589,136 @@
               },
               "namespaceId": "public",
               "table": "ApuItem"
+            }
+          },
+          "ApuItemPriceHistory": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "importRunId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "itemId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "price": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "source": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "importRun": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "importRunId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ApuImportRun",
+                  "namespace": "public"
+                }
+              },
+              "item": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "itemId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ApuItem",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "importRunId": {
+                  "column": "importRunId"
+                },
+                "itemId": {
+                  "column": "itemId"
+                },
+                "price": {
+                  "column": "price"
+                },
+                "source": {
+                  "column": "source"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "ApuItemPriceHistory"
             }
           },
           "AuditLog": {
@@ -1646,13 +2414,6 @@
                   "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
-              },
-              "wastePct": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int8@1",
-                  "kind": "scalar"
-                }
               }
             },
             "relations": {
@@ -1744,9 +2505,6 @@
                 },
                 "updatedAt": {
                   "column": "updatedAt"
-                },
-                "wastePct": {
-                  "column": "wastePct"
                 }
               },
               "namespaceId": "public",
@@ -1764,6 +2522,13 @@
               },
               "id": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "imageId": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -1790,10 +2555,24 @@
                   "kind": "scalar"
                 }
               },
+              "order": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "performance": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int8@1",
+                  "kind": "scalar"
+                }
+              },
+              "section": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -1902,6 +2681,9 @@
                 "id": {
                   "column": "id"
                 },
+                "imageId": {
+                  "column": "imageId"
+                },
                 "imageUrl": {
                   "column": "imageUrl"
                 },
@@ -1911,8 +2693,14 @@
                 "name": {
                   "column": "name"
                 },
+                "order": {
+                  "column": "order"
+                },
                 "performance": {
                   "column": "performance"
+                },
+                "section": {
+                  "column": "section"
                 },
                 "sourceItemId": {
                   "column": "sourceItemId"
@@ -4716,6 +5504,51 @@
                   "namespace": "public"
                 }
               },
+              "apuChapters": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "ApuChapter",
+                  "namespace": "public"
+                }
+              },
+              "apuImages": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "ApuImage",
+                  "namespace": "public"
+                }
+              },
+              "apuImportRuns": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "ApuImportRun",
+                  "namespace": "public"
+                }
+              },
               "apuItems": {
                 "cardinality": "1:N",
                 "on": {
@@ -4728,6 +5561,21 @@
                 },
                 "to": {
                   "model": "ApuItem",
+                  "namespace": "public"
+                }
+              },
+              "apuPriceHistory": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "ApuItemPriceHistory",
                   "namespace": "public"
                 }
               },
@@ -5494,6 +6342,11 @@
                   "nativeType": "bool",
                   "nullable": false
                 },
+                "chapterId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "code": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -5518,10 +6371,39 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "importedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "isAuxiliary": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
                 "name": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "referenceUnitPrice": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": true
+                },
+                "sortKey": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "sourceKey": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "tenantId": {
                   "codecId": "pg/text@1",
@@ -5556,9 +6438,34 @@
                     "namespaceId": "public",
                     "tableName": "Tenant"
                   }
+                },
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "chapterId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ApuActivity"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ApuChapter"
+                  }
                 }
               ],
               "indexes": [
+                {
+                  "columns": [
+                    "chapterId"
+                  ],
+                  "name": "ApuActivity_chapterId_idx_411dd3d6",
+                  "prefix": "ApuActivity_chapterId_idx",
+                  "unique": false
+                },
                 {
                   "columns": [
                     "tenantId"
@@ -5583,6 +6490,13 @@
               ]
             },
             "ApuActivityComposition": {
+              "checks": [
+                {
+                  "expression": "\"origin\" IN ('IMPORT', 'MANUAL')",
+                  "name": "ApuActivityComposition_origin_check_ba5a96cd",
+                  "prefix": "ApuActivityComposition_origin_check"
+                }
+              ],
               "columns": {
                 "activityId": {
                   "codecId": "pg/text@1",
@@ -5603,6 +6517,55 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "linePartial": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": true
+                },
+                "lineQuantity": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": true
+                },
+                "lineUnit": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "lineUnitPrice": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": true
+                },
+                "order": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "origin": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "MANUAL"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "CompositionOrigin",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "section": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "wastePercent": {
                   "codecId": "pg/numeric@1",
@@ -5657,6 +6620,15 @@
                 },
                 {
                   "columns": [
+                    "activityId",
+                    "order"
+                  ],
+                  "name": "ApuActivityComposition_activityId_order_idx_82e665b3",
+                  "prefix": "ApuActivityComposition_activityId_order_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
                     "itemId"
                   ],
                   "name": "ApuActivityComposition_itemId_idx_41357140",
@@ -5669,20 +6641,270 @@
                   "id"
                 ]
               },
+              "uniques": []
+            },
+            "ApuChapter": {
+              "columns": {
+                "code": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "order": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ApuChapter"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "ApuChapter_tenantId_idx_c93ed4f1",
+                  "prefix": "ApuChapter_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
               "uniques": [
                 {
                   "columns": [
-                    "activityId",
-                    "itemId"
+                    "tenantId",
+                    "code"
                   ]
                 }
               ]
             },
+            "ApuImage": {
+              "columns": {
+                "byteSize": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "data": {
+                  "codecId": "pg/bytea@1",
+                  "nativeType": "bytea",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "mimeType": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "sha256": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ApuImage"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "ApuImage_tenantId_idx_c93ed4f1",
+                  "prefix": "ApuImage_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "sha256"
+                  ]
+                }
+              ]
+            },
+            "ApuImportRun": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "fileName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "fileSha256": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "importedBy": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "stats": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ApuImportRun"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "createdAt"
+                  ],
+                  "name": "ApuImportRun_tenantId_createdAt_idx_88162366",
+                  "prefix": "ApuImportRun_tenantId_createdAt_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "ApuImportRun_tenantId_idx_c93ed4f1",
+                  "prefix": "ApuImportRun_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "ApuItem": {
               "checks": [
                 {
-                  "expression": "\"category\" IN ('MATERIAL', 'MANO_DE_OBRA', 'EQUIPO', 'TRANSPORTE')",
-                  "name": "ApuItem_category_check_cb615411",
+                  "expression": "\"category\" IN ('MATERIAL', 'MANO_DE_OBRA', 'EQUIPO', 'TRANSPORTE', 'OTRO', 'SUBCONTRATO')",
+                  "name": "ApuItem_category_check_f8aa2465",
                   "prefix": "ApuItem_category_check"
                 }
               ],
@@ -5695,6 +6917,11 @@
                   },
                   "nativeType": "bool",
                   "nullable": false
+                },
+                "auxiliaryActivityId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "category": {
                   "codecId": "pg/text@1",
@@ -5726,15 +6953,30 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "imageId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "imageUrl": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
+                  "nullable": true
+                },
+                "importedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
                   "nullable": true
                 },
                 "name": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "sourceKey": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "tenantId": {
                   "codecId": "pg/text@1",
@@ -5774,9 +7016,59 @@
                     "namespaceId": "public",
                     "tableName": "Tenant"
                   }
+                },
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "imageId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ApuItem"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ApuImage"
+                  }
+                },
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "auxiliaryActivityId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ApuItem"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ApuActivity"
+                  }
                 }
               ],
               "indexes": [
+                {
+                  "columns": [
+                    "auxiliaryActivityId"
+                  ],
+                  "name": "ApuItem_auxiliaryActivityId_idx_c2d09703",
+                  "prefix": "ApuItem_auxiliaryActivityId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "imageId"
+                  ],
+                  "name": "ApuItem_imageId_idx_9d3c09ba",
+                  "prefix": "ApuItem_imageId_idx",
+                  "unique": false
+                },
                 {
                   "columns": [
                     "tenantId"
@@ -5797,8 +7089,151 @@
                     "tenantId",
                     "code"
                   ]
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "sourceKey"
+                  ]
                 }
               ]
+            },
+            "ApuItemPriceHistory": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "importRunId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "itemId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "price": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "source": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ApuItemPriceHistory"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "itemId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ApuItemPriceHistory"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ApuItem"
+                  }
+                },
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "importRunId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ApuItemPriceHistory"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ApuImportRun"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "importRunId"
+                  ],
+                  "name": "ApuItemPriceHistory_importRunId_idx_99a94f3f",
+                  "prefix": "ApuItemPriceHistory_importRunId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "itemId",
+                    "createdAt"
+                  ],
+                  "name": "ApuItemPriceHistory_itemId_createdAt_idx_d577e708",
+                  "prefix": "ApuItemPriceHistory_itemId_createdAt_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "itemId"
+                  ],
+                  "name": "ApuItemPriceHistory_itemId_idx_41357140",
+                  "prefix": "ApuItemPriceHistory_itemId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "ApuItemPriceHistory_tenantId_idx_c93ed4f1",
+                  "prefix": "ApuItemPriceHistory_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
             },
             "AuditLog": {
               "columns": {
@@ -6366,15 +7801,6 @@
                   "codecId": "pg/timestamptz-temporal@1",
                   "nativeType": "timestamptz",
                   "nullable": false
-                },
-                "wastePct": {
-                  "codecId": "pg/int8@1",
-                  "default": {
-                    "kind": "literal",
-                    "value": "0"
-                  },
-                  "nativeType": "int8",
-                  "nullable": false
                 }
               },
               "foreignKeys": [
@@ -6448,8 +7874,8 @@
             "BudgetItemResource": {
               "checks": [
                 {
-                  "expression": "\"type\" IN ('MATERIAL', 'LABOR', 'EQUIPMENT', 'TRANSPORT')",
-                  "name": "BudgetItemResource_type_check_13d76a3a",
+                  "expression": "\"type\" IN ('MATERIAL', 'LABOR', 'EQUIPMENT', 'TRANSPORT', 'OTHER', 'SUBCONTRACT')",
+                  "name": "BudgetItemResource_type_check_f9fe751f",
                   "prefix": "BudgetItemResource_type_check"
                 }
               ],
@@ -6468,6 +7894,11 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "imageId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "imageUrl": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -6483,6 +7914,15 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "order": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
                 "performance": {
                   "codecId": "pg/int8@1",
                   "default": {
@@ -6491,6 +7931,11 @@
                   },
                   "nativeType": "int8",
                   "nullable": false
+                },
+                "section": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "sourceItemId": {
                   "codecId": "pg/text@1",
@@ -9339,7 +10784,9 @@
                 "MATERIAL",
                 "MANO_DE_OBRA",
                 "EQUIPO",
-                "TRANSPORTE"
+                "TRANSPORTE",
+                "OTRO",
+                "SUBCONTRATO"
               ]
             },
             "BookingStatus": {
@@ -9357,6 +10804,13 @@
                 "PENDING",
                 "COMPLETED",
                 "FAILED"
+              ]
+            },
+            "CompositionOrigin": {
+              "kind": "valueSet",
+              "values": [
+                "IMPORT",
+                "MANUAL"
               ]
             },
             "FieldNoteType": {
@@ -9456,7 +10910,9 @@
                 "MATERIAL",
                 "LABOR",
                 "EQUIPMENT",
-                "TRANSPORT"
+                "TRANSPORT",
+                "OTHER",
+                "SUBCONTRACT"
               ]
             },
             "Role": {
@@ -9510,10 +10966,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "d4509c335e914a2bda4c5a19954c47cc84007ba0fd294a7ca4f5a2d05e71d931"
+    "storageHash": "02a82f1994702b55c06a1ec7a4cc38025a325ad28de3b02824adcf3c16c97038"
   },
   "execution": {
-    "executionHash": "3304e4cb5cf375cce3d134b699be42b681880ab36538dc1b5d16b14ba96a675a",
+    "executionHash": "6438324cc1097801d91f7fdd8f8976f526d018304c64e9aa533f85f09f98d778",
     "mutations": {
       "defaults": [
         {
@@ -9559,6 +11015,54 @@
             "kind": "generator"
           },
           "ref": {
+            "entry": "ApuChapter",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "ApuChapter",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "ApuImage",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "ApuImportRun",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
             "entry": "ApuItem",
             "field": "id",
             "namespace": "public"
@@ -9576,6 +11080,17 @@
           "ref": {
             "entry": "ApuItem",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "ApuItemPriceHistory",
+            "field": "id",
             "namespace": "public"
           }
         },

@@ -79,6 +79,17 @@ enum ApuItemCategory {
   MANO_DE_OBRA
   EQUIPO
   TRANSPORTE
+  /// Otros costos (secciones "OTROS" del pack APU).
+  OTRO
+  /// Subcontratos (sección "SUBCONTRATOS" del pack APU).
+  SUBCONTRATO
+}
+
+/// Origen de una línea de composición APU: importada de un archivo (se
+/// reemplaza al reimportar) o creada a mano (nunca la toca una importación).
+enum CompositionOrigin {
+  IMPORT
+  MANUAL
 }
 
 /// Estado de un presupuesto/cotización de obra.
@@ -107,6 +118,8 @@ enum ResourceType {
   LABOR
   EQUIPMENT
   TRANSPORT
+  OTHER
+  SUBCONTRACT
 }
 
 /// Resultado evaluado de un compromiso semanal (Last Planner System). No
@@ -196,6 +209,10 @@ model Tenant {
   customerNotes CustomerNote[]
   apuItems      ApuItem[]
   apuActivities ApuActivity[]
+  apuImages     ApuImage[]
+  apuChapters   ApuChapter[]
+  apuImportRuns ApuImportRun[]
+  apuPriceHistory ApuItemPriceHistory[]
   quotes        Quote[]
   projects      Project[]
   projectBudgets ProjectBudget[]
@@ -350,13 +367,100 @@ model ApuItem {
   unitPrice Decimal
   /// Etapa 2: campos aditivos (no rompen datos existentes).
   active    Boolean        @default(true)
+  /// Enlace externo heredado. Las imágenes importadas van en `imageId`.
   imageUrl  String?
+  /// Imagen guardada en el sistema (importada del Excel o subida).
+  imageId   String?
+  image     ApuImage?      @relation(fields: [imageId], references: [id], onDelete: SetNull)
+  /// Identidad estable para reimportar sin duplicar: descripción + unidad
+  /// normalizadas. Null en insumos creados a mano.
+  sourceKey String?
+  /// Si el insumo es un APU auxiliar (APU compuesto), la actividad que lo define.
+  auxiliaryActivityId String?
+  auxiliaryActivity   ApuActivity? @relation("ApuAuxiliaryItem", fields: [auxiliaryActivityId], references: [id], onDelete: SetNull)
+  /// Última importación que tocó el insumo.
+  importedAt DateTime?
   createdAt DateTime       @default(now())
   updatedAt temporal.updatedAt()
 
   compositions ApuActivityComposition[]
+  priceHistory ApuItemPriceHistory[]
 
   @@unique([tenantId, code])
+  @@unique([tenantId, sourceKey])
+  @@index([tenantId])
+}
+
+/// Imagen binaria de un insumo, guardada en la base (no es un enlace
+/// externo). Deduplicada por contenido dentro del tenant: reimportar la misma
+/// foto no la duplica.
+model ApuImage {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sha256    String
+  mimeType  String
+  byteSize  Int
+  data      Bytes
+  createdAt DateTime @default(now())
+
+  items     ApuItem[]
+
+  @@unique([tenantId, sha256])
+  @@index([tenantId])
+}
+
+/// Capítulo del catálogo APU (ej. "1 PRELIMINARES"). Ordena las actividades.
+model ApuChapter {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  code      String
+  name      String
+  order     Int
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+
+  activities ApuActivity[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+}
+
+/// Registro de cada importación del catálogo (auditoría: qué archivo, cuándo,
+/// quién y qué cambió). Nunca se borra.
+model ApuImportRun {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  fileName    String
+  fileSha256  String
+  importedBy  String?
+  /// Conteos y verificaciones del resultado (JSON serializable).
+  stats       Json
+  createdAt   DateTime @default(now())
+
+  priceChanges ApuItemPriceHistory[]
+
+  @@index([tenantId, createdAt])
+}
+
+/// Historial de precios de un insumo: cada precio distinto que tuvo, con su
+/// origen. Una importación que cambia un precio deja aquí el anterior y el nuevo.
+model ApuItemPriceHistory {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  itemId      String
+  item        ApuItem  @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  price       Decimal
+  /// "IMPORT" o "MANUAL".
+  source      String
+  importRunId String?
+  importRun   ApuImportRun? @relation(fields: [importRunId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+
+  @@index([itemId, createdAt])
   @@index([tenantId])
 }
 
@@ -372,11 +476,25 @@ model ApuActivity {
   description String?
   /// Etapa 2: campo aditivo (no rompe datos existentes).
   active      Boolean  @default(true)
+  /// Capítulo del catálogo al que pertenece (null en auxiliares y manuales).
+  chapterId   String?
+  chapter     ApuChapter? @relation(fields: [chapterId], references: [id], onDelete: SetNull)
+  /// APU auxiliar: se usa como insumo de otros APU (APU compuesto).
+  isAuxiliary Boolean  @default(false)
+  /// Costo directo unitario declarado en el archivo importado ("VR COSTO
+  /// DIRECTO"); sirve para verificar que el cálculo del sistema coincide.
+  referenceUnitPrice Decimal?
+  /// Clave de orden natural ("0001.0002" para 1.02) para listar como el archivo.
+  sortKey     String?
+  /// Identidad estable para reimportar ("APU:1.01" o "AUX:<descripción>|<unidad>").
+  sourceKey   String?
+  importedAt  DateTime?
   createdAt   DateTime @default(now())
   updatedAt   temporal.updatedAt()
 
   compositions ApuActivityComposition[]
   quoteItems  QuoteItem[]
+  auxiliaryItems ApuItem[] @relation("ApuAuxiliaryItem")
 
   @@unique([tenantId, code])
   @@index([tenantId])
@@ -394,9 +512,22 @@ model ApuActivityComposition {
   consumption  Decimal
   /// Porcentaje de desperdicio (0–50).
   wastePercent Decimal
+  /// Posición de la línea dentro del APU (orden del archivo).
+  order        Int               @default(0)
+  /// Sección original del archivo ("MANO de OBRA:", "SEGURIDAD SOCIAL:"…).
+  section      String?
+  /// Unidad tal como viene en la línea (puede ser "%MO", "%", "%S").
+  lineUnit     String?
+  /// Cantidad / rendimiento tal como viene en el archivo.
+  lineQuantity Decimal?
+  /// Precio unitario de la línea en el archivo. En líneas porcentuales es la
+  /// base sobre la que se aplica el porcentaje y difiere entre actividades.
+  lineUnitPrice Decimal?
+  /// Valor parcial declarado en el archivo (verificación).
+  linePartial  Decimal?
+  origin       CompositionOrigin @default(MANUAL)
 
-  @@unique([activityId, itemId])
-  @@index([activityId])
+  @@index([activityId, order])
   @@index([itemId])
 }
 
@@ -657,8 +788,6 @@ model BudgetItem {
   unitCostDirect BigInt @default(0)
   /// Costo directo total de la partida = quantity × unitCostDirect.
   totalCostDirect BigInt @default(0)
-  /// Porcentaje de desperdicio (micro, 1_000_000 = 100%). Default 0.
-  wastePct       BigInt @default(0)
   /// Origen: ID de actividad del catálogo APU desde la que se importó esta partida.
   sourceActivityId String?
   createdAt      DateTime      @default(now())
@@ -692,6 +821,12 @@ model BudgetItemResource {
   sourceItemId  String?
   /// Porcentaje de desperdicio de esta línea (micro, 1_000_000 = 100%). Default 0.
   wastePct      BigInt @default(0)
+  /// Imagen del insumo en el sistema (copiada del catálogo al importar).
+  imageId       String?
+  /// Sección original de la línea en el APU del catálogo.
+  section       String?
+  /// Orden de la línea dentro del APU.
+  order         Int    @default(0)
   createdAt     DateTime   @default(now())
   updatedAt     temporal.updatedAt()
 

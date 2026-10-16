@@ -24,6 +24,8 @@ const CATEGORY_VARIANTS: Record<
   MANO_DE_OBRA: "gold",
   EQUIPO: "secondary",
   TRANSPORTE: "outline",
+  OTRO: "outline",
+  SUBCONTRATO: "secondary",
 };
 
 /** Badge de estado de presupuesto: punto cuadrado + texto en tinta. */

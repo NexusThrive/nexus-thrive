@@ -154,6 +154,8 @@ export const APU_ITEM_CATEGORIES = [
   { value: "MANO_DE_OBRA", label: "Mano de Obra" },
   { value: "EQUIPO", label: "Equipo" },
   { value: "TRANSPORTE", label: "Transporte" },
+  { value: "OTRO", label: "Otros" },
+  { value: "SUBCONTRATO", label: "Subcontrato" },
 ] as const;
 export type ApuItemCategoryValue = (typeof APU_ITEM_CATEGORIES)[number]["value"];
 
@@ -519,6 +521,8 @@ export const RESOURCE_TYPES = [
   { value: "LABOR", label: "Mano de obra" },
   { value: "EQUIPMENT", label: "Equipo" },
   { value: "TRANSPORT", label: "Transporte" },
+  { value: "OTHER", label: "Otros" },
+  { value: "SUBCONTRACT", label: "Subcontrato" },
 ] as const;
 export type ResourceTypeValue = (typeof RESOURCE_TYPES)[number]["value"];
 
@@ -544,6 +548,8 @@ export function apuItemCategoryToResourceType(
     MANO_DE_OBRA: "LABOR",
     EQUIPO: "EQUIPMENT",
     TRANSPORTE: "TRANSPORT",
+    OTRO: "OTHER",
+    SUBCONTRATO: "SUBCONTRACT",
   };
   return map[category];
 }

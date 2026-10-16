@@ -18,6 +18,7 @@ import {
   AIU_DEFAULTS,
   RESOURCE_TYPES,
   formatApuUnit,
+  APU_ITEM_CATEGORIES,
   apuItemCategoryToResourceType,
   type ActivityComponentInput,
   type AiuConfig,
@@ -292,10 +293,15 @@ describe("apu-engine — constantes y tipos", () => {
     expect(SCALE).toBe(BigInt(1_000_000));
   });
 
-  test("RESOURCE_TYPES tiene 4 valores (sin SUBCONTRACT/OTHER)", () => {
-    expect(RESOURCE_TYPES.length).toBe(4);
+  test("RESOURCE_TYPES cubre las secciones del pack APU (incluye otros y subcontratos)", () => {
     const values = RESOURCE_TYPES.map((r) => r.value);
-    expect(values).toEqual(["MATERIAL", "LABOR", "EQUIPMENT", "TRANSPORT"]);
+    expect(values).toEqual(["MATERIAL", "LABOR", "EQUIPMENT", "TRANSPORT", "OTHER", "SUBCONTRACT"]);
+  });
+
+  test("toda categoría del catálogo tiene tipo de recurso", () => {
+    for (const { value } of APU_ITEM_CATEGORIES) {
+      expect(RESOURCE_TYPES.map((r) => r.value)).toContain(apuItemCategoryToResourceType(value));
+    }
   });
 
   test("AIU_DEFAULTS es 10/5/5/19 % (fuente única en TS, espejo del contrato)", () => {
