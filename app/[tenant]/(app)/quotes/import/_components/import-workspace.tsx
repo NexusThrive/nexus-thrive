@@ -18,7 +18,10 @@ import FileDropzone from "./file-dropzone";
 import MetricsPanel from "./metrics-panel";
 import MappingEditor from "./mapping-editor";
 import PreviewTable from "./preview-table";
-import { parseApuFileAction, parseApuFromBlobAction, executeSmartImportAction } from "../actions";
+import { analyzeImportAction, executeSmartImportAction, importMasterPackAction } from "../actions";
+import { MasterPackPreview, MasterPackResult } from "./master-pack-panel";
+import type { MasterPackSummary } from "@/lib/apu-importer/master-pack-summary";
+import type { MasterPackImportResult } from "@/lib/apu-importer/master-pack-import";
 import { recomputePreview } from "@/lib/apu-importer/recompute";
 import type {
   ColumnMapping,
@@ -27,7 +30,7 @@ import type {
 } from "@/lib/apu-importer/types";
 import { cn } from "@/lib/cn";
 
-type Step = "upload" | "preview" | "done";
+type Step = "upload" | "preview" | "done" | "pack" | "pack-done";
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20 MB (espejo del server)
 const VERCEL_BODY_LIMIT = 4.5 * 1024 * 1024; // 4.5 MB — límite de plataforma Vercel
@@ -35,12 +38,15 @@ const VERCEL_BODY_LIMIT = 4.5 * 1024 * 1024; // 4.5 MB — límite de plataforma
 /**
  * Workspace del importador (cliente).
  *
- * Fase 1: el usuario sube un archivo → 
- *   - ≤ 4.5 MB: `parseApuFileAction` (FormData directa)
- *   - > 4.5 MB: subida a Vercel Blob (multipart) → `parseApuFromBlobAction`
- * Fase 2: confirmación → `executeSmartImportAction`
- * (server, transaccional). El mapeo se puede editar; las filas se re-derivan
- * en cliente con `recomputePreview` y el servidor revalida todo al importar.
+ * Fase 1: el usuario sube un archivo → `analyzeImportAction`
+ *   - ≤ 4.5 MB: FormData directa.
+ *   - > 4.5 MB: subida a Vercel Blob con token de un solo uso emitido por
+ *     /api/blob-upload (el token de escritura nunca llega al navegador).
+ * Fase 2:
+ *   - Pack APU completo → resumen → `importMasterPackAction` (el servidor
+ *     vuelve a leer el archivo y lo importa sin pérdida de datos).
+ *   - Archivo plano → mapeo editable → `executeSmartImportAction`. Las filas
+ *     se re-derivan en cliente con `recomputePreview` y el servidor revalida.
  */
 export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) {
   const router = useRouter();
@@ -52,6 +58,27 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
   const [executePending, setExecutePending] = useState(false);
   const [executeError, setExecuteError] = useState("");
   const [result, setResult] = useState<ImportResult | null>(null);
+  const [packSummary, setPackSummary] = useState<MasterPackSummary | null>(null);
+  const [packSource, setPackSource] = useState<FormData | null>(null);
+  const [packResult, setPackResult] = useState<{ result: MasterPackImportResult; message: string } | null>(null);
+
+  /** FormData con el archivo, o con la URL del blob si supera 4,5 MB. */
+  async function buildSource(file: File): Promise<FormData> {
+    const formData = new FormData();
+    if (file.size <= VERCEL_BODY_LIMIT) {
+      formData.set("file", file);
+      return formData;
+    }
+    const { upload } = await import("@vercel/blob/client");
+    const blob = await upload(`imports/${tenantSlug}/${file.name}`, file, {
+      access: "public",
+      handleUploadUrl: "/api/blob-upload",
+      multipart: true,
+    });
+    formData.set("blobUrl", blob.url);
+    formData.set("fileName", file.name);
+    return formData;
+  }
 
   async function handleFile(file: File) {
     setParsePending(true);
@@ -64,50 +91,19 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
         return;
       }
 
-      let preview: ImportPreview | null = null;
-
-      if (file.size <= VERCEL_BODY_LIMIT) {
-        // Archivo pequeño: ruta directa vía FormData (Server Action)
-        const formData = new FormData();
-        formData.set("file", file);
-        const response = await parseApuFileAction({ status: "idle" }, formData);
-        if (response.status === "ok" && response.preview) {
-          preview = response.preview;
-        } else {
-          setParseError(response.message ?? "No se pudo analizar el archivo.");
-        }
-      } else {
-        // Archivo grande (> 4.5 MB): subir a Vercel Blob y procesar desde la URL
-        const token = process.env.NEXT_PUBLIC_BLOB_READ_WRITE_TOKEN;
-        if (!token) {
-          setParseError(
-            "Configuración incompleta: falta NEXT_PUBLIC_BLOB_READ_WRITE_TOKEN en el entorno. " +
-            "Agrega el token de Vercel Blob en las variables de entorno de Vercel y redeployea."
-          );
-          return;
-        }
-
-        // Subida multipart a Vercel Blob (soporta > 5 MB automáticamente)
-        const { put } = await import("@vercel/blob");
-        const blob = await put(`imports/${Date.now()}-${file.name}`, file, {
-          access: "public",
-          multipart: true,
-          token,
-        });
-
-        // Procesar desde la URL del Blob
-        const formData = new FormData();
-        formData.set("blobUrl", blob.url);
-        formData.set("fileName", file.name);
-        formData.set("fileSize", String(file.size));
-
-        const response = await parseApuFromBlobAction({ status: "idle" }, formData);
-        if (response.status === "ok" && response.preview) {
-          preview = response.preview;
-        } else {
-          setParseError(response.message ?? "No se pudo analizar el archivo desde Blob.");
-        }
+      const source = await buildSource(file);
+      const response = await analyzeImportAction(tenantSlug, source);
+      if (response.status === "error") {
+        setParseError(response.message);
+        return;
       }
+      if (response.kind === "master-pack") {
+        setPackSummary(response.summary);
+        setPackSource(source);
+        setStep("pack");
+        return;
+      }
+      const preview: ImportPreview = response.preview;
 
       if (preview) {
         setPreview(preview);
@@ -154,7 +150,33 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
     }
   }
 
+  async function handlePackImport(updatePrices: boolean) {
+    if (!packSource) return;
+    setExecutePending(true);
+    setExecuteError("");
+    try {
+      const formData = new FormData();
+      for (const [key, value] of packSource.entries()) formData.set(key, value);
+      formData.set("updatePrices", updatePrices ? "true" : "false");
+      const response = await importMasterPackAction(tenantSlug, formData);
+      if (response.status === "ok") {
+        setPackResult({ result: response.result, message: response.message });
+        setStep("pack-done");
+        router.refresh();
+      } else {
+        setExecuteError(response.message);
+      }
+    } catch {
+      setExecuteError("Ocurrió un error inesperado. No se guardó nada.");
+    } finally {
+      setExecutePending(false);
+    }
+  }
+
   function reset() {
+    setPackSummary(null);
+    setPackSource(null);
+    setPackResult(null);
     setStep("upload");
     setPreview(null);
     setDraftMapping([]);
@@ -190,6 +212,12 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
               <li>
                 <b>Insumos planos</b> (CSV, TXT o XLSX con columnas como código,
                 descripción, unidad y precio): se mapean automáticamente.
+              </li>
+              <li>
+                <b>Libro APU completo</b> (hojas ACTIVIDADES, APU, APU AUXILIARES,
+                MATERIALES y CAPITULOS): se importa todo, con capítulos, APU
+                auxiliares y las fotos de los insumos. Reimportarlo actualiza sin
+                borrar nada.
               </li>
               <li>
                 <b>Packs APU</b> (XLSX con bloques por actividad, secciones
@@ -331,6 +359,25 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
             </button>
           </div>
         </section>
+      )}
+
+      {/* Pack APU completo: resumen y resultado */}
+      {step === "pack" && packSummary && (
+        <MasterPackPreview
+          summary={packSummary}
+          pending={executePending}
+          error={executeError}
+          onImport={handlePackImport}
+          onReset={reset}
+        />
+      )}
+      {step === "pack-done" && packResult && (
+        <MasterPackResult
+          tenantSlug={tenantSlug}
+          result={packResult.result}
+          message={packResult.message}
+          onReset={reset}
+        />
       )}
 
       {/* Paso 3: reporte */}
