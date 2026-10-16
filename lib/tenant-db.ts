@@ -38,6 +38,7 @@ import {
   lineTotal,
   moneyToString,
   resourceLineCostMicro,
+  RESOURCE_TYPES,
   type ApuItemCategoryValue,
   type ApuSnapshot,
   type QuoteStatusValue,
@@ -915,6 +916,51 @@ function assertRevision(
   }
 }
 
+/**
+ * Avanza `revision` con compare-and-set DENTRO de la transacción de la
+ * mutación: el WHERE exige la revisión leída al inicio. Si otro request
+ * escribió el presupuesto entretanto (otra edición, un bloqueo), no se toca
+ * la fila, se lanza `STALE_REVISION` y la transacción entera se revierte.
+ * `assertRevision` solo compara contra lo que vio el cliente; esto cierra la
+ * ventana entre esa lectura y la escritura. Devuelve la nueva revisión.
+ */
+async function bumpRevision(
+  tx: TenantTx,
+  budget: BudgetRow,
+  patch: {
+    isLocked?: boolean;
+    aiuAdminPct?: bigint;
+    aiuImprevPct?: bigint;
+    aiuUtilidadPct?: bigint;
+    ivaUtilidadPct?: bigint;
+  } = {},
+): Promise<number> {
+  const next = budget.revision + 1;
+  const updated = await tx.orm.public.ProjectBudget
+    .where({ id: budget.id, revision: budget.revision })
+    .updateAndCount({ ...patch, revision: next });
+  if (updated !== 1) {
+    throw new Error("STALE_REVISION");
+  }
+  return next;
+}
+
+/**
+ * Fija la revisión leída sin avanzarla: un UPDATE no-op con la revisión en el
+ * WHERE toma el lock de la fila, así que ninguna mutación concurrente puede
+ * avanzarla hasta que esta transacción termine (y si ya lo hizo, falla con
+ * `STALE_REVISION`). Para lecturas que deben ser una foto consistente de una
+ * revisión concreta, como la línea base.
+ */
+async function lockRevision(tx: TenantTx, budget: BudgetRow): Promise<void> {
+  const locked = await tx.orm.public.ProjectBudget
+    .where({ id: budget.id, revision: budget.revision })
+    .updateAndCount({ revision: budget.revision });
+  if (locked !== 1) {
+    throw new Error("STALE_REVISION");
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Guardados sin cambios (Etapa 1)                                     */
 /* ------------------------------------------------------------------ */
@@ -967,6 +1013,18 @@ async function loadBudgetTree(budget: BudgetRow): Promise<ProjectBudgetData> {
       wastePct: String(resource.wastePct),
     });
     resourcesByItem.set(resource.itemId, list);
+  }
+  // La tabla no guarda orden: se fija uno estable (tipo según RESOURCE_TYPES,
+  // luego nombre) para que el APU no cambie de orden entre cargas.
+  const typeRank = new Map<string, number>(
+    RESOURCE_TYPES.map((option, index) => [option.value, index]),
+  );
+  for (const list of resourcesByItem.values()) {
+    list.sort(
+      (a, b) =>
+        (typeRank.get(a.type) ?? 99) - (typeRank.get(b.type) ?? 99) ||
+        a.name.localeCompare(b.name, "es"),
+    );
   }
 
   const itemsByChapter = new Map<string, BudgetItemData[]>();
@@ -3090,9 +3148,7 @@ export function createTenantDb(tenantId: string) {
             name: input.name,
             description: input.description ?? null,
           });
-          await tx.orm.public.ProjectBudget
-            .where({ id: budget.id })
-            .update({ revision: budget.revision + 1 });
+          await bumpRevision(tx, budget);
           return created;
         });
         return { id: chapter.id };
@@ -3154,9 +3210,7 @@ export function createTenantDb(tenantId: string) {
             utilidad: budget.aiuUtilidadPct,
             iva: budget.ivaUtilidadPct,
           });
-          await tx.orm.public.ProjectBudget
-            .where({ id: budget.id })
-            .update({ revision: budget.revision + 1 });
+          await bumpRevision(tx, budget);
           return item;
         });
         return { id: created.id };
@@ -3329,9 +3383,7 @@ export function createTenantDb(tenantId: string) {
             utilidad: budget.aiuUtilidadPct,
             iva: budget.ivaUtilidadPct,
           });
-          await tx.orm.public.ProjectBudget
-            .where({ id: budget.id })
-            .update({ revision: budget.revision + 1 });
+          await bumpRevision(tx, budget);
           return item;
         });
         return { id: created.id };
@@ -3361,12 +3413,11 @@ export function createTenantDb(tenantId: string) {
           return;
         }
         await db.transaction(async (tx) => {
-          await tx.orm.public.ProjectBudget.where({ id: budget.id }).update({
+          await bumpRevision(tx, budget, {
             aiuAdminPct: config.adminPct,
             aiuImprevPct: config.imprevPct,
             aiuUtilidadPct: config.utilidadPct,
             ivaUtilidadPct: config.ivaUtilidadPct,
-            revision: budget.revision + 1,
           });
           await recalcBudgetTotals(tx, budget.id, {
             admin: config.adminPct,
@@ -3397,9 +3448,7 @@ export function createTenantDb(tenantId: string) {
         assertRevision(budget, expectedRevision);
         const action = isLocked ? "LOCK" : "UNLOCK";
         await db.transaction(async (tx) => {
-          await tx.orm.public.ProjectBudget
-            .where({ id: budget.id })
-            .update({ isLocked, revision: budget.revision + 1 });
+          await bumpRevision(tx, budget, { isLocked });
           await tx.orm.public.BudgetLockEvent.create({
             tenantId,
             budgetId: budget.id,
@@ -3446,9 +3495,7 @@ export function createTenantDb(tenantId: string) {
             utilidad: budget.aiuUtilidadPct,
             iva: budget.ivaUtilidadPct,
           });
-          await tx.orm.public.ProjectBudget
-            .where({ id: budget.id })
-            .update({ revision: budget.revision + 1 });
+          await bumpRevision(tx, budget);
         });
       },
 
@@ -3494,9 +3541,7 @@ export function createTenantDb(tenantId: string) {
             utilidad: budget.aiuUtilidadPct,
             iva: budget.ivaUtilidadPct,
           });
-          await tx.orm.public.ProjectBudget
-            .where({ id: budget.id })
-            .update({ revision: budget.revision + 1 });
+          await bumpRevision(tx, budget);
         });
       },
 
@@ -3538,9 +3583,7 @@ export function createTenantDb(tenantId: string) {
               name: input.name,
               description: input.description ?? null,
             });
-          await tx.orm.public.ProjectBudget
-            .where({ id: budget.id })
-            .update({ revision: budget.revision + 1 });
+          await bumpRevision(tx, budget);
         });
       },
 
@@ -3603,9 +3646,7 @@ export function createTenantDb(tenantId: string) {
             utilidad: budget.aiuUtilidadPct,
             iva: budget.ivaUtilidadPct,
           });
-          await tx.orm.public.ProjectBudget
-            .where({ id: budget.id })
-            .update({ revision: budget.revision + 1 });
+          await bumpRevision(tx, budget);
         });
       },
 
@@ -3729,6 +3770,7 @@ export function createTenantDb(tenantId: string) {
           throw new Error("Presupuesto no encontrado en este negocio.");
         }
         const created = await db.transaction(async (tx) => {
+          await lockRevision(tx, budget);
           const direct = await sumBudgetDirect(tx, budget.id);
           const totals = calculateBudgetTotals(
             direct,
@@ -3861,6 +3903,11 @@ export function createTenantDb(tenantId: string) {
           if (wastePct < BigInt(0)) {
             throw new Error("El desperdicio no puede ser negativo.");
           }
+          // Mismo tope que el validador de la action (WASTE_PCT_MAX = 100 %);
+          // la capa de datos no confía en que todo llamador valide.
+          if (wastePct > BigInt(1_000_000)) {
+            throw new Error("El desperdicio no puede superar el 100 %.");
+          }
           updateData.wastePct = wastePct;
         }
 
@@ -3910,11 +3957,7 @@ export function createTenantDb(tenantId: string) {
             utilidad: budget.aiuUtilidadPct,
             iva: budget.ivaUtilidadPct,
           });
-          await tx.orm.public.ProjectBudget
-            .where({ id: budget.id })
-            .update({ revision: budget.revision + 1 });
-
-          return budget.revision + 1;
+          return bumpRevision(tx, budget);
         });
 
         return { revision };

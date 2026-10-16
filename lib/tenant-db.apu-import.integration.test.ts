@@ -307,6 +307,53 @@ describe.skipIf(!enabled)("budgets.importActivityFromCatalog / updateResource (i
     expect(M(unchanged.wastePct)).toBe(M(0));
   });
 
+  test("updateResource rechaza desperdicio mayor a 100 %", async () => {
+    const cement = (await resourcesOf(importedItemId)).find((r) => r.sourceItemId === cementId)!;
+    await expect(
+      dbA.budgets.updateResource(projectId, cement.id, { wastePct: M(1_000_001) }),
+    ).rejects.toThrow("El desperdicio no puede superar el 100 %.");
+  });
+
+  test("concurrencia: dos ediciones sobre la misma revisión, solo una gana", async () => {
+    const before = await budgetRow();
+    const [cement, labor] = await (async () => {
+      const rs = await resourcesOf(importedItemId);
+      return [
+        rs.find((r) => r.sourceItemId === cementId)!,
+        rs.find((r) => r.sourceItemId === laborId)!,
+      ];
+    })();
+
+    const results = await Promise.allSettled([
+      dbA.budgets.updateResource(projectId, cement.id, { wastePct: M(50_000) }, before.revision),
+      dbA.budgets.updateResource(projectId, labor.id, { wastePct: M(50_000) }, before.revision),
+    ]);
+    const ok = results.filter((r) => r.status === "fulfilled");
+    const failed = results.filter((r) => r.status === "rejected");
+    expect(ok).toHaveLength(1);
+    expect(failed).toHaveLength(1);
+    expect(String((failed[0] as PromiseRejectedResult).reason)).toContain("STALE_REVISION");
+
+    // La perdedora se revirtió entera: exactamente una línea cambió.
+    const changed = (await resourcesOf(importedItemId)).filter(
+      (r) => M(r.wastePct) === M(50_000),
+    );
+    expect(changed).toHaveLength(1);
+    expect((await budgetRow()).revision).toBe(before.revision + 1);
+
+    // Restaura el estado para las pruebas siguientes.
+    const current = await budgetRow();
+    await dbA.budgets.updateResource(projectId, changed[0].id, { wastePct: M(0) }, current.revision);
+  });
+
+  test("el APU se devuelve en orden estable: tipo y luego nombre", async () => {
+    const tree = await dbA.budgets.get(projectId);
+    const item = tree!.chapters
+      .flatMap((chapter) => chapter.items)
+      .find((it) => it.id === importedItemId)!;
+    expect(item.resources.map((r) => r.type)).toEqual(["MATERIAL", "LABOR"]);
+  });
+
   test("presupuesto bloqueado: no se importa ni se edita", async () => {
     const cement = (await resourcesOf(importedItemId)).find((r) => r.sourceItemId === cementId)!;
     await dbA.budgets.setLocked(projectId, true);
