@@ -27,6 +27,40 @@ const IDLE: Idle = { status: "idle" };
 // que realmente maneja el hook (resultado del servidor o el Idle inicial).
 type BoundAction<R> = (prev: R | Idle, formData: FormData) => Promise<R | Idle>;
 
+function joinPlace(address: string | null, city: string | null): string | null {
+  const parts = [address, city].filter((part): part is string => Boolean(part?.trim()));
+  return parts.length ? parts.join(", ") : null;
+}
+
+/** Bloque de una parte del informe (constructora, cliente, obra). */
+function PartyBlock({
+  title,
+  lines,
+  empty,
+}: {
+  title: string;
+  lines: (string | null)[];
+  empty: string;
+}) {
+  const filled = lines.filter((line): line is string => Boolean(line?.trim()));
+  return (
+    <div className="rounded-md border p-3 text-sm">
+      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{title}</div>
+      {filled.length ? (
+        <div className="mt-1 space-y-0.5">
+          {filled.map((line, index) => (
+            <div key={index} className={index === 0 ? "font-medium" : "text-muted-foreground"}>
+              {line}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-1 text-xs text-muted-foreground">{empty}</p>
+      )}
+    </div>
+  );
+}
+
 export function ReportsWorkspace() {
   const params = useParams<{ tenant: string; projectId: string }>();
   const router = useRouter();
@@ -158,6 +192,38 @@ export function ReportsWorkspace() {
                 </p>
               </div>
               <Badge variant="outline">INFORME CERO — LÍNEA BASE</Badge>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              <PartyBlock
+                title="Constructora"
+                lines={[
+                  informeCero.constructorName,
+                  informeCero.constructorNit ? `NIT ${informeCero.constructorNit}` : null,
+                  joinPlace(informeCero.constructorAddress, informeCero.constructorCity),
+                ]}
+                empty="Completa la razón social y el NIT en Configuración."
+              />
+              <PartyBlock
+                title="Cliente"
+                lines={[
+                  informeCero.clientTaxName || informeCero.clientName,
+                  informeCero.clientTaxId
+                    ? `NIT ${informeCero.clientTaxId}${informeCero.clientTaxDv ? `-${informeCero.clientTaxDv}` : ""}`
+                    : null,
+                  joinPlace(informeCero.clientAddress, informeCero.clientCity),
+                ]}
+                empty="Completa los datos del cliente en la pestaña Ficha."
+              />
+              <PartyBlock
+                title="Obra"
+                lines={[
+                  joinPlace(informeCero.siteAddress, informeCero.siteCity),
+                  informeCero.siteDepartment,
+                  informeCero.projectLeaderName ? `Líder: ${informeCero.projectLeaderName}` : null,
+                ]}
+                empty="Completa la ubicación en la pestaña Ficha."
+              />
             </div>
 
             <div className="grid gap-4 md:grid-cols-4">

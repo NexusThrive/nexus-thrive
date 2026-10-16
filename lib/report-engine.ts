@@ -223,9 +223,18 @@ export type InformeCeroResource = {
  * No realiza cálculos financieros propios: reutiliza los totales ya calculados
  * y almacenados en el presupuesto (recalculados por el servidor en cada mutación).
  */
+/** Datos de la constructora que emite el informe (del `Tenant`). */
+export type ReportIssuer = {
+  name: string | null;
+  nit: string | null;
+  address: string | null;
+  city: string | null;
+};
+
 export function buildInformeCeroData(
   project: ProjectData,
   budget: ProjectBudgetData | null,
+  issuer: ReportIssuer | null = null,
 ): InformeCeroData {
   const reportDate = new Date().toISOString().split("T")[0];
 
@@ -272,10 +281,10 @@ export function buildInformeCeroData(
     clientCity: header?.clientCity ?? null,
     clientBillingEmail: header?.clientBillingEmail ?? null,
     legalRepName: header?.legalRepName ?? null,
-    constructorName: null, // Se obtiene del tenant si existe
-    constructorNit: null,
-    constructorAddress: null,
-    constructorCity: null,
+    constructorName: issuer?.name ?? null,
+    constructorNit: issuer?.nit ?? null,
+    constructorAddress: issuer?.address ?? null,
+    constructorCity: issuer?.city ?? null,
     projectLeaderName: header?.projectLeaderName ?? null,
     projectLeaderProfessionalId: header?.projectLeaderProfessionalId ?? null,
     supervisorName: header?.supervisorName ?? null,

@@ -40,6 +40,17 @@ export function createReportsDb(tenantId: string) {
           budgetData = await loadBudgetTree(budget);
         }
 
+        const [customer, tenant] = await Promise.all([
+          db.orm.public.Customer
+            .where({ id: project.customerId, tenantId })
+            .select("name")
+            .first(),
+          db.orm.public.Tenant
+            .where({ id: tenantId })
+            .select("name", "legalName", "taxId", "address", "city")
+            .first(),
+        ]);
+
         // Cargar header del proyecto (no tiene tenantId directo, usa projectId)
         const header = await db.orm.public.ProjectHeader
           .where({ projectId })
@@ -53,7 +64,7 @@ export function createReportsDb(tenantId: string) {
           status: project.status,
           createdAt: project.createdAt.toString(),
           updatedAt: project.updatedAt.toString(),
-          customerName: "", // Se obtendría del Customer relacionado
+          customerName: customer?.name ?? "",
           header: header ? {
             clientTaxName: header.clientTaxName,
             clientTaxId: header.clientTaxId,
@@ -76,7 +87,14 @@ export function createReportsDb(tenantId: string) {
         };
 
         const { buildInformeCeroData } = await import("@/lib/report-engine");
-        return buildInformeCeroData(projectData, budgetData);
+        return buildInformeCeroData(projectData, budgetData, tenant
+          ? {
+              name: tenant.legalName?.trim() || tenant.name,
+              nit: tenant.taxId ?? null,
+              address: tenant.address ?? null,
+              city: tenant.city ?? null,
+            }
+          : null);
       },
 
       /**
