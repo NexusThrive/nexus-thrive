@@ -1,5 +1,6 @@
 "use client";
 
+import { apuImageUrl } from "@/lib/apu-images";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Boxes, Check } from "lucide-react";
@@ -122,18 +123,29 @@ export default function ApuEditorModal({
 
   const quantity = useMemo(() => BigInt(item.quantity), [item.quantity]);
 
-  // Agrupa los recursos por bloque, respetando el orden canónico de categorías.
-  const groups = useMemo(
-    () =>
-      APU_ITEM_CATEGORIES.map((category) => ({
-        value: category.value,
-        label: category.label,
-        resources: item.resources.filter(
-          (resource) => RESOURCE_TO_CATEGORY[resource.type] === category.value,
-        ),
-      })).filter((group) => group.resources.length > 0),
-    [item.resources],
-  );
+  // Agrupa por la sección del APU del catálogo, en su orden. Los recursos
+  // sin sección (partidas creadas a mano) se agrupan por su tipo.
+  const groups = useMemo(() => {
+    const result: {
+      key: string;
+      label: string;
+      category: ApuItemCategoryValue;
+      resources: typeof item.resources;
+    }[] = [];
+    for (const resource of item.resources) {
+      const category = RESOURCE_TO_CATEGORY[resource.type];
+      const label =
+        (resource.section ?? "").replace(/:\s*$/, "") ||
+        (APU_ITEM_CATEGORIES.find((entry) => entry.value === category)?.label ?? "Otros");
+      let group = result.find((entry) => entry.label === label);
+      if (!group) {
+        group = { key: `${result.length}-${label}`, label, category, resources: [] };
+        result.push(group);
+      }
+      group.resources.push(resource);
+    }
+    return result;
+  }, [item.resources]);
 
   // Vista previa en vivo del costo directo (Σ de líneas) y del total partida.
   const preview = useMemo(() => {
@@ -263,9 +275,10 @@ export default function ApuEditorModal({
       ) : (
         <div className="mt-3 space-y-4">
           {groups.map((group) => (
-            <section key={group.value}>
+            <section key={group.key}>
               <div className="mb-1.5 flex items-center gap-2">
-                <ApuCategoryBadge category={group.value} />
+                <ApuCategoryBadge category={group.category} />
+                <span className="text-xs font-medium text-foreground/80">{group.label}</span>
                 <span className="text-xs text-muted-foreground">
                   {group.resources.length}{" "}
                   {group.resources.length === 1 ? "insumo" : "insumos"}
@@ -304,6 +317,10 @@ export default function ApuEditorModal({
                         >
                           <td className="px-3 py-2">
                             <div className="flex items-center gap-2">
+                              {resource.imageId ? (
+                                // eslint-disable-next-line @next/next/no-img-element -- foto servida por la API propia
+                                <img src={apuImageUrl(resource.imageId)!} alt="" loading="lazy" className="h-8 w-8 shrink-0 rounded border border-border bg-card object-contain" />
+                              ) : null}
                               <span className="truncate text-foreground">
                                 {resource.name}
                               </span>

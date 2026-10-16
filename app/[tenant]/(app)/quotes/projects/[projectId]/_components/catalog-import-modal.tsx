@@ -1,5 +1,6 @@
 "use client";
 
+import { apuImageUrl } from "@/lib/apu-images";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Lock, Search, Snowflake, X } from "lucide-react";
@@ -10,13 +11,12 @@ import {
   APU_UNITS,
   formatApuUnit,
 } from "@/lib/apu-engine";
-import { formatCurrency, formatMoneyMicro, toNumber } from "@/lib/format";
+import { formatCurrency, toNumber } from "@/lib/format";
 import type {
   ApuActivityDetail,
   ApuActivityRow,
 } from "@/lib/tenant-db";
 import Modal from "../../../_components/modal";
-import { ApuCategoryBadge } from "../../../_components/quote-badges";
 import {
   getCatalogActivityDetailAction,
   importActivityFromCatalogAction,
@@ -134,11 +134,21 @@ export default function CatalogImportModal({
     if (!detail) {
       return [];
     }
-    return APU_ITEM_CATEGORIES.map((category) => ({
-      value: category.value,
-      label: category.label,
-      rows: detail.compositions.filter((row) => row.category === category.value),
-    })).filter((group) => group.rows.length > 0);
+    // Por sección de la línea (como en el APU del catálogo); las líneas sin
+    // sección se agrupan por la categoría del insumo.
+    const groups: { key: string; label: string; rows: typeof detail.compositions }[] = [];
+    for (const row of detail.compositions) {
+      const label =
+        (row.section ?? "").replace(/:\s*$/, "") ||
+        (APU_ITEM_CATEGORIES.find((category) => category.value === row.category)?.label ?? "Otros");
+      let group = groups.find((entry) => entry.label === label);
+      if (!group) {
+        group = { key: `${groups.length}-${label}`, label, rows: [] };
+        groups.push(group);
+      }
+      group.rows.push(row);
+    }
+    return groups;
   }, [detail]);
 
   return (
@@ -238,7 +248,7 @@ export default function CatalogImportModal({
                         <div className="flex items-center gap-3 text-xs text-muted-foreground">
                           <span>{formatApuUnit(activity.unit)}</span>
                           <span className="font-mono tabular-nums">
-                            {formatMoneyMicro(activity.unitCost)}
+                            {formatCurrency(activity.unitCost)}
                           </span>
                           <span>
                             {activity.itemCount}{" "}
@@ -306,7 +316,7 @@ export default function CatalogImportModal({
                   <div className="text-right">
                     <p className="text-xs text-muted-foreground">Costo unit.</p>
                     <p className="font-mono text-sm font-medium tabular-nums text-accent-text">
-                      {formatMoneyMicro(detail.unitCost)}
+                      {formatCurrency(detail.unitCost)}
                     </p>
                   </div>
                 </div>
@@ -324,9 +334,9 @@ export default function CatalogImportModal({
 
               <div className="max-h-[18rem] space-y-3 overflow-y-auto">
                 {grouped.map((group) => (
-                  <div key={group.value}>
-                    <div className="mb-1.5 flex items-center gap-2">
-                      <ApuCategoryBadge category={group.value} />
+                  <div key={group.key}>
+                    <div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                      {group.label}
                     </div>
                     <ul className="divide-y divide-border/60 rounded-lg border border-border">
                       {group.rows.map((row) => (
@@ -334,18 +344,24 @@ export default function CatalogImportModal({
                           key={row.id}
                           className="flex items-center justify-between gap-3 px-3 py-2"
                         >
-                          <div className="min-w-0">
-                            <p className="truncate text-xs text-foreground">
-                              {row.itemName}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              Rend. {toNumber(row.consumption)} · desp.{" "}
-                              {toNumber(row.wastePercent)}% ·{" "}
-                              {formatCurrency(row.unitPrice)}
-                            </p>
+                          <div className="flex min-w-0 items-center gap-2">
+                            {row.imageId ? (
+                              // eslint-disable-next-line @next/next/no-img-element -- foto servida por la API propia
+                              <img src={apuImageUrl(row.imageId)!} alt="" loading="lazy" className="h-8 w-8 shrink-0 rounded border border-border bg-card object-contain" />
+                            ) : null}
+                            <div className="min-w-0">
+                              <p className="truncate text-xs text-foreground">
+                                {row.itemName}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {row.lineUnit?.trim().startsWith("%")
+                                  ? `${row.lineQuantity ?? ""} % sobre ${formatCurrency(row.unitPrice)}`
+                                  : `Rend. ${toNumber(row.consumption)} · desp. ${toNumber(row.wastePercent)}% · ${formatCurrency(row.unitPrice)}`}
+                              </p>
+                            </div>
                           </div>
                           <span className="shrink-0 font-mono text-xs tabular-nums text-foreground/80">
-                            {formatMoneyMicro(row.cost)}
+                            {formatCurrency(row.cost)}
                           </span>
                         </li>
                       ))}
