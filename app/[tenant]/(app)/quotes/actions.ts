@@ -1,5 +1,6 @@
 "use server";
 
+import { readImageUpload } from "@/lib/image-upload";
 import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
@@ -164,15 +165,21 @@ export async function createApuItemAction(
   if (!validation.ok) {
     return { status: "error", errors: validation.errors, values: validation.values };
   }
+  const photo = await readImageUpload(formData, "imageFile");
+  if (photo.status === "error") {
+    return { status: "error", errors: { imageUrl: photo.message }, values: validation.values };
+  }
 
   try {
+    const imageId =
+      photo.status === "ok" ? await tenantDb.apu.storeImage(photo.data, photo.mimeType) : undefined;
     await tenantDb.apu.createItem({
+      imageId,
       code: validation.values.code || undefined,
       name: validation.values.name,
       unit: validation.values.unit,
       category: validation.values.category as ApuItemCategoryValue,
       unitPrice: validation.values.unitPrice,
-      imageUrl: validation.values.imageUrl || undefined,
     });
   } catch (error) {
     if (isUniqueViolation(error)) {
@@ -208,15 +215,22 @@ export async function updateApuItemAction(
   if (!validation.ok) {
     return { status: "error", errors: validation.errors, values: validation.values };
   }
+  const photo = await readImageUpload(formData, "imageFile");
+  if (photo.status === "error") {
+    return { status: "error", errors: { imageUrl: photo.message }, values: validation.values };
+  }
 
   try {
+    if (photo.status === "ok") {
+      const imageId = await tenantDb.apu.storeImage(photo.data, photo.mimeType);
+      await tenantDb.apu.updateItem(itemId, { imageId });
+    }
     await tenantDb.apu.updateItem(itemId, {
       code: validation.values.code || undefined,
       name: validation.values.name,
       unit: validation.values.unit,
       category: validation.values.category as ApuItemCategoryValue,
       unitPrice: validation.values.unitPrice,
-      imageUrl: validation.values.imageUrl || undefined,
     });
   } catch (error) {
     if (isUniqueViolation(error)) {

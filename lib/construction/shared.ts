@@ -58,8 +58,22 @@ export type ApuActivityListInput = {
   unit?: string;
   /** `true` = vigentes; `false` = archivadas; omitido = todas. */
   active?: boolean;
+  /** Capítulo del catálogo (incluye sus subcapítulos). */
+  chapterCode?: string;
+  /** Actividades de obra (por defecto) o APU auxiliares. */
+  kind?: "activity" | "auxiliary";
   page?: number;
   limit?: number;
+};
+
+/** Capítulo del catálogo APU con su número de actividades. */
+export type ApuChapterRow = {
+  id: string;
+  code: string;
+  parentCode: string | null;
+  name: string;
+  order: number;
+  activityCount: number;
 };
 
 /** Fila serializable del banco de insumos (Decimal → string, Temporal → ISO). */
@@ -72,6 +86,8 @@ export type ApuItemRow = {
   unitPrice: string;
   active: boolean;
   imageUrl: string | null;
+  /** Foto guardada en el sistema (ver /api/apu-images/[id]). */
+  imageId: string | null;
   updatedAt: string;
 };
 
@@ -84,6 +100,11 @@ export type ApuActivityRow = {
   description: string | null;
   /** Σ componentes (precios + rendimientos actuales del banco). */
   unitCost: string;
+  /** Costo directo declarado en el archivo importado, si vino de uno. */
+  referenceUnitPrice: string | null;
+  chapterCode: string | null;
+  chapterName: string | null;
+  isAuxiliary: boolean;
   itemCount: number;
   active: boolean;
   updatedAt: string;
@@ -1013,12 +1034,25 @@ export async function getApuActivityDetail(
     };
   });
 
+  const chapter = activity.chapterId
+    ? await db.orm.public.ApuChapter.where({ id: activity.chapterId, tenantId })
+        .select("code", "name")
+        .first()
+    : null;
+
   return {
     id: activity.id,
     code: activity.code,
     name: activity.name,
     unit: activity.unit,
     description: activity.description,
+    referenceUnitPrice:
+      activity.referenceUnitPrice === null || activity.referenceUnitPrice === undefined
+        ? null
+        : String(activity.referenceUnitPrice),
+    chapterCode: chapter?.code ?? null,
+    chapterName: chapter?.name ?? null,
+    isAuxiliary: activity.isAuxiliary,
     unitCost: activityUnitCost(rows),
     itemCount: rows.length,
     active: activity.active,

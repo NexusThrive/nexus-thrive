@@ -1,5 +1,6 @@
 "use client";
 
+import { apuImageUrl } from "@/lib/apu-images";
 import { useEffect, useState, useTransition } from "react";
 import { useActionState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -60,13 +61,17 @@ function ItemForm({
   tenantSlug,
   itemId,
   defaults,
+  imageId = null,
   onDone,
 }: {
   tenantSlug: string;
   itemId?: string;
   defaults: ApuItemFormValues;
+  /** Foto actual del insumo guardada en el sistema. */
+  imageId?: string | null;
   onDone: () => void;
 }) {
+  const [photoPreview, setPhotoPreview] = useState<string | null>(apuImageUrl(imageId));
   const action = itemId ? updateApuItemAction : createApuItemAction;
   const [state, formAction, isPending] = useActionState(action, INITIAL_ITEM_STATE);
   const router = useRouter();
@@ -189,24 +194,40 @@ function ItemForm({
         </label>
       </div>
 
-      <label className="block">
-        <span className="mb-1 block text-sm font-medium text-foreground/80">
-          Imagen (URL https, opcional)
-        </span>
-        <input
-          name="imageUrl"
-          type="url"
-          inputMode="url"
-          defaultValue={defaults.imageUrl ?? ""}
-          placeholder="https://…/insumo.jpg"
-          className={inputClass}
-        />
+      <div className="flex items-start gap-3">
+        {photoPreview ? (
+          // eslint-disable-next-line @next/next/no-img-element -- vista previa local o foto servida por la API propia
+          <img src={photoPreview} alt="" className="h-16 w-16 shrink-0 rounded-md border border-border bg-card object-contain" />
+        ) : (
+          <span aria-hidden="true" className="h-16 w-16 shrink-0 rounded-md border border-dashed border-border" />
+        )}
+        <label htmlFor={`item-photo-${itemId ?? "new"}`} className="block min-w-0 flex-1">
+          <span className="mb-1 block text-sm font-medium text-foreground/80">
+            Foto del insumo (PNG, JPG, GIF o WEBP, máx. 2 MB)
+          </span>
+          <input
+            id={`item-photo-${itemId ?? "new"}`}
+            name="imageFile"
+            type="file"
+            accept="image/png,image/jpeg,image/gif,image/webp"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              setPhotoPreview(file ? URL.createObjectURL(file) : apuImageUrl(imageId));
+            }}
+            className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-lg file:border file:border-border file:bg-card file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-foreground/80 hover:file:bg-muted"
+          />
+          <span className="mt-1 block text-xs text-muted-foreground">
+            La foto se guarda en el sistema. Si no eliges una, se conserva la actual.
+          </span>
+        </label>
+      </div>
+      <div>
         {fieldError(state.errors, "imageUrl") ? (
           <span className="mt-1 block text-xs text-destructive">
             {fieldError(state.errors, "imageUrl")}
           </span>
         ) : null}
-      </label>
+      </div>
 
       <div className="flex justify-end gap-2 pt-1">
         <button
@@ -511,7 +532,7 @@ export default function ItemsBank({
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="overflow-x-auto rounded-lg border border-border bg-card">
         <table className="min-w-full divide-y divide-border text-sm">
           <thead className="bg-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
             <tr>
@@ -539,8 +560,16 @@ export default function ItemsBank({
                   <td className="px-4 py-3 font-mono text-xs font-medium text-accent-text">
                     {row.code ?? "—"}
                   </td>
-                  <td className="px-4 py-3 font-medium text-foreground">
-                    {row.name}
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      {row.imageId ? (
+                        // eslint-disable-next-line @next/next/no-img-element -- foto servida por la API propia, con caché
+                        <img src={apuImageUrl(row.imageId)!} alt="" loading="lazy" className="h-9 w-9 shrink-0 rounded-md border border-border bg-card object-contain" />
+                      ) : (
+                        <span aria-hidden="true" className="h-9 w-9 shrink-0 rounded-md border border-dashed border-border" />
+                      )}
+                      <span className="font-medium text-foreground">{row.name}</span>
+                    </div>
                   </td>
                   <td className="px-4 py-3">
                     <ApuCategoryBadge category={row.category} />
@@ -644,6 +673,7 @@ export default function ItemsBank({
               unitPrice: modal.row.unitPrice,
               imageUrl: modal.row.imageUrl ?? "",
             }}
+            imageId={modal.row.imageId}
             onDone={() => setModal(null)}
           />
         ) : null}

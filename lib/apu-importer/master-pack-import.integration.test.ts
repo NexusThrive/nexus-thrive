@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
+import { createTenantDb } from "@/lib/tenant-db";
 import { buildMasterPackPlan } from "./master-pack-plan";
 import { executeMasterPackImport } from "./master-pack-import";
 import { samplePack } from "./__fixtures__/sample-pack";
@@ -131,5 +132,41 @@ describe.skipIf(!TEST_URL)("executeMasterPackImport (integración)", () => {
     });
     await run();
     expect(await db.orm.public.ApuItem.where({ id: extra.id }).first()).not.toBeNull();
+  });
+
+  test("editar una actividad importada conserva sección, orden y precio de cada línea", async () => {
+    const tenantDb = createTenantDb(tenantId);
+    const detail = await tenantDb.apu.getActivity(legacyActivityId);
+    const percentLine = detail!.compositions.find((c) => c.lineUnit?.startsWith("%"))!;
+    const costBefore = detail!.unitCost;
+
+    // El usuario solo cambia el desperdicio del cemento (primera línea).
+    const rows = detail!.compositions.map((c, index) => ({
+      itemId: c.itemId,
+      consumption: c.consumption,
+      wastePercent: index === 0 ? "5" : c.wastePercent,
+    }));
+    const updated = await tenantDb.apu.updateActivity(legacyActivityId, {
+      name: detail!.name,
+      unit: detail!.unit,
+      compositions: rows,
+    });
+    const percentAfter = updated!.compositions.find((c) => c.id === percentLine.id)!;
+    expect(percentAfter.section).toBe(percentLine.section);
+    expect(percentAfter.unitPrice).toBe(percentLine.unitPrice);
+    expect(updated!.compositions.map((c) => c.order)).toEqual(detail!.compositions.map((c) => c.order));
+    expect(Number(updated!.unitCost)).toBeGreaterThan(Number(costBefore));
+  });
+
+  test("cambiar el precio de un insumo se propaga a sus líneas y queda en el historial", async () => {
+    const tenantDb = createTenantDb(tenantId);
+    const before = await db.orm.public.ApuItem.where({ id: legacyItemId }).first();
+    await tenantDb.apu.updateItem(legacyItemId, { unitPrice: "650" });
+    const lines = await db.orm.public.ApuActivityComposition.where({ itemId: legacyItemId, origin: "IMPORT" }).all();
+    expect(lines.length).toBeGreaterThan(0);
+    expect(lines.every((l) => String(l.lineUnitPrice) === "650")).toBe(true);
+    const history = await db.orm.public.ApuItemPriceHistory.where({ itemId: legacyItemId, source: "MANUAL" }).all();
+    expect(history.map((h) => String(h.price))).toEqual(["650"]);
+    expect(String(before!.unitPrice)).not.toBe("650");
   });
 });

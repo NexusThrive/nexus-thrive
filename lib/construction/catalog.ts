@@ -3,6 +3,7 @@
  * Extraído de `lib/tenant-db.ts`; `createTenantDb` lo compone. Todo
  * acceso va acotado al `tenantId` recibido.
  */
+import { createHash } from "node:crypto";
 import {
   or,
 } from "@prisma/orm-postgres/orm-client";
@@ -18,6 +19,7 @@ import {
 import {
   type ApuActivityDetail,
   type ApuActivityListInput,
+  type ApuChapterRow,
   type ApuActivityRow,
   type ApuItemRow,
   type ApuListInput,
@@ -26,6 +28,16 @@ import {
   escapeLike,
   getApuActivityDetail,
 } from "./shared";
+
+/** Igualdad de decimales en texto ("30000" = "30000.00"). */
+function sameDecimalText(a: unknown, b: unknown): boolean {
+  const norm = (value: unknown) => {
+    const [i, f = ""] = String(value).split(".");
+    const frac = f.replace(/0+$/, "");
+    return `${i.replace(/^0+(?=\d)/, "")}${frac ? `.${frac}` : ""}`;
+  };
+  return norm(a) === norm(b);
+}
 
 export function createCatalogDb(tenantId: string) {
   // --- APU p99 cache (closure-scoped, avoids 'this') ---
@@ -84,6 +96,7 @@ export function createCatalogDb(tenantId: string) {
             unitPrice: String(row.unitPrice),
             active: row.active,
             imageUrl: row.imageUrl,
+            imageId: row.imageId ?? null,
             updatedAt: String(row.updatedAt),
           })),
           total,
@@ -119,17 +132,114 @@ export function createCatalogDb(tenantId: string) {
         return res;
       },
 
+      /**
+       * Actualiza un insumo. Si cambia el precio, el cambio llega a las líneas
+       * de APU importadas que usaban el precio anterior (actualización masiva:
+       * "cambiar el cemento y que se recalculen los APU") y queda en el
+       * historial. Las líneas porcentuales no se tocan: su precio es una base.
+       */
       updateItem: async function(id: string, data: Record<string, unknown>) {
-        const res = await db.orm.public.ApuItem.where({ id, tenantId }).update(data);
+        const res = await db.transaction(async (tx) => {
+          const before = await tx.orm.public.ApuItem.where({ id, tenantId })
+            .select("unitPrice")
+            .first();
+          const updated = await tx.orm.public.ApuItem.where({ id, tenantId }).update(data as never);
+          const newPrice = data.unitPrice === undefined ? null : String(data.unitPrice);
+          if (before && updated && newPrice !== null && !sameDecimalText(before.unitPrice, newPrice)) {
+            const lines = await tx.orm.public.ApuActivityComposition.where({ itemId: id }).all();
+            for (const line of lines) {
+              const unit = line.lineUnit ?? "";
+              if (
+                line.lineUnitPrice !== null &&
+                !unit.trim().startsWith("%") &&
+                sameDecimalText(line.lineUnitPrice, before.unitPrice)
+              ) {
+                await tx.orm.public.ApuActivityComposition.where({ id: line.id }).update({
+                  lineUnitPrice: newPrice,
+                });
+              }
+            }
+            await tx.orm.public.ApuItemPriceHistory.createAndCount([
+              { tenantId, itemId: id, price: String(before.unitPrice), source: "ANTERIOR" },
+              { tenantId, itemId: id, price: newPrice, source: "MANUAL" },
+            ]);
+          }
+          return updated;
+        });
         invalidateP99();
         return res;
       },
 
-      /** Actividades con costo unitario calculado (precios actuales). */
+      /**
+       * Guarda una foto de insumo en el sistema (deduplicada por contenido) y
+       * devuelve su id. La misma imagen subida dos veces no se duplica.
+       */
+      storeImage: async (data: Uint8Array, mimeType: string): Promise<string> => {
+        const sha256 = createHash("sha256").update(data).digest("hex");
+        const existing = await db.orm.public.ApuImage.where({ tenantId, sha256 }).select("id").first();
+        if (existing) return existing.id;
+        const created = await db.orm.public.ApuImage.select("id").create({
+          tenantId,
+          sha256,
+          mimeType,
+          byteSize: data.byteLength,
+          data,
+        });
+        return created.id;
+      },
+
+      /**
+       * Todos los insumos vigentes, en forma compacta, para el selector de la
+       * composición (el catálogo real tiene miles: no se pagina ahí).
+       */
+      listAllItems: async (): Promise<ApuItemRow[]> => {
+        const rows = await db.orm.public.ApuItem.where({ tenantId, active: true })
+          .orderBy((item) => item.name.asc())
+          .all();
+        return rows.map((row) => ({
+          id: row.id,
+          code: row.code,
+          name: row.name,
+          unit: row.unit,
+          category: row.category,
+          unitPrice: String(row.unitPrice),
+          active: row.active,
+          imageUrl: row.imageUrl,
+          imageId: row.imageId ?? null,
+          updatedAt: String(row.updatedAt),
+        }));
+      },
+
+      /** Capítulos del catálogo en el orden del archivo, con su conteo. */
+      listChapters: async (): Promise<ApuChapterRow[]> => {
+        const [chapters, activities] = await Promise.all([
+          db.orm.public.ApuChapter.where({ tenantId })
+            .orderBy((chapter) => chapter.order.asc())
+            .all(),
+          db.orm.public.ApuActivity.where({ tenantId, isAuxiliary: false })
+            .select("chapterId")
+            .all(),
+        ]);
+        const counts = new Map<string, number>();
+        for (const activity of activities) {
+          if (activity.chapterId) counts.set(activity.chapterId, (counts.get(activity.chapterId) ?? 0) + 1);
+        }
+        return chapters.map((chapter) => ({
+          id: chapter.id,
+          code: chapter.code,
+          parentCode: chapter.parentCode ?? null,
+          name: chapter.name,
+          order: chapter.order,
+          activityCount: counts.get(chapter.id) ?? 0,
+        }));
+      },
+
       listActivities: async ({
         q,
         unit,
         active,
+        chapterCode,
+        kind = "activity",
         page = 1,
         limit = 200,
       }: ApuActivityListInput = {}): Promise<{
@@ -156,9 +266,22 @@ export function createCatalogDb(tenantId: string) {
         if (typeof active === "boolean") {
           filtered = filtered.where((activity) => activity.active.eq(active));
         }
+        filtered = filtered.where({ isAuxiliary: kind === "auxiliary" });
+        const chapters = await db.orm.public.ApuChapter.where({ tenantId })
+          .select("id", "code", "name")
+          .all();
+        const chapterById = new Map(chapters.map((chapter) => [chapter.id, chapter]));
+        if (chapterCode) {
+          // El capítulo y sus subcapítulos ("22" incluye "22.63").
+          const ids = chapters
+            .filter((chapter) => chapter.code === chapterCode || chapter.code.startsWith(`${chapterCode}.`))
+            .map((chapter) => chapter.id);
+          filtered = filtered.where((activity) => activity.chapterId.in(ids.length ? ids : ["-"]));
+        }
 
         const [rows, { total }] = await Promise.all([
           filtered
+            .orderBy((activity) => activity.sortKey.asc())
             .orderBy((activity) => activity.name.asc())
             .limit(safeLimit)
             .offset((safePage - 1) * safeLimit)
@@ -199,6 +322,13 @@ export function createCatalogDb(tenantId: string) {
               name: row.name,
               unit: row.unit,
               description: row.description,
+              referenceUnitPrice:
+                row.referenceUnitPrice === null || row.referenceUnitPrice === undefined
+                  ? null
+                  : String(row.referenceUnitPrice),
+              chapterCode: row.chapterId ? (chapterById.get(row.chapterId)?.code ?? null) : null,
+              chapterName: row.chapterId ? (chapterById.get(row.chapterId)?.name ?? null) : null,
+              isAuxiliary: row.isAuxiliary,
               unitCost: activityUnitCost(
                 activityCompositions.map((composition) => ({
                   unitPrice: compositionUnitPrice(composition, composition.item!.unitPrice),
@@ -235,8 +365,9 @@ export function createCatalogDb(tenantId: string) {
             ...fields,
             tenantId,
           });
-          for (const composition of compositions) {
+          for (const [order, composition] of compositions.entries()) {
             await tx.orm.public.ApuActivityComposition.create({
+              order,
               activityId: activity.id,
               itemId: composition.itemId,
               consumption: composition.consumption,
@@ -267,16 +398,43 @@ export function createCatalogDb(tenantId: string) {
           if (!activity) {
             throw new Error("No se encontró la actividad en este negocio.");
           }
-          await tx.orm.public.ApuActivityComposition.where({
-            activityId: id,
-          }).deleteAll();
+          // Cambios incrementales: cada fila del editor se empareja con su
+          // línea existente (mismo insumo, en orden). Las líneas que no se
+          // tocan conservan sección, orden y precio del archivo importado;
+          // borrar todo y recrear perdería esos datos.
+          const existing = await tx.orm.public.ApuActivityComposition
+            .where({ activityId: id })
+            .orderBy((line) => line.order.asc())
+            .all();
+          const unmatched = [...existing];
+          let nextOrder = existing.reduce((max, line) => Math.max(max, line.order), -1) + 1;
           for (const composition of compositions) {
-            await tx.orm.public.ApuActivityComposition.create({
-              activityId: id,
-              itemId: composition.itemId,
-              consumption: composition.consumption,
-              wastePercent: composition.wastePercent,
-            });
+            const index = unmatched.findIndex((line) => line.itemId === composition.itemId);
+            if (index === -1) {
+              await tx.orm.public.ApuActivityComposition.create({
+                activityId: id,
+                itemId: composition.itemId,
+                consumption: composition.consumption,
+                wastePercent: composition.wastePercent,
+                order: nextOrder,
+                origin: "MANUAL",
+              });
+              nextOrder += 1;
+              continue;
+            }
+            const [line] = unmatched.splice(index, 1);
+            if (
+              String(line.consumption) !== composition.consumption ||
+              String(line.wastePercent) !== composition.wastePercent
+            ) {
+              await tx.orm.public.ApuActivityComposition.where({ id: line.id }).update({
+                consumption: composition.consumption,
+                wastePercent: composition.wastePercent,
+              });
+            }
+          }
+          for (const line of unmatched) {
+            await tx.orm.public.ApuActivityComposition.where({ id: line.id }).delete();
           }
           return activity;
         });

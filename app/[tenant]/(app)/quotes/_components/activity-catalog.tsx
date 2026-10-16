@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, Layers, Pencil, Plus, X, AlertTriangle } from "lucide-react";
@@ -8,9 +8,14 @@ import { NLoader } from "@/components/brand/n-loader";
 import { formatCurrency } from "@/lib/format";
 import { APU_UNITS, formatApuUnit } from "@/lib/apu-engine";
 import SearchInput from "@/app/components/tenant/search-input";
+import FilterSelect from "@/app/components/tenant/filter-select";
+import PaginationLinks from "@/app/components/tenant/pagination-links";
+import { apuImageUrl } from "@/lib/apu-images";
 import type {
   ApuActivityDetail,
   ApuActivityRow,
+  ApuChapterRow,
+  ApuCompositionRow,
   ApuItemRow,
 } from "@/lib/tenant-db";
 import {
@@ -44,6 +49,90 @@ type CompRow = { itemId: string; consumption: string; wastePercent: string };
 
 function fieldError(errors?: { [key: string]: string }, field?: string) {
   return errors?.[field ?? ""];
+}
+
+/** Agrupa las líneas por sección en el orden del APU, con subtotal. */
+function groupBySection(lines: ApuCompositionRow[]) {
+  const groups: { key: string; label: string; subtotal: string; lines: ApuCompositionRow[] }[] = [];
+  for (const line of lines) {
+    const label = (line.section ?? "").replace(/:\s*$/, "") || "Sin sección";
+    let group = groups.find((entry) => entry.label === label);
+    if (!group) {
+      group = { key: `${groups.length}-${label}`, label, subtotal: "0", lines: [] };
+      groups.push(group);
+    }
+    group.lines.push(line);
+    group.subtotal = (Number(group.subtotal) + Number(line.cost)).toFixed(2);
+  }
+  return groups;
+}
+
+/**
+ * Selector de insumo con búsqueda: el catálogo real tiene miles de insumos y
+ * un <select> plano no se puede recorrer. Filtra en el cliente y muestra las
+ * primeras 100 coincidencias.
+ */
+function ItemPicker({
+  items,
+  value,
+  onChange,
+  name,
+  ariaLabel,
+  disabled,
+}: {
+  items: ApuItemRow[];
+  value: string;
+  onChange: (itemId: string) => void;
+  name?: string;
+  ariaLabel: string;
+  disabled?: boolean;
+}) {
+  const [query, setQuery] = useState("");
+  const selected = items.find((item) => item.id === value) ?? null;
+  const matches = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    const list = needle
+      ? items.filter(
+          (item) =>
+            item.name.toLowerCase().includes(needle) ||
+            (item.code ?? "").toLowerCase().includes(needle),
+        )
+      : items;
+    const top = list.slice(0, 100);
+    return selected && !top.includes(selected) ? [selected, ...top] : top;
+  }, [items, query, selected]);
+
+  return (
+    <div className="grid gap-1">
+      <input
+        type="search"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        placeholder="Buscar insumo por nombre o código…"
+        aria-label={`${ariaLabel}: buscar`}
+        disabled={disabled}
+        className={inputClass}
+      />
+      <select
+        name={name}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        aria-label={ariaLabel}
+        required
+        disabled={disabled}
+        className={inputClass}
+      >
+        <option value="">
+          {matches.length ? `Selecciona insumo (${matches.length}${matches.length === 100 ? "+" : ""})…` : "Sin coincidencias"}
+        </option>
+        {matches.map((item) => (
+          <option key={item.id} value={item.id}>
+            {item.name} ({formatApuUnit(item.unit)})
+          </option>
+        ))}
+      </select>
+    </div>
+  );
 }
 
 /**
@@ -90,19 +179,12 @@ function CompositionEditor({
           {comps.map((row, index) => (
             <div key={index} className="grid grid-cols-[1fr_auto] gap-2 rounded-lg border border-border bg-muted/60 p-2">
               <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_6.5rem_6.5rem]">
-                <select
+                <ItemPicker
+                  items={items}
                   value={row.itemId}
-                  onChange={(event) => update(index, { itemId: event.target.value })}
-                  aria-label={`Insumo ${index + 1}`}
-                  className={inputClass}
-                >
-                  <option value="">Selecciona insumo…</option>
-                  {items.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.name} ({formatApuUnit(item.unit)})
-                    </option>
-                  ))}
-                </select>
+                  onChange={(itemId) => update(index, { itemId })}
+                  ariaLabel={`Insumo ${index + 1}`}
+                />
                 <input
                   value={row.consumption}
                   onChange={(event) =>
@@ -435,9 +517,11 @@ function CompositionEditorDetail({
   removeAction: (formData: FormData) => void;
   busy: boolean;
 }) {
+  const [pick, setPick] = useState("");
+  const sections = groupBySection(detail.compositions);
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
+    <div className="space-y-3">
+      <div className="flex flex-col gap-2">
         <span className="text-sm font-medium text-foreground/80">
           Composición (insumos de la actividad)
         </span>
@@ -445,19 +529,16 @@ function CompositionEditorDetail({
           <input type="hidden" name="tenantSlug" value={tenantSlug} />
           <input type="hidden" name="activityId" value={detail.id} />
           <div className="flex flex-wrap gap-2">
-            <select
-              name="itemId"
-              required
-              disabled={busy}
-              className="min-w-[16rem] h-9 rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-accent focus:outline-2 focus:outline-accent/30 disabled:opacity-50"
-            >
-              <option value="">Selecciona insumo…</option>
-              {items.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name} ({formatApuUnit(item.unit)})
-                </option>
-              ))}
-            </select>
+            <div className="min-w-0 flex-1 basis-64">
+              <ItemPicker
+                items={items}
+                value={pick}
+                onChange={setPick}
+                name="itemId"
+                ariaLabel="Insumo a agregar"
+                disabled={busy}
+              />
+            </div>
             <input
               name="consumption"
               type="number"
@@ -474,7 +555,7 @@ function CompositionEditorDetail({
               step="0.01"
               min="0"
               max="50"
-              value="0"
+              defaultValue="0"
               placeholder="Desp. %"
               disabled={busy}
               className="w-24 h-9 rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-accent focus:outline-2 focus:outline-accent/30 disabled:opacity-50"
@@ -496,57 +577,76 @@ function CompositionEditorDetail({
           Sin insumos. Agrega al menos uno para poder cotizar esta actividad.
         </p>
       ) : (
-        <div className="space-y-2">
-          {detail.compositions.map((composition) => {
-            const itemP99 = p99Thresholds?.itemConsumption[composition.itemUnit] ?? p99Thresholds?.itemConsumptionP99?.[composition.itemUnit];
-            const itemMedian = p99Thresholds?.itemConsumptionMedian?.[composition.itemUnit];
-            const isConsumptionOutlier =
-              itemP99 &&
-              itemMedian &&
-              parseFloat(composition.consumption) > parseFloat(itemP99) &&
-              parseFloat(composition.consumption) > parseFloat(itemMedian) * 2;
-            return (
-              <form key={composition.id} action={removeAction} className="grid grid-cols-[1fr_auto] gap-2 rounded-lg border border-border bg-muted/60 p-2">
-                <input type="hidden" name="tenantSlug" value={tenantSlug} />
-                <input type="hidden" name="activityId" value={detail.id} />
-                <input type="hidden" name="itemId" value={composition.itemId} />
-                <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_5.5rem] items-center">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-foreground">
-                      {composition.itemName}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      ({formatApuUnit(composition.itemUnit)})
-                    </span>
-                    {isConsumptionOutlier && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-amber/10 px-1.5 py-0.5 text-[10px] font-medium text-amber" title={`Consumo > p99 (${itemP99}) para insumos en ${composition.itemUnit}`}>
-                        <AlertTriangle aria-hidden="true" className="h-2.5 w-2.5" />
-                        Revisar
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-right text-sm text-muted-foreground font-mono">
-                    {formatCurrency(composition.unitPrice)}
-                  </span>
-                  <span className="text-right text-sm text-muted-foreground font-mono">
-                    {composition.consumption}
-                    {isConsumptionOutlier && " ⚠"}
-                  </span>
-                  <span className="text-right text-sm text-muted-foreground font-mono">
-                    {composition.wastePercent}%
-                  </span>
-                </div>
-                <button
-                  type="submit"
-                  disabled={busy}
-                  className="self-start rounded-lg p-2 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
-                  aria-label={`Quitar ${composition.itemName}`}
-                >
-                  <X aria-hidden="true" className="h-4 w-4" />
-                </button>
-              </form>
-            );
-          })}
+        <div className="space-y-3">
+          {sections.map((section) => (
+            <div key={section.key} className="overflow-hidden rounded-lg border border-border">
+              <div className="flex items-center justify-between gap-2 bg-muted px-3 py-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <span>{section.label}</span>
+                <span className="font-mono normal-case tracking-normal">{formatCurrency(section.subtotal)}</span>
+              </div>
+              <div className="divide-y divide-border">
+                {section.lines.map((composition) => {
+                  const itemP99 = p99Thresholds?.itemConsumption[composition.itemUnit] ?? p99Thresholds?.itemConsumptionP99?.[composition.itemUnit];
+                  const itemMedian = p99Thresholds?.itemConsumptionMedian?.[composition.itemUnit];
+                  const isConsumptionOutlier =
+                    itemP99 &&
+                    itemMedian &&
+                    parseFloat(composition.consumption) > parseFloat(itemP99) &&
+                    parseFloat(composition.consumption) > parseFloat(itemMedian) * 2;
+                  const image = apuImageUrl(composition.imageId);
+                  const percent = composition.lineUnit?.trim().startsWith("%");
+                  return (
+                    <form key={composition.id} action={removeAction} className="grid grid-cols-[auto_1fr_auto] items-center gap-3 p-2">
+                      <input type="hidden" name="tenantSlug" value={tenantSlug} />
+                      <input type="hidden" name="activityId" value={detail.id} />
+                      <input type="hidden" name="itemId" value={composition.itemId} />
+                      {image ? (
+                        // eslint-disable-next-line @next/next/no-img-element -- imagen servida por la API propia, con caché
+                        <img src={image} alt="" loading="lazy" className="h-10 w-10 rounded-md border border-border bg-card object-contain" />
+                      ) : (
+                        <span aria-hidden="true" className="h-10 w-10 rounded-md border border-dashed border-border" />
+                      )}
+                      <div className="grid min-w-0 gap-1 sm:grid-cols-[minmax(0,1fr)_7rem_7rem_6rem] sm:items-center">
+                        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
+                          <span className="font-medium text-foreground">{composition.itemName}</span>
+                          <span className="text-xs text-muted-foreground">
+                            ({formatApuUnit(composition.lineUnit || composition.itemUnit)})
+                          </span>
+                          {composition.origin === "MANUAL" && (
+                            <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">manual</span>
+                          )}
+                          {isConsumptionOutlier && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber/10 px-1.5 py-0.5 text-[10px] font-medium text-amber" title={`Consumo > p99 (${itemP99}) para insumos en ${composition.itemUnit}`}>
+                              <AlertTriangle aria-hidden="true" className="h-2.5 w-2.5" />
+                              Revisar
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-sm text-muted-foreground font-mono sm:text-right" title={percent ? "Base sobre la que se aplica el porcentaje" : "Precio unitario"}>
+                          {formatCurrency(composition.unitPrice)}
+                        </span>
+                        <span className="text-sm text-muted-foreground font-mono sm:text-right">
+                          {percent ? `${composition.lineQuantity ?? ""} %` : composition.consumption}
+                          {Number(composition.wastePercent) > 0 ? ` +${composition.wastePercent}%` : ""}
+                        </span>
+                        <span className="text-sm font-medium text-foreground font-mono sm:text-right">
+                          {formatCurrency(composition.cost)}
+                        </span>
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={busy}
+                        className="self-start rounded-lg p-2 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
+                        aria-label={`Quitar ${composition.itemName}`}
+                      >
+                        <X aria-hidden="true" className="h-4 w-4" />
+                      </button>
+                    </form>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       )}
       <p className="text-xs text-muted-foreground">
@@ -564,16 +664,32 @@ function CompositionEditorDetail({
 export default function ActivityCatalog({
   tenantSlug,
   rows,
+  total,
+  page,
+  totalPages,
+  chapters,
+  chapterCode,
+  kind,
   items,
   activityLabel,
   p99Thresholds = null,
 }: {
   tenantSlug: string;
   rows: ApuActivityRow[];
+  total: number;
+  page: number;
+  totalPages: number;
+  chapters: ApuChapterRow[];
+  chapterCode: string;
+  kind: "activity" | "auxiliary";
   items: ApuItemRow[];
   activityLabel: string;
   p99Thresholds?: P99Thresholds | null;
 }) {
+  const chapterOptions = chapters.map((chapter) => ({
+    value: chapter.code,
+    label: `${chapter.parentCode ? "— " : ""}${chapter.code} · ${chapter.name} (${chapter.activityCount})`,
+  }));
   const [modal, setModal] = useState<
     | { type: "create" }
     | { type: "edit"; row: ApuActivityRow }
@@ -591,14 +707,32 @@ export default function ActivityCatalog({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <SearchInput
-          paramKey="aq"
-          pageParam="aqpage"
-          ariaLabel={`Buscar en catálogo de ${activityLabel.toLowerCase()}`}
-          placeholder={`Buscar ${activityLabel.toLowerCase()} o código…`}
-          defaultValue=""
-        />
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+          <SearchInput
+            paramKey="aq"
+            pageParam="aqpage"
+            ariaLabel={`Buscar en catálogo de ${activityLabel.toLowerCase()}`}
+            placeholder={`Buscar ${activityLabel.toLowerCase()} o código…`}
+            defaultValue=""
+          />
+          <FilterSelect
+            paramKey="akind"
+            pageParam="aqpage"
+            allLabel="Actividades de obra"
+            options={[{ value: "auxiliary", label: "APU auxiliares" }]}
+            value={kind === "auxiliary" ? "auxiliary" : ""}
+          />
+          {kind === "activity" && chapterOptions.length > 0 ? (
+            <FilterSelect
+              paramKey="ach"
+              pageParam="aqpage"
+              allLabel="Todos los capítulos"
+              options={chapterOptions}
+              value={chapterCode}
+            />
+          ) : null}
+        </div>
         <button
           type="button"
           onClick={() => setModal({ type: "create" })}
@@ -609,7 +743,7 @@ export default function ActivityCatalog({
         </button>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="overflow-x-auto rounded-lg border border-border bg-card">
         <table className="min-w-full divide-y divide-border text-sm">
           <thead className="bg-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
             <tr>
@@ -640,14 +774,22 @@ export default function ActivityCatalog({
                      <td className="px-4 py-3 font-mono text-xs font-medium text-accent-text">
                        {row.code ?? "—"}
                      </td>
-                     <td className="px-4 py-3 font-medium text-foreground">
-                       {row.name}
+                     <td className="px-4 py-3">
+                       <div className="font-medium text-foreground">{row.name}</div>
+                       {row.chapterName ? (
+                         <div className="text-xs text-muted-foreground">
+                           {row.chapterCode} · {row.chapterName}
+                         </div>
+                       ) : null}
                      </td>
                      <td className="px-4 py-3 text-muted-foreground">
                        {formatApuUnit(row.unit)}
                      </td>
                      <td className="px-4 py-3 text-right font-semibold text-foreground">
-                       <div className="flex items-center justify-end gap-1.5">
+                       <div
+                         className="flex items-center justify-end gap-1.5 whitespace-nowrap"
+                         title={row.referenceUnitPrice ? `Archivo: ${formatCurrency(row.referenceUnitPrice)}` : undefined}
+                       >
                          {formatCurrency(row.unitCost)}
                          {isOutlier && (
                            <span className="inline-flex items-center gap-1 rounded-full bg-amber/10 px-2 py-0.5 text-xs font-medium text-amber" title={`Costo > p99 (${p99}) para actividades en ${row.unit}`}>
@@ -690,6 +832,13 @@ export default function ActivityCatalog({
            </tbody>
         </table>
       </div>
+
+      <PaginationLinks
+        paramKey="aqpage"
+        page={page}
+        totalPages={totalPages}
+        totalLabel={`${total} ${kind === "auxiliary" ? "APU auxiliares" : activityLabel.toLowerCase()}`}
+      />
 
       <Modal
         open={modal?.type === "detail"}

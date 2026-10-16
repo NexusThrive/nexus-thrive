@@ -30,6 +30,7 @@ import ActivityCatalog from "./_components/activity-catalog";
 
 const QUOTES_PAGE_SIZE = 10;
 const ITEMS_PAGE_SIZE = 10;
+const ACTIVITIES_PAGE_SIZE = 50;
 
 function firstString(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
@@ -175,16 +176,34 @@ export default async function QuotesPage({
 
   if (activeTab === "activities") {
     const q = firstString(sp.aq).trim();
-    const [catalog, itemsResult, p99] = await Promise.all([
-      tenantDb.apu.listActivities({ q }),
-      tenantDb.apu.listItems({ limit: 400 }),
+    const chapterCode = firstString(sp.ach).trim() || undefined;
+    const kind = firstString(sp.akind) === "auxiliary" ? "auxiliary" : "activity";
+    const pageRaw = Number.parseInt(firstString(sp.aqpage), 10);
+    const requestedPage = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
+    const [catalog, items, chapters, p99] = await Promise.all([
+      tenantDb.apu.listActivities({
+        q,
+        chapterCode,
+        kind,
+        page: requestedPage,
+        limit: ACTIVITIES_PAGE_SIZE,
+      }),
+      tenantDb.apu.listAllItems(),
+      tenantDb.apu.listChapters(),
       tenantDb.apu.getP99Thresholds(),
     ]);
+    const totalPages = Math.max(1, Math.ceil(catalog.total / ACTIVITIES_PAGE_SIZE));
     activitiesSection = (
       <ActivityCatalog
         tenantSlug={tenantSlug}
         rows={catalog.rows}
-        items={itemsResult.rows}
+        total={catalog.total}
+        page={Math.min(requestedPage, totalPages)}
+        totalPages={totalPages}
+        chapters={chapters}
+        chapterCode={chapterCode ?? ""}
+        kind={kind}
+        items={items}
         activityLabel={terms.apuActivity}
         p99Thresholds={p99}
       />
