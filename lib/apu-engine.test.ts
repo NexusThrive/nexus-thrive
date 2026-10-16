@@ -164,6 +164,17 @@ describe("apu-engine — resourceLineCostMicro (línea del compositor APU)", () 
 });
 
 describe("apu-engine — componentCost / activityUnitCost", () => {
+  test("componentCost es exacto con más de 6 decimales (packs APU reales)", () => {
+    // 0.1090147 × 220170 = 24001.766499 → 24001.766499 (micro exacto)
+    expect(
+      componentCost({ unitPrice: "220170", consumption: "0.1090147", wastePercent: "0" }),
+    ).toBe(BigInt(24_001_766_499));
+    // Precio con 8 decimales: se redondea al micro (half-up).
+    expect(
+      componentCost({ unitPrice: "744.23000005", consumption: "1", wastePercent: "0" }),
+    ).toBe(BigInt(744_230_000));
+  });
+
   const makeComp = (overrides: Partial<ActivityComponentInput> = {}): ActivityComponentInput => ({
     unitPrice: "28000",
     consumption: "7",

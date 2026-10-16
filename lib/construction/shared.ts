@@ -6,6 +6,7 @@ import {
   db,
 } from "@/prisma/db";
 import {
+  compositionUnitPrice,
   activityUnitCost,
   calculateBudgetTotals,
   componentCost,
@@ -101,6 +102,15 @@ export type ApuCompositionRow = {
   wastePercent: string;
   /** Precio × consumo × (1 + desperdicio/100) — motor Decimal del servidor. */
   cost: string;
+  /** Posición y sección de la línea en el APU (orden del archivo importado). */
+  order: number;
+  section: string | null;
+  /** Unidad y cantidad tal como el archivo ("%MO" y 10 en una línea porcentual). */
+  lineUnit: string | null;
+  lineQuantity: string | null;
+  origin: "IMPORT" | "MANUAL";
+  /** Foto del insumo guardada en el sistema. */
+  imageId: string | null;
 };
 
 /** Detalle completo de una actividad (para consulta de composición). */
@@ -257,6 +267,11 @@ export type BudgetResourceData = {
   unitPrice: string;
   totalPrice: string;
   imageUrl: string | null;
+  /** Foto del insumo guardada en el sistema (ver /api/apu-images/[id]). */
+  imageId: string | null;
+  /** Sección original de la línea en el APU del catálogo. */
+  section: string | null;
+  order: number;
   /** Porcentaje de desperdicio de esta línea (micro, 1_000_000 = 100%). Default 0. */
   wastePct: string;
 };
@@ -397,9 +412,14 @@ export type ImportCompositionRow = {
     category: ApuItemCategoryValue;
     unitPrice: string;
     imageUrl: string | null;
+    imageId: string | null;
   } | null;
   consumption: string;
   wastePercent: string;
+  order: number;
+  section: string | null;
+  lineUnit: string | null;
+  lineUnitPrice: string | null;
 };
 
 /* ------------------------------------------------------------------ */
@@ -752,7 +772,7 @@ export async function loadBudgetTree(budget: BudgetRow): Promise<ProjectBudgetDa
   const resources = itemIds.length
     ? await db.orm.public.BudgetItemResource
         .where((resource) => resource.itemId.in(itemIds))
-        .select("id", "itemId", "type", "name", "unit", "performance", "unitPrice", "totalPrice", "imageUrl", "wastePct")
+        .select("id", "itemId", "type", "name", "unit", "performance", "unitPrice", "totalPrice", "imageUrl", "imageId", "section", "order", "wastePct")
         .all()
     : [];
 
@@ -768,18 +788,22 @@ export async function loadBudgetTree(budget: BudgetRow): Promise<ProjectBudgetDa
       unitPrice: String(resource.unitPrice),
       totalPrice: String(resource.totalPrice),
       imageUrl: resource.imageUrl,
+      imageId: resource.imageId ?? null,
+      section: resource.section ?? null,
+      order: resource.order,
       wastePct: String(resource.wastePct),
     });
     resourcesByItem.set(resource.itemId, list);
   }
-  // La tabla no guarda orden: se fija uno estable (tipo según RESOURCE_TYPES,
-  // luego nombre) para que el APU no cambie de orden entre cargas.
+  // Orden del APU del catálogo; los recursos anteriores a ese dato (todos en
+  // 0) quedan en un orden estable por tipo y nombre.
   const typeRank = new Map<string, number>(
     RESOURCE_TYPES.map((option, index) => [option.value, index]),
   );
   for (const list of resourcesByItem.values()) {
     list.sort(
       (a, b) =>
+        a.order - b.order ||
         (typeRank.get(a.type) ?? 99) - (typeRank.get(b.type) ?? 99) ||
         a.name.localeCompare(b.name, "es"),
     );
@@ -954,13 +978,15 @@ export async function getApuActivityDetail(
 
   const compositions = await db.orm.public.ApuActivityComposition
     .where({ activityId })
+    .orderBy((line) => line.order.asc())
     .include("item", (item) =>
-      item.select("id", "code", "name", "unit", "category", "unitPrice"),
+      item.select("id", "code", "name", "unit", "category", "unitPrice", "imageId"),
     )
     .all();
 
   const rows: ApuCompositionRow[] = compositions.map((composition) => {
     const item = composition.item!;
+    const unitPrice = compositionUnitPrice(composition, item.unitPrice);
     return {
       id: composition.id,
       itemId: item.id,
@@ -968,16 +994,22 @@ export async function getApuActivityDetail(
       itemName: item.name,
       itemUnit: item.unit,
       category: item.category,
-      unitPrice: String(item.unitPrice),
+      unitPrice,
       consumption: String(composition.consumption),
       wastePercent: String(composition.wastePercent),
       cost: moneyToString(
         componentCost({
-          unitPrice: String(item.unitPrice),
+          unitPrice,
           consumption: String(composition.consumption),
           wastePercent: String(composition.wastePercent),
         }),
       ),
+      order: composition.order,
+      section: composition.section ?? null,
+      lineUnit: composition.lineUnit ?? null,
+      lineQuantity: composition.lineQuantity === null ? null : String(composition.lineQuantity),
+      origin: composition.origin,
+      imageId: item.imageId ?? null,
     };
   });
 

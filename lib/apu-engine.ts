@@ -254,23 +254,54 @@ export type ActivityComponentInput = {
  * Todo en micro-unidades enteras; se redondea half-up al micro.
  */
 export function componentCost(input: ActivityComponentInput): Money {
-  const unitPrice = parseMoney(input.unitPrice);
-  const consumption = parseMoney(input.consumption);
-  const waste = parseMoney(input.wastePercent);
+  const unitPrice = parseExactDecimal(input.unitPrice);
+  const consumption = parseExactDecimal(input.consumption);
+  const waste = parseExactDecimal(input.wastePercent);
 
   if (unitPrice === null || consumption === null || waste === null) {
     throw new Error("componentCost: entrada decimal inválida.");
   }
-  if (unitPrice < BigInt(0) || consumption < BigInt(0) || waste < BigInt(0)) {
+  if (unitPrice.digits < BigInt(0) || consumption.digits < BigInt(0) || waste.digits < BigInt(0)) {
     throw new Error("componentCost: valores negativos no permitidos.");
   }
 
-  // factor = (100 + desperdicio) / 100 en micro-puntos → 100*UNIT + waste
-  const factor = BigInt(100) * UNIT + waste;
-  return roundDiv(
-    unitPrice * consumption * factor,
-    BigInt(100) * UNIT * UNIT,
-  );
+  // Exacto con cualquier cantidad de decimales (los packs APU traen algunos
+  // rendimientos y precios con 7+ decimales):
+  //   precio × consumo × (100 + desperdicio) / 100, redondeado al micro.
+  const wasteScale = BigInt(10) ** BigInt(waste.scale);
+  const factor = BigInt(100) * wasteScale + waste.digits;
+  const numerator = unitPrice.digits * consumption.digits * factor * UNIT;
+  const denominator =
+    BigInt(10) ** BigInt(unitPrice.scale + consumption.scale) * BigInt(100) * wasteScale;
+  return roundDiv(numerator, denominator);
+}
+
+/** Decimal en texto como entero escalado, sin límite de decimales. */
+function parseExactDecimal(raw: string): { digits: bigint; scale: number } | null {
+  const value = raw.trim();
+  if (!value || value.length > 60 || !DECIMAL_PATTERN.test(value)) {
+    return null;
+  }
+  const negative = value.startsWith("-");
+  const unsigned = negative ? value.slice(1) : value;
+  const [intPart, fracPart = ""] = unsigned.split(".");
+  const digits = BigInt((intPart || "0") + fracPart);
+  return { digits: negative ? -digits : digits, scale: fracPart.length };
+}
+
+/**
+ * Precio unitario efectivo de una línea de composición: el que trae la línea
+ * (importada de un pack APU; en líneas porcentuales es su base) o, si la línea
+ * es manual y no lo tiene, el precio vigente del insumo.
+ */
+export function compositionUnitPrice(
+  line: { lineUnitPrice?: unknown },
+  itemUnitPrice: unknown,
+): string {
+  const own = line.lineUnitPrice;
+  return own !== null && own !== undefined && String(own) !== ""
+    ? String(own)
+    : String(itemUnitPrice);
 }
 
 /** Costo unitario de una actividad = Σ de sus componentes. */

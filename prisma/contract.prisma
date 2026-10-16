@@ -416,6 +416,8 @@ model ApuChapter {
   tenantId  String
   tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   code      String
+  /// Capítulo padre de un subcapítulo ("22" para "22.63").
+  parentCode String?
   name      String
   order     Int
   createdAt DateTime @default(now())
@@ -486,6 +488,9 @@ model ApuActivity {
   referenceUnitPrice Decimal?
   /// Clave de orden natural ("0001.0002" para 1.02) para listar como el archivo.
   sortKey     String?
+  /// Datos del archivo sin columna propia (ej. "TOTAL % P" de un auxiliar de
+  /// mano de obra). Se guardan tal cual para no perder nada.
+  sourceExtras Json?
   /// Identidad estable para reimportar ("APU:1.01" o "AUX:<descripción>|<unidad>").
   sourceKey   String?
   importedAt  DateTime?

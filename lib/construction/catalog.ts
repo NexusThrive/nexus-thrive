@@ -10,6 +10,7 @@ import {
   db,
 } from "@/prisma/db";
 import {
+  compositionUnitPrice,
   activityUnitCost,
   isStrictlyPositive,
   isValidPercent,
@@ -200,7 +201,7 @@ export function createCatalogDb(tenantId: string) {
               description: row.description,
               unitCost: activityUnitCost(
                 activityCompositions.map((composition) => ({
-                  unitPrice: String(composition.item!.unitPrice),
+                  unitPrice: compositionUnitPrice(composition, composition.item!.unitPrice),
                   consumption: String(composition.consumption),
                   wastePercent: String(composition.wastePercent),
                 })),
@@ -472,7 +473,7 @@ export function createCatalogDb(tenantId: string) {
           const comps = compsByActivity.get(activity.id) ?? [];
           const costStr = activityUnitCost(
             comps.map((c) => ({
-              unitPrice: String(c.item!.unitPrice),
+              unitPrice: compositionUnitPrice(c, c.item!.unitPrice),
               consumption: String(c.consumption),
               wastePercent: String(c.wastePercent),
             })),
@@ -602,7 +603,7 @@ export function createCatalogDb(tenantId: string) {
           if (comps.length > 0) {
             const costStr = activityUnitCost(
               comps.map((c) => ({
-                unitPrice: String(c.item!.unitPrice),
+                unitPrice: compositionUnitPrice(c, c.item!.unitPrice),
                 consumption: String(c.consumption),
                 wastePercent: String(c.wastePercent),
               })),

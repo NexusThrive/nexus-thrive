@@ -676,6 +676,13 @@
                   "kind": "scalar"
                 }
               },
+              "sourceExtras": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
               "sourceKey": {
                 "nullable": true,
                 "type": {
@@ -818,6 +825,9 @@
                 },
                 "sortKey": {
                   "column": "sortKey"
+                },
+                "sourceExtras": {
+                  "column": "sourceExtras"
                 },
                 "sourceKey": {
                   "column": "sourceKey"
@@ -1043,6 +1053,13 @@
                   "kind": "scalar"
                 }
               },
+              "parentCode": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "tenantId": {
                 "nullable": false,
                 "type": {
@@ -1107,6 +1124,9 @@
                 },
                 "order": {
                   "column": "order"
+                },
+                "parentCode": {
+                  "column": "parentCode"
                 },
                 "tenantId": {
                   "column": "tenantId"
@@ -6400,6 +6420,11 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "sourceExtras": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
+                  "nullable": true
+                },
                 "sourceKey": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -6673,6 +6698,11 @@
                   "codecId": "pg/int4@1",
                   "nativeType": "int4",
                   "nullable": false
+                },
+                "parentCode": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "tenantId": {
                   "codecId": "pg/text@1",
@@ -10966,7 +10996,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "02a82f1994702b55c06a1ec7a4cc38025a325ad28de3b02824adcf3c16c97038"
+    "storageHash": "acc73824552ea1f63e199492704a211eed0ab4eda1e20010f64e722d70fddc19"
   },
   "execution": {
     "executionHash": "6438324cc1097801d91f7fdd8f8976f526d018304c64e9aa533f85f09f98d778",

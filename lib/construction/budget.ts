@@ -3,6 +3,7 @@
  * Extraído de `lib/tenant-db.ts`; `createTenantDb` lo compone. Todo
  * acceso va acotado al `tenantId` recibido.
  */
+import { categoryForSection } from "@/lib/apu-importer/master-pack-plan";
 import {
   db,
 } from "@/prisma/db";
@@ -10,6 +11,7 @@ import {
   formatDateTime,
 } from "@/lib/format";
 import {
+  compositionUnitPrice,
   AIU_DEFAULTS,
   apuItemCategoryToResourceType,
   calculateBudgetTotals,
@@ -280,6 +282,7 @@ export function createBudgetsDb(tenantId: string) {
 
         const compositions = (await db.orm.public.ApuActivityComposition
           .where({ activityId })
+          .orderBy((line) => line.order.asc())
           .include("item", (item) =>
             item.select(
               "id",
@@ -289,6 +292,7 @@ export function createBudgetsDb(tenantId: string) {
               "category",
               "unitPrice",
               "imageUrl",
+              "imageId",
             ),
           )
           .all()) as unknown as ImportCompositionRow[];
@@ -306,6 +310,9 @@ export function createBudgetsDb(tenantId: string) {
           totalPrice: bigint;
           wastePct: bigint;
           imageUrl: string | null;
+          imageId: string | null;
+          section: string | null;
+          order: number;
           sourceItemId: string;
         }[] = [];
         let unitCostDirect = BigInt(0);
@@ -316,7 +323,8 @@ export function createBudgetsDb(tenantId: string) {
           if (!item || item.tenantId !== tenantId) {
             continue;
           }
-          const unitPrice = decimalToMicro(String(item.unitPrice));
+          // Precio de la línea (pack APU; base en líneas porcentuales) o del insumo.
+          const unitPrice = decimalToMicro(compositionUnitPrice(composition, item.unitPrice));
           const performance = decimalToMicro(String(composition.consumption));
           const wastePercentMicro = decimalToMicro(
             String(composition.wastePercent),
@@ -337,14 +345,21 @@ export function createBudgetsDb(tenantId: string) {
           });
           unitCostDirect += lineCost;
           resources.push({
-            type: apuItemCategoryToResourceType(item.category),
+            // La sección de la línea manda (el mismo insumo puede ser material
+            // en un APU y equipo en otro).
+            type: apuItemCategoryToResourceType(
+              composition.section ? categoryForSection(composition.section) : item.category,
+            ),
             name: item.name,
-            unit: item.unit,
+            unit: composition.lineUnit || item.unit,
             performance,
             unitPrice,
             totalPrice: lineCost,
             wastePct,
             imageUrl: item.imageUrl ?? null,
+            imageId: item.imageId ?? null,
+            section: composition.section ?? null,
+            order: resources.length,
             sourceItemId: item.id,
           });
         }
@@ -384,6 +399,9 @@ export function createBudgetsDb(tenantId: string) {
               unitPrice: resource.unitPrice,
               totalPrice: resource.totalPrice,
               imageUrl: resource.imageUrl,
+              imageId: resource.imageId,
+              section: resource.section,
+              order: resource.order,
               wastePct: resource.wastePct,
               sourceItemId: resource.sourceItemId,
             });

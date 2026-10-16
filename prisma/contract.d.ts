@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'02a82f1994702b55c06a1ec7a4cc38025a325ad28de3b02824adcf3c16c97038'>;
+  StorageHashBase<'acc73824552ea1f63e199492704a211eed0ab4eda1e20010f64e722d70fddc19'>;
 export type ExecutionHash =
   ExecutionHashBase<'6438324cc1097801d91f7fdd8f8976f526d018304c64e9aa533f85f09f98d778'>;
 export type ProfileHash =
@@ -262,6 +262,7 @@ export type FieldOutputTypes = {
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly referenceUnitPrice: CodecTypes['pg/numeric@1']['output'] | null;
       readonly sortKey: CodecTypes['pg/text@1']['output'] | null;
+      readonly sourceExtras: CodecTypes['pg/json@1']['output'] | null;
       readonly sourceKey: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly unit: CodecTypes['pg/text@1']['output'];
@@ -287,6 +288,7 @@ export type FieldOutputTypes = {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly order: CodecTypes['pg/int4@1']['output'];
+      readonly parentCode: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
@@ -727,6 +729,7 @@ export type FieldInputTypes = {
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly referenceUnitPrice: CodecTypes['pg/numeric@1']['input'] | null;
       readonly sortKey: CodecTypes['pg/text@1']['input'] | null;
+      readonly sourceExtras: CodecTypes['pg/json@1']['input'] | null;
       readonly sourceKey: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly unit: CodecTypes['pg/text@1']['input'];
@@ -752,6 +755,7 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly order: CodecTypes['pg/int4@1']['input'];
+      readonly parentCode: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
@@ -1192,6 +1196,7 @@ export type StorageColumnTypes = {
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly referenceUnitPrice: CodecTypes['pg/numeric@1']['output'] | null;
       readonly sortKey: CodecTypes['pg/text@1']['output'] | null;
+      readonly sourceExtras: CodecTypes['pg/json@1']['output'] | null;
       readonly sourceKey: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly unit: CodecTypes['pg/text@1']['output'];
@@ -1217,6 +1222,7 @@ export type StorageColumnTypes = {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly order: CodecTypes['pg/int4@1']['output'];
+      readonly parentCode: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
@@ -1657,6 +1663,7 @@ export type StorageColumnInputTypes = {
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly referenceUnitPrice: CodecTypes['pg/numeric@1']['input'] | null;
       readonly sortKey: CodecTypes['pg/text@1']['input'] | null;
+      readonly sourceExtras: CodecTypes['pg/json@1']['input'] | null;
       readonly sourceKey: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly unit: CodecTypes['pg/text@1']['input'];
@@ -1682,6 +1689,7 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly order: CodecTypes['pg/int4@1']['input'];
+      readonly parentCode: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
@@ -2122,6 +2130,7 @@ export namespace Models {
     name: CodecTypes['pg/text@1']['output'];
     referenceUnitPrice: CodecTypes['pg/numeric@1']['output'] | null;
     sortKey: CodecTypes['pg/text@1']['output'] | null;
+    sourceExtras: CodecTypes['pg/json@1']['output'] | null;
     sourceKey: CodecTypes['pg/text@1']['output'] | null;
     tenantId: CodecTypes['pg/text@1']['output'];
     unit: CodecTypes['pg/text@1']['output'];
@@ -2157,6 +2166,7 @@ export namespace Models {
     id: CodecTypes['pg/text@1']['output'];
     name: CodecTypes['pg/text@1']['output'];
     order: CodecTypes['pg/int4@1']['output'];
+    parentCode: CodecTypes['pg/text@1']['output'] | null;
     tenantId: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     activities: public_ApuActivity[];
@@ -2856,6 +2866,11 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
+                readonly sourceExtras: {
+                  readonly nativeType: 'json';
+                  readonly codecId: 'pg/json@1';
+                  readonly nullable: true;
+                };
                 readonly sourceKey: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -3067,6 +3082,11 @@ type ContractBase = Omit<
                   readonly nativeType: 'int4';
                   readonly codecId: 'pg/int4@1';
                   readonly nullable: false;
+                };
+                readonly parentCode: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                 };
                 readonly tenantId: {
                   readonly nativeType: 'text';
@@ -6509,6 +6529,10 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly sourceExtras: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/json@1' };
+              };
               readonly sourceKey: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -6603,6 +6627,7 @@ type ContractBase = Omit<
                 readonly name: { readonly column: 'name' };
                 readonly referenceUnitPrice: { readonly column: 'referenceUnitPrice' };
                 readonly sortKey: { readonly column: 'sortKey' };
+                readonly sourceExtras: { readonly column: 'sourceExtras' };
                 readonly sourceKey: { readonly column: 'sourceKey' };
                 readonly tenantId: { readonly column: 'tenantId' };
                 readonly unit: { readonly column: 'unit' };
@@ -6731,6 +6756,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
               };
+              readonly parentCode: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly tenantId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -6777,6 +6806,7 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly name: { readonly column: 'name' };
                 readonly order: { readonly column: 'order' };
+                readonly parentCode: { readonly column: 'parentCode' };
                 readonly tenantId: { readonly column: 'tenantId' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
               };

@@ -13,6 +13,7 @@ import {
   toNumber,
 } from "@/lib/format";
 import {
+  compositionUnitPrice,
   buildApuSnapshot,
   calculateQuoteTotals,
   currentYearBogota,
@@ -272,7 +273,7 @@ export function createQuotesDb(tenantId: string) {
               name: item.name,
               unit: item.unit,
               category: item.category,
-              unitPrice: String(item.unitPrice),
+              unitPrice: compositionUnitPrice(composition, item.unitPrice),
               consumption: String(composition.consumption),
               wastePercent: String(composition.wastePercent),
             };
