@@ -12,7 +12,21 @@
  *   (habría que emitir una nueva): lo aprobado es exactamente lo cotizado.
  */
 import { db } from "@/prisma/db";
-import { bumpRevision, insertBaseline, loadBudgetTree, lockRevision, serializeProjectHeader } from "./shared";
+import {
+  apuItemCategoryToResourceType,
+  calculateItemTotal,
+  decimalToMicro,
+  resourceLineCostMicro,
+  type ApuSnapshot,
+} from "@/lib/apu-engine";
+import {
+  bumpRevision,
+  insertBaseline,
+  loadBudgetTree,
+  lockRevision,
+  recalcBudgetTotals,
+  serializeProjectHeader,
+} from "./shared";
 import {
   buildQuoteDocument,
   microFractionToPercent,
@@ -345,6 +359,177 @@ export function createProjectQuotesDb(tenantId: string) {
           updatedAt: String(project.updatedAt),
         };
       });
+    },
+
+    /* --- Cotizaciones anteriores a la obra (migración) -------------- */
+
+    /** Cotizaciones creadas antes de que la cotización naciera de la obra. */
+    listLegacy: async () => {
+      const quotes = await db.orm.public.Quote.where({ tenantId })
+        .where((quote) => quote.projectId.isNull())
+        .orderBy((quote) => quote.createdAt.desc())
+        .select("id", "code", "title", "status", "customerId", "totalAmount", "createdAt")
+        .all();
+      return quotes.map((quote) => ({
+        id: quote.id,
+        code: quote.code,
+        title: quote.title,
+        status: quote.status as ProjectQuoteRow["status"],
+        customerId: quote.customerId ?? null,
+        totalAmount: String(quote.totalAmount),
+        createdAt: String(quote.createdAt),
+      }));
+    },
+
+    /**
+     * Pasa una cotización anterior a una obra recién creada (vacía): un
+     * capítulo "General" con sus partidas y el APU congelado de cada una, el
+     * mismo AIU, y la cotización como versión 1 con su código original. Si
+     * estaba aprobada, la obra queda contratada con línea base y bloqueo.
+     * Errores: NOT_FOUND, ALREADY_MIGRATED, PROJECT_NOT_EMPTY.
+     */
+    adoptLegacyQuote: async (
+      quoteId: string,
+      projectId: string,
+      input: { userId: string; userName: string },
+    ): Promise<{ projectStatus: string; legacyTotal: string; newTotal: string }> => {
+      const quote = await db.orm.public.Quote.where({ id: quoteId, tenantId }).first();
+      if (!quote) throw new Error("NOT_FOUND");
+      if (quote.projectId) throw new Error("ALREADY_MIGRATED");
+      const project = await db.orm.public.Project.where({ id: projectId, tenantId }).first();
+      const budget = await db.orm.public.ProjectBudget.where({ projectId, tenantId }).first();
+      if (!project || !budget) throw new Error("NOT_FOUND");
+      const existingChapters = await db.orm.public.BudgetChapter.where({ budgetId: budget.id }).select("id").all();
+      if (existingChapters.length > 0) throw new Error("PROJECT_NOT_EMPTY");
+      const lines = await db.orm.public.QuoteItem.where({ quoteId }).all();
+
+      const micro = (value: unknown) => decimalToMicro(String(value)) ?? BigInt(0);
+      const fraction = (percent: unknown) => micro(percent) / BigInt(100);
+
+      const revision = await db.transaction(async (tx) => {
+        const chapter = await tx.orm.public.BudgetChapter.create({
+          tenantId,
+          budgetId: budget.id,
+          order: 1,
+          name: "General",
+          description: `Migrada de la cotización ${quote.code}`,
+        });
+        for (const [index, line] of lines.entries()) {
+          const snapshot = (line.apuSnapshot ?? null) as ApuSnapshot | null;
+          const quantity = micro(line.quantity);
+          const unitCostDirect = micro(line.unitCost);
+          const item = await tx.orm.public.BudgetItem.create({
+            tenantId,
+            chapterId: chapter.id,
+            order: index + 1,
+            code: snapshot?.activity.code ?? String(index + 1),
+            description: line.name,
+            unit: line.unit,
+            quantity,
+            unitCostDirect,
+            totalCostDirect: calculateItemTotal(quantity, unitCostDirect),
+            sourceActivityId: line.activityId ?? null,
+          });
+          for (const [order, component] of (snapshot?.components ?? []).entries()) {
+            const performance = micro(component.consumption);
+            const unitPrice = micro(component.unitPrice);
+            const wastePct = micro(component.wastePercent) / BigInt(100);
+            await tx.orm.public.BudgetItemResource.create({
+              tenantId,
+              itemId: item.id,
+              type: apuItemCategoryToResourceType(component.category),
+              name: component.name,
+              unit: component.unit,
+              performance,
+              unitPrice,
+              wastePct,
+              totalPrice: resourceLineCostMicro({ performance, wastePct, unitPrice }),
+              order,
+              sourceItemId: component.itemId,
+            });
+          }
+        }
+        const aiu = {
+          admin: fraction(quote.adminPercent),
+          imprev: fraction(quote.imprevPercent),
+          utilidad: fraction(quote.utilPercent),
+          iva: fraction(quote.taxPercent),
+        };
+        await recalcBudgetTotals(tx, budget.id, aiu);
+        return bumpRevision(tx, budget, {
+          aiuAdminPct: aiu.admin,
+          aiuImprevPct: aiu.imprev,
+          aiuUtilidadPct: aiu.utilidad,
+          ivaUtilidadPct: aiu.iva,
+        });
+      });
+
+      const fresh = (await db.orm.public.ProjectBudget.where({ id: budget.id }).first())!;
+      const tree = await loadBudgetTree(fresh);
+      const [customer, header, tenant] = await Promise.all([
+        db.orm.public.Customer.where({ id: project.customerId, tenantId }).select("name").first(),
+        db.orm.public.ProjectHeader.where({ projectId }).first(),
+        db.orm.public.Tenant.where({ id: tenantId }).select("name", "legalName", "taxId", "address", "city").first(),
+      ]);
+      const document = buildQuoteDocument({
+        version: 1,
+        code: quote.code,
+        issuedAt: String(quote.createdAt),
+        validUntil: null,
+        showApuDetail: false,
+        project: { code: project.code, name: project.name },
+        header: header ? serializeProjectHeader(header) : null,
+        customerName: customer?.name ?? "",
+        issuer: {
+          name: tenant?.legalName?.trim() || tenant?.name || null,
+          taxId: tenant?.taxId ?? null,
+          address: tenant?.address ?? null,
+          city: tenant?.city ?? null,
+        },
+        budget: tree,
+      });
+
+      const targetStatus =
+        quote.status === "APPROVED" ? "APPROVED" : quote.status === "DRAFT" ? "DRAFT" : "BIDDING";
+
+      await db.transaction(async (tx) => {
+        const adopted = await tx.orm.public.Quote.where({ id: quoteId, tenantId })
+          .where((q) => q.projectId.isNull())
+          .updateAndCount({
+            projectId,
+            version: 1,
+            budgetRevision: revision,
+            snapshot: document as never,
+            customerId: project.customerId,
+            sentAt: quote.status === "DRAFT" ? null : quote.createdAt,
+          });
+        if (adopted !== 1) throw new Error("ALREADY_MIGRATED");
+        if (targetStatus === "APPROVED") {
+          await lockRevision(tx, fresh);
+          await insertBaseline(tx, tenantId, fresh, {
+            userId: input.userId,
+            userName: input.userName,
+            note: `Cotización ${quote.code} aprobada (migrada)`,
+          });
+          await bumpRevision(tx, fresh, { isLocked: true });
+          await tx.orm.public.BudgetLockEvent.create({
+            tenantId,
+            budgetId: fresh.id,
+            action: "LOCK",
+            reason: `Contratada: cotización ${quote.code} aprobada (migrada)`,
+            userId: input.userId,
+          });
+        }
+        if (targetStatus !== "DRAFT") {
+          await tx.orm.public.Project.where({ id: projectId, tenantId }).update({ status: targetStatus });
+        }
+      });
+
+      return {
+        projectStatus: targetStatus,
+        legacyTotal: String(quote.totalAmount),
+        newTotal: tree.grandTotal,
+      };
     },
 
     /* --- Seguimientos ----------------------------------------------- */
