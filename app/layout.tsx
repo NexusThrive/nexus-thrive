@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
+import { clerkLocalization, clerkProviderAppearance } from "@/lib/auth/clerk-appearance";
 import { fontVariables } from "@/lib/fonts";
 import { themeInitScript } from "@/components/atoms/theme-toggle";
 import { MotionProvider } from "@/components/providers/motion-provider";
@@ -19,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider localization={clerkLocalization} appearance={clerkProviderAppearance}>
       <html
         lang="es"
         className={`${fontVariables} h-full antialiased`}

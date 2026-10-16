@@ -15,6 +15,7 @@
     "build-storybook": "storybook build -o storybook-static"
   },
   "dependencies": {
+    "@clerk/localizations": "^4.23.0",
     "@clerk/nextjs": "^7.9.11",
     "@prisma/orm-postgres": "8.0.0-rc.14",
     "@radix-ui/react-avatar": "^1.2.7",
