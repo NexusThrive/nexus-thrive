@@ -54,8 +54,12 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      # Sin TEST_DATABASE_URL las de integración se omiten: corren después,
+      # cuando la base ya está migrada.
       - name: Unit tests
         run: pnpm test
+        env:
+          TEST_DATABASE_URL: ""
 
       - name: Migraciones sobre base limpia
         run: |
