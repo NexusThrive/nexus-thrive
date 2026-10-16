@@ -98,6 +98,16 @@ export default async function ProjectDetailPage({
   const baselines = await tenantDb.budgets.listBaselines(projectId);
   const hasApprovedBaseline = baselines.length > 0;
   const plan = tab === "planificador" ? await tenantDb.lean.getPlan(projectId) : null;
+  // Partidas del presupuesto: para enlazar tareas/compromisos/bitácora y para
+  // registrar el avance de obra.
+  const itemProgress =
+    tab === "planificador" || tab === "bitacora" || tab === "campo"
+      ? await tenantDb.progress.listByItem(projectId)
+      : [];
+  const budgetItemOptions = itemProgress.map((item) => ({
+    id: item.itemId,
+    label: `${item.code} · ${item.description}`,
+  }));
   const fieldLog = tab === "bitacora" || tab === "campo"
     ? await tenantDb.fieldLog.getLog(projectId)
     : null;
@@ -106,7 +116,6 @@ export default async function ProjectDetailPage({
   // Autor de la bitácora y rol D7: del usuario en sesión (todas las pestañas).
   const { userId } = await auth();
   const member = userId ? await tenantDb.users.findByClerkUserId(userId) : null;
-  const currentUserName = member?.name?.trim() || member?.email || "Usuario";
   const currentUserRole = member?.role ?? "STAFF";
   const canGovernBudget =
     currentUserRole === "OWNER" || currentUserRole === "SUPERADMIN";
@@ -243,7 +252,7 @@ export default async function ProjectDetailPage({
           />
         ) : tab === "planificador" ? (
           plan ? (
-            <LeanWorkspace _tenantSlug={tenantSlug} _projectId={project.id} plan={plan} />
+            <LeanWorkspace tenantSlug={tenantSlug} projectId={project.id} plan={plan} budgetItems={budgetItemOptions} />
           ) : (
             <PrepareProject action={prepareAction} />
           )
@@ -253,8 +262,8 @@ export default async function ProjectDetailPage({
               tenantSlug={tenantSlug}
               projectId={project.id}
               log={fieldLog}
-              currentUserName={currentUserName}
-              currentUserRole={currentUserRole}
+              itemProgress={itemProgress}
+              contracted={project.status === "APPROVED" || project.status === "IN_EXECUTION"}
             />
           ) : (
             <PrepareProject action={prepareAction} />

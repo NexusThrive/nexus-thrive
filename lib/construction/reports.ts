@@ -3,6 +3,7 @@
  * Extraído de `lib/tenant-db.ts`; `createTenantDb` lo compone. Todo
  * acceso va acotado al `tenantId` recibido.
  */
+import { createProgressDb } from "./progress";
 import {
   db,
 } from "@/prisma/db";
@@ -143,6 +144,8 @@ export function createReportsDb(tenantId: string) {
         };
 
         const { buildWeeklyReportData } = await import("@/lib/report-engine");
+        // Todas las actas: el informe toma las que cierran hasta el fin de semana.
+        const progressEntries = await createProgressDb(tenantId).entriesUntil(projectId, "9999-12-31");
         return buildWeeklyReportData(
           projectData,
           budgetData,
@@ -150,6 +153,7 @@ export function createReportsDb(tenantId: string) {
           fieldLogData,
           weekNumber,
           year,
+          progressEntries,
         );
       },
 

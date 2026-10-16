@@ -35,6 +35,8 @@ export type FieldLogEntryData = {
   authorRole: string;
   photoUrls: string[];
   entryDate: string; // "YYYY-MM-DD" Bogotá
+  /** Partida del presupuesto a la que se refiere (opcional). */
+  budgetItemId?: string | null;
 };
 
 /**
@@ -121,7 +123,11 @@ export function isValidWeatherCondition(
 }
 
 /** Valida que una URL sea HTTPS (no vacía y con protocolo permitido). */
+/** Foto guardada en el sistema (ver app/api/apu-images). */
+const INTERNAL_PHOTO = /^\/api\/apu-images\/[0-9a-f-]{36}$/i;
+
 export function isValidPhotoUrl(raw: string): boolean {
+  if (INTERNAL_PHOTO.test(raw)) return true;
   try {
     const url = new URL(raw);
     return url.protocol === "https:";

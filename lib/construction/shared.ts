@@ -461,6 +461,7 @@ export type LookaheadTaskData = {
   responsible: string;
   isRestricted: boolean;
   notes: string | null;
+  budgetItemId: string | null;
 };
 
 /** Compromiso del plan de trabajo semanal serializado. */
@@ -475,6 +476,7 @@ export type WeeklyCommitmentData = {
   status: CommitmentStatusValue;
   failureCause: NonComplianceCauseValue | null;
   failureNotes: string | null;
+  budgetItemId: string | null;
 };
 
 /** Plan Lean serializado: cabecera + tareas del Lookahead + compromisos. */
@@ -499,6 +501,8 @@ export type CreateLookaheadTaskInput = {
   responsible: string;
   isRestricted: boolean;
   notes?: string | null;
+  /** Partida del presupuesto a la que se refiere (opcional). */
+  budgetItemId?: string | null;
 };
 
 export type CreateCommitmentInput = {
@@ -506,6 +510,8 @@ export type CreateCommitmentInput = {
   responsible: string;
   /** Lunes de la semana operativa a la que pertenece ("YYYY-MM-DD"). */
   weekStartDate: string;
+  /** Partida del presupuesto a la que se refiere (opcional). */
+  budgetItemId?: string | null;
 };
 
 export type UpdateCommitmentStatusInput = {
@@ -530,6 +536,7 @@ export type FieldLogEntryData = {
   authorRole: string;
   photoUrls: string[];
   entryDate: string; // "YYYY-MM-DD" Bogotá
+  budgetItemId?: string | null;
 };
 
 /** Bitácora serializada: cabecera + entradas. */
@@ -550,6 +557,8 @@ export type CreateFieldLogEntryInput = {
   authorName: string;
   authorRole: string;
   photoUrls: string[];
+  /** Partida del presupuesto a la que se refiere (opcional). */
+  budgetItemId?: string | null;
 };
 
 /** Fila mínima de `FieldLog` que necesita la serialización. */
@@ -594,6 +603,7 @@ export async function loadFieldLog(log: FieldLogRow, tenantId: string): Promise<
       authorName: entry.authorName,
       authorRole: entry.authorRole,
       photoUrls: normalizePhotoUrls(entry.photoUrls),
+      budgetItemId: entry.budgetItemId ?? null,
     })),
   };
 }
@@ -667,6 +677,7 @@ export async function loadLeanPlan(plan: ProjectPlanRow): Promise<ProjectPlanDat
       responsible: task.responsible,
       isRestricted: task.isRestricted,
       notes: task.notes,
+      budgetItemId: task.budgetItemId ?? null,
     })),
     commitments: commitments.map((commitment) => ({
       id: commitment.id,
@@ -677,6 +688,7 @@ export async function loadLeanPlan(plan: ProjectPlanRow): Promise<ProjectPlanDat
       status: commitment.status as CommitmentStatusValue,
       failureCause: commitment.failureCause as NonComplianceCauseValue | null,
       failureNotes: commitment.failureNotes,
+      budgetItemId: commitment.budgetItemId ?? null,
     })),
   };
 }
@@ -1155,4 +1167,29 @@ export async function insertBaseline(
     approvedByName: input.userName,
   });
   return baseline;
+}
+
+/**
+ * Valida que una partida pertenezca al presupuesto de la obra (y al tenant).
+ * Devuelve el id normalizado (null si no se indicó). Lanza si es ajena.
+ */
+export async function resolveBudgetItemOfProject(
+  tenantId: string,
+  projectId: string,
+  budgetItemId: string | null | undefined,
+): Promise<string | null> {
+  if (!budgetItemId) return null;
+  const item = await db.orm.public.BudgetItem.where({ id: budgetItemId, tenantId })
+    .select("chapterId")
+    .first();
+  if (item) {
+    const chapter = await db.orm.public.BudgetChapter.where({ id: item.chapterId, tenantId })
+      .select("budgetId")
+      .first();
+    const budget = chapter
+      ? await db.orm.public.ProjectBudget.where({ id: chapter.budgetId, tenantId, projectId }).select("id").first()
+      : null;
+    if (budget) return budgetItemId;
+  }
+  throw new Error("La partida indicada no pertenece al presupuesto de esta obra.");
 }

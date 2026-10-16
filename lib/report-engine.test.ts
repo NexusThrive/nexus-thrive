@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { buildEvm, buildInformeCeroData } from "./report-engine";
+import { buildEvm, buildInformeCeroData, earnedValueMicro } from "./report-engine";
 
 const METRIC_KEYS = ["pv", "ev", "ac", "spi", "cpi", "sv", "cv"] as const;
 
@@ -64,5 +64,40 @@ describe("report-engine — buildInformeCeroData (emisor y cliente)", () => {
     const data = buildInformeCeroData(project, null);
     expect(data.constructorName).toBeNull();
     expect(data.constructorNit).toBeNull();
+  });
+});
+
+describe("report-engine — valor ganado desde actas de avance", () => {
+  const budget = {
+    directCostTotal: "1000000000000",
+    chapters: [
+      {
+        items: [
+          { id: "a", unitCostDirect: "50000000000" }, // $50.000 / unidad
+          { id: "b", unitCostDirect: "12500000" }, // $12,5 / unidad
+        ],
+      },
+    ],
+  } as unknown as Parameters<typeof earnedValueMicro>[0];
+
+  test("suma ejecutado × costo unitario hasta la fecha de corte", () => {
+    const entries = [
+      { budgetItemId: "a", cutoffDate: "2026-10-05", executedQuantity: "2000000" },
+      { budgetItemId: "a", cutoffDate: "2026-10-12", executedQuantity: "1500000" },
+      { budgetItemId: "b", cutoffDate: "2026-10-12", executedQuantity: "4000000" },
+      { budgetItemId: "a", cutoffDate: "2026-10-20", executedQuantity: "9000000" },
+    ];
+    // a: 3,5 × 50.000 = 175.000 ; b: 4 × 12,5 = 50 → 175.050
+    expect(earnedValueMicro(budget, entries, "2026-10-12")).toBe(BigInt(175_050_000_000));
+    expect(earnedValueMicro(budget, entries, "2026-10-04")).toBe(BigInt(0));
+  });
+
+  test("con actas, EV es medible y PV/AC siguen sin fuente", () => {
+    const evm = buildEvm(budget, 17.5, null, BigInt(175_050_000_000));
+    expect(evm.ev.measurable).toBe(true);
+    expect(evm.ev.value).toContain("175");
+    expect(evm.pv.measurable).toBe(false);
+    expect(evm.ac.measurable).toBe(false);
+    expect(evm.physicalProgressPct).toBe(17.5);
   });
 });

@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { requireTenantContext } from "@/lib/tenant-context";
 import { validateCreateFieldLogEntry } from "./validators";
+import { readImageUpload } from "@/lib/image-upload";
 
 export type ActionState = {
   status: "idle" | "ok" | "error";
@@ -45,7 +46,27 @@ export async function createFieldLogEntryAction(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const raw = Object.fromEntries(formData.entries());
+  // Varias fotos por anotación: `getAll` (fromEntries se queda con una sola).
+  const raw: Record<string, unknown> = Object.fromEntries(formData.entries());
+  raw.photoUrls = formData
+    .getAll("photoUrls")
+    .map((value) => String(value).trim())
+    .filter(Boolean);
+  const files = formData.getAll("photos").filter((value): value is File => value instanceof File && value.size > 0);
+  if (files.length + (raw.photoUrls as string[]).length > 10) {
+    return { status: "error", message: "Máximo 10 fotografías por anotación." };
+  }
+  const uploads: { data: Uint8Array; mimeType: string }[] = [];
+  for (const file of files) {
+    const single = new FormData();
+    single.set("photo", file);
+    const photo = await readImageUpload(single, "photo");
+    if (photo.status === "error") {
+      return { status: "error", message: `${file.name}: ${photo.message}` };
+    }
+    if (photo.status === "ok") uploads.push({ data: photo.data, mimeType: photo.mimeType });
+  }
+  delete raw.photos;
   const validation = validateCreateFieldLogEntry(raw);
   if (!validation.ok) {
     return {
@@ -69,6 +90,13 @@ export async function createFieldLogEntryAction(
     // El autor se deriva de la sesión, nunca del formulario (anti-suplantación).
     const member = await context.tenantDb.users.findByClerkUserId(context.userId);
     const authorName = member?.name?.trim() || member?.email || "Usuario";
+    // Fotos subidas: se guardan en el sistema (no como enlaces externos).
+    const stored: string[] = [];
+    for (const upload of uploads) {
+      const imageId = await context.tenantDb.apu.storeImage(upload.data, upload.mimeType);
+      stored.push(`/api/apu-images/${imageId}`);
+    }
+    values.photoUrls = [...values.photoUrls, ...stored];
     // Obtener la bitácora del proyecto
     const log = await context.tenantDb.fieldLog.getOrCreateLog(projectId);
     await context.tenantDb.fieldLog.createEntry(log.id, {
@@ -81,6 +109,7 @@ export async function createFieldLogEntryAction(
       authorName,
       authorRole: context.role,
       photoUrls: values.photoUrls,
+      budgetItemId: String(raw.budgetItemId ?? "").trim() || null,
     });
     revalidatePath(`/${tenantSlug}/projects/${projectId}`);
     return { status: "ok" };

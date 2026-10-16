@@ -397,23 +397,66 @@ export type EvmData = {
  * @param physicalProgressPct avance físico real 0–100, o `null` si no hay fuente
  * @param _actualCostMicro costo real incurrido en micro, o `null` si no hay fuente
  */
+/** Acta de avance resumida para el cálculo del valor ganado. */
+export type ProgressEntryInput = {
+  budgetItemId: string;
+  /** "YYYY-MM-DD" */
+  cutoffDate: string;
+  /** Cantidad ejecutada (micro). */
+  executedQuantity: string;
+};
+
+/**
+ * Valor ganado (micro-pesos) hasta `untilIsoDay`: Σ cantidad ejecutada ×
+ * costo unitario directo de cada partida (costo directo, sin AIU).
+ */
+export function earnedValueMicro(
+  budget: ProjectBudgetData,
+  entries: ProgressEntryInput[],
+  untilIsoDay: string,
+): bigint {
+  const unitCost = new Map<string, bigint>();
+  for (const chapter of budget.chapters) {
+    for (const item of chapter.items) unitCost.set(item.id, BigInt(item.unitCostDirect));
+  }
+  const executedByItem = new Map<string, bigint>();
+  for (const entry of entries) {
+    if (entry.cutoffDate > untilIsoDay || !unitCost.has(entry.budgetItemId)) continue;
+    executedByItem.set(
+      entry.budgetItemId,
+      (executedByItem.get(entry.budgetItemId) ?? BigInt(0)) + BigInt(entry.executedQuantity),
+    );
+  }
+  let total = BigInt(0);
+  for (const [itemId, executed] of executedByItem) {
+    total += (executed * unitCost.get(itemId)! + BigInt(500_000)) / BigInt(1_000_000);
+  }
+  return total;
+}
+
 export function buildEvm(
-  _budget: ProjectBudgetData | null,
+  budget: ProjectBudgetData | null,
   physicalProgressPct: number | null,
   _actualCostMicro: bigint | null,
+  earnedMicro: bigint | null = null,
 ): EvmData {
   const mm = (reason: string): EvmMetric => ({ value: null, measurable: false, reason });
 
-  // No existe en el esquema ninguna fuente de PV (línea base de cronograma),
-  // EV (avance físico) ni AC (costo real): el EVM no es medible todavía.
-  const reason = "No medible: sin avance físico ni costo real registrados";
+  // PV (cronograma valorizado) y AC (costo real por obra) todavía no tienen
+  // fuente en el sistema; EV sí, cuando hay actas de avance.
+  const hasEv = budget !== null && earnedMicro !== null;
+  const reason = hasEv
+    ? "Valor ganado medible; PV y AC requieren cronograma valorizado y costos reales"
+    : "No medible: sin avance físico ni costo real registrados";
 
   return {
     available: false,
     reason,
     physicalProgressPct,
     pv: mm("No medible: sin línea base de cronograma aprobada"),
-    ev: mm("No medible: sin registro de avance físico de obra"),
+    ev: hasEv
+      ? { value: formatMoneyMicro(earnedMicro!), measurable: true }
+      : mm("No medible: sin registro de avance físico de obra"),
     ac: mm("No medible: sin registro de costo real incurrido"),
     spi: mm("No medible: requiere EV y PV"),
     cpi: mm("No medible: requiere EV y AC"),
@@ -433,6 +476,7 @@ export function buildWeeklyReportData(
   fieldLog: FieldLogData | null,
   weekNumber: number,
   year: number,
+  progressEntries: ProgressEntryInput[] | null = null,
 ): WeeklyReportData {
   const reportDate = new Date().toISOString().split("T")[0];
   const { start, end } = isoWeekRange(year, weekNumber);
@@ -451,13 +495,21 @@ export function buildWeeklyReportData(
   // Compromisos programados (todos los de esa semana, independientemente del estado)
   const scheduled = commitments;
 
-  // Avance físico de obra: el esquema NO registra avance físico real. El PPC
-  // mide cumplimiento de compromisos (Lean), NO avance de obra, así que nunca
-  // se usa como avance físico. Sin fuente real, queda en `null`.
-  const physicalProgressPct: number | null = null;
+  // Avance físico: sale de las actas de avance (nunca del PPC de Lean, que
+  // mide cumplimiento de compromisos). Sin actas, queda en `null`.
+  const periodEndIso = formatPlainDate(end);
+  const earned =
+    budget && progressEntries && progressEntries.length > 0
+      ? earnedValueMicro(budget, progressEntries, periodEndIso)
+      : null;
+  const direct = budget ? BigInt(budget.directCostTotal) : BigInt(0);
+  const physicalProgressPct: number | null =
+    earned !== null && direct > BigInt(0)
+      ? Number((earned * BigInt(1000)) / direct) / 10
+      : null;
 
-  // EVM honesto: no medible mientras no existan avance físico ni costo real.
-  const evm = buildEvm(budget, physicalProgressPct, null);
+  // EVM honesto: EV medible con actas; PV y AC siguen sin fuente (N3).
+  const evm = buildEvm(budget, physicalProgressPct, null, earned);
 
   // Bitácora del período
   let fieldLogEntries: FieldLogEntryData[] = [];

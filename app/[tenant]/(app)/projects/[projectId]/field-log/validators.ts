@@ -1,3 +1,4 @@
+import { isValidPhotoUrl } from "@/lib/field-log-engine";
 export type CreateFieldLogEntryValues = {
   type: "ADVANCE" | "OBSERVATION" | "AUTHORIZATION" | "INCIDENT";
   entryDate: string; // YYYY-MM-DD
@@ -13,12 +14,7 @@ const TYPES = new Set(["ADVANCE", "OBSERVATION", "AUTHORIZATION", "INCIDENT"]);
 const WEATHER = new Set(["SUNNY", "CLOUDY", "RAIN_LIGHT", "RAIN_HEAVY"]);
 
 function isValidUrl(u: string): boolean {
-  try {
-    const url = new URL(u);
-    return url.protocol === "https:";
-  } catch {
-    return false;
-  }
+  return isValidPhotoUrl(u);
 }
 
 export function validateCreateFieldLogEntry(input: unknown) {
@@ -62,7 +58,7 @@ export function validateCreateFieldLogEntry(input: unknown) {
       const s = String(u ?? "").trim();
       if (s.length > 0) {
         if (!isValidUrl(s)) {
-          errors.photoUrls = ["Solo se permiten URLs HTTPS válidas."];
+          errors.photoUrls = ["Foto no válida."];
           break;
         }
         photoUrls.push(s);

@@ -79,6 +79,7 @@ export async function createLookaheadTaskAction(
       responsible: values.responsible,
       isRestricted: values.isRestricted ?? false,
       notes: values.notes ?? null,
+      budgetItemId: String(raw.budgetItemId ?? "").trim() || null,
     });
     revalidatePath(`/${tenantSlug}/projects/${projectId}`);
     return { status: "ok" };
@@ -122,6 +123,7 @@ export async function createWeeklyCommitmentAction(
       description: values.description,
       responsible: values.responsible,
       weekStartDate: values.weekStartDate,
+      budgetItemId: String(raw.budgetItemId ?? "").trim() || null,
     });
     revalidatePath(`/${tenantSlug}/projects/${projectId}`);
     return { status: "ok" };

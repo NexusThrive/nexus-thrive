@@ -23,6 +23,7 @@ import {
   type UpdateCommitmentStatusInput,
   bogotaInstantFromIsoDate,
   loadLeanPlan,
+  resolveBudgetItemOfProject,
 } from "./shared";
 
 export function createPlanDb(tenantId: string) {
@@ -109,9 +110,11 @@ export function createPlanDb(tenantId: string) {
           throw new Error("La fecha de fin no puede ser anterior a la de inicio.");
         }
 
+        const budgetItemId = await resolveBudgetItemOfProject(tenantId, projectId, input.budgetItemId);
         const created = await db.orm.public.LookaheadTask.create({
           tenantId,
           planId: plan.id,
+          budgetItemId,
           code: input.code,
           description: input.description,
           weekNumber: derivedWeek,
@@ -143,9 +146,11 @@ export function createPlanDb(tenantId: string) {
         const weekStart = bogotaToday(`${input.weekStartDate}T12:00:00Z`);
         const { year, week } = isoWeekOf(weekStart);
 
+        const budgetItemId = await resolveBudgetItemOfProject(tenantId, projectId, input.budgetItemId);
         const created = await db.orm.public.WeeklyCommitment.create({
           tenantId,
           planId: plan.id,
+          budgetItemId,
           weekNumber: week,
           year,
           description: input.description,

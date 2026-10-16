@@ -25,7 +25,7 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const CAUSES = new Set(["WEATHER", "MATERIALS", "LABOR", "EQUIPMENT", "DESIGN_CHANGE", "PREVIOUS_WORK", "OTHER"]);
 
 function asBoolean(v: unknown): boolean {
-  if (v === true || v === "true") return true;
+  if (v === true || v === "true" || v === "on") return true;
   if (v === false || v === "false") return false;
   return false;
 }

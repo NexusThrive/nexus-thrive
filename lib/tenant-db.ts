@@ -32,6 +32,7 @@ import {
 import { createCatalogDb } from "@/lib/construction/catalog";
 import { createQuotesDb } from "@/lib/construction/quotes";
 import { createProjectQuotesDb } from "@/lib/construction/project-quotes";
+import { createProgressDb } from "@/lib/construction/progress";
 import { createProjectsDb } from "@/lib/construction/projects";
 import { createProjectHeadersDb } from "@/lib/construction/project-headers";
 import { createBudgetsDb } from "@/lib/construction/budget";
@@ -728,6 +729,7 @@ export function createTenantDb(tenantId: string) {
 
     quotes: createQuotesDb(tenantId),
     projectQuotes: createProjectQuotesDb(tenantId),
+    progress: createProgressDb(tenantId),
 
     projects: createProjectsDb(tenantId),
 

@@ -11,6 +11,7 @@ import {
   type FieldLogData,
   bogotaInstantFromEntryDate,
   loadFieldLog,
+  resolveBudgetItemOfProject,
 } from "./shared";
 
 export function createFieldLogDb(tenantId: string) {
@@ -75,9 +76,11 @@ export function createFieldLogDb(tenantId: string) {
           throw new Error("Bitácora no encontrada en este negocio.");
         }
 
+        const budgetItemId = await resolveBudgetItemOfProject(tenantId, log.projectId, input.budgetItemId);
         const created = await db.orm.public.FieldLogEntry.create({
           tenantId,
           logId,
+          budgetItemId,
           type: input.type,
           entryDate: bogotaInstantFromEntryDate(input.entryDate),
           title: input.title,
