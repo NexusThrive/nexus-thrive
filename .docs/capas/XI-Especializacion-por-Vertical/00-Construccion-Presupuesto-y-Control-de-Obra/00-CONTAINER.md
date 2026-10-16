@@ -3,7 +3,7 @@ id: XI.00.00
 capa_padre: XI.00
 titulo: "Contenedor de obra"
 type: contenedor
-ruta: "/quotes/projects/[projectId]"
+ruta: "/projects/[projectId]"
 tabs: 5
 created: 2026-10-10
 updated: 2026-10-10
@@ -17,16 +17,17 @@ tags: [capas, construccion, contenedor, proyecto, tabs]
 ## Ruta
 
 ```
-app/[tenant]/(app)/quotes/projects/[projectId]/
+app/[tenant]/(app)/projects/[projectId]/
 ```
 
 El contenedor es **project-scoped**: el `projectId` es el contexto de todo lo que se hace (presupuesto, cronograma, bitácora, informes).
 
-### Decisión de ruta abierta
+### Decisión de ruta (resuelta 2026-10-16)
 
-- Coexisten hoy `app/[tenant]/(app)/quotes` (presupuestador actual) y `app/[tenant]/quotes/[id]/print`.
-- **Por definir:** si el contenedor se anida bajo `quotes/projects/[projectId]` (como dice el brief) o si `Project` se promueve a recurso propio (`projects/[projectId]`) y `quotes` pasa a ser una de sus tabs. Ver capa III y el contrato con la capa VI.00 (Proyectos).
-- Mientras se decide, **el brief manda**: `quotes/projects/[projectId]`.
+- La obra es un recurso propio: `app/[tenant]/(app)/projects/[projectId]`.
+- Las cotizaciones son versiones emitidas desde el presupuesto de la obra: pestaña **Cotizaciones** del contenedor y directorio `/quotes` con una carpeta por obra.
+- El catálogo APU vive en `/catalog` (importador en `/catalog/import`).
+- Las rutas anteriores (`/quotes/projects/...`, `/quotes/import`) redirigen.
 
 ## Las 5 tabs
 
@@ -34,6 +35,7 @@ El contenedor es **project-scoped**: el `projectId` es el contexto de todo lo qu
 | --- | --- | --- | --- |
 | 1 | **Ficha, Cliente & Encabezado** | I · II · IV · XIII | identificar partes, ubicación, roles, emisor |
 | 2 | **Presupuestador APU & AIU** | III | biblioteca APU, capítulos, cantidades, AIU, snapshot |
+| 2b | **Cotizaciones** | III · IV | versiones emitidas, aprobación del cliente, seguimientos |
 | 3 | **Planificador Lean** | V | hitos, lookahead 6 sem, WWP, PPC |
 | 4 | **Bitácora & Campo** | VII · VIII | diario de campo, evidencia fotográfica |
 | 5 | **Informes & Exportación** | IX · XI · XII | Informe Cero/Semanal, explosión BOM, PDF |
@@ -63,5 +65,5 @@ Borrador → Cotización → Contratada → En ejecución → Cerrada
 
 ## Dependencias
 
-- Requiere el modelo `Project` (aún **no existe** en Prisma). Es el prerrequisito estructural del contenedor. Ver plan en capa III / relación con VI.00.
+- `Project` existe en Prisma; presupuesto, plan y bitácora nacen con la obra.
 - Reutiliza `Customer` (CRM) como maestro de terceros.
