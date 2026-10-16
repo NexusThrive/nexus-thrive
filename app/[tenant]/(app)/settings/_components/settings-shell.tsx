@@ -8,6 +8,7 @@ import type { ModuleValue } from "@/lib/admin-catalogs";
 import ProfileTab from "./profile-tab";
 import ModulesTab from "./modules-tab";
 import TeamTab from "./team-tab";
+import { PageHeader } from "@/components/molecules/page-header";
 
 export type RoleValue = "SUPERADMIN" | "OWNER" | "STAFF";
 
@@ -70,14 +71,11 @@ export default function SettingsShell({
 
   return (
     <div className="mx-auto w-full max-w-4xl">
-        <header className="mb-6">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Ajustes
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Configura el perfil, los módulos y el equipo de tu negocio.
-          </p>
-        </header>
+        <PageHeader
+          eyebrow="Sistema"
+          title="Ajustes"
+          description="Configura el perfil, los módulos y el equipo de tu negocio."
+        />
 
         <div className="mb-6 flex gap-1 border-b border-border">
           {TABS.map((item) => (

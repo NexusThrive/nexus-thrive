@@ -24,6 +24,7 @@ import AiuConfigModal from "./aiu-config-modal";
 import CatalogImportModal from "./catalog-import-modal";
 import ApuEditorModal from "./apu-editor-modal";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { EmptyState } from "@/components/molecules/empty-state";
 
 /** Tarjeta KPI del resumen financiero del presupuesto. */
 function KpiCard({
@@ -355,19 +356,14 @@ export default function BudgetWorkspace({
 
       {/* Estructura jerárquica */}
       {budget.chapters.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-border bg-card p-8 text-center">
-          <Settings2
+        <EmptyState
+          className="rounded-lg border border-border bg-card"
+          title="El presupuesto está vacío"
+          description="Crea el primer capítulo para empezar a desglosar las partidas de la obra. Los totales se recalculan automáticamente con cada partida."
+          action={<><Settings2
             aria-hidden="true"
             className="mx-auto h-6 w-6 text-muted-foreground"
-          />
-          <p className="mt-3 text-sm font-medium text-foreground">
-            El presupuesto está vacío
-          </p>
-          <p className="mx-auto mt-1 max-w-md text-xs text-muted-foreground">
-            Crea el primer capítulo para empezar a desglosar las partidas de la
-            obra. Los totales se recalculan automáticamente con cada partida.
-          </p>
-          {!budget.isLocked ? (
+          />{!budget.isLocked ? (
             <button
               type="button"
               onClick={() => {
@@ -379,8 +375,8 @@ export default function BudgetWorkspace({
               <Plus aria-hidden="true" className="h-4 w-4" />
               Crear primer capítulo
             </button>
-          ) : null}
-        </div>
+          ) : null}</>}
+        />
       ) : (
         <div className="space-y-3">
           {budget.chapters.map((chapter) => (

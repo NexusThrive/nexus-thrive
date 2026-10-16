@@ -16,6 +16,7 @@ import {
   NewMembershipButton,
   type MembershipCustomerOption,
 } from "./_components/membership-form";
+import { PageHeader } from "@/components/molecules/page-header";
 
 const PAGE_SIZE = 10;
 
@@ -110,24 +111,19 @@ export default async function MembershipsPage({
   return (
     <div className="space-y-8">
       {/* Encabezado */}
-      <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
-          <h1 className="font-display text-[clamp(24px,4.4vw,34px)] font-bold leading-[1.12] tracking-[-0.02em] text-foreground">
-            Membresías
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Planes y renovaciones de{" "}
+      <PageHeader
+        eyebrow="Gestión"
+        title="Membresías"
+        description={<>Planes y renovaciones de{" "}
             <span className="font-medium text-foreground/80">
               {tenantRecord.name}
             </span>
-            .
-          </p>
-        </div>
-        <NewMembershipButton
+            .</>}
+        actions={<NewMembershipButton
           tenantSlug={tenantSlug}
           customers={customerOptions}
-        />
-      </header>
+        />}
+      />
 
       {/* Resumen */}
       <MembershipSummary metrics={metrics} />

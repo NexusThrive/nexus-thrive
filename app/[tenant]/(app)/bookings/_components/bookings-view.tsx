@@ -6,6 +6,7 @@ import { CalendarPlus, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { NLoader } from "@/components/atoms/n-loader";
 import { useToast } from "@/components/molecules/toast";
+import { StatTile } from "@/components/molecules/stat-tile";
 import {
   createBookingAction,
   updateBookingStatusAction,
@@ -13,6 +14,7 @@ import {
   type BookingStatusFormState,
 } from "../actions";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { PageHeader } from "@/components/molecules/page-header";
 
 export type BookingStatusValue =
   | "PENDING"
@@ -161,16 +163,11 @@ function BookingsContent({
 
   return (
     <div className="mx-auto w-full max-w-5xl">
-      <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Reservas
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Gestiona las reservas y su estado.
-          </p>
-        </div>
-        <button
+      <PageHeader
+        eyebrow="Gestión"
+        title="Reservas"
+        description="Gestiona las reservas y su estado."
+        actions={<button
           type="button"
           onClick={() => setShowForm((prev) => !prev)}
           className={buttonVariants()}
@@ -181,15 +178,15 @@ function BookingsContent({
             <CalendarPlus aria-hidden="true" className="h-4 w-4" />
           )}
           {showForm ? "Cerrar" : "Nueva reserva"}
-        </button>
-      </header>
+        </button>}
+      />
 
       {/* KPIs reales */}
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <KpiCard label="Reservas totales" value={metrics.total} tone="gold" />
-        <KpiCard label="Confirmadas" value={metrics.confirmed} tone="success" />
-        <KpiCard label="Pendientes" value={metrics.pending} tone="warning" />
-      </div>
+      <section aria-label="Resumen de reservas" className="mb-6 grid grid-cols-2 gap-3.5 sm:grid-cols-3">
+        <StatTile index={0} label="Reservas totales" value={metrics.total} tone="neutral" note="Todas las registradas" />
+        <StatTile index={1} label="Confirmadas" value={metrics.confirmed} tone="success" note="Listas para atender" />
+        <StatTile index={2} label="Pendientes" value={metrics.pending} tone="warning" pulse={metrics.pending > 0} note="Esperan confirmación" />
+      </section>
 
       {showForm && (
         <form
@@ -452,26 +449,3 @@ function BookingsContent({
   );
 }
 
-function KpiCard({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: number;
-  tone: "gold" | "success" | "warning";
-}) {
-  const toneClass =
-    tone === "gold"
-      ? "text-gold-600"
-      : tone === "success"
-        ? "text-success"
-        : "text-warning-foreground";
-
-  return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <div className={cn("text-2xl font-bold", toneClass)}>{value}</div>
-      <div className="mt-1 text-sm text-muted-foreground">{label}</div>
-    </div>
-  );
-}

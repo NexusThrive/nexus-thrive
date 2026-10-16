@@ -104,7 +104,7 @@ export default function PreviewTable({ rows, blockMode }: { rows: ParsedRow[]; b
       <div className="overflow-x-auto">
         <table className="w-full min-w-[720px] text-left">
           <thead>
-            <tr className="bg-muted text-[11px] uppercase tracking-wide text-muted-foreground">
+            <tr className="bg-muted text-[11px] text-muted-foreground">
               <th className="px-3 py-2 font-medium">Estado</th>
               <th className="px-3 py-2 font-medium">{blockMode ? "Actividad" : "Nombre"}</th>
               <th className="px-3 py-2 font-medium">Código</th>

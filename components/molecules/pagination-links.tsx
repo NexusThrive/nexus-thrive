@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 /**
  * Paginación genérica. `paramKey` es el parámetro de página de la sección
@@ -48,7 +49,7 @@ export default function PaginationLinks({
           type="button"
           disabled={page <= 1 || isPending}
           onClick={() => navigateToPage(page - 1)}
-          className="inline-flex h-9 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+          className={buttonVariants({ variant: "outline", size: "sm" })}
         >
           <ChevronLeft aria-hidden="true" className="h-4 w-4" />
           Anterior
@@ -57,7 +58,7 @@ export default function PaginationLinks({
           type="button"
           disabled={page >= totalPages || isPending}
           onClick={() => navigateToPage(page + 1)}
-          className="inline-flex h-9 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+          className={buttonVariants({ variant: "outline", size: "sm" })}
         >
           {isPending ? (
             <NLoader size={16} className="text-current" />

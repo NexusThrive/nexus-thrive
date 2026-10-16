@@ -1,16 +1,11 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { CountUp } from "@/components/atoms/count-up";
+import { CountUp, type CountFormat } from "@/components/atoms/count-up";
 import { Sparkline } from "@/components/atoms/sparkline";
 import { cn } from "@/lib/utils";
 
-export type KpiFormat = "number" | "cop";
-
-const FORMATTERS: Record<KpiFormat, (n: number) => string> = {
-  number: (n) => Math.round(n).toLocaleString("es-CO"),
-  cop: (n) => `${n < 0 ? "−" : ""}$ ${Math.round(Math.abs(n)).toLocaleString("es-CO")}`,
-};
+export type KpiFormat = CountFormat;
 
 /**
  * KPI NEXUS THRIVE: etiqueta + icono discreto arriba, valor Montserrat 600
@@ -33,6 +28,7 @@ export function KpiCard({
   href,
   index = 0,
   className,
+  children,
 }: {
   label: string;
   value: number | string;
@@ -50,6 +46,8 @@ export function KpiCard({
   /** Posición en la fila: escalona la entrada y el trazo. */
   index?: number;
   className?: string;
+  /** Detalle al pie, separado por una línea (p. ej. desglose por método). */
+  children?: ReactNode;
 }) {
   const body = (
     <>
@@ -66,7 +64,7 @@ export function KpiCard({
           compact ? "text-2xl leading-8" : "text-[clamp(20px,3.6vw,28px)] leading-[1.2]",
         )}
       >
-        {typeof value === "number" ? <CountUp value={value} format={FORMATTERS[format]} /> : value}
+        {typeof value === "number" ? <CountUp value={value} format={format} /> : value}
       </p>
       {delta || hint ? (
         <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
@@ -77,6 +75,7 @@ export function KpiCard({
       {trend ? (
         <Sparkline values={trend} color={trendColor} delay={250 + index * 80} className="mt-auto pt-2" />
       ) : null}
+      {children ? <div className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">{children}</div> : null}
     </>
   );
 

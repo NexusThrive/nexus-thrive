@@ -12,6 +12,7 @@ import {
   type VerticalValue,
 } from "@/lib/admin-catalogs";
 import type { TenantSortKey } from "@/lib/admin-db";
+import { buttonVariants } from "@/components/atoms/button-variants";
 import { cn } from "@/lib/utils";
 
 const SORT_OPTIONS: { value: TenantSortKey; label: string }[] = [
@@ -64,57 +65,15 @@ export default function TenantToolbar({
     });
   };
 
-  return (
-    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-        <SearchInput
-          paramKey="q"
-          pageParam="page"
-          ariaLabel="Buscar negocios"
-          placeholder="Buscar por nombre, slug o dominio…"
-          defaultValue={q}
-        />
-        <FilterSelect
-          paramKey="vertical"
-          pageParam="page"
-          allLabel="Todas las verticales"
-          options={VERTICALS.map((value) => ({
-            value,
-            label: VERTICAL_LABELS[value],
-          }))}
-          value={vertical ?? ""}
-        />
-        <FilterSelect
-          paramKey="status"
-          pageParam="page"
-          allLabel="Todos los estados"
-          options={[
-            { value: "active", label: "Activos" },
-            { value: "inactive", label: "Suspendidos" },
-          ]}
-          value={status ?? ""}
-        />
-        <FilterSelect
-          paramKey="sort"
-          pageParam="page"
-          allLabel="Orden: más recientes"
-          options={SORT_OPTIONS}
-          value={sort}
-        />
-      </div>
-
+  // Acciones a la derecha del buscador.
+  const actions = (
       <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={toggleAttention}
           disabled={isPending}
           aria-pressed={attentionOnly}
-          className={cn(
-            "inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded border px-3 text-[13px] font-semibold transition disabled:opacity-60",
-            attentionOnly
-              ? "border-transparent bg-primary text-primary-foreground"
-              : "border-border-strong bg-transparent text-foreground hover:bg-surface-muted",
-          )}
+          className={buttonVariants({ variant: attentionOnly ? "primary" : "outline" })}
         >
           {isPending ? (
             <NLoader size={16} className="text-current" />
@@ -138,11 +97,57 @@ export default function TenantToolbar({
 
         <a
           href={exportHref}
-          className="inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded border border-border-strong px-3 text-[13px] font-semibold text-foreground transition hover:bg-surface-muted"
+          className={buttonVariants({ variant: "outline" })}
         >
           <Download aria-hidden="true" className="size-4" />
           Exportar CSV
         </a>
+      </div>
+  );
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap items-center gap-2 [&>div:first-child]:max-w-none">
+        <SearchInput
+          paramKey="q"
+          pageParam="page"
+          ariaLabel="Buscar negocios"
+          placeholder="Buscar por nombre, slug o dominio…"
+          defaultValue={q}
+        />
+        {actions}
+      </div>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+        <FilterSelect
+          fullWidth
+          paramKey="vertical"
+          pageParam="page"
+          allLabel="Todas las verticales"
+          options={VERTICALS.map((value) => ({
+            value,
+            label: VERTICAL_LABELS[value],
+          }))}
+          value={vertical ?? ""}
+        />
+        <FilterSelect
+          fullWidth
+          paramKey="status"
+          pageParam="page"
+          allLabel="Todos los estados"
+          options={[
+            { value: "active", label: "Activos" },
+            { value: "inactive", label: "Suspendidos" },
+          ]}
+          value={status ?? ""}
+        />
+        <FilterSelect
+          fullWidth
+          paramKey="sort"
+          pageParam="page"
+          allLabel="Orden: más recientes"
+          options={SORT_OPTIONS}
+          value={sort}
+        />
       </div>
     </div>
   );

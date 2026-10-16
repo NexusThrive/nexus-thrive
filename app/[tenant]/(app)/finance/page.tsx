@@ -8,6 +8,7 @@ import FilterSelect from "@/components/molecules/filter-select";
 import PaymentsTable, { type PaymentViewRow } from "./_components/payments-table";
 import ExpensesTable, { type ExpenseViewRow } from "./_components/expenses-table";
 import { PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/finance";
+import { PageHeader } from "@/components/molecules/page-header";
 
 const PAGE_SIZE = 10;
 
@@ -130,16 +131,13 @@ export default async function FinancePage({
   return (
     <div className="space-y-8">
       {/* Encabezado */}
-      <header className="flex flex-col gap-1">
-        <h1 className="font-display text-[clamp(24px,4.4vw,34px)] font-bold leading-[1.12] tracking-[-0.02em] text-foreground">
-          Finanzas y caja menor
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Cobros y gastos de{" "}
+      <PageHeader
+        eyebrow="Gestión"
+        title="Finanzas y caja menor"
+        description={<>Cobros y gastos de{" "}
           <span className="font-medium text-foreground/80">{tenantRecord.name}</span>{" "}
-          · {monthLabel}.
-        </p>
-      </header>
+          · {monthLabel}.</>}
+      />
 
       {/* Resumen del mes */}
       <FinanceSummary

@@ -37,6 +37,7 @@ import {
 } from "../quotes/actions";
 import { fieldClasses, inputClasses, labelClasses } from "@/components/atoms/input";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { EmptyState } from "@/components/molecules/empty-state";
 
 const FOLLOW_UP_TYPES: { value: FollowUpTypeValue; label: string; icon: typeof Phone }[] = [
   { value: "CALL", label: "Llamada", icon: Phone },
@@ -165,14 +166,12 @@ export default function ProjectQuotesWorkspace({
         ) : null}
 
         {quotes.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-border bg-card p-8 text-center">
-            <FileText aria-hidden="true" className="mx-auto h-8 w-8 text-muted-foreground" />
-            <p className="mt-2 text-sm font-medium text-foreground">Todavía no hay cotizaciones</p>
-            <p className="mx-auto mt-1 max-w-md text-xs text-muted-foreground">
-              Arma el presupuesto en la pestaña Presupuestador y emite la primera versión para el
-              cliente.
-            </p>
-          </div>
+          <EmptyState
+            className="rounded-lg border border-border bg-card"
+            title="Todavía no hay cotizaciones"
+            description="Arma el presupuesto en la pestaña Presupuestador y emite la primera versión para el cliente."
+            action={<><FileText aria-hidden="true" className="mx-auto h-8 w-8 text-muted-foreground" /></>}
+          />
         ) : (
           <ol className="space-y-3">
             {quotes.map((quote) => {

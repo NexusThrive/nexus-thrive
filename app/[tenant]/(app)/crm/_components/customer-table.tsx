@@ -3,18 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import {
-  Archive,
-  ChevronLeft,
-  ChevronRight,
-  Mail,
-  Pencil,
-  Phone,
-  RotateCcw,
-  Trash2,
-  Users,
-  X,
-} from "lucide-react";
+import { Archive, ChevronLeft, ChevronRight, Mail, Pencil, Phone, RotateCcw, Trash2, X } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
 import {
   archiveCustomerAction,
@@ -26,6 +15,7 @@ import ConfirmDialog from "./confirm-dialog";
 import CustomerForm from "./customer-form";
 import { useVerticalTerms } from "../../vertical-terms-context";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { EmptyState } from "@/components/molecules/empty-state";
 
 export type CustomerRow = {
   id: string;
@@ -239,25 +229,11 @@ export default function CustomerTable({
 
       {/* ---------- Estado vacío ---------- */}
       {rows.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card px-6 py-12 text-center">
-          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-sm bg-muted text-muted-foreground">
-            <Users aria-hidden="true" className="h-6 w-6" />
-          </span>
-          <p className="mt-4 text-sm font-medium text-foreground">
-            {query
-              ? `Sin coincidencias para «${query}»`
-              : isArchivedView
-                ? `No hay ${customersLabel} archivados`
-                : `Aún no hay ${customersLabel} registrados`}
-          </p>
-          <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-            {query
-              ? "Prueba con otro término o limpia la búsqueda."
-              : isArchivedView
-                ? `Los ${customersLabel} que archives aparecerán aquí.`
-                : `Crea el primer ${customerLabel} con el botón «Nuevo ${customerLabel}».`}
-          </p>
-        </div>
+        <EmptyState
+          className="rounded-lg border border-border bg-card"
+          title={query ? `Sin coincidencias para «${query}»` : isArchivedView ? `No hay ${customersLabel} archivados` : `Aún no hay ${customersLabel} registrados`}
+          description={query ? "Prueba con otro término o limpia la búsqueda." : isArchivedView ? `Los ${customersLabel} que archives aparecerán aquí.` : `Crea el primer ${customerLabel} con el botón «Nuevo ${customerLabel}».`}
+        />
       ) : (
         <>
           {/* ---------- Tabla (desktop) ---------- */}
@@ -266,7 +242,7 @@ export default function CustomerTable({
               <caption className="sr-only">
                 {terms.customers} de {tenantSlug}
               </caption>
-              <thead className="border-b border-border bg-muted text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <thead className="border-b border-border bg-muted text-xs font-semibold text-muted-foreground">
                 <tr>
                   {isArchivedView ? (
                     <th scope="col" className="w-10 px-4 py-3">

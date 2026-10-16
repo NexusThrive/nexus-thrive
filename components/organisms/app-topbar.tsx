@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
  * scroll y la barra de ruta corre por su borde al navegar.
  */
 export function AppTopbar() {
-  const { active, tenantName, hrefFor, setPaletteOpen } = useShell();
+  const { title, brandName, hrefFor, openSearch } = useShell();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -47,21 +47,21 @@ export function AppTopbar() {
       <Link href={hrefFor("")} aria-label="Inicio" className="flex min-w-0 items-center gap-2.5 md:hidden">
         <BrandLogo variant="mark" size={26} className="shrink-0 text-primary" />
         <span className="flex min-w-0 flex-col leading-tight">
-          <b className="truncate font-display text-sm font-semibold">{tenantName}</b>
+          <b className="truncate font-display text-sm font-semibold">{brandName}</b>
           <small className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <i aria-hidden="true" className="inline-block size-1.5 -skew-x-[24deg] bg-accent" />
-            {active?.label ?? "Inicio"}
+            {title}
           </small>
         </span>
       </Link>
 
-      <h1 className="hidden truncate font-display text-[15px] font-semibold md:block">{active?.label ?? "Inicio"}</h1>
+      <h1 className="hidden truncate font-display text-[15px] font-semibold md:block">{title}</h1>
 
       <div className="flex-1" />
 
       <button
         type="button"
-        onClick={() => setPaletteOpen(true)}
+        onClick={openSearch}
         className="hidden h-[38px] min-w-[240px] items-center gap-2.5 rounded-md border border-border bg-surface pl-3 pr-2.5 text-[13px] text-muted-foreground transition-colors duration-200 hover:border-border-input md:flex"
       >
         <Search aria-hidden="true" className="size-4" />
@@ -70,7 +70,7 @@ export function AppTopbar() {
       </button>
       <button
         type="button"
-        onClick={() => setPaletteOpen(true)}
+        onClick={openSearch}
         aria-label="Buscar"
         data-press=""
         className="grid size-10 place-items-center rounded-md hover:bg-surface-muted md:hidden"

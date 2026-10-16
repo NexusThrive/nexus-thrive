@@ -7,7 +7,7 @@ import { Command } from "cmdk";
 import { Moon, Search } from "lucide-react";
 import { Kbd } from "@/components/atoms/kbd";
 import { setTheme } from "@/components/atoms/theme-toggle";
-import { useShell } from "@/components/providers/shell-context";
+import { usePalette, useShell } from "@/components/providers/shell-context";
 
 /**
  * Paleta de comandos (Ctrl/⌘ K): ir a cualquier sección, crear algo o cambiar
@@ -15,7 +15,8 @@ import { useShell } from "@/components/providers/shell-context";
  * (la opción activa lleva el corte oro), Enter para abrir, Esc para cerrar.
  */
 export function CommandPalette() {
-  const { groups, quickActions, hrefFor, paletteOpen, setPaletteOpen } = useShell();
+  const { groups, quickActions, hrefFor } = useShell();
+  const { open: paletteOpen, setOpen: setPaletteOpen } = usePalette();
   const router = useRouter();
 
   useEffect(() => {

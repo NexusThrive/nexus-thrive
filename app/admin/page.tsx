@@ -91,14 +91,14 @@ export default async function AdminPage({
     <div className="space-y-8">
       <AdminHeader />
 
-      <section id="resumen" className="scroll-mt-6">
+      <section id="resumen" className="scroll-mt-20">
         <ExecutiveKpis metrics={metrics} />
       </section>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <section
           id="negocios"
-          className="scroll-mt-6 space-y-4 lg:col-span-2"
+          className="scroll-mt-20 space-y-4 lg:col-span-2"
         >
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h2 className="font-display text-lg font-semibold text-foreground">
@@ -133,7 +133,7 @@ export default async function AdminPage({
         <aside className="space-y-8">
           <section
             id="actividad"
-            className="scroll-mt-6 rounded-lg border border-border bg-card p-5"
+            className="scroll-mt-20 rounded-lg border border-border bg-card p-5"
           >
             <h2 className="font-display text-base font-semibold text-foreground">
               Actividad de la plataforma
@@ -148,7 +148,7 @@ export default async function AdminPage({
 
           <section
             id="auditoria"
-            className="scroll-mt-6 rounded-lg border border-border bg-card p-5"
+            className="scroll-mt-20 rounded-lg border border-border bg-card p-5"
           >
             <h2 className="font-display text-base font-semibold text-foreground">
               Auditoría

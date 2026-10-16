@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { useShell } from "@/components/providers/shell-context";
+import { usePalette } from "@/components/providers/shell-context";
 import { withShell } from "../../.storybook/decorators";
 import { CommandPalette } from "./command-palette";
 
 function OpenPalette() {
-  const { setPaletteOpen } = useShell();
-  useEffect(() => setPaletteOpen(true), [setPaletteOpen]);
+  const { setOpen } = usePalette();
+  useEffect(() => setOpen(true), [setOpen]);
   return <CommandPalette />;
 }
 

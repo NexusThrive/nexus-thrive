@@ -21,7 +21,8 @@ import { getVerticalTerms, type VerticalTerms } from "@/lib/vertical-terms";
 export type NavItem = {
   /** Clave estable (para React y para la paleta de comandos). */
   key: string;
-  module: ModuleValue | "settings";
+  /** Módulo del negocio al que pertenece (no aplica en el panel CEO). */
+  module?: ModuleValue | "settings";
   label: string;
   /** Ruta relativa al negocio: "" = inicio, "/crm", "/projects"… */
   href: string;
@@ -70,7 +71,7 @@ export const SETTINGS_ITEM: NavItem = {
 /**
  * Navegación del negocio: solo los módulos activos, en el orden del catálogo,
  * con el vocabulario de la vertical (Socios, Pacientes, Obras…). Grupos:
- * General (inicio), Gestión (módulos) y Sistema (configuración).
+ * General (inicio, siempre), Gestión (módulos) y Sistema (configuración).
  */
 export function buildTenantNav(vertical: VerticalValue, activeModules: readonly ModuleValue[]): NavGroup[] {
   const terms = getVerticalTerms(vertical);
@@ -87,7 +88,8 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
   };
   const enabled = MODULES.filter((moduleName) => active.has(moduleName));
   return [
-    { label: "General", items: enabled.filter((m) => m === "dashboard").flatMap(items) },
+    // El inicio existe siempre (es la raíz del negocio), con o sin el módulo.
+    { label: "General", items: items("dashboard") },
     { label: "Gestión", items: enabled.filter((m) => m !== "dashboard").flatMap(items) },
     { label: "Sistema", items: [SETTINGS_ITEM] },
   ].filter((group) => group.items.length > 0);

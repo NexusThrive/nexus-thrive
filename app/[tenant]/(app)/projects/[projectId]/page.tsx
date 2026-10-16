@@ -16,6 +16,7 @@ import { ReportsWorkspace } from "./_components/reports-workspace";
 import { prepareProjectAction } from "../actions";
 import PrepareProject from "./_components/prepare-project";
 import ProjectQuotesWorkspace from "./_components/project-quotes-workspace";
+import { EmptyState } from "@/components/molecules/empty-state";
 
 function firstString(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
@@ -37,18 +38,15 @@ function formatDate(value: string): string {
 /** Placeholder de las pestañas que llegan en fases posteriores del vertical. */
 function TabPlaceholder({ label }: { label: string }) {
   return (
-    <div className="rounded-lg border border-dashed border-border bg-card p-8 text-center">
-      <Construction
+    <EmptyState
+      className="rounded-lg border border-border bg-card"
+      title={label}
+      description="Esta sección llega en una próxima fase del vertical de construcción. FASE 1 entrega el contenedor y la ficha del proyecto (tab “Ficha y cliente”)."
+      action={<><Construction
         aria-hidden="true"
         className="mx-auto h-6 w-6 text-muted-foreground"
-      />
-      <p className="mt-3 text-sm font-medium text-foreground">{label}</p>
-      <p className="mx-auto mt-1 max-w-md text-xs text-muted-foreground">
-        Esta sección llega en una próxima fase del vertical de construcción.
-        FASE 1 entrega el contenedor y la ficha del proyecto (tab “Ficha y
-        cliente”).
-      </p>
-    </div>
+      /></>}
+    />
   );
 }
 
@@ -139,7 +137,7 @@ export default async function ProjectDetailPage({
               </span>
               <ProjectStatusBadge status={project.status} />
             </div>
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            <h1 className="mt-1 font-display text-[clamp(24px,4.4vw,34px)] font-bold leading-[1.12] tracking-[-0.02em] text-foreground">
               {project.name}
             </h1>
             {project.description ? (

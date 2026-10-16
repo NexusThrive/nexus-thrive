@@ -73,7 +73,7 @@ export default function QuoteDocumentSheet({
             <div className="overflow-x-auto">
               <table className="mt-1 w-full border-collapse text-sm">
                 <thead>
-                  <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
+                  <tr className="text-left text-xs font-semibold text-muted-foreground">
                     <th className="py-1.5 pr-2 font-medium">Ítem</th>
                     <th className="py-1.5 pr-2 font-medium">Descripción</th>
                     <th className="py-1.5 pr-2 text-right font-medium">Und</th>

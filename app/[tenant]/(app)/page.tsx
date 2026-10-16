@@ -8,6 +8,8 @@ import { getVerticalTerms } from "@/lib/vertical-terms";
 import { formatCurrency, formatRelativeTime } from "@/lib/format";
 import type { RecentActivityItem } from "@/lib/dashboard-types";
 import { greetingFor, percentChange, previousBogotaMonth } from "@/lib/dashboard";
+import { sortModules } from "@/lib/admin-catalogs";
+import { quickCreateActions } from "@/lib/navigation/quick-create";
 import { Delta } from "@/components/atoms/delta";
 import { RevealText } from "@/components/atoms/reveal-text";
 import { KpiCard } from "@/components/molecules/kpi-card";
@@ -34,7 +36,9 @@ export default async function TenantDashboard({
   const tenantRecord = await db.orm.public.Tenant.where({
     slug: tenantSlug,
     active: true,
-  }).first();
+  })
+    .include("modules", (module) => module.select("moduleName", "active"))
+    .first();
 
   if (!tenantRecord) {
     notFound();
@@ -73,6 +77,16 @@ export default async function TenantDashboard({
   // Vocabulario adaptativo de la vertical (Socios / Pacientes / Turistas…).
   const terms = getVerticalTerms(tenantRecord.vertical);
   const base = `/${tenantSlug}`;
+  const activeModules = sortModules(
+    tenantRecord.modules.filter((m) => m.active).map((m) => m.moduleName),
+  );
+  const has = (m: (typeof activeModules)[number]) => activeModules.includes(m);
+  const quickActions = quickCreateActions(tenantRecord.vertical, activeModules);
+  // La variación solo se muestra si hay mes anterior con qué comparar.
+  const deltaFor = (current: number, before: number, inverse = false) => {
+    const change = percentChange(current, before);
+    return change == null ? undefined : <Delta value={change} inverse={inverse} />;
+  };
 
   const activityItems: RecentActivityItem[] = recentActivity.map((item) => ({
     id: item.id,
@@ -98,9 +112,9 @@ export default async function TenantDashboard({
           value={metrics.income}
           format="cop"
           icon={TrendingUp}
-          delta={<Delta value={percentChange(metrics.income, previous.income)} />}
-          hint="vs. mes anterior"
-          href={`${base}/finance`}
+          delta={deltaFor(metrics.income, previous.income)}
+          hint={percentChange(metrics.income, previous.income) == null ? "Cobros del mes" : "vs. mes anterior"}
+          href={has("finance") ? `${base}/finance` : undefined}
         />
         <KpiCard
           index={1}
@@ -108,7 +122,7 @@ export default async function TenantDashboard({
           value={activeCustomers}
           icon={Users}
           hint={activeCustomers > 0 ? "en tu cartera" : `Sin ${terms.customers.toLowerCase()} aún`}
-          href={`${base}/crm`}
+          href={has("crm") ? `${base}/crm` : undefined}
         />
         <KpiCard
           index={2}
@@ -116,9 +130,9 @@ export default async function TenantDashboard({
           value={metrics.expenses}
           format="cop"
           icon={MinusCircle}
-          delta={<Delta value={percentChange(metrics.expenses, previous.expenses)} inverse />}
+          delta={deltaFor(metrics.expenses, previous.expenses, true)}
           hint="caja menor y fijos"
-          href={`${base}/finance`}
+          href={has("finance") ? `${base}/finance` : undefined}
         />
         <KpiCard
           index={3}
@@ -127,17 +141,19 @@ export default async function TenantDashboard({
           format="cop"
           icon={Wallet}
           alert={metrics.balance < 0}
-          delta={<Delta value={percentChange(metrics.balance, previous.balance)} />}
+          delta={deltaFor(metrics.balance, previous.balance)}
           hint="ingresos menos gastos"
-          href={`${base}/finance`}
+          href={has("finance") ? `${base}/finance` : undefined}
         />
       </section>
 
       <section className="mt-3.5 grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
         <RecentActivity items={activityItems} />
-        <QuickActions tenantSlug={tenantRecord.slug} terms={terms} />
+        <QuickActions tenantSlug={tenantRecord.slug} actions={quickActions} />
       </section>
 
+      {has("memberships") ? (
+        <>
       <SectionTitle
         title="Membresías"
         action={
@@ -147,6 +163,8 @@ export default async function TenantDashboard({
         }
       />
       <MembershipSummary metrics={membershipMetrics} />
+        </>
+      ) : null}
     </div>
   );
 }

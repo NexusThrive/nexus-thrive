@@ -1,0 +1,22 @@
+/* ==========================================================================
+   Select nativo con la flecha de la marca en TODA la app (mismo dibujo que el
+   átomo Select). Va sin capa a propósito: los formularios arman sus clases
+   con funciones de validación y no siempre usan `selectClasses`; esta regla
+   garantiza la misma flecha y el espacio para ella en todos.
+   ========================================================================== */
+select:not([multiple]):not([size]) {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--foreground-muted) 50%),
+    linear-gradient(135deg, var(--foreground-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 13px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 34px;
+  cursor: pointer;
+}
+select:not([multiple]):not([size]):disabled {
+  cursor: not-allowed;
+}

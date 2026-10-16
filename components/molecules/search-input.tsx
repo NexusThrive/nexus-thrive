@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
+import { inputClasses } from "@/components/atoms/input";
+import { cn } from "@/lib/utils";
 
 const DEBOUNCE_MS = 250;
 
@@ -78,10 +80,10 @@ export default function SearchInput({
   }, [value]);
 
   return (
-    <div className="relative w-full sm:max-w-xs">
+    <div className="relative w-full min-w-[200px] sm:max-w-xs sm:flex-1">
       <Search
         aria-hidden="true"
-        className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+        className="pointer-events-none absolute left-3 top-1/2 size-[18px] -translate-y-1/2 text-muted-foreground"
       />
       <input
         ref={inputRef}
@@ -91,7 +93,7 @@ export default function SearchInput({
         placeholder={placeholder}
         value={value}
         onChange={(event) => setValue(event.target.value)}
-        className="h-10 w-full rounded-lg border border-border bg-card pr-9 pl-9 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-ring/40 focus:border-ring focus:outline-2 focus:outline-ring/30"
+        className={cn(inputClasses, "pl-[38px] pr-9 [&::-webkit-search-cancel-button]:hidden")}
       />
       <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
         {isPending ? (
@@ -101,7 +103,7 @@ export default function SearchInput({
             type="button"
             aria-label="Limpiar búsqueda"
             onClick={() => setValue("")}
-            className="rounded p-0.5 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+            className="rounded-sm p-0.5 text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
           >
             <X aria-hidden="true" className="h-4 w-4" />
           </button>

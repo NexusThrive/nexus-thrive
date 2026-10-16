@@ -16,6 +16,7 @@
 /* En la capa base: si no, sus reglas sin capa (h1, p…) le ganan a las utilidades. */
 @import "../packages/brand/css/base.css" layer(base);
 @import "./styles/motion.css";
+@import "./styles/forms.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 

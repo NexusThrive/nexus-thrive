@@ -94,7 +94,7 @@ export function AuthBrandPanel({ mode }: { mode: AuthMode }) {
                 <div className="min-w-0 flex-1 leading-tight">
                   <small className="text-xs text-muted-foreground">Ingresos de hoy</small>
                   <p className="font-display text-[26px] font-bold tabular-nums tracking-[-0.015em]">
-                    <CountUp value={2480000} duration={1100} format={(n) => `$ ${Math.round(n).toLocaleString("es-CO")}`} />
+                    <CountUp value={2480000} duration={1100} format="cop" />
                   </p>
                 </div>
                 <span className="inline-flex items-center gap-0.5 text-xs font-semibold text-success">

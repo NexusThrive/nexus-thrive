@@ -67,7 +67,7 @@ export default function MembershipTable({
       {/* Desktop */}
       <div className="hidden overflow-hidden rounded-lg border border-border bg-card md:block">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-border bg-muted text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <thead className="border-b border-border bg-muted text-xs font-semibold text-muted-foreground">
             <tr>
               <th scope="col" className="px-4 py-3">
                 Cliente

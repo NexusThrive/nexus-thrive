@@ -62,7 +62,7 @@ export default function ProjectsTable({
     <div className="space-y-4">
       <div className="overflow-x-auto rounded-lg border border-border bg-card">
         <table className="min-w-full divide-y divide-border text-sm">
-          <thead className="bg-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
+          <thead className="bg-muted text-left text-xs font-semibold text-muted-foreground">
             <tr>
               <th className="px-4 py-3 font-medium">Código</th>
               <th className="px-4 py-3 font-medium">Proyecto</th>

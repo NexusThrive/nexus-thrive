@@ -3,6 +3,11 @@ import { activeNavItem, buildTenantNav, isNavActive, tenantRelativePath } from "
 import { quickCreateActions } from "./quick-create";
 
 describe("buildTenantNav", () => {
+  it("siempre muestra Inicio aunque el módulo de panel no esté activo", () => {
+    const groups = buildTenantNav("construction", ["quotes"]);
+    expect(groups[0].items.map((i) => i.label)).toEqual(["Inicio"]);
+  });
+
   it("solo muestra módulos activos y siempre Configuración", () => {
     const groups = buildTenantNav("gym", ["dashboard", "crm"]);
     expect(groups.map((g) => g.label)).toEqual(["General", "Gestión", "Sistema"]);
@@ -13,7 +18,7 @@ describe("buildTenantNav", () => {
     const labels = buildTenantNav("construction", ["quotes"])
       .flatMap((g) => g.items)
       .map((i) => i.label);
-    expect(labels).toEqual(["Obras", "Cotizaciones", "Catálogo APU", "Configuración"]);
+    expect(labels).toEqual(["Inicio", "Obras", "Cotizaciones", "Catálogo APU", "Configuración"]);
   });
 });
 

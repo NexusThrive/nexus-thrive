@@ -3,6 +3,8 @@
 import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { NLoader } from "@/components/atoms/n-loader";
+import { selectClasses } from "@/components/atoms/input";
+import { cn } from "@/lib/utils";
 
 /**
  * Select de filtro que mantiene la URL como única fuente de verdad.
@@ -16,12 +18,15 @@ export default function FilterSelect({
   allLabel,
   options,
   value,
+  fullWidth = false,
 }: {
   paramKey: string;
   pageParam: string;
   allLabel: string;
   options: readonly { value: string; label: string }[];
   value: string;
+  /** Ocupa todo el ancho de su celda (barras de filtros en rejilla). */
+  fullWidth?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -42,13 +47,13 @@ export default function FilterSelect({
   };
 
   return (
-    <span className="relative inline-flex">
+    <span className={cn("relative inline-flex", fullWidth && "w-full")}>
       <select
         aria-label={allLabel}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         disabled={isPending}
-        className="h-10 w-full appearance-none rounded-lg border border-border bg-card pr-8 pl-3 text-sm text-foreground/80 transition hover:border-ring/40 focus:border-ring focus:outline-2 focus:outline-ring/30 disabled:opacity-60 sm:w-auto"
+        className={cn(selectClasses, fullWidth ? "w-full" : "w-full sm:w-auto", isPending && "bg-none")}
       >
         <option value="">{allLabel}</option>
         {options.map((option) => (
@@ -57,24 +62,11 @@ export default function FilterSelect({
           </option>
         ))}
       </select>
-      <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2">
-        {isPending ? (
+      {isPending ? (
+        <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2">
           <NLoader size={14} className="text-current" />
-        ) : (
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="h-4 w-4 text-muted-foreground"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-              clipRule="evenodd"
-            />
-          </svg>
-        )}
-      </span>
+        </span>
+      ) : null}
     </span>
   );
 }

@@ -11,6 +11,7 @@ import FilterSelect from "@/components/molecules/filter-select";
 import QuoteFolders from "./_components/quote-folders";
 import LegacyQuotes from "./_components/legacy-quotes";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { PageHeader } from "@/components/molecules/page-header";
 
 function firstString(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
@@ -56,18 +57,17 @@ export default async function QuotesPage({
       .all();
     return (
       <div className="space-y-6">
-        <header className="space-y-2">
-          <Link
+        <PageHeader
+          eyebrow="Construcción"
+          title="Cotizaciones anteriores"
+          actions={<Link
             href={`/${tenantSlug}/quotes`}
             className="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground"
           >
             <ArrowLeft aria-hidden="true" className="h-4 w-4" />
             Volver a las carpetas
-          </Link>
-          <h1 className="font-display text-[clamp(24px,4.4vw,34px)] font-bold leading-[1.12] tracking-[-0.02em] text-foreground">
-            Cotizaciones anteriores
-          </h1>
-        </header>
+          </Link>}
+        />
         <LegacyQuotes tenantSlug={tenantSlug} quotes={legacy} customers={customers} canMigrate={canGovern} />
       </div>
     );
@@ -80,21 +80,18 @@ export default async function QuotesPage({
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
-          <h1 className="font-display text-[clamp(24px,4.4vw,34px)] font-bold leading-[1.12] tracking-[-0.02em] text-foreground">Cotizaciones</h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Una carpeta por obra con sus versiones emitidas y los seguimientos al cliente.
-          </p>
-        </div>
-        <Link
+      <PageHeader
+        eyebrow="Construcción"
+        title="Cotizaciones"
+        description="Una carpeta por obra con sus versiones emitidas y los seguimientos al cliente."
+        actions={<Link
           href={`/${tenantSlug}/projects`}
           className={`${buttonVariants({ variant: "outline" })} shrink-0 self-start`}
         >
           <Building2 aria-hidden="true" className="h-4 w-4" />
           Obras
-        </Link>
-      </header>
+        </Link>}
+      />
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <SearchInput

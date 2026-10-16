@@ -2,10 +2,9 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ChevronRight, LayoutGrid, Plus } from "lucide-react";
+import { ChevronRight, LayoutGrid, Plus, Search } from "lucide-react";
 import { IconTile } from "@/components/atoms/icon-tile";
 import { useShell } from "@/components/providers/shell-context";
-import { isNavActive } from "@/lib/navigation/tenant-nav";
 import { spring } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { QuickCreateGrid } from "./quick-create-grid";
@@ -20,7 +19,7 @@ const PRIMARY_SLOTS = 3;
  * un saltito. Se esconde al bajar y vuelve al subir.
  */
 export function MobileTabBar() {
-  const { groups, relativePath, hrefFor } = useShell();
+  const { groups, activeKey, hrefFor, quickActions, openSearch, onNavigate } = useShell();
   const barRef = useRef<HTMLElement>(null);
   const indicatorRef = useRef<HTMLSpanElement>(null);
   const [hidden, setHidden] = useState(false);
@@ -28,9 +27,8 @@ export function MobileTabBar() {
   const [moreOpen, setMoreOpen] = useState(false);
 
   const items = groups.flatMap((g) => g.items);
-  const primary = items.filter((i) => i.module !== "settings").slice(0, PRIMARY_SLOTS);
+  const primary = items.filter((i) => i.key !== "settings").slice(0, PRIMARY_SLOTS);
   const rest = items.filter((i) => !primary.includes(i));
-  const activeKey = items.find((i) => isNavActive(i.href, relativePath))?.key;
   const moreActive = !!activeKey && !primary.some((i) => i.key === activeKey);
   const [first, second, third] = primary;
 
@@ -83,6 +81,7 @@ export function MobileTabBar() {
         key={item.key}
         href={hrefFor(item.href)}
         aria-current={item.key === activeKey ? "page" : undefined}
+        onClick={onNavigate ? (event) => onNavigate(item, event) : undefined}
         data-press=""
         className={tabClass}
       >
@@ -112,16 +111,20 @@ export function MobileTabBar() {
         {tab(second)}
         <button
           type="button"
-          aria-label="Crear"
-          aria-expanded={createOpen}
-          onClick={() => setCreateOpen(true)}
+          aria-label={quickActions.length ? "Crear" : "Buscar"}
+          aria-expanded={quickActions.length ? createOpen : undefined}
+          onClick={() => (quickActions.length ? setCreateOpen(true) : openSearch())}
           data-press=""
           className="mb-1.5 grid size-14 place-items-center justify-self-center rounded-[6px] bg-primary text-primary-foreground shadow-[0_6px_18px_rgba(0,0,0,.22)]"
         >
+          {quickActions.length ? (
           <Plus
             aria-hidden="true"
             className={cn("size-6 transition-transform duration-[320ms] ease-[var(--nx-ease-out)]", createOpen && "rotate-[135deg]")}
           />
+          ) : (
+            <Search aria-hidden="true" className="size-6" />
+          )}
         </button>
         {tab(third)}
         <button
@@ -147,7 +150,10 @@ export function MobileTabBar() {
               key={item.key}
               href={hrefFor(item.href)}
               aria-current={item.key === activeKey ? "page" : undefined}
-              onClick={() => setMoreOpen(false)}
+              onClick={(event) => {
+                setMoreOpen(false);
+                onNavigate?.(item, event);
+              }}
               data-press="card"
               className="flex items-center gap-3 rounded-lg border border-border bg-surface p-3 transition-colors hover:bg-surface-muted aria-[current=page]:border-accent"
             >
