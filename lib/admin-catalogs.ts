@@ -438,6 +438,8 @@ export const RESERVED_SLUGS = [
   "assets",
   "shop",
   "health",
+  "pricing",
+  "precios",
 ] as const;
 
 const SLUG_ALLOWED = /^[a-z0-9-]+$/;

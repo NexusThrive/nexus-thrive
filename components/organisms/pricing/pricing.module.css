@@ -1,0 +1,177 @@
+/* Configurador de precios: el color del nivel tiñe la tarjeta (gris, azul
+   Nexus, oro) y transiciona suave gracias a @property. */
+@property --acc {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #6b6b73;
+}
+@property --accs {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #efeeea;
+}
+
+.cfg {
+  --t1: #6b6b73;
+  --t1s: #efeeea;
+  --t1b: #0a0a0b;
+  --t1bf: #ffffff;
+  --t2: #1e3a6e;
+  --t2s: #e8edf6;
+  --t2b: #1e3a6e;
+  --t2bf: #ffffff;
+  --t3: #7f6210;
+  --t3s: #f6ebc4;
+  --t3b: #d4af37;
+  --t3bf: #0a0a0b;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  overflow: clip;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: 0 24px 60px -24px rgba(10, 10, 11, 0.18);
+  transition:
+    --acc 0.7s var(--nx-ease-out),
+    --accs 0.7s var(--nx-ease-out),
+    border-color 0.5s;
+}
+:global(.dark) .cfg {
+  --t1: #a1a1a8;
+  --t1s: #1e1e21;
+  --t1b: #f7f6f3;
+  --t1bf: #0a0a0b;
+  --t2: #8db0ee;
+  --t2s: rgba(77, 120, 200, 0.16);
+  --t2b: #3461b3;
+  --t2bf: #ffffff;
+  --t3: #d4af37;
+  --t3s: rgba(212, 175, 55, 0.14);
+  --t3b: #d4af37;
+  --t3bf: #000000;
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.7);
+}
+@media (min-width: 960px) {
+  .cfg {
+    grid-template-columns: minmax(0, 1.42fr) minmax(0, 1fr);
+  }
+}
+.cfg[data-tier="essential"] {
+  --acc: var(--t1);
+  --accs: var(--t1s);
+  --btnb: var(--t1b);
+  --btnf: var(--t1bf);
+}
+.cfg[data-tier="elite"] {
+  --acc: var(--t2);
+  --accs: var(--t2s);
+  --btnb: var(--t2b);
+  --btnf: var(--t2bf);
+}
+.cfg[data-tier="signature"] {
+  --acc: var(--t3);
+  --accs: var(--t3s);
+  --btnb: var(--t3b);
+  --btnf: var(--t3bf);
+  border-color: color-mix(in oklab, var(--nx-gold-500) 45%, var(--border));
+}
+.cfg::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 2;
+  height: 3px;
+  background: var(--acc);
+}
+.cfg[data-pre]::before {
+  background: linear-gradient(90deg, var(--t2) 0 55%, var(--nx-gold-500));
+}
+
+/* Resumen: en Signature se vuelve Ink. */
+.sum {
+  --pfg: var(--foreground);
+  --pmu: var(--foreground-muted);
+  --pln: var(--border);
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  min-width: 0;
+  background: var(--surface-muted);
+  color: var(--pfg);
+  border-top: 1px solid var(--border);
+  transition: background 0.7s var(--nx-ease-out);
+}
+@media (min-width: 960px) {
+  .sum {
+    border-top: 0;
+    border-left: 1px solid var(--border);
+  }
+}
+.cfg[data-tier="signature"] .sum {
+  --pfg: #f7f6f3;
+  --pmu: #a1a1a8;
+  --pln: #2a2a2e;
+  background: #000;
+}
+.glyph {
+  position: absolute;
+  z-index: -1;
+  right: -16%;
+  bottom: -6%;
+  width: 72%;
+  aspect-ratio: 734.96 / 634.25;
+  color: var(--pfg);
+  opacity: 0.035;
+  transition:
+    opacity 0.6s,
+    color 0.6s;
+}
+.cfg[data-tier="signature"] .glyph {
+  color: var(--nx-gold-500);
+  opacity: 0.08;
+}
+.sweep {
+  position: absolute;
+  z-index: -1;
+  inset: 0 auto 0 0;
+  width: 40%;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--acc) 30%, transparent), transparent);
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: start;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--acc) 16%, transparent);
+  color: var(--acc);
+  font: 700 10.5px var(--font-display);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.cfg[data-tier="signature"] .badge {
+  background: rgba(212, 175, 55, 0.16);
+  color: var(--nx-gold-500);
+}
+.accent {
+  color: var(--acc);
+}
+.cfg[data-tier="signature"] .accentGold {
+  color: var(--nx-gold-500);
+}
+.cta {
+  background: var(--btnb);
+  color: var(--btnf);
+  transition:
+    filter 0.2s,
+    background 0.6s,
+    color 0.6s;
+}
+.cta:hover {
+  filter: brightness(1.12);
+}
