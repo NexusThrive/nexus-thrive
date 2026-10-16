@@ -1,5 +1,7 @@
 "use server";
 
+import { buildBudgetWorkbook } from "@/lib/construction/budget-export";
+import { db } from "@/prisma/db";
 import { revalidatePath } from "next/cache";
 import { decimalToMicro } from "@/lib/apu-engine";
 import type {
@@ -615,4 +617,36 @@ export async function updateResourceAction(
       message: toFormError(error, "No se pudo actualizar la línea de APU."),
     };
   }
+}
+
+/**
+ * Exporta el presupuesto de la obra a Excel (hojas Presupuesto y APU).
+ * Devuelve el archivo en base64 para que el navegador lo descargue.
+ */
+export async function exportBudgetXlsxAction(
+  tenantSlug: string,
+  projectId: string,
+): Promise<{ ok: true; filename: string; base64: string } | { ok: false; message: string }> {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context) return { ok: false, message: "No tienes acceso a este negocio." };
+  const [project, budget] = await Promise.all([
+    context.tenantDb.projects.get(projectId),
+    context.tenantDb.budgets.get(projectId),
+  ]);
+  if (!project || !budget) return { ok: false, message: "No se encontró el presupuesto de esta obra." };
+  const tenant = await db.orm.public.Tenant.where({ id: context.tenantId }).select("name", "legalName").first();
+  const generatedOn = new Date(Date.now() - 5 * 3600 * 1000).toISOString().slice(0, 10);
+  const bytes = buildBudgetWorkbook({
+    budget,
+    projectCode: project.code,
+    projectName: project.name,
+    customerName: project.customerName,
+    issuerName: tenant?.legalName?.trim() || tenant?.name || null,
+    generatedOn,
+  });
+  return {
+    ok: true,
+    filename: `${budget.code}-${project.code}.xlsx`,
+    base64: Buffer.from(bytes).toString("base64"),
+  };
 }

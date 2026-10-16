@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { BadgeCheck, Boxes, Layers, Lock, LockOpen, Pencil, Plus, Settings2, SlidersHorizontal, Trash2 } from "lucide-react";
+import { BadgeCheck, Boxes, FileSpreadsheet, Layers, Lock, LockOpen, Pencil, Plus, Settings2, SlidersHorizontal, Trash2 } from "lucide-react";
 import { microToPercent } from "@/lib/apu-engine";
 import { formatMoneyMicro, formatQuantityMicro } from "@/lib/format";
 import { NLoader } from "@/components/brand/n-loader";
@@ -16,6 +16,7 @@ import {
   approveBudgetBaselineAction,
   deleteBudgetItemAction,
   deleteChapterAction,
+  exportBudgetXlsxAction,
   toggleBudgetLockAction,
 } from "../budget/actions";
 import ChapterModal, { type EditableChapter } from "./chapter-modal";
@@ -104,6 +105,29 @@ export default function BudgetWorkspace({
 
   const router = useRouter();
   const [isToggling, startToggle] = useTransition();
+  const [isExporting, startExport] = useTransition();
+  const [exportError, setExportError] = useState<string | null>(null);
+
+  const onExport = () =>
+    startExport(async () => {
+      setExportError(null);
+      const result = await exportBudgetXlsxAction(tenantSlug, projectId);
+      if (!result.ok) {
+        setExportError(result.message);
+        return;
+      }
+      const bytes = Uint8Array.from(atob(result.base64), (char) => char.charCodeAt(0));
+      const url = URL.createObjectURL(
+        new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }),
+      );
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = result.filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    });
   const [isDeleting, startDelete] = useTransition();
   const [isApproving, startApprove] = useTransition();
 
@@ -271,6 +295,15 @@ export default function BudgetWorkspace({
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
+            onClick={onExport}
+            disabled={isExporting || itemCount === 0}
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isExporting ? <NLoader size={14} className="text-current" /> : <FileSpreadsheet aria-hidden="true" className="h-4 w-4" />}
+            Exportar Excel
+          </button>
+          <button
+            type="button"
             onClick={() => setAiuOpen(true)}
             disabled={budget.isLocked}
             className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
@@ -307,6 +340,11 @@ export default function BudgetWorkspace({
           </button>
         </div>
       </div>
+      {exportError ? (
+        <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {exportError}
+        </p>
+      ) : null}
 
       {budget.isLocked ? (
         <div className="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
