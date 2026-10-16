@@ -26,4 +26,5 @@ pnpm exec vitest run \
   lib/construction/containers.integration.test.ts \
   lib/apu-importer/master-pack-import.integration.test.ts \
   lib/construction/project-quotes.integration.test.ts \
-  lib/construction/progress.integration.test.ts
+  lib/construction/progress.integration.test.ts \
+  lib/construction/flow.integration.test.ts
