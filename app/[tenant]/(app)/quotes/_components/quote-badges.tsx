@@ -14,6 +14,7 @@ const STATUS_DOTS: Record<
   SENT: "warning",
   APPROVED: "success",
   REJECTED: "danger",
+  SUPERSEDED: "muted",
 };
 
 const CATEGORY_VARIANTS: Record<

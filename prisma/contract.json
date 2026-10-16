@@ -52,6 +52,10 @@
       "model": "BudgetItem",
       "namespace": "public"
     },
+    "BudgetItemProgress": {
+      "model": "BudgetItemProgress",
+      "namespace": "public"
+    },
     "BudgetItemResource": {
       "model": "BudgetItemResource",
       "namespace": "public"
@@ -98,6 +102,10 @@
     },
     "ProjectBudget": {
       "model": "ProjectBudget",
+      "namespace": "public"
+    },
+    "ProjectFollowUp": {
+      "model": "ProjectFollowUp",
       "namespace": "public"
     },
     "ProjectHeader": {
@@ -235,6 +243,31 @@
               {
                 "name": "INCIDENT",
                 "value": "INCIDENT"
+              }
+            ]
+          },
+          "FollowUpType": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "NOTE",
+                "value": "NOTE"
+              },
+              {
+                "name": "CALL",
+                "value": "CALL"
+              },
+              {
+                "name": "EMAIL",
+                "value": "EMAIL"
+              },
+              {
+                "name": "MEETING",
+                "value": "MEETING"
+              },
+              {
+                "name": "VISIT",
+                "value": "VISIT"
               }
             ]
           },
@@ -443,6 +476,10 @@
               {
                 "name": "REJECTED",
                 "value": "REJECTED"
+              },
+              {
+                "name": "SUPERSEDED",
+                "value": "SUPERSEDED"
               }
             ]
           },
@@ -2453,6 +2490,66 @@
                   "namespace": "public"
                 }
               },
+              "commitments": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "budgetItemId"
+                  ]
+                },
+                "to": {
+                  "model": "WeeklyCommitment",
+                  "namespace": "public"
+                }
+              },
+              "fieldLogEntries": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "budgetItemId"
+                  ]
+                },
+                "to": {
+                  "model": "FieldLogEntry",
+                  "namespace": "public"
+                }
+              },
+              "lookaheadTasks": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "budgetItemId"
+                  ]
+                },
+                "to": {
+                  "model": "LookaheadTask",
+                  "namespace": "public"
+                }
+              },
+              "progress": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "budgetItemId"
+                  ]
+                },
+                "to": {
+                  "model": "BudgetItemProgress",
+                  "namespace": "public"
+                }
+              },
               "resources": {
                 "cardinality": "1:N",
                 "on": {
@@ -2529,6 +2626,130 @@
               },
               "namespaceId": "public",
               "table": "BudgetItem"
+            }
+          },
+          "BudgetItemProgress": {
+            "fields": {
+              "authorName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "budgetItemId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "cutoffDate": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "executedQuantity": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int8@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "note": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "budgetItem": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "budgetItemId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "BudgetItem",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "authorName": {
+                  "column": "authorName"
+                },
+                "budgetItemId": {
+                  "column": "budgetItemId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "cutoffDate": {
+                  "column": "cutoffDate"
+                },
+                "executedQuantity": {
+                  "column": "executedQuantity"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "note": {
+                  "column": "note"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "BudgetItemProgress"
             }
           },
           "BudgetItemResource": {
@@ -3421,6 +3642,13 @@
                   "kind": "scalar"
                 }
               },
+              "budgetItemId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -3520,6 +3748,22 @@
               }
             },
             "relations": {
+              "budgetItem": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "budgetItemId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "BudgetItem",
+                  "namespace": "public"
+                }
+              },
               "log": {
                 "cardinality": "N:1",
                 "nullable": false,
@@ -3560,6 +3804,9 @@
                 },
                 "authorRole": {
                   "column": "authorRole"
+                },
+                "budgetItemId": {
+                  "column": "budgetItemId"
                 },
                 "createdAt": {
                   "column": "createdAt"
@@ -3604,6 +3851,13 @@
           },
           "LookaheadTask": {
             "fields": {
+              "budgetItemId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "code": {
                 "nullable": false,
                 "type": {
@@ -3697,6 +3951,22 @@
               }
             },
             "relations": {
+              "budgetItem": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "budgetItemId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "BudgetItem",
+                  "namespace": "public"
+                }
+              },
               "plan": {
                 "cardinality": "N:1",
                 "nullable": false,
@@ -3732,6 +4002,9 @@
             },
             "storage": {
               "fields": {
+                "budgetItemId": {
+                  "column": "budgetItemId"
+                },
                 "code": {
                   "column": "code"
                 },
@@ -4260,6 +4533,21 @@
                   "namespace": "public"
                 }
               },
+              "followUps": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "projectId"
+                  ]
+                },
+                "to": {
+                  "model": "ProjectFollowUp",
+                  "namespace": "public"
+                }
+              },
               "header": {
                 "cardinality": "1:1",
                 "nullable": true,
@@ -4289,6 +4577,21 @@
                 },
                 "to": {
                   "model": "ProjectPlan",
+                  "namespace": "public"
+                }
+              },
+              "quotes": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "projectId"
+                  ]
+                },
+                "to": {
+                  "model": "Quote",
                   "namespace": "public"
                 }
               },
@@ -4605,6 +4908,182 @@
               },
               "namespaceId": "public",
               "table": "ProjectBudget"
+            }
+          },
+          "ProjectFollowUp": {
+            "fields": {
+              "authorName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "completedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "note": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "projectId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "quoteId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "scheduledFor": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "type": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "FollowUpType",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "project": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "projectId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Project",
+                  "namespace": "public"
+                }
+              },
+              "quote": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "quoteId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Quote",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "authorName": {
+                  "column": "authorName"
+                },
+                "completedAt": {
+                  "column": "completedAt"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "note": {
+                  "column": "note"
+                },
+                "projectId": {
+                  "column": "projectId"
+                },
+                "quoteId": {
+                  "column": "quoteId"
+                },
+                "scheduledFor": {
+                  "column": "scheduledFor"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "type": {
+                  "column": "type"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "ProjectFollowUp"
             }
           },
           "ProjectHeader": {
@@ -5008,6 +5487,13 @@
                   "kind": "scalar"
                 }
               },
+              "budgetRevision": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "code": {
                 "nullable": false,
                 "type": {
@@ -5023,6 +5509,27 @@
                 }
               },
               "customerId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "decidedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "decidedByName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "decisionNote": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
@@ -5047,6 +5554,34 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "projectId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sentAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "showApuDetail": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "snapshot": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/json@1",
                   "kind": "scalar"
                 }
               },
@@ -5104,6 +5639,20 @@
                   "codecId": "pg/numeric@1",
                   "kind": "scalar"
                 }
+              },
+              "validUntil": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "version": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
               }
             },
             "relations": {
@@ -5123,6 +5672,21 @@
                   "namespace": "public"
                 }
               },
+              "followUps": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "quoteId"
+                  ]
+                },
+                "to": {
+                  "model": "ProjectFollowUp",
+                  "namespace": "public"
+                }
+              },
               "items": {
                 "cardinality": "1:N",
                 "on": {
@@ -5135,6 +5699,22 @@
                 },
                 "to": {
                   "model": "QuoteItem",
+                  "namespace": "public"
+                }
+              },
+              "project": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "projectId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Project",
                   "namespace": "public"
                 }
               },
@@ -5160,6 +5740,9 @@
                 "adminPercent": {
                   "column": "adminPercent"
                 },
+                "budgetRevision": {
+                  "column": "budgetRevision"
+                },
                 "code": {
                   "column": "code"
                 },
@@ -5169,6 +5752,15 @@
                 "customerId": {
                   "column": "customerId"
                 },
+                "decidedAt": {
+                  "column": "decidedAt"
+                },
+                "decidedByName": {
+                  "column": "decidedByName"
+                },
+                "decisionNote": {
+                  "column": "decisionNote"
+                },
                 "directCost": {
                   "column": "directCost"
                 },
@@ -5177,6 +5769,18 @@
                 },
                 "imprevPercent": {
                   "column": "imprevPercent"
+                },
+                "projectId": {
+                  "column": "projectId"
+                },
+                "sentAt": {
+                  "column": "sentAt"
+                },
+                "showApuDetail": {
+                  "column": "showApuDetail"
+                },
+                "snapshot": {
+                  "column": "snapshot"
                 },
                 "status": {
                   "column": "status"
@@ -5198,6 +5802,12 @@
                 },
                 "utilPercent": {
                   "column": "utilPercent"
+                },
+                "validUntil": {
+                  "column": "validUntil"
+                },
+                "version": {
+                  "column": "version"
                 }
               },
               "namespaceId": "public",
@@ -5629,6 +6239,21 @@
                   "namespace": "public"
                 }
               },
+              "budgetItemProgress": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "BudgetItemProgress",
+                  "namespace": "public"
+                }
+              },
               "budgetItemResources": {
                 "cardinality": "1:N",
                 "on": {
@@ -5791,6 +6416,21 @@
                 },
                 "to": {
                   "model": "ProjectBudget",
+                  "namespace": "public"
+                }
+              },
+              "projectFollowUps": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "ProjectFollowUp",
                   "namespace": "public"
                 }
               },
@@ -6168,6 +6808,13 @@
           },
           "WeeklyCommitment": {
             "fields": {
+              "budgetItemId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -6266,6 +6913,22 @@
               }
             },
             "relations": {
+              "budgetItem": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "budgetItemId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "BudgetItem",
+                  "namespace": "public"
+                }
+              },
               "plan": {
                 "cardinality": "N:1",
                 "nullable": false,
@@ -6301,6 +6964,9 @@
             },
             "storage": {
               "fields": {
+                "budgetItemId": {
+                  "column": "budgetItemId"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
@@ -7901,6 +8567,123 @@
                 }
               ]
             },
+            "BudgetItemProgress": {
+              "columns": {
+                "authorName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "budgetItemId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "cutoffDate": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "executedQuantity": {
+                  "codecId": "pg/int8@1",
+                  "nativeType": "int8",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "note": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "BudgetItemProgress"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "budgetItemId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "BudgetItemProgress"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "BudgetItem"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "budgetItemId",
+                    "cutoffDate"
+                  ],
+                  "name": "BudgetItemProgress_budgetItemId_cutoffDate_idx_c4d1637e",
+                  "prefix": "BudgetItemProgress_budgetItemId_cutoffDate_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "budgetItemId"
+                  ],
+                  "name": "BudgetItemProgress_budgetItemId_idx_39963a95",
+                  "prefix": "BudgetItemProgress_budgetItemId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "BudgetItemProgress_tenantId_idx_c93ed4f1",
+                  "prefix": "BudgetItemProgress_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "BudgetItemResource": {
               "checks": [
                 {
@@ -8639,6 +9422,11 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "budgetItemId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "default": {
@@ -8767,9 +9555,34 @@
                     "namespaceId": "public",
                     "tableName": "FieldLog"
                   }
+                },
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "budgetItemId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "FieldLogEntry"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "BudgetItem"
+                  }
                 }
               ],
               "indexes": [
+                {
+                  "columns": [
+                    "budgetItemId"
+                  ],
+                  "name": "FieldLogEntry_budgetItemId_idx_39963a95",
+                  "prefix": "FieldLogEntry_budgetItemId_idx",
+                  "unique": false
+                },
                 {
                   "columns": [
                     "logId"
@@ -8805,6 +9618,11 @@
             },
             "LookaheadTask": {
               "columns": {
+                "budgetItemId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "code": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -8913,9 +9731,34 @@
                     "namespaceId": "public",
                     "tableName": "ProjectPlan"
                   }
+                },
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "budgetItemId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "LookaheadTask"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "BudgetItem"
+                  }
                 }
               ],
               "indexes": [
+                {
+                  "columns": [
+                    "budgetItemId"
+                  ],
+                  "name": "LookaheadTask_budgetItemId_idx_39963a95",
+                  "prefix": "LookaheadTask_budgetItemId_idx",
+                  "unique": false
+                },
                 {
                   "columns": [
                     "planId"
@@ -9664,6 +10507,189 @@
                 }
               ]
             },
+            "ProjectFollowUp": {
+              "checks": [
+                {
+                  "expression": "\"type\" IN ('NOTE', 'CALL', 'EMAIL', 'MEETING', 'VISIT')",
+                  "name": "ProjectFollowUp_type_check_80a207bd",
+                  "prefix": "ProjectFollowUp_type_check"
+                }
+              ],
+              "columns": {
+                "authorName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "completedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "note": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "projectId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "quoteId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "scheduledFor": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "type": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "NOTE"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "FollowUpType",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProjectFollowUp"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "projectId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProjectFollowUp"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Project"
+                  }
+                },
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "quoteId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProjectFollowUp"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Quote"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "projectId",
+                    "createdAt"
+                  ],
+                  "name": "ProjectFollowUp_projectId_createdAt_idx_d2d6484f",
+                  "prefix": "ProjectFollowUp_projectId_createdAt_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "projectId"
+                  ],
+                  "name": "ProjectFollowUp_projectId_idx_a96e4d92",
+                  "prefix": "ProjectFollowUp_projectId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "quoteId"
+                  ],
+                  "name": "ProjectFollowUp_quoteId_idx_a7628ce5",
+                  "prefix": "ProjectFollowUp_quoteId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "ProjectFollowUp_tenantId_idx_c93ed4f1",
+                  "prefix": "ProjectFollowUp_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "projectId"
+                  ],
+                  "name": "ProjectFollowUp_tenantId_projectId_idx_e88197e4",
+                  "prefix": "ProjectFollowUp_tenantId_projectId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "ProjectHeader": {
               "columns": {
                 "clientAddress": {
@@ -9944,8 +10970,8 @@
             "Quote": {
               "checks": [
                 {
-                  "expression": "\"status\" IN ('DRAFT', 'SENT', 'APPROVED', 'REJECTED')",
-                  "name": "Quote_status_check_58e78406",
+                  "expression": "\"status\" IN ('DRAFT', 'SENT', 'APPROVED', 'REJECTED', 'SUPERSEDED')",
+                  "name": "Quote_status_check_27d93e38",
                   "prefix": "Quote_status_check"
                 }
               ],
@@ -9958,6 +10984,11 @@
                   },
                   "nativeType": "numeric",
                   "nullable": false
+                },
+                "budgetRevision": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
                 },
                 "code": {
                   "codecId": "pg/text@1",
@@ -9974,6 +11005,21 @@
                   "nullable": false
                 },
                 "customerId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "decidedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "decidedByName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "decisionNote": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
@@ -9996,6 +11042,30 @@
                   },
                   "nativeType": "numeric",
                   "nullable": false
+                },
+                "projectId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "sentAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "showApuDetail": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "snapshot": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
+                  "nullable": true
                 },
                 "status": {
                   "codecId": "pg/text@1",
@@ -10049,6 +11119,16 @@
                   },
                   "nativeType": "numeric",
                   "nullable": false
+                },
+                "validUntil": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "version": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
                 }
               },
               "foreignKeys": [
@@ -10085,6 +11165,23 @@
                     "namespaceId": "public",
                     "tableName": "Customer"
                   }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "projectId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Quote"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Project"
+                  }
                 }
               ],
               "indexes": [
@@ -10094,6 +11191,14 @@
                   ],
                   "name": "Quote_customerId_idx_b2a8a46c",
                   "prefix": "Quote_customerId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "projectId"
+                  ],
+                  "name": "Quote_projectId_idx_a96e4d92",
+                  "prefix": "Quote_projectId_idx",
                   "unique": false
                 },
                 {
@@ -10124,6 +11229,12 @@
                   "columns": [
                     "tenantId",
                     "code"
+                  ]
+                },
+                {
+                  "columns": [
+                    "projectId",
+                    "version"
                   ]
                 }
               ]
@@ -10654,6 +11765,11 @@
                 }
               ],
               "columns": {
+                "budgetItemId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "default": {
@@ -10769,9 +11885,34 @@
                     "namespaceId": "public",
                     "tableName": "ProjectPlan"
                   }
+                },
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "budgetItemId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "WeeklyCommitment"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "BudgetItem"
+                  }
                 }
               ],
               "indexes": [
+                {
+                  "columns": [
+                    "budgetItemId"
+                  ],
+                  "name": "WeeklyCommitment_budgetItemId_idx_39963a95",
+                  "prefix": "WeeklyCommitment_budgetItemId_idx",
+                  "unique": false
+                },
                 {
                   "columns": [
                     "planId"
@@ -10850,6 +11991,16 @@
                 "OBSERVATION",
                 "AUTHORIZATION",
                 "INCIDENT"
+              ]
+            },
+            "FollowUpType": {
+              "kind": "valueSet",
+              "values": [
+                "NOTE",
+                "CALL",
+                "EMAIL",
+                "MEETING",
+                "VISIT"
               ]
             },
             "MembershipStatus": {
@@ -10931,7 +12082,8 @@
                 "DRAFT",
                 "SENT",
                 "APPROVED",
-                "REJECTED"
+                "REJECTED",
+                "SUPERSEDED"
               ]
             },
             "ResourceType": {
@@ -10996,10 +12148,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "acc73824552ea1f63e199492704a211eed0ab4eda1e20010f64e722d70fddc19"
+    "storageHash": "5c796da84a2812cda89958292183d686ab17b12ddac66c131b160f9cd9952792"
   },
   "execution": {
-    "executionHash": "6438324cc1097801d91f7fdd8f8976f526d018304c64e9aa533f85f09f98d778",
+    "executionHash": "d957155aa23c772602ee4e39c786ac703e3319d82f2888e87b831a0f30928e75",
     "mutations": {
       "defaults": [
         {
@@ -11206,6 +12358,17 @@
           "ref": {
             "entry": "BudgetItem",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "BudgetItemProgress",
+            "field": "id",
             "namespace": "public"
           }
         },
@@ -11502,6 +12665,32 @@
           },
           "ref": {
             "entry": "ProjectBudget",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "ProjectFollowUp",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "ProjectFollowUp",
             "field": "updatedAt",
             "namespace": "public"
           }

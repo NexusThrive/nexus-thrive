@@ -1084,3 +1084,75 @@ export async function countActivityQuoteUsage(activityId: string): Promise<numbe
     .aggregate((aggregate) => ({ total: aggregate.count() }));
   return total;
 }
+
+/**
+ * Crea una línea base con la foto del presupuesto dentro de `tx`. El llamador
+ * debe haber fijado la revisión (`lockRevision`) para que la foto sea
+ * consistente. Lo usan `approveBaseline` y la aprobación de una cotización.
+ */
+export async function insertBaseline(
+  tx: TenantTx,
+  tenantId: string,
+  budget: BudgetRow,
+  input: { userId: string; userName: string; note?: string; budgetRevision?: number },
+) {
+  const direct = await sumBudgetDirect(tx, budget.id);
+  const totals = calculateBudgetTotals(
+    direct,
+    budget.aiuAdminPct,
+    budget.aiuImprevPct,
+    budget.aiuUtilidadPct,
+    budget.ivaUtilidadPct,
+  );
+  const chapters = await tx.orm.public.BudgetChapter
+    .where({ budgetId: budget.id })
+    .orderBy((chapter) => chapter.order.asc())
+    .select("id", "order", "name")
+    .all();
+  const chapterIds = chapters.map((chapter) => chapter.id);
+  const items = chapterIds.length
+    ? await tx.orm.public.BudgetItem
+        .where((item) => item.chapterId.in(chapterIds))
+        .select("chapterId", "totalCostDirect")
+        .all()
+    : [];
+  const subtotalByChapter = new Map<string, bigint>();
+  for (const item of items) {
+    subtotalByChapter.set(
+      item.chapterId,
+      (subtotalByChapter.get(item.chapterId) ?? BigInt(0)) +
+        BigInt(item.totalCostDirect),
+    );
+  }
+  const snapshot = chapters.map((chapter) => ({
+    order: chapter.order,
+    name: chapter.name,
+    subtotal: (
+      subtotalByChapter.get(chapter.id) ?? BigInt(0)
+    ).toString(),
+  }));
+  const last = await tx.orm.public.BudgetBaseline
+    .where({ budgetId: budget.id })
+    .orderBy((baseline) => baseline.version.desc())
+    .first();
+  const version = last ? last.version + 1 : 1;
+  const baseline = await tx.orm.public.BudgetBaseline.create({
+    tenantId,
+    budgetId: budget.id,
+    budgetRevision: input.budgetRevision ?? budget.revision,
+    version,
+    directCostTotal: direct,
+    adminTotal: totals.adminTotal,
+    imprevTotal: totals.imprevTotal,
+    utilidadTotal: totals.utilidadTotal,
+    ivaUtilidadTotal: totals.ivaUtilidadTotal,
+    grandTotal: totals.grandTotal,
+    chapterCount: chapters.length,
+    itemCount: items.length,
+    snapshot: snapshot as never,
+    note: input.note?.trim() ? input.note.trim() : null,
+    approvedById: input.userId,
+    approvedByName: input.userName,
+  });
+  return baseline;
+}

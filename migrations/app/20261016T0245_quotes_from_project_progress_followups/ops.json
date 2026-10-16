@@ -1,0 +1,1598 @@
+[
+  {
+    "id": "dropCheckConstraint.Quote.Quote_status_check_58e78406",
+    "label": "Drop check constraint \"Quote_status_check_58e78406\" on \"Quote\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "Quote_status_check_58e78406",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Quote_status_check_58e78406\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Quote_status_check_58e78406",
+          "public",
+          "\"public\".\"Quote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"Quote_status_check_58e78406\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\" DROP CONSTRAINT \"Quote_status_check_58e78406\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Quote_status_check_58e78406\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Quote_status_check_58e78406",
+          "public",
+          "\"public\".\"Quote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.BudgetItemProgress",
+    "label": "Create table \"BudgetItemProgress\"",
+    "summary": "Creates table \"BudgetItemProgress\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "BudgetItemProgress"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"BudgetItemProgress\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItemProgress\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"BudgetItemProgress\"",
+        "sql": "CREATE TABLE \"public\".\"BudgetItemProgress\" (\n  \"authorName\" text NOT NULL,\n  \"budgetItemId\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"cutoffDate\" timestamptz NOT NULL,\n  \"executedQuantity\" int8 NOT NULL,\n  \"id\" text NOT NULL,\n  \"note\" text,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"BudgetItemProgress\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItemProgress\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ProjectFollowUp",
+    "label": "Create table \"ProjectFollowUp\"",
+    "summary": "Creates table \"ProjectFollowUp\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ProjectFollowUp"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ProjectFollowUp\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectFollowUp\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ProjectFollowUp\"",
+        "sql": "CREATE TABLE \"public\".\"ProjectFollowUp\" (\n  \"authorName\" text NOT NULL,\n  \"completedAt\" timestamptz,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"note\" text NOT NULL,\n  \"projectId\" text NOT NULL,\n  \"quoteId\" text,\n  \"scheduledFor\" timestamptz,\n  \"tenantId\" text NOT NULL,\n  \"type\" text DEFAULT 'NOTE' NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"ProjectFollowUp_type_check_80a207bd\" CHECK (\"type\" IN ('NOTE', 'CALL', 'EMAIL', 'MEETING', 'VISIT'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ProjectFollowUp\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectFollowUp\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.FieldLogEntry.budgetItemId",
+    "label": "Add column \"budgetItemId\" to \"FieldLogEntry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "budgetItemId",
+        "table": "FieldLogEntry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"budgetItemId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "FieldLogEntry",
+          "budgetItemId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"budgetItemId\"",
+        "sql": "ALTER TABLE \"public\".\"FieldLogEntry\" ADD COLUMN \"budgetItemId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"budgetItemId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "FieldLogEntry",
+          "budgetItemId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.LookaheadTask.budgetItemId",
+    "label": "Add column \"budgetItemId\" to \"LookaheadTask\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "budgetItemId",
+        "table": "LookaheadTask"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"budgetItemId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "LookaheadTask",
+          "budgetItemId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"budgetItemId\"",
+        "sql": "ALTER TABLE \"public\".\"LookaheadTask\" ADD COLUMN \"budgetItemId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"budgetItemId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "LookaheadTask",
+          "budgetItemId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Quote.budgetRevision",
+    "label": "Add column \"budgetRevision\" to \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "budgetRevision",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"budgetRevision\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "budgetRevision"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"budgetRevision\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\" ADD COLUMN \"budgetRevision\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"budgetRevision\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "budgetRevision"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Quote.decidedAt",
+    "label": "Add column \"decidedAt\" to \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "decidedAt",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"decidedAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "decidedAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"decidedAt\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\" ADD COLUMN \"decidedAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"decidedAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "decidedAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Quote.decidedByName",
+    "label": "Add column \"decidedByName\" to \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "decidedByName",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"decidedByName\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "decidedByName"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"decidedByName\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\" ADD COLUMN \"decidedByName\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"decidedByName\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "decidedByName"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Quote.decisionNote",
+    "label": "Add column \"decisionNote\" to \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "decisionNote",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"decisionNote\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "decisionNote"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"decisionNote\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\" ADD COLUMN \"decisionNote\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"decisionNote\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "decisionNote"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Quote.projectId",
+    "label": "Add column \"projectId\" to \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "projectId",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"projectId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "projectId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"projectId\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\" ADD COLUMN \"projectId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"projectId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "projectId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Quote.sentAt",
+    "label": "Add column \"sentAt\" to \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sentAt",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sentAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "sentAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sentAt\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\" ADD COLUMN \"sentAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sentAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "sentAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Quote.showApuDetail",
+    "label": "Add column \"showApuDetail\" to \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "showApuDetail",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"showApuDetail\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "showApuDetail"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"showApuDetail\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\" ADD COLUMN \"showApuDetail\" bool DEFAULT false NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"showApuDetail\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "showApuDetail"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Quote.snapshot",
+    "label": "Add column \"snapshot\" to \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "snapshot",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"snapshot\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "snapshot"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"snapshot\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\" ADD COLUMN \"snapshot\" json"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"snapshot\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "snapshot"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Quote.validUntil",
+    "label": "Add column \"validUntil\" to \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "validUntil",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"validUntil\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "validUntil"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"validUntil\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\" ADD COLUMN \"validUntil\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"validUntil\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "validUntil"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Quote.version",
+    "label": "Add column \"version\" to \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "version",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"version\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "version"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"version\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\" ADD COLUMN \"version\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"version\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Quote",
+          "version"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.WeeklyCommitment.budgetItemId",
+    "label": "Add column \"budgetItemId\" to \"WeeklyCommitment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "budgetItemId",
+        "table": "WeeklyCommitment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"budgetItemId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "WeeklyCommitment",
+          "budgetItemId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"budgetItemId\"",
+        "sql": "ALTER TABLE \"public\".\"WeeklyCommitment\" ADD COLUMN \"budgetItemId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"budgetItemId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "WeeklyCommitment",
+          "budgetItemId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.Quote.Quote_status_check_27d93e38",
+    "label": "Add check constraint \"Quote_status_check_27d93e38\" on \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "Quote_status_check_27d93e38",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Quote_status_check_27d93e38\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Quote_status_check_27d93e38",
+          "public",
+          "\"public\".\"Quote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"Quote_status_check_27d93e38\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\" ADD CONSTRAINT \"Quote_status_check_27d93e38\" CHECK (\"status\" IN ('DRAFT', 'SENT', 'APPROVED', 'REJECTED', 'SUPERSEDED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Quote_status_check_27d93e38\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Quote_status_check_27d93e38",
+          "public",
+          "\"public\".\"Quote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Quote.Quote_projectId_version_key",
+    "label": "Add unique constraint on \"Quote\" (projectId, version)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Quote_projectId_version_key",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Quote_projectId_version_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Quote_projectId_version_key",
+          "public",
+          "\"public\".\"Quote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Quote_projectId_version_key\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\" ADD CONSTRAINT \"Quote_projectId_version_key\" UNIQUE (\"projectId\", \"version\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Quote_projectId_version_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Quote_projectId_version_key",
+          "public",
+          "\"public\".\"Quote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BudgetItemProgress.BudgetItemProgress_budgetItemId_cutoffDate_idx_c4d1637e",
+    "label": "Create index \"BudgetItemProgress_budgetItemId_cutoffDate_idx_c4d1637e\" on \"BudgetItemProgress\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BudgetItemProgress_budgetItemId_cutoffDate_idx_c4d1637e",
+        "table": "BudgetItemProgress"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BudgetItemProgress_budgetItemId_cutoffDate_idx_c4d1637e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItemProgress_budgetItemId_cutoffDate_idx_c4d1637e\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BudgetItemProgress_budgetItemId_cutoffDate_idx_c4d1637e\"",
+        "sql": "CREATE INDEX \"BudgetItemProgress_budgetItemId_cutoffDate_idx_c4d1637e\" ON \"public\".\"BudgetItemProgress\" (\"budgetItemId\", \"cutoffDate\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BudgetItemProgress_budgetItemId_cutoffDate_idx_c4d1637e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItemProgress_budgetItemId_cutoffDate_idx_c4d1637e\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BudgetItemProgress.BudgetItemProgress_budgetItemId_idx_39963a95",
+    "label": "Create index \"BudgetItemProgress_budgetItemId_idx_39963a95\" on \"BudgetItemProgress\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BudgetItemProgress_budgetItemId_idx_39963a95",
+        "table": "BudgetItemProgress"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BudgetItemProgress_budgetItemId_idx_39963a95\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItemProgress_budgetItemId_idx_39963a95\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BudgetItemProgress_budgetItemId_idx_39963a95\"",
+        "sql": "CREATE INDEX \"BudgetItemProgress_budgetItemId_idx_39963a95\" ON \"public\".\"BudgetItemProgress\" (\"budgetItemId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BudgetItemProgress_budgetItemId_idx_39963a95\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItemProgress_budgetItemId_idx_39963a95\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BudgetItemProgress.BudgetItemProgress_tenantId_idx_c93ed4f1",
+    "label": "Create index \"BudgetItemProgress_tenantId_idx_c93ed4f1\" on \"BudgetItemProgress\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BudgetItemProgress_tenantId_idx_c93ed4f1",
+        "table": "BudgetItemProgress"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BudgetItemProgress_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItemProgress_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BudgetItemProgress_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"BudgetItemProgress_tenantId_idx_c93ed4f1\" ON \"public\".\"BudgetItemProgress\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BudgetItemProgress_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItemProgress_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.FieldLogEntry.FieldLogEntry_budgetItemId_idx_39963a95",
+    "label": "Create index \"FieldLogEntry_budgetItemId_idx_39963a95\" on \"FieldLogEntry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "FieldLogEntry_budgetItemId_idx_39963a95",
+        "table": "FieldLogEntry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"FieldLogEntry_budgetItemId_idx_39963a95\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FieldLogEntry_budgetItemId_idx_39963a95\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"FieldLogEntry_budgetItemId_idx_39963a95\"",
+        "sql": "CREATE INDEX \"FieldLogEntry_budgetItemId_idx_39963a95\" ON \"public\".\"FieldLogEntry\" (\"budgetItemId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"FieldLogEntry_budgetItemId_idx_39963a95\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FieldLogEntry_budgetItemId_idx_39963a95\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.LookaheadTask.LookaheadTask_budgetItemId_idx_39963a95",
+    "label": "Create index \"LookaheadTask_budgetItemId_idx_39963a95\" on \"LookaheadTask\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "LookaheadTask_budgetItemId_idx_39963a95",
+        "table": "LookaheadTask"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"LookaheadTask_budgetItemId_idx_39963a95\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"LookaheadTask_budgetItemId_idx_39963a95\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"LookaheadTask_budgetItemId_idx_39963a95\"",
+        "sql": "CREATE INDEX \"LookaheadTask_budgetItemId_idx_39963a95\" ON \"public\".\"LookaheadTask\" (\"budgetItemId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"LookaheadTask_budgetItemId_idx_39963a95\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"LookaheadTask_budgetItemId_idx_39963a95\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProjectFollowUp.ProjectFollowUp_projectId_createdAt_idx_d2d6484f",
+    "label": "Create index \"ProjectFollowUp_projectId_createdAt_idx_d2d6484f\" on \"ProjectFollowUp\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProjectFollowUp_projectId_createdAt_idx_d2d6484f",
+        "table": "ProjectFollowUp"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProjectFollowUp_projectId_createdAt_idx_d2d6484f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectFollowUp_projectId_createdAt_idx_d2d6484f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProjectFollowUp_projectId_createdAt_idx_d2d6484f\"",
+        "sql": "CREATE INDEX \"ProjectFollowUp_projectId_createdAt_idx_d2d6484f\" ON \"public\".\"ProjectFollowUp\" (\"projectId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProjectFollowUp_projectId_createdAt_idx_d2d6484f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectFollowUp_projectId_createdAt_idx_d2d6484f\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProjectFollowUp.ProjectFollowUp_projectId_idx_a96e4d92",
+    "label": "Create index \"ProjectFollowUp_projectId_idx_a96e4d92\" on \"ProjectFollowUp\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProjectFollowUp_projectId_idx_a96e4d92",
+        "table": "ProjectFollowUp"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProjectFollowUp_projectId_idx_a96e4d92\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectFollowUp_projectId_idx_a96e4d92\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProjectFollowUp_projectId_idx_a96e4d92\"",
+        "sql": "CREATE INDEX \"ProjectFollowUp_projectId_idx_a96e4d92\" ON \"public\".\"ProjectFollowUp\" (\"projectId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProjectFollowUp_projectId_idx_a96e4d92\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectFollowUp_projectId_idx_a96e4d92\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProjectFollowUp.ProjectFollowUp_quoteId_idx_a7628ce5",
+    "label": "Create index \"ProjectFollowUp_quoteId_idx_a7628ce5\" on \"ProjectFollowUp\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProjectFollowUp_quoteId_idx_a7628ce5",
+        "table": "ProjectFollowUp"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProjectFollowUp_quoteId_idx_a7628ce5\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectFollowUp_quoteId_idx_a7628ce5\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProjectFollowUp_quoteId_idx_a7628ce5\"",
+        "sql": "CREATE INDEX \"ProjectFollowUp_quoteId_idx_a7628ce5\" ON \"public\".\"ProjectFollowUp\" (\"quoteId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProjectFollowUp_quoteId_idx_a7628ce5\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectFollowUp_quoteId_idx_a7628ce5\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProjectFollowUp.ProjectFollowUp_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ProjectFollowUp_tenantId_idx_c93ed4f1\" on \"ProjectFollowUp\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProjectFollowUp_tenantId_idx_c93ed4f1",
+        "table": "ProjectFollowUp"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProjectFollowUp_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectFollowUp_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProjectFollowUp_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ProjectFollowUp_tenantId_idx_c93ed4f1\" ON \"public\".\"ProjectFollowUp\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProjectFollowUp_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectFollowUp_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProjectFollowUp.ProjectFollowUp_tenantId_projectId_idx_e88197e4",
+    "label": "Create index \"ProjectFollowUp_tenantId_projectId_idx_e88197e4\" on \"ProjectFollowUp\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProjectFollowUp_tenantId_projectId_idx_e88197e4",
+        "table": "ProjectFollowUp"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProjectFollowUp_tenantId_projectId_idx_e88197e4\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectFollowUp_tenantId_projectId_idx_e88197e4\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProjectFollowUp_tenantId_projectId_idx_e88197e4\"",
+        "sql": "CREATE INDEX \"ProjectFollowUp_tenantId_projectId_idx_e88197e4\" ON \"public\".\"ProjectFollowUp\" (\"tenantId\", \"projectId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProjectFollowUp_tenantId_projectId_idx_e88197e4\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectFollowUp_tenantId_projectId_idx_e88197e4\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Quote.Quote_projectId_idx_a96e4d92",
+    "label": "Create index \"Quote_projectId_idx_a96e4d92\" on \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Quote_projectId_idx_a96e4d92",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Quote_projectId_idx_a96e4d92\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Quote_projectId_idx_a96e4d92\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Quote_projectId_idx_a96e4d92\"",
+        "sql": "CREATE INDEX \"Quote_projectId_idx_a96e4d92\" ON \"public\".\"Quote\" (\"projectId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Quote_projectId_idx_a96e4d92\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Quote_projectId_idx_a96e4d92\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WeeklyCommitment.WeeklyCommitment_budgetItemId_idx_39963a95",
+    "label": "Create index \"WeeklyCommitment_budgetItemId_idx_39963a95\" on \"WeeklyCommitment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WeeklyCommitment_budgetItemId_idx_39963a95",
+        "table": "WeeklyCommitment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WeeklyCommitment_budgetItemId_idx_39963a95\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WeeklyCommitment_budgetItemId_idx_39963a95\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WeeklyCommitment_budgetItemId_idx_39963a95\"",
+        "sql": "CREATE INDEX \"WeeklyCommitment_budgetItemId_idx_39963a95\" ON \"public\".\"WeeklyCommitment\" (\"budgetItemId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WeeklyCommitment_budgetItemId_idx_39963a95\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WeeklyCommitment_budgetItemId_idx_39963a95\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.BudgetItemProgress.BudgetItemProgress_tenantId_fkey",
+    "label": "Add foreign key \"BudgetItemProgress_tenantId_fkey\" on \"BudgetItemProgress\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "BudgetItemProgress_tenantId_fkey",
+        "table": "BudgetItemProgress"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"BudgetItemProgress_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItemProgress_tenantId_fkey",
+          "public",
+          "\"public\".\"BudgetItemProgress\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"BudgetItemProgress_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItemProgress\"\nADD CONSTRAINT \"BudgetItemProgress_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"BudgetItemProgress_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItemProgress_tenantId_fkey",
+          "public",
+          "\"public\".\"BudgetItemProgress\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.BudgetItemProgress.BudgetItemProgress_budgetItemId_fkey",
+    "label": "Add foreign key \"BudgetItemProgress_budgetItemId_fkey\" on \"BudgetItemProgress\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "BudgetItemProgress_budgetItemId_fkey",
+        "table": "BudgetItemProgress"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"BudgetItemProgress_budgetItemId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItemProgress_budgetItemId_fkey",
+          "public",
+          "\"public\".\"BudgetItemProgress\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"BudgetItemProgress_budgetItemId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItemProgress\"\nADD CONSTRAINT \"BudgetItemProgress_budgetItemId_fkey\"\nFOREIGN KEY (\"budgetItemId\")\nREFERENCES \"public\".\"BudgetItem\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"BudgetItemProgress_budgetItemId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItemProgress_budgetItemId_fkey",
+          "public",
+          "\"public\".\"BudgetItemProgress\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.FieldLogEntry.FieldLogEntry_budgetItemId_fkey",
+    "label": "Add foreign key \"FieldLogEntry_budgetItemId_fkey\" on \"FieldLogEntry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "FieldLogEntry_budgetItemId_fkey",
+        "table": "FieldLogEntry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"FieldLogEntry_budgetItemId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FieldLogEntry_budgetItemId_fkey",
+          "public",
+          "\"public\".\"FieldLogEntry\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"FieldLogEntry_budgetItemId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"FieldLogEntry\"\nADD CONSTRAINT \"FieldLogEntry_budgetItemId_fkey\"\nFOREIGN KEY (\"budgetItemId\")\nREFERENCES \"public\".\"BudgetItem\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"FieldLogEntry_budgetItemId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FieldLogEntry_budgetItemId_fkey",
+          "public",
+          "\"public\".\"FieldLogEntry\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.LookaheadTask.LookaheadTask_budgetItemId_fkey",
+    "label": "Add foreign key \"LookaheadTask_budgetItemId_fkey\" on \"LookaheadTask\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "LookaheadTask_budgetItemId_fkey",
+        "table": "LookaheadTask"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"LookaheadTask_budgetItemId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "LookaheadTask_budgetItemId_fkey",
+          "public",
+          "\"public\".\"LookaheadTask\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"LookaheadTask_budgetItemId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"LookaheadTask\"\nADD CONSTRAINT \"LookaheadTask_budgetItemId_fkey\"\nFOREIGN KEY (\"budgetItemId\")\nREFERENCES \"public\".\"BudgetItem\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"LookaheadTask_budgetItemId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "LookaheadTask_budgetItemId_fkey",
+          "public",
+          "\"public\".\"LookaheadTask\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProjectFollowUp.ProjectFollowUp_tenantId_fkey",
+    "label": "Add foreign key \"ProjectFollowUp_tenantId_fkey\" on \"ProjectFollowUp\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProjectFollowUp_tenantId_fkey",
+        "table": "ProjectFollowUp"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProjectFollowUp_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectFollowUp_tenantId_fkey",
+          "public",
+          "\"public\".\"ProjectFollowUp\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProjectFollowUp_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProjectFollowUp\"\nADD CONSTRAINT \"ProjectFollowUp_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProjectFollowUp_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectFollowUp_tenantId_fkey",
+          "public",
+          "\"public\".\"ProjectFollowUp\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProjectFollowUp.ProjectFollowUp_projectId_fkey",
+    "label": "Add foreign key \"ProjectFollowUp_projectId_fkey\" on \"ProjectFollowUp\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProjectFollowUp_projectId_fkey",
+        "table": "ProjectFollowUp"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProjectFollowUp_projectId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectFollowUp_projectId_fkey",
+          "public",
+          "\"public\".\"ProjectFollowUp\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProjectFollowUp_projectId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProjectFollowUp\"\nADD CONSTRAINT \"ProjectFollowUp_projectId_fkey\"\nFOREIGN KEY (\"projectId\")\nREFERENCES \"public\".\"Project\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProjectFollowUp_projectId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectFollowUp_projectId_fkey",
+          "public",
+          "\"public\".\"ProjectFollowUp\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProjectFollowUp.ProjectFollowUp_quoteId_fkey",
+    "label": "Add foreign key \"ProjectFollowUp_quoteId_fkey\" on \"ProjectFollowUp\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProjectFollowUp_quoteId_fkey",
+        "table": "ProjectFollowUp"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProjectFollowUp_quoteId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectFollowUp_quoteId_fkey",
+          "public",
+          "\"public\".\"ProjectFollowUp\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProjectFollowUp_quoteId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProjectFollowUp\"\nADD CONSTRAINT \"ProjectFollowUp_quoteId_fkey\"\nFOREIGN KEY (\"quoteId\")\nREFERENCES \"public\".\"Quote\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProjectFollowUp_quoteId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectFollowUp_quoteId_fkey",
+          "public",
+          "\"public\".\"ProjectFollowUp\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Quote.Quote_projectId_fkey",
+    "label": "Add foreign key \"Quote_projectId_fkey\" on \"Quote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Quote_projectId_fkey",
+        "table": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Quote_projectId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Quote_projectId_fkey",
+          "public",
+          "\"public\".\"Quote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Quote_projectId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Quote\"\nADD CONSTRAINT \"Quote_projectId_fkey\"\nFOREIGN KEY (\"projectId\")\nREFERENCES \"public\".\"Project\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Quote_projectId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Quote_projectId_fkey",
+          "public",
+          "\"public\".\"Quote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.WeeklyCommitment.WeeklyCommitment_budgetItemId_fkey",
+    "label": "Add foreign key \"WeeklyCommitment_budgetItemId_fkey\" on \"WeeklyCommitment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "WeeklyCommitment_budgetItemId_fkey",
+        "table": "WeeklyCommitment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"WeeklyCommitment_budgetItemId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WeeklyCommitment_budgetItemId_fkey",
+          "public",
+          "\"public\".\"WeeklyCommitment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"WeeklyCommitment_budgetItemId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"WeeklyCommitment\"\nADD CONSTRAINT \"WeeklyCommitment_budgetItemId_fkey\"\nFOREIGN KEY (\"budgetItemId\")\nREFERENCES \"public\".\"BudgetItem\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"WeeklyCommitment_budgetItemId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WeeklyCommitment_budgetItemId_fkey",
+          "public",
+          "\"public\".\"WeeklyCommitment\""
+        ]
+      }
+    ]
+  }
+]

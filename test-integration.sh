@@ -24,4 +24,5 @@ pnpm exec vitest run \
   lib/apu-importer.field-changes.test.ts \
   lib/tenant-db.apu-import.integration.test.ts \
   lib/construction/containers.integration.test.ts \
-  lib/apu-importer/master-pack-import.integration.test.ts
+  lib/apu-importer/master-pack-import.integration.test.ts \
+  lib/construction/project-quotes.integration.test.ts

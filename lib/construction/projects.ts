@@ -258,6 +258,17 @@ export function createProjectsDb(tenantId: string) {
           if (!canTransitionProjectStatus(current, input.status)) {
             throw new Error("INVALID_TRANSITION");
           }
+          // Contratada solo con una cotización aprobada por el cliente: ese
+          // evento crea la línea base y bloquea el presupuesto (ver
+          // projectQuotes.decide). Una obra no se contrata a mano.
+          if (input.status === "APPROVED") {
+            const approved = await db.orm.public.Quote.where({ tenantId, projectId: id, status: "APPROVED" })
+              .select("id")
+              .first();
+            if (!approved) {
+              throw new Error("APPROVED_REQUIRES_QUOTE");
+            }
+          }
           patch.status = input.status;
         }
 

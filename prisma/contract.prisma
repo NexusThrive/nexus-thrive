@@ -98,6 +98,17 @@ enum QuoteStatus {
   SENT
   APPROVED
   REJECTED
+  /// Reemplazada por una versión posterior de la misma obra.
+  SUPERSEDED
+}
+
+/// Tipo de seguimiento comercial de una obra (carpeta de cotizaciones).
+enum FollowUpType {
+  NOTE
+  CALL
+  EMAIL
+  MEETING
+  VISIT
 }
 
 /// Ciclo de vida de un proyecto de obra (vertical construcción).
@@ -214,6 +225,8 @@ model Tenant {
   apuImportRuns ApuImportRun[]
   apuPriceHistory ApuItemPriceHistory[]
   quotes        Quote[]
+  projectFollowUps ProjectFollowUp[]
+  budgetItemProgress BudgetItemProgress[]
   projects      Project[]
   projectBudgets ProjectBudget[]
   budgetChapters BudgetChapter[]
@@ -577,15 +590,58 @@ model Quote {
   taxPercent    Decimal     @default(19)
   directCost    Decimal
   totalAmount   Decimal
+  /// Obra de la que se emitió (null solo en cotizaciones anteriores a que la
+  /// cotización naciera de la obra; ver la migración de cotizaciones antiguas).
+  projectId     String?
+  project       Project?    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  /// Versión dentro de la obra (v1, v2…).
+  version       Int?
+  /// Revisión del presupuesto congelada en esta versión.
+  budgetRevision Int?
+  /// Foto completa del documento emitido (capítulos, partidas, totales,
+  /// partes). Un cambio posterior del presupuesto no la altera.
+  snapshot      Json?
+  /// Si el documento para el cliente muestra el detalle APU de cada partida.
+  showApuDetail Boolean     @default(false)
+  validUntil    DateTime?
+  sentAt        DateTime?
+  decidedAt     DateTime?
+  decidedByName String?
+  decisionNote  String?
   createdAt     DateTime    @default(now())
   updatedAt     temporal.updatedAt()
 
   items QuoteItem[]
+  followUps ProjectFollowUp[]
 
   @@unique([tenantId, code])
+  @@unique([projectId, version])
   @@index([tenantId])
   @@index([tenantId, status])
   @@index([customerId])
+}
+
+/// Seguimiento comercial de una obra: llamada, correo, reunión, visita o nota,
+/// opcionalmente ligado a una versión de la cotización y con fecha prevista.
+model ProjectFollowUp {
+  id           String       @id @default(uuid())
+  tenantId     String
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  projectId    String
+  project      Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  quoteId      String?
+  quote        Quote?       @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+  type         FollowUpType @default(NOTE)
+  note         String
+  /// Fecha prevista (próximo contacto); null si es un registro de lo ocurrido.
+  scheduledFor DateTime?
+  completedAt  DateTime?
+  authorName   String
+  createdAt    DateTime     @default(now())
+  updatedAt    temporal.updatedAt()
+
+  @@index([tenantId, projectId])
+  @@index([projectId, createdAt])
 }
 
 /// Registro de auditoría de acciones privilegiadas del SuperAdmin
@@ -658,6 +714,8 @@ model Project {
   header   ProjectHeader?
   /// Presupuesto de obra del proyecto (1:1 en esta fase, Tab 2).
   budget   ProjectBudget?
+  quotes   Quote[]
+  followUps ProjectFollowUp[]
   /// Plan operativo Lean (Last Planner System) del proyecto (1:1, Tab 3).
   plan     ProjectPlan?
   /// Bitácora de campo del proyecto (1:1, Tab 4).
@@ -799,6 +857,10 @@ model BudgetItem {
   updatedAt      temporal.updatedAt()
 
   resources BudgetItemResource[]
+  progress  BudgetItemProgress[]
+  lookaheadTasks LookaheadTask[]
+  commitments    WeeklyCommitment[]
+  fieldLogEntries FieldLogEntry[]
 
   @@unique([chapterId, order])
   @@index([tenantId])
@@ -837,6 +899,24 @@ model BudgetItemResource {
 
   @@index([tenantId])
   @@index([itemId])
+}
+
+/// Acta de avance de una partida: cantidad ejecutada en el período que cierra
+/// en `cutoffDate` (micro-unidades, se acumula). Es la fuente del valor ganado.
+model BudgetItemProgress {
+  id               String     @id @default(uuid())
+  tenantId         String
+  tenant           Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  budgetItemId     String
+  budgetItem       BudgetItem @relation(fields: [budgetItemId], references: [id], onDelete: Cascade)
+  cutoffDate       DateTime
+  executedQuantity BigInt
+  note             String?
+  authorName       String
+  createdAt        DateTime   @default(now())
+
+  @@index([tenantId])
+  @@index([budgetItemId, cutoffDate])
 }
 
 /// Línea base aprobada del presupuesto (D1 — revisiones baseline). Congela la
@@ -957,6 +1037,9 @@ model LookaheadTask {
   /// Restricción real identificada por el equipo (no decorativa).
   isRestricted Boolean @default(false)
   notes       String?
+  /// Partida del presupuesto a la que se refiere (opcional).
+  budgetItemId String?
+  budgetItem   BudgetItem? @relation(fields: [budgetItemId], references: [id], onDelete: SetNull)
   createdAt   DateTime @default(now())
   updatedAt   temporal.updatedAt()
 
@@ -986,6 +1069,9 @@ model WeeklyCommitment {
   /// Causa de no cumplimiento (solo cuando `status = FAILED`).
   failureCause NonComplianceCause?
   failureNotes String?
+  /// Partida del presupuesto a la que se refiere (opcional).
+  budgetItemId String?
+  budgetItem   BudgetItem? @relation(fields: [budgetItemId], references: [id], onDelete: SetNull)
   createdAt    DateTime          @default(now())
   updatedAt    temporal.updatedAt()
 
@@ -1028,6 +1114,9 @@ model FieldLogEntry {
   authorName  String
   authorRole  String
   photoUrls   String[]         @default([])
+  /// Partida del presupuesto a la que se refiere (opcional).
+  budgetItemId String?
+  budgetItem   BudgetItem? @relation(fields: [budgetItemId], references: [id], onDelete: SetNull)
   createdAt   DateTime         @default(now())
   updatedAt   temporal.updatedAt()
 

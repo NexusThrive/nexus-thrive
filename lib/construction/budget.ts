@@ -42,6 +42,7 @@ import {
   lockRevision,
   recalcBudgetTotals,
   sumBudgetDirect,
+  insertBaseline,
 } from "./shared";
 
 export function createBudgetsDb(tenantId: string) {
@@ -800,65 +801,7 @@ export function createBudgetsDb(tenantId: string) {
         }
         const created = await db.transaction(async (tx) => {
           await lockRevision(tx, budget);
-          const direct = await sumBudgetDirect(tx, budget.id);
-          const totals = calculateBudgetTotals(
-            direct,
-            budget.aiuAdminPct,
-            budget.aiuImprevPct,
-            budget.aiuUtilidadPct,
-            budget.ivaUtilidadPct,
-          );
-          const chapters = await tx.orm.public.BudgetChapter
-            .where({ budgetId: budget.id })
-            .orderBy((chapter) => chapter.order.asc())
-            .select("id", "order", "name")
-            .all();
-          const chapterIds = chapters.map((chapter) => chapter.id);
-          const items = chapterIds.length
-            ? await tx.orm.public.BudgetItem
-                .where((item) => item.chapterId.in(chapterIds))
-                .select("chapterId", "totalCostDirect")
-                .all()
-            : [];
-          const subtotalByChapter = new Map<string, bigint>();
-          for (const item of items) {
-            subtotalByChapter.set(
-              item.chapterId,
-              (subtotalByChapter.get(item.chapterId) ?? BigInt(0)) +
-                BigInt(item.totalCostDirect),
-            );
-          }
-          const snapshot = chapters.map((chapter) => ({
-            order: chapter.order,
-            name: chapter.name,
-            subtotal: (
-              subtotalByChapter.get(chapter.id) ?? BigInt(0)
-            ).toString(),
-          }));
-          const last = await tx.orm.public.BudgetBaseline
-            .where({ budgetId: budget.id })
-            .orderBy((baseline) => baseline.version.desc())
-            .first();
-          const version = last ? last.version + 1 : 1;
-          const baseline = await tx.orm.public.BudgetBaseline.create({
-            tenantId,
-            budgetId: budget.id,
-            budgetRevision: budget.revision,
-            version,
-            directCostTotal: direct,
-            adminTotal: totals.adminTotal,
-            imprevTotal: totals.imprevTotal,
-            utilidadTotal: totals.utilidadTotal,
-            ivaUtilidadTotal: totals.ivaUtilidadTotal,
-            grandTotal: totals.grandTotal,
-            chapterCount: chapters.length,
-            itemCount: items.length,
-            snapshot: snapshot as never,
-            note: input.note?.trim() ? input.note.trim() : null,
-            approvedById: input.userId,
-            approvedByName: input.userName,
-          });
-          return baseline;
+          return insertBaseline(tx, tenantId, budget, input);
         });
         return { id: created.id, version: created.version };
       },

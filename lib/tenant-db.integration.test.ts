@@ -581,7 +581,7 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
     // La acción createFieldLogEntryAction deriva authorName/authorRole del miembro
   });
 
-  test("updateProject: transiciones válidas DRAFT→BIDDING→APPROVED→IN_EXECUTION→COMPLETED", async () => {
+  test("updateProject: transiciones válidas DRAFT→BIDDING→(aprobación)→IN_EXECUTION→COMPLETED", async () => {
     // Crear proyecto nuevo para este test
     const stamp = Date.now().toString(36);
     const customer = await db.orm.public.Customer.create({
@@ -599,9 +599,12 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
     // DRAFT → BIDDING
     let r = await dbT.projects.updateProject(proj.id, { expectedStatus: "DRAFT", status: "BIDDING" });
     expect(r).toBe("BIDDING");
-    // BIDDING → APPROVED
-    r = await dbT.projects.updateProject(proj.id, { expectedStatus: "BIDDING", status: "APPROVED" });
-    expect(r).toBe("APPROVED");
+    // BIDDING → APPROVED no se hace a mano: exige una cotización aprobada
+    // (projectQuotes.decide). Aquí se simula con la fila para seguir el recorrido.
+    await expect(
+      dbT.projects.updateProject(proj.id, { expectedStatus: "BIDDING", status: "APPROVED" }),
+    ).rejects.toThrow("APPROVED_REQUIRES_QUOTE");
+    await db.orm.public.Project.where({ id: proj.id }).update({ status: "APPROVED" });
     // APPROVED → IN_EXECUTION
     r = await dbT.projects.updateProject(proj.id, { expectedStatus: "APPROVED", status: "IN_EXECUTION" });
     expect(r).toBe("IN_EXECUTION");
@@ -650,9 +653,9 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
     });
     const dbT = createTenantDb(tenantId);
 
-    // Llevar a COMPLETED
+    // Llevar a COMPLETED (la aprobación se simula con la fila: exige cotización).
     await dbT.projects.updateProject(proj.id, { expectedStatus: "DRAFT", status: "BIDDING" });
-    await dbT.projects.updateProject(proj.id, { expectedStatus: "BIDDING", status: "APPROVED" });
+    await db.orm.public.Project.where({ id: proj.id }).update({ status: "APPROVED" });
     await dbT.projects.updateProject(proj.id, { expectedStatus: "APPROVED", status: "IN_EXECUTION" });
     await dbT.projects.updateProject(proj.id, { expectedStatus: "IN_EXECUTION", status: "COMPLETED" });
 

@@ -164,6 +164,7 @@ export const QUOTE_STATUSES = [
   { value: "SENT", label: "Enviado" },
   { value: "APPROVED", label: "Aprobado" },
   { value: "REJECTED", label: "Rechazado" },
+  { value: "SUPERSEDED", label: "Reemplazada" },
 ] as const;
 export type QuoteStatusValue = (typeof QUOTE_STATUSES)[number]["value"];
 

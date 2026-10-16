@@ -215,6 +215,8 @@ function projectErrorMessage(error: unknown, fallback: string): string {
         return "Esa transición de estado no está permitida.";
       case "MISSING_EXPECTED_STATUS":
         return "Falta el estado esperado para validar el cambio.";
+      case "APPROVED_REQUIRES_QUOTE":
+        return "Una obra queda contratada cuando el cliente aprueba una cotización. Emite la cotización y registra su aprobación en la pestaña Cotizaciones.";
       default:
         return error.message;
     }
