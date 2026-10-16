@@ -3,8 +3,6 @@
  * Extraído de `lib/tenant-db.ts`.
  */
 import {
-} from "@prisma/orm-postgres/orm-client";
-import {
   db,
 } from "@/prisma/db";
 import {
