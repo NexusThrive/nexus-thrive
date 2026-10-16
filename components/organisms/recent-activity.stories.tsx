@@ -7,9 +7,9 @@ const meta = {
   args: {
     items: [
       { id: "1", type: "payment", title: "Pago mensualidad", description: "Laura Méndez · Tarjeta", amount: "$ 120.000", time: "Hace 5 min" },
-      { id: "2", type: "expense", title: "Compra de cemento", description: "Caja menor · Obra Calle 80", amount: "-$ 845.000", time: "Hace 1 h" },
+      { id: "2", type: "expense", title: "Compra de cemento", description: "Caja menor · Obra Calle 80", amount: "$ 845.000", time: "Hace 1 h" },
       { id: "3", type: "payment", title: "Anticipo cotización v2", description: "Inversiones Sabana · Transferencia", amount: "$ 15.780.000", time: "Ayer" },
-      { id: "4", type: "expense", title: "Transporte de material", description: "Caja menor", amount: "-$ 210.000", time: "Ayer" },
+      { id: "4", type: "expense", title: "Transporte de material", description: "Caja menor", amount: "$ 210.000", time: "Ayer" },
     ],
   },
   decorators: [(Story) => <div className="max-w-lg"><Story /></div>],

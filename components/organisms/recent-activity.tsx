@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { HandCoins, Receipt } from "lucide-react";
-import { cn } from "@/lib/cn";
+import { IconTile } from "@/components/atoms/icon-tile";
 import { EmptyState } from "@/components/molecules/empty-state";
+import { Amount, ListItem } from "@/components/molecules/list-item";
 import {
   SegmentedControl,
   type SegmentedOption,
@@ -52,12 +53,12 @@ export default function RecentActivity({ items }: RecentActivityProps) {
   return (
     <section
       aria-labelledby="recent-activity-title"
-      className="flex h-full flex-col rounded-lg border border-border bg-card"
+      className="nx-rise flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card"
     >
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-3.5">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-[18px] py-3.5">
         <h2
           id="recent-activity-title"
-          className="font-display text-base font-semibold text-foreground"
+          className="font-display text-[15px] font-semibold text-foreground"
         >
           Actividad reciente
         </h2>
@@ -80,36 +81,23 @@ export default function RecentActivity({ items }: RecentActivityProps) {
           {visible.map((item) => {
             const Icon = ACTIVITY_ICONS[item.type];
             const isExpense = item.type === "expense";
-
             return (
-              <li
-                key={item.id}
-                className="nx-row flex h-[60px] items-center gap-3 border-b border-border px-5 last:border-b-0"
-              >
-                <Icon
-                  aria-hidden="true"
-                  strokeWidth={1.5}
-                  className="size-[18px] shrink-0 text-muted-foreground"
+              <li key={item.id} className="nx-row">
+                <ListItem
+                  leading={
+                    <IconTile size="sm" tone={isExpense ? "gold" : "neutral"}>
+                      <Icon strokeWidth={1.6} />
+                    </IconTile>
+                  }
+                  title={item.title}
+                  subtitle={item.description}
+                  trailing={
+                    <div className="shrink-0 text-right">
+                      <Amount value={isExpense ? `−${item.amount}` : `+${item.amount}`} negative={isExpense} />
+                      <p className="text-[11.5px] text-muted-foreground">{item.time}</p>
+                    </div>
+                  }
                 />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-foreground">
-                    {item.title}
-                  </p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {item.description}
-                  </p>
-                </div>
-                <div className="shrink-0 text-right">
-                  <p
-                    className={cn(
-                      "text-sm font-semibold tabular-nums",
-                      isExpense ? "text-danger" : "text-foreground",
-                    )}
-                  >
-                    {item.amount}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{item.time}</p>
-                </div>
               </li>
             );
           })}
