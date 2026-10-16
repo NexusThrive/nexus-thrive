@@ -5,9 +5,11 @@ import { usePathname } from "next/navigation";
 import { useEffect, type ComponentType } from "react";
 import {
   Banknote,
+  BookOpen,
+  Building2,
   CalendarDays,
   CreditCard,
-  FileText,
+  FolderOpen,
   LayoutDashboard,
   MessageCircle,
   Package,
@@ -46,16 +48,24 @@ type NavItem = {
 
 type NavGroup = { label: string; items: NavItem[] };
 
-const MODULE_NAV: Record<
-  ModuleValue,
-  { href: string; icon: NavItem["icon"]; label: (terms: VerticalTerms) => string }
-> = {
+type ModuleNav = { href: string; icon: NavItem["icon"]; label: (terms: VerticalTerms, vertical: VerticalValue) => string };
+
+/** Un módulo puede ocupar varias entradas (cotizaciones = obras + carpetas + catálogo). */
+const MODULE_NAV: Record<ModuleValue, ModuleNav | ModuleNav[]> = {
   dashboard: { href: "", icon: LayoutDashboard, label: () => "Dashboard" },
   crm: { href: "/crm", icon: Users, label: (terms) => terms.customers },
   bookings: { href: "/bookings", icon: CalendarDays, label: (terms) => terms.bookings },
   memberships: { href: "/memberships", icon: CreditCard, label: () => "Membresías" },
   orders: { href: "/orders", icon: ShoppingCart, label: () => "Pedidos" },
-  quotes: { href: "/quotes", icon: FileText, label: (terms) => terms.quotes ?? "Cotizaciones" },
+  quotes: [
+    {
+      href: "/projects",
+      icon: Building2,
+      label: (_terms, vertical) => (vertical === "construction" ? "Obras" : "Proyectos"),
+    },
+    { href: "/quotes", icon: FolderOpen, label: () => "Cotizaciones" },
+    { href: "/catalog", icon: BookOpen, label: () => "Catálogo APU" },
+  ],
   inventory: { href: "/inventory", icon: Package, label: (terms) => terms.items },
   finance: { href: "/finance", icon: Wallet, label: () => "Finanzas" },
   payments: { href: "/payments", icon: Banknote, label: () => "Pagos" },
@@ -81,6 +91,16 @@ export default function Sidebar({
   const basePath = `/${tenantSlug}`;
   const terms = getVerticalTerms(vertical);
 
+  const navItems = (moduleName: ModuleValue): NavItem[] => {
+    const entry = MODULE_NAV[moduleName];
+    return (Array.isArray(entry) ? entry : [entry]).map((item) => ({
+      module: moduleName,
+      href: item.href,
+      icon: item.icon,
+      label: item.label(terms, vertical),
+    }));
+  };
+
   const activeSet = new Set(activeModules);
   const navModules = MODULES.filter((moduleName) => activeSet.has(moduleName));
 
@@ -90,23 +110,13 @@ export default function Sidebar({
         label: "General",
         items: navModules
           .filter((moduleName) => moduleName === "dashboard")
-          .map((moduleName) => ({
-            module: moduleName,
-            href: MODULE_NAV[moduleName].href,
-            icon: MODULE_NAV[moduleName].icon,
-            label: MODULE_NAV[moduleName].label(terms),
-          })),
+          .flatMap((moduleName) => navItems(moduleName)),
       },
       {
         label: "Gestión",
         items: navModules
           .filter((moduleName) => moduleName !== "dashboard")
-          .map((moduleName) => ({
-            module: moduleName,
-            href: MODULE_NAV[moduleName].href,
-            icon: MODULE_NAV[moduleName].icon,
-            label: MODULE_NAV[moduleName].label(terms),
-          })),
+          .flatMap((moduleName) => navItems(moduleName)),
       },
       {
         label: "Sistema",
@@ -232,7 +242,7 @@ export default function Sidebar({
                   const href = item.href === "" ? basePath : `${basePath}${item.href}`;
 
                   return (
-                    <li key={item.module}>
+                    <li key={item.href}>
                       <Link
                         href={href}
                         onClick={close}

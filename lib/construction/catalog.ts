@@ -210,6 +210,27 @@ export function createCatalogDb(tenantId: string) {
         }));
       },
 
+      /** Cifras del catálogo para el encabezado del módulo. */
+      getOverview: async () => {
+        const [activities, items, chapters, lastRun] = await Promise.all([
+          db.orm.public.ApuActivity.where({ tenantId }).select("isAuxiliary").all(),
+          db.orm.public.ApuItem.where({ tenantId }).select("imageId", "active").all(),
+          db.orm.public.ApuChapter.where({ tenantId }).select("id").all(),
+          db.orm.public.ApuImportRun.where({ tenantId })
+            .orderBy((run) => run.createdAt.desc())
+            .select("fileName", "createdAt")
+            .first(),
+        ]);
+        return {
+          activities: activities.filter((a) => !a.isAuxiliary).length,
+          auxiliaries: activities.filter((a) => a.isAuxiliary).length,
+          items: items.filter((i) => i.active).length,
+          itemsWithImage: items.filter((i) => i.imageId).length,
+          chapters: chapters.length,
+          lastImport: lastRun ? { fileName: lastRun.fileName, createdAt: String(lastRun.createdAt) } : null,
+        };
+      },
+
       /** Capítulos del catálogo en el orden del archivo, con su conteo. */
       listChapters: async (): Promise<ApuChapterRow[]> => {
         const [chapters, activities] = await Promise.all([

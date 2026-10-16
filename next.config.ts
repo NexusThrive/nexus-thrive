@@ -23,6 +23,17 @@ const nextConfig: NextConfig = {
     "localhost:3001",
     ...devOriginsFromEnv(process.env.DEV_ALLOWED_ORIGINS),
   ],
+  // Rutas anteriores a la reorganización de construcción (obras, carpetas de
+  // cotizaciones y catálogo APU separados).
+  async redirects() {
+    return [
+      { source: "/:tenant/quotes/projects", destination: "/:tenant/projects", permanent: false },
+      { source: "/:tenant/quotes/projects/:path*", destination: "/:tenant/projects/:path*", permanent: false },
+      { source: "/:tenant/quotes/import", destination: "/:tenant/catalog/import", permanent: false },
+      { source: "/:tenant/quotes/new", destination: "/:tenant/projects", permanent: false },
+      { source: "/:tenant/quotes/:id/explosion", destination: "/:tenant/quotes/:id", permanent: false },
+    ];
+  },
   // Los packs APU reales superan los límites por defecto (Server Actions 1 MB,
   // proxy 10 MB) — el MASTER PACK pesa ~16 MB.
   experimental: {

@@ -129,6 +129,7 @@ export const PROJECT_TYPE_OPTIONS: ReadonlyArray<{
 export type ProjectTab =
   | "ficha"
   | "presupuesto"
+  | "cotizaciones"
   | "planificador"
   | "planificacion"
   | "bitacora"
@@ -141,6 +142,7 @@ export const PROJECT_TABS: ReadonlyArray<{
 }> = [
   { value: "ficha", label: "Ficha y cliente" },
   { value: "presupuesto", label: "Presupuestador" },
+  { value: "cotizaciones", label: "Cotizaciones" },
   { value: "planificador", label: "Planificador Lean" },
   { value: "bitacora", label: "Bitácora y campo" },
   { value: "informes", label: "Informes y exportación" },
