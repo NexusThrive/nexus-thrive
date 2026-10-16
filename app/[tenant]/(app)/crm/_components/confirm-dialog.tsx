@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { TriangleAlert } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 
 /**
  * Diálogo de confirmación genérico (role=dialog, cierra con Escape o clic

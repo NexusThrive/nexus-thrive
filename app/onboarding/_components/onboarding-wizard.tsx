@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import { completeAdaptiveOnboardingAction } from "../actions";
 import { validateAdaptiveOnboarding } from "@/lib/onboarding/validation";
 import {

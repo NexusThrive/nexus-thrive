@@ -2,10 +2,10 @@
 
 import { useActionState, useEffect, useMemo, useState, startTransition } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { KpiCard } from "@/components/brand/kpi-card";
-import { EmptyState } from "@/components/brand/empty-state";
+import { Button } from "@/components/atoms/button";
+import { Badge } from "@/components/atoms/badge";
+import { KpiCard } from "@/components/molecules/kpi-card";
+import { EmptyState } from "@/components/molecules/empty-state";
 import {
   exportBomCsvAction,
   getInformeCeroDataAction,

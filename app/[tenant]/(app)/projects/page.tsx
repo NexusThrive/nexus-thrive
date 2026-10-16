@@ -9,8 +9,8 @@ import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
 import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/projects";
 import { cn } from "@/lib/cn";
-import SearchInput from "@/app/components/tenant/search-input";
-import FilterSelect from "@/app/components/tenant/filter-select";
+import SearchInput from "@/components/molecules/search-input";
+import FilterSelect from "@/components/molecules/filter-select";
 import ProjectsTable from "./_components/projects-table";
 import NewProjectModal from "./_components/new-project-modal";
 

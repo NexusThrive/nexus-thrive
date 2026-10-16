@@ -3,9 +3,9 @@
 import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Download, TriangleAlert } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
-import SearchInput from "@/app/components/tenant/search-input";
-import FilterSelect from "@/app/components/tenant/filter-select";
+import { NLoader } from "@/components/atoms/n-loader";
+import SearchInput from "@/components/molecules/search-input";
+import FilterSelect from "@/components/molecules/filter-select";
 import {
   VERTICAL_LABELS,
   VERTICALS,

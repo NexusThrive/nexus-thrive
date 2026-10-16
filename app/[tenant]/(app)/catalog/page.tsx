@@ -8,7 +8,7 @@ import { canGovernBudget, type TenantRole } from "@/lib/tenant-context";
 import { getQuoteTerms } from "@/lib/vertical-terms";
 import { formatDateShort } from "@/lib/format";
 import { isValidCategory } from "@/lib/apu-engine";
-import TabNav from "@/components/construction/tab-nav";
+import TabNav from "@/components/molecules/tab-nav";
 import ItemsBank from "./_components/items-bank";
 import ActivityCatalog from "./_components/activity-catalog";
 

@@ -3,10 +3,10 @@
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
-import { KpiCard } from "@/components/brand/kpi-card";
-import { EmptyState } from "@/components/brand/empty-state";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { KpiCard } from "@/components/molecules/kpi-card";
+import { EmptyState } from "@/components/molecules/empty-state";
+import { Button } from "@/components/atoms/button";
+import { Badge } from "@/components/atoms/badge";
 import { formatDateShort } from "@/lib/format";
 import {
   NON_COMPLIANCE_CAUSES,

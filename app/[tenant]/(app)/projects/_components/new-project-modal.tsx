@@ -4,8 +4,8 @@ import { useEffect, useActionState, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
-import Modal from "@/components/construction/modal";
+import { NLoader } from "@/components/atoms/n-loader";
+import Modal from "@/components/organisms/modal";
 import { createProjectAction, type CreateProjectFormState } from "../actions";
 
 const IDLE_STATE: CreateProjectFormState = { status: "idle" };

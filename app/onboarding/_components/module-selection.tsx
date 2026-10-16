@@ -22,7 +22,7 @@ import {
 } from "@/lib/admin-catalogs";
 import { getOnboardingModulePreset } from "@/lib/onboarding/presets";
 import type { OnboardingDraft } from "@/lib/onboarding/types";
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "@/components/atoms/switch";
 import { cn } from "@/lib/utils";
 
 const MODULE_ICONS: Record<ModuleValue, typeof Layers> = {

@@ -11,7 +11,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/components/ui/command";
+} from "@/components/organisms/command";
 
 /**
  * Paleta de comandos del panel (⌘K / Ctrl+K): navegación y acciones

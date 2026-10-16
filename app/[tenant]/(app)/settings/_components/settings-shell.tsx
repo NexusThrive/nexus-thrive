@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 
 import { cn } from "@/lib/cn";
-import { ToastProvider } from "@/components/brand/toast";
+import { ToastProvider } from "@/components/molecules/toast";
 import type { ModuleValue } from "@/lib/admin-catalogs";
 import ProfileTab from "./profile-tab";
 import ModulesTab from "./modules-tab";

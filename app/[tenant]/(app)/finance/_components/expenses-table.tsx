@@ -1,7 +1,7 @@
 import { Receipt } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/atoms/badge";
 import { formatCurrency, formatDate } from "@/lib/format";
-import PaginationLinks from "@/app/components/tenant/pagination-links";
+import PaginationLinks from "@/components/molecules/pagination-links";
 
 export type ExpenseViewRow = {
   id: string;

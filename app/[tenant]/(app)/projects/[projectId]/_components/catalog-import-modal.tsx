@@ -4,8 +4,8 @@ import { apuImageUrl } from "@/lib/apu-images";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Lock, Search, Snowflake, X } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
-import { useToast } from "@/components/brand/toast";
+import { NLoader } from "@/components/atoms/n-loader";
+import { useToast } from "@/components/molecules/toast";
 import {
   APU_ITEM_CATEGORIES,
   APU_UNITS,
@@ -16,7 +16,7 @@ import type {
   ApuActivityDetail,
   ApuActivityRow,
 } from "@/lib/tenant-db";
-import Modal from "@/components/construction/modal";
+import Modal from "@/components/organisms/modal";
 import {
   getCatalogActivityDetailAction,
   importActivityFromCatalogAction,

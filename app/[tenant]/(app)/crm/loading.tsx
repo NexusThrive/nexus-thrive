@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/atoms/skeleton";
 
 /** Skeleton del CRM mientras carga la página RSC (búsqueda/filtrado). */
 export default function CrmLoading() {

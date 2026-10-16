@@ -9,7 +9,8 @@
    ========================================================================== */
 @import "../packages/brand/css/tokens.css";
 @import "../packages/brand/css/theme-v4.css";
-@import "../packages/brand/css/base.css";
+/* En la capa base: si no, sus reglas sin capa (h1, p…) le ganan a las utilidades. */
+@import "../packages/brand/css/base.css" layer(base);
 
 @custom-variant dark (&:where(.dark, .dark *));
 

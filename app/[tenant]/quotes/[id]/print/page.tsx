@@ -6,7 +6,7 @@ import { createTenantDb } from "@/lib/tenant-db";
 import { getQuoteTerms, getVerticalTerms } from "@/lib/vertical-terms";
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import PrintButton from "./_components/print-button";
-import QuoteDocumentSheet from "@/components/construction/quote-document-sheet";
+import QuoteDocumentSheet from "@/components/organisms/quote-document-sheet";
 
 /**
  * Documento comercial para el cliente — Fase 3.

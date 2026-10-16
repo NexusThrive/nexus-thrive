@@ -1,4 +1,4 @@
-import { Badge, StatusDot } from "@/components/ui/badge";
+import { Badge, StatusDot } from "@/components/atoms/badge";
 
 /**
  * Badge del estado global del negocio: `Activo` responde vía subdominio;

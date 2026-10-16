@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import type {
   PaymentMethodValue,
   VerticalValue,

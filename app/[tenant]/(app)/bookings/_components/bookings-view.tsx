@@ -4,8 +4,8 @@ import { useEffect, useState, useActionState, startTransition } from "react";
 import { CalendarPlus, X } from "lucide-react";
 
 import { cn } from "@/lib/cn";
-import { NLoader } from "@/components/brand/n-loader";
-import { useToast, ToastProvider } from "@/components/brand/toast";
+import { NLoader } from "@/components/atoms/n-loader";
+import { useToast, ToastProvider } from "@/components/molecules/toast";
 import {
   createBookingAction,
   updateBookingStatusAction,

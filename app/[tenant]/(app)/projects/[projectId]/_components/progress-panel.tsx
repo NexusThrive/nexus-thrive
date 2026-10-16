@@ -3,8 +3,8 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { NLoader } from "@/components/brand/n-loader";
+import { Button } from "@/components/atoms/button";
+import { NLoader } from "@/components/atoms/n-loader";
 import { formatDateShort, formatMoneyMicro, formatQuantityMicro } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import type { ItemProgressRow } from "@/lib/construction/progress";

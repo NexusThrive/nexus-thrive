@@ -10,8 +10,8 @@ import {
   RefreshCw,
   ShieldCheck,
 } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
-import { Badge } from "@/components/ui/badge";
+import { NLoader } from "@/components/atoms/n-loader";
+import { Badge } from "@/components/atoms/badge";
 import { cn } from "@/lib/cn";
 import type { MasterPackSummary } from "@/lib/apu-importer/master-pack-summary";
 import type { MasterPackImportResult } from "@/lib/apu-importer/master-pack-import";

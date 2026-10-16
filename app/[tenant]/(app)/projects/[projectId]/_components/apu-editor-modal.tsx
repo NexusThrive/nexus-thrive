@@ -4,8 +4,8 @@ import { apuImageUrl } from "@/lib/apu-images";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Boxes, Check } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
-import { useToast } from "@/components/brand/toast";
+import { NLoader } from "@/components/atoms/n-loader";
+import { useToast } from "@/components/molecules/toast";
 import {
   APU_ITEM_CATEGORIES,
   calculateItemTotal,
@@ -19,8 +19,8 @@ import {
 } from "@/lib/apu-engine";
 import { formatMoneyMicro, formatQuantityMicro } from "@/lib/format";
 import type { BudgetItemData, BudgetResourceData } from "@/lib/tenant-db";
-import Modal from "@/components/construction/modal";
-import { ApuCategoryBadge } from "@/components/construction/quote-badges";
+import Modal from "@/components/organisms/modal";
+import { ApuCategoryBadge } from "@/components/molecules/quote-badges";
 import { updateResourceAction } from "../budget/actions";
 
 /**

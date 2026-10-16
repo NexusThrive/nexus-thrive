@@ -5,7 +5,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useActionState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, FileUp, Pencil, Plus } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import { formatCurrency } from "@/lib/format";
 import {
   APU_ITEM_CATEGORIES,
@@ -13,8 +13,8 @@ import {
   formatApuUnit,
   type ApuItemCategoryValue,
 } from "@/lib/apu-engine";
-import SearchInput from "@/app/components/tenant/search-input";
-import FilterSelect from "@/app/components/tenant/filter-select";
+import SearchInput from "@/components/molecules/search-input";
+import FilterSelect from "@/components/molecules/filter-select";
 import type { ApuItemRow } from "@/lib/tenant-db";
 import {
   parseImportCsv,
@@ -31,8 +31,8 @@ import {
   type ApuMutationState,
   type ImportResultState,
 } from "../actions";
-import Modal from "@/components/construction/modal";
-import { ApuCategoryBadge } from "@/components/construction/quote-badges";
+import Modal from "@/components/organisms/modal";
+import { ApuCategoryBadge } from "@/components/molecules/quote-badges";
 
 const EMPTY_ITEM: ApuItemFormValues = {
   code: "",

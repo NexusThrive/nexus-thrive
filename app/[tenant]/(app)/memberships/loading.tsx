@@ -1,5 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { NLoader } from "@/components/brand/n-loader";
+import { Skeleton } from "@/components/atoms/skeleton";
+import { NLoader } from "@/components/atoms/n-loader";
 
 /** Carga del segmento /memberships: skeleton de marca consistente con Finanzas. */
 export default function MembershipsLoading() {

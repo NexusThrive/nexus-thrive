@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useActionState } from "react";
-import { Switch } from "@/components/ui/switch";
-import { NLoader } from "@/components/brand/n-loader";
-import { useToast } from "@/components/brand/toast";
+import { Switch } from "@/components/atoms/switch";
+import { NLoader } from "@/components/atoms/n-loader";
+import { useToast } from "@/components/molecules/toast";
 import { MODULE_LABELS } from "@/lib/admin-catalogs";
 import { cn } from "@/lib/cn";
 import { toggleModuleAction, type ModulesFormState } from "../actions";

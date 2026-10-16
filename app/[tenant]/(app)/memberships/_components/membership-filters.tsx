@@ -1,7 +1,7 @@
 "use client";
 
-import SearchInput from "@/app/components/tenant/search-input";
-import FilterSelect from "@/app/components/tenant/filter-select";
+import SearchInput from "@/components/molecules/search-input";
+import FilterSelect from "@/components/molecules/filter-select";
 import {
   MEMBERSHIP_STATUSES,
   MEMBERSHIP_TYPES,

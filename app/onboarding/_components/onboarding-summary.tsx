@@ -8,7 +8,7 @@ import {
   Store,
   User,
 } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import { VERTICAL_LABELS, sortModules } from "@/lib/admin-catalogs";
 import {
   TEAM_SIZE_LABELS,

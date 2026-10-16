@@ -15,7 +15,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import {
   archiveCustomerAction,
   deleteCustomersAction,

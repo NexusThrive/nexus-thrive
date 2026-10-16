@@ -1,5 +1,5 @@
 import { ShoppingCart } from "lucide-react";
-import ModulePlaceholder from "../../../components/tenant/module-placeholder";
+import ModulePlaceholder from "@/components/templates/module-placeholder";
 
 /** Módulo Pedidos: habilitado por TenantModule; implementación en roadmap. */
 export default function OrdersPage() {

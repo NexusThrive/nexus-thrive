@@ -2,7 +2,7 @@
 
 import { useEffect, useActionState, useRef } from "react";
 import { X } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import { createPaymentAction, type PaymentFormState } from "../actions";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import type { CustomerOption } from "./finance-actions";

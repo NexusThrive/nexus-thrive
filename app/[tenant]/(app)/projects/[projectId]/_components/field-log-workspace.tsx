@@ -3,11 +3,11 @@
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { HardHat, ImagePlus, Trash2, User, X } from "lucide-react";
-import { KpiCard } from "@/components/brand/kpi-card";
-import { EmptyState } from "@/components/brand/empty-state";
-import { NLoader } from "@/components/brand/n-loader";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { KpiCard } from "@/components/molecules/kpi-card";
+import { EmptyState } from "@/components/molecules/empty-state";
+import { NLoader } from "@/components/atoms/n-loader";
+import { Button } from "@/components/atoms/button";
+import { Badge } from "@/components/atoms/badge";
 import { formatDateShort } from "@/lib/format";
 import { getLogSummaryStats, type FieldLogEntryData } from "@/lib/field-log-engine";
 import type { FieldLogData } from "@/lib/tenant-db";

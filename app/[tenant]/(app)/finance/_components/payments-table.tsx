@@ -1,9 +1,9 @@
 import { CalendarDays, HandCoins, User } from "lucide-react";
-import { Badge, StatusDot } from "@/components/ui/badge";
+import { Badge, StatusDot } from "@/components/atoms/badge";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { paymentMethodLabel, paymentStatusLabel } from "@/lib/finance";
 import type { PaymentMethodValue, PaymentStatusValue } from "@/lib/finance";
-import PaginationLinks from "@/app/components/tenant/pagination-links";
+import PaginationLinks from "@/components/molecules/pagination-links";
 
 export type PaymentViewRow = {
   id: string;

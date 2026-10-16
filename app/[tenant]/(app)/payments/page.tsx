@@ -1,5 +1,5 @@
 import { Banknote } from "lucide-react";
-import ModulePlaceholder from "../../../components/tenant/module-placeholder";
+import ModulePlaceholder from "@/components/templates/module-placeholder";
 
 /** Módulo Pagos: habilitado por TenantModule; implementación en roadmap. */
 export default function PaymentsPage() {

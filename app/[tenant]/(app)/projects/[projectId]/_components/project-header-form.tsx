@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { Save } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import type { ProjectHeaderData } from "@/lib/tenant-db";
 import { PROJECT_TYPE_OPTIONS } from "@/lib/projects";
 import {

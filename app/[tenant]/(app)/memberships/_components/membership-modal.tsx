@@ -2,7 +2,7 @@
 
 import { useEffect, useActionState } from "react";
 import { RefreshCw, X } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import {
   renewMembershipAction,
   type RenewalFormState,

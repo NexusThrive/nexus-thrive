@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { MessageCircle, RefreshCw, UserRound } from "lucide-react";
-import PaginationLinks from "@/app/components/tenant/pagination-links";
+import PaginationLinks from "@/components/molecules/pagination-links";
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import { typeLabel, type MembershipStatusValue, type MembershipTypeValue } from "@/lib/memberships";
 import MembershipStatusBadge from "./membership-status-badge";

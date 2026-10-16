@@ -9,3 +9,8 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
+
+/** Limita `n` al rango 0..1 (progresos y porcentajes de las cargas). */
+export function clamp01(n: number): number {
+  return Math.max(0, Math.min(1, n));
+}

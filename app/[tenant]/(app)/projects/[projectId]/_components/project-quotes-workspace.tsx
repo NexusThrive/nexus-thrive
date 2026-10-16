@@ -18,8 +18,8 @@ import {
   Users,
   XCircle,
 } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
-import { QuoteStatusBadge } from "@/components/construction/quote-badges";
+import { NLoader } from "@/components/atoms/n-loader";
+import { QuoteStatusBadge } from "@/components/molecules/quote-badges";
 import { formatDateShort, formatMoneyMicro } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import type {

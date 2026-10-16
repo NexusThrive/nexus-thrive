@@ -1,6 +1,6 @@
 import { Clock, CreditCard, RefreshCw, XCircle } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
-import { KpiCard } from "@/components/brand/kpi-card";
+import { KpiCard } from "@/components/molecules/kpi-card";
 import type { MembershipMetrics } from "@/lib/tenant-db";
 
 /**

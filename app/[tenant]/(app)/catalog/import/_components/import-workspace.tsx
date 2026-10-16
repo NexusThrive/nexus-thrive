@@ -12,8 +12,8 @@ import {
   Sparkles,
   UploadCloud,
 } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
-import { Badge } from "@/components/ui/badge";
+import { NLoader } from "@/components/atoms/n-loader";
+import { Badge } from "@/components/atoms/badge";
 import FileDropzone from "./file-dropzone";
 import MetricsPanel from "./metrics-panel";
 import MappingEditor from "./mapping-editor";

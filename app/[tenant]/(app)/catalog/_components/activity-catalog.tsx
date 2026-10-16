@@ -4,12 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, Layers, Pencil, Plus, X, AlertTriangle } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import { formatCurrency } from "@/lib/format";
 import { APU_UNITS, formatApuUnit } from "@/lib/apu-engine";
-import SearchInput from "@/app/components/tenant/search-input";
-import FilterSelect from "@/app/components/tenant/filter-select";
-import PaginationLinks from "@/app/components/tenant/pagination-links";
+import SearchInput from "@/components/molecules/search-input";
+import FilterSelect from "@/components/molecules/filter-select";
+import PaginationLinks from "@/components/molecules/pagination-links";
 import { apuImageUrl } from "@/lib/apu-images";
 import type {
   ApuActivityDetail,
@@ -27,8 +27,8 @@ import {
   type ApuActivityFormState,
   type ApuMutationState,
 } from "../actions";
-import Modal from "@/components/construction/modal";
-import { ApuCategoryBadge } from "@/components/construction/quote-badges";
+import Modal from "@/components/organisms/modal";
+import { ApuCategoryBadge } from "@/components/molecules/quote-badges";
 
 type P99Thresholds = {
   activityUnitCost: Record<string, string>;

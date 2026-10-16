@@ -2,7 +2,7 @@
 
 import { useEffect, useActionState, useState } from "react";
 import { Building2, Check, User, X } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import {
   createTenantAction,
   checkSlugAvailabilityAction,

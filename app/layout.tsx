@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { fontVariables } from "@/lib/fonts";
-import { themeInitScript } from "@/components/brand/theme";
-import { SplashIntro } from "@/components/brand/splash-intro";
+import { themeInitScript } from "@/components/atoms/theme-toggle";
+import { SplashIntro } from "@/components/organisms/splash-intro";
 import "./globals.css";
 
 export const metadata: Metadata = {

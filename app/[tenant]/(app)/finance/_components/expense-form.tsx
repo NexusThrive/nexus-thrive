@@ -2,7 +2,7 @@
 
 import { useEffect, useActionState, useRef } from "react";
 import { X } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import { createExpenseAction, type ExpenseFormState } from "../actions";
 import { EXPENSE_CATEGORIES } from "@/lib/finance";
 

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CalendarClock, Folder, FolderClock } from "lucide-react";
-import { QuoteStatusBadge } from "@/components/construction/quote-badges";
+import { QuoteStatusBadge } from "@/components/molecules/quote-badges";
 import { ProjectStatusBadge } from "../../projects/_components/project-status-badge";
 import { formatDateShort, formatMoneyMicro } from "@/lib/format";
 import type { QuoteFolderRow } from "@/lib/construction/project-quotes";

@@ -2,7 +2,7 @@
 
 import { useEffect, useActionState, useMemo, useState } from "react";
 import { Check, Plus, X } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import {
   createMembershipAction,
   type MembershipFormState,

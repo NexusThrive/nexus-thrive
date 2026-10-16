@@ -13,14 +13,14 @@ import {
   ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
-import { Brand } from "@/components/brand/brand";
+import { Brand } from "@/components/atoms/logo";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from "@/components/organisms/sheet";
 import { cn } from "@/lib/utils";
 
 /** Descarga el CSV vía un enlace efímero (evita navegación client). */

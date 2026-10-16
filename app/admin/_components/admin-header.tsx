@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Command, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/atoms/button";
 import TenantForm from "./tenant-form";
 import CommandPalette from "./command-palette";
 

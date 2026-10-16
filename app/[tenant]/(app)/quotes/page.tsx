@@ -6,8 +6,8 @@ import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
 import { canGovernBudget, type TenantRole } from "@/lib/tenant-context";
 import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/projects";
-import SearchInput from "@/app/components/tenant/search-input";
-import FilterSelect from "@/app/components/tenant/filter-select";
+import SearchInput from "@/components/molecules/search-input";
+import FilterSelect from "@/components/molecules/filter-select";
 import QuoteFolders from "./_components/quote-folders";
 import LegacyQuotes from "./_components/legacy-quotes";
 

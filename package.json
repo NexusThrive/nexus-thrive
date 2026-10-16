@@ -10,7 +10,9 @@
     "postinstall": "prisma skills sync || exit 0",
     "test": "vitest run",
     "test:integration": "bash ./test-integration.sh",
-    "verify": "pnpm exec tsc --noEmit && pnpm test --run 2>&1 | tail -3 && pnpm test:integration 2>&1 | tail -3 && pnpm build 2>&1 | grep -E '○|ƒ' | tail -2"
+    "verify": "pnpm exec tsc --noEmit && pnpm test --run 2>&1 | tail -3 && pnpm test:integration 2>&1 | tail -3 && pnpm build 2>&1 | grep -E '○|ƒ' | tail -2",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build -o storybook-static"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.11",
@@ -38,6 +40,10 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@storybook/addon-a11y": "10.6.2",
+    "@storybook/addon-docs": "10.6.2",
+    "@storybook/addon-themes": "10.6.2",
+    "@storybook/nextjs-vite": "10.6.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -45,8 +51,10 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
     "prisma": "8.0.0-rc.20",
+    "storybook": "10.6.2",
     "tailwindcss": "^4",
     "typescript": "^5",
+    "vite": "8.3.2",
     "vitest": "^5.0.3"
   },
   "packageManager": "pnpm@12.3.4"

@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState, useActionState } from "react";
 import { useRouter } from "next/navigation";
-import { NLoader } from "@/components/brand/n-loader";
-import Modal from "@/components/construction/modal";
+import { NLoader } from "@/components/atoms/n-loader";
+import Modal from "@/components/organisms/modal";
 import {
   calculateBudgetTotals,
   percentToMicro,

@@ -3,7 +3,7 @@
 import { useEffect, useActionState, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Check, Pencil } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import {
   nextProjectStatuses,
   projectStatusLabel,

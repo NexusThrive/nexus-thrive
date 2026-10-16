@@ -1,5 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { NLoader } from "@/components/brand/n-loader";
+import { Skeleton } from "@/components/atoms/skeleton";
+import { NLoader } from "@/components/atoms/n-loader";
 
 /** Carga del segmento /finance: skeleton de marca consistente con el CRM. */
 export default function FinanceLoading() {

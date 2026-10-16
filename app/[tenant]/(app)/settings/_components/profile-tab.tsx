@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState, useActionState } from "react";
 import { useRouter } from "next/navigation";
-import { NLoader } from "@/components/brand/n-loader";
-import { useToast } from "@/components/brand/toast";
+import { NLoader } from "@/components/atoms/n-loader";
+import { useToast } from "@/components/molecules/toast";
 import { cn } from "@/lib/cn";
 import {
   updateTenantProfileAction,

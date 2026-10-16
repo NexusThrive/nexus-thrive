@@ -1,4 +1,4 @@
-import { Badge, StatusDot } from "@/components/ui/badge";
+import { Badge, StatusDot } from "@/components/atoms/badge";
 import { projectStatusLabel, type ProjectStatusValue } from "@/lib/projects";
 
 const STATUS_DOTS: Record<
