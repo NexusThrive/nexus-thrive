@@ -22,4 +22,5 @@ pnpm exec vitest run \
   lib/tenant-db.archived-rejection.test.ts \
   lib/apu-importer.price-behavior.test.ts \
   lib/apu-importer.field-changes.test.ts \
-  lib/tenant-db.apu-import.integration.test.ts
+  lib/tenant-db.apu-import.integration.test.ts \
+  lib/construction/containers.integration.test.ts

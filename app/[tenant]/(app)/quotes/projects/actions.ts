@@ -1,5 +1,6 @@
 "use server";
 
+import { ensureProjectContainers } from "@/lib/construction/containers";
 import { revalidatePath } from "next/cache";
 import {
   canChangeProjectStatus,
@@ -109,12 +110,36 @@ export async function createProjectAction(
     throw error;
   }
 
+  // Presupuesto, plan y bitácora nacen con la obra: la página nunca los crea.
+  await ensureProjectContainers(tenantDb, project.id);
+
   revalidatePath(`/${tenantSlug}/quotes/projects`);
   return {
     status: "ok",
     message: `Proyecto ${project.code} creado como borrador.`,
     projectId: project.id,
   };
+}
+
+/**
+ * Prepara una obra creada antes de que los contenedores nacieran con ella
+ * (presupuesto, plan y bitácora). Acción explícita: la página la ofrece cuando
+ * falta alguno, en lugar de crearlos al renderizar.
+ */
+export async function prepareProjectAction(
+  tenantSlug: string,
+  projectId: string,
+): Promise<void> {
+  const context = await requireTenantContext(tenantSlug);
+  if (!context || !projectId) {
+    return;
+  }
+  const project = await context.tenantDb.projects.get(projectId);
+  if (!project) {
+    return;
+  }
+  await ensureProjectContainers(context.tenantDb, projectId);
+  revalidatePath(`/${tenantSlug}/quotes/projects/${projectId}`);
 }
 
 export async function updateProjectHeaderAction(

@@ -13,8 +13,8 @@ import BudgetWorkspace from "./_components/budget-workspace";
 import LeanWorkspace from "./_components/lean-workspace";
 import FieldLogWorkspace from "./_components/field-log-workspace";
 import { ReportsWorkspace } from "./_components/reports-workspace";
-import { getOrCreateProjectBudgetAction } from "./budget/actions";
-import { getOrCreateFieldLogAction } from "./field-log/actions";
+import { prepareProjectAction } from "../actions";
+import PrepareProject from "./_components/prepare-project";
 
 function firstString(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
@@ -83,17 +83,17 @@ export default async function ProjectDetailPage({
   const activeLabel =
     PROJECT_TABS.find((entry) => entry.value === tab)?.label ?? "";
 
-  // El presupuesto (Tab 2) se asegura/crea solo cuando se visita esa pestaña.
+  // Solo lectura: los contenedores nacen con la obra (ensureProjectContainers).
+  // Si una obra antigua no los tiene, la pestaña ofrece "Preparar obra".
   const budget =
-    tab === "presupuesto"
-      ? await getOrCreateProjectBudgetAction(tenantSlug, projectId)
-      : null;
+    tab === "presupuesto" ? await tenantDb.budgets.get(projectId) : null;
   const baselines = await tenantDb.budgets.listBaselines(projectId);
   const hasApprovedBaseline = baselines.length > 0;
-  const plan = tab === "planificador" ? await tenantDb.lean.getOrCreatePlan(projectId) : null;
+  const plan = tab === "planificador" ? await tenantDb.lean.getPlan(projectId) : null;
   const fieldLog = tab === "bitacora" || tab === "campo"
-    ? await tenantDb.fieldLog.getOrCreateLog(projectId)
+    ? await tenantDb.fieldLog.getLog(projectId)
     : null;
+  const prepareAction = prepareProjectAction.bind(null, tenantSlug, projectId);
 
   // Autor de la bitácora y rol D7: del usuario en sesión (todas las pestañas).
   const { userId } = await auth();
@@ -219,22 +219,13 @@ export default async function ProjectDetailPage({
               canGovern={canGovernBudget}
             />
           ) : (
-            <div className="rounded-lg border border-dashed border-border bg-card p-8 text-center">
-              <p className="text-sm font-medium text-foreground">
-                No se pudo cargar el presupuesto
-              </p>
-              <p className="mx-auto mt-1 max-w-md text-xs text-muted-foreground">
-                Verifica tus permisos sobre este negocio o vuelve a intentarlo.
-              </p>
-            </div>
+            <PrepareProject action={prepareAction} />
           )
         ) : tab === "planificador" ? (
           plan ? (
             <LeanWorkspace _tenantSlug={tenantSlug} _projectId={project.id} plan={plan} />
           ) : (
-            <div className="rounded-lg border border-dashed border-border bg-card p-8 text-center">
-              <p className="text-sm font-medium text-foreground">No se pudo cargar el plan operativo</p>
-            </div>
+            <PrepareProject action={prepareAction} />
           )
         ) : tab === "bitacora" || tab === "campo" ? (
           fieldLog ? (
@@ -246,9 +237,7 @@ export default async function ProjectDetailPage({
               currentUserRole={currentUserRole}
             />
           ) : (
-            <div className="rounded-lg border border-dashed border-border bg-card p-8 text-center">
-              <p className="text-sm font-medium text-foreground">No se pudo cargar la bitácora</p>
-            </div>
+            <PrepareProject action={prepareAction} />
           )
         ) : tab === "informes" ? (
           <ReportsWorkspace />
