@@ -1,15 +1,20 @@
 import type { ReactNode } from "react";
 import type { ModuleValue, VerticalValue } from "@/lib/admin-catalogs";
-import { RouteBar } from "@/components/molecules/route-bar";
-import Header from "@/components/organisms/header";
+import { ToastProvider } from "@/components/molecules/toast";
+import { AppSidebar } from "@/components/organisms/app-sidebar";
+import { AppTopbar } from "@/components/organisms/app-topbar";
+import { CommandPalette } from "@/components/organisms/command-palette";
+import { MobileTabBar } from "@/components/organisms/mobile-tab-bar";
 import { ModuleEntry } from "@/components/organisms/module-intro";
-import Sidebar from "@/components/organisms/sidebar";
-import { SidebarProvider } from "@/components/providers/sidebar-context";
+import { ShellProvider } from "@/components/providers/shell-context";
+import styles from "./tenant-shell.module.css";
 
 /**
- * Plantilla del negocio: topbar de 56 px, sidebar de 232 px (drawer en móvil)
- * y área de contenido con la barra de ruta y la intro de módulo. No carga
- * datos: el layout `(app)` le pasa lo ya resuelto en el servidor.
+ * Plantilla del negocio. Móvil: barra superior + barra inferior con el botón
+ * central "Crear". Tablet: riel de iconos. PC: barra lateral completa (se
+ * puede contraer). Paleta de comandos con Ctrl/⌘ K y notificaciones en toda
+ * la app. No carga datos: el layout `(app)` le pasa lo resuelto en el
+ * servidor (solo valores serializables).
  */
 export function TenantShell({
   tenantSlug,
@@ -26,22 +31,25 @@ export function TenantShell({
   children: ReactNode;
 }) {
   return (
-    <SidebarProvider>
-      <div className="min-h-screen bg-background font-sans text-foreground">
-        <Header tenantName={tenantName} />
-
-        <Sidebar
-          tenantSlug={tenantSlug}
-          tenantName={tenantName}
-          vertical={vertical}
-          activeModules={activeModules}
-        />
-
-        <main className="px-4 py-6 sm:px-6 lg:py-8 lg:pl-[15.5rem] lg:pr-8">
-          <RouteBar />
-          <ModuleEntry>{children}</ModuleEntry>
-        </main>
-      </div>
-    </SidebarProvider>
+    <ShellProvider
+      tenantSlug={tenantSlug}
+      tenantName={tenantName}
+      vertical={vertical}
+      activeModules={activeModules}
+    >
+      <ToastProvider>
+        <div className={styles.root}>
+          <AppSidebar />
+          <div className={styles.main}>
+            <AppTopbar />
+            <main id="contenido" tabIndex={-1} className={styles.view}>
+              <ModuleEntry>{children}</ModuleEntry>
+            </main>
+          </div>
+          <MobileTabBar />
+          <CommandPalette />
+        </div>
+      </ToastProvider>
+    </ShellProvider>
   );
 }

@@ -6,7 +6,6 @@ import { BadgeCheck, Boxes, FileSpreadsheet, Layers, Lock, LockOpen, Pencil, Plu
 import { microToPercent } from "@/lib/apu-engine";
 import { formatMoneyMicro, formatQuantityMicro } from "@/lib/format";
 import { NLoader } from "@/components/atoms/n-loader";
-import { ToastProvider } from "@/components/molecules/toast";
 import type {
   BudgetBaselineData,
   BudgetItemData,
@@ -630,9 +629,8 @@ export default function BudgetWorkspace({
         />
       ) : null}
 
-      {/* ToastProvider siempre montado: los toasts de los modales (importación
-          y compositor APU) sobreviven al cierre del modal. */}
-      <ToastProvider>
+      {/* Los toasts de los modales (importación y compositor APU) usan el
+          ToastProvider del shell: sobreviven al cierre del modal. */}
         {importChapter ? (
           <CatalogImportModal
             tenantSlug={tenantSlug}
@@ -652,7 +650,6 @@ export default function BudgetWorkspace({
             onClose={() => setApuItem(null)}
           />
         ) : null}
-      </ToastProvider>
     </div>
   );
 }

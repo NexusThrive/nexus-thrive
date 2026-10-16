@@ -27,10 +27,13 @@ export const WithImage: Story = {
   ),
 };
 
-export const Large: Story = {
+/** Tamaños (28, 34, 52 px) y tonos: tinta, oro (cliente Gold) y neutro. */
+export const SizesAndTones: Story = {
   render: () => (
-    <Avatar className="size-12">
-      <AvatarFallback className="text-base">MR</AvatarFallback>
-    </Avatar>
+    <div className="flex items-end gap-3">
+      <Avatar size="sm"><AvatarFallback>MT</AvatarFallback></Avatar>
+      <Avatar><AvatarFallback tone="gold">CP</AvatarFallback></Avatar>
+      <Avatar size="lg"><AvatarFallback tone="neutral">LG</AvatarFallback></Avatar>
+    </div>
   ),
 };

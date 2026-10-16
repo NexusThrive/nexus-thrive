@@ -6,11 +6,12 @@ import { cn } from "@/lib/utils";
 
 /**
  * Badge NEXUS THRIVE: radio 2 px, padding 2px 8px, Inter 500 12 px, fondo
- * `--surface-muted` y borde. Los estados llevan un punto cuadrado de 6 px en
- * lugar de una píldora de color. La variante `gold` es para avisos.
+ * `--surface-muted` y borde. Los estados llevan un punto cuadrado de 6 px
+ * (`tone`) en lugar de una píldora de color; `pulse` lo hace latir (avisos
+ * que esperan acción). `gold` es para avisos y `solid` para destacar.
  */
 const badgeVariants = cva(
-  "inline-flex w-fit shrink-0 items-center gap-1.5 whitespace-nowrap rounded-sm border px-2 py-0.5 text-xs font-medium",
+  "inline-flex w-fit shrink-0 items-center gap-1.5 whitespace-nowrap rounded-sm border px-2 py-0.5 text-xs/[18px] font-medium",
   {
     variants: {
       variant: {
@@ -18,6 +19,7 @@ const badgeVariants = cva(
         secondary: "border-border bg-surface-muted text-foreground",
         outline: "border-border bg-transparent text-muted-foreground",
         gold: "border-transparent bg-warning text-warning-foreground",
+        solid: "border-transparent bg-primary text-primary-foreground",
         success: "border-border bg-surface-muted text-foreground",
         destructive: "border-transparent bg-danger/10 text-danger",
         warning: "border-transparent bg-warning text-warning-foreground",
@@ -27,23 +29,34 @@ const badgeVariants = cva(
   },
 );
 
+export type StatusTone = "success" | "danger" | "warning" | "neutral" | "muted";
+
+const DOT_TONES: Record<StatusTone, string> = {
+  success: "bg-success",
+  danger: "bg-danger",
+  warning: "bg-gold-600",
+  neutral: "bg-foreground",
+  muted: "bg-muted-foreground",
+};
+
 /** Punto cuadrado de 6 px para estados (funcional, no decorativo). */
 export function StatusDot({
   className,
   tone = "success",
+  pulse = false,
 }: {
   className?: string;
-  tone?: "success" | "danger" | "warning" | "muted";
+  tone?: StatusTone;
+  /** Late (opacidad) para estados que esperan acción, p. ej. "Por vencer". */
+  pulse?: boolean;
 }) {
   return (
     <span
       aria-hidden="true"
       className={cn(
         "block size-1.5 shrink-0",
-        tone === "success" && "bg-success",
-        tone === "danger" && "bg-danger",
-        tone === "warning" && "bg-gold-500",
-        tone === "muted" && "bg-muted-foreground",
+        DOT_TONES[tone],
+        pulse && "animate-[nx-pulse_1.6s_ease-in-out_infinite] motion-reduce:animate-none",
         className,
       )}
     />
@@ -53,17 +66,28 @@ export function StatusDot({
 function Badge({
   className,
   variant,
+  tone,
+  pulse,
   asChild = false,
+  children,
   ...props
 }: React.ComponentProps<"span"> &
-  VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
+  VariantProps<typeof badgeVariants> & {
+    asChild?: boolean;
+    /** Antepone un `StatusDot` de ese tono. */
+    tone?: StatusTone;
+    pulse?: boolean;
+  }) {
   const Comp = asChild ? Slot : "span";
   return (
     <Comp
       data-slot="badge"
       className={cn(badgeVariants({ variant }), className)}
       {...props}
-    />
+    >
+      {tone && !asChild ? <StatusDot tone={tone} pulse={pulse} /> : null}
+      {children}
+    </Comp>
   );
 }
 

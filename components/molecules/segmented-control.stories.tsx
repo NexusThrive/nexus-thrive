@@ -20,6 +20,18 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
+/** Con contadores (filtros con resultados) y versión pequeña. */
+export const WithCounts: Story = {
+  args: {
+    options: [
+      { value: "all", label: "Todos", count: 14 },
+      { value: "active", label: "Activos", count: 8 },
+      { value: "due", label: "Por vencer", count: 2 },
+      { value: "expired", label: "Vencidas", count: 2 },
+    ],
+  },
+};
+
 export const Interactive: Story = {
   render: function Render(args) {
     const [value, setValue] = useState<string>("all");

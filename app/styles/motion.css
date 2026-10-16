@@ -1,0 +1,144 @@
+/* ==========================================================================
+   Movimiento NEXUS THRIVE (compartido por todos los componentes).
+   Todo lo que puede ser CSS es CSS; el JS de lib/motion solo calcula
+   resortes, contadores y partículas y los reproduce con la Web Animations
+   API. Un único interruptor apaga todo: prefers-reduced-motion o
+   <html data-motion="off"> (Ajustes → Reducir movimiento).
+   ========================================================================== */
+
+html[data-motion="off"] *,
+html[data-motion="off"] *::before,
+html[data-motion="off"] *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 1ms !important;
+}
+
+/* El cambio de tema lo anima lib/motion/theme-transition (barrido a 24°). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* --- Foco de luz que sigue al puntero (tarjetas .nx-spot) --- */
+@media (hover: hover) and (pointer: fine) {
+  .nx-spot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      280px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(212, 175, 55, 0.09),
+      transparent 60%
+    );
+    transition: opacity var(--d3);
+  }
+  .nx-spot:hover::after {
+    opacity: 1;
+  }
+}
+
+/* --- Ráfaga de cortes (lib/motion burst) --- */
+.nx-burst {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  pointer-events: none;
+  overflow: hidden;
+}
+.nx-burst i {
+  position: absolute;
+  width: 4px;
+  height: 14px;
+  background: var(--nx-gold-500);
+  transform: skewX(var(--nx-angle));
+}
+.nx-burst i.k {
+  background: var(--foreground);
+}
+
+/* --- Texto con enfoque letra por letra (FocusText) --- */
+.nx-fx-ch {
+  display: inline-block;
+  white-space: pre;
+  opacity: 0;
+  filter: blur(12px);
+  transform: translateY(0.25em);
+  transition:
+    opacity 0.8s var(--nx-ease-out),
+    filter 0.8s var(--nx-ease-out),
+    transform 0.8s var(--nx-ease-out);
+  transition-delay: calc(var(--i) * 28ms);
+}
+.nx-fx-go .nx-fx-ch {
+  opacity: 1;
+  filter: blur(0);
+  transform: none;
+}
+.nx-gold-text {
+  background: linear-gradient(90deg, var(--nx-gold-600), var(--nx-gold-500) 55%, var(--accent-text));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* --- Entrada de bloques al montar una vista --- */
+@keyframes nx-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(8px);
+  }
+}
+.nx-rise {
+  animation: nx-rise 0.7s var(--nx-ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * 50ms);
+}
+
+@keyframes nx-pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+@keyframes nx-float {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-fx-ch {
+    transition: none;
+  }
+  .nx-rise {
+    animation: none;
+  }
+}
+
+@keyframes nx-pop {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+  }
+}
+
+/* Entrada de cada vista del negocio (app/[tenant]/(app)/template.tsx). */
+@keyframes nx-view-in {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(4px);
+  }
+}
+.nx-view-in {
+  animation: nx-view-in 360ms var(--nx-ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nx-view-in {
+    animation: none;
+  }
+}

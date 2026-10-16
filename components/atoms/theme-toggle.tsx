@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
+import { withThemeSweep } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 /**
@@ -39,16 +40,9 @@ function getServerTheme(): Theme {
   return "light";
 }
 
-export function ThemeToggle({ className }: { className?: string }) {
-  const theme = useSyncExternalStore(
-    subscribeTheme,
-    getThemeSnapshot,
-    getServerTheme,
-  );
-  const isDark = theme === "dark";
-
-  function toggle() {
-    const next: Theme = isDark ? "light" : "dark";
+/** Cambia el tema con el barrido diagonal y guarda la preferencia. */
+export function setTheme(next: Theme): void {
+  withThemeSweep(() => {
     document.documentElement.classList.toggle("dark", next === "dark");
     try {
       localStorage.setItem(THEME_STORAGE_KEY, next);
@@ -56,25 +50,39 @@ export function ThemeToggle({ className }: { className?: string }) {
       /* modo privado: la clase sigue aplicándose en memoria */
     }
     window.dispatchEvent(new Event(THEME_EVENT));
+  });
+}
+
+/** Lee el tema actual (clase `dark` de <html>) y se suscribe a sus cambios. */
+export function useTheme(): Theme {
+  return useSyncExternalStore(subscribeTheme, getThemeSnapshot, getServerTheme);
+}
+
+export function ThemeToggle({ className }: { className?: string }) {
+  const isDark = useTheme() === "dark";
+
+  function toggle() {
+    setTheme(isDark ? "light" : "dark");
   }
 
   return (
     <button
       type="button"
       onClick={toggle}
+      data-press=""
       aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
       aria-pressed={isDark}
       className={cn(
-        "grid size-9 shrink-0 place-items-center rounded-md border border-border text-muted-foreground transition-colors",
-        "hover:border-border-strong hover:bg-surface-muted hover:text-foreground",
+        "grid size-10 shrink-0 place-items-center rounded-md text-foreground transition-colors duration-200",
+        "hover:bg-surface-muted",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         className,
       )}
     >
       {isDark ? (
-        <Sun className="size-4" aria-hidden="true" strokeWidth={1.5} />
+        <Sun className="size-[18px]" aria-hidden="true" strokeWidth={1.6} />
       ) : (
-        <Moon className="size-4" aria-hidden="true" strokeWidth={1.5} />
+        <Moon className="size-[18px]" aria-hidden="true" strokeWidth={1.6} />
       )}
     </button>
   );

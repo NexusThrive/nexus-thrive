@@ -8,7 +8,7 @@ const meta = {
   argTypes: {
     variant: {
       control: "select",
-      options: ["default", "secondary", "outline", "gold", "success", "destructive", "warning"],
+      options: ["default", "outline", "gold", "solid", "destructive"],
     },
   },
 } satisfies Meta<typeof Badge>;
@@ -29,14 +29,27 @@ export const Variants: Story = {
   ),
 };
 
-/** Los estados llevan un punto cuadrado de 6 px, no una píldora de color. */
+/** Los estados llevan un punto cuadrado de 6 px (`tone`), no una píldora de color. */
 export const WithStatusDot: Story = {
   render: () => (
     <div className="flex flex-wrap gap-2">
-      <Badge><StatusDot tone="success" />Aprobada</Badge>
-      <Badge><StatusDot tone="warning" />Enviada</Badge>
-      <Badge><StatusDot tone="danger" />Rechazada</Badge>
-      <Badge><StatusDot tone="muted" />Borrador</Badge>
+      <Badge tone="success">Activo</Badge>
+      <Badge tone="warning" pulse>Por vencer</Badge>
+      <Badge tone="danger">Vencida</Badge>
+      <Badge tone="neutral">Pendiente</Badge>
+      <Badge variant="solid">Nuevo</Badge>
+    </div>
+  ),
+};
+
+/** `StatusDot` suelto, para tablas y listas. */
+export const Dots: Story = {
+  render: () => (
+    <div className="flex items-center gap-3">
+      <StatusDot tone="success" />
+      <StatusDot tone="warning" pulse />
+      <StatusDot tone="danger" />
+      <StatusDot tone="muted" />
     </div>
   ),
 };

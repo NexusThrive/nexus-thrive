@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { N_PATH } from "@/components/atoms/n-path";
 
 /**
- * Estado vacío NEXUS THRIVE: la N en contorno (opacidad .18, 56 px, estática),
+ * Estado vacío NEXUS THRIVE: la N en contorno (opacidad .18, 56 px) que flota,
  * título Montserrat 600 16 px, descripción muted 13 px y una acción (botón
  * outline). Centrado con 48 px de padding vertical.
  */
@@ -30,7 +30,7 @@ export function EmptyState({
         width={56}
         height={56}
         aria-hidden="true"
-        className="text-foreground opacity-[0.18]"
+        className="animate-[nx-float_4s_ease-in-out_infinite] text-foreground opacity-[0.18] motion-reduce:animate-none"
       >
         <path
           d={N_PATH}

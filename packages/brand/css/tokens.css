@@ -62,11 +62,28 @@
   --motion-fast: 120ms;
   --motion-base: 200ms;
   --ease: cubic-bezier(0.2, 0, 0, 1);
+  /* Escala de la app: d1 micro, d2 hover/color, d3 paneles, d4 entradas. */
+  --d1: 120ms;
+  --d2: 200ms;
+  --d3: 320ms;
+  --d4: 600ms;
+  --nx-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --nx-ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --nx-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Rebote corto para indicadores que se deslizan (segmentados, pestañas). */
+  --nx-ease-spring: cubic-bezier(0.34, 1.3, 0.64, 1);
+  --nx-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* El ángulo de la N: cortes, barras de progreso y destellos. */
+  --nx-angle: -24deg;
+
+  /* --- Densidad (data-density="compact" en <html>) --- */
+  --control-h: 40px;
+  --row-h: 56px;
 
   /* --- Layout de la app --- */
   --sidebar-width: 248px;
-  --sidebar-width-collapsed: 64px;
-  --topbar-height: 56px;
+  --sidebar-width-collapsed: 76px;
+  --topbar-height: 60px;
   --content-max: 1280px;
 
   /* --- Semánticos: MODO CLARO (por defecto) --- */
@@ -75,7 +92,10 @@
   --surface-muted: var(--nx-graphite-100);
   --surface-inverse: var(--nx-ink);
   --border: var(--nx-graphite-200);
-  --border-strong: #cfcdc7;
+  --border-strong: #d9d7d1;
+  /* Borde de controles editables (inputs, checkbox): más contraste (AA). */
+  --border-input: #8f8f96;
+  --surface-hover: #eae8e2;
 
   --foreground: var(--nx-graphite-950);
   --foreground-muted: var(--nx-graphite-500);
@@ -90,13 +110,19 @@
   --accent-text: var(--nx-gold-700);
   --accent-subtle: var(--nx-gold-100);
 
-  --ring: var(--nx-gold-600);
+  --ring: #8f6f12;
   --success: var(--nx-success);
+  --success-subtle: #e3f0e9;
   --danger: var(--nx-danger);
+  --danger-subtle: #f7e3e1;
   --warning-bg: var(--nx-gold-100);
   --warning-fg: var(--nx-gold-700);
 
   --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --nx-shadow-overlay: 0 12px 32px rgba(10, 10, 11, 0.14);
+  /* Barras con desenfoque (topbar, tab bar) y fondo de modales. */
+  --glass: rgba(247, 246, 243, 0.82);
+  --overlay: rgba(10, 10, 11, 0.42);
 
   /* --- Sidebar: navegación (blanca en claro, Ink en oscuro) --- */
   --sidebar-bg: var(--nx-white);
@@ -117,6 +143,8 @@
   --surface-inverse: var(--nx-ink);
   --border: var(--nx-graphite-700);
   --border-strong: #3a3a40;
+  --border-input: #6b6b73;
+  --surface-hover: #26262a;
 
   --foreground: var(--nx-paper);
   --foreground-muted: var(--nx-graphite-400);
@@ -133,11 +161,16 @@
 
   --ring: var(--nx-gold-500);
   --success: #3fa57a;
+  --success-subtle: rgba(63, 165, 122, 0.14);
   --danger: #e5564d;
+  --danger-subtle: rgba(229, 86, 77, 0.14);
   --warning-bg: rgba(212, 175, 55, 0.14);
   --warning-fg: var(--nx-gold-300);
 
   --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --nx-shadow-overlay: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --glass: rgba(10, 10, 11, 0.78);
+  --overlay: rgba(0, 0, 0, 0.6);
 
   --sidebar-bg: var(--nx-ink);
   --sidebar-fg: var(--nx-paper);
@@ -146,4 +179,10 @@
   --sidebar-hover: rgba(255, 255, 255, 0.06);
   --sidebar-active: rgba(255, 255, 255, 0.08);
   --sidebar-accent: var(--nx-gold-500);
+}
+
+/* --- Densidad compacta: más filas visibles en tablas --- */
+[data-density="compact"] {
+  --control-h: 34px;
+  --row-h: 46px;
 }

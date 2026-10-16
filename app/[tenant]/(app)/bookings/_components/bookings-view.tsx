@@ -5,7 +5,7 @@ import { CalendarPlus, X } from "lucide-react";
 
 import { cn } from "@/lib/cn";
 import { NLoader } from "@/components/atoms/n-loader";
-import { useToast, ToastProvider } from "@/components/molecules/toast";
+import { useToast } from "@/components/molecules/toast";
 import {
   createBookingAction,
   updateBookingStatusAction,
@@ -74,11 +74,7 @@ export default function BookingsView(props: {
   bookings: BookingView[];
   customers: BookingCustomerOption[];
 }) {
-  return (
-    <ToastProvider>
-      <BookingsContent {...props} />
-    </ToastProvider>
-  );
+  return <BookingsContent {...props} />;
 }
 
 function BookingsContent({

@@ -6,9 +6,23 @@ function Triggers() {
   const { toast } = useToast();
   return (
     <div className="flex flex-wrap gap-3">
-      <Button onClick={() => toast("Cotización emitida", "success")}>Éxito</Button>
-      <Button variant="outline" onClick={() => toast("No se pudo guardar la partida", "error")}>Error</Button>
-      <Button variant="ghost" onClick={() => toast("El presupuesto está bloqueado")}>Información</Button>
+      <Button onClick={() => toast({ title: "Pago registrado", description: "$ 142.800 · Nequi", variant: "success" })}>
+        Éxito
+      </Button>
+      <Button variant="outline" onClick={() => toast("No se pudo guardar la partida", "error")}>
+        Error
+      </Button>
+      <Button
+        variant="ghost"
+        onClick={() =>
+          toast({ title: "Recordatorio enviado", description: "WhatsApp a Carlos Peña", undo: () => toast("Recordatorio cancelado") })
+        }
+      >
+        Con deshacer
+      </Button>
+      <Button variant="secondary" onClick={() => toast({ title: "Sin conexión", description: "Mostramos los últimos datos guardados.", variant: "warning" })}>
+        Aviso
+      </Button>
     </div>
   );
 }
@@ -18,10 +32,11 @@ const meta = {
   component: ToastProvider,
   args: { children: null },
   parameters: {
+    layout: "fullscreen",
     docs: {
       description: {
         component:
-          "`<ToastProvider>` envuelve el árbol cliente y cualquier hijo llama `useToast().toast(mensaje, variante)`. Máximo 4 visibles, se cierran solos a los 4,5 s.",
+          "`useToast().toast(...)` acepta texto y variante o un objeto con título, descripción y deshacer. Entran con resorte (arriba en móvil, abajo a la derecha en PC), la barra oro se pausa con el cursor, se descartan deslizándolas y nunca hay más de tres.",
       },
     },
   },
@@ -33,7 +48,9 @@ type Story = StoryObj<typeof meta>;
 export const Playground: Story = {
   render: () => (
     <ToastProvider>
-      <Triggers />
+      <div className="h-[420px] p-6">
+        <Triggers />
+      </div>
     </ToastProvider>
   ),
 };

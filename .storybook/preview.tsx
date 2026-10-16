@@ -1,13 +1,18 @@
 import type { Decorator, Preview } from "@storybook/nextjs-vite";
 import { withThemeByClassName } from "@storybook/addon-themes";
 import { fontVariables } from "@/lib/fonts";
+import { MotionProvider } from "@/components/providers/motion-provider";
+import { PreferencesProvider } from "@/components/providers/preferences";
 import "../app/globals.css";
 
-/** Las fuentes de marca (next/font) cuelgan de variables CSS en un ancestro. */
+/** Fuentes de marca (next/font), preferencias y efectos de puntero globales. */
 const withFonts: Decorator = (Story) => (
-  <div className={`${fontVariables} bg-background font-sans text-foreground antialiased`}>
-    <Story />
-  </div>
+  <PreferencesProvider>
+    <MotionProvider />
+    <div className={`${fontVariables} bg-background font-sans text-foreground antialiased`}>
+      <Story />
+    </div>
+  </PreferencesProvider>
 );
 
 const preview: Preview = {
@@ -26,6 +31,7 @@ const preview: Preview = {
           "Moléculas",
           "Organismos",
           "Plantillas",
+          "Páginas",
         ],
       },
     },

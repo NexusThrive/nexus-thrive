@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 
 import { cn } from "@/lib/cn";
-import { ToastProvider } from "@/components/molecules/toast";
 import type { ModuleValue } from "@/lib/admin-catalogs";
 import ProfileTab from "./profile-tab";
 import ModulesTab from "./modules-tab";
@@ -70,8 +69,7 @@ export default function SettingsShell({
   const [tab, setTab] = useState<Tab>("profile");
 
   return (
-    <ToastProvider>
-      <div className="mx-auto w-full max-w-4xl">
+    <div className="mx-auto w-full max-w-4xl">
         <header className="mb-6">
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             Ajustes
@@ -116,7 +114,6 @@ export default function SettingsShell({
           />
         )}
         {tab === "team" && <TeamTab members={team} />}
-      </div>
-    </ToastProvider>
+    </div>
   );
 }

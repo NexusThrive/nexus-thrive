@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
 import { useReducedMotion } from "@/lib/hooks/use-reduced-motion";
 
 /* --- 3 · Barra de ruta ---------------------------------------------------- */
-export function RouteBar() {
+/** `className` permite anclarla dentro de la barra superior. */
+export function RouteBar({ className }: { className?: string }) {
   const pathname = usePathname();
   const [phase, setPhase] = useState<"idle" | "loading" | "finishing">("idle");
   const reduce = useReducedMotion();
@@ -57,7 +58,7 @@ export function RouteBar() {
 
   return (
     <div
-      className="nx-strip fixed inset-x-0 top-14 z-[70]"
+      className={cn("nx-strip fixed inset-x-0 top-14 z-[70]", className)}
       role="progressbar"
       aria-label="Cargando página"
     >
