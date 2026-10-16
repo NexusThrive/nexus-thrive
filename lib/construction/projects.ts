@@ -4,7 +4,6 @@
  * acceso va acotado al `tenantId` recibido.
  */
 import {
-  and,
   or,
 } from "@prisma/orm-postgres/orm-client";
 import {
