@@ -1,15 +1,8 @@
 import { ShieldCheck } from "lucide-react";
 import type { AuditLogRow } from "@/lib/admin-db";
+import { AUDIT_ACTION_LABELS as ACTION_LABELS } from "@/lib/audit-labels";
 import { formatDateTime } from "@/lib/format";
 
-const ACTION_LABELS: Record<string, string> = {
-  CREATE_TENANT: "Negocio creado",
-  SUSPEND_TENANT: "Negocio suspendido",
-  ACTIVATE_TENANT: "Negocio reactivado",
-  TOGGLE_MODULE: "Módulo actualizado",
-  EXPORT_TENANTS: "Exportación de negocios",
-  IMPERSONATE: "Acceso como negocio",
-};
 
 /**
  * Bitácora de auditoría: quién hizo qué y sobre qué negocio. Solo lectura;

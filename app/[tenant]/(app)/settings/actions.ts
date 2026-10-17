@@ -4,7 +4,9 @@ import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
-import { isModule, validateSlug } from "@/lib/admin-catalogs";
+import { isModule, isVertical, validateSlug } from "@/lib/admin-catalogs";
+import { checkModuleToggle } from "@/lib/plans/compat";
+import { loadPricingConfig } from "@/lib/plans/settings";
 
 type TenantDb = ReturnType<typeof createTenantDb>;
 
@@ -183,6 +185,13 @@ export async function toggleModuleAction(
   }
 
   const { tenantId } = context;
+
+  // Solo módulos compatibles con el rubro y operativos; el Inicio no se apaga.
+  const tenant = await db.orm.public.Tenant.select("vertical").where({ id: tenantId }).first();
+  if (tenant && isVertical(tenant.vertical)) {
+    const check = checkModuleToggle(await loadPricingConfig(), tenant.vertical, moduleName, active);
+    if (!check.ok) return { status: "error", errors: { moduleName: check.message } };
+  }
 
   try {
     // Idempotente en ambas direcciones: crear si no existía, actualizar si sí.

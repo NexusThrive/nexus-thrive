@@ -1,5 +1,9 @@
 "use server";
 
+import { isVertical } from "@/lib/admin-catalogs";
+import { checkModuleToggle } from "@/lib/plans/compat";
+import { loadPricingConfig } from "@/lib/plans/settings";
+
 import { clerkClient } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { requireStaff } from "@/lib/ops/access";
@@ -266,6 +270,12 @@ export async function toggleTenantModuleAction(
   const tenant = await adminDb.getTenantModules(tenantId);
   if (!tenant) {
     return { status: "error", message: "El negocio no fue encontrado." };
+  }
+
+  // Compatibilidad con el rubro y estado del catálogo (Planes y módulos).
+  if (isVertical(tenant.vertical)) {
+    const check = checkModuleToggle(await loadPricingConfig(), tenant.vertical, moduleName, active);
+    if (!check.ok) return { status: "error", message: check.message };
   }
 
   await adminDb.toggleModule(tenantId, moduleName, active);

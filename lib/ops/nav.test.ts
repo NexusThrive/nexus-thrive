@@ -15,3 +15,11 @@ describe("navegación del Operations Center", () => {
     expect(opsActiveKey(groups, "/admin/equipo/roles")).toBe("equipo");
   });
 });
+
+describe("permisos alternativos", () => {
+  it("Planes y módulos se ve con catálogo o con precios", () => {
+    expect(opsNavFor(["pricing.edit"]).flatMap((g) => g.items.map((i) => i.key))).toContain("planes");
+    expect(opsNavFor(["catalog.edit"]).flatMap((g) => g.items.map((i) => i.key))).toContain("planes");
+    expect(opsNavFor(["leads.view"]).flatMap((g) => g.items.map((i) => i.key))).not.toContain("planes");
+  });
+});

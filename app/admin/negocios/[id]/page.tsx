@@ -10,7 +10,10 @@ import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { createAdminDb } from "@/lib/admin-db";
 import { getAccountExtras, listManagers, ACCOUNT_STAGES } from "@/lib/ops/accounts";
 import { getStaffContext } from "@/lib/ops/access";
-import { PLANS, type PlanKey } from "@/lib/plans/catalog";
+import { moduleStatusRow } from "@/lib/plans/compat";
+import { planOf } from "@/lib/plans/pricing";
+import { loadPricingConfig } from "@/lib/plans/settings";
+import type { PlanKey } from "@/lib/plans/catalog";
 import { formatUsdCents } from "@/lib/plans/quote";
 import AuditLog from "../../_components/audit-log";
 import { ResumenTab, UsuariosTab } from "../../_components/tenant-drawer";
@@ -55,16 +58,19 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
   const can = (p: (typeof staff.permissions)[number]) => staff.permissions.includes(p);
 
   const adminDb = createAdminDb();
-  const [detail, extras, managers, audit] = await Promise.all([
+  const [detail, extras, managers, audit, pricing] = await Promise.all([
     adminDb.getTenantDetail(id),
     getAccountExtras(id),
     listManagers(),
     can("audit.view") ? adminDb.listAuditLogs(50, { tenantId: id }) : Promise.resolve([]),
+    loadPricingConfig(),
   ]);
   if (!detail || !extras) notFound();
 
   const { icon: VerticalIcon } = getVerticalIcon(detail.vertical);
-  const plan = PLANS[extras.plan as PlanKey];
+  const plan = planOf(pricing, extras.plan as PlanKey);
+  const tier = pricing.tiers.find((t) => t.id === extras.customerTierId);
+  const moduleRows = detail.modules.map((m) => moduleStatusRow(pricing, detail.vertical, m.moduleName, extras.contractedModules, m.active));
   const stageLabel = ACCOUNT_STAGES.find((s) => s.value === extras.stage)?.label ?? extras.stage;
   const alerts = [
     !detail.active && { icon: AlertTriangle, tone: "danger" as const, text: `Servicio suspendido${detail.suspendedReason ? `: ${detail.suspendedReason}` : ""}` },
@@ -144,10 +150,12 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
               <p className="mt-3 font-display text-[28px] font-bold tabular-nums">
                 {formatUsdCents(extras.planMonthlyUsdCents)} <span className="text-[13px] font-normal text-muted-foreground">USD/mes · {extras.billingCycle === "ANNUAL" ? "anual" : "mensual"}</span>
               </p>
+              <p className="text-[13px] text-muted-foreground">Clientes: {tier?.label ?? "sin tramo (negocio anterior al catálogo)"}</p>
+              <p className="mt-2 text-xs text-muted-foreground">Precio fijado al registrarse; los cambios del catálogo aplican a registros nuevos.</p>
             </div>
           </Panel>
           <Panel title="Módulos" hint={can("accounts.modules") ? "Activa o desactiva módulos de este negocio." : "Solo lectura: tu rol no cambia módulos."}>
-            <ModuleToggles tenantId={detail.id} modules={detail.modules} canEdit={can("accounts.modules")} />
+            <ModuleToggles tenantId={detail.id} modules={moduleRows} canEdit={can("accounts.modules")} />
           </Panel>
         </div>
       ) : null}

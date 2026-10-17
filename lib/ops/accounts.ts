@@ -74,12 +74,15 @@ export type AccountExtras = {
   plan: string;
   billingCycle: string;
   planMonthlyUsdCents: number;
+  customerTierId: string | null;
+  /** Módulos contratados con el plan (null = negocio anterior al catálogo). */
+  contractedModules: string[] | null;
   contacts: ContactRow[];
 };
 
 export async function getAccountExtras(tenantId: string): Promise<AccountExtras | null> {
   const t = await db.orm.public.Tenant.where({ id: tenantId })
-    .select("accountStage", "accountManagerId", "plan", "billingCycle", "planMonthlyUsdCents")
+    .select("accountStage", "accountManagerId", "plan", "billingCycle", "planMonthlyUsdCents", "customerTierId", "contractedModules")
     .first();
   if (!t) return null;
   const [manager, contacts] = await Promise.all([
@@ -93,6 +96,8 @@ export async function getAccountExtras(tenantId: string): Promise<AccountExtras 
     plan: t.plan,
     billingCycle: t.billingCycle,
     planMonthlyUsdCents: t.planMonthlyUsdCents,
+    customerTierId: t.customerTierId,
+    contractedModules: t.contractedModules ? [...t.contractedModules] : null,
     contacts: contacts.map((c) => ({
       id: c.id,
       name: c.name,

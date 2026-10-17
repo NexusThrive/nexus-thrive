@@ -13,8 +13,8 @@ import {
   type OnboardingPrefill,
 } from "@/lib/onboarding/types";
 import { MODULE_LABELS } from "@/lib/admin-catalogs";
-import { PLANS } from "@/lib/plans/catalog";
-import { formatUsdCents, moduleMonthlyCents, quotePlan } from "@/lib/plans/quote";
+import { modulePriceCents, planOf, quote as quotePlan, signupVerticals, type PricingConfig } from "@/lib/plans/pricing";
+import { formatUsdCents } from "@/lib/plans/quote";
 import ProfileSelection from "./profile-selection";
 import AdaptiveBusinessForm from "./adaptive-business-form";
 import { buttonVariants } from "@/components/atoms/button-variants";
@@ -57,7 +57,7 @@ const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve
  * localStorage (modo `create`); la validación es la misma del servidor y el
  * precio se recalcula en el servidor al crear.
  */
-export default function OnboardingWizard({ prefill, firstName }: { prefill: OnboardingPrefill; firstName?: string }) {
+export default function OnboardingWizard({ prefill, firstName, config }: { prefill: OnboardingPrefill; firstName?: string; config: PricingConfig }) {
   const firstStep: FlowStep = prefill.mode === "resume" ? "profile" : "intro";
   const [step, setStep] = useState<FlowStep>(firstStep);
   const [slide, setSlide] = useState(0);
@@ -84,13 +84,15 @@ export default function OnboardingWizard({ prefill, firstName }: { prefill: Onbo
         selectedModules: draft.selectedModules,
         plan: draft.plan,
         billing: draft.billing,
-      }),
-    [draft, prefill.tenantId],
+        customerTierId: draft.customerTierId,
+      }, config),
+    [draft, prefill.tenantId, config],
   );
 
   const quote = draft.vertical
-    ? quotePlan({ plan: draft.plan, vertical: draft.vertical, billing: draft.billing, selected: draft.selectedModules })
+    ? quotePlan(config, { plan: draft.plan, vertical: draft.vertical, billing: draft.billing, selected: draft.selectedModules, tierId: draft.customerTierId })
     : null;
+  const planName = planOf(config, draft.plan)?.name ?? draft.plan;
 
   // Siempre sobre el borrador más reciente: varios cambios en el mismo
   // instante (autocompletado del navegador) no se pisan entre sí.
@@ -194,12 +196,12 @@ export default function OnboardingWizard({ prefill, firstName }: { prefill: Onbo
         vertical: draft.vertical,
         city: draft.city,
         tenantType: draft.tenantType,
-        planName: step === "plan" || step === "confirm" ? PLANS[draft.plan].name : undefined,
+        planName: step === "plan" || step === "confirm" ? planName : undefined,
         price: quote ? (quote.monthlyCents / 100).toFixed(quote.monthlyCents % 100 ? 2 : 0) : undefined,
         modules:
           quote && (step === "plan" || step === "confirm")
             ? quote.modules.map((module) => {
-                const cents = draft.vertical ? moduleMonthlyCents(module, draft.vertical, draft.plan) : 0;
+                const cents = draft.vertical ? modulePriceCents(config, module, draft.vertical, draft.plan) : 0;
                 return { module, price: cents ? formatUsdCents(cents) : "Incluido" };
               })
             : [],
@@ -270,6 +272,7 @@ export default function OnboardingWizard({ prefill, firstName }: { prefill: Onbo
 
         {step === "business" ? (
           <AdaptiveBusinessForm
+            verticals={signupVerticals(config).map((v) => ({ value: v.vertical, label: v.label }))}
             draft={draft}
             onPatch={patch}
             errors={validation.ok ? {} : validation.errors}
@@ -279,9 +282,10 @@ export default function OnboardingWizard({ prefill, firstName }: { prefill: Onbo
 
         {step === "plan" && draft.vertical ? (
           <PlanPicker
+            config={config}
             vertical={draft.vertical}
-            value={{ plan: draft.plan, billing: draft.billing, selected: draft.selectedModules }}
-            onChange={({ plan, billing, selected }) => patch({ plan, billing, selectedModules: selected })}
+            value={{ plan: draft.plan, billing: draft.billing, selected: draft.selectedModules, tierId: draft.customerTierId }}
+            onChange={({ plan, billing, selected, tierId }) => patch({ plan, billing, selectedModules: selected, customerTierId: tierId })}
           />
         ) : null}
 
@@ -303,7 +307,9 @@ export default function OnboardingWizard({ prefill, firstName }: { prefill: Onbo
                 address: draft.tenantType === "COMPANY" ? draft.address : undefined,
                 city: draft.city,
                 plan: draft.plan,
+                planName,
                 billing: draft.billing,
+                tierLabel: config.tiers.find((t) => t.id === quote.tierId)?.label,
                 quote,
               }}
               teamSizeLabel={draft.tenantType === "COMPANY" && draft.teamSize ? TEAM_SIZE_LABELS[draft.teamSize] : undefined}
@@ -320,7 +326,7 @@ export default function OnboardingWizard({ prefill, firstName }: { prefill: Onbo
       {cinematic ? (
         <CreationCinematic
           status={cinematic}
-          planName={PLANS[draft.plan].name}
+          planName={planName}
           businessName={draft.name.trim()}
           error={error ?? undefined}
           onBack={() => setCinematic(null)}

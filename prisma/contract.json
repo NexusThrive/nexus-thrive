@@ -72,6 +72,10 @@
       "model": "CustomerNote",
       "namespace": "public"
     },
+    "CustomerTierSetting": {
+      "model": "CustomerTierSetting",
+      "namespace": "public"
+    },
     "Expense": {
       "model": "Expense",
       "namespace": "public"
@@ -92,8 +96,16 @@
       "model": "Membership",
       "namespace": "public"
     },
+    "ModuleSetting": {
+      "model": "ModuleSetting",
+      "namespace": "public"
+    },
     "Payment": {
       "model": "Payment",
+      "namespace": "public"
+    },
+    "PlanSetting": {
+      "model": "PlanSetting",
       "namespace": "public"
     },
     "Project": {
@@ -146,6 +158,10 @@
     },
     "User": {
       "model": "User",
+      "namespace": "public"
+    },
+    "VerticalSetting": {
+      "model": "VerticalSetting",
       "namespace": "public"
     },
     "WeeklyCommitment": {
@@ -3462,6 +3478,77 @@
               "table": "CustomerNote"
             }
           },
+          "CustomerTierSetting": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "label": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "maxCustomers": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "order": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "priceUsdCents": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "label": {
+                  "column": "label"
+                },
+                "maxCustomers": {
+                  "column": "maxCustomers"
+                },
+                "order": {
+                  "column": "order"
+                },
+                "priceUsdCents": {
+                  "column": "priceUsdCents"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "CustomerTierSetting"
+            }
+          },
           "Expense": {
             "fields": {
               "amount": {
@@ -4293,6 +4380,97 @@
               "table": "Membership"
             }
           },
+          "ModuleSetting": {
+            "fields": {
+              "description": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "included": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "label": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "module": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "order": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "priceUsdCents": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "description": {
+                  "column": "description"
+                },
+                "included": {
+                  "column": "included"
+                },
+                "label": {
+                  "column": "label"
+                },
+                "module": {
+                  "column": "module"
+                },
+                "order": {
+                  "column": "order"
+                },
+                "priceUsdCents": {
+                  "column": "priceUsdCents"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "ModuleSetting"
+            }
+          },
           "Payment": {
             "fields": {
               "amount": {
@@ -4473,6 +4651,148 @@
               },
               "namespaceId": "public",
               "table": "Payment"
+            }
+          },
+          "PlanSetting": {
+            "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "annualDiscountPct": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "basePriceUsdCents": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "chargesModules": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "features": {
+                "many": true,
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "includesAllModules": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "key": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "moduleDiscountPct": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "order": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "recommended": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "tagline": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "active": {
+                  "column": "active"
+                },
+                "annualDiscountPct": {
+                  "column": "annualDiscountPct"
+                },
+                "basePriceUsdCents": {
+                  "column": "basePriceUsdCents"
+                },
+                "chargesModules": {
+                  "column": "chargesModules"
+                },
+                "features": {
+                  "column": "features"
+                },
+                "includesAllModules": {
+                  "column": "includesAllModules"
+                },
+                "key": {
+                  "column": "key"
+                },
+                "moduleDiscountPct": {
+                  "column": "moduleDiscountPct"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "order": {
+                  "column": "order"
+                },
+                "recommended": {
+                  "column": "recommended"
+                },
+                "tagline": {
+                  "column": "tagline"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "PlanSetting"
             }
           },
           "Project": {
@@ -6323,6 +6643,14 @@
                   "kind": "scalar"
                 }
               },
+              "contractedModules": {
+                "many": true,
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -6331,6 +6659,13 @@
                 }
               },
               "customDomain": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "customerTierId": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
@@ -6909,11 +7244,17 @@
                 "city": {
                   "column": "city"
                 },
+                "contractedModules": {
+                  "column": "contractedModules"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
                 "customDomain": {
                   "column": "customDomain"
+                },
+                "customerTierId": {
+                  "column": "customerTierId"
                 },
                 "googleBusinessUrl": {
                   "column": "googleBusinessUrl"
@@ -7332,6 +7673,109 @@
               },
               "namespaceId": "public",
               "table": "User"
+            }
+          },
+          "VerticalSetting": {
+            "fields": {
+              "dashboardTemplate": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "label": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "modules": {
+                "many": true,
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "order": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "priceFactorPct": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "recommended": {
+                "many": true,
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "signupEnabled": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "vertical": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "dashboardTemplate": {
+                  "column": "dashboardTemplate"
+                },
+                "label": {
+                  "column": "label"
+                },
+                "modules": {
+                  "column": "modules"
+                },
+                "order": {
+                  "column": "order"
+                },
+                "priceFactorPct": {
+                  "column": "priceFactorPct"
+                },
+                "recommended": {
+                  "column": "recommended"
+                },
+                "signupEnabled": {
+                  "column": "signupEnabled"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "vertical": {
+                  "column": "vertical"
+                }
+              },
+              "namespaceId": "public",
+              "table": "VerticalSetting"
             }
           },
           "WeeklyCommitment": {
@@ -9725,6 +10169,48 @@
               },
               "uniques": []
             },
+            "CustomerTierSetting": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "label": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "maxCustomers": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "order": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "priceUsdCents": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "Expense": {
               "columns": {
                 "amount": {
@@ -10480,6 +10966,58 @@
               },
               "uniques": []
             },
+            "ModuleSetting": {
+              "columns": {
+                "description": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "included": {
+                  "codecId": "pg/bool@1",
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "label": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "module": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "order": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "priceUsdCents": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "module"
+                ]
+              },
+              "uniques": []
+            },
             "Payment": {
               "checks": [
                 {
@@ -10673,6 +11211,99 @@
                   ]
                 }
               ]
+            },
+            "PlanSetting": {
+              "checks": [
+                {
+                  "expression": "array_position(\"features\", NULL) IS NULL",
+                  "name": "PlanSetting_features_elem_not_null_1a661718",
+                  "prefix": "PlanSetting_features_elem_not_null"
+                }
+              ],
+              "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "annualDiscountPct": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "basePriceUsdCents": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "chargesModules": {
+                  "codecId": "pg/bool@1",
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "features": {
+                  "codecId": "pg/text@1",
+                  "many": true,
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "includesAllModules": {
+                  "codecId": "pg/bool@1",
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "key": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "moduleDiscountPct": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "order": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "recommended": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "tagline": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "key"
+                ]
+              },
+              "uniques": []
             },
             "Project": {
               "checks": [
@@ -12080,6 +12711,11 @@
                   "prefix": "Tenant_billingCycle_check"
                 },
                 {
+                  "expression": "array_position(\"contractedModules\", NULL) IS NULL",
+                  "name": "Tenant_contractedModules_elem_not_null_6b619961",
+                  "prefix": "Tenant_contractedModules_elem_not_null"
+                },
+                {
                   "expression": "\"paymentMethods\"::text[] <@ ARRAY['WOMPI', 'NEQUI', 'CASH', 'TRANSFER']::text[]",
                   "name": "Tenant_paymentMethods_check_08fe4dd4",
                   "prefix": "Tenant_paymentMethods_check"
@@ -12160,6 +12796,12 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "contractedModules": {
+                  "codecId": "pg/text@1",
+                  "many": true,
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "default": {
@@ -12170,6 +12812,11 @@
                   "nullable": false
                 },
                 "customDomain": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "customerTierId": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
@@ -12634,6 +13281,77 @@
                 }
               ]
             },
+            "VerticalSetting": {
+              "checks": [
+                {
+                  "expression": "array_position(\"modules\", NULL) IS NULL",
+                  "name": "VerticalSetting_modules_elem_not_null_749d77ec",
+                  "prefix": "VerticalSetting_modules_elem_not_null"
+                },
+                {
+                  "expression": "array_position(\"recommended\", NULL) IS NULL",
+                  "name": "VerticalSetting_recommended_elem_not_null_226dce52",
+                  "prefix": "VerticalSetting_recommended_elem_not_null"
+                }
+              ],
+              "columns": {
+                "dashboardTemplate": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "label": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "modules": {
+                  "codecId": "pg/text@1",
+                  "many": true,
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "order": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "priceFactorPct": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "recommended": {
+                  "codecId": "pg/text@1",
+                  "many": true,
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "signupEnabled": {
+                  "codecId": "pg/bool@1",
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "vertical": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "vertical"
+                ]
+              },
+              "uniques": []
+            },
             "WeeklyCommitment": {
               "checks": [
                 {
@@ -13055,10 +13773,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "3cb85e24576ac30fbaf328a36ce3ff144b6d5a9e84ca5c0490a11e9b0a32e95c"
+    "storageHash": "42b9c8b933599d309c78323c0b5d4f0697a6daa233071bca60cba19569af718c"
   },
   "execution": {
-    "executionHash": "7b08ad599a5d08d2185a7afee3a20b676cce66201659ee2777c139a8d8cdc609",
+    "executionHash": "1dccea0e522047cb0c60db3034517f81e4a802a2fef553bdce6f249325d11151",
     "mutations": {
       "defaults": [
         {
@@ -13370,6 +14088,21 @@
         },
         {
           "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "CustomerTierSetting",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
             "id": "uuidv4",
             "kind": "generator"
           },
@@ -13500,6 +14233,21 @@
         },
         {
           "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "ModuleSetting",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
             "id": "uuidv4",
             "kind": "generator"
           },
@@ -13520,6 +14268,21 @@
           },
           "ref": {
             "entry": "Payment",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PlanSetting",
             "field": "updatedAt",
             "namespace": "public"
           }
@@ -13843,6 +14606,21 @@
           },
           "ref": {
             "entry": "User",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "VerticalSetting",
             "field": "updatedAt",
             "namespace": "public"
           }
