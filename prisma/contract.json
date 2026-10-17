@@ -88,6 +88,14 @@
       "model": "FieldLogEntry",
       "namespace": "public"
     },
+    "Lead": {
+      "model": "Lead",
+      "namespace": "public"
+    },
+    "LeadActivity": {
+      "model": "LeadActivity",
+      "namespace": "public"
+    },
     "LookaheadTask": {
       "model": "LookaheadTask",
       "namespace": "public"
@@ -144,6 +152,10 @@
       "model": "StaffRole",
       "namespace": "public"
     },
+    "SupportTicket": {
+      "model": "SupportTicket",
+      "namespace": "public"
+    },
     "Tenant": {
       "model": "Tenant",
       "namespace": "public"
@@ -154,6 +166,10 @@
     },
     "TenantModule": {
       "model": "TenantModule",
+      "namespace": "public"
+    },
+    "TicketMessage": {
+      "model": "TicketMessage",
       "namespace": "public"
     },
     "User": {
@@ -330,6 +346,43 @@
               {
                 "name": "VISIT",
                 "value": "VISIT"
+              }
+            ]
+          },
+          "LeadStage": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "NEW",
+                "value": "NEW"
+              },
+              {
+                "name": "CONTACTED",
+                "value": "CONTACTED"
+              },
+              {
+                "name": "QUALIFIED",
+                "value": "QUALIFIED"
+              },
+              {
+                "name": "DEMO",
+                "value": "DEMO"
+              },
+              {
+                "name": "PROPOSAL",
+                "value": "PROPOSAL"
+              },
+              {
+                "name": "NEGOTIATION",
+                "value": "NEGOTIATION"
+              },
+              {
+                "name": "WON",
+                "value": "WON"
+              },
+              {
+                "name": "LOST",
+                "value": "LOST"
               }
             ]
           },
@@ -618,6 +671,60 @@
               {
                 "name": "COMPANY",
                 "value": "COMPANY"
+              }
+            ]
+          },
+          "TicketPriority": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "LOW",
+                "value": "LOW"
+              },
+              {
+                "name": "NORMAL",
+                "value": "NORMAL"
+              },
+              {
+                "name": "HIGH",
+                "value": "HIGH"
+              },
+              {
+                "name": "URGENT",
+                "value": "URGENT"
+              }
+            ]
+          },
+          "TicketStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "NEW",
+                "value": "NEW"
+              },
+              {
+                "name": "OPEN",
+                "value": "OPEN"
+              },
+              {
+                "name": "IN_PROGRESS",
+                "value": "IN_PROGRESS"
+              },
+              {
+                "name": "WAITING_CUSTOMER",
+                "value": "WAITING_CUSTOMER"
+              },
+              {
+                "name": "ESCALATED",
+                "value": "ESCALATED"
+              },
+              {
+                "name": "RESOLVED",
+                "value": "RESOLVED"
+              },
+              {
+                "name": "CLOSED",
+                "value": "CLOSED"
               }
             ]
           },
@@ -3999,6 +4106,337 @@
               "table": "FieldLogEntry"
             }
           },
+          "Lead": {
+            "fields": {
+              "city": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "company": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "contactName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "email": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "lostReason": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "nextStep": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "nextStepAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "notes": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "ownerId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "phone": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "plan": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "source": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "stage": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "LeadStage",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "stageChangedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "valueUsdCents": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "vertical": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "activities": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "leadId"
+                  ]
+                },
+                "to": {
+                  "model": "LeadActivity",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "city": {
+                  "column": "city"
+                },
+                "company": {
+                  "column": "company"
+                },
+                "contactName": {
+                  "column": "contactName"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "email": {
+                  "column": "email"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "lostReason": {
+                  "column": "lostReason"
+                },
+                "nextStep": {
+                  "column": "nextStep"
+                },
+                "nextStepAt": {
+                  "column": "nextStepAt"
+                },
+                "notes": {
+                  "column": "notes"
+                },
+                "ownerId": {
+                  "column": "ownerId"
+                },
+                "phone": {
+                  "column": "phone"
+                },
+                "plan": {
+                  "column": "plan"
+                },
+                "source": {
+                  "column": "source"
+                },
+                "stage": {
+                  "column": "stage"
+                },
+                "stageChangedAt": {
+                  "column": "stageChangedAt"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "valueUsdCents": {
+                  "column": "valueUsdCents"
+                },
+                "vertical": {
+                  "column": "vertical"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Lead"
+            }
+          },
+          "LeadActivity": {
+            "fields": {
+              "body": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "kind": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "leadId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "staffId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "staffName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "lead": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "leadId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Lead",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "body": {
+                  "column": "body"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "kind": {
+                  "column": "kind"
+                },
+                "leadId": {
+                  "column": "leadId"
+                },
+                "staffId": {
+                  "column": "staffId"
+                },
+                "staffName": {
+                  "column": "staffName"
+                }
+              },
+              "namespaceId": "public",
+              "table": "LeadActivity"
+            }
+          },
           "LookaheadTask": {
             "fields": {
               "budgetItemId": {
@@ -6587,6 +7025,235 @@
               "table": "StaffRole"
             }
           },
+          "SupportTicket": {
+            "fields": {
+              "assigneeId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "category": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "channel": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "closedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "description": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "firstResponseAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "priority": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "TicketPriority",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "requesterContact": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "requesterName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "resolvedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "seq": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "solution": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "TicketStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "subject": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "year": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "messages": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "ticketId"
+                  ]
+                },
+                "to": {
+                  "model": "TicketMessage",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "assigneeId": {
+                  "column": "assigneeId"
+                },
+                "category": {
+                  "column": "category"
+                },
+                "channel": {
+                  "column": "channel"
+                },
+                "closedAt": {
+                  "column": "closedAt"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "description": {
+                  "column": "description"
+                },
+                "firstResponseAt": {
+                  "column": "firstResponseAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "priority": {
+                  "column": "priority"
+                },
+                "requesterContact": {
+                  "column": "requesterContact"
+                },
+                "requesterName": {
+                  "column": "requesterName"
+                },
+                "resolvedAt": {
+                  "column": "resolvedAt"
+                },
+                "seq": {
+                  "column": "seq"
+                },
+                "solution": {
+                  "column": "solution"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "subject": {
+                  "column": "subject"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "year": {
+                  "column": "year"
+                }
+              },
+              "namespaceId": "public",
+              "table": "SupportTicket"
+            }
+          },
           "Tenant": {
             "fields": {
               "accountManagerId": {
@@ -7544,6 +8211,104 @@
               },
               "namespaceId": "public",
               "table": "TenantModule"
+            }
+          },
+          "TicketMessage": {
+            "fields": {
+              "authorName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "authorStaffId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "body": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "internal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "ticketId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "ticket": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "ticketId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "SupportTicket",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "authorName": {
+                  "column": "authorName"
+                },
+                "authorStaffId": {
+                  "column": "authorStaffId"
+                },
+                "body": {
+                  "column": "body"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "internal": {
+                  "column": "internal"
+                },
+                "ticketId": {
+                  "column": "ticketId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "TicketMessage"
             }
           },
           "User": {
@@ -10630,6 +11395,242 @@
               },
               "uniques": []
             },
+            "Lead": {
+              "checks": [
+                {
+                  "expression": "\"stage\" IN ('NEW', 'CONTACTED', 'QUALIFIED', 'DEMO', 'PROPOSAL', 'NEGOTIATION', 'WON', 'LOST')",
+                  "name": "Lead_stage_check_ded1c79a",
+                  "prefix": "Lead_stage_check"
+                }
+              ],
+              "columns": {
+                "city": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "company": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "contactName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "email": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "lostReason": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "nextStep": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "nextStepAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "notes": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "ownerId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "phone": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "plan": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "source": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "stage": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "NEW"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "LeadStage",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "stageChangedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "valueUsdCents": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "vertical": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [
+                {
+                  "columns": [
+                    "ownerId"
+                  ],
+                  "name": "Lead_ownerId_idx_e2d0c1ef",
+                  "prefix": "Lead_ownerId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "stage"
+                  ],
+                  "name": "Lead_stage_idx_51755035",
+                  "prefix": "Lead_stage_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "LeadActivity": {
+              "columns": {
+                "body": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "kind": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "leadId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "staffId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "staffName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "leadId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "LeadActivity"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Lead"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "leadId"
+                  ],
+                  "name": "LeadActivity_leadId_idx_9113844c",
+                  "prefix": "LeadActivity_leadId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "LookaheadTask": {
               "columns": {
                 "budgetItemId": {
@@ -12698,6 +13699,173 @@
                 }
               ]
             },
+            "SupportTicket": {
+              "checks": [
+                {
+                  "expression": "\"priority\" IN ('LOW', 'NORMAL', 'HIGH', 'URGENT')",
+                  "name": "SupportTicket_priority_check_72dbae57",
+                  "prefix": "SupportTicket_priority_check"
+                },
+                {
+                  "expression": "\"status\" IN ('NEW', 'OPEN', 'IN_PROGRESS', 'WAITING_CUSTOMER', 'ESCALATED', 'RESOLVED', 'CLOSED')",
+                  "name": "SupportTicket_status_check_ab8fd9bd",
+                  "prefix": "SupportTicket_status_check"
+                }
+              ],
+              "columns": {
+                "assigneeId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "category": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "channel": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "closedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "description": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "firstResponseAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "priority": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "NORMAL"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "TicketPriority",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "requesterContact": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "requesterName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "resolvedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "seq": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "solution": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "NEW"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "TicketStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "subject": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "year": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [
+                {
+                  "columns": [
+                    "status"
+                  ],
+                  "name": "SupportTicket_status_idx_e98638ab",
+                  "prefix": "SupportTicket_status_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "SupportTicket_tenantId_idx_c93ed4f1",
+                  "prefix": "SupportTicket_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "year",
+                    "seq"
+                  ]
+                }
+              ]
+            },
             "Tenant": {
               "checks": [
                 {
@@ -13174,6 +14342,88 @@
                 }
               ]
             },
+            "TicketMessage": {
+              "columns": {
+                "authorName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "authorStaffId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "body": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "internal": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "ticketId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "ticketId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "TicketMessage"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "SupportTicket"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "ticketId"
+                  ],
+                  "name": "TicketMessage_ticketId_idx_2fe526c3",
+                  "prefix": "TicketMessage_ticketId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "User": {
               "checks": [
                 {
@@ -13620,6 +14870,19 @@
                 "VISIT"
               ]
             },
+            "LeadStage": {
+              "kind": "valueSet",
+              "values": [
+                "NEW",
+                "CONTACTED",
+                "QUALIFIED",
+                "DEMO",
+                "PROPOSAL",
+                "NEGOTIATION",
+                "WON",
+                "LOST"
+              ]
+            },
             "MembershipStatus": {
               "kind": "valueSet",
               "values": [
@@ -13737,6 +15000,27 @@
                 "COMPANY"
               ]
             },
+            "TicketPriority": {
+              "kind": "valueSet",
+              "values": [
+                "LOW",
+                "NORMAL",
+                "HIGH",
+                "URGENT"
+              ]
+            },
+            "TicketStatus": {
+              "kind": "valueSet",
+              "values": [
+                "NEW",
+                "OPEN",
+                "IN_PROGRESS",
+                "WAITING_CUSTOMER",
+                "ESCALATED",
+                "RESOLVED",
+                "CLOSED"
+              ]
+            },
             "Vertical": {
               "kind": "valueSet",
               "values": [
@@ -13773,10 +15057,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "42b9c8b933599d309c78323c0b5d4f0697a6daa233071bca60cba19569af718c"
+    "storageHash": "30f5cc787f3de9b5784746b77523cedac80f339fe43ba057c577646c19505fe9"
   },
   "execution": {
-    "executionHash": "1dccea0e522047cb0c60db3034517f81e4a802a2fef553bdce6f249325d11151",
+    "executionHash": "6782965da8874f740dfcb1a23a72003c8a9eed72d4a1f4267494b8ab91bc38f7",
     "mutations": {
       "defaults": [
         {
@@ -14185,6 +15469,43 @@
             "kind": "generator"
           },
           "ref": {
+            "entry": "Lead",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Lead",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "LeadActivity",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
             "entry": "LookaheadTask",
             "field": "id",
             "namespace": "public"
@@ -14512,6 +15833,32 @@
             "kind": "generator"
           },
           "ref": {
+            "entry": "SupportTicket",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "SupportTicket",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
             "entry": "Tenant",
             "field": "id",
             "namespace": "public"
@@ -14581,6 +15928,17 @@
           "ref": {
             "entry": "TenantModule",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "TicketMessage",
+            "field": "id",
             "namespace": "public"
           }
         },
