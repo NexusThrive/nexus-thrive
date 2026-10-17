@@ -43,8 +43,8 @@ export function quickCreateActions(
   }
   if (has("finance")) {
     actions.push(
-      { key: "payment", label: "Registrar pago", hint: "Cobrar un movimiento", href: "/finance", icon: HandCoins },
-      { key: "expense", label: "Registrar gasto", hint: "Anotar un egreso de caja", href: "/finance", icon: Receipt },
+      { key: "payment", label: "Registrar pago", hint: "Cobrar y generar comprobante", href: "/finance?nuevo=pago", icon: HandCoins },
+      { key: "expense", label: "Registrar gasto", hint: "Anotar un egreso de caja", href: "/finance?nuevo=gasto", icon: Receipt },
     );
   }
   if (has("bookings")) {

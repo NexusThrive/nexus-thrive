@@ -2,16 +2,19 @@ import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * Variación porcentual con flecha. `inverse` invierte el color (en gastos,
+ * Variación con flecha: porcentual por defecto o conteo (`format="count"`,
+ * p. ej. "+3" clientes nuevos). `inverse` invierte el color (en gastos,
  * subir es malo). `null` = sin periodo previo con qué comparar.
  */
 export function Delta({
   value,
   inverse = false,
+  format = "percent",
   className,
 }: {
   value: number | null;
   inverse?: boolean;
+  format?: "percent" | "count";
   className?: string;
 }) {
   if (value == null) {
@@ -33,7 +36,8 @@ export function Delta({
     >
       <Icon aria-hidden="true" className="size-3.5" />
       {up ? "+" : "−"}
-      {Math.abs(value)} %
+      {Math.abs(value)}
+      {format === "percent" ? " %" : null}
     </span>
   );
 }

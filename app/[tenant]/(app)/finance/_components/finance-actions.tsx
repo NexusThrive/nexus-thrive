@@ -1,70 +1,124 @@
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
-import PaymentForm from "./payment-form";
-import ExpenseForm from "./expense-form";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Banknote, MinusCircle } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { ExpenseSheet } from "@/components/organisms/expense-sheet";
+import { PaymentSheet } from "@/components/organisms/payment-sheet";
+import { EXPENSE_CATEGORIES, PAYMENT_METHODS } from "@/lib/finance";
+import { cn } from "@/lib/utils";
+import { createExpenseAction, createPaymentAction } from "../actions";
 
 export type CustomerOption = {
   id: string;
   name: string;
   email: string;
+  phone?: string | null;
 };
 
-const ACTION_BUTTON =
-  "inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted";
+type Open = "pago" | "gasto" | null;
 
 /**
- * Controles de registro (Server Actions vía `useActionState` en cada modal).
- * Solo este componente es cliente: la página RSC sigue siendo la fuente de
- * datos y los modales cierran cuando el servidor confirma la escritura.
+ * Registrar pago (teclado + recibo impreso) y registrar gasto (chips de
+ * categoría). Los botones van dentro de la tarjeta de balance (`tone="dark"`)
+ * o sobre fondo claro. `?nuevo=pago|gasto` abre la hoja al llegar (acciones
+ * rápidas del inicio y del botón Crear). Las escrituras son las Server
+ * Actions de siempre: validan, guardan y revalidan Finanzas e Inicio.
  */
 export default function FinanceActions({
   tenantSlug,
+  business,
   customers,
+  initial = null,
+  tone = "dark",
 }: {
   tenantSlug: string;
+  business: { name: string; subtitle?: string };
   customers: CustomerOption[];
+  initial?: Open;
+  tone?: "dark" | "light";
 }) {
-  const [paymentOpen, setPaymentOpen] = useState(false);
-  const [expenseOpen, setExpenseOpen] = useState(false);
+  const [open, setOpen] = useState<Open>(initial);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const setSheet = (next: Open) => {
+    setOpen(next);
+    // Quita ?nuevo= al cerrar para que recargar no la vuelva a abrir.
+    if (!next && searchParams.has("nuevo")) {
+      const params = new URLSearchParams(searchParams);
+      params.delete("nuevo");
+      router.replace(params.size ? `${pathname}?${params}` : pathname, { scroll: false });
+    }
+  };
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setExpenseOpen(true)}
-          className={ACTION_BUTTON}
-        >
-          <Plus aria-hidden="true" className="h-4 w-4 text-destructive" />
-          Registrar gasto
-        </button>
-        <button
-          type="button"
-          onClick={() => setPaymentOpen(true)}
-          className={buttonVariants()}
-        >
-          <Plus aria-hidden="true" className="h-4 w-4" />
-          Registrar pago
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={() => setSheet("pago")}
+        className={cn(buttonVariants({ variant: "accent" }), tone === "light" && "order-2")}
+        data-mag=""
+      >
+        <Banknote aria-hidden="true" className="size-4" />
+        Registrar pago
+      </button>
+      <button
+        type="button"
+        onClick={() => setSheet("gasto")}
+        className={cn(
+          buttonVariants({ variant: "outline" }),
+          tone === "dark" && "border-[#3A3A40] text-[#F7F6F3] hover:border-[#55555c] hover:bg-[#1E1E21]",
+        )}
+      >
+        <MinusCircle aria-hidden="true" className="size-4" />
+        Registrar gasto
+      </button>
 
-      {paymentOpen ? (
-        <PaymentForm
-          tenantSlug={tenantSlug}
-          customers={customers}
-          onClose={() => setPaymentOpen(false)}
-        />
-      ) : null}
+      <PaymentSheet
+        open={open === "pago"}
+        onOpenChange={(next) => setSheet(next ? "pago" : null)}
+        business={business}
+        methods={PAYMENT_METHODS}
+        customers={customers.map((c) => ({ id: c.id, name: c.name, hint: c.email || undefined, phone: c.phone }))}
+        onCharge={async ({ amount, customerId, method, description }) => {
+          const form = new FormData();
+          form.set("tenantSlug", tenantSlug);
+          form.set("status", "APPROVED");
+          form.set("amount", String(amount));
+          form.set("customerId", customerId);
+          form.set("provider", method);
+          form.set("providerRefId", "");
+          form.set("description", description);
+          const state = await createPaymentAction({ status: "idle" }, form);
+          if (state.status === "ok" && state.receipt) return { ok: true, ...state.receipt };
+          const fieldError = state.errors ? Object.values(state.errors).find(Boolean) : undefined;
+          return { ok: false, message: state.message ?? fieldError ?? "No se pudo registrar el pago." };
+        }}
+      />
 
-      {expenseOpen ? (
-        <ExpenseForm
-          tenantSlug={tenantSlug}
-          onClose={() => setExpenseOpen(false)}
-        />
-      ) : null}
+      <ExpenseSheet
+        open={open === "gasto"}
+        onOpenChange={(next) => setSheet(next ? "gasto" : null)}
+        categories={EXPENSE_CATEGORIES}
+        onSave={async ({ amount, category, description }) => {
+          const form = new FormData();
+          form.set("tenantSlug", tenantSlug);
+          form.set("amount", String(amount));
+          form.set("category", category);
+          form.set("description", description);
+          const state = await createExpenseAction({ status: "idle" }, form);
+          if (state.status === "ok") return { ok: true };
+          const field = state.errors?.amount ? "amount" : state.errors?.description ? "description" : state.errors?.category ? "category" : undefined;
+          return {
+            ok: false,
+            field,
+            message: state.message ?? (field ? state.errors?.[field] : undefined) ?? "No se pudo registrar el gasto.",
+          };
+        }}
+      />
     </>
   );
 }

@@ -18,6 +18,8 @@ export type PaymentFormState = {
   message?: string;
   errors?: PaymentFieldErrors;
   values?: PaymentFormValues;
+  /** En éxito: datos del comprobante (referencia y fecha reales del pago). */
+  receipt?: { reference: string; createdAt: string };
 };
 
 export type ExpenseFormState = {
@@ -111,7 +113,7 @@ export async function createPaymentAction(
     }
   }
 
-  await tenantDb.payments.create({
+  const created = await tenantDb.payments.create({
     customerId: customerId || null,
     provider,
     status,
@@ -122,7 +124,13 @@ export async function createPaymentAction(
 
   revalidatePath(`/${tenantSlug}/finance`);
   revalidatePath(`/${tenantSlug}`);
-  return { status: "ok" };
+  return {
+    status: "ok",
+    receipt: {
+      reference: providerRefId || `REC-${created.id.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      createdAt: String(created.createdAt),
+    },
+  };
 }
 
 /** Registra un gasto de caja menor. Revalida Finanzas y el dashboard. */
