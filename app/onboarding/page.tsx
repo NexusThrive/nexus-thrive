@@ -2,6 +2,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getOnboardingPrefill } from "./prefill";
 import OnboardingWizard from "./_components/onboarding-wizard";
+import { loadPricingConfig } from "@/lib/plans/settings";
 
 /**
  * Onboarding adaptativo (auto-servicio).
@@ -39,5 +40,7 @@ export default async function OnboardingPage({
   }
 
   const user = await currentUser();
-  return <OnboardingWizard prefill={prefill} firstName={user?.firstName ?? undefined} />;
+  // Rubros, planes, módulos y precios del catálogo del Operations Center.
+  const config = await loadPricingConfig();
+  return <OnboardingWizard prefill={prefill} firstName={user?.firstName ?? undefined} config={config} />;
 }

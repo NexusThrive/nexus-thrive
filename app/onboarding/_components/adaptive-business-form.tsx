@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Check, Link2, MapPin, MapPinned, Receipt } from "lucide-react";
-import { VERTICALS, VERTICAL_LABELS, type VerticalValue } from "@/lib/admin-catalogs";
+import type { VerticalValue } from "@/lib/admin-catalogs";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { normalizeSlug, normalizeAndValidateSlug } from "@/lib/onboarding/slug";
 import {
@@ -18,6 +18,8 @@ import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { cn } from "@/lib/utils";
 
 type FieldProps = {
+  /** Rubros habilitados para registrarse (catálogo del Operations Center). */
+  verticals: { value: VerticalValue; label: string }[];
   draft: OnboardingDraft;
   /** Aplica un cambio parcial sobre el borrador MÁS RECIENTE (no sobre `draft`),
    *  así varios cambios en el mismo instante (autocompletado) no se pisan. */
@@ -41,7 +43,7 @@ function IconInput({ icon: Icon, className, ...props }: React.ComponentProps<"in
  * enlace se arma solo desde el nombre hasta que el usuario lo edita, y la
  * vista previa del panel de marca refleja cada cambio en vivo.
  */
-export default function AdaptiveBusinessForm({ draft, onPatch: patch, errors, showErrors }: FieldProps) {
+export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch, errors, showErrors }: FieldProps) {
   const [slugTouched, setSlugTouched] = useState(() => draft.slugRaw.length > 0);
   const isCompany = draft.tenantType === "COMPANY";
   const slugCheck = normalizeAndValidateSlug(draft.slugRaw);
@@ -120,7 +122,7 @@ export default function AdaptiveBusinessForm({ draft, onPatch: patch, errors, sh
           Rubro del negocio <span className="text-muted-foreground">*</span>
         </legend>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {VERTICALS.map((vertical) => {
+          {verticals.map(({ value: vertical, label }) => {
             const { icon: Icon } = getVerticalIcon(vertical);
             const selected = draft.vertical === vertical;
             return (
@@ -129,7 +131,7 @@ export default function AdaptiveBusinessForm({ draft, onPatch: patch, errors, sh
                 type="button"
                 aria-pressed={selected}
                 data-press=""
-                onClick={() => patch({ vertical: vertical as VerticalValue })}
+                onClick={() => patch({ vertical })}
                 className={cn(
                   "flex items-center gap-2 rounded-md border px-2.5 py-2 text-left transition-[border-color,background-color,box-shadow] duration-200",
                   selected
@@ -138,7 +140,7 @@ export default function AdaptiveBusinessForm({ draft, onPatch: patch, errors, sh
                 )}
               >
                 <Icon aria-hidden="true" className={cn("size-4 shrink-0", selected ? "text-accent-text" : "text-muted-foreground")} />
-                <span className="min-w-0 text-[12.5px] font-medium leading-tight">{VERTICAL_LABELS[vertical]}</span>
+                <span className="min-w-0 text-[12.5px] font-medium leading-tight">{label}</span>
               </button>
             );
           })}

@@ -1,65 +1,97 @@
 "use client";
 
-import { Check, Lock, Sparkles } from "lucide-react";
+import { Check, Lock, Sparkles, Users } from "lucide-react";
+import { Chip, ChipRow } from "@/components/atoms/chip";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
-import { MODULE_LABELS, VERTICAL_LABELS, VERTICAL_RECIPES, type ModuleValue, type VerticalValue } from "@/lib/admin-catalogs";
-import { MODULE_DESCRIPTIONS, MODULE_ICONS } from "@/lib/onboarding/module-meta";
-import { INCLUDED_MODULES, PLANS, type Billing, type PlanKey } from "@/lib/plans/catalog";
-import { formatUsdCents, moduleMonthlyCents, modulesForVertical, quotePlan } from "@/lib/plans/quote";
+import type { ModuleValue, VerticalValue } from "@/lib/admin-catalogs";
+import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
+import type { Billing, PlanKey } from "@/lib/plans/catalog";
+import { activePlans, modulePriceCents, offeredModules, quote, verticalOf, type PricingConfig } from "@/lib/plans/pricing";
+import { formatUsdCents } from "@/lib/plans/quote";
 import { cn } from "@/lib/utils";
 
-const PLAN_ORDER: PlanKey[] = ["ESSENTIAL", "ELITE", "SIGNATURE"];
-
-export type PlanSelection = { plan: PlanKey; billing: Billing; selected: ModuleValue[] };
+export type PlanSelection = { plan: PlanKey; billing: Billing; selected: ModuleValue[]; tierId: string | null };
 
 /**
- * Paso "Plan y módulos": los tres planes con su precio en vivo (USD) y los
- * módulos que sirven al rubro (lo ajeno no aparece). Tocar un módulo de pago
- * estando en Essential pasa a Elite con ese módulo; en Signature van todos.
- * Pensado para caber sin desplazamiento en escritorio.
+ * Paso "Plan y módulos" del onboarding, con el catálogo que se configura en
+ * el Operations Center: planes activos con su precio en vivo (USD), los
+ * módulos que se ofrecen al rubro (lo planeado o ajeno no aparece), el
+ * tramo de clientes y el ciclo de pago. Tocar un módulo de pago estando en
+ * un plan sin módulos pasa al plan que sí los permite.
  */
 export function PlanPicker({
+  config,
   vertical,
   value,
   onChange,
 }: {
+  config: PricingConfig;
   vertical: VerticalValue;
   value: PlanSelection;
   onChange: (value: PlanSelection) => void;
 }) {
-  // Orden de lectura: incluidos, luego los de la receta del rubro, luego los generales.
-  const recipe = VERTICAL_RECIPES[vertical].modules as readonly ModuleValue[];
-  const rank = (m: ModuleValue) => (INCLUDED_MODULES.includes(m) ? 0 : recipe.includes(m) ? 1 : 2);
-  const modules = [...modulesForVertical(vertical)].sort((a, b) => rank(a) - rank(b));
-  const quoteFor = (plan: PlanKey) => quotePlan({ plan, vertical, billing: value.billing, selected: value.selected });
-  const active = quoteFor(value.plan);
+  const plans = activePlans(config);
+  const modules = offeredModules(config, vertical);
+  const tiers = [...config.tiers].sort((a, b) => a.order - b.order);
+  const tierId = value.tierId ?? tiers[0]?.id ?? null;
+  const current = plans.find((p) => p.key === value.plan) ?? plans[0];
+  const q = (plan: PlanKey) => quote(config, { plan, vertical, billing: value.billing, selected: value.selected, tierId });
+  const active = q(current?.key ?? value.plan);
   const activeSet = new Set(active.modules);
+  const upgrade = plans.find((p) => p.chargesModules && !p.includesAllModules);
+  const recommended = verticalOf(config, vertical)?.recommended ?? [];
+  const anyAnnual = plans.some((p) => p.annualDiscountPct > 0);
+  const annualPct = Math.max(0, ...plans.map((p) => p.annualDiscountPct));
 
-  const toggleModule = (module: ModuleValue) => {
-    if (INCLUDED_MODULES.includes(module) || value.plan === "SIGNATURE") return;
-    if (value.plan === "ESSENTIAL") {
-      onChange({ ...value, plan: "ELITE", selected: [...new Set([...value.selected, module])] });
+  const pickPlan = (key: PlanKey) => {
+    const p = plans.find((x) => x.key === key);
+    const selected = p?.chargesModules && !p.includesAllModules && value.selected.length === 0 ? [...recommended] : value.selected;
+    onChange({ ...value, plan: key, selected, tierId });
+  };
+
+  const toggleModule = (module: ModuleValue, included: boolean) => {
+    if (included || current?.includesAllModules) return;
+    if (!current?.chargesModules) {
+      if (upgrade) onChange({ ...value, plan: upgrade.key, selected: [...new Set([...value.selected, module])], tierId });
       return;
     }
     const on = value.selected.includes(module);
-    onChange({ ...value, selected: on ? value.selected.filter((m) => m !== module) : [...value.selected, module] });
+    onChange({ ...value, tierId, selected: on ? value.selected.filter((m) => m !== module) : [...value.selected, module] });
   };
 
   return (
     <div className="grid grid-cols-1 gap-5">
+      {tiers.length > 1 ? (
+        <section aria-labelledby="tier-title">
+          <h2 id="tier-title" className="mb-2 flex items-center gap-2 font-display text-[15px] font-semibold">
+            <Users aria-hidden="true" className="size-4 text-accent-text" /> ¿Cuántos clientes atiendes?
+          </h2>
+          <ChipRow className="flex-wrap">
+            {tiers.map((t) => (
+              <Chip key={t.id} selected={t.id === tierId} onClick={() => onChange({ ...value, tierId: t.id })}>
+                {t.label}
+                {t.priceUsdCents > 0 ? ` · +${formatUsdCents(t.priceUsdCents)}` : ""}
+              </Chip>
+            ))}
+          </ChipRow>
+        </section>
+      ) : null}
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <SegmentedControl
           ariaLabel="Ciclo de facturación"
           value={value.billing}
-          onChange={(billing) => onChange({ ...value, billing })}
+          onChange={(billing) => onChange({ ...value, billing, tierId })}
           options={[
             { value: "MONTHLY", label: "Mensual" },
             {
               value: "ANNUAL",
-              label: (
+              label: anyAnnual ? (
                 <>
-                  Anual <span className="rounded-sm bg-success-subtle px-1.5 py-0.5 text-[10.5px] font-bold text-success">−20 %</span>
+                  Anual <span className="rounded-sm bg-success-subtle px-1.5 py-0.5 text-[10.5px] font-bold text-success">−{annualPct} %</span>
                 </>
+              ) : (
+                "Anual"
               ),
             },
           ]}
@@ -67,27 +99,24 @@ export function PlanPicker({
         <p className="text-[12.5px] text-muted-foreground">Precios en USD · sin cobro todavía</p>
       </div>
 
-      <div role="radiogroup" aria-label="Plan" className="grid gap-2.5 sm:grid-cols-3">
-        {PLAN_ORDER.map((key) => {
-          const plan = PLANS[key];
-          const quote = quoteFor(key);
-          const selected = value.plan === key;
+      <div role="radiogroup" aria-label="Plan" className={cn("grid gap-2.5", plans.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
+        {plans.map((plan) => {
+          const selected = current?.key === plan.key;
+          const price = q(plan.key).monthlyCents;
           return (
             <button
-              key={key}
+              key={plan.key}
               type="button"
               role="radio"
               aria-checked={selected}
               data-press="card"
-              onClick={() => onChange({ ...value, plan: key })}
+              onClick={() => pickPlan(plan.key)}
               className={cn(
                 "relative flex flex-col rounded-lg border p-4 text-left transition-[border-color,box-shadow,background-color] duration-300 max-sm:flex-row max-sm:items-center max-sm:gap-3",
-                selected
-                  ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_3px_rgba(212,175,55,.22)]"
-                  : "border-border-input bg-surface hover:border-border-input-hover",
+                selected ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_3px_rgba(212,175,55,.22)]" : "border-border-input bg-surface hover:border-border-input-hover",
               )}
             >
-              {key === "ELITE" ? (
+              {plan.recommended ? (
                 <span className="absolute -top-2.5 left-3 inline-flex items-center gap-1 rounded-sm bg-ink px-2 py-0.5 text-[10.5px] font-semibold text-white dark:bg-accent dark:text-ink">
                   <Sparkles aria-hidden="true" className="size-3" /> Recomendado
                 </span>
@@ -97,7 +126,7 @@ export function PlanPicker({
                 <span className="text-[12px] text-muted-foreground sm:hidden">{plan.tagline}</span>
               </span>
               <span className="mt-2 flex items-baseline gap-1 max-sm:order-3 max-sm:mt-0">
-                <span className="font-display text-[26px] font-bold leading-none tabular-nums">{formatUsdCents(quote.monthlyCents)}</span>
+                <span className="font-display text-[26px] font-bold leading-none tabular-nums">{formatUsdCents(price)}</span>
                 <span className="text-[12px] text-muted-foreground">/mes</span>
               </span>
               <span className="mt-1.5 text-[12.5px] leading-5 text-muted-foreground max-sm:hidden">{plan.tagline}</span>
@@ -126,61 +155,54 @@ export function PlanPicker({
       <section aria-labelledby="plan-modules" className="min-w-0">
         <div className="mb-2.5 flex items-baseline justify-between gap-3">
           <h2 id="plan-modules" className="font-display text-[15px] font-semibold">
-            Módulos para {VERTICAL_LABELS[vertical].toLowerCase()}
+            Módulos para {verticalOf(config, vertical)?.label.toLowerCase() ?? "tu negocio"}
           </h2>
           <span className="text-[12px] text-muted-foreground">
-            {active.modules.length} de {modules.length} activos
+            {active.modules.filter((m) => m !== "dashboard").length} de {modules.length} activos
           </span>
         </div>
         <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
-          {modules.map((module) => {
-            const Icon = MODULE_ICONS[module];
-            const included = INCLUDED_MODULES.includes(module);
-            const on = activeSet.has(module);
-            const locked = value.plan === "ESSENTIAL" && !included;
-            const fixed = included || value.plan === "SIGNATURE";
-            const price = moduleMonthlyCents(module, vertical, value.plan === "ESSENTIAL" ? "ELITE" : value.plan);
+          {modules.map((m) => {
+            const Icon = MODULE_ICONS[m.module];
+            const on = activeSet.has(m.module);
+            const locked = !current?.chargesModules && !current?.includesAllModules && !m.included;
+            const fixed = m.included || !!current?.includesAllModules;
+            const price = modulePriceCents(config, m.module, vertical, current?.chargesModules || current?.includesAllModules ? current.key : (upgrade?.key ?? current?.key ?? value.plan));
             return (
-              <li key={module}>
+              <li key={m.module}>
                 <button
                   type="button"
                   aria-pressed={on}
                   aria-disabled={fixed || undefined}
-                  title={MODULE_DESCRIPTIONS[module]}
-                  onClick={() => toggleModule(module)}
+                  title={m.description}
+                  onClick={() => toggleModule(m.module, m.included)}
                   data-press=""
                   className={cn(
                     "flex w-full items-center gap-2.5 rounded-md border px-3 py-2 text-left transition-colors duration-200",
-                    on
-                      ? "border-border-input-hover bg-surface-muted"
-                      : "border-border-input bg-surface hover:border-border-input-hover",
+                    on ? "border-border-input-hover bg-surface-muted" : "border-border-input bg-surface hover:border-border-input-hover",
                     fixed && "cursor-default",
                   )}
                 >
                   <Icon aria-hidden="true" className={cn("size-4 shrink-0", on ? "text-accent-text" : "text-muted-foreground")} />
                   <span className="grid min-w-0 flex-1 leading-tight">
                     <span className={cn("truncate text-[13px] font-medium", !on && "text-muted-foreground")}>
-                      {MODULE_LABELS[module]}
+                      {m.label}
+                      {m.status === "BETA" ? <span className="ml-1 font-mono text-[10px] text-accent-text">beta</span> : null}
                     </span>
-                    {included ? (
+                    {m.included ? (
                       <span className="text-[11px] font-medium text-success">Incluido</span>
                     ) : locked ? (
                       <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
                         <Lock aria-hidden="true" className="size-3" />
-                        {formatUsdCents(price)}/mes con Elite
+                        {formatUsdCents(price)}/mes con {upgrade?.name ?? "un plan de pago"}
                       </span>
                     ) : (
-                      <span className={cn("font-mono text-[11px] tabular-nums", on ? "text-foreground" : "text-muted-foreground")}>
-                        +{formatUsdCents(price)}/mes
-                      </span>
+                      <span className={cn("font-mono text-[11px] tabular-nums", on ? "text-foreground" : "text-muted-foreground")}>+{formatUsdCents(price)}/mes</span>
                     )}
                   </span>
                   <span
                     aria-hidden="true"
-                    className={cn(
-                      "grid size-4 shrink-0 place-items-center rounded-[4px] border transition-colors",
-                      on ? "border-foreground bg-foreground text-background" : "border-border-input",
-                    )}
+                    className={cn("grid size-4 shrink-0 place-items-center rounded-[4px] border transition-colors", on ? "border-foreground bg-foreground text-background" : "border-border-input")}
                   >
                     {on ? <Check className="size-3" strokeWidth={3} /> : null}
                   </span>
@@ -190,10 +212,10 @@ export function PlanPicker({
           })}
         </ul>
         <p className="mt-3 text-[12.5px] text-muted-foreground">
-          {value.plan === "ESSENTIAL"
-            ? "Empiezas gratis con lo esencial. Toca un módulo para sumarlo con Elite."
-            : value.plan === "SIGNATURE"
-              ? "Signature incluye todos los módulos de tu rubro con 40 % de descuento en cada uno."
+          {!current?.chargesModules && !current?.includesAllModules
+            ? `Empiezas con lo esencial. Toca un módulo para sumarlo con ${upgrade?.name ?? "un plan de pago"}.`
+            : current?.includesAllModules
+              ? `${current.name} incluye todos los módulos de tu rubro${current.moduleDiscountPct ? ` con ${current.moduleDiscountPct} % de descuento en cada uno` : ""}.`
               : "Activa solo lo que usas; el precio se ajusta al instante."}
         </p>
       </section>

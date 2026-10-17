@@ -341,34 +341,8 @@ const ROLE_LABELS: Record<"SUPERADMIN" | "OWNER" | "STAFF", string> = {
   STAFF: "Equipo",
 };
 
-export const AUDIT_ACTION_LABELS: Record<string, string> = {
-  CREATE_TENANT: "Negocio creado",
-  SUSPEND_TENANT: "Negocio suspendido",
-  ACTIVATE_TENANT: "Negocio reactivado",
-  TOGGLE_MODULE: "Módulo actualizado",
-  EXPORT_TENANTS: "Exportación de negocios",
-  IMPERSONATE: "Acceso como negocio (impersonación)",
-  STAFF_INVITE: "Integrante invitado",
-  STAFF_ROLE_CHANGE: "Rol de integrante cambiado",
-  STAFF_DEACTIVATE: "Integrante desactivado",
-  STAFF_REACTIVATE: "Integrante reactivado",
-  ROLE_CREATE: "Rol creado",
-  ROLE_UPDATE: "Permisos de rol cambiados",
-  ROLE_DELETE: "Rol eliminado",
-  ACCOUNT_UPDATE: "Cuenta actualizada",
-  CONTACT_SAVE: "Contacto guardado",
-  CONTACT_DELETE: "Contacto eliminado",
-  CATALOG_UPDATE: "Catálogo de planes y módulos actualizado",
-  LEAD_SAVE: "Lead guardado",
-  LEAD_STAGE: "Lead cambió de etapa",
-  LEAD_CONVERT: "Lead convertido en negocio",
-  TICKET_SAVE: "Ticket actualizado",
-  TICKET_STATUS: "Ticket cambió de estado",
-  SUBSCRIPTION_SAVE: "Suscripción actualizada",
-  CHARGE_RECORD: "Cobro registrado",
-  CHARGE_CONFIRM: "Cobro confirmado",
-  CHARGE_REFUND: "Cobro reembolsado",
-};
+import { AUDIT_ACTION_LABELS } from "./audit-labels";
+export { AUDIT_ACTION_LABELS };
 
 /** Escapa los comodines de LIKE para que la búsqueda sea literal. */
 function escapeLike(input: string): string {
@@ -979,6 +953,7 @@ export function createAdminDb() {
         name: tenant.name,
         slug: tenant.slug,
         active: tenant.active,
+        vertical: tenant.vertical,
         modules: MODULES.map((moduleName) => ({
           moduleName,
           active: activeByName.get(moduleName) ?? false,

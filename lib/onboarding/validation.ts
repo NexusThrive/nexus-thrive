@@ -8,7 +8,7 @@
  */
 
 import type { Billing, PlanKey } from "@/lib/plans/catalog";
-import { resolvePlanModules } from "@/lib/plans/quote";
+import { defaultPricingConfig, resolveModules, signupVerticals, type PricingConfig } from "@/lib/plans/pricing";
 import {
   isVertical,
   isModule,
@@ -79,7 +79,8 @@ export function validateAdaptiveOnboarding(raw: {
   selectedModules: unknown;
   plan?: unknown;
   billing?: unknown;
-}): AdaptiveValidationResult {
+  customerTierId?: unknown;
+}, config: PricingConfig = defaultPricingConfig()): AdaptiveValidationResult {
   const errors: OnboardingFieldErrors = {};
 
   // --- perfil ----------------------------------------------------------
@@ -193,11 +194,23 @@ export function validateAdaptiveOnboarding(raw: {
   // `dashboard` es la landing de `(app)` y siempre queda activo.
   selectedModules.add("dashboard");
   const modules = vertical
-    ? resolvePlanModules(plan, vertical, [...selectedModules])
+    ? resolveModules(config, plan, vertical, [...selectedModules])
     : sortModules([...selectedModules]);
   if (modules.length === 0) {
     errors.selectedModules = "Selecciona al menos un módulo.";
   }
+
+  // Rubro habilitado para registrarse (catálogo del Operations Center).
+  if (vertical && !signupVerticals(config).some((v) => v.vertical === vertical)) {
+    errors.vertical = "Este rubro todavía no está disponible para registrarse.";
+  }
+
+  // Tramo de clientes: debe existir; sin elegir, el primero (el más pequeño).
+  const tiers = [...config.tiers].sort((a, b) => a.order - b.order);
+  const customerTierId =
+    typeof raw.customerTierId === "string" && tiers.some((t) => t.id === raw.customerTierId)
+      ? raw.customerTierId
+      : (tiers[0]?.id ?? null);
 
   if (
     !tenantType ||
@@ -237,6 +250,7 @@ export function validateAdaptiveOnboarding(raw: {
       selectedModules: modules,
       plan,
       billing,
+      customerTierId,
     },
   };
 }

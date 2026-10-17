@@ -4,7 +4,8 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { db } from "@/prisma/db";
 import { validateAdaptiveOnboarding } from "@/lib/onboarding/validation";
 import { suggestSlug } from "@/lib/onboarding/slug";
-import { quotePlan } from "@/lib/plans/quote";
+import { quote as quotePlan } from "@/lib/plans/pricing";
+import { loadPricingConfig } from "@/lib/plans/settings";
 import type {
   AdaptiveOnboardingInput,
   ModuleValue,
@@ -73,7 +74,9 @@ export async function completeAdaptiveOnboardingAction(
   }
 
   // 2) Validación estricta y normalización ---------------------------
-  const result = validateAdaptiveOnboarding(input);
+  // Catálogo vigente (Operations Center): rubros, módulos, planes y tramos.
+  const pricing = await loadPricingConfig();
+  const result = validateAdaptiveOnboarding(input, pricing);
   if (!result.ok) {
     return {
       status: "error",
@@ -87,9 +90,17 @@ export async function completeAdaptiveOnboardingAction(
   // hay cobro: se guarda la elección y el precio mensual que se le mostró.
   const plan = values.plan ?? "ESSENTIAL";
   const billing = values.billing ?? "MONTHLY";
-  const quote = quotePlan({ plan, vertical: values.vertical, billing, selected: values.selectedModules });
+  const quote = quotePlan(pricing, {
+    plan,
+    vertical: values.vertical,
+    billing,
+    selected: values.selectedModules,
+    tierId: values.customerTierId ?? null,
+  });
   const planFields = {
     plan,
+    customerTierId: quote.tierId,
+    contractedModules: quote.modules,
     billingCycle: billing,
     planMonthlyUsdCents: quote.monthlyCents,
     planSelectedAt: Temporal.Instant.fromEpochMilliseconds(Date.now()),

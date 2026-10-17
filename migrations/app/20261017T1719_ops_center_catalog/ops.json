@@ -1,0 +1,284 @@
+[
+  {
+    "id": "table.CustomerTierSetting",
+    "label": "Create table \"CustomerTierSetting\"",
+    "summary": "Creates table \"CustomerTierSetting\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "CustomerTierSetting"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"CustomerTierSetting\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CustomerTierSetting\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"CustomerTierSetting\"",
+        "sql": "CREATE TABLE \"public\".\"CustomerTierSetting\" (\n  \"id\" text NOT NULL,\n  \"label\" text NOT NULL,\n  \"maxCustomers\" int4,\n  \"order\" int4 NOT NULL,\n  \"priceUsdCents\" int4 NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"CustomerTierSetting\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CustomerTierSetting\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ModuleSetting",
+    "label": "Create table \"ModuleSetting\"",
+    "summary": "Creates table \"ModuleSetting\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ModuleSetting"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ModuleSetting\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ModuleSetting\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ModuleSetting\"",
+        "sql": "CREATE TABLE \"public\".\"ModuleSetting\" (\n  \"description\" text NOT NULL,\n  \"included\" bool NOT NULL,\n  \"label\" text NOT NULL,\n  \"module\" text NOT NULL,\n  \"order\" int4 NOT NULL,\n  \"priceUsdCents\" int4 NOT NULL,\n  \"status\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"module\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ModuleSetting\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ModuleSetting\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.PlanSetting",
+    "label": "Create table \"PlanSetting\"",
+    "summary": "Creates table \"PlanSetting\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "PlanSetting"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"PlanSetting\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PlanSetting\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"PlanSetting\"",
+        "sql": "CREATE TABLE \"public\".\"PlanSetting\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"annualDiscountPct\" int4 NOT NULL,\n  \"basePriceUsdCents\" int4 NOT NULL,\n  \"chargesModules\" bool NOT NULL,\n  \"features\" text[] NOT NULL,\n  \"includesAllModules\" bool NOT NULL,\n  \"key\" text NOT NULL,\n  \"moduleDiscountPct\" int4 NOT NULL,\n  \"name\" text NOT NULL,\n  \"order\" int4 NOT NULL,\n  \"recommended\" bool DEFAULT false NOT NULL,\n  \"tagline\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"key\"),\n  CONSTRAINT \"PlanSetting_features_elem_not_null_1a661718\" CHECK (array_position(\"features\", NULL) IS NULL)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"PlanSetting\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PlanSetting\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.VerticalSetting",
+    "label": "Create table \"VerticalSetting\"",
+    "summary": "Creates table \"VerticalSetting\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "VerticalSetting"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"VerticalSetting\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"VerticalSetting\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"VerticalSetting\"",
+        "sql": "CREATE TABLE \"public\".\"VerticalSetting\" (\n  \"dashboardTemplate\" text,\n  \"label\" text NOT NULL,\n  \"modules\" text[] NOT NULL,\n  \"order\" int4 NOT NULL,\n  \"priceFactorPct\" int4 NOT NULL,\n  \"recommended\" text[] NOT NULL,\n  \"signupEnabled\" bool NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"vertical\" text NOT NULL,\n  PRIMARY KEY (\"vertical\"),\n  CONSTRAINT \"VerticalSetting_modules_elem_not_null_749d77ec\" CHECK (array_position(\"modules\", NULL) IS NULL),\n  CONSTRAINT \"VerticalSetting_recommended_elem_not_null_226dce52\" CHECK (array_position(\"recommended\", NULL) IS NULL)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"VerticalSetting\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"VerticalSetting\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.contractedModules",
+    "label": "Add column \"contractedModules\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "contractedModules",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"contractedModules\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "contractedModules"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"contractedModules\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"contractedModules\" text[]"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"contractedModules\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "contractedModules"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.customerTierId",
+    "label": "Add column \"customerTierId\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "customerTierId",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"customerTierId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "customerTierId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"customerTierId\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"customerTierId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"customerTierId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "customerTierId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.Tenant.Tenant_contractedModules_elem_not_null_6b619961",
+    "label": "Add check constraint \"Tenant_contractedModules_elem_not_null_6b619961\" on \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "Tenant_contractedModules_elem_not_null_6b619961",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Tenant_contractedModules_elem_not_null_6b619961\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Tenant_contractedModules_elem_not_null_6b619961",
+          "public",
+          "\"public\".\"Tenant\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"Tenant_contractedModules_elem_not_null_6b619961\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD CONSTRAINT \"Tenant_contractedModules_elem_not_null_6b619961\" CHECK (array_position(\"contractedModules\", NULL) IS NULL)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Tenant_contractedModules_elem_not_null_6b619961\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Tenant_contractedModules_elem_not_null_6b619961",
+          "public",
+          "\"public\".\"Tenant\""
+        ]
+      }
+    ]
+  }
+]

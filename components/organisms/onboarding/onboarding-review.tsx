@@ -3,8 +3,9 @@ import type { ReactNode } from "react";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { MODULE_LABELS, VERTICAL_LABELS, type ModuleValue, type VerticalValue } from "@/lib/admin-catalogs";
 import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
-import { PLANS, type Billing, type PlanKey } from "@/lib/plans/catalog";
-import { formatUsdCents, type PlanQuote } from "@/lib/plans/quote";
+import type { Billing, PlanKey } from "@/lib/plans/catalog";
+import type { Quote } from "@/lib/plans/pricing";
+import { formatUsdCents } from "@/lib/plans/quote";
 
 export type ReviewData = {
   tenantType: "INDIVIDUAL" | "COMPANY" | null;
@@ -17,8 +18,11 @@ export type ReviewData = {
   address?: string;
   city: string;
   plan: PlanKey;
+  planName: string;
   billing: Billing;
-  quote: PlanQuote;
+  /** Tramo de clientes elegido. */
+  tierLabel?: string;
+  quote: Quote;
 };
 
 function Row({ icon: Icon, label, value }: { icon: typeof Store; label: string; value: ReactNode }) {
@@ -85,10 +89,11 @@ export function OnboardingReview({
         <div className="flex items-end justify-between gap-3 py-3">
           <div>
             <p className="font-display text-[17px] font-bold">
-              Thrive <span className="text-accent-text">{PLANS[data.plan].name}</span>
+              Thrive <span className="text-accent-text">{data.planName}</span>
             </p>
             <p className="text-[12.5px] text-muted-foreground">
-              {data.billing === "ANNUAL" ? `Anual · ${formatUsdCents(data.quote.yearlyCents)} al año` : "Mensual"} · sin cobro todavía
+              {data.billing === "ANNUAL" ? `Anual · ${formatUsdCents(data.quote.yearlyCents)} al año` : "Mensual"}
+              {data.tierLabel ? ` · ${data.tierLabel}` : ""} · sin cobro todavía
             </p>
           </div>
           <p className="flex items-baseline gap-1">
@@ -97,7 +102,7 @@ export function OnboardingReview({
           </p>
         </div>
         <ul className="flex flex-wrap gap-1.5 border-t border-border py-3">
-          {data.quote.modules.map((m: ModuleValue) => {
+          {data.quote.modules.filter((m: ModuleValue) => m !== "dashboard").map((m: ModuleValue) => {
             const Icon = MODULE_ICONS[m];
             return (
               <li key={m} className="inline-flex items-center gap-1.5 rounded-sm border border-border bg-surface-muted px-2 py-1 text-[12px] font-medium">

@@ -21,8 +21,8 @@ type OpsItem = {
   label: string;
   href: string;
   icon: LucideIcon;
-  /** Permiso para verlo (sin permiso = visible para todo el equipo). */
-  permission?: PermissionKey;
+  /** Permiso para verlo; con una lista basta cualquiera (sin permiso = todo el equipo). */
+  permission?: PermissionKey | PermissionKey[];
   /** Aparece solo cuando su fase ya está construida. */
   ready: boolean;
 };
@@ -53,7 +53,7 @@ export const OPS_NAV: { label: string; items: OpsItem[] }[] = [
   {
     label: "Administración",
     items: [
-      { key: "planes", label: "Planes y módulos", href: "/admin/planes", icon: LayoutGrid, permission: "catalog.edit", ready: false },
+      { key: "planes", label: "Planes y módulos", href: "/admin/planes", icon: LayoutGrid, permission: ["catalog.edit", "pricing.edit"], ready: true },
       { key: "facturacion", label: "Facturación", href: "/admin/facturacion", icon: CreditCard, permission: "billing.view", ready: false },
       { key: "equipo", label: "Equipo y permisos", href: "/admin/equipo", icon: UsersRound, permission: "team.invite", ready: true },
       { key: "informes", label: "Informes", href: "/admin/informes", icon: LineChart, permission: "billing.view", ready: false },
@@ -70,7 +70,7 @@ export function opsNavFor(permissions: readonly string[]): NavGroup[] {
   return OPS_NAV.map((g) => ({
     label: g.label,
     items: g.items
-      .filter((i) => i.ready && (!i.permission || permissions.includes(i.permission)))
+      .filter((i) => i.ready && (!i.permission || [i.permission].flat().some((p) => permissions.includes(p))))
       .map(({ key, label, href, icon }) => ({ key, label, href, icon })),
   })).filter((g) => g.items.length > 0);
 }

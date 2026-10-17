@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { quotePlan } from "@/lib/plans/quote";
+import { defaultPricingConfig, quote } from "@/lib/plans/pricing";
 import { OnboardingReview } from "./onboarding-review";
 
 const meta = {
@@ -19,7 +19,9 @@ const meta = {
       city: "Cartagena",
       plan: "ELITE",
       billing: "ANNUAL",
-      quote: quotePlan({ plan: "ELITE", vertical: "construction", billing: "ANNUAL", selected: ["quotes", "whatsapp"] }),
+      planName: "Elite",
+      tierLabel: "Hasta 500 clientes",
+      quote: quote(defaultPricingConfig(), { plan: "ELITE", vertical: "construction", billing: "ANNUAL", selected: ["quotes", "whatsapp"], tierId: "tier-500" }),
     },
   },
 } satisfies Meta<typeof OnboardingReview>;

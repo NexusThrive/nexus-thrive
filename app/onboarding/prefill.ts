@@ -34,6 +34,7 @@ type TenantForDraft = {
   modules: { moduleName: string; active: boolean }[];
   plan?: OnboardingDraft["plan"];
   billingCycle?: OnboardingDraft["billing"];
+  customerTierId?: string | null;
 };
 
 function tenantToDraft(tenant: TenantForDraft): OnboardingDraft {
@@ -54,6 +55,7 @@ function tenantToDraft(tenant: TenantForDraft): OnboardingDraft {
     ),
     plan: tenant.plan ?? "ESSENTIAL",
     billing: tenant.billingCycle ?? "MONTHLY",
+    customerTierId: tenant.customerTierId ?? null,
   };
 }
 
