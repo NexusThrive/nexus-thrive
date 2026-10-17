@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Switch } from "@/components/atoms/switch";
+import { flash } from "@/lib/motion";
 import type { LucideIcon } from "lucide-react";
 import { HandCoins, Receipt } from "lucide-react";
 import { IconTile } from "@/components/atoms/icon-tile";
@@ -32,11 +35,36 @@ const FILTERS: SegmentedOption<Filter>[] = [
 /**
  * Actividad reciente (Client Component): `SegmentedControl` de 3 opciones,
  * filas de 60 px con icono semántico, entrada escalonada y estado vacío con
- * la N en contorno. Gastos en #B3261E; ingresos en tinta.
+ * la N en contorno. Gastos en #B3261E; ingresos en tinta. Con "En vivo"
+ * (activo por defecto) la página se actualiza cada 30 s con la pestaña
+ * visible y los movimientos que llegan destellan en oro (DAT·05).
  */
 export default function RecentActivity({ items }: RecentActivityProps) {
   const [filter, setFilter] = useState<Filter>("all");
+  const [live, setLive] = useState(true);
   const listRef = useRef<HTMLUListElement>(null);
+  const seen = useRef<Set<string> | null>(null);
+  const router = useRouter();
+  const liveId = useId();
+
+  useEffect(() => {
+    if (!live) return;
+    const id = window.setInterval(() => {
+      if (document.visibilityState === "visible") router.refresh();
+    }, 30_000);
+    return () => window.clearInterval(id);
+  }, [live, router]);
+
+  // Lo que llegó desde la última vez destella.
+  useEffect(() => {
+    const ids = new Set(items.map((i) => i.id));
+    const before = seen.current;
+    seen.current = ids;
+    if (!before) return;
+    for (const id of ids) {
+      if (!before.has(id)) flash(listRef.current?.querySelector(`[data-id="${CSS.escape(id)}"]`));
+    }
+  }, [items]);
 
   const visible =
     filter === "all" ? items : items.filter((item) => item.type === filter);
@@ -63,12 +91,21 @@ export default function RecentActivity({ items }: RecentActivityProps) {
           Actividad reciente
         </h2>
 
-        <SegmentedControl
-          ariaLabel="Filtrar actividad"
-          options={FILTERS}
-          value={filter}
-          onChange={setFilter}
-        />
+        <div className="flex items-center gap-3">
+          <label htmlFor={liveId} className="flex items-center gap-2 text-[13px] text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              {live ? <i aria-hidden="true" className="size-1.5 bg-success motion-safe:animate-[nx-pulse_1.6s_ease-in-out_infinite]" /> : null}
+              En vivo
+            </span>
+            <Switch id={liveId} checked={live} onCheckedChange={setLive} />
+          </label>
+          <SegmentedControl
+            ariaLabel="Filtrar actividad"
+            options={FILTERS}
+            value={filter}
+            onChange={setFilter}
+          />
+        </div>
       </header>
 
       {visible.length === 0 ? (
@@ -82,7 +119,7 @@ export default function RecentActivity({ items }: RecentActivityProps) {
             const Icon = ACTIVITY_ICONS[item.type];
             const isExpense = item.type === "expense";
             return (
-              <li key={item.id} className="nx-row">
+              <li key={item.id} data-id={item.id} className="nx-row">
                 <ListItem
                   leading={
                     <IconTile size="sm" tone={isExpense ? "gold" : "neutral"}>
