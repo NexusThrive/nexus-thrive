@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { buttonVariants } from "@/components/atoms/button-variants";
 import { useActionState, useCallback, useEffect, useState } from "react";
-import { useSignIn } from "@clerk/nextjs";
 import {
   AtSign,
   CheckCircle2,
@@ -31,12 +32,12 @@ import type { TenantDetail } from "@/lib/admin-db";
 import { cn } from "@/lib/utils";
 import {
   activateTenantAction,
-  createImpersonationAction,
   getTenantDetailAction,
   toggleTenantModuleAction,
   type AdminFormState,
 } from "../actions";
 import TenantStatusBadge from "./tenant-status-badge";
+import { useImpersonate } from "./use-impersonate";
 import SuspendDialog from "./suspend-dialog";
 
 const IDLE: AdminFormState = { status: "idle" };
@@ -64,12 +65,6 @@ export default function TenantDrawer({
 }) {
   const [detail, setDetail] = useState<TenantDetail | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>("resumen");
-
-  const { signIn } = useSignIn();
-  const [impersonating, setImpersonating] = useState(false);
-  const [impersonationError, setImpersonationError] = useState<string | null>(
-    null,
-  );
 
   const [moduleState, moduleAction, modulePending] = useActionState(
     toggleTenantModuleAction,
@@ -105,45 +100,9 @@ export default function TenantDrawer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [moduleState.status, activateState.status]);
 
+  const { impersonate, pending: impersonating, error: impersonationError } = useImpersonate();
   const handleImpersonate = async () => {
-    if (!tenantId) return;
-    setImpersonating(true);
-    setImpersonationError(null);
-    try {
-      const result = await createImpersonationAction(tenantId);
-      if (result.status !== "ok" || !result.ticket) {
-        setImpersonationError(result.message ?? "No se pudo impersonar.");
-        return;
-      }
-      // Clerk 7 (signals): ticket → finalize, que activa la sesión y navega.
-      const ticketAttempt = await signIn.ticket({ ticket: result.ticket });
-      if (ticketAttempt.error) {
-        setImpersonationError(
-          ticketAttempt.error.longMessage ??
-            ticketAttempt.error.message ??
-            "No se pudo validar el ticket de acceso.",
-        );
-        return;
-      }
-      const target = result.url ?? "/";
-      const finalized = await signIn.finalize({
-        navigate: ({ decorateUrl }) => {
-          window.location.assign(decorateUrl(target));
-        },
-      });
-      if (finalized.error) {
-        setImpersonationError(
-          finalized.error.longMessage ??
-            finalized.error.message ??
-            "No se pudo completar el cambio de sesión.",
-        );
-      }
-    } catch (error) {
-      console.error("[admin] impersonate:", error);
-      setImpersonationError("No se pudo iniciar la impersonación.");
-    } finally {
-      setImpersonating(false);
-    }
+    if (tenantId) await impersonate(tenantId);
   };
 
   const visual = detail ? getVerticalIcon(detail.vertical) : null;
@@ -194,6 +153,9 @@ export default function TenantDrawer({
               </div>
 
               <div className="mt-4 flex flex-wrap gap-2">
+                <Link href={`/admin/negocios/${detail.id}`} className={buttonVariants({ size: "sm" })}>
+                  Ver ficha 360°
+                </Link>
                 {detail.active ? (
                   <SuspendDialog
                     tenantId={detail.id}
@@ -305,7 +267,7 @@ function Stat({
   );
 }
 
-function ResumenTab({ detail }: { detail: TenantDetail }) {
+export function ResumenTab({ detail }: { detail: TenantDetail }) {
   const { metrics } = detail;
   const ecosystem = [
     {
@@ -469,7 +431,7 @@ function InfoRow({ label, value }: { label: string; value: string | null }) {
   );
 }
 
-function UsuariosTab({ detail }: { detail: TenantDetail }) {
+export function UsuariosTab({ detail }: { detail: TenantDetail }) {
   if (detail.users.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">

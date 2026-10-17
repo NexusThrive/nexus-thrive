@@ -1,0 +1,491 @@
+[
+  {
+    "id": "table.StaffMember",
+    "label": "Create table \"StaffMember\"",
+    "summary": "Creates table \"StaffMember\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "StaffMember"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"StaffMember\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StaffMember\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"StaffMember\"",
+        "sql": "CREATE TABLE \"public\".\"StaffMember\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"clerkUserId\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"invitedById\" text,\n  \"joinedAt\" timestamptz,\n  \"lastSeenAt\" timestamptz,\n  \"name\" text,\n  \"roleId\" text NOT NULL,\n  \"title\" text,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"StaffMember\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StaffMember\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.StaffRole",
+    "label": "Create table \"StaffRole\"",
+    "summary": "Creates table \"StaffRole\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "StaffRole"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"StaffRole\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StaffRole\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"StaffRole\"",
+        "sql": "CREATE TABLE \"public\".\"StaffRole\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text,\n  \"id\" text NOT NULL,\n  \"key\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"permissions\" text[] NOT NULL,\n  \"system\" bool DEFAULT false NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"StaffRole_permissions_elem_not_null_318e2952\" CHECK (array_position(\"permissions\", NULL) IS NULL)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"StaffRole\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StaffRole\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.TenantContact",
+    "label": "Create table \"TenantContact\"",
+    "summary": "Creates table \"TenantContact\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "TenantContact"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"TenantContact\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TenantContact\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"TenantContact\"",
+        "sql": "CREATE TABLE \"public\".\"TenantContact\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text,\n  \"hours\" text,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"notes\" text,\n  \"phone\" text,\n  \"preferredChannel\" text,\n  \"purpose\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"whatsapp\" text,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"TenantContact\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TenantContact\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.accountManagerId",
+    "label": "Add column \"accountManagerId\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "accountManagerId",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"accountManagerId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "accountManagerId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"accountManagerId\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"accountManagerId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"accountManagerId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "accountManagerId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.accountStage",
+    "label": "Add column \"accountStage\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "accountStage",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"accountStage\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "accountStage"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"accountStage\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"accountStage\" text DEFAULT 'ACTIVE' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"accountStage\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "accountStage"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.StaffMember.StaffMember_clerkUserId_key",
+    "label": "Add unique constraint on \"StaffMember\" (clerkUserId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "StaffMember_clerkUserId_key",
+        "table": "StaffMember"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"StaffMember_clerkUserId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StaffMember_clerkUserId_key",
+          "public",
+          "\"public\".\"StaffMember\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"StaffMember_clerkUserId_key\"",
+        "sql": "ALTER TABLE \"public\".\"StaffMember\" ADD CONSTRAINT \"StaffMember_clerkUserId_key\" UNIQUE (\"clerkUserId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"StaffMember_clerkUserId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StaffMember_clerkUserId_key",
+          "public",
+          "\"public\".\"StaffMember\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.StaffMember.StaffMember_email_key",
+    "label": "Add unique constraint on \"StaffMember\" (email)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "StaffMember_email_key",
+        "table": "StaffMember"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"StaffMember_email_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StaffMember_email_key",
+          "public",
+          "\"public\".\"StaffMember\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"StaffMember_email_key\"",
+        "sql": "ALTER TABLE \"public\".\"StaffMember\" ADD CONSTRAINT \"StaffMember_email_key\" UNIQUE (\"email\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"StaffMember_email_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StaffMember_email_key",
+          "public",
+          "\"public\".\"StaffMember\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.StaffRole.StaffRole_key_key",
+    "label": "Add unique constraint on \"StaffRole\" (key)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "StaffRole_key_key",
+        "table": "StaffRole"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"StaffRole_key_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StaffRole_key_key",
+          "public",
+          "\"public\".\"StaffRole\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"StaffRole_key_key\"",
+        "sql": "ALTER TABLE \"public\".\"StaffRole\" ADD CONSTRAINT \"StaffRole_key_key\" UNIQUE (\"key\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"StaffRole_key_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StaffRole_key_key",
+          "public",
+          "\"public\".\"StaffRole\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.Tenant.Tenant_accountStage_check_8f6f0190",
+    "label": "Add check constraint \"Tenant_accountStage_check_8f6f0190\" on \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "Tenant_accountStage_check_8f6f0190",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Tenant_accountStage_check_8f6f0190\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Tenant_accountStage_check_8f6f0190",
+          "public",
+          "\"public\".\"Tenant\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"Tenant_accountStage_check_8f6f0190\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD CONSTRAINT \"Tenant_accountStage_check_8f6f0190\" CHECK (\"accountStage\" IN ('ONBOARDING', 'ACTIVE', 'CANCELLED', 'ARCHIVED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Tenant_accountStage_check_8f6f0190\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Tenant_accountStage_check_8f6f0190",
+          "public",
+          "\"public\".\"Tenant\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StaffMember.StaffMember_roleId_idx_ffccc9a4",
+    "label": "Create index \"StaffMember_roleId_idx_ffccc9a4\" on \"StaffMember\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StaffMember_roleId_idx_ffccc9a4",
+        "table": "StaffMember"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StaffMember_roleId_idx_ffccc9a4\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StaffMember_roleId_idx_ffccc9a4\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StaffMember_roleId_idx_ffccc9a4\"",
+        "sql": "CREATE INDEX \"StaffMember_roleId_idx_ffccc9a4\" ON \"public\".\"StaffMember\" (\"roleId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StaffMember_roleId_idx_ffccc9a4\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StaffMember_roleId_idx_ffccc9a4\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.TenantContact.TenantContact_tenantId_idx_c93ed4f1",
+    "label": "Create index \"TenantContact_tenantId_idx_c93ed4f1\" on \"TenantContact\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "TenantContact_tenantId_idx_c93ed4f1",
+        "table": "TenantContact"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"TenantContact_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TenantContact_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"TenantContact_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"TenantContact_tenantId_idx_c93ed4f1\" ON \"public\".\"TenantContact\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"TenantContact_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TenantContact_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StaffMember.StaffMember_roleId_fkey",
+    "label": "Add foreign key \"StaffMember_roleId_fkey\" on \"StaffMember\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StaffMember_roleId_fkey",
+        "table": "StaffMember"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StaffMember_roleId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StaffMember_roleId_fkey",
+          "public",
+          "\"public\".\"StaffMember\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StaffMember_roleId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StaffMember\"\nADD CONSTRAINT \"StaffMember_roleId_fkey\"\nFOREIGN KEY (\"roleId\")\nREFERENCES \"public\".\"StaffRole\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StaffMember_roleId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StaffMember_roleId_fkey",
+          "public",
+          "\"public\".\"StaffMember\""
+        ]
+      }
+    ]
+  }
+]

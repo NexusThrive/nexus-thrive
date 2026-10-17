@@ -6,6 +6,16 @@ enum Role {
   STAFF
 }
 
+/// Etapa comercial de una cuenta en el Operations Center. Distinta del
+/// estado de servicio (`Tenant.active` + `suspendedReason`): un problema de
+/// pago o técnico no es una cancelación comercial.
+enum AccountStage {
+  ONBOARDING
+  ACTIVE
+  CANCELLED
+  ARCHIVED
+}
+
 /// Plan de NEXUS elegido en el onboarding (Thrive Essential / Elite / Signature).
 enum TenantPlan {
   /// Gratis: módulos base para conocer NEXUS.
@@ -222,6 +232,9 @@ model Tenant {
   /// Precio mensual en centavos de USD (0 en Essential).
   planMonthlyUsdCents Int          @default(0)
   planSelectedAt      DateTime?
+  /// Operations Center: etapa comercial y responsable de cuenta (StaffMember.id).
+  accountStage     AccountStage @default(ACTIVE)
+  accountManagerId String?
   /// Métodos de pago aceptados (Paso 4 del onboarding; catálogo PaymentProvider).
   /// Nullable en DB: un tenant nuevo aún no los configuró; el código normaliza a [].
   paymentMethods    PaymentProvider[]?
@@ -1146,4 +1159,62 @@ model FieldLogEntry {
   @@index([tenantId])
   @@index([logId])
   @@index([tenantId, entryDate])
+}
+
+
+/// Rol del equipo interno de NEXUS (Operations Center). Los permisos son
+/// claves controladas por `lib/ops/permissions.ts`; `system` = rol base que
+/// no se puede borrar (sí editar, salvo el de Propietario).
+model StaffRole {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  name        String
+  description String?
+  permissions String[]
+  system      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   temporal.updatedAt()
+
+  members StaffMember[]
+}
+
+/// Integrante del equipo NEXUS. No pertenece a ningún negocio: su acceso al
+/// panel sale de su rol. Se invita por correo; `clerkUserId` se completa la
+/// primera vez que entra con ese correo.
+model StaffMember {
+  id          String    @id @default(uuid())
+  clerkUserId String?   @unique
+  email       String    @unique
+  name        String?
+  title       String?
+  roleId      String
+  role        StaffRole @relation(fields: [roleId], references: [id])
+  active      Boolean   @default(true)
+  invitedById String?
+  joinedAt    DateTime?
+  lastSeenAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   temporal.updatedAt()
+
+  @@index([roleId])
+}
+
+/// Contactos de un negocio para el equipo NEXUS (no son clientes del
+/// negocio): para qué sirve cada canal y cuándo contactarlo.
+model TenantContact {
+  id               String   @id @default(uuid())
+  tenantId         String
+  name             String
+  /// Dueño, administrativo, técnico, comercial…
+  purpose          String
+  phone            String?
+  whatsapp         String?
+  email            String?
+  preferredChannel String?
+  hours            String?
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        temporal.updatedAt()
+
+  @@index([tenantId])
 }
