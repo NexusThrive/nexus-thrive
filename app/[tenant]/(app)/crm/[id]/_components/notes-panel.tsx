@@ -9,6 +9,7 @@ import { cn } from "@/lib/cn";
 import { NOTE_MAX_LENGTH } from "@/lib/customer-notes";
 import { createCustomerNoteAction } from "../actions";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { labelClasses } from "@/components/atoms/input";
 
 const INITIAL_STATE = { status: "idle" as const };
 
@@ -51,7 +52,7 @@ export default function NotesPanel({
 
         <label
           htmlFor="note-content"
-          className="block text-sm font-medium text-foreground/80"
+          className={labelClasses}
         >
           Nueva nota
         </label>

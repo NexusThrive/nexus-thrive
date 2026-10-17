@@ -73,27 +73,31 @@ export const clerkAppearance = {
     fontSize: "14px",
   },
   elements: {
-    rootBox: "w-full",
-    cardBox: "w-full max-w-none border-0 bg-transparent shadow-none",
-    card: "w-full gap-[18px] border-0 bg-transparent p-0 shadow-none",
+    // Clerk recorta con overflow:hidden y sus campos dibujan el borde con una
+    // sombra que cae fuera del contenedor: sin esto se corta el borde izquierdo.
+    rootBox: "w-full overflow-visible",
+    cardBox: "w-full max-w-none overflow-visible! border-0 bg-transparent shadow-none!",
+    card: "w-full gap-[18px] overflow-visible! border-0 bg-transparent p-0 shadow-none!",
+    main: "overflow-visible!",
+    form: "overflow-visible!",
     header: "gap-1.5 items-start text-left",
     headerTitle: "font-display text-[clamp(24px,5vw,28px)] font-bold leading-tight tracking-[-0.02em] text-foreground",
     headerSubtitle: "text-[14.5px] text-muted-foreground",
     socialButtons: "grid gap-2 [grid-template-columns:repeat(auto-fit,minmax(140px,1fr))]!",
     socialButtonsBlockButton:
-      "h-[42px] rounded-md border border-border-strong bg-surface text-[13.5px] font-medium text-foreground shadow-none transition-colors hover:border-border-input hover:bg-surface-muted",
+      "h-[42px] rounded-md border border-border-input bg-surface text-[13.5px] font-medium text-foreground shadow-none! transition-colors hover:border-border-input-hover hover:bg-surface-muted",
     socialButtonsBlockButtonText: "font-medium",
     dividerLine: "bg-border",
     dividerText: "text-[12.5px] text-muted-foreground",
     formFieldLabel: "text-[13px] font-medium text-foreground",
     formFieldAction: "text-[12.5px] font-medium text-accent-text hover:underline",
     formFieldInput:
-      "h-11 rounded-md border border-border-input bg-surface px-3 text-[15px] text-foreground shadow-none transition-[border-color,box-shadow] focus:border-ring focus:shadow-[0_0_0_3px_rgba(212,175,55,.2)] focus:outline-none",
+      "h-11 rounded-md border border-border-input bg-surface px-3 text-[15px] text-foreground shadow-none! transition-[border-color,box-shadow] hover:border-border-input-hover focus:border-ring focus:shadow-[0_0_0_3px_rgba(212,175,55,.2)]! focus:outline-none",
     formFieldInputShowPasswordButton: "text-muted-foreground hover:text-foreground",
     formFieldErrorText: "text-[12.5px] text-danger",
     formFieldHintText: "text-xs text-muted-foreground",
     formButtonPrimary:
-      "h-[46px] rounded-md bg-primary bg-none text-sm font-semibold normal-case text-primary-foreground shadow-none transition-[filter] hover:brightness-[1.2] active:scale-[.98]",
+      "h-[46px] rounded-md bg-primary bg-none! text-sm font-semibold normal-case text-primary-foreground shadow-none! transition-[filter] after:hidden hover:brightness-[1.2] active:scale-[.98]",
     formResendCodeLink: "text-[13px] font-semibold text-accent-text",
     otpCodeFieldInput:
       "h-14 w-full rounded-md border border-border-input bg-surface font-display text-2xl font-bold tabular-nums text-foreground caret-[var(--nx-gold-500)] focus:border-ring focus:shadow-[0_0_0_3px_rgba(212,175,55,.2)]",

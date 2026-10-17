@@ -31,6 +31,7 @@ import Modal from "@/components/organisms/modal";
 import { ApuCategoryBadge } from "@/components/molecules/quote-badges";
 import { fieldClasses, inputClasses, labelClasses } from "@/components/atoms/input";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { cn } from "@/lib/utils";
 
 type P99Thresholds = {
   activityUnitCost: Record<string, string>;
@@ -373,7 +374,7 @@ function ActivityForm({
           name="description"
           defaultValue={defaults.description}
           rows={2}
-          className={`${fieldClasses} py-2 w-full`}
+          className={cn(fieldClasses, "py-2 w-full")}
         />
         {fieldError(state.errors, "description") ? (
           <span className="mt-1 block text-xs text-destructive">
@@ -549,7 +550,7 @@ function CompositionEditorDetail({
               required
               placeholder="Rendimiento"
               disabled={busy}
-              className={`${fieldClasses} h-9 w-28`}
+              className={cn(fieldClasses, "h-9 w-28")}
             />
             <input
               name="wastePercent"
@@ -560,7 +561,7 @@ function CompositionEditorDetail({
               defaultValue="0"
               placeholder="Desp. %"
               disabled={busy}
-              className={`${fieldClasses} h-9 w-24`}
+              className={cn(fieldClasses, "h-9 w-24")}
             />
             <button
               type="submit"

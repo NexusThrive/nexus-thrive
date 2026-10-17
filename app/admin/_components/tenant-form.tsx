@@ -24,6 +24,7 @@ import {
 import { getOnboardingModulePreset } from "@/lib/onboarding/presets";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
+import { labelClasses } from "@/components/atoms/input";
 
 const IDLE_STATE: AdminFormState = { status: "idle" };
 const SLUG_DEBOUNCE_MS = 350;
@@ -227,7 +228,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
           <div>
             <label
               htmlFor="tenant-name"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Nombre
             </label>
@@ -244,7 +245,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
               }
               aria-invalid={Boolean(errors.name)}
               className={[
-                "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
+                "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
                 errors.name
                   ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
                   : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
@@ -262,7 +263,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
             <div>
               <label
                 htmlFor="tenant-legal-name"
-                className="text-sm font-medium text-foreground/80"
+                className={labelClasses}
               >
                 Razón social{" "}
                 <span className="font-normal text-muted-foreground">(opcional)</span>
@@ -276,7 +277,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                 placeholder="Ej: Gimnasio Carlos S.A.S."
                 aria-invalid={Boolean(errors.legalName)}
                 className={[
-                  "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
+                  "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
                   errors.legalName
                     ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
                     : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
@@ -294,7 +295,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
           <div>
             <label
               htmlFor="tenant-tax-id"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               {tenantType === "COMPANY" ? "NIT / RUT" : "Documento (CC / NIT)"}{" "}
               <span className="font-normal text-muted-foreground">(opcional)</span>
@@ -310,7 +311,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
               }
               aria-invalid={Boolean(errors.taxId)}
               className={[
-                "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
+                "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
                 errors.taxId
                   ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
                   : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
@@ -328,7 +329,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
             <div>
               <label
                 htmlFor="tenant-team-size"
-                className="text-sm font-medium text-foreground/80"
+                className={labelClasses}
               >
                 Equipo{" "}
                 <span className="font-normal text-muted-foreground">(opcional)</span>
@@ -342,7 +343,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                 }
                 aria-invalid={Boolean(errors.teamSize)}
                 className={[
-                  "mt-1 h-10 w-full appearance-none rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
+                  "h-10 w-full appearance-none rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
                   errors.teamSize
                     ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
                     : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
@@ -370,7 +371,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
             <div>
               <label
                 htmlFor="tenant-address"
-                className="text-sm font-medium text-foreground/80"
+                className={labelClasses}
               >
                 Dirección{" "}
                 <span className="font-normal text-muted-foreground">
@@ -386,7 +387,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                 placeholder="Ej: Cra 15 # 82-52, Bogotá"
                 aria-invalid={Boolean(errors.address)}
                 className={[
-                  "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
+                  "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
                   errors.address
                     ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
                     : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
@@ -404,7 +405,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
           <div>
             <label
               htmlFor="tenant-slug"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Slug (subdominio)
             </label>
@@ -446,7 +447,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
           <div>
             <label
               htmlFor="tenant-vertical"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Vertical
             </label>
@@ -461,7 +462,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
               }}
               aria-invalid={Boolean(errors.vertical)}
               className={[
-                "mt-1 h-10 w-full appearance-none rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
+                "h-10 w-full appearance-none rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
                 errors.vertical
                   ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
                   : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",

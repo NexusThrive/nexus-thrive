@@ -1,6 +1,9 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useState, startTransition } from "react";
+import { SegmentedControl } from "@/components/molecules/segmented-control";
+import { fieldClasses } from "@/components/atoms/input";
+import { cn } from "@/lib/utils";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
@@ -122,41 +125,30 @@ export function ReportsWorkspace() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Button
-            variant={activeTab === "informe-cero" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setActiveTab("informe-cero")}
-          >
-            Informe Cero
-          </Button>
-          <Button
-            variant={activeTab === "informe-semanal" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setActiveTab("informe-semanal")}
-          >
-            Informe Semanal
-          </Button>
-          <Button
-            variant={activeTab === "bom" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setActiveTab("bom")}
-          >
-            BOM
-          </Button>
-        </div>
+        <SegmentedControl
+          ariaLabel="Tipo de informe"
+          value={activeTab}
+          onChange={setActiveTab}
+          options={[
+            { value: "informe-cero", label: "Informe Cero" },
+            { value: "informe-semanal", label: "Informe semanal" },
+            { value: "bom", label: "BOM" },
+          ]}
+        />
         <div className="flex items-center gap-2 print:hidden">
           <input
             type="number"
             value={weekNumber}
             onChange={(e) => setWeekNumber(Number(e.target.value))}
-            className="w-20 rounded-md border px-2 py-1 text-sm"
+            aria-label="Semana"
+            className={cn(fieldClasses, "h-8 w-20 tabular-nums")}
           />
           <input
             type="number"
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
-            className="w-24 rounded-md border px-2 py-1 text-sm"
+            aria-label="Año"
+            className={cn(fieldClasses, "h-8 w-24 tabular-nums")}
           />
           <Button
             variant="outline"

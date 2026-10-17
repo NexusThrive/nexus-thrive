@@ -19,6 +19,7 @@ import {
 } from "@/lib/memberships";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
+import { labelClasses } from "@/components/atoms/input";
 
 export type MembershipCustomerOption = {
   id: string;
@@ -115,7 +116,7 @@ function MembershipForm({
 
   const fieldClass = (hasError: boolean) =>
     [
-      "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
+      "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
       hasError
         ? "border-destructive focus:border-destructive focus:outline-destructive/30"
         : "border-border hover:border-ring/50 focus:border-ring focus:outline-ring/30",
@@ -137,7 +138,7 @@ function MembershipForm({
           <div>
             <label
               htmlFor="membership-customer"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Cliente <span className="text-destructive">*</span>
             </label>
@@ -170,7 +171,7 @@ function MembershipForm({
             <div>
               <label
                 htmlFor="membership-type"
-                className="text-sm font-medium text-foreground/80"
+                className={labelClasses}
               >
                 Plan <span className="text-destructive">*</span>
               </label>
@@ -193,7 +194,7 @@ function MembershipForm({
             <div>
               <label
                 htmlFor="membership-start"
-                className="text-sm font-medium text-foreground/80"
+                className={labelClasses}
               >
                 Inicio <span className="text-destructive">*</span>
               </label>
@@ -216,7 +217,7 @@ function MembershipForm({
           <div>
             <label
               htmlFor="membership-price"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Precio (COP) <span className="text-destructive">*</span>
             </label>
@@ -261,7 +262,7 @@ function MembershipForm({
             <div>
               <label
                 htmlFor="membership-provider"
-                className="text-sm font-medium text-foreground/80"
+                className={labelClasses}
               >
                 Método de pago <span className="text-destructive">*</span>
               </label>

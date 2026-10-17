@@ -351,7 +351,7 @@ function FollowUpsPanel({
             minLength={3}
             maxLength={1000}
             rows={3}
-            className={`${fieldClasses} py-2 w-full`}
+            className={cn(fieldClasses, "py-2 w-full")}
             placeholder="Ej. Llamar para resolver dudas sobre la cimentación"
           />
         </label>

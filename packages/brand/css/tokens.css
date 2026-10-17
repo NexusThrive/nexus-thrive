@@ -93,8 +93,10 @@
   --surface-inverse: var(--nx-ink);
   --border: var(--nx-graphite-200);
   --border-strong: #d9d7d1;
-  /* Borde de controles editables (inputs, checkbox): más contraste (AA). */
-  --border-input: #8f8f96;
+  /* Borde de controles editables (inputs, selects, casillas): gris suave en
+     reposo; se marca más al pasar el cursor y toma el halo oro al enfocar. */
+  --border-input: #d2d0ca;
+  --border-input-hover: #a9a7a1;
   --surface-hover: #eae8e2;
 
   --foreground: var(--nx-graphite-950);
@@ -143,7 +145,8 @@
   --surface-inverse: var(--nx-ink);
   --border: var(--nx-graphite-700);
   --border-strong: #3a3a40;
-  --border-input: #6b6b73;
+  --border-input: #3a3a40;
+  --border-input-hover: #55555c;
   --surface-hover: #26262a;
 
   --foreground: var(--nx-paper);

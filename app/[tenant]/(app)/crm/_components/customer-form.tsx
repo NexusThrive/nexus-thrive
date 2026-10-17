@@ -11,6 +11,7 @@ import {
 import { useVerticalTerms } from "../../vertical-terms-context";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
+import { labelClasses } from "@/components/atoms/input";
 
 type CustomerToEdit = {
   id: string;
@@ -56,7 +57,7 @@ export default function CustomerForm({
 
   const fieldClass = (hasError: boolean) =>
     [
-      "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
+      "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
       hasError
         ? "border-destructive/30 focus:border-destructive focus:outline-destructive/30"
         : "border-border hover:border-foreground/20 focus:border-gold-500 focus:outline-gold-600/30",
@@ -78,7 +79,7 @@ export default function CustomerForm({
           <div>
             <label
               htmlFor="customer-name"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Nombre <span className="text-destructive">*</span>
             </label>
@@ -102,7 +103,7 @@ export default function CustomerForm({
           <div>
             <label
               htmlFor="customer-email"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Correo
             </label>
@@ -126,7 +127,7 @@ export default function CustomerForm({
           <div>
             <label
               htmlFor="customer-phone"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Teléfono
             </label>

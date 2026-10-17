@@ -35,6 +35,7 @@ import Modal from "@/components/organisms/modal";
 import { ApuCategoryBadge } from "@/components/molecules/quote-badges";
 import { fieldClasses, inputClasses, labelClasses } from "@/components/atoms/input";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { cn } from "@/lib/utils";
 
 const EMPTY_ITEM: ApuItemFormValues = {
   code: "",
@@ -321,7 +322,7 @@ function ImportForm({
           placeholder={
             "code,name,unit,category,unitPrice\nCEM-02,Cemento gris 50 kg,BULTO,MATERIAL,35000"
           }
-          className={`${fieldClasses} py-2 w-full font-mono text-xs`}
+          className={cn(fieldClasses, "py-2 w-full font-mono text-xs")}
         />
         <p className="mt-1 text-xs text-muted-foreground">
           Columnas: código (opcional), nombre, unidad (M3, KG, BULTO, HR,

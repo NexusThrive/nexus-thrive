@@ -16,6 +16,7 @@ import {
 } from "../actions";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { PageHeader } from "@/components/molecules/page-header";
+import { labelClasses } from "@/components/atoms/input";
 
 export type BookingStatusValue =
   | "PENDING"
@@ -207,7 +208,7 @@ function BookingsContent({
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label htmlFor="booking-customer" className="text-sm font-medium text-foreground/80">
+              <label htmlFor="booking-customer" className={labelClasses}>
                 Cliente <span className="text-destructive">*</span>
               </label>
               <select
@@ -216,7 +217,7 @@ function BookingsContent({
                 value={form.customerId}
                 onChange={(event) => setField("customerId", event.target.value)}
                 aria-invalid={Boolean(errors.customerId)}
-                className={cn("mt-1", fieldClass(Boolean(errors.customerId)))}
+                className={cn(fieldClass(Boolean(errors.customerId)))}
               >
                 <option value="">Selecciona un cliente…</option>
                 {customers.map((customer) => (
@@ -233,7 +234,7 @@ function BookingsContent({
             </div>
 
             <div>
-              <label htmlFor="booking-service" className="text-sm font-medium text-foreground/80">
+              <label htmlFor="booking-service" className={labelClasses}>
                 Servicio <span className="text-destructive">*</span>
               </label>
               <input
@@ -243,7 +244,7 @@ function BookingsContent({
                 onChange={(event) => setField("serviceName", event.target.value)}
                 aria-invalid={Boolean(errors.serviceName)}
                 placeholder="Ej. Entrenamiento personal"
-                className={cn("mt-1", fieldClass(Boolean(errors.serviceName)))}
+                className={cn(fieldClass(Boolean(errors.serviceName)))}
               />
               {errors.serviceName && (
                 <p role="alert" className="mt-1 text-xs text-destructive">
@@ -253,7 +254,7 @@ function BookingsContent({
             </div>
 
             <div>
-              <label htmlFor="booking-start" className="text-sm font-medium text-foreground/80">
+              <label htmlFor="booking-start" className={labelClasses}>
                 Fecha de inicio <span className="text-destructive">*</span>
               </label>
               <input
@@ -263,7 +264,7 @@ function BookingsContent({
                 value={form.startDate}
                 onChange={(event) => setField("startDate", event.target.value)}
                 aria-invalid={Boolean(errors.startDate)}
-                className={cn("mt-1", fieldClass(Boolean(errors.startDate)))}
+                className={cn(fieldClass(Boolean(errors.startDate)))}
               />
               {errors.startDate && (
                 <p role="alert" className="mt-1 text-xs text-destructive">
@@ -273,7 +274,7 @@ function BookingsContent({
             </div>
 
             <div>
-              <label htmlFor="booking-end" className="text-sm font-medium text-foreground/80">
+              <label htmlFor="booking-end" className={labelClasses}>
                 Fecha de fin <span className="text-destructive">*</span>
               </label>
               <input
@@ -283,7 +284,7 @@ function BookingsContent({
                 value={form.endDate}
                 onChange={(event) => setField("endDate", event.target.value)}
                 aria-invalid={Boolean(errors.endDate)}
-                className={cn("mt-1", fieldClass(Boolean(errors.endDate)))}
+                className={cn(fieldClass(Boolean(errors.endDate)))}
               />
               {errors.endDate && (
                 <p role="alert" className="mt-1 text-xs text-destructive">
@@ -293,7 +294,7 @@ function BookingsContent({
             </div>
 
             <div>
-              <label htmlFor="booking-amount" className="text-sm font-medium text-foreground/80">
+              <label htmlFor="booking-amount" className={labelClasses}>
                 Importe (COP) <span className="text-destructive">*</span>
               </label>
               <input
@@ -304,7 +305,7 @@ function BookingsContent({
                 onChange={(event) => setField("totalAmount", event.target.value)}
                 aria-invalid={Boolean(errors.totalAmount)}
                 placeholder="Ej. 50000 o 50.000"
-                className={cn("mt-1", fieldClass(Boolean(errors.totalAmount)))}
+                className={cn(fieldClass(Boolean(errors.totalAmount)))}
               />
               {errors.totalAmount && (
                 <p role="alert" className="mt-1 text-xs text-destructive">
@@ -314,7 +315,7 @@ function BookingsContent({
             </div>
 
             <div>
-              <label htmlFor="booking-notes" className="text-sm font-medium text-foreground/80">
+              <label htmlFor="booking-notes" className={labelClasses}>
                 Notas
               </label>
               <input
@@ -323,7 +324,7 @@ function BookingsContent({
                 value={form.notes}
                 onChange={(event) => setField("notes", event.target.value)}
                 placeholder="Observaciones (opcional)"
-                className={cn("mt-1", fieldClass(false))}
+                className={cn(fieldClass(false))}
               />
             </div>
           </div>

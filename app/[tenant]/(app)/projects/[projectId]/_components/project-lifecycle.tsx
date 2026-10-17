@@ -17,7 +17,8 @@ import {
   type UpdateProjectFormState,
 } from "../../actions";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { fieldClasses } from "@/components/atoms/input";
+import { fieldClasses, labelClasses } from "@/components/atoms/input";
+import { cn } from "@/lib/utils";
 
 const IDLE_STATE: UpdateProjectFormState = { status: "idle" };
 
@@ -150,7 +151,7 @@ export default function ProjectLifecycle({
           <div>
             <label
               htmlFor="project-name"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Nombre <span className="text-destructive">*</span>
             </label>
@@ -158,7 +159,7 @@ export default function ProjectLifecycle({
               id="project-name"
               name="name"
               defaultValue={state.values?.name ?? name}
-              className={`${fieldClasses} h-[var(--control-h)] mt-1 w-full`}
+              className={cn(fieldClasses, "h-[var(--control-h)] mt-1 w-full")}
             />
             {state.errors?.name ? (
               <p role="alert" className="mt-1 text-xs text-destructive">
@@ -170,7 +171,7 @@ export default function ProjectLifecycle({
           <div>
             <label
               htmlFor="project-description"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Descripción
             </label>
@@ -179,7 +180,7 @@ export default function ProjectLifecycle({
               name="description"
               rows={2}
               defaultValue={state.values?.description ?? description}
-              className={`mt-1 ${fieldClasses} py-2`}
+              className={cn(fieldClasses, "py-2")}
             />
             {state.errors?.description ? (
               <p role="alert" className="mt-1 text-xs text-destructive">

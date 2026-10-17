@@ -13,6 +13,7 @@ import { formatDateShort, formatCurrency } from "@/lib/format";
 import type { MembershipViewRow } from "./membership-table";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
+import { labelClasses } from "@/components/atoms/input";
 
 const IDLE_STATE: RenewalFormState = { status: "idle" };
 
@@ -97,7 +98,7 @@ export default function MembershipModal({
           <div>
             <label
               htmlFor="renewal-provider"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Método de pago
             </label>
@@ -107,7 +108,7 @@ export default function MembershipModal({
               defaultValue="CASH"
               aria-invalid={Boolean(errors.provider)}
               className={[
-                "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
+                "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
                 errors.provider
                   ? "border-destructive focus:border-destructive focus:outline-destructive/30"
                   : "border-border hover:border-ring/50 focus:border-ring focus:outline-ring/30",

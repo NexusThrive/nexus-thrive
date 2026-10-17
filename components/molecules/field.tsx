@@ -35,7 +35,7 @@ export function Field({
   const errorId = error ? `${id}-error` : undefined;
   const describedBy = [errorId, hintId].filter(Boolean).join(" ") || undefined;
   return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
+    <div className={cn("flex flex-col gap-2", className)}>
       <div className="flex items-baseline justify-between gap-2.5">
         <label htmlFor={id} className="text-[13px] font-medium text-foreground">
           {label}

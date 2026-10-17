@@ -15,6 +15,7 @@ import type { ItemProgressRow } from "@/lib/construction/progress";
 import { createFieldLogEntryAction, deleteFieldLogEntryAction } from "../field-log/actions";
 import ProgressPanel from "./progress-panel";
 import { fieldClasses, inputClasses, labelClasses } from "@/components/atoms/input";
+import { cn } from "@/lib/utils";
 
 const TYPE_STYLES: Record<FieldLogEntryData["type"], { label: string; className: string }> = {
   ADVANCE: { label: "Avance", className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" },
@@ -283,7 +284,7 @@ function NewEntryForm({
             required
             rows={4}
             maxLength={4000}
-            className={`${fieldClasses} py-2 w-full`}
+            className={cn(fieldClasses, "py-2 w-full")}
           />
           {fieldError("description")}
         </label>

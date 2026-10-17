@@ -13,6 +13,7 @@
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
   --color-border-input: var(--border-input);
+  --color-border-input-hover: var(--border-input-hover);
   --color-surface-hover: var(--surface-hover);
   --color-success-subtle: var(--success-subtle);
   --color-danger-subtle: var(--danger-subtle);

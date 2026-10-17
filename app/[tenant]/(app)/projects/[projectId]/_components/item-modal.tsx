@@ -11,12 +11,13 @@ import {
   type BudgetItemFormState,
 } from "../budget/actions";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { labelClasses } from "@/components/atoms/input";
 
 const IDLE_STATE: BudgetItemFormState = { status: "idle" };
 
 const FIELD_CLASS = (hasError: boolean) =>
   [
-    "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
+    "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
     hasError
       ? "border-destructive/30 focus:border-destructive focus:outline-destructive/30"
       : "border-border hover:border-foreground/20 focus:border-gold-500 focus:outline-gold-600/30",
@@ -120,7 +121,7 @@ export default function ItemModal({
           <div className="sm:col-span-2">
             <label
               htmlFor="item-description"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Descripción <span className="text-destructive">*</span>
             </label>
@@ -142,7 +143,7 @@ export default function ItemModal({
           <div>
             <label
               htmlFor="item-code"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Código
             </label>
@@ -164,7 +165,7 @@ export default function ItemModal({
           <div>
             <label
               htmlFor="item-unit"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Unidad <span className="text-destructive">*</span>
             </label>
@@ -192,7 +193,7 @@ export default function ItemModal({
           <div>
             <label
               htmlFor="item-quantity"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Cantidad <span className="text-destructive">*</span>
             </label>
@@ -215,7 +216,7 @@ export default function ItemModal({
           <div>
             <label
               htmlFor="item-unit-cost"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Costo unitario directo{" "}
               <span className="text-destructive">*</span>

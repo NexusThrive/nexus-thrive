@@ -8,13 +8,14 @@ import { NLoader } from "@/components/atoms/n-loader";
 import Modal from "@/components/organisms/modal";
 import { createProjectAction, type CreateProjectFormState } from "../actions";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { fieldClasses } from "@/components/atoms/input";
+import { fieldClasses, labelClasses } from "@/components/atoms/input";
+import { cn } from "@/lib/utils";
 
 const IDLE_STATE: CreateProjectFormState = { status: "idle" };
 
 const FIELD_CLASS = (hasError: boolean) =>
   [
-    "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
+    "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
     hasError
       ? "border-destructive/30 focus:border-destructive focus:outline-destructive/30"
       : "border-border hover:border-foreground/20 focus:border-gold-500 focus:outline-gold-600/30",
@@ -87,7 +88,7 @@ export default function NewProjectModal({
             <div>
               <label
                 htmlFor="project-customer"
-                className="text-sm font-medium text-foreground/80"
+                className={labelClasses}
               >
                 Cliente <span className="text-destructive">*</span>
               </label>
@@ -115,7 +116,7 @@ export default function NewProjectModal({
             <div>
               <label
                 htmlFor="project-name"
-                className="text-sm font-medium text-foreground/80"
+                className={labelClasses}
               >
                 Nombre del proyecto <span className="text-destructive">*</span>
               </label>
@@ -137,7 +138,7 @@ export default function NewProjectModal({
             <div>
               <label
                 htmlFor="project-description"
-                className="text-sm font-medium text-foreground/80"
+                className={labelClasses}
               >
                 Descripción
               </label>
@@ -148,7 +149,7 @@ export default function NewProjectModal({
                 defaultValue={state.values?.description ?? ""}
                 placeholder="Alcance general de la obra (opcional)."
                 aria-invalid={Boolean(errors.description)}
-                className={`mt-1 ${fieldClasses} py-2`}
+                className={cn(fieldClasses, "py-2")}
               />
               {errors.description ? (
                 <p role="alert" className="mt-1 text-xs text-destructive">

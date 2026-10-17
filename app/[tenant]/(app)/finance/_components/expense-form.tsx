@@ -7,6 +7,7 @@ import { createExpenseAction, type ExpenseFormState } from "../actions";
 import { EXPENSE_CATEGORIES } from "@/lib/finance";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
+import { labelClasses } from "@/components/atoms/input";
 
 const IDLE_STATE: ExpenseFormState = { status: "idle" };
 
@@ -39,7 +40,7 @@ export default function ExpenseForm({
 
   const fieldClass = (hasError: boolean) =>
     [
-      "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
+      "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
       hasError
         ? "border-destructive focus:border-destructive focus:outline-destructive/30"
         : "border-border hover:border-ring/50 focus:border-ring focus:outline-ring/30",
@@ -58,7 +59,7 @@ export default function ExpenseForm({
           <div>
             <label
               htmlFor="expense-description"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Concepto <span className="text-destructive">*</span>
             </label>
@@ -81,7 +82,7 @@ export default function ExpenseForm({
           <div>
             <label
               htmlFor="expense-category"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Categoría <span className="text-destructive">*</span>
             </label>
@@ -108,7 +109,7 @@ export default function ExpenseForm({
           <div>
             <label
               htmlFor="expense-amount"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Monto (COP) <span className="text-destructive">*</span>
             </label>

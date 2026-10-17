@@ -20,12 +20,12 @@ export function IndustryPicker({ value, onChange }: { value: IndustryKey; onChan
             data-press=""
             className={cn(
               "inline-flex h-[34px] items-center gap-[7px] rounded-md border px-3 text-[13px] transition-colors duration-200",
-              checked ? "border-foreground bg-foreground text-background" : "border-border-strong bg-surface hover:border-border-input",
+              checked ? "border-border-input-hover bg-surface-muted font-semibold text-foreground" : "border-border-input bg-surface text-muted-foreground hover:border-border-input-hover hover:text-foreground",
             )}
           >
             {industry.name}
             {industry.factor !== 1 ? (
-              <span className={cn("rounded-sm border border-current px-[5px] py-px font-mono text-[10.5px] font-medium opacity-85", checked ? "text-background" : "text-accent-text")}>
+              <span className={cn("rounded-sm border border-current px-[5px] py-px font-mono text-[10.5px] font-medium opacity-85", "text-accent-text")}>
                 ×{industry.factor.toFixed(2)}
               </span>
             ) : null}

@@ -11,13 +11,14 @@ import {
 } from "../../actions";
 import type { ProjectHeaderFormValues } from "../../validators";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { fieldClasses } from "@/components/atoms/input";
+import { fieldClasses, labelClasses } from "@/components/atoms/input";
+import { cn } from "@/lib/utils";
 
 const IDLE_STATE: ProjectHeaderFormState = { status: "idle" };
 
 const FIELD_CLASS = (hasError: boolean) =>
   [
-    "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
+    "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
     hasError
       ? "border-destructive/30 focus:border-destructive focus:outline-destructive/30"
       : "border-border hover:border-foreground/20 focus:border-gold-500 focus:outline-gold-600/30",
@@ -44,7 +45,7 @@ function Field({
     <div>
       <label
         htmlFor={id}
-        className="text-sm font-medium text-foreground/80"
+        className={labelClasses}
       >
         {label}
       </label>
@@ -183,7 +184,7 @@ export default function ProjectHeaderForm({
         <div>
           <label
             htmlFor="header-projectType"
-            className="text-sm font-medium text-foreground/80"
+            className={labelClasses}
           >
             Tipo de obra
           </label>
@@ -231,7 +232,7 @@ export default function ProjectHeaderForm({
         <div className="sm:col-span-2">
           <label
             htmlFor="header-siteAccessNotes"
-            className="text-sm font-medium text-foreground/80"
+            className={labelClasses}
           >
             Notas de acceso
           </label>
@@ -242,7 +243,7 @@ export default function ProjectHeaderForm({
             defaultValue={val("siteAccessNotes")}
             aria-invalid={Boolean(errors.siteAccessNotes)}
             placeholder="Horarios, permisos, restricciones del sitio…"
-            className={`mt-1 ${fieldClasses} py-2`}
+            className={cn(fieldClasses, "py-2")}
           />
           {errors.siteAccessNotes ? (
             <p role="alert" className="mt-1 text-xs text-destructive">

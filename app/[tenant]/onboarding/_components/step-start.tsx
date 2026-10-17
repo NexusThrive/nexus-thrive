@@ -5,6 +5,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { MAX_INITIAL_CUSTOMERS } from "../validators";
 import type { OnboardingFormState } from "../actions";
 import { fieldClasses } from "@/components/atoms/input";
+import { cn } from "@/lib/utils";
 
 /**
  * Paso 5 — Clientes iniciales (0 a 3, opcional). Las filas vacías se
@@ -61,7 +62,7 @@ export default function StepStart({
                   name="customerName"
                   type="text"
                   placeholder="Ej. Laura Gómez"
-                  className={`${fieldClasses} h-9 mt-1 w-full px-2.5`}
+                  className={cn(fieldClasses, "h-9 mt-1 w-full px-2.5")}
                 />
               </div>
               <div>
@@ -76,7 +77,7 @@ export default function StepStart({
                   name="customerPhone"
                   type="tel"
                   placeholder="+57 300 123 4567"
-                  className={`${fieldClasses} h-9 mt-1 w-full px-2.5`}
+                  className={cn(fieldClasses, "h-9 mt-1 w-full px-2.5")}
                 />
               </div>
               <div>
@@ -91,7 +92,7 @@ export default function StepStart({
                   name="customerEmail"
                   type="email"
                   placeholder="laura@correo.com"
-                  className={`${fieldClasses} h-9 mt-1 w-full px-2.5`}
+                  className={cn(fieldClasses, "h-9 mt-1 w-full px-2.5")}
                 />
               </div>
             </div>

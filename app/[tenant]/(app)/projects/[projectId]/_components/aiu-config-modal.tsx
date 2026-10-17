@@ -14,12 +14,13 @@ import {
   type AiuFormState,
 } from "../budget/actions";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { labelClasses } from "@/components/atoms/input";
 
 const IDLE_STATE: AiuFormState = { status: "idle" };
 
 const FIELD_CLASS = (hasError: boolean) =>
   [
-    "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
+    "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
     hasError
       ? "border-destructive/30 focus:border-destructive focus:outline-destructive/30"
       : "border-border hover:border-foreground/20 focus:border-gold-500 focus:outline-gold-600/30",
@@ -120,7 +121,7 @@ export default function AiuConfigModal({
             <div key={field.name}>
               <label
                 htmlFor={`aiu-${field.name}`}
-                className="text-sm font-medium text-foreground/80"
+                className={labelClasses}
               >
                 {field.label}
               </label>
