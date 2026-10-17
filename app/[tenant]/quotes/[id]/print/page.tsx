@@ -6,6 +6,7 @@ import { createTenantDb } from "@/lib/tenant-db";
 import { getQuoteTerms, getVerticalTerms } from "@/lib/vertical-terms";
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import PrintButton from "./_components/print-button";
+import QuoteDocumentSheet from "@/components/construction/quote-document-sheet";
 
 /**
  * Documento comercial para el cliente — Fase 3.
@@ -34,6 +35,29 @@ export default async function QuotePrintPage({
   }
 
   const tenantDb = createTenantDb(tenantRecord.id);
+  const terms = getQuoteTerms(tenantRecord.vertical);
+
+  // Versión emitida desde una obra: se imprime su foto congelada.
+  const versioned = await tenantDb.projectQuotes.getDocument(quoteId);
+  if (versioned) {
+    return (
+      <div className="min-h-screen bg-muted px-4 py-6 print:bg-card print:p-0">
+        <style>{`@page { size: A4; margin: 12mm; }`}</style>
+        <div className="mx-auto mb-6 flex max-w-[210mm] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between print:hidden">
+          <Link
+            href={`/${tenantSlug}/projects/${versioned.projectId}?tab=cotizaciones`}
+            className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-border-strong bg-card px-3 py-2 text-sm font-medium text-foreground/80 transition hover:bg-muted"
+          >
+            <ArrowLeft aria-hidden="true" className="h-4 w-4" />
+            Volver a la obra
+          </Link>
+          <PrintButton />
+        </div>
+        <QuoteDocumentSheet document={versioned.document} quoteLabel={terms.quote} />
+      </div>
+    );
+  }
+
   const quote = await tenantDb.quotes.get(quoteId);
   if (!quote) {
     notFound();
@@ -48,7 +72,6 @@ export default async function QuotePrintPage({
         .first()
     : null;
 
-  const terms = getQuoteTerms(tenantRecord.vertical);
   const baseTerms = getVerticalTerms(tenantRecord.vertical);
 
   return (

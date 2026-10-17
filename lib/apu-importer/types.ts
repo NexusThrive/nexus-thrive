@@ -132,6 +132,29 @@ export interface ImportPreview {
   confidence: ConfidenceScore;
   warnings: ImportWarning[];
   errors: string[];
+  /** Cambios de campo detectados en insumos existentes (requiere DB). */
+  fieldChanges?: FieldChange[];
+  /** Cambios de precio detectados en insumos existentes (requiere DB). */
+  priceChanges?: PriceChange[];
+}
+
+/** Cambio de precio detectado en insumo existente. */
+export interface PriceChange {
+  itemId: string;
+  code: string | null;
+  name: string;
+  currentPrice: string;
+  newPrice: string;
+  variationPct: number; // (new - current) / current * 100
+}
+
+/** Cambio de campo (nombre, unidad, categoría) en insumo existente. */
+export interface FieldChange {
+  itemId: string;
+  code: string | null;
+  field: "name" | "unit" | "category";
+  currentValue: string;
+  newValue: string;
 }
 
 /** Reporte de la Fase 2 — IMPORTACIÓN (transaccional). */
@@ -145,4 +168,44 @@ export interface ImportResult {
   warnings: number;
   errors: string[];
   totalProcessed: number;
+  priceChanges: PriceChange[];
+}
+
+/** Plan de ejecución validado listo para importación transaccional. */
+
+
+/** Ítem planificado listo para upsert. */
+export interface PlannedItem {
+  key: string;
+  code?: string;
+  name: string;
+  unit: string;
+  unitPrice: string;
+  category: ApuImportLine["category"];
+  sourceIndex: number;
+  skipReason?: string;
+}
+
+/** Actividad planificada lista para upsert. */
+export interface PlannedActivity {
+  key: string;
+  code?: string;
+  name: string;
+  unit: string;
+  lines: Array<{
+    itemName: string;
+    unit: string;
+    quantity: string;
+    unitPrice: string;
+    category?: ApuImportLine["category"];
+    skipReason?: string;
+  }>;
+  skipReason?: string;
+}
+
+export interface ExecutionPlan {
+  items: PlannedItem[];
+  activities: PlannedActivity[];
+  skippedRows: number;
+  warnings: ImportWarning[];
 }

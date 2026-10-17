@@ -1,0 +1,560 @@
+[
+  {
+    "id": "dropTable.ApuActivity",
+    "label": "Drop table \"ApuActivity\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ApuActivity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ApuActivity\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"ApuActivity\"",
+        "sql": "DROP TABLE \"public\".\"ApuActivity\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ApuActivity\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropTable.ApuActivityComposition",
+    "label": "Drop table \"ApuActivityComposition\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ApuActivityComposition\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivityComposition\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"ApuActivityComposition\"",
+        "sql": "DROP TABLE \"public\".\"ApuActivityComposition\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ApuActivityComposition\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivityComposition\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropTable.ApuItem",
+    "label": "Drop table \"ApuItem\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ApuItem\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"ApuItem\"",
+        "sql": "DROP TABLE \"public\".\"ApuItem\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ApuItem\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropTable.AuditLog",
+    "label": "Drop table \"AuditLog\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "AuditLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"AuditLog\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AuditLog\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"AuditLog\"",
+        "sql": "DROP TABLE \"public\".\"AuditLog\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"AuditLog\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AuditLog\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropTable.Quote",
+    "label": "Drop table \"Quote\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Quote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Quote\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Quote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"Quote\"",
+        "sql": "DROP TABLE \"public\".\"Quote\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Quote\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Quote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropTable.QuoteItem",
+    "label": "Drop table \"QuoteItem\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "QuoteItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"QuoteItem\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"QuoteItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"QuoteItem\"",
+        "sql": "DROP TABLE \"public\".\"QuoteItem\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"QuoteItem\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"QuoteItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.Tenant.Tenant_tenantType_check_0d8e073f",
+    "label": "Drop check constraint \"Tenant_tenantType_check_0d8e073f\" on \"Tenant\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "Tenant_tenantType_check_0d8e073f",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Tenant_tenantType_check_0d8e073f\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Tenant_tenantType_check_0d8e073f",
+          "public",
+          "\"public\".\"Tenant\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"Tenant_tenantType_check_0d8e073f\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" DROP CONSTRAINT \"Tenant_tenantType_check_0d8e073f\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Tenant_tenantType_check_0d8e073f\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Tenant_tenantType_check_0d8e073f",
+          "public",
+          "\"public\".\"Tenant\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.Tenant.address",
+    "label": "Drop column \"address\" from \"Tenant\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "address",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"address\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "address"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"address\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" DROP COLUMN \"address\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"address\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "address"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.Tenant.legalName",
+    "label": "Drop column \"legalName\" from \"Tenant\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "legalName",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"legalName\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "legalName"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"legalName\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" DROP COLUMN \"legalName\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"legalName\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "legalName"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.Tenant.suspendedAt",
+    "label": "Drop column \"suspendedAt\" from \"Tenant\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "suspendedAt",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"suspendedAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "suspendedAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"suspendedAt\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" DROP COLUMN \"suspendedAt\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"suspendedAt\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "suspendedAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.Tenant.suspendedReason",
+    "label": "Drop column \"suspendedReason\" from \"Tenant\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "suspendedReason",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"suspendedReason\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "suspendedReason"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"suspendedReason\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" DROP COLUMN \"suspendedReason\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"suspendedReason\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "suspendedReason"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.Tenant.taxId",
+    "label": "Drop column \"taxId\" from \"Tenant\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "taxId",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"taxId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "taxId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"taxId\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" DROP COLUMN \"taxId\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"taxId\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "taxId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.Tenant.teamSize",
+    "label": "Drop column \"teamSize\" from \"Tenant\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "teamSize",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"teamSize\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "teamSize"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"teamSize\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" DROP COLUMN \"teamSize\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"teamSize\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "teamSize"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.Tenant.tenantType",
+    "label": "Drop column \"tenantType\" from \"Tenant\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "tenantType",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"tenantType\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "tenantType"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"tenantType\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" DROP COLUMN \"tenantType\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"tenantType\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "tenantType"
+        ]
+      }
+    ]
+  }
+]

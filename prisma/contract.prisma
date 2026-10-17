@@ -79,6 +79,17 @@ enum ApuItemCategory {
   MANO_DE_OBRA
   EQUIPO
   TRANSPORTE
+  /// Otros costos (secciones "OTROS" del pack APU).
+  OTRO
+  /// Subcontratos (sección "SUBCONTRATOS" del pack APU).
+  SUBCONTRATO
+}
+
+/// Origen de una línea de composición APU: importada de un archivo (se
+/// reemplaza al reimportar) o creada a mano (nunca la toca una importación).
+enum CompositionOrigin {
+  IMPORT
+  MANUAL
 }
 
 /// Estado de un presupuesto/cotización de obra.
@@ -87,6 +98,76 @@ enum QuoteStatus {
   SENT
   APPROVED
   REJECTED
+  /// Reemplazada por una versión posterior de la misma obra.
+  SUPERSEDED
+}
+
+/// Tipo de seguimiento comercial de una obra (carpeta de cotizaciones).
+enum FollowUpType {
+  NOTE
+  CALL
+  EMAIL
+  MEETING
+  VISIT
+}
+
+/// Ciclo de vida de un proyecto de obra (vertical construcción).
+enum ProjectStatus {
+  DRAFT
+  BIDDING
+  APPROVED
+  IN_EXECUTION
+  COMPLETED
+  CANCELLED
+}
+
+/// Categoría de un recurso que compone la actividad (APU) de una partida
+/// presupuestaria (FASE 2 — Tab 2). Distinto de `ApuItemCategory` (banco de
+/// insumos reutilizable): aquí es la clasificación dentro de un presupuesto.
+enum ResourceType {
+  MATERIAL
+  LABOR
+  EQUIPMENT
+  TRANSPORT
+  OTHER
+  SUBCONTRACT
+}
+
+/// Resultado evaluado de un compromiso semanal (Last Planner System). No
+/// representa el avance de una tarea: es el resultado del compromiso de la
+/// semana — pendiente de evaluar, cumplido o no cumplido (FASE 3 — Tab 3).
+enum CommitmentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+/// Causa de No Cumplimiento (CNC) de un compromiso fallido. Catálogo base
+/// del sistema CNC (Last Planner System).
+enum NonComplianceCause {
+  WEATHER
+  MATERIALS
+  LABOR
+  EQUIPMENT
+  DESIGN_CHANGE
+  PREVIOUS_WORK
+  OTHER
+}
+
+/// Tipo de anotación en la bitácora de campo (FASE 4 — Tab 4).
+enum FieldNoteType {
+  ADVANCE
+  OBSERVATION
+  AUTHORIZATION
+  INCIDENT
+}
+
+/// Condición meteorológica registrada en una anotación de campo (FASE 4 — Tab 4).
+enum WeatherCondition {
+  SUNNY
+  CLOUDY
+  RAIN_LIGHT
+  RAIN_HEAVY
 }
 
 model Tenant {
@@ -139,7 +220,23 @@ model Tenant {
   customerNotes CustomerNote[]
   apuItems      ApuItem[]
   apuActivities ApuActivity[]
+  apuImages     ApuImage[]
+  apuChapters   ApuChapter[]
+  apuImportRuns ApuImportRun[]
+  apuPriceHistory ApuItemPriceHistory[]
   quotes        Quote[]
+  projectFollowUps ProjectFollowUp[]
+  budgetItemProgress BudgetItemProgress[]
+  projects      Project[]
+  projectBudgets ProjectBudget[]
+  budgetChapters BudgetChapter[]
+  budgetItems   BudgetItem[]
+  budgetItemResources BudgetItemResource[]
+  budgetBaselines   BudgetBaseline[]
+  projectPlans      ProjectPlan[]
+  lookaheadTasks    LookaheadTask[]
+  weeklyCommitments WeeklyCommitment[]
+  fieldLogs         FieldLog[]
 
   @@index([slug])
 }
@@ -189,6 +286,7 @@ model Customer {
   memberships Membership[]
   notes CustomerNote[]
   quotes Quote[]
+  projects Project[]
 
   @@index([tenantId])
 }
@@ -280,11 +378,104 @@ model ApuItem {
   unit      String
   category  ApuItemCategory
   unitPrice Decimal
+  /// Etapa 2: campos aditivos (no rompen datos existentes).
+  active    Boolean        @default(true)
+  /// Enlace externo heredado. Las imágenes importadas van en `imageId`.
+  imageUrl  String?
+  /// Imagen guardada en el sistema (importada del Excel o subida).
+  imageId   String?
+  image     ApuImage?      @relation(fields: [imageId], references: [id], onDelete: SetNull)
+  /// Identidad estable para reimportar sin duplicar: descripción + unidad
+  /// normalizadas. Null en insumos creados a mano.
+  sourceKey String?
+  /// Si el insumo es un APU auxiliar (APU compuesto), la actividad que lo define.
+  auxiliaryActivityId String?
+  auxiliaryActivity   ApuActivity? @relation("ApuAuxiliaryItem", fields: [auxiliaryActivityId], references: [id], onDelete: SetNull)
+  /// Última importación que tocó el insumo.
+  importedAt DateTime?
+  createdAt DateTime       @default(now())
   updatedAt temporal.updatedAt()
 
   compositions ApuActivityComposition[]
+  priceHistory ApuItemPriceHistory[]
 
   @@unique([tenantId, code])
+  @@unique([tenantId, sourceKey])
+  @@index([tenantId])
+}
+
+/// Imagen binaria de un insumo, guardada en la base (no es un enlace
+/// externo). Deduplicada por contenido dentro del tenant: reimportar la misma
+/// foto no la duplica.
+model ApuImage {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sha256    String
+  mimeType  String
+  byteSize  Int
+  data      Bytes
+  createdAt DateTime @default(now())
+
+  items     ApuItem[]
+
+  @@unique([tenantId, sha256])
+  @@index([tenantId])
+}
+
+/// Capítulo del catálogo APU (ej. "1 PRELIMINARES"). Ordena las actividades.
+model ApuChapter {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  code      String
+  /// Capítulo padre de un subcapítulo ("22" para "22.63").
+  parentCode String?
+  name      String
+  order     Int
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+
+  activities ApuActivity[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+}
+
+/// Registro de cada importación del catálogo (auditoría: qué archivo, cuándo,
+/// quién y qué cambió). Nunca se borra.
+model ApuImportRun {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  fileName    String
+  fileSha256  String
+  importedBy  String?
+  /// Conteos y verificaciones del resultado (JSON serializable).
+  stats       Json
+  createdAt   DateTime @default(now())
+
+  priceChanges ApuItemPriceHistory[]
+
+  @@index([tenantId, createdAt])
+}
+
+/// Historial de precios de un insumo: cada precio distinto que tuvo, con su
+/// origen. Una importación que cambia un precio deja aquí el anterior y el nuevo.
+model ApuItemPriceHistory {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  itemId      String
+  item        ApuItem  @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  price       Decimal
+  /// "IMPORT" o "MANUAL".
+  source      String
+  importRunId String?
+  importRun   ApuImportRun? @relation(fields: [importRunId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+
+  @@index([itemId, createdAt])
   @@index([tenantId])
 }
 
@@ -298,11 +489,30 @@ model ApuActivity {
   name        String
   unit        String
   description String?
+  /// Etapa 2: campo aditivo (no rompe datos existentes).
+  active      Boolean  @default(true)
+  /// Capítulo del catálogo al que pertenece (null en auxiliares y manuales).
+  chapterId   String?
+  chapter     ApuChapter? @relation(fields: [chapterId], references: [id], onDelete: SetNull)
+  /// APU auxiliar: se usa como insumo de otros APU (APU compuesto).
+  isAuxiliary Boolean  @default(false)
+  /// Costo directo unitario declarado en el archivo importado ("VR COSTO
+  /// DIRECTO"); sirve para verificar que el cálculo del sistema coincide.
+  referenceUnitPrice Decimal?
+  /// Clave de orden natural ("0001.0002" para 1.02) para listar como el archivo.
+  sortKey     String?
+  /// Datos del archivo sin columna propia (ej. "TOTAL % P" de un auxiliar de
+  /// mano de obra). Se guardan tal cual para no perder nada.
+  sourceExtras Json?
+  /// Identidad estable para reimportar ("APU:1.01" o "AUX:<descripción>|<unidad>").
+  sourceKey   String?
+  importedAt  DateTime?
   createdAt   DateTime @default(now())
   updatedAt   temporal.updatedAt()
 
   compositions ApuActivityComposition[]
   quoteItems  QuoteItem[]
+  auxiliaryItems ApuItem[] @relation("ApuAuxiliaryItem")
 
   @@unique([tenantId, code])
   @@index([tenantId])
@@ -320,9 +530,22 @@ model ApuActivityComposition {
   consumption  Decimal
   /// Porcentaje de desperdicio (0–50).
   wastePercent Decimal
+  /// Posición de la línea dentro del APU (orden del archivo).
+  order        Int               @default(0)
+  /// Sección original del archivo ("MANO de OBRA:", "SEGURIDAD SOCIAL:"…).
+  section      String?
+  /// Unidad tal como viene en la línea (puede ser "%MO", "%", "%S").
+  lineUnit     String?
+  /// Cantidad / rendimiento tal como viene en el archivo.
+  lineQuantity Decimal?
+  /// Precio unitario de la línea en el archivo. En líneas porcentuales es la
+  /// base sobre la que se aplica el porcentaje y difiere entre actividades.
+  lineUnitPrice Decimal?
+  /// Valor parcial declarado en el archivo (verificación).
+  linePartial  Decimal?
+  origin       CompositionOrigin @default(MANUAL)
 
-  @@unique([activityId, itemId])
-  @@index([activityId])
+  @@index([activityId, order])
   @@index([itemId])
 }
 
@@ -367,15 +590,58 @@ model Quote {
   taxPercent    Decimal     @default(19)
   directCost    Decimal
   totalAmount   Decimal
+  /// Obra de la que se emitió (null solo en cotizaciones anteriores a que la
+  /// cotización naciera de la obra; ver la migración de cotizaciones antiguas).
+  projectId     String?
+  project       Project?    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  /// Versión dentro de la obra (v1, v2…).
+  version       Int?
+  /// Revisión del presupuesto congelada en esta versión.
+  budgetRevision Int?
+  /// Foto completa del documento emitido (capítulos, partidas, totales,
+  /// partes). Un cambio posterior del presupuesto no la altera.
+  snapshot      Json?
+  /// Si el documento para el cliente muestra el detalle APU de cada partida.
+  showApuDetail Boolean     @default(false)
+  validUntil    DateTime?
+  sentAt        DateTime?
+  decidedAt     DateTime?
+  decidedByName String?
+  decisionNote  String?
   createdAt     DateTime    @default(now())
   updatedAt     temporal.updatedAt()
 
   items QuoteItem[]
+  followUps ProjectFollowUp[]
 
   @@unique([tenantId, code])
+  @@unique([projectId, version])
   @@index([tenantId])
   @@index([tenantId, status])
   @@index([customerId])
+}
+
+/// Seguimiento comercial de una obra: llamada, correo, reunión, visita o nota,
+/// opcionalmente ligado a una versión de la cotización y con fecha prevista.
+model ProjectFollowUp {
+  id           String       @id @default(uuid())
+  tenantId     String
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  projectId    String
+  project      Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  quoteId      String?
+  quote        Quote?       @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+  type         FollowUpType @default(NOTE)
+  note         String
+  /// Fecha prevista (próximo contacto); null si es un registro de lo ocurrido.
+  scheduledFor DateTime?
+  completedAt  DateTime?
+  authorName   String
+  createdAt    DateTime     @default(now())
+  updatedAt    temporal.updatedAt()
+
+  @@index([tenantId, projectId])
+  @@index([projectId, createdAt])
 }
 
 /// Registro de auditoría de acciones privilegiadas del SuperAdmin
@@ -422,4 +688,439 @@ model QuoteItem {
 
   @@index([quoteId])
   @@index([activityId])
+}
+
+/// Contenedor de un proyecto de obra (FASE 1 del vertical construcción).
+/// Cada proyecto es dueño de su ficha (`ProjectHeader`, 1:1) y, en fases
+/// posteriores, de presupuestos, planificación y bitácora.
+///
+/// Aislamiento multi-tenant: toda consulta filtra por `tenantId` y la capa
+/// de negocio valida que el `Customer` pertenezca al mismo tenant antes de
+/// vincularlo (el índice compuesto impide cruces accidentales de lectura).
+model Project {
+  id         String        @id @default(uuid())
+  tenantId   String
+  tenant     Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId String
+  customer   Customer      @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  /// Código de negocio: PROY-2026-001 (único dentro del tenant).
+  code       String
+  name       String
+  description String?
+  status     ProjectStatus @default(DRAFT)
+  createdAt  DateTime      @default(now())
+  updatedAt  temporal.updatedAt()
+
+  header   ProjectHeader?
+  /// Presupuesto de obra del proyecto (1:1 en esta fase, Tab 2).
+  budget   ProjectBudget?
+  quotes   Quote[]
+  followUps ProjectFollowUp[]
+  /// Plan operativo Lean (Last Planner System) del proyecto (1:1, Tab 3).
+  plan     ProjectPlan?
+  /// Bitácora de campo del proyecto (1:1, Tab 4).
+  fieldLog FieldLog?
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@index([customerId])
+  @@index([tenantId, status])
+}
+
+/// 1:1 con Proyecto. Snapshot inicial tomado del Customer del CRM al crear
+/// el proyecto (no es una segunda fuente maestra de cliente: el maestro
+/// sigue siendo `Customer`; aquí se congela lo que aplica a ESTA obra).
+model ProjectHeader {
+  id        String   @id @default(uuid())
+  projectId String   @unique
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // A) Datos tributarios / contractuales del cliente (snapshot del CRM).
+  clientTaxName      String?
+  clientTaxId        String?
+  clientTaxDv        String?
+  clientAddress      String?
+  clientCity         String?
+  clientBillingEmail String?
+  legalRepName       String?
+
+  // B) Ubicación y tipo de obra.
+  siteAddress     String?
+  siteCity        String?
+  siteDepartment  String?
+  projectType     String?
+  siteAccessNotes String?
+
+  // C) Responsables de la obra.
+  technicalContact            String?
+  technicalPhone              String?
+  projectLeaderName           String?
+  projectLeaderProfessionalId String?
+  supervisorName              String?
+
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+
+  @@index([projectId])
+}
+
+/// Presupuesto de obra de un proyecto (FASE 2 — Tab 2). Un proyecto tiene
+/// como máximo un presupuesto en esta fase (1:1 vía `projectId @unique`).
+///
+/// Montos y porcentajes en micro-unidades `BigInt` (6 decimales):
+///   · dinero/cantidad: 1_000_000 = 1.000000
+///   · porcentajes:     1_000_000 = 1.000000 = 100 % (100_000 = 10 %)
+/// El servidor SIEMPRE recalcula los totales con `lib/apu-engine.ts`;
+/// nunca se persisten totales enviados por el navegador.
+model ProjectBudget {
+  id        String  @id @default(uuid())
+  tenantId  String
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  projectId String  @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  /// Código de negocio: PRES-2026-001 (único dentro del tenant).
+  code      String
+  name      String
+
+  /// Configuración AIU (fracción × 1e6). Por defecto 10 % / 5 % / 5 % / 19 %.
+  aiuAdminPct     BigInt @default(100000)
+  aiuImprevPct    BigInt @default(50000)
+  aiuUtilidadPct  BigInt @default(50000)
+  ivaUtilidadPct  BigInt @default(190000)
+
+  /// Totales derivados (recalculados por el servidor en cada mutación).
+  directCostTotal  BigInt @default(0)
+  adminTotal       BigInt @default(0)
+  imprevTotal      BigInt @default(0)
+  utilidadTotal    BigInt @default(0)
+  ivaUtilidadTotal BigInt @default(0)
+  grandTotal       BigInt @default(0)
+
+  /// Bloqueo básico: la capa de negocio rechaza mutaciones ordinarias.
+  isLocked  Boolean  @default(false)
+  /// Versión optimista: se incrementa en cada mutación del presupuesto para
+  /// detectar ediciones concurrentes (STALE_REVISION).
+  revision  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+
+  chapters BudgetChapter[]
+  baselines BudgetBaseline[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+}
+
+/// Capítulo (grupo de partidas) dentro de un presupuesto. `order` es el
+/// orden de presentación; se asigna como `max + 1` al final del presupuesto.
+model BudgetChapter {
+  id        String        @id @default(uuid())
+  tenantId  String
+  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  budgetId  String
+  budget    ProjectBudget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  order     Int
+  name      String
+  description String?
+  createdAt DateTime      @default(now())
+  updatedAt temporal.updatedAt()
+
+  items BudgetItem[]
+
+  @@unique([budgetId, order])
+  @@index([tenantId])
+  @@index([budgetId])
+}
+
+/// Partida / actividad presupuestaria dentro de un capítulo. Cantidad y
+/// costos en micro-unidades `BigInt` (6 decimales).
+model BudgetItem {
+  id             String        @id @default(uuid())
+  tenantId       String
+  tenant         Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  chapterId      String
+  chapter        BudgetChapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  order          Int
+  /// Código de actividad (puede repetirse entre capítulos).
+  code           String
+  description    String
+  unit           String
+  /// Cantidad escalada (1_000_000 = 1.000000).
+  quantity       BigInt @default(1000000)
+  /// Costo unitario directo (micro-pesos).
+  unitCostDirect BigInt @default(0)
+  /// Costo directo total de la partida = quantity × unitCostDirect.
+  totalCostDirect BigInt @default(0)
+  /// Origen: ID de actividad del catálogo APU desde la que se importó esta partida.
+  sourceActivityId String?
+  createdAt      DateTime      @default(now())
+  updatedAt      temporal.updatedAt()
+
+  resources BudgetItemResource[]
+  progress  BudgetItemProgress[]
+  lookaheadTasks LookaheadTask[]
+  commitments    WeeklyCommitment[]
+  fieldLogEntries FieldLogEntry[]
+
+  @@unique([chapterId, order])
+  @@index([tenantId])
+  @@index([chapterId])
+}
+
+/// Recurso que compone la actividad (APU) de una partida. El editor
+/// avanzado de composición queda para una fase posterior (N1 solo persiste
+/// el modelo y lo muestra); `imageUrl` es opcional y sin integración externa.
+model BudgetItemResource {
+  id            String     @id @default(uuid())
+  tenantId      String
+  tenant        Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  itemId        String
+  item          BudgetItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  type          ResourceType
+  name          String
+  unit          String
+  /// Rendimiento del recurso por unidad de actividad (1_000_000 = 1.0).
+  performance   BigInt @default(1000000)
+  unitPrice     BigInt @default(0)
+  totalPrice    BigInt @default(0)
+  imageUrl      String?
+  /// Origen: ID de insumo del catálogo APU desde el que se importó este recurso.
+  sourceItemId  String?
+  /// Porcentaje de desperdicio de esta línea (micro, 1_000_000 = 100%). Default 0.
+  wastePct      BigInt @default(0)
+  /// Imagen del insumo en el sistema (copiada del catálogo al importar).
+  imageId       String?
+  /// Sección original de la línea en el APU del catálogo.
+  section       String?
+  /// Orden de la línea dentro del APU.
+  order         Int    @default(0)
+  createdAt     DateTime   @default(now())
+  updatedAt     temporal.updatedAt()
+
+  @@index([tenantId])
+  @@index([itemId])
+}
+
+/// Acta de avance de una partida: cantidad ejecutada en el período que cierra
+/// en `cutoffDate` (micro-unidades, se acumula). Es la fuente del valor ganado.
+model BudgetItemProgress {
+  id               String     @id @default(uuid())
+  tenantId         String
+  tenant           Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  budgetItemId     String
+  budgetItem       BudgetItem @relation(fields: [budgetItemId], references: [id], onDelete: Cascade)
+  cutoffDate       DateTime
+  executedQuantity BigInt
+  note             String?
+  authorName       String
+  createdAt        DateTime   @default(now())
+
+  @@index([tenantId])
+  @@index([budgetItemId, cutoffDate])
+}
+
+/// Línea base aprobada del presupuesto (D1 — revisiones baseline). Congela la
+/// revisión, los totales y los conteos del presupuesto en el instante de la
+/// aprobación para comparar después contra el avance y el costo real (FASE 5).
+/// Solo OWNER / SUPERADMIN pueden aprobar (D7). Un presupuesto puede acumular
+/// varias líneas base; la de mayor `version` es la vigente.
+model BudgetBaseline {
+  id        String        @id @default(uuid())
+  tenantId  String
+  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  budgetId  String
+  budget    ProjectBudget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+
+  /// Revisión del presupuesto (`ProjectBudget.revision`) **en el momento de aprobar**.
+  /// No cambia aunque el presupuesto se edite después; congela la revisión histórica.
+  budgetRevision Int
+  /// Número de secuencia de la línea base dentro del presupuesto (1, 2, 3…).
+  /// Se auto-incrementa por presupuesto (`@@unique([budgetId, version])`).
+  version        Int
+
+  /// Snapshot de totales en micro-unidades al momento de aprobar.
+  directCostTotal  BigInt
+  adminTotal       BigInt
+  imprevTotal      BigInt
+  utilidadTotal    BigInt
+  ivaUtilidadTotal BigInt
+  grandTotal       BigInt
+
+  /// Conteos del estado congelado.
+  chapterCount Int
+  itemCount    Int
+  /// Snapshot informativo del árbol de capítulos ({ order, name, subtotal }).
+  snapshot Json?
+
+  note           String?
+  approvedById   String
+  approvedByName String
+
+  createdAt DateTime @default(now())
+
+  @@unique([budgetId, version])
+  @@index([tenantId])
+  @@index([budgetId])
+}
+
+/// Evento de bloqueo/desbloqueo del presupuesto (solo agregar).
+/// Se crea en la misma transacción que el cambio de `isLocked`.
+model BudgetLockEvent {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  budgetId  String
+  budget    ProjectBudget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  action    String   // "LOCK" | "UNLOCK"
+  reason    String?
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([budgetId])
+  @@index([budgetId, createdAt])
+}
+
+/// Plan operativo Lean (Last Planner System) de un proyecto (FASE 3 — Tab 3).
+/// Un proyecto tiene como máximo un plan en esta fase (1:1 vía `projectId
+/// @unique`, lo que impide duplicados ante creación concurrente).
+///
+/// Semántica de la ventana Lookahead: `windowStartDate` ancla el lunes (día
+/// calendario en America/Bogota) de la SEMANA RELATIVA 1 de la ventana de 6
+/// semanas. La posición de una tarea dentro de la ventana se calcula como
+/// `weekNumber = floor((startDate − windowStartDate) / 7 días) + 1`. Al
+/// avanzar la ventana operativa se desplaza `windowStartDate` y se recalcula
+/// `weekNumber` de cada tarea, de modo que la planificación no se queda
+/// "congelada" en semanas relativas fijas.
+model ProjectPlan {
+  id        String  @id @default(uuid())
+  tenantId  String
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  projectId String  @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  name      String @default("Plan Operativo de Obra")
+  /// Meta de cumplimiento (PPC) en porcentaje. Configurable, no universal.
+  targetPpc Int    @default(85)
+  /// Lunes (00:00 Bogotá) de la semana relativa 1 de la ventana Lookahead.
+  windowStartDate DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+
+  lookaheadTasks LookaheadTask[]
+  commitments    WeeklyCommitment[]
+
+  @@index([tenantId])
+  @@index([tenantId, projectId])
+}
+
+/// Tarea de la ventana Lookahead (6 semanas) de un plan operativo. `weekNumber`
+/// es la SEMANA RELATIVA dentro de la ventana (1..6 en la ventana vigente;
+/// puede quedar <= 0 cuando la ventana avanza y la tarea pasa al histórico).
+/// NO es una semana calendario (ver `WeeklyCommitment`).
+model LookaheadTask {
+  id          String      @id @default(uuid())
+  tenantId    String
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  planId      String
+  plan        ProjectPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  /// Código de la tarea dentro del plan (p. ej. LKA-01). No único.
+  code        String
+  description String
+  /// Semana relativa dentro de la ventana Lookahead.
+  weekNumber  Int
+  startDate   DateTime
+  endDate     DateTime
+  /// Responsable o cuadrilla.
+  responsible String
+  /// Restricción real identificada por el equipo (no decorativa).
+  isRestricted Boolean @default(false)
+  notes       String?
+  /// Partida del presupuesto a la que se refiere (opcional).
+  budgetItemId String?
+  budgetItem   BudgetItem? @relation(fields: [budgetItemId], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   temporal.updatedAt()
+
+  @@index([tenantId])
+  @@index([planId])
+  @@index([tenantId, weekNumber])
+}
+
+/// Compromiso del Plan de Trabajo Semanal (WWP). `weekNumber` y `year` son la
+/// SEMANA CALENDARIO ISO-8601 y su año ISO (en America/Bogota), NO la semana
+/// relativa del Lookahead. El estado refleja el RESULTADO evaluado del
+/// compromiso; `failureCause`/`failureNotes` solo existen mientras el estado
+/// es FAILED (se limpian al cambiar de estado).
+model WeeklyCommitment {
+  id           String           @id @default(uuid())
+  tenantId     String
+  tenant       Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  planId       String
+  plan         ProjectPlan      @relation(fields: [planId], references: [id], onDelete: Cascade)
+  /// Semana calendario ISO-8601 (1..53).
+  weekNumber   Int
+  /// Año ISO-8601 (puede diferir del año natural en los bordes de enero).
+  year         Int
+  description  String
+  responsible  String
+  status       CommitmentStatus  @default(PENDING)
+  /// Causa de no cumplimiento (solo cuando `status = FAILED`).
+  failureCause NonComplianceCause?
+  failureNotes String?
+  /// Partida del presupuesto a la que se refiere (opcional).
+  budgetItemId String?
+  budgetItem   BudgetItem? @relation(fields: [budgetItemId], references: [id], onDelete: SetNull)
+  createdAt    DateTime          @default(now())
+  updatedAt    temporal.updatedAt()
+
+  @@index([tenantId])
+  @@index([planId])
+  @@index([tenantId, weekNumber, year])
+}
+
+/// Bitácora de campo de un proyecto (FASE 4 — Tab 4). Un proyecto tiene
+/// como máximo una bitácora en esta fase (1:1 vía `projectId @unique`).
+model FieldLog {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  projectId String   @unique
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name      String   @default("Diario Oficial de Obra")
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+
+  entries FieldLogEntry[]
+
+  @@index([tenantId])
+  @@index([tenantId, projectId])
+}
+
+/// Anotación del Diario Oficial de Obra (FASE 4 — Tab 4).
+model FieldLogEntry {
+  id          String           @id @default(uuid())
+  tenantId    String
+  tenant      Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  logId       String
+  log         FieldLog         @relation(fields: [logId], references: [id], onDelete: Cascade)
+  entryDate   DateTime
+  type        FieldNoteType    @default(ADVANCE)
+  title       String
+  description String
+  weather     WeatherCondition @default(SUNNY)
+  laborCount  Int              @default(0)
+  authorName  String
+  authorRole  String
+  photoUrls   String[]         @default([])
+  /// Partida del presupuesto a la que se refiere (opcional).
+  budgetItemId String?
+  budgetItem   BudgetItem? @relation(fields: [budgetItemId], references: [id], onDelete: SetNull)
+  createdAt   DateTime         @default(now())
+  updatedAt   temporal.updatedAt()
+
+  @@index([tenantId])
+  @@index([logId])
+  @@index([tenantId, entryDate])
 }

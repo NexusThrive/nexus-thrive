@@ -16,7 +16,10 @@ export interface CategoryResult {
 }
 
 /** Palabras clave por categoría (normalizadas internamente al comparar). */
-const CATEGORY_KEYWORDS: Record<Exclude<ApuItemCategoryValue, "MATERIAL">, string[]> = {
+const CATEGORY_KEYWORDS: Record<
+  Exclude<ApuItemCategoryValue, "MATERIAL" | "OTRO" | "SUBCONTRATO">,
+  string[]
+> = {
   MANO_DE_OBRA: [
     "jornal", "oficial", "ayudante", "cuadrilla", "operario", "maestro",
     "peon", "peón", "mono", "hh ", "horas-hombre", "trabajador", "obrero",

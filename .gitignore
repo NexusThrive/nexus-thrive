@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -42,4 +43,10 @@ next-env.d.ts
 
 # prisma
 /prisma/migrations
-migrations
+
+# transcripts de sesión (no se versionan)
+/conversations
+
+# contract emitido viejo (el vigente vive en prisma/) y volcado manual de esquema
+/generated
+/migration.sql

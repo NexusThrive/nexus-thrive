@@ -64,6 +64,31 @@ export function moneyToString(micro: Money): string {
   return `${sign}${whole}.${fracText}`;
 }
 
+/**
+ * Convierte un decimal (string) a micro-unidades aplicando redondeo half-up a
+ * 6 decimales. A diferencia de `parseMoney` NO rechaza valores con más de 6
+ * decimales: los redondea (necesario para importar catálogos con precisión
+ * arbitraria). Rechaza negativos, vacíos, notación científica y cualquier
+ * entrada que no sea un decimal no negativo.
+ */
+export function decimalToMicro(raw: string): Money | null {
+  const value = raw.trim();
+  if (!value || value.length > 60 || !DECIMAL_PATTERN.test(value)) {
+    return null;
+  }
+  if (value.startsWith("-")) {
+    return null;
+  }
+  const [intPart, fracPart = ""] = value.split(".");
+  const base = BigInt(intPart || "0") * UNIT;
+  if (fracPart.length <= 6) {
+    return base + BigInt((fracPart + "000000").slice(0, 6));
+  }
+  const kept = BigInt(fracPart.slice(0, 6));
+  const roundsUp = fracPart.charCodeAt(6) - 48 >= 5;
+  return base + kept + (roundsUp ? BigInt(1) : BigInt(0));
+}
+
 /** División con redondeo half-up (valores no negativos). */
 function roundDiv(numerator: bigint, denominator: bigint): bigint {
   return (numerator + denominator / BigInt(2)) / denominator;
@@ -129,6 +154,8 @@ export const APU_ITEM_CATEGORIES = [
   { value: "MANO_DE_OBRA", label: "Mano de Obra" },
   { value: "EQUIPO", label: "Equipo" },
   { value: "TRANSPORTE", label: "Transporte" },
+  { value: "OTRO", label: "Otros" },
+  { value: "SUBCONTRATO", label: "Subcontrato" },
 ] as const;
 export type ApuItemCategoryValue = (typeof APU_ITEM_CATEGORIES)[number]["value"];
 
@@ -137,6 +164,7 @@ export const QUOTE_STATUSES = [
   { value: "SENT", label: "Enviado" },
   { value: "APPROVED", label: "Aprobado" },
   { value: "REJECTED", label: "Rechazado" },
+  { value: "SUPERSEDED", label: "Reemplazada" },
 ] as const;
 export type QuoteStatusValue = (typeof QUOTE_STATUSES)[number]["value"];
 
@@ -163,6 +191,24 @@ export const APU_UNITS = [
   "HA",
 ] as const;
 export type ApuUnitValue = (typeof APU_UNITS)[number];
+
+/**
+ * Mapeo de PRESENTACIÓN de unidades: la base guarda el código técnico
+ * (`M2`, `M3`) y la UI muestra el símbolo (`m²`, `m³`). No altera lo
+ * almacenado — es solo capa de visualización.
+ */
+const APU_UNIT_LABELS: Record<string, string> = {
+  M2: "m²",
+  M3: "m³",
+};
+
+/** Devuelve la etiqueta visual de una unidad (cae al código si no hay mapeo). */
+export function formatApuUnit(unit: string | null | undefined): string {
+  if (!unit) {
+    return "";
+  }
+  return APU_UNIT_LABELS[unit] ?? unit;
+}
 
 export function apuCategoryLabel(category: ApuItemCategoryValue): string {
   return (
@@ -209,23 +255,54 @@ export type ActivityComponentInput = {
  * Todo en micro-unidades enteras; se redondea half-up al micro.
  */
 export function componentCost(input: ActivityComponentInput): Money {
-  const unitPrice = parseMoney(input.unitPrice);
-  const consumption = parseMoney(input.consumption);
-  const waste = parseMoney(input.wastePercent);
+  const unitPrice = parseExactDecimal(input.unitPrice);
+  const consumption = parseExactDecimal(input.consumption);
+  const waste = parseExactDecimal(input.wastePercent);
 
   if (unitPrice === null || consumption === null || waste === null) {
     throw new Error("componentCost: entrada decimal inválida.");
   }
-  if (unitPrice < BigInt(0) || consumption < BigInt(0) || waste < BigInt(0)) {
+  if (unitPrice.digits < BigInt(0) || consumption.digits < BigInt(0) || waste.digits < BigInt(0)) {
     throw new Error("componentCost: valores negativos no permitidos.");
   }
 
-  // factor = (100 + desperdicio) / 100 en micro-puntos → 100*UNIT + waste
-  const factor = BigInt(100) * UNIT + waste;
-  return roundDiv(
-    unitPrice * consumption * factor,
-    BigInt(100) * UNIT * UNIT,
-  );
+  // Exacto con cualquier cantidad de decimales (los packs APU traen algunos
+  // rendimientos y precios con 7+ decimales):
+  //   precio × consumo × (100 + desperdicio) / 100, redondeado al micro.
+  const wasteScale = BigInt(10) ** BigInt(waste.scale);
+  const factor = BigInt(100) * wasteScale + waste.digits;
+  const numerator = unitPrice.digits * consumption.digits * factor * UNIT;
+  const denominator =
+    BigInt(10) ** BigInt(unitPrice.scale + consumption.scale) * BigInt(100) * wasteScale;
+  return roundDiv(numerator, denominator);
+}
+
+/** Decimal en texto como entero escalado, sin límite de decimales. */
+function parseExactDecimal(raw: string): { digits: bigint; scale: number } | null {
+  const value = raw.trim();
+  if (!value || value.length > 60 || !DECIMAL_PATTERN.test(value)) {
+    return null;
+  }
+  const negative = value.startsWith("-");
+  const unsigned = negative ? value.slice(1) : value;
+  const [intPart, fracPart = ""] = unsigned.split(".");
+  const digits = BigInt((intPart || "0") + fracPart);
+  return { digits: negative ? -digits : digits, scale: fracPart.length };
+}
+
+/**
+ * Precio unitario efectivo de una línea de composición: el que trae la línea
+ * (importada de un pack APU; en líneas porcentuales es su base) o, si la línea
+ * es manual y no lo tiene, el precio vigente del insumo.
+ */
+export function compositionUnitPrice(
+  line: { lineUnitPrice?: unknown },
+  itemUnitPrice: unknown,
+): string {
+  const own = line.lineUnitPrice;
+  return own !== null && own !== undefined && String(own) !== ""
+    ? String(own)
+    : String(itemUnitPrice);
 }
 
 /** Costo unitario de una actividad = Σ de sus componentes. */
@@ -343,6 +420,173 @@ export function directCostOf(quantities: string[], unitCosts: string[]): string 
 }
 
 /* ------------------------------------------------------------------ */
+/* Presupuesto de proyecto — motor BigInt (FASE 2, Tab 2)              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Escala de punto fijo (6 decimales), la que exige el contrato de
+ * `ProjectBudget` (columnas `BigInt`).
+ *   · DINERO/CANTIDAD: 1_000_000 = 1.000000
+ *   · PORCENTAJES almacenados: 1_000_000 = 1.000000 = 100 %
+ *     (100_000 = 10 %, 50_000 = 5 %, 190_000 = 19 %)
+ */
+export const SCALE = UNIT;
+
+/**
+ * Configuración AIU por defecto del vertical construcción: Admin 10 %,
+ * Imprevistos 5 %, Utilidad 5 %, IVA sobre utilidad 19 %. Es la fuente única
+ * en TypeScript — debe coincidir con los `@default` de `ProjectBudget` en
+ * `prisma/contract.prisma` (100_000 / 50_000 / 50_000 / 190_000).
+ */
+export const AIU_DEFAULTS = {
+  adminPct: BigInt(100_000),
+  imprevPct: BigInt(50_000),
+  utilidadPct: BigInt(50_000),
+  ivaUtilidadPct: BigInt(190_000),
+} as const;
+
+/**
+ * Convierte un porcentaje legible ("10", "9.5", "19") a la micro-fracción
+ * almacenada (100_000 = 10 %). Devuelve `null` si no es un decimal válido.
+ * Nota: es una división exacta por 100 sobre el decimal ya parseado.
+ */
+export function percentToMicro(raw: string): bigint | null {
+  const value = parseMoney(raw);
+  if (value === null) {
+    return null;
+  }
+  return value / BigInt(100);
+}
+
+/** Inverso de `percentToMicro`: 100_000 → "10", 190_000 → "19". */
+export function microToPercent(micro: bigint): string {
+  return moneyToString(micro * BigInt(100));
+}
+
+/**
+ * Costo directo total de una partida: `quantity × unitCostDirect`, ambos en
+ * micro-unidades. Redondeo half-up al micro (misma regla del motor).
+ * Rechaza valores negativos.
+ */
+export function calculateItemTotal(quantity: bigint, unitCost: bigint): bigint {
+  if (quantity < BigInt(0) || unitCost < BigInt(0)) {
+    throw new Error("calculateItemTotal: valores negativos no permitidos.");
+  }
+  return roundDiv(quantity * unitCost, SCALE);
+}
+
+/**
+ * Costo de UNA línea de recurso del presupuesto, todo en micro-unidades:
+ *   performance × (SCALE + wastePct) × unitPrice / SCALE²
+ * `wastePct` es la fracción de desperdicio en micro (1_000_000 = 100 %).
+ * Redondeo half-up, idéntico a `updateResource` e `importActivityFromCatalog`.
+ * Rechaza valores negativos.
+ */
+export function resourceLineCostMicro(params: {
+  performance: bigint;
+  wastePct: bigint;
+  unitPrice: bigint;
+}): Money {
+  const { performance, wastePct, unitPrice } = params;
+  if (
+    performance < BigInt(0) ||
+    wastePct < BigInt(0) ||
+    unitPrice < BigInt(0)
+  ) {
+    throw new Error("resourceLineCostMicro: valores negativos no permitidos.");
+  }
+  return roundDiv(
+    performance * (SCALE + wastePct) * unitPrice,
+    SCALE * SCALE,
+  );
+}
+
+export type BudgetTotals = {
+  adminTotal: bigint;
+  imprevTotal: bigint;
+  utilidadTotal: bigint;
+  ivaUtilidadTotal: bigint;
+  grandTotal: bigint;
+};
+
+/**
+ * Cascada financiera del presupuesto: administración, imprevistos y utilidad
+ * se aplican sobre el costo directo; el IVA SOLO sobre la utilidad.
+ * Todos los operandos están en micro-unidades y los porcentajes con
+ * 1_000_000 = 100 %. Aritmética `BigInt` pura, redondeo half-up, sin punto
+ * flotante. Determinístico.
+ */
+export function calculateBudgetTotals(
+  directCostTotal: bigint,
+  adminPct: bigint,
+  imprevPct: bigint,
+  utilidadPct: bigint,
+  ivaUtilidadPct: bigint,
+): BudgetTotals {
+  if (
+    directCostTotal < BigInt(0) ||
+    adminPct < BigInt(0) ||
+    imprevPct < BigInt(0) ||
+    utilidadPct < BigInt(0) ||
+    ivaUtilidadPct < BigInt(0)
+  ) {
+    throw new Error("calculateBudgetTotals: valores negativos no permitidos.");
+  }
+
+  const adminTotal = roundDiv(directCostTotal * adminPct, SCALE);
+  const imprevTotal = roundDiv(directCostTotal * imprevPct, SCALE);
+  const utilidadTotal = roundDiv(directCostTotal * utilidadPct, SCALE);
+  const ivaUtilidadTotal = roundDiv(utilidadTotal * ivaUtilidadPct, SCALE);
+  const grandTotal =
+    directCostTotal +
+    adminTotal +
+    imprevTotal +
+    utilidadTotal +
+    ivaUtilidadTotal;
+
+  return { adminTotal, imprevTotal, utilidadTotal, ivaUtilidadTotal, grandTotal };
+}
+
+/** Catálogo de tipos de recurso de una partida (espejo del enum del contrato). */
+export const RESOURCE_TYPES = [
+  { value: "MATERIAL", label: "Material" },
+  { value: "LABOR", label: "Mano de obra" },
+  { value: "EQUIPMENT", label: "Equipo" },
+  { value: "TRANSPORT", label: "Transporte" },
+  { value: "OTHER", label: "Otros" },
+  { value: "SUBCONTRACT", label: "Subcontrato" },
+] as const;
+export type ResourceTypeValue = (typeof RESOURCE_TYPES)[number]["value"];
+
+export function resourceTypeLabel(type: ResourceTypeValue): string {
+  return RESOURCE_TYPES.find((option) => option.value === type)?.label ?? type;
+}
+
+export function isValidResourceType(raw: string): raw is ResourceTypeValue {
+  return (RESOURCE_TYPES as readonly { value: string }[]).some(
+    (option) => option.value === raw,
+  );
+}
+
+/**
+ * Convierte una categoría de insumo APU al tipo de recurso del presupuesto.
+ * Mapeo 1:1 determinista, sin efectos colaterales (función pura).
+ */
+export function apuItemCategoryToResourceType(
+  category: ApuItemCategoryValue,
+): ResourceTypeValue {
+  const map: Record<ApuItemCategoryValue, ResourceTypeValue> = {
+    MATERIAL: "MATERIAL",
+    MANO_DE_OBRA: "LABOR",
+    EQUIPO: "EQUIPMENT",
+    TRANSPORTE: "TRANSPORT",
+    OTRO: "OTHER",
+    SUBCONTRATO: "SUBCONTRACT",
+  };
+  return map[category];
+}
+
+/* ------------------------------------------------------------------ */
 /* Snapshot del APU (inmutable al cotizar)                             */
 /* ------------------------------------------------------------------ */
 
@@ -412,4 +656,41 @@ export function buildApuSnapshot(input: {
       ),
     })),
   };
+}
+/**
+ * Determina si un valor debe mostrar badge "Revisar":
+ * SOLO si supera p99 Y es mayor a 2x la mediana de su unidad.
+ * Función pura, sin efectos colaterales.
+ */
+export function shouldShowReviewBadge(
+  value: number,
+  p99: number | undefined,
+  median: number | undefined,
+): boolean {
+  if (p99 === undefined || median === undefined) return false;
+  return value > p99 && value > median * 2;
+}
+
+/**
+ * Variante para costo unitario de actividad (ya parseado a number).
+ */
+export function shouldReviewActivityUnitCost(
+  unitCost: number,
+  p99ByUnit: Record<string, number>,
+  medianByUnit: Record<string, number>,
+  unit: string,
+): boolean {
+  return shouldShowReviewBadge(unitCost, p99ByUnit[unit], medianByUnit[unit]);
+}
+
+/**
+ * Variante para consumo de insumo (ya parseado a number).
+ */
+export function shouldReviewItemConsumption(
+  consumption: number,
+  p99ByUnit: Record<string, number>,
+  medianByUnit: Record<string, number>,
+  itemUnit: string,
+): boolean {
+  return shouldShowReviewBadge(consumption, p99ByUnit[itemUnit], medianByUnit[itemUnit]);
 }

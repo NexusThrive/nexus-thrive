@@ -28,30 +28,8 @@ export default clerkMiddleware(async (auth, request) => {
     return NextResponse.next();
   }
 
-  // Tenant routes: /{tenant}/*
-  // Detecta primer segmento como tenant slug
-  const segments = pathname.split("/").filter(Boolean);
-  const firstSegment = segments[0];
-
-  if (firstSegment) {
-    // Rutas conocidas que NO son tenants
-    const nonTenantRoutes = ["admin", "onboarding", "sign-in", "sign-up", "api", "_next", "__clerk"];
-    
-    if (!nonTenantRoutes.includes(firstSegment)) {
-      // Es un tenant: /gymcarlos/... → reescribe a /gymcarlos/...
-      // Si ya viene con el tenant, pasa directo
-      const isTenantScoped = pathname === `/${firstSegment}` || pathname.startsWith(`/${firstSegment}/`);
-      
-      if (isTenantScoped) {
-        return NextResponse.next();
-      }
-      
-      // Reescribe añadiendo el tenant prefix
-      return NextResponse.rewrite(
-        new URL(`/${firstSegment}${pathname}`, request.url)
-      );
-    }
-  }
+  // Tenant routes: /{tenant}/* pasan tal cual; el layout `[tenant]` valida
+  // sesión y membresía (y cada server action lo revalida).
 
   // Root → sign-in
   if (pathname === "/") {

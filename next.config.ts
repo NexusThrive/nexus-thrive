@@ -1,26 +1,39 @@
 import type { NextConfig } from "next";
 
+/** Cada host se acepta con y sin el puerto 3000 del dev server. */
+function devOriginsFromEnv(raw: string | undefined): string[] {
+  return (raw ?? "")
+    .split(",")
+    .map((host) => host.trim())
+    .filter(Boolean)
+    .flatMap((host) => [host, `${host}:3000`]);
+}
+
 const nextConfig: NextConfig = {
-  // Acceso al dev server desde el móvil (bluetooth-free): sin estos Hosts,
-  // Next dev bloquea los recursos y la página queda en blanco.
+  // Hosts extra del dev server (acceso desde el móvil por Tailscale/LAN):
+  // sin ellos, Next dev bloquea los recursos y la página queda en blanco.
+  // Los propios de cada máquina van en `.env` (no versionado), separados por
+  // coma: DEV_ALLOWED_ORIGINS="mi-host.ts.net,192.168.1.10".
   allowedDevOrigins: [
-    "gymcarlos.lvh.me",
-    "gymcarlos.lvh.me:3000",
     "*.lvh.me",
     "*.lvh.me:3000",
     "lvh.me",
     "lvh.me:3000",
     "localhost:3000",
     "localhost:3001",
-    "archlinux-2026-08-08.tail07d332.ts.net",
-    "archlinux-2026-08-08.tail07d332.ts.net:3000",
-    "*.tail07d332.ts.net",
-    "*.tail07d332.ts.net:3000",
-    "100.96.105.83",
-    "100.96.105.83:3000",
-    "192.168.1.114",
-    "192.168.1.114:3000",
+    ...devOriginsFromEnv(process.env.DEV_ALLOWED_ORIGINS),
   ],
+  // Rutas anteriores a la reorganización de construcción (obras, carpetas de
+  // cotizaciones y catálogo APU separados).
+  async redirects() {
+    return [
+      { source: "/:tenant/quotes/projects", destination: "/:tenant/projects", permanent: false },
+      { source: "/:tenant/quotes/projects/:path*", destination: "/:tenant/projects/:path*", permanent: false },
+      { source: "/:tenant/quotes/import", destination: "/:tenant/catalog/import", permanent: false },
+      { source: "/:tenant/quotes/new", destination: "/:tenant/projects", permanent: false },
+      { source: "/:tenant/quotes/:id/explosion", destination: "/:tenant/quotes/:id", permanent: false },
+    ];
+  },
   // Los packs APU reales superan los límites por defecto (Server Actions 1 MB,
   // proxy 10 MB) — el MASTER PACK pesa ~16 MB.
   experimental: {

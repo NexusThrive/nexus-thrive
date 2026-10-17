@@ -1,0 +1,725 @@
+[
+  {
+    "id": "table.LookaheadTask",
+    "label": "Create table \"LookaheadTask\"",
+    "summary": "Creates table \"LookaheadTask\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "LookaheadTask"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"LookaheadTask\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"LookaheadTask\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"LookaheadTask\"",
+        "sql": "CREATE TABLE \"public\".\"LookaheadTask\" (\n  \"code\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text NOT NULL,\n  \"endDate\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"isRestricted\" bool DEFAULT false NOT NULL,\n  \"notes\" text,\n  \"planId\" text NOT NULL,\n  \"responsible\" text NOT NULL,\n  \"startDate\" timestamptz NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"weekNumber\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"LookaheadTask\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"LookaheadTask\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ProjectPlan",
+    "label": "Create table \"ProjectPlan\"",
+    "summary": "Creates table \"ProjectPlan\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ProjectPlan"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ProjectPlan\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectPlan\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ProjectPlan\"",
+        "sql": "CREATE TABLE \"public\".\"ProjectPlan\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text DEFAULT 'Plan Operativo de Obra' NOT NULL,\n  \"projectId\" text NOT NULL,\n  \"targetPpc\" int4 DEFAULT 85 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"windowStartDate\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ProjectPlan\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectPlan\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.WeeklyCommitment",
+    "label": "Create table \"WeeklyCommitment\"",
+    "summary": "Creates table \"WeeklyCommitment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "WeeklyCommitment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"WeeklyCommitment\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WeeklyCommitment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"WeeklyCommitment\"",
+        "sql": "CREATE TABLE \"public\".\"WeeklyCommitment\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text NOT NULL,\n  \"failureCause\" text,\n  \"failureNotes\" text,\n  \"id\" text NOT NULL,\n  \"planId\" text NOT NULL,\n  \"responsible\" text NOT NULL,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"weekNumber\" int4 NOT NULL,\n  \"year\" int4 NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"WeeklyCommitment_failureCause_check_8114adf5\" CHECK (\"failureCause\" IN ('WEATHER', 'MATERIALS', 'LABOR', 'EQUIPMENT', 'DESIGN_CHANGE', 'PREVIOUS_WORK', 'OTHER')),\n  CONSTRAINT \"WeeklyCommitment_status_check_04ef721f\" CHECK (\"status\" IN ('PENDING', 'COMPLETED', 'FAILED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"WeeklyCommitment\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WeeklyCommitment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ProjectPlan.ProjectPlan_projectId_key",
+    "label": "Add unique constraint on \"ProjectPlan\" (projectId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ProjectPlan_projectId_key",
+        "table": "ProjectPlan"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ProjectPlan_projectId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectPlan_projectId_key",
+          "public",
+          "\"public\".\"ProjectPlan\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ProjectPlan_projectId_key\"",
+        "sql": "ALTER TABLE \"public\".\"ProjectPlan\" ADD CONSTRAINT \"ProjectPlan_projectId_key\" UNIQUE (\"projectId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ProjectPlan_projectId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectPlan_projectId_key",
+          "public",
+          "\"public\".\"ProjectPlan\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.LookaheadTask.LookaheadTask_planId_idx_5b32079a",
+    "label": "Create index \"LookaheadTask_planId_idx_5b32079a\" on \"LookaheadTask\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "LookaheadTask_planId_idx_5b32079a",
+        "table": "LookaheadTask"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"LookaheadTask_planId_idx_5b32079a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"LookaheadTask_planId_idx_5b32079a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"LookaheadTask_planId_idx_5b32079a\"",
+        "sql": "CREATE INDEX \"LookaheadTask_planId_idx_5b32079a\" ON \"public\".\"LookaheadTask\" (\"planId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"LookaheadTask_planId_idx_5b32079a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"LookaheadTask_planId_idx_5b32079a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.LookaheadTask.LookaheadTask_tenantId_idx_c93ed4f1",
+    "label": "Create index \"LookaheadTask_tenantId_idx_c93ed4f1\" on \"LookaheadTask\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "LookaheadTask_tenantId_idx_c93ed4f1",
+        "table": "LookaheadTask"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"LookaheadTask_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"LookaheadTask_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"LookaheadTask_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"LookaheadTask_tenantId_idx_c93ed4f1\" ON \"public\".\"LookaheadTask\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"LookaheadTask_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"LookaheadTask_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.LookaheadTask.LookaheadTask_tenantId_weekNumber_idx_bbf8add1",
+    "label": "Create index \"LookaheadTask_tenantId_weekNumber_idx_bbf8add1\" on \"LookaheadTask\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "LookaheadTask_tenantId_weekNumber_idx_bbf8add1",
+        "table": "LookaheadTask"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"LookaheadTask_tenantId_weekNumber_idx_bbf8add1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"LookaheadTask_tenantId_weekNumber_idx_bbf8add1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"LookaheadTask_tenantId_weekNumber_idx_bbf8add1\"",
+        "sql": "CREATE INDEX \"LookaheadTask_tenantId_weekNumber_idx_bbf8add1\" ON \"public\".\"LookaheadTask\" (\"tenantId\", \"weekNumber\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"LookaheadTask_tenantId_weekNumber_idx_bbf8add1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"LookaheadTask_tenantId_weekNumber_idx_bbf8add1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProjectPlan.ProjectPlan_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ProjectPlan_tenantId_idx_c93ed4f1\" on \"ProjectPlan\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProjectPlan_tenantId_idx_c93ed4f1",
+        "table": "ProjectPlan"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProjectPlan_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectPlan_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProjectPlan_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ProjectPlan_tenantId_idx_c93ed4f1\" ON \"public\".\"ProjectPlan\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProjectPlan_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectPlan_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProjectPlan.ProjectPlan_tenantId_projectId_idx_e88197e4",
+    "label": "Create index \"ProjectPlan_tenantId_projectId_idx_e88197e4\" on \"ProjectPlan\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProjectPlan_tenantId_projectId_idx_e88197e4",
+        "table": "ProjectPlan"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProjectPlan_tenantId_projectId_idx_e88197e4\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectPlan_tenantId_projectId_idx_e88197e4\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProjectPlan_tenantId_projectId_idx_e88197e4\"",
+        "sql": "CREATE INDEX \"ProjectPlan_tenantId_projectId_idx_e88197e4\" ON \"public\".\"ProjectPlan\" (\"tenantId\", \"projectId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProjectPlan_tenantId_projectId_idx_e88197e4\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectPlan_tenantId_projectId_idx_e88197e4\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WeeklyCommitment.WeeklyCommitment_planId_idx_5b32079a",
+    "label": "Create index \"WeeklyCommitment_planId_idx_5b32079a\" on \"WeeklyCommitment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WeeklyCommitment_planId_idx_5b32079a",
+        "table": "WeeklyCommitment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WeeklyCommitment_planId_idx_5b32079a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WeeklyCommitment_planId_idx_5b32079a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WeeklyCommitment_planId_idx_5b32079a\"",
+        "sql": "CREATE INDEX \"WeeklyCommitment_planId_idx_5b32079a\" ON \"public\".\"WeeklyCommitment\" (\"planId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WeeklyCommitment_planId_idx_5b32079a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WeeklyCommitment_planId_idx_5b32079a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WeeklyCommitment.WeeklyCommitment_tenantId_idx_c93ed4f1",
+    "label": "Create index \"WeeklyCommitment_tenantId_idx_c93ed4f1\" on \"WeeklyCommitment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WeeklyCommitment_tenantId_idx_c93ed4f1",
+        "table": "WeeklyCommitment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WeeklyCommitment_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WeeklyCommitment_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WeeklyCommitment_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"WeeklyCommitment_tenantId_idx_c93ed4f1\" ON \"public\".\"WeeklyCommitment\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WeeklyCommitment_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WeeklyCommitment_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WeeklyCommitment.WeeklyCommitment_tenantId_weekNumber_year_idx_07f7a3c9",
+    "label": "Create index \"WeeklyCommitment_tenantId_weekNumber_year_idx_07f7a3c9\" on \"WeeklyCommitment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WeeklyCommitment_tenantId_weekNumber_year_idx_07f7a3c9",
+        "table": "WeeklyCommitment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WeeklyCommitment_tenantId_weekNumber_year_idx_07f7a3c9\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WeeklyCommitment_tenantId_weekNumber_year_idx_07f7a3c9\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WeeklyCommitment_tenantId_weekNumber_year_idx_07f7a3c9\"",
+        "sql": "CREATE INDEX \"WeeklyCommitment_tenantId_weekNumber_year_idx_07f7a3c9\" ON \"public\".\"WeeklyCommitment\" (\"tenantId\", \"weekNumber\", \"year\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WeeklyCommitment_tenantId_weekNumber_year_idx_07f7a3c9\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WeeklyCommitment_tenantId_weekNumber_year_idx_07f7a3c9\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.LookaheadTask.LookaheadTask_tenantId_fkey",
+    "label": "Add foreign key \"LookaheadTask_tenantId_fkey\" on \"LookaheadTask\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "LookaheadTask_tenantId_fkey",
+        "table": "LookaheadTask"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"LookaheadTask_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "LookaheadTask_tenantId_fkey",
+          "public",
+          "\"public\".\"LookaheadTask\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"LookaheadTask_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"LookaheadTask\"\nADD CONSTRAINT \"LookaheadTask_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"LookaheadTask_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "LookaheadTask_tenantId_fkey",
+          "public",
+          "\"public\".\"LookaheadTask\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.LookaheadTask.LookaheadTask_planId_fkey",
+    "label": "Add foreign key \"LookaheadTask_planId_fkey\" on \"LookaheadTask\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "LookaheadTask_planId_fkey",
+        "table": "LookaheadTask"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"LookaheadTask_planId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "LookaheadTask_planId_fkey",
+          "public",
+          "\"public\".\"LookaheadTask\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"LookaheadTask_planId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"LookaheadTask\"\nADD CONSTRAINT \"LookaheadTask_planId_fkey\"\nFOREIGN KEY (\"planId\")\nREFERENCES \"public\".\"ProjectPlan\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"LookaheadTask_planId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "LookaheadTask_planId_fkey",
+          "public",
+          "\"public\".\"LookaheadTask\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProjectPlan.ProjectPlan_tenantId_fkey",
+    "label": "Add foreign key \"ProjectPlan_tenantId_fkey\" on \"ProjectPlan\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProjectPlan_tenantId_fkey",
+        "table": "ProjectPlan"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProjectPlan_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectPlan_tenantId_fkey",
+          "public",
+          "\"public\".\"ProjectPlan\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProjectPlan_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProjectPlan\"\nADD CONSTRAINT \"ProjectPlan_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProjectPlan_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectPlan_tenantId_fkey",
+          "public",
+          "\"public\".\"ProjectPlan\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProjectPlan.ProjectPlan_projectId_fkey",
+    "label": "Add foreign key \"ProjectPlan_projectId_fkey\" on \"ProjectPlan\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProjectPlan_projectId_fkey",
+        "table": "ProjectPlan"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProjectPlan_projectId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectPlan_projectId_fkey",
+          "public",
+          "\"public\".\"ProjectPlan\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProjectPlan_projectId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProjectPlan\"\nADD CONSTRAINT \"ProjectPlan_projectId_fkey\"\nFOREIGN KEY (\"projectId\")\nREFERENCES \"public\".\"Project\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProjectPlan_projectId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectPlan_projectId_fkey",
+          "public",
+          "\"public\".\"ProjectPlan\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.WeeklyCommitment.WeeklyCommitment_tenantId_fkey",
+    "label": "Add foreign key \"WeeklyCommitment_tenantId_fkey\" on \"WeeklyCommitment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "WeeklyCommitment_tenantId_fkey",
+        "table": "WeeklyCommitment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"WeeklyCommitment_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WeeklyCommitment_tenantId_fkey",
+          "public",
+          "\"public\".\"WeeklyCommitment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"WeeklyCommitment_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"WeeklyCommitment\"\nADD CONSTRAINT \"WeeklyCommitment_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"WeeklyCommitment_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WeeklyCommitment_tenantId_fkey",
+          "public",
+          "\"public\".\"WeeklyCommitment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.WeeklyCommitment.WeeklyCommitment_planId_fkey",
+    "label": "Add foreign key \"WeeklyCommitment_planId_fkey\" on \"WeeklyCommitment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "WeeklyCommitment_planId_fkey",
+        "table": "WeeklyCommitment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"WeeklyCommitment_planId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WeeklyCommitment_planId_fkey",
+          "public",
+          "\"public\".\"WeeklyCommitment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"WeeklyCommitment_planId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"WeeklyCommitment\"\nADD CONSTRAINT \"WeeklyCommitment_planId_fkey\"\nFOREIGN KEY (\"planId\")\nREFERENCES \"public\".\"ProjectPlan\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"WeeklyCommitment_planId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WeeklyCommitment_planId_fkey",
+          "public",
+          "\"public\".\"WeeklyCommitment\""
+        ]
+      }
+    ]
+  }
+]

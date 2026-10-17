@@ -1,0 +1,935 @@
+[
+  {
+    "id": "table.BudgetChapter",
+    "label": "Create table \"BudgetChapter\"",
+    "summary": "Creates table \"BudgetChapter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "BudgetChapter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"BudgetChapter\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetChapter\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"BudgetChapter\"",
+        "sql": "CREATE TABLE \"public\".\"BudgetChapter\" (\n  \"budgetId\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"order\" int4 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"BudgetChapter\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetChapter\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.BudgetItem",
+    "label": "Create table \"BudgetItem\"",
+    "summary": "Creates table \"BudgetItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "BudgetItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"BudgetItem\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"BudgetItem\"",
+        "sql": "CREATE TABLE \"public\".\"BudgetItem\" (\n  \"chapterId\" text NOT NULL,\n  \"code\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"order\" int4 NOT NULL,\n  \"quantity\" int8 DEFAULT '1000000'::int8 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"totalCostDirect\" int8 DEFAULT '0'::int8 NOT NULL,\n  \"unit\" text NOT NULL,\n  \"unitCostDirect\" int8 DEFAULT '0'::int8 NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"BudgetItem\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.BudgetItemResource",
+    "label": "Create table \"BudgetItemResource\"",
+    "summary": "Creates table \"BudgetItemResource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "BudgetItemResource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"BudgetItemResource\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItemResource\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"BudgetItemResource\"",
+        "sql": "CREATE TABLE \"public\".\"BudgetItemResource\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"imageUrl\" text,\n  \"itemId\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"performance\" int8 DEFAULT '1000000'::int8 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"totalPrice\" int8 DEFAULT '0'::int8 NOT NULL,\n  \"type\" text NOT NULL,\n  \"unit\" text NOT NULL,\n  \"unitPrice\" int8 DEFAULT '0'::int8 NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"BudgetItemResource_type_check_13d76a3a\" CHECK (\"type\" IN ('MATERIAL', 'LABOR', 'EQUIPMENT', 'TRANSPORT'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"BudgetItemResource\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItemResource\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ProjectBudget",
+    "label": "Create table \"ProjectBudget\"",
+    "summary": "Creates table \"ProjectBudget\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ProjectBudget"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ProjectBudget\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectBudget\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ProjectBudget\"",
+        "sql": "CREATE TABLE \"public\".\"ProjectBudget\" (\n  \"adminTotal\" int8 DEFAULT '0'::int8 NOT NULL,\n  \"aiuAdminPct\" int8 DEFAULT '100000'::int8 NOT NULL,\n  \"aiuImprevPct\" int8 DEFAULT '50000'::int8 NOT NULL,\n  \"aiuUtilidadPct\" int8 DEFAULT '50000'::int8 NOT NULL,\n  \"code\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"directCostTotal\" int8 DEFAULT '0'::int8 NOT NULL,\n  \"grandTotal\" int8 DEFAULT '0'::int8 NOT NULL,\n  \"id\" text NOT NULL,\n  \"imprevTotal\" int8 DEFAULT '0'::int8 NOT NULL,\n  \"isLocked\" bool DEFAULT false NOT NULL,\n  \"ivaUtilidadPct\" int8 DEFAULT '190000'::int8 NOT NULL,\n  \"ivaUtilidadTotal\" int8 DEFAULT '0'::int8 NOT NULL,\n  \"name\" text NOT NULL,\n  \"projectId\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"utilidadTotal\" int8 DEFAULT '0'::int8 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ProjectBudget\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectBudget\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.BudgetChapter.BudgetChapter_budgetId_order_key",
+    "label": "Add unique constraint on \"BudgetChapter\" (budgetId, order)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "BudgetChapter_budgetId_order_key",
+        "table": "BudgetChapter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"BudgetChapter_budgetId_order_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetChapter_budgetId_order_key",
+          "public",
+          "\"public\".\"BudgetChapter\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"BudgetChapter_budgetId_order_key\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetChapter\" ADD CONSTRAINT \"BudgetChapter_budgetId_order_key\" UNIQUE (\"budgetId\", \"order\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"BudgetChapter_budgetId_order_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetChapter_budgetId_order_key",
+          "public",
+          "\"public\".\"BudgetChapter\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.BudgetItem.BudgetItem_chapterId_order_key",
+    "label": "Add unique constraint on \"BudgetItem\" (chapterId, order)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "BudgetItem_chapterId_order_key",
+        "table": "BudgetItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"BudgetItem_chapterId_order_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItem_chapterId_order_key",
+          "public",
+          "\"public\".\"BudgetItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"BudgetItem_chapterId_order_key\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItem\" ADD CONSTRAINT \"BudgetItem_chapterId_order_key\" UNIQUE (\"chapterId\", \"order\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"BudgetItem_chapterId_order_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItem_chapterId_order_key",
+          "public",
+          "\"public\".\"BudgetItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ProjectBudget.ProjectBudget_projectId_key",
+    "label": "Add unique constraint on \"ProjectBudget\" (projectId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ProjectBudget_projectId_key",
+        "table": "ProjectBudget"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ProjectBudget_projectId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectBudget_projectId_key",
+          "public",
+          "\"public\".\"ProjectBudget\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ProjectBudget_projectId_key\"",
+        "sql": "ALTER TABLE \"public\".\"ProjectBudget\" ADD CONSTRAINT \"ProjectBudget_projectId_key\" UNIQUE (\"projectId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ProjectBudget_projectId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectBudget_projectId_key",
+          "public",
+          "\"public\".\"ProjectBudget\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ProjectBudget.ProjectBudget_tenantId_code_key",
+    "label": "Add unique constraint on \"ProjectBudget\" (tenantId, code)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ProjectBudget_tenantId_code_key",
+        "table": "ProjectBudget"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ProjectBudget_tenantId_code_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectBudget_tenantId_code_key",
+          "public",
+          "\"public\".\"ProjectBudget\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ProjectBudget_tenantId_code_key\"",
+        "sql": "ALTER TABLE \"public\".\"ProjectBudget\" ADD CONSTRAINT \"ProjectBudget_tenantId_code_key\" UNIQUE (\"tenantId\", \"code\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ProjectBudget_tenantId_code_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectBudget_tenantId_code_key",
+          "public",
+          "\"public\".\"ProjectBudget\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BudgetChapter.BudgetChapter_budgetId_idx_abbf614c",
+    "label": "Create index \"BudgetChapter_budgetId_idx_abbf614c\" on \"BudgetChapter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BudgetChapter_budgetId_idx_abbf614c",
+        "table": "BudgetChapter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BudgetChapter_budgetId_idx_abbf614c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetChapter_budgetId_idx_abbf614c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BudgetChapter_budgetId_idx_abbf614c\"",
+        "sql": "CREATE INDEX \"BudgetChapter_budgetId_idx_abbf614c\" ON \"public\".\"BudgetChapter\" (\"budgetId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BudgetChapter_budgetId_idx_abbf614c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetChapter_budgetId_idx_abbf614c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BudgetChapter.BudgetChapter_tenantId_idx_c93ed4f1",
+    "label": "Create index \"BudgetChapter_tenantId_idx_c93ed4f1\" on \"BudgetChapter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BudgetChapter_tenantId_idx_c93ed4f1",
+        "table": "BudgetChapter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BudgetChapter_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetChapter_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BudgetChapter_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"BudgetChapter_tenantId_idx_c93ed4f1\" ON \"public\".\"BudgetChapter\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BudgetChapter_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetChapter_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BudgetItem.BudgetItem_chapterId_idx_411dd3d6",
+    "label": "Create index \"BudgetItem_chapterId_idx_411dd3d6\" on \"BudgetItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BudgetItem_chapterId_idx_411dd3d6",
+        "table": "BudgetItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BudgetItem_chapterId_idx_411dd3d6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItem_chapterId_idx_411dd3d6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BudgetItem_chapterId_idx_411dd3d6\"",
+        "sql": "CREATE INDEX \"BudgetItem_chapterId_idx_411dd3d6\" ON \"public\".\"BudgetItem\" (\"chapterId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BudgetItem_chapterId_idx_411dd3d6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItem_chapterId_idx_411dd3d6\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BudgetItem.BudgetItem_tenantId_idx_c93ed4f1",
+    "label": "Create index \"BudgetItem_tenantId_idx_c93ed4f1\" on \"BudgetItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BudgetItem_tenantId_idx_c93ed4f1",
+        "table": "BudgetItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BudgetItem_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItem_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BudgetItem_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"BudgetItem_tenantId_idx_c93ed4f1\" ON \"public\".\"BudgetItem\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BudgetItem_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItem_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BudgetItemResource.BudgetItemResource_itemId_idx_41357140",
+    "label": "Create index \"BudgetItemResource_itemId_idx_41357140\" on \"BudgetItemResource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BudgetItemResource_itemId_idx_41357140",
+        "table": "BudgetItemResource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BudgetItemResource_itemId_idx_41357140\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItemResource_itemId_idx_41357140\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BudgetItemResource_itemId_idx_41357140\"",
+        "sql": "CREATE INDEX \"BudgetItemResource_itemId_idx_41357140\" ON \"public\".\"BudgetItemResource\" (\"itemId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BudgetItemResource_itemId_idx_41357140\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItemResource_itemId_idx_41357140\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BudgetItemResource.BudgetItemResource_tenantId_idx_c93ed4f1",
+    "label": "Create index \"BudgetItemResource_tenantId_idx_c93ed4f1\" on \"BudgetItemResource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BudgetItemResource_tenantId_idx_c93ed4f1",
+        "table": "BudgetItemResource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BudgetItemResource_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItemResource_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BudgetItemResource_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"BudgetItemResource_tenantId_idx_c93ed4f1\" ON \"public\".\"BudgetItemResource\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BudgetItemResource_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetItemResource_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProjectBudget.ProjectBudget_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ProjectBudget_tenantId_idx_c93ed4f1\" on \"ProjectBudget\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProjectBudget_tenantId_idx_c93ed4f1",
+        "table": "ProjectBudget"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProjectBudget_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectBudget_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProjectBudget_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ProjectBudget_tenantId_idx_c93ed4f1\" ON \"public\".\"ProjectBudget\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProjectBudget_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProjectBudget_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.BudgetChapter.BudgetChapter_tenantId_fkey",
+    "label": "Add foreign key \"BudgetChapter_tenantId_fkey\" on \"BudgetChapter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "BudgetChapter_tenantId_fkey",
+        "table": "BudgetChapter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"BudgetChapter_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetChapter_tenantId_fkey",
+          "public",
+          "\"public\".\"BudgetChapter\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"BudgetChapter_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetChapter\"\nADD CONSTRAINT \"BudgetChapter_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"BudgetChapter_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetChapter_tenantId_fkey",
+          "public",
+          "\"public\".\"BudgetChapter\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.BudgetChapter.BudgetChapter_budgetId_fkey",
+    "label": "Add foreign key \"BudgetChapter_budgetId_fkey\" on \"BudgetChapter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "BudgetChapter_budgetId_fkey",
+        "table": "BudgetChapter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"BudgetChapter_budgetId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetChapter_budgetId_fkey",
+          "public",
+          "\"public\".\"BudgetChapter\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"BudgetChapter_budgetId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetChapter\"\nADD CONSTRAINT \"BudgetChapter_budgetId_fkey\"\nFOREIGN KEY (\"budgetId\")\nREFERENCES \"public\".\"ProjectBudget\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"BudgetChapter_budgetId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetChapter_budgetId_fkey",
+          "public",
+          "\"public\".\"BudgetChapter\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.BudgetItem.BudgetItem_tenantId_fkey",
+    "label": "Add foreign key \"BudgetItem_tenantId_fkey\" on \"BudgetItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "BudgetItem_tenantId_fkey",
+        "table": "BudgetItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"BudgetItem_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItem_tenantId_fkey",
+          "public",
+          "\"public\".\"BudgetItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"BudgetItem_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItem\"\nADD CONSTRAINT \"BudgetItem_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"BudgetItem_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItem_tenantId_fkey",
+          "public",
+          "\"public\".\"BudgetItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.BudgetItem.BudgetItem_chapterId_fkey",
+    "label": "Add foreign key \"BudgetItem_chapterId_fkey\" on \"BudgetItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "BudgetItem_chapterId_fkey",
+        "table": "BudgetItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"BudgetItem_chapterId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItem_chapterId_fkey",
+          "public",
+          "\"public\".\"BudgetItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"BudgetItem_chapterId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItem\"\nADD CONSTRAINT \"BudgetItem_chapterId_fkey\"\nFOREIGN KEY (\"chapterId\")\nREFERENCES \"public\".\"BudgetChapter\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"BudgetItem_chapterId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItem_chapterId_fkey",
+          "public",
+          "\"public\".\"BudgetItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.BudgetItemResource.BudgetItemResource_tenantId_fkey",
+    "label": "Add foreign key \"BudgetItemResource_tenantId_fkey\" on \"BudgetItemResource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "BudgetItemResource_tenantId_fkey",
+        "table": "BudgetItemResource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"BudgetItemResource_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItemResource_tenantId_fkey",
+          "public",
+          "\"public\".\"BudgetItemResource\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"BudgetItemResource_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItemResource\"\nADD CONSTRAINT \"BudgetItemResource_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"BudgetItemResource_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItemResource_tenantId_fkey",
+          "public",
+          "\"public\".\"BudgetItemResource\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.BudgetItemResource.BudgetItemResource_itemId_fkey",
+    "label": "Add foreign key \"BudgetItemResource_itemId_fkey\" on \"BudgetItemResource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "BudgetItemResource_itemId_fkey",
+        "table": "BudgetItemResource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"BudgetItemResource_itemId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItemResource_itemId_fkey",
+          "public",
+          "\"public\".\"BudgetItemResource\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"BudgetItemResource_itemId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItemResource\"\nADD CONSTRAINT \"BudgetItemResource_itemId_fkey\"\nFOREIGN KEY (\"itemId\")\nREFERENCES \"public\".\"BudgetItem\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"BudgetItemResource_itemId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItemResource_itemId_fkey",
+          "public",
+          "\"public\".\"BudgetItemResource\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProjectBudget.ProjectBudget_tenantId_fkey",
+    "label": "Add foreign key \"ProjectBudget_tenantId_fkey\" on \"ProjectBudget\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProjectBudget_tenantId_fkey",
+        "table": "ProjectBudget"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProjectBudget_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectBudget_tenantId_fkey",
+          "public",
+          "\"public\".\"ProjectBudget\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProjectBudget_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProjectBudget\"\nADD CONSTRAINT \"ProjectBudget_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProjectBudget_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectBudget_tenantId_fkey",
+          "public",
+          "\"public\".\"ProjectBudget\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProjectBudget.ProjectBudget_projectId_fkey",
+    "label": "Add foreign key \"ProjectBudget_projectId_fkey\" on \"ProjectBudget\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProjectBudget_projectId_fkey",
+        "table": "ProjectBudget"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProjectBudget_projectId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectBudget_projectId_fkey",
+          "public",
+          "\"public\".\"ProjectBudget\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProjectBudget_projectId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProjectBudget\"\nADD CONSTRAINT \"ProjectBudget_projectId_fkey\"\nFOREIGN KEY (\"projectId\")\nREFERENCES \"public\".\"Project\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProjectBudget_projectId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProjectBudget_projectId_fkey",
+          "public",
+          "\"public\".\"ProjectBudget\""
+        ]
+      }
+    ]
+  }
+]

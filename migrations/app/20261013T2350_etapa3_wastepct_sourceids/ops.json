@@ -1,0 +1,128 @@
+[
+  {
+    "id": "column.public.BudgetItem.sourceActivityId",
+    "label": "Add column \"sourceActivityId\" to \"BudgetItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sourceActivityId",
+        "table": "BudgetItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sourceActivityId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItem",
+          "sourceActivityId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sourceActivityId\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItem\" ADD COLUMN \"sourceActivityId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sourceActivityId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItem",
+          "sourceActivityId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.BudgetItem.wastePct",
+    "label": "Add column \"wastePct\" to \"BudgetItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "wastePct",
+        "table": "BudgetItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"wastePct\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItem",
+          "wastePct"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"wastePct\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItem\" ADD COLUMN \"wastePct\" int8 DEFAULT '0'::int8 NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"wastePct\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItem",
+          "wastePct"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.BudgetItemResource.sourceItemId",
+    "label": "Add column \"sourceItemId\" to \"BudgetItemResource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sourceItemId",
+        "table": "BudgetItemResource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sourceItemId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItemResource",
+          "sourceItemId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sourceItemId\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItemResource\" ADD COLUMN \"sourceItemId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sourceItemId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItemResource",
+          "sourceItemId"
+        ]
+      }
+    ]
+  }
+]

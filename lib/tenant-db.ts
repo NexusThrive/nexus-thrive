@@ -1,14 +1,23 @@
-import { and, or } from "@prisma/orm-postgres/orm-client";
-import { db } from "@/prisma/db";
-import { formatDateShort, toNumber } from "@/lib/format";
+import {
+  and,
+  or,
+} from "@prisma/orm-postgres/orm-client";
+import {
+  db,
+} from "@/prisma/db";
+import {
+  formatDateShort,
+  toNumber,
+} from "@/lib/format";
 import {
   DEFAULT_MODULES_BY_VERTICAL,
   type VerticalValue,
 } from "@/lib/admin-catalogs";
-import { paymentMethodLabel, paymentStatusLabel } from "@/lib/finance";
-import type {
-  PaymentMethodValue,
-  PaymentStatusValue,
+import {
+  paymentMethodLabel,
+  paymentStatusLabel,
+  type PaymentMethodValue,
+  type PaymentStatusValue,
 } from "@/lib/finance";
 import {
   EXPIRING_WINDOW_DAYS,
@@ -16,30 +25,26 @@ import {
   computeMembershipStatus,
   plusDays,
   typeLabel,
+  type MembershipPaymentEntry,
+  type MembershipStatusValue,
+  type MembershipTypeValue,
 } from "@/lib/memberships";
-import type {
-  MembershipPaymentEntry,
-  MembershipStatusValue,
-  MembershipTypeValue,
-} from "@/lib/memberships";
+import { createCatalogDb } from "@/lib/construction/catalog";
+import { createQuotesDb } from "@/lib/construction/quotes";
+import { createProjectQuotesDb } from "@/lib/construction/project-quotes";
+import { createProgressDb } from "@/lib/construction/progress";
+import { createProjectsDb } from "@/lib/construction/projects";
+import { createProjectHeadersDb } from "@/lib/construction/project-headers";
+import { createBudgetsDb } from "@/lib/construction/budget";
+import { createPlanDb } from "@/lib/construction/plan";
+import { createFieldLogDb } from "@/lib/construction/field-log";
+import { createReportsDb } from "@/lib/construction/reports";
 import {
-  activityUnitCost,
-  buildApuSnapshot,
-  calculateQuoteTotals,
-  componentCost,
-  currentYearBogota,
-  lineTotal,
-  moneyToString,
-  type ApuItemCategoryValue,
-  type ApuSnapshot,
-  type QuoteStatusValue,
-  type QuoteTotals,
-} from "@/lib/apu-engine";
+  escapeLike,
+} from "@/lib/construction/shared";
 
-/** Escapa los comodines de LIKE para que la búsqueda sea literal. */
-function escapeLike(input: string): string {
-  return input.replace(/[\\%_]/g, (char) => `\\${char}`);
-}
+export type * from "@/lib/construction/shared";
+
 
 export type CustomerSearchInput = {
   /** Texto libre (nombre, email o teléfono). */
@@ -235,124 +240,6 @@ export type Customer360Details = {
 };
 
 /* ------------------------------------------------------------------ */
-/* Módulo Construcción & APU                                           */
-/* ------------------------------------------------------------------ */
-
-export type ApuListInput = {
-  q?: string;
-  category?: ApuItemCategoryValue;
-  page?: number;
-  limit?: number;
-};
-
-/** Fila serializable del banco de insumos (Decimal → string, Temporal → ISO). */
-export type ApuItemRow = {
-  id: string;
-  code: string | null;
-  name: string;
-  unit: string;
-  category: ApuItemCategoryValue;
-  unitPrice: string;
-  updatedAt: string;
-};
-
-/** Actividad APU con costo unitario calculado en el servidor. */
-export type ApuActivityRow = {
-  id: string;
-  code: string | null;
-  name: string;
-  unit: string;
-  description: string | null;
-  /** Σ componentes (precios + rendimientos actuales del banco). */
-  unitCost: string;
-  itemCount: number;
-  updatedAt: string;
-};
-
-/** Insumo dentro de la composición de una actividad (con su costo). */
-export type ApuCompositionRow = {
-  id: string;
-  itemId: string;
-  itemCode: string | null;
-  itemName: string;
-  itemUnit: string;
-  category: ApuItemCategoryValue;
-  unitPrice: string;
-  consumption: string;
-  wastePercent: string;
-  /** Precio × consumo × (1 + desperdicio/100) — motor Decimal del servidor. */
-  cost: string;
-};
-
-/** Detalle completo de una actividad (para consulta de composición). */
-export type ApuActivityDetail = ApuActivityRow & {
-  compositions: ApuCompositionRow[];
-};
-
-export type QuoteListInput = {
-  q?: string;
-  status?: QuoteStatusValue;
-  page?: number;
-  limit?: number;
-};
-
-/** Fila serializable de presupuesto (lista). */
-export type QuoteRow = {
-  id: string;
-  code: string;
-  title: string;
-  customerId: string | null;
-  customerName: string | null;
-  status: QuoteStatusValue;
-  directCost: string;
-  totalAmount: string;
-  createdAt: string;
-};
-
-/** Métricas de la portada del módulo (datos reales de PostgreSQL). */
-export type QuoteMetrics = {
-  total: number;
-  approved: number;
-  draft: number;
-  /** Suma de totales de todos los presupuestos del tenant. */
-  totalAmount: number;
-};
-
-/** Actividad dentro de un presupuesto (congelada al cotizar). */
-export type QuoteItemRow = {
-  id: string;
-  activityId: string | null;
-  name: string;
-  unit: string;
-  quantity: string;
-  unitCost: string;
-  totalCost: string;
-  apuSnapshot: ApuSnapshot | null;
-};
-
-/** Detalle completo de un presupuesto (AIU re-derivado del servidor). */
-export type QuoteDetail = {
-  id: string;
-  code: string;
-  title: string;
-  customerId: string | null;
-  customerName: string | null;
-  status: QuoteStatusValue;
-  adminPercent: string;
-  imprevPercent: string;
-  utilPercent: string;
-  taxPercent: string;
-  directCost: string;
-  administration: string;
-  contingency: string;
-  utility: string;
-  subtotal: string;
-  tax: string;
-  totalAmount: string;
-  createdAt: string;
-  updatedAt: string;
-  items: QuoteItemRow[];
-};
 
 /** Último ISO mayor (fecha ISO-8601 de ancho fijo: orden lexicográfico = cronológico). */
 function maxIso(a: string | null, b: string | null): string | null {
@@ -452,63 +339,6 @@ async function listCustomerNotes(
   }));
 }
 
-/**
- * Detalle completo de una actividad APU (con composición y costos).
- * Helper de módulo: no depende del namespace, así `apu.createActivity`
- * y `apu.updateActivity` pueden re-leer el detalle tras su transacción.
- */
-async function getApuActivityDetail(
-  tenantId: string,
-  activityId: string,
-): Promise<ApuActivityDetail | null> {
-  const activity = await db.orm.public.ApuActivity
-    .where({ id: activityId, tenantId })
-    .first();
-  if (!activity) {
-    return null;
-  }
-
-  const compositions = await db.orm.public.ApuActivityComposition
-    .where({ activityId })
-    .include("item", (item) =>
-      item.select("id", "code", "name", "unit", "category", "unitPrice"),
-    )
-    .all();
-
-  const rows: ApuCompositionRow[] = compositions.map((composition) => {
-    const item = composition.item!;
-    return {
-      id: composition.id,
-      itemId: item.id,
-      itemCode: item.code,
-      itemName: item.name,
-      itemUnit: item.unit,
-      category: item.category,
-      unitPrice: String(item.unitPrice),
-      consumption: String(composition.consumption),
-      wastePercent: String(composition.wastePercent),
-      cost: moneyToString(
-        componentCost({
-          unitPrice: String(item.unitPrice),
-          consumption: String(composition.consumption),
-          wastePercent: String(composition.wastePercent),
-        }),
-      ),
-    };
-  });
-
-  return {
-    id: activity.id,
-    code: activity.code,
-    name: activity.name,
-    unit: activity.unit,
-    description: activity.description,
-    unitCost: activityUnitCost(rows),
-    itemCount: rows.length,
-    updatedAt: String(activity.updatedAt),
-    compositions: rows,
-  };
-}
 
 export function createTenantDb(tenantId: string) {
   if (!tenantId || tenantId.trim() === "") {
@@ -516,6 +346,7 @@ export function createTenantDb(tenantId: string) {
       "Se requiere un tenantId válido para inicializar la capa de base de datos."
     );
   }
+
 
   return {
     customers: {
@@ -890,583 +721,27 @@ export function createTenantDb(tenantId: string) {
     /* Módulo Construcción & APU — banco de insumos                    */
     /* -------------------------------------------------------------- */
 
-    apu: {
-      listItems: async ({
-        q,
-        category,
-        page = 1,
-        limit = 10,
-      }: ApuListInput = {}): Promise<{ rows: ApuItemRow[]; total: number }> => {
-        const text = (q ?? "").trim();
-        const pattern = text ? `%${escapeLike(text)}%` : null;
-        const safePage = Math.max(1, Math.trunc(page));
-        const safeLimit = Math.min(100, Math.max(1, Math.trunc(limit)));
-
-        let filtered = db.orm.public.ApuItem.where({ tenantId });
-        if (text) {
-          filtered = filtered.where((item) =>
-            or(item.name.ilike(pattern!), item.code.ilike(pattern!)),
-          );
-        }
-        if (category) {
-          filtered = filtered.where((item) => item.category.eq(category));
-        }
-
-        const [rows, { total }] = await Promise.all([
-          filtered
-            .orderBy((item) => item.name.asc())
-            .limit(safeLimit)
-            .offset((safePage - 1) * safeLimit)
-            .all(),
-          filtered.aggregate((aggregate) => ({ total: aggregate.count() })),
-        ]);
-
-        return {
-          rows: rows.map((row) => ({
-            id: row.id,
-            code: row.code,
-            name: row.name,
-            unit: row.unit,
-            category: row.category,
-            unitPrice: String(row.unitPrice),
-            updatedAt: String(row.updatedAt),
-          })),
-          total,
-        };
-      },
-
-      getItem: (id: string) =>
-        db.orm.public.ApuItem.where({ id, tenantId }).first(),
-
-      createItem: (
-        data: Omit<
-          Parameters<typeof db.orm.public.ApuItem.create>[0],
-          "tenantId"
-        >,
-      ) =>
-        db.orm.public.ApuItem.create({
-          ...data,
-          tenantId,
-        }),
-
-      updateItem: (id: string, data: Record<string, unknown>) =>
-        db.orm.public.ApuItem.where({ id, tenantId }).update(data),
-
-      /** Actividades con costo unitario calculado (precios actuales). */
-      listActivities: async ({
-        q,
-        limit = 200,
-      }: {
-        q?: string;
-        limit?: number;
-      } = {}): Promise<{ rows: ApuActivityRow[]; total: number }> => {
-        const text = (q ?? "").trim();
-        const pattern = text ? `%${escapeLike(text)}%` : null;
-        const safeLimit = Math.min(500, Math.max(1, Math.trunc(limit)));
-
-        let filtered = db.orm.public.ApuActivity.where({ tenantId });
-        if (text) {
-          filtered = filtered.where((activity) =>
-            or(
-              activity.name.ilike(pattern!),
-              activity.code.ilike(pattern!),
-            ),
-          );
-        }
-
-        const [rows, { total }] = await Promise.all([
-          filtered
-            .orderBy((activity) => activity.name.asc())
-            .limit(safeLimit)
-            .all(),
-          filtered.aggregate((aggregate) => ({ total: aggregate.count() })),
-        ]);
-
-        const activityIds = rows.map((row) => row.id);
-        const compositions =
-          activityIds.length === 0
-            ? []
-            : await db.orm.public.ApuActivityComposition
-                .where((composition) => composition.activityId.in(activityIds))
-                .include("item", (item) =>
-                  item.select(
-                    "id",
-                    "code",
-                    "name",
-                    "unit",
-                    "category",
-                    "unitPrice",
-                  ),
-                )
-                .all();
-        const byActivity = new Map<string, typeof compositions>();
-        for (const composition of compositions) {
-          const list = byActivity.get(composition.activityId) ?? [];
-          list.push(composition);
-          byActivity.set(composition.activityId, list);
-        }
-
-        return {
-          rows: rows.map((row) => {
-            const activityCompositions = byActivity.get(row.id) ?? [];
-            return {
-              id: row.id,
-              code: row.code,
-              name: row.name,
-              unit: row.unit,
-              description: row.description,
-              unitCost: activityUnitCost(
-                activityCompositions.map((composition) => ({
-                  unitPrice: String(composition.item!.unitPrice),
-                  consumption: String(composition.consumption),
-                  wastePercent: String(composition.wastePercent),
-                })),
-              ),
-              itemCount: activityCompositions.length,
-              updatedAt: String(row.updatedAt),
-            };
-          }),
-          total,
-        };
-      },
-
-      /** Detalle de una actividad con su composición (costos unitarios). */
-      getActivity: (id: string) => getApuActivityDetail(tenantId, id),
-
-      /**
-       * Crea actividad + composición en una transacción. `compositions`
-       * llega ya validada por la Server Action (insumos del mismo tenant).
-       */
-      createActivity: async (data: {
-        code?: string;
-        name: string;
-        unit: string;
-        description?: string;
-        compositions: { itemId: string; consumption: string; wastePercent: string }[];
-      }): Promise<ApuActivityDetail | null> => {
-        const { compositions, ...fields } = data;
-        const created = await db.transaction(async (tx) => {
-          const activity = await tx.orm.public.ApuActivity.create({
-            ...fields,
-            tenantId,
-          });
-          for (const composition of compositions) {
-            await tx.orm.public.ApuActivityComposition.create({
-              activityId: activity.id,
-              itemId: composition.itemId,
-              consumption: composition.consumption,
-              wastePercent: composition.wastePercent,
-            });
-          }
-          return activity;
-        });
-        return getApuActivityDetail(tenantId, created.id);
-      },
-
-      /** Reemplaza actividad + composición completa (idempotente). */
-      updateActivity: async (
-        id: string,
-        data: {
-          code?: string;
-          name: string;
-          unit: string;
-          description?: string;
-          compositions: { itemId: string; consumption: string; wastePercent: string }[];
-        },
-      ): Promise<ApuActivityDetail | null> => {
-        const { compositions, ...fields } = data;
-        const updated = await db.transaction(async (tx) => {
-          const activity = await tx.orm.public.ApuActivity
-            .where({ id, tenantId })
-            .update(fields);
-          if (!activity) {
-            throw new Error("No se encontró la actividad en este negocio.");
-          }
-          await tx.orm.public.ApuActivityComposition.where({
-            activityId: id,
-          }).deleteAll();
-          for (const composition of compositions) {
-            await tx.orm.public.ApuActivityComposition.create({
-              activityId: id,
-              itemId: composition.itemId,
-              consumption: composition.consumption,
-              wastePercent: composition.wastePercent,
-            });
-          }
-          return activity;
-        });
-        return getApuActivityDetail(tenantId, updated.id);
-      },
-    },
+    apu: createCatalogDb(tenantId),
 
     /* -------------------------------------------------------------- */
     /* Módulo Construcción & APU — presupuestos                        */
     /* -------------------------------------------------------------- */
 
-    quotes: {
-      list: async ({
-        q,
-        status,
-        page = 1,
-        limit = 10,
-      }: QuoteListInput = {}): Promise<{ rows: QuoteRow[]; total: number }> => {
-        const text = (q ?? "").trim();
-        const pattern = text ? `%${escapeLike(text)}%` : null;
-        const safePage = Math.max(1, Math.trunc(page));
-        const safeLimit = Math.min(100, Math.max(1, Math.trunc(limit)));
+    quotes: createQuotesDb(tenantId),
+    projectQuotes: createProjectQuotesDb(tenantId),
+    progress: createProgressDb(tenantId),
 
-        let filtered = db.orm.public.Quote.where({ tenantId });
-        if (text) {
-          filtered = filtered.where((quote) =>
-            or(quote.code.ilike(pattern!), quote.title.ilike(pattern!)),
-          );
-        }
-        if (status) {
-          filtered = filtered.where((quote) => quote.status.eq(status));
-        }
+    projects: createProjectsDb(tenantId),
 
-        const [rows, { total }] = await Promise.all([
-          filtered
-            .orderBy((quote) => quote.createdAt.desc())
-            .limit(safeLimit)
-            .offset((safePage - 1) * safeLimit)
-            .all(),
-          filtered.aggregate((aggregate) => ({ total: aggregate.count() })),
-        ]);
+    projectHeaders: createProjectHeadersDb(tenantId),
 
-        const customerIds = [
-          ...new Set(
-            rows
-              .map((row) => row.customerId)
-              .filter((id): id is string => Boolean(id)),
-          ),
-        ];
-        const customers =
-          customerIds.length === 0
-            ? []
-            : await db.orm.public.Customer
-                .where({ tenantId })
-                .where((customer) => customer.id.in(customerIds))
-                .all();
-        const customerById = new Map(
-          customers.map((customer) => [customer.id, customer]),
-        );
+    budgets: createBudgetsDb(tenantId),
 
-        return {
-          rows: rows.map((row) => ({
-            id: row.id,
-            code: row.code,
-            title: row.title,
-            customerId: row.customerId,
-            customerName: row.customerId
-              ? customerById.get(row.customerId)?.name ?? "Cliente eliminado"
-              : null,
-            status: row.status,
-            directCost: String(row.directCost),
-            totalAmount: String(row.totalAmount),
-            createdAt: String(row.createdAt),
-          })),
-          total,
-        };
-      },
+    lean: createPlanDb(tenantId),
 
-      /** Métricas de portada (datos reales, no mock). */
-      getMetrics: async (): Promise<QuoteMetrics> => {
-        const [countAgg, approvedAgg, draftAgg, totalAgg] = await Promise.all([
-          db.orm.public.Quote
-            .where({ tenantId })
-            .aggregate((aggregate) => ({ total: aggregate.count() })),
-          db.orm.public.Quote
-            .where({ tenantId })
-            .where((quote) => quote.status.eq("APPROVED"))
-            .aggregate((aggregate) => ({ total: aggregate.count() })),
-          db.orm.public.Quote
-            .where({ tenantId })
-            .where((quote) => quote.status.eq("DRAFT"))
-            .aggregate((aggregate) => ({ total: aggregate.count() })),
-          db.orm.public.Quote
-            .where({ tenantId })
-            .aggregate((aggregate) => ({ total: aggregate.sum("totalAmount") })),
-        ]);
+    fieldLog: createFieldLogDb(tenantId),
 
-        return {
-          total: countAgg.total,
-          approved: approvedAgg.total,
-          draft: draftAgg.total,
-          totalAmount: toNumber(totalAgg.total),
-        };
-      },
-
-      /**
-       * Presupuesto completo. El desglose AIU se RECALCULA con el motor
-       * desde los porcentajes guardados — nunca se confía en los totales
-       * que haya enviado el navegador.
-       */
-      get: async (id: string): Promise<QuoteDetail | null> => {
-        const quote = await db.orm.public.Quote
-          .where({ id, tenantId })
-          .first();
-        if (!quote) {
-          return null;
-        }
-
-        const [items, customer] = await Promise.all([
-          db.orm.public.QuoteItem.where({ quoteId: id }).all(),
-          quote.customerId
-            ? db.orm.public.Customer
-                .where({ id: quote.customerId, tenantId })
-                .select("name")
-                .first()
-            : null,
-        ]);
-
-        const breakdown = calculateQuoteTotals(
-          items.map((item) => ({
-            quantity: String(item.quantity),
-            unitCost: String(item.unitCost),
-          })),
-          {
-            adminPercent: String(quote.adminPercent),
-            imprevPercent: String(quote.imprevPercent),
-            utilPercent: String(quote.utilPercent),
-            taxPercent: String(quote.taxPercent),
-          },
-        );
-
-        return {
-          id: quote.id,
-          code: quote.code,
-          title: quote.title,
-          customerId: quote.customerId,
-          customerName: quote.customerId
-            ? customer?.name ?? "Cliente eliminado"
-            : null,
-          status: quote.status,
-          adminPercent: String(quote.adminPercent),
-          imprevPercent: String(quote.imprevPercent),
-          utilPercent: String(quote.utilPercent),
-          taxPercent: String(quote.taxPercent),
-          directCost: String(quote.directCost),
-          administration: breakdown.administration,
-          contingency: breakdown.contingency,
-          utility: breakdown.utility,
-          subtotal: breakdown.subtotal,
-          tax: breakdown.tax,
-          totalAmount: String(quote.totalAmount),
-          createdAt: String(quote.createdAt),
-          updatedAt: String(quote.updatedAt),
-          items: items.map((item) => ({
-            id: item.id,
-            activityId: item.activityId,
-            name: item.name,
-            unit: item.unit,
-            quantity: String(item.quantity),
-            unitCost: String(item.unitCost),
-            totalCost: String(item.totalCost),
-            apuSnapshot: (item.apuSnapshot as ApuSnapshot | null) ?? null,
-          })),
-        };
-      },
-
-      /**
-       * Crea un presupuesto DRAFT con snapshot inmutable de cada APU.
-       * Precios y costos se recalculan SIEMPRE en el servidor con el motor
-       * (el navegador solo manda activityId + cantidad + % AIU). Todo en
-       * una transacción; código correlativo PRES-<año>-NNN por tenant.
-       */
-      create: async (data: {
-        customerId: string | null;
-        title: string;
-        items: { activityId: string; quantity: string }[];
-        aiuConfig: {
-          adminPercent: string;
-          imprevPercent: string;
-          utilPercent: string;
-          taxPercent: string;
-        };
-      }): Promise<QuoteDetail> => {
-        const activityIds = [
-          ...new Set(data.items.map((item) => item.activityId)),
-        ];
-
-        const [activities, allCompositions] = await Promise.all([
-          db.orm.public.ApuActivity
-            .where({ tenantId })
-            .where((activity) => activity.id.in(activityIds))
-            .all(),
-          db.orm.public.ApuActivityComposition.where((composition) =>
-            composition.activityId.in(activityIds),
-          )
-            .include("item", (item) =>
-              item.select(
-                "id",
-                "code",
-                "name",
-                "unit",
-                "category",
-                "unitPrice",
-              ),
-            )
-            .all(),
-        ]);
-        if (activities.length !== activityIds.length) {
-          throw new Error(
-            "Alguna de las actividades no existe en este negocio.",
-          );
-        }
-
-        const activityById = new Map(
-          activities.map((activity) => [activity.id, activity]),
-        );
-        const compositionsByActivity = new Map<
-          string,
-          typeof allCompositions
-        >();
-        for (const composition of allCompositions) {
-          const list =
-            compositionsByActivity.get(composition.activityId) ?? [];
-          list.push(composition);
-          compositionsByActivity.set(composition.activityId, list);
-        }
-
-        // Líneas con snapshot inmutable + costo unitario congelado.
-        const quoteItems = data.items.map(({ activityId, quantity }) => {
-          const activity = activityById.get(activityId);
-          if (!activity) {
-            throw new Error("Actividad no encontrada.");
-          }
-          const components = (
-            compositionsByActivity.get(activityId) ?? []
-          ).map((composition) => {
-            const item = composition.item!;
-            return {
-              itemId: item.id,
-              code: item.code,
-              name: item.name,
-              unit: item.unit,
-              category: item.category,
-              unitPrice: String(item.unitPrice),
-              consumption: String(composition.consumption),
-              wastePercent: String(composition.wastePercent),
-            };
-          });
-          const snapshot = buildApuSnapshot({
-            activity: {
-              id: activity.id,
-              code: activity.code,
-              name: activity.name,
-              unit: activity.unit,
-            },
-            components,
-          });
-          return {
-            activityId,
-            quantity,
-            name: activity.name,
-            unit: activity.unit,
-            unitCost: snapshot.unitCost,
-            totalCost: moneyToString(lineTotal(quantity, snapshot.unitCost)),
-            apuSnapshot: snapshot,
-          };
-        });
-
-        const totals = calculateQuoteTotals(
-          quoteItems.map((item) => ({
-            quantity: item.quantity,
-            unitCost: item.unitCost,
-          })),
-          data.aiuConfig,
-        );
-
-        // Código correlativo por tenant y año (solo lectura previa).
-        const year = currentYearBogota();
-        const prefix = `PRES-${year}-`;
-        const latest = await db.orm.public.Quote
-          .where({ tenantId })
-          .where((quote) => quote.code.like(`${prefix}%`))
-          .orderBy((quote) => quote.code.desc())
-          .first();
-        const sequence = latest
-          ? Number(latest.code.slice(prefix.length)) + 1
-          : 1;
-        const code = `${prefix}${String(sequence).padStart(3, "0")}`;
-
-        const created = await db.transaction(async (tx) => {
-          const quote = await tx.orm.public.Quote.create({
-            tenantId,
-            customerId: data.customerId,
-            title: data.title,
-            code,
-            status: "DRAFT",
-            adminPercent: data.aiuConfig.adminPercent,
-            imprevPercent: data.aiuConfig.imprevPercent,
-            utilPercent: data.aiuConfig.utilPercent,
-            taxPercent: data.aiuConfig.taxPercent,
-            directCost: totals.directCost,
-            totalAmount: totals.totalAmount,
-          });
-          const createdItems: Awaited<
-            ReturnType<typeof tx.orm.public.QuoteItem.create>
-          >[] = [];
-          for (const item of quoteItems) {
-            createdItems.push(
-              await tx.orm.public.QuoteItem.create({
-                quoteId: quote.id,
-                activityId: item.activityId,
-                name: item.name,
-                unit: item.unit,
-                quantity: item.quantity,
-                unitCost: item.unitCost,
-                totalCost: item.totalCost,
-                apuSnapshot: item.apuSnapshot,
-              }),
-            );
-          }
-          return { quote, createdItems };
-        });
-
-        const customer = created.quote.customerId
-          ? await db.orm.public.Customer
-              .where({ id: created.quote.customerId, tenantId })
-              .select("name")
-              .first()
-          : null;
-
-        return {
-          id: created.quote.id,
-          code: created.quote.code,
-          title: created.quote.title,
-          customerId: created.quote.customerId,
-          customerName: created.quote.customerId
-            ? customer?.name ?? "Cliente eliminado"
-            : null,
-          status: created.quote.status as QuoteStatusValue,
-          adminPercent: String(created.quote.adminPercent),
-          imprevPercent: String(created.quote.imprevPercent),
-          utilPercent: String(created.quote.utilPercent),
-          taxPercent: String(created.quote.taxPercent),
-          directCost: String(created.quote.directCost),
-          administration: totals.administration,
-          contingency: totals.contingency,
-          utility: totals.utility,
-          subtotal: totals.subtotal,
-          tax: totals.tax,
-          totalAmount: String(created.quote.totalAmount),
-          createdAt: String(created.quote.createdAt),
-          updatedAt: String(created.quote.updatedAt),
-          items: created.createdItems.map((item) => ({
-            id: item.id,
-            activityId: item.activityId,
-            name: item.name,
-            unit: item.unit,
-            quantity: String(item.quantity),
-            unitCost: String(item.unitCost),
-            totalCost: String(item.totalCost),
-            apuSnapshot: (item.apuSnapshot as ApuSnapshot | null) ?? null,
-          })),
-        };
-      },
-    },
+    reports: createReportsDb(tenantId),
 
     users: {
       list: () => db.orm.public.User.where({ tenantId }).all(),

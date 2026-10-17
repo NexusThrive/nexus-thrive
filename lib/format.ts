@@ -51,6 +51,81 @@ export function formatCurrency(
   return currencyFormatter.format(toNumber(value));
 }
 
+/**
+ * Formatea un monto en micro-unidades (`BigInt`, 6 decimales: 1_000_000 =
+ * 1 COP) SIN perder precisión: convierte a pesos con redondeo half-up usando
+ * `BigInt` y solo entonces usa `Intl.NumberFormat`.
+ *
+ * El resultado en pesos se pasa a `Number` únicamente para formatear; es
+ * seguro para cualquier presupuesto real (enteros < 2^53 ≈ 9,0e15 COP).
+ */
+export function formatMoneyMicro(
+  micro: bigint | string | null | undefined,
+): string {
+  if (micro === null || micro === undefined || micro === "") {
+    return currencyFormatter.format(0);
+  }
+  let value: bigint;
+  try {
+    value = typeof micro === "bigint" ? micro : BigInt(micro);
+  } catch {
+    return currencyFormatter.format(0);
+  }
+  const negative = value < BigInt(0);
+  const abs = negative ? -value : value;
+  // half-up a peso entero: (abs + 500_000) / 1_000_000
+  const pesos = (abs + BigInt(500_000)) / BigInt(1_000_000);
+  const n = Number(pesos);
+  return currencyFormatter.format(negative ? -n : n);
+}
+
+/**
+ * Cantidad en micro-unidades → decimal legible sin ceros sobrantes
+ * (1_000_000 → "1", 1_500_000 → "1.5", 250_000 → "0.25").
+ */
+export function formatQuantityMicro(
+  micro: bigint | string | null | undefined,
+): string {
+  if (micro === null || micro === undefined || micro === "") {
+    return "0";
+  }
+  let value: bigint;
+  try {
+    value = typeof micro === "bigint" ? micro : BigInt(micro);
+  } catch {
+    return "0";
+  }
+  const negative = value < BigInt(0);
+  const abs = negative ? -value : value;
+  const whole = abs / BigInt(1_000_000);
+  const frac = (abs % BigInt(1_000_000))
+    .toString()
+    .padStart(6, "0")
+    .replace(/0+$/, "");
+  const text = frac ? `${whole}.${frac}` : `${whole}`;
+  return negative ? `-${text}` : text;
+}
+
+/**
+ * Porcentaje en micro-fracción → string con 1 decimal
+ * (1_000_000 = 100 % → "100.0%", 100_000 = 10 % → "10.0%").
+ */
+export function formatPercentMicro(
+  micro: bigint | string | null | undefined,
+): string {
+  if (micro === null || micro === undefined || micro === "") {
+    return "0%";
+  }
+  try {
+    const value = typeof micro === "bigint" ? micro : BigInt(micro);
+    // 1_000_000 = 100 % → /10_000 = % con 2 decimales de precisión interna.
+    const percent = Number(value) / 10_000;
+    return `${percent.toFixed(1)}%`;
+  } catch {
+    return "0%";
+  }
+}
+
 /** Normaliza Temporal.Instant / Date / string ISO a un Date de JS. */
 function toDate(value: unknown): Date | null {
   if (value instanceof Date) {

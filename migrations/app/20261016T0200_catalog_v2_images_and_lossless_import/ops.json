@@ -1,0 +1,2285 @@
+[
+  {
+    "id": "dropConstraint.ApuActivityComposition.ApuActivityComposition_activityId_itemId_key",
+    "label": "Drop constraint \"ApuActivityComposition_activityId_itemId_key\" on \"ApuActivityComposition\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ApuActivityComposition_activityId_itemId_key",
+        "table": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ApuActivityComposition_activityId_itemId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuActivityComposition_activityId_itemId_key",
+          "public",
+          "\"public\".\"ApuActivityComposition\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"ApuActivityComposition_activityId_itemId_key\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivityComposition\" DROP CONSTRAINT \"ApuActivityComposition_activityId_itemId_key\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ApuActivityComposition_activityId_itemId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuActivityComposition_activityId_itemId_key",
+          "public",
+          "\"public\".\"ApuActivityComposition\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.ApuItem.ApuItem_category_check_cb615411",
+    "label": "Drop check constraint \"ApuItem_category_check_cb615411\" on \"ApuItem\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "ApuItem_category_check_cb615411",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ApuItem_category_check_cb615411\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItem_category_check_cb615411",
+          "public",
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"ApuItem_category_check_cb615411\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItem\" DROP CONSTRAINT \"ApuItem_category_check_cb615411\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ApuItem_category_check_cb615411\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItem_category_check_cb615411",
+          "public",
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data.BudgetItem.wastePct.toResources",
+    "label": "Move BudgetItem.wastePct into its resources before dropping it",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "copy item-level wastePct to resources that have none",
+        "sql": "UPDATE \"public\".\"BudgetItemResource\" AS r SET \"wastePct\" = i.\"wastePct\" FROM \"public\".\"BudgetItem\" AS i WHERE r.\"itemId\" = i.\"id\" AND i.\"wastePct\" > 0 AND r.\"wastePct\" = 0"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify no resource lost an item-level wastePct",
+        "sql": "SELECT NOT EXISTS (SELECT 1 FROM \"public\".\"BudgetItemResource\" AS r JOIN \"public\".\"BudgetItem\" AS i ON r.\"itemId\" = i.\"id\" WHERE i.\"wastePct\" > 0 AND r.\"wastePct\" = 0) AS \"result\""
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.BudgetItem.wastePct",
+    "label": "Drop column \"wastePct\" from \"BudgetItem\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "wastePct",
+        "table": "BudgetItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"wastePct\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItem",
+          "wastePct"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"wastePct\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItem\" DROP COLUMN \"wastePct\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"wastePct\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItem",
+          "wastePct"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.BudgetItemResource.BudgetItemResource_type_check_13d76a3a",
+    "label": "Drop check constraint \"BudgetItemResource_type_check_13d76a3a\" on \"BudgetItemResource\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "BudgetItemResource_type_check_13d76a3a",
+        "table": "BudgetItemResource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"BudgetItemResource_type_check_13d76a3a\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItemResource_type_check_13d76a3a",
+          "public",
+          "\"public\".\"BudgetItemResource\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"BudgetItemResource_type_check_13d76a3a\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItemResource\" DROP CONSTRAINT \"BudgetItemResource_type_check_13d76a3a\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"BudgetItemResource_type_check_13d76a3a\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItemResource_type_check_13d76a3a",
+          "public",
+          "\"public\".\"BudgetItemResource\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ApuChapter",
+    "label": "Create table \"ApuChapter\"",
+    "summary": "Creates table \"ApuChapter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ApuChapter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ApuChapter\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuChapter\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ApuChapter\"",
+        "sql": "CREATE TABLE \"public\".\"ApuChapter\" (\n  \"code\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"order\" int4 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ApuChapter\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuChapter\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ApuImage",
+    "label": "Create table \"ApuImage\"",
+    "summary": "Creates table \"ApuImage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ApuImage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ApuImage\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuImage\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ApuImage\"",
+        "sql": "CREATE TABLE \"public\".\"ApuImage\" (\n  \"byteSize\" int4 NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"data\" bytea NOT NULL,\n  \"id\" text NOT NULL,\n  \"mimeType\" text NOT NULL,\n  \"sha256\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ApuImage\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuImage\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ApuImportRun",
+    "label": "Create table \"ApuImportRun\"",
+    "summary": "Creates table \"ApuImportRun\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ApuImportRun"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ApuImportRun\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuImportRun\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ApuImportRun\"",
+        "sql": "CREATE TABLE \"public\".\"ApuImportRun\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"fileName\" text NOT NULL,\n  \"fileSha256\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"importedBy\" text,\n  \"stats\" json NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ApuImportRun\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuImportRun\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ApuItemPriceHistory",
+    "label": "Create table \"ApuItemPriceHistory\"",
+    "summary": "Creates table \"ApuItemPriceHistory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ApuItemPriceHistory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ApuItemPriceHistory\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItemPriceHistory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ApuItemPriceHistory\"",
+        "sql": "CREATE TABLE \"public\".\"ApuItemPriceHistory\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"importRunId\" text,\n  \"itemId\" text NOT NULL,\n  \"price\" numeric NOT NULL,\n  \"source\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ApuItemPriceHistory\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItemPriceHistory\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuActivity.chapterId",
+    "label": "Add column \"chapterId\" to \"ApuActivity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "chapterId",
+        "table": "ApuActivity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"chapterId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivity",
+          "chapterId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"chapterId\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivity\" ADD COLUMN \"chapterId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"chapterId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivity",
+          "chapterId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuActivity.importedAt",
+    "label": "Add column \"importedAt\" to \"ApuActivity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "importedAt",
+        "table": "ApuActivity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"importedAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivity",
+          "importedAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"importedAt\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivity\" ADD COLUMN \"importedAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"importedAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivity",
+          "importedAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuActivity.isAuxiliary",
+    "label": "Add column \"isAuxiliary\" to \"ApuActivity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "isAuxiliary",
+        "table": "ApuActivity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"isAuxiliary\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivity",
+          "isAuxiliary"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"isAuxiliary\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivity\" ADD COLUMN \"isAuxiliary\" bool DEFAULT false NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"isAuxiliary\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivity",
+          "isAuxiliary"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuActivity.referenceUnitPrice",
+    "label": "Add column \"referenceUnitPrice\" to \"ApuActivity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "referenceUnitPrice",
+        "table": "ApuActivity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"referenceUnitPrice\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivity",
+          "referenceUnitPrice"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"referenceUnitPrice\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivity\" ADD COLUMN \"referenceUnitPrice\" numeric"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"referenceUnitPrice\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivity",
+          "referenceUnitPrice"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuActivity.sortKey",
+    "label": "Add column \"sortKey\" to \"ApuActivity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sortKey",
+        "table": "ApuActivity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sortKey\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivity",
+          "sortKey"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sortKey\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivity\" ADD COLUMN \"sortKey\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sortKey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivity",
+          "sortKey"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuActivity.sourceKey",
+    "label": "Add column \"sourceKey\" to \"ApuActivity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sourceKey",
+        "table": "ApuActivity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sourceKey\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivity",
+          "sourceKey"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sourceKey\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivity\" ADD COLUMN \"sourceKey\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sourceKey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivity",
+          "sourceKey"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuActivityComposition.linePartial",
+    "label": "Add column \"linePartial\" to \"ApuActivityComposition\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "linePartial",
+        "table": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"linePartial\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivityComposition",
+          "linePartial"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"linePartial\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivityComposition\" ADD COLUMN \"linePartial\" numeric"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"linePartial\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivityComposition",
+          "linePartial"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuActivityComposition.lineQuantity",
+    "label": "Add column \"lineQuantity\" to \"ApuActivityComposition\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "lineQuantity",
+        "table": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"lineQuantity\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivityComposition",
+          "lineQuantity"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"lineQuantity\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivityComposition\" ADD COLUMN \"lineQuantity\" numeric"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"lineQuantity\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivityComposition",
+          "lineQuantity"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuActivityComposition.lineUnit",
+    "label": "Add column \"lineUnit\" to \"ApuActivityComposition\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "lineUnit",
+        "table": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"lineUnit\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivityComposition",
+          "lineUnit"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"lineUnit\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivityComposition\" ADD COLUMN \"lineUnit\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"lineUnit\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivityComposition",
+          "lineUnit"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuActivityComposition.lineUnitPrice",
+    "label": "Add column \"lineUnitPrice\" to \"ApuActivityComposition\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "lineUnitPrice",
+        "table": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"lineUnitPrice\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivityComposition",
+          "lineUnitPrice"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"lineUnitPrice\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivityComposition\" ADD COLUMN \"lineUnitPrice\" numeric"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"lineUnitPrice\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivityComposition",
+          "lineUnitPrice"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuActivityComposition.order",
+    "label": "Add column \"order\" to \"ApuActivityComposition\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "order",
+        "table": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"order\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivityComposition",
+          "order"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"order\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivityComposition\" ADD COLUMN \"order\" int4 DEFAULT 0 NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"order\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivityComposition",
+          "order"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuActivityComposition.origin",
+    "label": "Add column \"origin\" to \"ApuActivityComposition\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "origin",
+        "table": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"origin\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivityComposition",
+          "origin"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"origin\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivityComposition\" ADD COLUMN \"origin\" text DEFAULT 'MANUAL' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"origin\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivityComposition",
+          "origin"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuActivityComposition.section",
+    "label": "Add column \"section\" to \"ApuActivityComposition\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "section",
+        "table": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"section\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivityComposition",
+          "section"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"section\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivityComposition\" ADD COLUMN \"section\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"section\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivityComposition",
+          "section"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuItem.auxiliaryActivityId",
+    "label": "Add column \"auxiliaryActivityId\" to \"ApuItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "auxiliaryActivityId",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"auxiliaryActivityId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuItem",
+          "auxiliaryActivityId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"auxiliaryActivityId\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItem\" ADD COLUMN \"auxiliaryActivityId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"auxiliaryActivityId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuItem",
+          "auxiliaryActivityId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuItem.imageId",
+    "label": "Add column \"imageId\" to \"ApuItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "imageId",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"imageId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuItem",
+          "imageId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"imageId\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItem\" ADD COLUMN \"imageId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"imageId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuItem",
+          "imageId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuItem.importedAt",
+    "label": "Add column \"importedAt\" to \"ApuItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "importedAt",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"importedAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuItem",
+          "importedAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"importedAt\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItem\" ADD COLUMN \"importedAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"importedAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuItem",
+          "importedAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuItem.sourceKey",
+    "label": "Add column \"sourceKey\" to \"ApuItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sourceKey",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sourceKey\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuItem",
+          "sourceKey"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sourceKey\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItem\" ADD COLUMN \"sourceKey\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sourceKey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuItem",
+          "sourceKey"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.BudgetItemResource.imageId",
+    "label": "Add column \"imageId\" to \"BudgetItemResource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "imageId",
+        "table": "BudgetItemResource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"imageId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItemResource",
+          "imageId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"imageId\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItemResource\" ADD COLUMN \"imageId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"imageId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItemResource",
+          "imageId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.BudgetItemResource.order",
+    "label": "Add column \"order\" to \"BudgetItemResource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "order",
+        "table": "BudgetItemResource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"order\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItemResource",
+          "order"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"order\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItemResource\" ADD COLUMN \"order\" int4 DEFAULT 0 NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"order\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItemResource",
+          "order"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.BudgetItemResource.section",
+    "label": "Add column \"section\" to \"BudgetItemResource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "section",
+        "table": "BudgetItemResource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"section\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItemResource",
+          "section"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"section\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItemResource\" ADD COLUMN \"section\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"section\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItemResource",
+          "section"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.ApuActivityComposition.ApuActivityComposition_origin_check_ba5a96cd",
+    "label": "Add check constraint \"ApuActivityComposition_origin_check_ba5a96cd\" on \"ApuActivityComposition\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "ApuActivityComposition_origin_check_ba5a96cd",
+        "table": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ApuActivityComposition_origin_check_ba5a96cd\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuActivityComposition_origin_check_ba5a96cd",
+          "public",
+          "\"public\".\"ApuActivityComposition\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"ApuActivityComposition_origin_check_ba5a96cd\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivityComposition\" ADD CONSTRAINT \"ApuActivityComposition_origin_check_ba5a96cd\" CHECK (\"origin\" IN ('IMPORT', 'MANUAL'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ApuActivityComposition_origin_check_ba5a96cd\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuActivityComposition_origin_check_ba5a96cd",
+          "public",
+          "\"public\".\"ApuActivityComposition\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ApuChapter.ApuChapter_tenantId_code_key",
+    "label": "Add unique constraint on \"ApuChapter\" (tenantId, code)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ApuChapter_tenantId_code_key",
+        "table": "ApuChapter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ApuChapter_tenantId_code_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuChapter_tenantId_code_key",
+          "public",
+          "\"public\".\"ApuChapter\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ApuChapter_tenantId_code_key\"",
+        "sql": "ALTER TABLE \"public\".\"ApuChapter\" ADD CONSTRAINT \"ApuChapter_tenantId_code_key\" UNIQUE (\"tenantId\", \"code\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ApuChapter_tenantId_code_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuChapter_tenantId_code_key",
+          "public",
+          "\"public\".\"ApuChapter\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ApuImage.ApuImage_tenantId_sha256_key",
+    "label": "Add unique constraint on \"ApuImage\" (tenantId, sha256)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ApuImage_tenantId_sha256_key",
+        "table": "ApuImage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ApuImage_tenantId_sha256_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuImage_tenantId_sha256_key",
+          "public",
+          "\"public\".\"ApuImage\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ApuImage_tenantId_sha256_key\"",
+        "sql": "ALTER TABLE \"public\".\"ApuImage\" ADD CONSTRAINT \"ApuImage_tenantId_sha256_key\" UNIQUE (\"tenantId\", \"sha256\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ApuImage_tenantId_sha256_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuImage_tenantId_sha256_key",
+          "public",
+          "\"public\".\"ApuImage\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.ApuItem.ApuItem_category_check_f8aa2465",
+    "label": "Add check constraint \"ApuItem_category_check_f8aa2465\" on \"ApuItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "ApuItem_category_check_f8aa2465",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ApuItem_category_check_f8aa2465\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItem_category_check_f8aa2465",
+          "public",
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"ApuItem_category_check_f8aa2465\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItem\" ADD CONSTRAINT \"ApuItem_category_check_f8aa2465\" CHECK (\"category\" IN ('MATERIAL', 'MANO_DE_OBRA', 'EQUIPO', 'TRANSPORTE', 'OTRO', 'SUBCONTRATO'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ApuItem_category_check_f8aa2465\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItem_category_check_f8aa2465",
+          "public",
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ApuItem.ApuItem_tenantId_sourceKey_key",
+    "label": "Add unique constraint on \"ApuItem\" (tenantId, sourceKey)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ApuItem_tenantId_sourceKey_key",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ApuItem_tenantId_sourceKey_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItem_tenantId_sourceKey_key",
+          "public",
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ApuItem_tenantId_sourceKey_key\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItem\" ADD CONSTRAINT \"ApuItem_tenantId_sourceKey_key\" UNIQUE (\"tenantId\", \"sourceKey\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ApuItem_tenantId_sourceKey_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItem_tenantId_sourceKey_key",
+          "public",
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.BudgetItemResource.BudgetItemResource_type_check_f9fe751f",
+    "label": "Add check constraint \"BudgetItemResource_type_check_f9fe751f\" on \"BudgetItemResource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "BudgetItemResource_type_check_f9fe751f",
+        "table": "BudgetItemResource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"BudgetItemResource_type_check_f9fe751f\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItemResource_type_check_f9fe751f",
+          "public",
+          "\"public\".\"BudgetItemResource\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"BudgetItemResource_type_check_f9fe751f\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItemResource\" ADD CONSTRAINT \"BudgetItemResource_type_check_f9fe751f\" CHECK (\"type\" IN ('MATERIAL', 'LABOR', 'EQUIPMENT', 'TRANSPORT', 'OTHER', 'SUBCONTRACT'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"BudgetItemResource_type_check_f9fe751f\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetItemResource_type_check_f9fe751f",
+          "public",
+          "\"public\".\"BudgetItemResource\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ApuActivity.ApuActivity_chapterId_idx_411dd3d6",
+    "label": "Create index \"ApuActivity_chapterId_idx_411dd3d6\" on \"ApuActivity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ApuActivity_chapterId_idx_411dd3d6",
+        "table": "ApuActivity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ApuActivity_chapterId_idx_411dd3d6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivity_chapterId_idx_411dd3d6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ApuActivity_chapterId_idx_411dd3d6\"",
+        "sql": "CREATE INDEX \"ApuActivity_chapterId_idx_411dd3d6\" ON \"public\".\"ApuActivity\" (\"chapterId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ApuActivity_chapterId_idx_411dd3d6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivity_chapterId_idx_411dd3d6\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ApuActivityComposition.ApuActivityComposition_activityId_order_idx_82e665b3",
+    "label": "Create index \"ApuActivityComposition_activityId_order_idx_82e665b3\" on \"ApuActivityComposition\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ApuActivityComposition_activityId_order_idx_82e665b3",
+        "table": "ApuActivityComposition"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ApuActivityComposition_activityId_order_idx_82e665b3\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivityComposition_activityId_order_idx_82e665b3\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ApuActivityComposition_activityId_order_idx_82e665b3\"",
+        "sql": "CREATE INDEX \"ApuActivityComposition_activityId_order_idx_82e665b3\" ON \"public\".\"ApuActivityComposition\" (\"activityId\", \"order\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ApuActivityComposition_activityId_order_idx_82e665b3\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuActivityComposition_activityId_order_idx_82e665b3\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ApuChapter.ApuChapter_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ApuChapter_tenantId_idx_c93ed4f1\" on \"ApuChapter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ApuChapter_tenantId_idx_c93ed4f1",
+        "table": "ApuChapter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ApuChapter_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuChapter_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ApuChapter_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ApuChapter_tenantId_idx_c93ed4f1\" ON \"public\".\"ApuChapter\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ApuChapter_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuChapter_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ApuImage.ApuImage_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ApuImage_tenantId_idx_c93ed4f1\" on \"ApuImage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ApuImage_tenantId_idx_c93ed4f1",
+        "table": "ApuImage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ApuImage_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuImage_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ApuImage_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ApuImage_tenantId_idx_c93ed4f1\" ON \"public\".\"ApuImage\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ApuImage_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuImage_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ApuImportRun.ApuImportRun_tenantId_createdAt_idx_88162366",
+    "label": "Create index \"ApuImportRun_tenantId_createdAt_idx_88162366\" on \"ApuImportRun\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ApuImportRun_tenantId_createdAt_idx_88162366",
+        "table": "ApuImportRun"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ApuImportRun_tenantId_createdAt_idx_88162366\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuImportRun_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ApuImportRun_tenantId_createdAt_idx_88162366\"",
+        "sql": "CREATE INDEX \"ApuImportRun_tenantId_createdAt_idx_88162366\" ON \"public\".\"ApuImportRun\" (\"tenantId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ApuImportRun_tenantId_createdAt_idx_88162366\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuImportRun_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ApuImportRun.ApuImportRun_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ApuImportRun_tenantId_idx_c93ed4f1\" on \"ApuImportRun\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ApuImportRun_tenantId_idx_c93ed4f1",
+        "table": "ApuImportRun"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ApuImportRun_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuImportRun_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ApuImportRun_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ApuImportRun_tenantId_idx_c93ed4f1\" ON \"public\".\"ApuImportRun\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ApuImportRun_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuImportRun_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ApuItem.ApuItem_auxiliaryActivityId_idx_c2d09703",
+    "label": "Create index \"ApuItem_auxiliaryActivityId_idx_c2d09703\" on \"ApuItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ApuItem_auxiliaryActivityId_idx_c2d09703",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ApuItem_auxiliaryActivityId_idx_c2d09703\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItem_auxiliaryActivityId_idx_c2d09703\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ApuItem_auxiliaryActivityId_idx_c2d09703\"",
+        "sql": "CREATE INDEX \"ApuItem_auxiliaryActivityId_idx_c2d09703\" ON \"public\".\"ApuItem\" (\"auxiliaryActivityId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ApuItem_auxiliaryActivityId_idx_c2d09703\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItem_auxiliaryActivityId_idx_c2d09703\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ApuItem.ApuItem_imageId_idx_9d3c09ba",
+    "label": "Create index \"ApuItem_imageId_idx_9d3c09ba\" on \"ApuItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ApuItem_imageId_idx_9d3c09ba",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ApuItem_imageId_idx_9d3c09ba\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItem_imageId_idx_9d3c09ba\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ApuItem_imageId_idx_9d3c09ba\"",
+        "sql": "CREATE INDEX \"ApuItem_imageId_idx_9d3c09ba\" ON \"public\".\"ApuItem\" (\"imageId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ApuItem_imageId_idx_9d3c09ba\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItem_imageId_idx_9d3c09ba\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ApuItemPriceHistory.ApuItemPriceHistory_importRunId_idx_99a94f3f",
+    "label": "Create index \"ApuItemPriceHistory_importRunId_idx_99a94f3f\" on \"ApuItemPriceHistory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ApuItemPriceHistory_importRunId_idx_99a94f3f",
+        "table": "ApuItemPriceHistory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ApuItemPriceHistory_importRunId_idx_99a94f3f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItemPriceHistory_importRunId_idx_99a94f3f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ApuItemPriceHistory_importRunId_idx_99a94f3f\"",
+        "sql": "CREATE INDEX \"ApuItemPriceHistory_importRunId_idx_99a94f3f\" ON \"public\".\"ApuItemPriceHistory\" (\"importRunId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ApuItemPriceHistory_importRunId_idx_99a94f3f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItemPriceHistory_importRunId_idx_99a94f3f\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ApuItemPriceHistory.ApuItemPriceHistory_itemId_createdAt_idx_d577e708",
+    "label": "Create index \"ApuItemPriceHistory_itemId_createdAt_idx_d577e708\" on \"ApuItemPriceHistory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ApuItemPriceHistory_itemId_createdAt_idx_d577e708",
+        "table": "ApuItemPriceHistory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ApuItemPriceHistory_itemId_createdAt_idx_d577e708\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItemPriceHistory_itemId_createdAt_idx_d577e708\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ApuItemPriceHistory_itemId_createdAt_idx_d577e708\"",
+        "sql": "CREATE INDEX \"ApuItemPriceHistory_itemId_createdAt_idx_d577e708\" ON \"public\".\"ApuItemPriceHistory\" (\"itemId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ApuItemPriceHistory_itemId_createdAt_idx_d577e708\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItemPriceHistory_itemId_createdAt_idx_d577e708\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ApuItemPriceHistory.ApuItemPriceHistory_itemId_idx_41357140",
+    "label": "Create index \"ApuItemPriceHistory_itemId_idx_41357140\" on \"ApuItemPriceHistory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ApuItemPriceHistory_itemId_idx_41357140",
+        "table": "ApuItemPriceHistory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ApuItemPriceHistory_itemId_idx_41357140\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItemPriceHistory_itemId_idx_41357140\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ApuItemPriceHistory_itemId_idx_41357140\"",
+        "sql": "CREATE INDEX \"ApuItemPriceHistory_itemId_idx_41357140\" ON \"public\".\"ApuItemPriceHistory\" (\"itemId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ApuItemPriceHistory_itemId_idx_41357140\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItemPriceHistory_itemId_idx_41357140\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ApuItemPriceHistory.ApuItemPriceHistory_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ApuItemPriceHistory_tenantId_idx_c93ed4f1\" on \"ApuItemPriceHistory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ApuItemPriceHistory_tenantId_idx_c93ed4f1",
+        "table": "ApuItemPriceHistory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ApuItemPriceHistory_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItemPriceHistory_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ApuItemPriceHistory_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ApuItemPriceHistory_tenantId_idx_c93ed4f1\" ON \"public\".\"ApuItemPriceHistory\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ApuItemPriceHistory_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ApuItemPriceHistory_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ApuChapter.ApuChapter_tenantId_fkey",
+    "label": "Add foreign key \"ApuChapter_tenantId_fkey\" on \"ApuChapter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ApuChapter_tenantId_fkey",
+        "table": "ApuChapter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ApuChapter_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuChapter_tenantId_fkey",
+          "public",
+          "\"public\".\"ApuChapter\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ApuChapter_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ApuChapter\"\nADD CONSTRAINT \"ApuChapter_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ApuChapter_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuChapter_tenantId_fkey",
+          "public",
+          "\"public\".\"ApuChapter\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ApuActivity.ApuActivity_chapterId_fkey",
+    "label": "Add foreign key \"ApuActivity_chapterId_fkey\" on \"ApuActivity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ApuActivity_chapterId_fkey",
+        "table": "ApuActivity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ApuActivity_chapterId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuActivity_chapterId_fkey",
+          "public",
+          "\"public\".\"ApuActivity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ApuActivity_chapterId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivity\"\nADD CONSTRAINT \"ApuActivity_chapterId_fkey\"\nFOREIGN KEY (\"chapterId\")\nREFERENCES \"public\".\"ApuChapter\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ApuActivity_chapterId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuActivity_chapterId_fkey",
+          "public",
+          "\"public\".\"ApuActivity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ApuImage.ApuImage_tenantId_fkey",
+    "label": "Add foreign key \"ApuImage_tenantId_fkey\" on \"ApuImage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ApuImage_tenantId_fkey",
+        "table": "ApuImage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ApuImage_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuImage_tenantId_fkey",
+          "public",
+          "\"public\".\"ApuImage\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ApuImage_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ApuImage\"\nADD CONSTRAINT \"ApuImage_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ApuImage_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuImage_tenantId_fkey",
+          "public",
+          "\"public\".\"ApuImage\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ApuImportRun.ApuImportRun_tenantId_fkey",
+    "label": "Add foreign key \"ApuImportRun_tenantId_fkey\" on \"ApuImportRun\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ApuImportRun_tenantId_fkey",
+        "table": "ApuImportRun"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ApuImportRun_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuImportRun_tenantId_fkey",
+          "public",
+          "\"public\".\"ApuImportRun\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ApuImportRun_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ApuImportRun\"\nADD CONSTRAINT \"ApuImportRun_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ApuImportRun_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuImportRun_tenantId_fkey",
+          "public",
+          "\"public\".\"ApuImportRun\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ApuItem.ApuItem_auxiliaryActivityId_fkey",
+    "label": "Add foreign key \"ApuItem_auxiliaryActivityId_fkey\" on \"ApuItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ApuItem_auxiliaryActivityId_fkey",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ApuItem_auxiliaryActivityId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItem_auxiliaryActivityId_fkey",
+          "public",
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ApuItem_auxiliaryActivityId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItem\"\nADD CONSTRAINT \"ApuItem_auxiliaryActivityId_fkey\"\nFOREIGN KEY (\"auxiliaryActivityId\")\nREFERENCES \"public\".\"ApuActivity\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ApuItem_auxiliaryActivityId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItem_auxiliaryActivityId_fkey",
+          "public",
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ApuItem.ApuItem_imageId_fkey",
+    "label": "Add foreign key \"ApuItem_imageId_fkey\" on \"ApuItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ApuItem_imageId_fkey",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ApuItem_imageId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItem_imageId_fkey",
+          "public",
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ApuItem_imageId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItem\"\nADD CONSTRAINT \"ApuItem_imageId_fkey\"\nFOREIGN KEY (\"imageId\")\nREFERENCES \"public\".\"ApuImage\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ApuItem_imageId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItem_imageId_fkey",
+          "public",
+          "\"public\".\"ApuItem\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ApuItemPriceHistory.ApuItemPriceHistory_tenantId_fkey",
+    "label": "Add foreign key \"ApuItemPriceHistory_tenantId_fkey\" on \"ApuItemPriceHistory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ApuItemPriceHistory_tenantId_fkey",
+        "table": "ApuItemPriceHistory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ApuItemPriceHistory_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItemPriceHistory_tenantId_fkey",
+          "public",
+          "\"public\".\"ApuItemPriceHistory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ApuItemPriceHistory_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItemPriceHistory\"\nADD CONSTRAINT \"ApuItemPriceHistory_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ApuItemPriceHistory_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItemPriceHistory_tenantId_fkey",
+          "public",
+          "\"public\".\"ApuItemPriceHistory\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ApuItemPriceHistory.ApuItemPriceHistory_itemId_fkey",
+    "label": "Add foreign key \"ApuItemPriceHistory_itemId_fkey\" on \"ApuItemPriceHistory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ApuItemPriceHistory_itemId_fkey",
+        "table": "ApuItemPriceHistory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ApuItemPriceHistory_itemId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItemPriceHistory_itemId_fkey",
+          "public",
+          "\"public\".\"ApuItemPriceHistory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ApuItemPriceHistory_itemId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItemPriceHistory\"\nADD CONSTRAINT \"ApuItemPriceHistory_itemId_fkey\"\nFOREIGN KEY (\"itemId\")\nREFERENCES \"public\".\"ApuItem\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ApuItemPriceHistory_itemId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItemPriceHistory_itemId_fkey",
+          "public",
+          "\"public\".\"ApuItemPriceHistory\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ApuItemPriceHistory.ApuItemPriceHistory_importRunId_fkey",
+    "label": "Add foreign key \"ApuItemPriceHistory_importRunId_fkey\" on \"ApuItemPriceHistory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ApuItemPriceHistory_importRunId_fkey",
+        "table": "ApuItemPriceHistory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ApuItemPriceHistory_importRunId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItemPriceHistory_importRunId_fkey",
+          "public",
+          "\"public\".\"ApuItemPriceHistory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ApuItemPriceHistory_importRunId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItemPriceHistory\"\nADD CONSTRAINT \"ApuItemPriceHistory_importRunId_fkey\"\nFOREIGN KEY (\"importRunId\")\nREFERENCES \"public\".\"ApuImportRun\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ApuItemPriceHistory_importRunId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ApuItemPriceHistory_importRunId_fkey",
+          "public",
+          "\"public\".\"ApuItemPriceHistory\""
+        ]
+      }
+    ]
+  }
+]

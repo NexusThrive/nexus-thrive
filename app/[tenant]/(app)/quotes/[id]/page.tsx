@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import {
   ArrowLeft,
-  BarChart3,
   CalendarDays,
   FileText,
-  MessageCircle,
   Printer,
   User,
   Wallet,
@@ -13,18 +11,16 @@ import {
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
 import { getQuoteTerms, getVerticalTerms } from "@/lib/vertical-terms";
-import { getQuotePublicUrl } from "@/lib/app-url";
 import { formatCurrency, formatDateShort } from "@/lib/format";
-import { QuoteStatusBadge } from "../_components/quote-badges";
+import { QuoteStatusBadge } from "@/components/construction/quote-badges";
 
 /**
- * Detalle de presupuesto — Fase 3.
+ * Detalle de una cotización.
  *
- * Vista completa de un presupuesto con acciones rápidas:
- *   - Imprimir / PDF Cliente → `/[tenant]/quotes/[id]/print` (documento A4).
- *   - Explosión de Materiales → `/[tenant]/quotes/[id]/explosion` (panel de obra).
- *   - Compartir por WhatsApp → enlace `wa.me` con mensaje resumido (sin datos
- *     sensibles: solo información pública del presupuesto).
+ * Una cotización emitida desde una obra se gestiona en la pestaña
+ * Cotizaciones de esa obra: aquí solo se redirige. Las cotizaciones
+ * anteriores a la obra se muestran en solo lectura, con su documento para
+ * imprimir y la opción de pasarlas a una obra (en Cotizaciones anteriores).
  *
  * Multi-tenant: `tenantDb.quotes.get(quoteId)` filtra por `tenantId`; si el
  * presupuesto no pertenece al tenant → 404 sin revelar su existencia.
@@ -42,6 +38,13 @@ export default async function QuoteDetailPage({
   }).first();
   if (!tenantRecord) {
     notFound();
+  }
+
+  const owner = await db.orm.public.Quote.where({ id: quoteId, tenantId: tenantRecord.id })
+    .select("projectId")
+    .first();
+  if (owner?.projectId) {
+    redirect(`/${tenantSlug}/projects/${owner.projectId}?tab=cotizaciones`);
   }
 
   const tenantDb = createTenantDb(tenantRecord.id);
@@ -62,29 +65,16 @@ export default async function QuoteDetailPage({
   const terms = getQuoteTerms(tenantRecord.vertical);
   const baseTerms = getVerticalTerms(tenantRecord.vertical);
 
-  const publicUrl = getQuotePublicUrl(tenantSlug, quote.id);
-  const waText = [
-    `${terms.quote} — ${quote.code}`,
-    "",
-    `Cliente: ${customer?.name ?? quote.customerName ?? "—"}`,
-    `Proyecto: ${quote.title}`,
-    "",
-    `Total: ${formatCurrency(quote.totalAmount)}`,
-    "",
-    "Ver presupuesto:",
-    publicUrl,
-  ].join("\n");
-  const waLink = `https://wa.me/?text=${encodeURIComponent(waText)}`;
 
   return (
     <div className="space-y-6">
       <header className="flex flex-col gap-1">
         <Link
-          href={`/${tenantSlug}/quotes`}
+          href={`/${tenantSlug}/quotes?folder=anteriores`}
           className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-muted-foreground transition hover:text-foreground/80"
         >
           <ArrowLeft aria-hidden="true" className="h-4 w-4" />
-          Volver a {terms.quotes.toLowerCase()}
+          Volver a cotizaciones anteriores
         </Link>
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
@@ -107,21 +97,11 @@ export default async function QuoteDetailPage({
           Imprimir / PDF Cliente
         </Link>
         <Link
-          href={`/${tenantSlug}/quotes/${quote.id}/explosion`}
+          href={`/${tenantSlug}/quotes?folder=anteriores`}
           className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted"
         >
-          <BarChart3 aria-hidden="true" className="h-4 w-4" />
-          Explosión de Materiales
+          Pasar a una obra
         </Link>
-        <a
-          href={waLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-success/30 bg-success/10 px-3 text-sm font-medium text-success transition hover:border-success/40 hover:bg-success/10"
-        >
-          <MessageCircle aria-hidden="true" className="h-4 w-4" />
-          Compartir por WhatsApp
-        </a>
       </div>
 
       {/* Resumen */}

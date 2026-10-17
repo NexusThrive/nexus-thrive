@@ -1,430 +1,71 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
-import { getQuoteTerms, type QuoteTerms } from "@/lib/vertical-terms";
-import type { ApuItemCategoryValue } from "@/lib/apu-engine";
-import {
-  validateApuActivity,
-  validateApuItem,
-  validateQuote,
-  parseImportCsv,
-  type ApuActivityFieldErrors,
-  type ApuActivityFormValues,
-  type ApuItemFieldErrors,
-  type ApuItemFormValues,
-  type QuoteFieldErrors,
-  type QuoteFormValues,
-} from "./validators";
+import { canGovernBudget, requireTenantContext } from "@/lib/tenant-context";
+import { ensureProjectContainers } from "@/lib/construction/containers";
 
-/* ------------------------------------------------------------------ */
-/* Tipos de estado (firma useActionState)                              */
-/* ------------------------------------------------------------------ */
-
-export type ApuItemFormState = {
-  status: "idle" | "error" | "ok";
-  message?: string;
-  errors?: ApuItemFieldErrors;
-  values?: ApuItemFormValues;
-};
-
-export type ApuActivityFormState = {
-  status: "idle" | "error" | "ok";
-  message?: string;
-  errors?: ApuActivityFieldErrors;
-  values?: ApuActivityFormValues;
-};
-
-export type QuoteFormState = {
-  status: "idle" | "error" | "ok";
-  message?: string;
-  errors?: QuoteFieldErrors;
-  values?: QuoteFormValues;
-};
-
-export type ImportResultState = {
-  status: "idle" | "error" | "ok";
-  message?: string;
-  created?: number;
-  updated?: number;
-};
-
-const ACCESS_DENIED_FORM = { status: "error", message: "No tienes acceso a este negocio." } as const;
-
-type TenantDb = ReturnType<typeof createTenantDb>;
-
-/** DB del tenant + vocabulario cotizaciones (mensajes adaptativos). */
-type TenantContext = {
-  tenantId: string;
-  tenantDb: TenantDb;
-  terms: QuoteTerms;
-};
+export type MigrateLegacyResult =
+  | { ok: true; projectId: string; message: string }
+  | { ok: false; message: string };
 
 /**
- * Verifica sesión de Clerk + tenant activo + membresía del usuario.
- * Devuelve `null` cuando algo falla (el caller responde con mensaje genérico).
+ * Pasa una cotización anterior (sin obra) a una obra nueva, con su
+ * presupuesto, partidas y APU. Si la cotización no tenía cliente, se usa el
+ * elegido en el formulario. Si algo falla, la obra creada se elimina y la
+ * cotización queda como estaba. Solo OWNER / SUPERADMIN.
  */
-async function requireTenantContext(
-  tenantSlug: string,
-): Promise<TenantContext | null> {
-  if (!tenantSlug || tenantSlug.trim() === "") {
-    return null;
-  }
-  const { userId } = await auth();
-  if (!userId) {
-    return null;
-  }
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    return null;
-  }
-  const tenantDb = createTenantDb(tenantRecord.id);
-  const member = await tenantDb.users.findByClerkUserId(userId);
-  if (!member) {
-    return null;
-  }
-  return {
-    tenantId: tenantRecord.id,
-    tenantDb,
-    terms: getQuoteTerms(tenantRecord.vertical),
-  };
-}
-
-/** Detecta violación de clave única (código duplicado en el tenant). */
-function isUniqueViolation(error: unknown): boolean {
-  return (
-    error instanceof Error &&
-    /duplicate key value violates unique constraint/i.test(error.message)
-  );
-}
-
-const DUPLICATE_CODE_MESSAGE =
-  "Ya existe un ítem con ese código en este negocio. Usa otro código o déjalo vacío.";
-
-/* ------------------------------------------------------------------ */
-/* Banco de insumos — ítems                                            */
-/* ------------------------------------------------------------------ */
-
-export async function createApuItemAction(
-  _prevState: ApuItemFormState,
-  formData: FormData,
-): Promise<ApuItemFormState> {
-  const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const context = await requireTenantContext(tenantSlug);
-  if (!context) {
-    return ACCESS_DENIED_FORM;
-  }
-  const { tenantDb } = context;
-
-  const validation = validateApuItem(formData);
-  if (!validation.ok) {
-    return { status: "error", errors: validation.errors, values: validation.values };
-  }
-
-  try {
-    await tenantDb.apu.createItem({
-      code: validation.values.code || undefined,
-      name: validation.values.name,
-      unit: validation.values.unit,
-      category: validation.values.category as ApuItemCategoryValue,
-      unitPrice: validation.values.unitPrice,
-    });
-  } catch (error) {
-    if (isUniqueViolation(error)) {
-      return { status: "error", message: DUPLICATE_CODE_MESSAGE, values: validation.values };
-    }
-    throw error;
-  }
-
-  revalidatePath(`/${tenantSlug}/quotes`);
-  return { status: "ok" };
-}
-
-export async function updateApuItemAction(
-  _prevState: ApuItemFormState,
-  formData: FormData,
-): Promise<ApuItemFormState> {
-  const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const itemId = String(formData.get("itemId") ?? "");
-  const context = await requireTenantContext(tenantSlug);
-  if (!context) {
-    return ACCESS_DENIED_FORM;
-  }
-  const { tenantDb } = context;
-
-  if (!itemId) {
-    return { status: "error", message: "Ítem no válido." };
-  }
-
-  const validation = validateApuItem(formData);
-  if (!validation.ok) {
-    return { status: "error", errors: validation.errors, values: validation.values };
-  }
-
-  try {
-    await tenantDb.apu.updateItem(itemId, {
-      code: validation.values.code || undefined,
-      name: validation.values.name,
-      unit: validation.values.unit,
-      category: validation.values.category as ApuItemCategoryValue,
-      unitPrice: validation.values.unitPrice,
-    });
-  } catch (error) {
-    if (isUniqueViolation(error)) {
-      return { status: "error", message: DUPLICATE_CODE_MESSAGE, values: validation.values };
-    }
-    throw error;
-  }
-
-  revalidatePath(`/${tenantSlug}/quotes`);
-  return { status: "ok" };
-}
-
-/* ------------------------------------------------------------------ */
-/* Catálogo APU — actividades                                          */
-/* ------------------------------------------------------------------ */
-
-export async function createApuActivityAction(
-  _prevState: ApuActivityFormState,
-  formData: FormData,
-): Promise<ApuActivityFormState> {
-  const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const context = await requireTenantContext(tenantSlug);
-  if (!context) {
-    return ACCESS_DENIED_FORM;
-  }
-  const { tenantDb } = context;
-
-  const validation = validateApuActivity(formData);
-  if (!validation.ok) {
-    return { status: "error", errors: validation.errors, values: validation.values };
-  }
-
-  try {
-    await tenantDb.apu.createActivity({
-      code: validation.values.code || undefined,
-      name: validation.values.name,
-      unit: validation.values.unit,
-      description: validation.values.description || undefined,
-      compositions: validation.values.compositions,
-    });
-  } catch (error) {
-    if (isUniqueViolation(error)) {
-      return {
-        status: "error",
-        message: "Ya existe una actividad con ese código en este negocio.",
-        values: validation.values,
-      };
-    }
-    throw error;
-  }
-
-  revalidatePath(`/${tenantSlug}/quotes`);
-  return { status: "ok" };
-}
-
-export async function updateApuActivityAction(
-  _prevState: ApuActivityFormState,
-  formData: FormData,
-): Promise<ApuActivityFormState> {
-  const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const activityId = String(formData.get("activityId") ?? "");
-  const context = await requireTenantContext(tenantSlug);
-  if (!context) {
-    return ACCESS_DENIED_FORM;
-  }
-  const { tenantDb } = context;
-
-  if (!activityId) {
-    return { status: "error", message: "Actividad no válida." };
-  }
-
-  const validation = validateApuActivity(formData);
-  if (!validation.ok) {
-    return { status: "error", errors: validation.errors, values: validation.values };
-  }
-
-  try {
-    await tenantDb.apu.updateActivity(activityId, {
-      code: validation.values.code || undefined,
-      name: validation.values.name,
-      unit: validation.values.unit,
-      description: validation.values.description || undefined,
-      compositions: validation.values.compositions,
-    });
-  } catch (error) {
-    if (isUniqueViolation(error)) {
-      return {
-        status: "error",
-        message: "Ya existe una actividad con ese código en este negocio.",
-        values: validation.values,
-      };
-    }
-    throw error;
-  }
-
-  revalidatePath(`/${tenantSlug}/quotes`);
-  return { status: "ok" };
-}
-
-/* ------------------------------------------------------------------ */
-/* Presupuestos                                                        */
-/* ------------------------------------------------------------------ */
-
-export async function createQuoteAction(
-  _prevState: QuoteFormState,
-  formData: FormData,
-): Promise<QuoteFormState> {
-  const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const context = await requireTenantContext(tenantSlug);
-  if (!context) {
-    return ACCESS_DENIED_FORM;
-  }
-  const { tenantDb, terms } = context;
-
-  const validation = validateQuote(formData);
-  if (!validation.ok) {
-    return { status: "error", errors: validation.errors, values: validation.values };
-  }
-
-  const quote = await tenantDb.quotes.create({
-    customerId: validation.values.customerId || null,
-    title: validation.values.title,
-    items: validation.values.items,
-    aiuConfig: {
-      adminPercent: validation.values.adminPercent,
-      imprevPercent: validation.values.imprevPercent,
-      utilPercent: validation.values.utilPercent,
-      taxPercent: validation.values.taxPercent,
-    },
-  });
-
-  revalidatePath(`/${tenantSlug}/quotes`);
-  revalidatePath(`/${tenantSlug}/quotes/new`);
-  return {
-    status: "ok",
-    message: `${terms.quote} ${quote.code} creado como borrador.`,
-  };
-}
-
-/** Detalle completo de un presupuesto para el modal (lectura). */
-export async function getQuoteDetailAction(
+export async function migrateLegacyQuoteAction(
   tenantSlug: string,
   quoteId: string,
-) {
-  const context = await requireTenantContext(tenantSlug);
-  if (!context) {
-    return null;
-  }
-  const { tenantDb } = context;
-  return tenantDb.quotes.get(quoteId);
-}
-
-/** Detalle de una actividad con composición (modal de catálogo). */
-export async function getActivityDetailAction(
-  tenantSlug: string,
-  activityId: string,
-) {
-  const context = await requireTenantContext(tenantSlug);
-  if (!context) {
-    return null;
-  }
-  const { tenantDb } = context;
-  return tenantDb.apu.getActivity(activityId);
-}
-
-/* ------------------------------------------------------------------ */
-/* Import CSV/Excel (atómico: upsert en transacción)                   */
-/* ------------------------------------------------------------------ */
-
-export async function importApuItemsAction(
-  _prevState: ImportResultState,
   formData: FormData,
-): Promise<ImportResultState> {
-  const tenantSlug = String(formData.get("tenantSlug") ?? "");
+): Promise<MigrateLegacyResult> {
   const context = await requireTenantContext(tenantSlug);
-  if (!context) {
-    return ACCESS_DENIED_FORM;
+  if (!context) return { ok: false, message: "No tienes acceso a este negocio." };
+  if (!canGovernBudget(context.role)) {
+    return { ok: false, message: "Solo el dueño del negocio puede migrar cotizaciones." };
+  }
+  const { tenantDb, tenantId } = context;
+  const quote = await db.orm.public.Quote.where({ id: quoteId, tenantId }).first();
+  if (!quote) return { ok: false, message: "No se encontró la cotización." };
+  if (quote.projectId) return { ok: false, message: "Esta cotización ya pertenece a una obra." };
+
+  const customerId = quote.customerId ?? String(formData.get("customerId") ?? "").trim();
+  if (!customerId) {
+    return { ok: false, message: "Elige el cliente de la obra: esta cotización no tenía cliente." };
   }
 
-  const raw = String(formData.get("importText") ?? "");
-  const parsed = parseImportCsv(raw);
-  if (!parsed.ok) {
-    return {
-      status: "error",
-      message: `No se importó nada: ${parsed.errors[0]}${
-        parsed.errors.length > 1 ? ` (+${parsed.errors.length - 1} más)` : ""
-      }`,
-    };
-  }
-
-  // Upsert atómico dentro de una sola transacción; si una operación
-  // falla, nada se aplica. Con código: buscar y actualizar o crear;
-  // sin código: siempre crear (NULL no colisiona en la única parcial).
+  let projectId: string | null = null;
   try {
-    const stats = await db.transaction(async (tx) => {
-      let created = 0;
-      let updated = 0;
-      for (const row of parsed.rows) {
-        if (row.code) {
-          const found = await tx.orm.public.ApuItem.where({
-            tenantId: context.tenantId,
-            code: row.code,
-          }).first();
-          if (found) {
-            await tx.orm.public.ApuItem.where({ id: found.id }).update({
-              name: row.name,
-              unit: row.unit,
-              category: row.category as ApuItemCategoryValue,
-              unitPrice: row.unitPrice,
-            });
-            updated += 1;
-          } else {
-            await tx.orm.public.ApuItem.create({
-              tenantId: context.tenantId,
-              code: row.code,
-              name: row.name,
-              unit: row.unit,
-              category: row.category as ApuItemCategoryValue,
-              unitPrice: row.unitPrice,
-            });
-            created += 1;
-          }
-        } else {
-          await tx.orm.public.ApuItem.create({
-            tenantId: context.tenantId,
-            code: null,
-            name: row.name,
-            unit: row.unit,
-            category: row.category as ApuItemCategoryValue,
-            unitPrice: row.unitPrice,
-          });
-          created += 1;
-        }
-      }
-      return { created, updated };
+    const project = await tenantDb.projects.create({ customerId, name: quote.title });
+    projectId = project.id;
+    await ensureProjectContainers(tenantDb, project.id);
+    const member = await tenantDb.users.findByClerkUserId(context.userId);
+    const result = await tenantDb.projectQuotes.adoptLegacyQuote(quoteId, project.id, {
+      userId: context.userId,
+      userName: member?.name?.trim() || member?.email || "Usuario",
     });
-
     revalidatePath(`/${tenantSlug}/quotes`);
+    revalidatePath(`/${tenantSlug}/projects`);
+    const differs = Math.abs(Number(result.newTotal) / 1_000_000 - Number(result.legacyTotal)) >= 0.01;
     return {
-      status: "ok",
-      message: `${stats.created} creados, ${stats.updated} actualizados.`,
-      created: stats.created,
-      updated: stats.updated,
+      ok: true,
+      projectId: project.id,
+      message: differs
+        ? `Obra ${project.code} creada. El total recalculado difiere del original; revísalo en el presupuesto.`
+        : `Obra ${project.code} creada con la cotización ${quote.code}.`,
     };
   } catch (error) {
-    if (isUniqueViolation(error)) {
-      return {
-        status: "error",
-        message:
-          "No se importó nada: hay códigos duplicados entre las filas o con el catálogo actual.",
-      };
+    if (projectId) {
+      await db.orm.public.Project.where({ id: projectId, tenantId }).delete();
     }
-    throw error;
+    console.error("[quotes] migrateLegacyQuoteAction", error);
+    return {
+      ok: false,
+      message:
+        error instanceof Error && error.message.includes("Cliente no encontrado")
+          ? "El cliente elegido no existe en este negocio."
+          : "No se pudo migrar la cotización. No se cambió nada.",
+    };
   }
 }

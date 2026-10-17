@@ -1,0 +1,536 @@
+[
+  {
+    "id": "table.BudgetLockEvent",
+    "label": "Create table \"BudgetLockEvent\"",
+    "summary": "Creates table \"BudgetLockEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "BudgetLockEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"BudgetLockEvent\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetLockEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"BudgetLockEvent\"",
+        "sql": "CREATE TABLE \"public\".\"BudgetLockEvent\" (\n  \"action\" text NOT NULL,\n  \"budgetId\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"reason\" text,\n  \"tenantId\" text NOT NULL,\n  \"userId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"BudgetLockEvent\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetLockEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuActivity.active",
+    "label": "Add column \"active\" to \"ApuActivity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "active",
+        "table": "ApuActivity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"active\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivity",
+          "active"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"active\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivity\" ADD COLUMN \"active\" bool DEFAULT true NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"active\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivity",
+          "active"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuItem.active",
+    "label": "Add column \"active\" to \"ApuItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "active",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"active\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuItem",
+          "active"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"active\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItem\" ADD COLUMN \"active\" bool DEFAULT true NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"active\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuItem",
+          "active"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuItem.createdAt",
+    "label": "Add column \"createdAt\" to \"ApuItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "createdAt",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"createdAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuItem",
+          "createdAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"createdAt\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItem\" ADD COLUMN \"createdAt\" timestamptz DEFAULT (now()) NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"createdAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuItem",
+          "createdAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuItem.imageUrl",
+    "label": "Add column \"imageUrl\" to \"ApuItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "imageUrl",
+        "table": "ApuItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"imageUrl\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuItem",
+          "imageUrl"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"imageUrl\"",
+        "sql": "ALTER TABLE \"public\".\"ApuItem\" ADD COLUMN \"imageUrl\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"imageUrl\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuItem",
+          "imageUrl"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.BudgetItem.sourceActivityId",
+    "label": "Add column \"sourceActivityId\" to \"BudgetItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sourceActivityId",
+        "table": "BudgetItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sourceActivityId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItem",
+          "sourceActivityId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sourceActivityId\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItem\" ADD COLUMN \"sourceActivityId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sourceActivityId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItem",
+          "sourceActivityId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.BudgetItem.wastePct",
+    "label": "Add column \"wastePct\" to \"BudgetItem\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "wastePct",
+        "table": "BudgetItem"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"wastePct\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItem",
+          "wastePct"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"wastePct\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItem\" ADD COLUMN \"wastePct\" int8 DEFAULT '0'::int8 NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"wastePct\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItem",
+          "wastePct"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.BudgetItemResource.sourceItemId",
+    "label": "Add column \"sourceItemId\" to \"BudgetItemResource\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sourceItemId",
+        "table": "BudgetItemResource"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sourceItemId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItemResource",
+          "sourceItemId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sourceItemId\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetItemResource\" ADD COLUMN \"sourceItemId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sourceItemId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BudgetItemResource",
+          "sourceItemId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BudgetLockEvent.BudgetLockEvent_budgetId_createdAt_idx_81273a2c",
+    "label": "Create index \"BudgetLockEvent_budgetId_createdAt_idx_81273a2c\" on \"BudgetLockEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BudgetLockEvent_budgetId_createdAt_idx_81273a2c",
+        "table": "BudgetLockEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BudgetLockEvent_budgetId_createdAt_idx_81273a2c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetLockEvent_budgetId_createdAt_idx_81273a2c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BudgetLockEvent_budgetId_createdAt_idx_81273a2c\"",
+        "sql": "CREATE INDEX \"BudgetLockEvent_budgetId_createdAt_idx_81273a2c\" ON \"public\".\"BudgetLockEvent\" (\"budgetId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BudgetLockEvent_budgetId_createdAt_idx_81273a2c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetLockEvent_budgetId_createdAt_idx_81273a2c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BudgetLockEvent.BudgetLockEvent_budgetId_idx_abbf614c",
+    "label": "Create index \"BudgetLockEvent_budgetId_idx_abbf614c\" on \"BudgetLockEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BudgetLockEvent_budgetId_idx_abbf614c",
+        "table": "BudgetLockEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BudgetLockEvent_budgetId_idx_abbf614c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetLockEvent_budgetId_idx_abbf614c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BudgetLockEvent_budgetId_idx_abbf614c\"",
+        "sql": "CREATE INDEX \"BudgetLockEvent_budgetId_idx_abbf614c\" ON \"public\".\"BudgetLockEvent\" (\"budgetId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BudgetLockEvent_budgetId_idx_abbf614c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetLockEvent_budgetId_idx_abbf614c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BudgetLockEvent.BudgetLockEvent_tenantId_idx_c93ed4f1",
+    "label": "Create index \"BudgetLockEvent_tenantId_idx_c93ed4f1\" on \"BudgetLockEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BudgetLockEvent_tenantId_idx_c93ed4f1",
+        "table": "BudgetLockEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BudgetLockEvent_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetLockEvent_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BudgetLockEvent_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"BudgetLockEvent_tenantId_idx_c93ed4f1\" ON \"public\".\"BudgetLockEvent\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BudgetLockEvent_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BudgetLockEvent_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.BudgetLockEvent.BudgetLockEvent_tenantId_fkey",
+    "label": "Add foreign key \"BudgetLockEvent_tenantId_fkey\" on \"BudgetLockEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "BudgetLockEvent_tenantId_fkey",
+        "table": "BudgetLockEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"BudgetLockEvent_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetLockEvent_tenantId_fkey",
+          "public",
+          "\"public\".\"BudgetLockEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"BudgetLockEvent_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetLockEvent\"\nADD CONSTRAINT \"BudgetLockEvent_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"BudgetLockEvent_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetLockEvent_tenantId_fkey",
+          "public",
+          "\"public\".\"BudgetLockEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.BudgetLockEvent.BudgetLockEvent_budgetId_fkey",
+    "label": "Add foreign key \"BudgetLockEvent_budgetId_fkey\" on \"BudgetLockEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "BudgetLockEvent_budgetId_fkey",
+        "table": "BudgetLockEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"BudgetLockEvent_budgetId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetLockEvent_budgetId_fkey",
+          "public",
+          "\"public\".\"BudgetLockEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"BudgetLockEvent_budgetId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"BudgetLockEvent\"\nADD CONSTRAINT \"BudgetLockEvent_budgetId_fkey\"\nFOREIGN KEY (\"budgetId\")\nREFERENCES \"public\".\"ProjectBudget\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"BudgetLockEvent_budgetId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BudgetLockEvent_budgetId_fkey",
+          "public",
+          "\"public\".\"BudgetLockEvent\""
+        ]
+      }
+    ]
+  }
+]

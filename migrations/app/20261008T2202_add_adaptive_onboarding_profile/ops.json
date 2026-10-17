@@ -1,0 +1,254 @@
+[
+  {
+    "id": "column.public.Tenant.address",
+    "label": "Add column \"address\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "address",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"address\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "address"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"address\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"address\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"address\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "address"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.legalName",
+    "label": "Add column \"legalName\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "legalName",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"legalName\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "legalName"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"legalName\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"legalName\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"legalName\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "legalName"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.taxId",
+    "label": "Add column \"taxId\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "taxId",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"taxId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "taxId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"taxId\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"taxId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"taxId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "taxId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.teamSize",
+    "label": "Add column \"teamSize\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "teamSize",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"teamSize\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "teamSize"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"teamSize\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"teamSize\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"teamSize\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "teamSize"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.tenantType",
+    "label": "Add column \"tenantType\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "tenantType",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"tenantType\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "tenantType"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"tenantType\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"tenantType\" text DEFAULT 'COMPANY' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"tenantType\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "tenantType"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.Tenant.Tenant_tenantType_check_0d8e073f",
+    "label": "Add check constraint \"Tenant_tenantType_check_0d8e073f\" on \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "Tenant_tenantType_check_0d8e073f",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Tenant_tenantType_check_0d8e073f\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Tenant_tenantType_check_0d8e073f",
+          "public",
+          "\"public\".\"Tenant\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"Tenant_tenantType_check_0d8e073f\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD CONSTRAINT \"Tenant_tenantType_check_0d8e073f\" CHECK (\"tenantType\" IN ('INDIVIDUAL', 'COMPANY'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Tenant_tenantType_check_0d8e073f\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Tenant_tenantType_check_0d8e073f",
+          "public",
+          "\"public\".\"Tenant\""
+        ]
+      }
+    ]
+  }
+]

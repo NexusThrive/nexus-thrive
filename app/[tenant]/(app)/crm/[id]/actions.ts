@@ -1,8 +1,7 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
 import { revalidatePath } from "next/cache";
-import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
 import { NOTE_MAX_LENGTH } from "@/lib/customer-notes";
 
@@ -23,30 +22,11 @@ type NoteContext = {
 async function requireTenantContext(
   tenantSlug: string,
 ): Promise<NoteContext | null> {
-  if (!tenantSlug || tenantSlug.trim() === "") {
+  const context = await requireSharedTenantContext(tenantSlug);
+  if (!context) {
     return null;
   }
-  const { userId } = await auth();
-  if (!userId) {
-    return null;
-  }
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    return null;
-  }
-  const tenantDb = createTenantDb(tenantRecord.id);
-  const member = await tenantDb.users.findByClerkUserId(userId);
-  if (!member) {
-    return null;
-  }
-  return {
-    tenantId: tenantRecord.id,
-    tenantSlug,
-    memberId: member.id,
-  };
+  return { tenantId: context.tenantId, tenantSlug, memberId: context.memberId };
 }
 
 /**

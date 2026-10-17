@@ -95,7 +95,7 @@ const UNIT_SYNONYMS: Record<string, string> = {
   kg: "KG", kilo: "KG", kilos: "KG", kilogramo: "KG", kilogramos: "KG",
   und: "UND", un: "UND", ",": "UND", unidad: "UND", unidades: "UND", unid: "UND",
   hr: "HR", hora: "HR", horas: "HR", h: "HR",
-  bulto: "BULTO", bultos: "BULTO",
+  bulto: "BULTO", bultos: "BULTO", bol: "BULTO", bolitos: "BULTO",
   glb: "GLB", global: "GLB",
   l: "L", lt: "L", litro: "L", litros: "L", dm3: "L",
   cm: "CM", cml: "CM",
@@ -172,6 +172,9 @@ function jaccard(a: string[], b: string[]): number {
 export function matchHeaderToField(header: string, field: ImportTargetField): number {
   const normalized = normalizeText(header);
   if (!normalized) return 0;
+
+  // Exact match of field name itself (e.g., "code" matches "code" field)
+  if (normalizeText(field) === normalizeText(header)) return 100;
 
   const synonyms = FIELD_SYNONYMS[field];
   for (const synonym of synonyms) {

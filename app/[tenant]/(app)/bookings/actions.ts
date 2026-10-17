@@ -1,8 +1,8 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { parseCopAmount } from "@/lib/cop-amount";
+import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
 import { revalidatePath } from "next/cache";
-import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
 
 type TenantDb = ReturnType<typeof createTenantDb>;
@@ -53,48 +53,20 @@ const ACCESS_DENIED_BOOKING_STATUS: BookingStatusFormState = {
 async function requireTenantDb(
   tenantSlug: string,
 ): Promise<{ tenantDb: TenantDb; tenantId: string } | null> {
-  if (!tenantSlug || tenantSlug.trim() === "") {
+  const context = await requireSharedTenantContext(tenantSlug);
+  if (!context) {
     return null;
   }
-
-  const { userId } = await auth();
-  if (!userId) {
-    return null;
-  }
-
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    return null;
-  }
-
-  const tenantDb = createTenantDb(tenantRecord.id);
-  const localUser = await tenantDb.users.findByClerkUserId(userId);
-  if (!localUser) {
-    return null;
-  }
-
-  return { tenantDb, tenantId: tenantRecord.id };
+  return { tenantDb: context.tenantDb, tenantId: context.tenantId };
 }
 
 /**
- * Normaliza un importe en COP a un entero de pesos. Acepta "50000",
- * "50.000" o "50,000". Devuelve `null` si no es un número positivo.
+ * Normaliza un importe en COP (ver `parseCopAmount`: "50000", "50.000",
+ * "50,000", "1.234.567,89"). Devuelve `null` si no es un número positivo.
  */
 function parseAmount(raw: string): number | null {
-  const cleaned = raw.trim().replace(/\s/g, "");
-  if (!cleaned) {
-    return null;
-  }
-
-  const normalized = /^\d{1,3}([.,]\d{3})+$/.test(cleaned)
-    ? cleaned.replace(/[.,]/g, "")
-    : cleaned.replace(",", ".");
-
-  const value = Number(normalized);
-  return Number.isFinite(value) && value > 0 ? value : null;
+  const amount = parseCopAmount(raw);
+  return amount === null ? null : Number(amount);
 }
 
 /**

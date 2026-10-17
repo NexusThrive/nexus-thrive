@@ -1,0 +1,242 @@
+[
+  {
+    "id": "table.AuditLog",
+    "label": "Create table \"AuditLog\"",
+    "summary": "Creates table \"AuditLog\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "AuditLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"AuditLog\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AuditLog\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"AuditLog\"",
+        "sql": "CREATE TABLE \"public\".\"AuditLog\" (\n  \"action\" text NOT NULL,\n  \"actorEmail\" text,\n  \"actorId\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"ipAddress\" text,\n  \"metadata\" json,\n  \"targetTenantId\" text,\n  \"targetTenantName\" text,\n  \"userAgent\" text,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"AuditLog\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AuditLog\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.suspendedAt",
+    "label": "Add column \"suspendedAt\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "suspendedAt",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"suspendedAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "suspendedAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"suspendedAt\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"suspendedAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"suspendedAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "suspendedAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.suspendedReason",
+    "label": "Add column \"suspendedReason\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "suspendedReason",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"suspendedReason\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "suspendedReason"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"suspendedReason\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"suspendedReason\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"suspendedReason\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "suspendedReason"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.AuditLog.AuditLog_actorId_idx_a58f6b4b",
+    "label": "Create index \"AuditLog_actorId_idx_a58f6b4b\" on \"AuditLog\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "AuditLog_actorId_idx_a58f6b4b",
+        "table": "AuditLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"AuditLog_actorId_idx_a58f6b4b\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AuditLog_actorId_idx_a58f6b4b\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"AuditLog_actorId_idx_a58f6b4b\"",
+        "sql": "CREATE INDEX \"AuditLog_actorId_idx_a58f6b4b\" ON \"public\".\"AuditLog\" (\"actorId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"AuditLog_actorId_idx_a58f6b4b\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AuditLog_actorId_idx_a58f6b4b\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.AuditLog.AuditLog_createdAt_idx_9575dbd7",
+    "label": "Create index \"AuditLog_createdAt_idx_9575dbd7\" on \"AuditLog\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "AuditLog_createdAt_idx_9575dbd7",
+        "table": "AuditLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"AuditLog_createdAt_idx_9575dbd7\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AuditLog_createdAt_idx_9575dbd7\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"AuditLog_createdAt_idx_9575dbd7\"",
+        "sql": "CREATE INDEX \"AuditLog_createdAt_idx_9575dbd7\" ON \"public\".\"AuditLog\" (\"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"AuditLog_createdAt_idx_9575dbd7\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AuditLog_createdAt_idx_9575dbd7\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.AuditLog.AuditLog_targetTenantId_idx_9ecf2d83",
+    "label": "Create index \"AuditLog_targetTenantId_idx_9ecf2d83\" on \"AuditLog\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "AuditLog_targetTenantId_idx_9ecf2d83",
+        "table": "AuditLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"AuditLog_targetTenantId_idx_9ecf2d83\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AuditLog_targetTenantId_idx_9ecf2d83\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"AuditLog_targetTenantId_idx_9ecf2d83\"",
+        "sql": "CREATE INDEX \"AuditLog_targetTenantId_idx_9ecf2d83\" ON \"public\".\"AuditLog\" (\"targetTenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"AuditLog_targetTenantId_idx_9ecf2d83\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AuditLog_targetTenantId_idx_9ecf2d83\""
+        ]
+      }
+    ]
+  }
+]

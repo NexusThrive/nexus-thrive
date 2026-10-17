@@ -1,76 +1,24 @@
-import { notFound } from "next/navigation";
 import Link from "next/link";
-import {
-  CheckCircle2,
-  FileText,
-  Plus,
-  Upload,
-  Wallet,
-} from "lucide-react";
+import { notFound, redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
+import { ArrowLeft, Building2 } from "lucide-react";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
-import { getQuoteTerms } from "@/lib/vertical-terms";
-import { formatCurrency } from "@/lib/format";
-import {
-  QUOTE_STATUSES,
-  isValidCategory,
-  isValidStatus,
-  type QuoteStatusValue,
-} from "@/lib/apu-engine";
-import { cn } from "@/lib/cn";
+import { canGovernBudget, type TenantRole } from "@/lib/tenant-context";
+import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/projects";
 import SearchInput from "@/app/components/tenant/search-input";
 import FilterSelect from "@/app/components/tenant/filter-select";
-import QuotesWorkspace, { type QuotesTab } from "./_components/quotes-workspace";
-import QuotesTable from "./_components/quotes-table";
-import ItemsBank from "./_components/items-bank";
-import ActivityCatalog from "./_components/activity-catalog";
-
-const QUOTES_PAGE_SIZE = 10;
-const ITEMS_PAGE_SIZE = 10;
+import QuoteFolders from "./_components/quote-folders";
+import LegacyQuotes from "./_components/legacy-quotes";
 
 function firstString(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
 }
 
-function card(
-  icon: React.ReactNode,
-  title: string,
-  value: string,
-  description: string,
-  tone: string,
-) {
-  return (
-    <article className="rounded-lg border border-border bg-card p-5">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-muted-foreground">{title}</p>
-          <p className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-            {value}
-          </p>
-        </div>
-        <span
-          aria-hidden="true"
-          className={cn(
-            "grid h-10 w-10 shrink-0 place-items-center rounded-lg",
-            tone,
-          )}
-        >
-          {icon}
-        </span>
-      </div>
-      <p className="mt-3 border-t border-border pt-2 text-xs text-muted-foreground">
-        {description}
-      </p>
-    </article>
-  );
-}
-
 /**
- * Módulo Construcción & APU: la URL es la fuente de verdad
- * (`?tab=&bq=&bs=&aq=&iq=&ic=`). Cada Server Action llama `revalidatePath`.
- *
- * El acceso (tenant activo + miembro) está garantizado por el layout de
- * `app/[tenant]/layout.tsx`.
+ * Cotizaciones: un directorio con una carpeta por obra (`?q=&status=`), más
+ * la carpeta de cotizaciones anteriores a la obra (`?folder=anteriores`).
+ * El acceso lo garantiza `app/[tenant]/layout.tsx`.
  */
 export default async function QuotesPage({
   params,
@@ -82,202 +30,89 @@ export default async function QuotesPage({
   const { tenant: tenantSlug } = await params;
   const sp = await searchParams;
 
-  const tag = firstString(sp.tab);
-  const activeTab: QuotesTab =
-    tag === "activities" || tag === "items" ? tag : "quotes";
+  // El catálogo APU vivía aquí (?tab=activities|items).
+  const legacyTab = firstString(sp.tab);
+  if (legacyTab === "activities" || legacyTab === "items") {
+    redirect(`/${tenantSlug}/catalog?tab=${legacyTab}`);
+  }
 
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
+  const tenantRecord = await db.orm.public.Tenant.where({ slug: tenantSlug, active: true }).first();
   if (!tenantRecord) {
     notFound();
   }
-
   const tenantDb = createTenantDb(tenantRecord.id);
-  const [metrics] = await Promise.all([tenantDb.quotes.getMetrics()]);
+  const { userId } = await auth();
+  const member = userId ? await tenantDb.users.findByClerkUserId(userId) : null;
+  const canGovern = canGovernBudget((member?.role ?? "STAFF") as TenantRole);
 
-  const terms = getQuoteTerms(tenantRecord.vertical);
+  const legacy = await tenantDb.projectQuotes.listLegacy();
+  const showLegacy = firstString(sp.folder) === "anteriores";
 
-  let quotesSection: React.ReactNode = null;
-  let activitiesSection: React.ReactNode = null;
-  let itemsSection: React.ReactNode = null;
-
-  if (activeTab === "quotes") {
-    const q = firstString(sp.bq).trim();
-    const statusRaw = firstString(sp.bs);
-    const status: QuoteStatusValue | undefined = isValidStatus(statusRaw)
-      ? statusRaw
-      : undefined;
-    const pageRaw = Number.parseInt(firstString(sp.bpage), 10);
-    const requestedPage = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
-
-    const result = await tenantDb.quotes.list({
-      q,
-      status,
-      page: requestedPage,
-      limit: QUOTES_PAGE_SIZE,
-    });
-    const totalPages = Math.max(1, Math.ceil(result.total / QUOTES_PAGE_SIZE));
-    const safePage = Math.min(requestedPage, totalPages);
-
-    quotesSection = (
-      <div className="space-y-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-2">
-            <SearchInput
-              paramKey="bq"
-              pageParam="bpage"
-              ariaLabel={`Buscar ${terms.quotes.toLowerCase()}`}
-              placeholder={`Buscar ${terms.quote.toLowerCase()} o código…`}
-              defaultValue={q}
-            />
-            <FilterSelect
-              paramKey="bs"
-              pageParam="bpage"
-              allLabel={`Todos los estados`}
-              options={QUOTE_STATUSES}
-              value={status ?? ""}
-            />
-          </div>
+  if (showLegacy) {
+    const customers = await db.orm.public.Customer.where({ tenantId: tenantRecord.id })
+      .orderBy((customer) => customer.name.asc())
+      .select("id", "name")
+      .all();
+    return (
+      <div className="space-y-6">
+        <header className="space-y-2">
           <Link
-            href={`/${tenantSlug}/quotes/new`}
-            className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+            href={`/${tenantSlug}/quotes`}
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground"
           >
-            <Plus aria-hidden="true" className="h-4 w-4" />
-            Nuevo {terms.quote.toLowerCase()}
+            <ArrowLeft aria-hidden="true" className="h-4 w-4" />
+            Volver a las carpetas
           </Link>
-        </div>
-        <QuotesTable
-          tenantSlug={tenantSlug}
-          rows={result.rows}
-          total={result.total}
-          page={safePage}
-          quoteLabel={terms.quote}
-        />
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            Cotizaciones anteriores
+          </h1>
+        </header>
+        <LegacyQuotes tenantSlug={tenantSlug} quotes={legacy} customers={customers} canMigrate={canGovern} />
       </div>
     );
   }
 
-  if (activeTab === "activities") {
-    const q = firstString(sp.aq).trim();
-    const [catalog, itemsResult] = await Promise.all([
-      tenantDb.apu.listActivities({ q }),
-      tenantDb.apu.listItems({ limit: 400 }),
-    ]);
-    activitiesSection = (
-      <ActivityCatalog
-        tenantSlug={tenantSlug}
-        rows={catalog.rows}
-        items={itemsResult.rows}
-        activityLabel={terms.apuActivity}
-      />
-    );
-  }
-
-  if (activeTab === "items") {
-    const q = firstString(sp.iq).trim();
-    const categoryRaw = firstString(sp.ic);
-    const category = isValidCategory(categoryRaw)
-      ? categoryRaw
-      : undefined;
-    const pageRaw = Number.parseInt(firstString(sp.ipage), 10);
-    const requestedPage = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
-
-    const result = await tenantDb.apu.listItems({
-      q,
-      category,
-      page: requestedPage,
-      limit: ITEMS_PAGE_SIZE,
-    });
-    const totalPages = Math.max(1, Math.ceil(result.total / ITEMS_PAGE_SIZE));
-    const safePage = Math.min(requestedPage, totalPages);
-
-    itemsSection = (
-      <ItemsBank
-        tenantSlug={tenantSlug}
-        rows={result.rows}
-        total={result.total}
-        page={safePage}
-        itemLabel={terms.apuItem}
-      />
-    );
-  }
+  const q = firstString(sp.q).trim();
+  const statusRaw = firstString(sp.status);
+  const status = isValidProjectStatus(statusRaw) ? statusRaw : undefined;
+  const folders = await tenantDb.projectQuotes.listFolders({ q, status });
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-            {terms.quotes}
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Presupuestos de obra, catálogo de análisis de precios unitarios y
-            banco de insumos de{" "}
-            <span className="font-medium text-foreground/80">{tenantRecord.name}</span>.
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Cotizaciones</h1>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+            Una carpeta por obra con sus versiones emitidas y los seguimientos al cliente.
           </p>
         </div>
-        <div className="mt-3 flex shrink-0 items-center gap-2 sm:mt-0">
-          <Link
-            href={`/${tenantSlug}/quotes/import`}
-            className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-accent/30 bg-accent-subtle px-3 text-sm font-medium text-accent-text transition hover:border-accent/40 hover:bg-accent-subtle"
-          >
-            <Upload aria-hidden="true" className="h-4 w-4" />
-            Importar APU
-          </Link>
-        </div>
+        <Link
+          href={`/${tenantSlug}/projects`}
+          className="inline-flex h-10 shrink-0 items-center gap-1.5 self-start rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted"
+        >
+          <Building2 aria-hidden="true" className="h-4 w-4" />
+          Obras
+        </Link>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {card(
-          <FileText aria-hidden="true" className="h-5 w-5 text-accent-text" />,
-          `Total ${terms.quotes.toLowerCase()}`,
-          String(metrics.total),
-          "Creados en este negocio",
-          "bg-accent-subtle text-accent-text",
-        )}
-        {card(
-          <CheckCircle2
-            aria-hidden="true"
-            className="h-5 w-5 text-success"
-          />,
-          `${terms.quotes.toLowerCase()} aprobados`,
-          String(metrics.approved),
-          "Aprobados por el cliente",
-          "bg-success/10 text-success",
-        )}
-        {card(
-          <FileText aria-hidden="true" className="h-5 w-5 text-gold-700" />,
-          `${terms.quotes.toLowerCase()} en borrador`,
-          String(metrics.draft),
-          "Pendientes de enviar",
-          "bg-gold-100 text-gold-700",
-        )}
-        {card(
-          <Wallet aria-hidden="true" className="h-5 w-5 text-muted-foreground" />,
-          `Monto total cotizado`,
-          formatCurrency(metrics.totalAmount),
-          "Suma de todos los presupuestos",
-          "bg-muted text-muted-foreground",
-        )}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <SearchInput
+          paramKey="q"
+          pageParam="page"
+          ariaLabel="Buscar carpeta por obra"
+          placeholder="Buscar obra…"
+          defaultValue={q}
+        />
+        <FilterSelect
+          paramKey="status"
+          pageParam="page"
+          allLabel="Todos los estados"
+          options={PROJECT_STATUSES}
+          value={status ?? ""}
+        />
       </div>
 
-      <QuotesWorkspace
-        activeTab={activeTab}
-        tabs={[
-          { value: "quotes", label: terms.quotes },
-          { value: "activities", label: terms.apuActivities },
-          { value: "items", label: terms.apuItems },
-        ]}
-      >
-        {activeTab === "quotes" ? (
-          quotesSection
-        ) : activeTab === "activities" ? (
-          activitiesSection
-        ) : (
-          itemsSection
-        )}
-      </QuotesWorkspace>
+      <QuoteFolders tenantSlug={tenantSlug} folders={folders} legacyCount={q || status ? 0 : legacy.length} />
     </div>
   );
 }

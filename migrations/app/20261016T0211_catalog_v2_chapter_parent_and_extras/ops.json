@@ -1,0 +1,86 @@
+[
+  {
+    "id": "column.public.ApuActivity.sourceExtras",
+    "label": "Add column \"sourceExtras\" to \"ApuActivity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sourceExtras",
+        "table": "ApuActivity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sourceExtras\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivity",
+          "sourceExtras"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sourceExtras\"",
+        "sql": "ALTER TABLE \"public\".\"ApuActivity\" ADD COLUMN \"sourceExtras\" json"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sourceExtras\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuActivity",
+          "sourceExtras"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.ApuChapter.parentCode",
+    "label": "Add column \"parentCode\" to \"ApuChapter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "parentCode",
+        "table": "ApuChapter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"parentCode\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuChapter",
+          "parentCode"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"parentCode\"",
+        "sql": "ALTER TABLE \"public\".\"ApuChapter\" ADD COLUMN \"parentCode\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"parentCode\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "ApuChapter",
+          "parentCode"
+        ]
+      }
+    ]
+  }
+]
