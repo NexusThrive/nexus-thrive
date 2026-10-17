@@ -16,6 +16,8 @@ import {
 } from "../actions";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { PageHeader } from "@/components/molecules/page-header";
+import { SegmentedControl } from "@/components/molecules/segmented-control";
+import BookingsAgenda from "./bookings-agenda";
 import { labelClasses } from "@/components/atoms/input";
 
 export type BookingStatusValue =
@@ -33,6 +35,9 @@ export type BookingView = {
   status: BookingStatusValue;
   amountLabel: string;
   notes: string | null;
+  /** ISO de inicio y fin (la agenda las ubica en el día y la hora de Bogotá). */
+  startAt: string;
+  endAt: string;
 };
 
 export type BookingCustomerOption = { id: string; name: string };
@@ -106,6 +111,7 @@ function BookingsContent({
 
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [view, setView] = useState<"agenda" | "list">("agenda");
 
   // Notificaciones toast: useEffect para no llamar setState del provider durante render.
   const [prevCreateState, setPrevCreateState] = useState<BookingFormState>(CREATE_IDLE);
@@ -350,7 +356,28 @@ function BookingsContent({
         </form>
       )}
 
-      {bookings.length === 0 ? (
+      <div className="mb-3.5 flex items-center justify-between gap-3">
+        <SegmentedControl
+          ariaLabel="Vista de reservas"
+          value={view}
+          onChange={setView}
+          options={[
+            { value: "agenda", label: "Agenda" },
+            { value: "list", label: "Lista", count: bookings.length },
+          ]}
+        />
+      </div>
+
+      {view === "agenda" ? (
+        <BookingsAgenda
+          tenantSlug={tenantSlug}
+          bookings={bookings}
+          onNew={() => {
+            setShowForm(true);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
+      ) : bookings.length === 0 ? (
         <EmptyState
           className="rounded-lg border border-border bg-card"
           title="Aún no tienes reservas"

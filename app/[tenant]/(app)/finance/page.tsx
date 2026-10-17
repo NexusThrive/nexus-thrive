@@ -64,6 +64,7 @@ export default async function FinancePage({
   const period = firstString(sp.p) === "7d" ? 7 : 30;
   const nuevo = firstString(sp.nuevo);
   const initialSheet = nuevo === "pago" || nuevo === "gasto" ? nuevo : null;
+  const initialCustomerId = firstString(sp.cliente);
 
   const tenantRecord = await db.orm.public.Tenant.where({
     slug: tenantSlug,
@@ -175,6 +176,7 @@ export default async function FinancePage({
                 business={{ name: tenantRecord.name, subtitle: tenantRecord.city ?? undefined }}
                 customers={customerOptions}
                 initial={initialSheet}
+                initialCustomerId={initialCustomerId}
               />
             }
           />

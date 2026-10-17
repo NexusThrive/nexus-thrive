@@ -31,12 +31,15 @@ export default function FinanceActions({
   business,
   customers,
   initial = null,
+  initialCustomerId = "",
   tone = "dark",
 }: {
   tenantSlug: string;
   business: { name: string; subtitle?: string };
   customers: CustomerOption[];
   initial?: Open;
+  /** Cliente preseleccionado en el cobro (?cliente=, desde la ficha o la lista). */
+  initialCustomerId?: string;
   tone?: "dark" | "light";
 }) {
   const [open, setOpen] = useState<Open>(initial);
@@ -47,9 +50,10 @@ export default function FinanceActions({
   const setSheet = (next: Open) => {
     setOpen(next);
     // Quita ?nuevo= al cerrar para que recargar no la vuelva a abrir.
-    if (!next && searchParams.has("nuevo")) {
+    if (!next && (searchParams.has("nuevo") || searchParams.has("cliente"))) {
       const params = new URLSearchParams(searchParams);
       params.delete("nuevo");
+      params.delete("cliente");
       router.replace(params.size ? `${pathname}?${params}` : pathname, { scroll: false });
     }
   };
@@ -81,6 +85,7 @@ export default function FinanceActions({
         open={open === "pago"}
         onOpenChange={(next) => setSheet(next ? "pago" : null)}
         business={business}
+        defaultCustomerId={customers.some((c) => c.id === initialCustomerId) ? initialCustomerId : ""}
         methods={PAYMENT_METHODS}
         customers={customers.map((c) => ({ id: c.id, name: c.name, hint: c.email || undefined, phone: c.phone }))}
         onCharge={async ({ amount, customerId, method, description }) => {

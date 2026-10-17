@@ -5,6 +5,7 @@ import { AppSidebar } from "@/components/organisms/app-sidebar";
 import { AppTopbar } from "@/components/organisms/app-topbar";
 import { CommandPalette } from "@/components/organisms/command-palette";
 import { MobileTabBar } from "@/components/organisms/mobile-tab-bar";
+import { NetworkBanner } from "@/components/molecules/network-banner";
 import { ShellProvider } from "@/components/providers/shell-context";
 import styles from "./tenant-shell.module.css";
 
@@ -21,6 +22,7 @@ export function TenantShell({
   tenantName,
   vertical,
   activeModules,
+  topbarActions,
   children,
 }: {
   tenantSlug: string;
@@ -28,6 +30,8 @@ export function TenantShell({
   vertical: VerticalValue;
   /** Módulos activos, ya filtrados y ordenados. */
   activeModules: ModuleValue[];
+  /** Botones extra de la barra superior (p. ej. la campana de notificaciones). */
+  topbarActions?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -41,13 +45,14 @@ export function TenantShell({
         <div className={styles.root}>
           <AppSidebar />
           <div className={styles.main}>
-            <AppTopbar />
+            <AppTopbar actions={topbarActions} />
             <main id="contenido" tabIndex={-1} className={styles.view}>
               {children}
             </main>
           </div>
           <MobileTabBar />
           <CommandPalette />
+          <NetworkBanner />
         </div>
       </ToastProvider>
     </ShellProvider>

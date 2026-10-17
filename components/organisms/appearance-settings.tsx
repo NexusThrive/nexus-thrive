@@ -75,6 +75,28 @@ export function AppearanceSettings() {
           }
         />
       </section>
+
+      <section className={card} aria-labelledby="locale-title">
+        <div className="flex items-center justify-between border-b border-border px-[18px] py-4">
+          <h2 id="locale-title" className="font-display text-[15px] font-semibold">Formato regional</h2>
+          <span className="font-mono text-xs text-muted-foreground">es-CO · America/Bogota</span>
+        </div>
+        {REGIONAL.map(([label, value]) => (
+          <div key={label} className="flex items-center justify-between gap-3.5 border-b border-border px-[18px] py-3.5 last:border-b-0">
+            <span className="text-muted-foreground">{label}</span>
+            <b className="text-right font-medium tabular-nums">{value}</b>
+          </div>
+        ))}
+      </section>
     </div>
   );
 }
+
+const SAMPLE = new Date(Date.UTC(2026, 9, 20, 15, 30));
+const REGIONAL: [string, string][] = [
+  ["Moneda", `$ ${(12_400_000).toLocaleString("es-CO")}`],
+  ["Número", (1234567.89).toLocaleString("es-CO")],
+  ["Fecha", new Intl.DateTimeFormat("es-CO", { dateStyle: "full", timeZone: "America/Bogota" }).format(SAMPLE)],
+  ["Hora", new Intl.DateTimeFormat("es-CO", { hour: "numeric", minute: "2-digit", timeZone: "America/Bogota" }).format(SAMPLE)],
+  ["Semana", "Empieza el lunes"],
+];

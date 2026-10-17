@@ -3,7 +3,8 @@
 import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Archive, ChevronLeft, ChevronRight, Mail, Pencil, Phone, RotateCcw, Trash2, X } from "lucide-react";
+import { SwipeCard } from "@/components/molecules/swipe-card";
+import { Archive, Banknote, ChevronLeft, ChevronRight, Mail, MessageCircle, Pencil, Phone, RotateCcw, Trash2, X } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
 import {
   archiveCustomerAction,
@@ -381,14 +382,11 @@ export default function CustomerTable({
           </div>
 
           {/* ---------- Tarjetas (mobile) ---------- */}
-          <ul className="space-y-3 sm:hidden">
-            {rows.map((row) => (
-              <li
-                key={row.id}
-                className="rounded-lg border border-border bg-card p-4"
-              >
-                <div className="flex items-start gap-3">
-                  {isArchivedView ? (
+          {isArchivedView ? (
+            <ul className="space-y-3 sm:hidden">
+              {rows.map((row) => (
+                <li key={row.id} className="rounded-lg border border-border bg-card p-4">
+                  <div className="flex items-start gap-3">
                     <input
                       type="checkbox"
                       aria-label={`Seleccionar a ${row.name}`}
@@ -396,77 +394,63 @@ export default function CustomerTable({
                       onChange={() => toggleRow(row.id)}
                       className="mt-2 h-4 w-4 cursor-pointer rounded accent-gold-600"
                     />
-                  ) : null}
-                  <span
-                    aria-hidden="true"
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-accent-subtle text-xs font-semibold text-accent-text"
-                  >
-                    {initialsOf(row.name)}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="flex flex-wrap items-center gap-2 font-medium text-foreground">
-                      <Link
-                        href={`/${tenantSlug}/crm/${row.id}`}
-                        className="text-foreground transition-colors hover:text-accent-text hover:underline"
-                        title={`Ver ficha de ${row.name}`}
-                      >
+                    <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-accent-subtle text-xs font-semibold text-accent-text">
+                      {initialsOf(row.name)}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="flex flex-wrap items-center gap-2 font-medium text-foreground">
                         {row.name}
-                      </Link>
-                      {isArchivedView ? (
-                        <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold uppercase text-muted-foreground">
-                          Archivado
-                        </span>
-                      ) : null}
-                    </p>
-                    {row.email ? (
-                      <p className="truncate text-xs text-muted-foreground">{row.email}</p>
-                    ) : null}
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {row.phone || "Sin teléfono"} · {row.createdAt}
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-3 flex justify-end gap-1.5 border-t border-border/70 pt-3">
-                  {isArchivedView ? (
+                        <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold uppercase text-muted-foreground">Archivado</span>
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        {row.phone || "Sin teléfono"} · {row.createdAt}
+                      </p>
+                    </div>
                     <button
                       type="button"
                       disabled={isPending}
-                      onClick={() =>
-                        runAction(() => restoreCustomerAction(tenantSlug, row.id))
-                      }
-                      className={`${ICON_BUTTON} border-success/20 text-success`}
+                      onClick={() => runAction(() => restoreCustomerAction(tenantSlug, row.id))}
+                      className={`${ICON_BUTTON} w-auto border-success/20 px-3 text-success`}
                     >
                       <RotateCcw aria-hidden="true" className="h-4 w-4" />
                       <span className="ml-1.5 text-xs font-medium">Restaurar</span>
                     </button>
-                  ) : (
-                    <>
-                      <button
-                        type="button"
-                        disabled={isPending}
-                        onClick={() =>
-                          runAction(() => archiveCustomerAction(tenantSlug, row.id))
-                        }
-                        className={`${ICON_BUTTON} w-auto px-3`}
-                      >
-                        <Archive aria-hidden="true" className="h-4 w-4" />
-                        <span className="ml-1.5 text-xs font-medium">Archivar</span>
-                      </button>
-                      <button
-                        type="button"
-                        disabled={isPending}
-                        onClick={() => setEditTarget(row)}
-                        className={`${ICON_BUTTON} w-auto px-3`}
-                      >
-                        <Pencil aria-hidden="true" className="h-4 w-4" />
-                        <span className="ml-1.5 text-xs font-medium">Editar</span>
-                      </button>
-                    </>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <ul className="grid gap-2.5 sm:hidden">
+              <li className="text-center text-xs text-muted-foreground">Desliza una tarjeta a la izquierda para cobrar o recordar.</li>
+              {rows.map((row) => {
+                const digits = row.phone.replace(/\D/g, "");
+                const wa = digits ? `https://wa.me/${digits.length === 10 ? `57${digits}` : digits}?text=${encodeURIComponent(`Hola ${row.name.split(" ")[0]}, te escribimos de parte de nuestro negocio.`)}` : undefined;
+                return (
+                  <li key={row.id}>
+                    <SwipeCard
+                      actions={[
+                        { label: "Cobrar", icon: Banknote, tone: "gold", href: `/${tenantSlug}/finance?nuevo=pago&cliente=${row.id}` },
+                        { label: "Recordar", icon: MessageCircle, tone: "ink", href: wa, external: true, disabled: !wa },
+                        { label: "Editar", icon: Pencil, tone: "muted", onClick: () => setEditTarget(row) },
+                        { label: "Archivar", icon: Archive, tone: "danger", onClick: () => runAction(() => archiveCustomerAction(tenantSlug, row.id)), disabled: isPending },
+                      ]}
+                    >
+                      <Link href={`/${tenantSlug}/crm/${row.id}`} draggable={false} className="flex items-center gap-3 px-3.5 py-3">
+                        <span aria-hidden="true" className="grid size-[34px] shrink-0 place-items-center rounded-md bg-primary font-display text-xs font-bold text-primary-foreground">
+                          {initialsOf(row.name)}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <b className="block truncate font-medium">{row.name}</b>
+                          <small className="block truncate text-xs text-muted-foreground">{row.phone || row.email || "Sin contacto"}</small>
+                        </span>
+                        <small className="shrink-0 text-xs text-muted-foreground">{row.createdAt}</small>
+                      </Link>
+                    </SwipeCard>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </>
       )}
 

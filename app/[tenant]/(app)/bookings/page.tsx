@@ -79,6 +79,8 @@ export default async function BookingsPage({
     status: booking.status as BookingStatusValue,
     amountLabel: formatCurrency(Number(booking.totalAmount)),
     notes: booking.notes ?? null,
+    startAt: String(booking.startDate),
+    endAt: String(booking.endDate),
   }));
 
   const customers: BookingCustomerOption[] = customerResult.rows.map(

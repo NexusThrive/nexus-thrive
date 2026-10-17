@@ -4,6 +4,7 @@ import { sortModules } from "@/lib/admin-catalogs";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import { TenantShell } from "@/components/templates/tenant-shell";
 import { VerticalTermsProvider } from "./vertical-terms-context";
+import TenantNotifications from "./_components/tenant-notifications";
 
 /**
  * Ruta `(app)`: shell del negocio + gate de onboarding.
@@ -58,6 +59,7 @@ export default async function AppLayout({
         tenantName={tenantRecord.name}
         vertical={tenantRecord.vertical}
         activeModules={activeModules}
+        topbarActions={<TenantNotifications tenantSlug={tenantRecord.slug} />}
       >
         {children}
       </TenantShell>

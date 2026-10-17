@@ -18,6 +18,7 @@ import { PageHeader, SectionTitle } from "@/components/molecules/page-header";
 import QuickActions from "@/components/organisms/quick-actions";
 import { IncomeChart, type ChartPoint } from "@/components/organisms/income-chart";
 import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
+import { PullToRefresh } from "@/components/molecules/pull-to-refresh";
 import RecentActivity from "@/components/organisms/recent-activity";
 import MembershipSummary from "./memberships/_components/membership-summary";
 
@@ -143,6 +144,7 @@ export default async function TenantDashboard({
   }));
 
   return (
+    <PullToRefresh>
     <div className="flex flex-col">
       <PageHeader
         eyebrow={formattedDate}
@@ -251,5 +253,6 @@ export default async function TenantDashboard({
         <RecentActivity items={activityItems} />
       </div>
     </div>
+    </PullToRefresh>
   );
 }

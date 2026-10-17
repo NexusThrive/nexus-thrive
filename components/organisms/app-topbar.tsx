@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 import { Search } from "lucide-react";
@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
  * (Ctrl K). A la derecha, tema y cuenta. El borde inferior aparece al hacer
  * scroll y la barra de ruta corre por su borde al navegar.
  */
-export function AppTopbar() {
+export function AppTopbar({ actions }: { actions?: ReactNode }) {
   const { title, brandName, hrefFor, openSearch } = useShell();
   const [scrolled, setScrolled] = useState(false);
 
@@ -77,6 +77,7 @@ export function AppTopbar() {
       >
         <Search aria-hidden="true" className="size-[18px]" />
       </button>
+      {actions}
       <ThemeToggle />
       <UserButton appearance={{ elements: { userButtonAvatarBox: "size-[34px] rounded-[4px]" } }} />
 
