@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'5c796da84a2812cda89958292183d686ab17b12ddac66c131b160f9cd9952792'>;
+  StorageHashBase<'8be75ffc85a7020108206a5f06fd19614674399b48b6fcc1d261180d665fe619'>;
 export type ExecutionHash =
   ExecutionHashBase<'d957155aa23c772602ee4e39c786ac703e3319d82f2888e87b831a0f30928e75'>;
 export type ProfileHash =
@@ -660,6 +660,7 @@ export type FieldOutputTypes = {
     readonly Tenant: {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly address: CodecTypes['pg/text@1']['output'] | null;
+      readonly billingCycle: 'MONTHLY' | 'ANNUAL';
       readonly city: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly customDomain: CodecTypes['pg/text@1']['output'] | null;
@@ -670,6 +671,9 @@ export type FieldOutputTypes = {
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['output'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
+      readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
+      readonly planMonthlyUsdCents: CodecTypes['pg/int4@1']['output'];
+      readonly planSelectedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly suspendedReason: CodecTypes['pg/text@1']['output'] | null;
@@ -1163,6 +1167,7 @@ export type FieldInputTypes = {
     readonly Tenant: {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly address: CodecTypes['pg/text@1']['input'] | null;
+      readonly billingCycle: 'MONTHLY' | 'ANNUAL';
       readonly city: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly customDomain: CodecTypes['pg/text@1']['input'] | null;
@@ -1173,6 +1178,9 @@ export type FieldInputTypes = {
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['input'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
+      readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
+      readonly planMonthlyUsdCents: CodecTypes['pg/int4@1']['input'];
+      readonly planSelectedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly slug: CodecTypes['pg/text@1']['input'];
       readonly suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly suspendedReason: CodecTypes['pg/text@1']['input'] | null;
@@ -1666,6 +1674,7 @@ export type StorageColumnTypes = {
     readonly Tenant: {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly address: CodecTypes['pg/text@1']['output'] | null;
+      readonly billingCycle: 'MONTHLY' | 'ANNUAL';
       readonly city: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly customDomain: CodecTypes['pg/text@1']['output'] | null;
@@ -1676,6 +1685,9 @@ export type StorageColumnTypes = {
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['output'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
+      readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
+      readonly planMonthlyUsdCents: CodecTypes['pg/int4@1']['output'];
+      readonly planSelectedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly suspendedReason: CodecTypes['pg/text@1']['output'] | null;
@@ -2169,6 +2181,7 @@ export type StorageColumnInputTypes = {
     readonly Tenant: {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly address: CodecTypes['pg/text@1']['input'] | null;
+      readonly billingCycle: 'MONTHLY' | 'ANNUAL';
       readonly city: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly customDomain: CodecTypes['pg/text@1']['input'] | null;
@@ -2179,6 +2192,9 @@ export type StorageColumnInputTypes = {
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['input'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
+      readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
+      readonly planMonthlyUsdCents: CodecTypes['pg/int4@1']['input'];
+      readonly planSelectedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly slug: CodecTypes['pg/text@1']['input'];
       readonly suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly suspendedReason: CodecTypes['pg/text@1']['input'] | null;
@@ -2802,6 +2818,7 @@ export namespace Models {
   export type public_Tenant = {
     active: CodecTypes['pg/bool@1']['output'];
     address: CodecTypes['pg/text@1']['output'] | null;
+    billingCycle: 'MONTHLY' | 'ANNUAL';
     city: CodecTypes['pg/text@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     customDomain: CodecTypes['pg/text@1']['output'] | null;
@@ -2812,6 +2829,9 @@ export namespace Models {
     name: CodecTypes['pg/text@1']['output'];
     onboardingCompleted: CodecTypes['pg/bool@1']['output'];
     paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
+    plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
+    planMonthlyUsdCents: CodecTypes['pg/int4@1']['output'];
+    planSelectedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     slug: CodecTypes['pg/text@1']['output'];
     suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     suspendedReason: CodecTypes['pg/text@1']['output'] | null;
@@ -6424,6 +6444,15 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
+                readonly billingCycle: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'MONTHLY'>;
+                  };
+                };
                 readonly city: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -6477,6 +6506,29 @@ type ContractBase = Omit<
                 readonly paymentMethods: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly plan: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'ESSENTIAL'>;
+                  };
+                };
+                readonly planMonthlyUsdCents: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+                  };
+                };
+                readonly planSelectedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: true;
                 };
                 readonly slug: {
@@ -6838,6 +6890,10 @@ type ContractBase = Omit<
                 'SUBCONTRATO',
               ];
             };
+            readonly BillingCycle: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['MONTHLY', 'ANNUAL'];
+            };
             readonly BookingStatus: {
               readonly kind: 'valueSet';
               readonly values: readonly ['PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED'];
@@ -6931,6 +6987,10 @@ type ContractBase = Omit<
             readonly Role: {
               readonly kind: 'valueSet';
               readonly values: readonly ['SUPERADMIN', 'OWNER', 'STAFF'];
+            };
+            readonly TenantPlan: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['ESSENTIAL', 'ELITE', 'SIGNATURE'];
             };
             readonly TenantType: {
               readonly kind: 'valueSet';
@@ -10428,6 +10488,10 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly billingCycle: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly city: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -10471,6 +10535,21 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
                 readonly many: true;
+              };
+              readonly plan: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly planMonthlyUsdCents: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly planSelectedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
               };
               readonly slug: {
                 readonly nullable: false;
@@ -10810,6 +10889,7 @@ type ContractBase = Omit<
               readonly fields: {
                 readonly active: { readonly column: 'active' };
                 readonly address: { readonly column: 'address' };
+                readonly billingCycle: { readonly column: 'billingCycle' };
                 readonly city: { readonly column: 'city' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly customDomain: { readonly column: 'customDomain' };
@@ -10820,6 +10900,9 @@ type ContractBase = Omit<
                 readonly name: { readonly column: 'name' };
                 readonly onboardingCompleted: { readonly column: 'onboardingCompleted' };
                 readonly paymentMethods: { readonly column: 'paymentMethods' };
+                readonly plan: { readonly column: 'plan' };
+                readonly planMonthlyUsdCents: { readonly column: 'planMonthlyUsdCents' };
+                readonly planSelectedAt: { readonly column: 'planSelectedAt' };
                 readonly slug: { readonly column: 'slug' };
                 readonly suspendedAt: { readonly column: 'suspendedAt' };
                 readonly suspendedReason: { readonly column: 'suspendedReason' };
@@ -11106,6 +11189,13 @@ type ContractBase = Omit<
               { readonly name: 'SUBCONTRATO'; readonly value: 'SUBCONTRATO' },
             ];
           };
+          readonly BillingCycle: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'MONTHLY'; readonly value: 'MONTHLY' },
+              { readonly name: 'ANNUAL'; readonly value: 'ANNUAL' },
+            ];
+          };
           readonly BookingStatus: {
             readonly codecId: 'pg/text@1';
             readonly members: readonly [
@@ -11249,6 +11339,14 @@ type ContractBase = Omit<
               { readonly name: 'SUPERADMIN'; readonly value: 'SUPERADMIN' },
               { readonly name: 'OWNER'; readonly value: 'OWNER' },
               { readonly name: 'STAFF'; readonly value: 'STAFF' },
+            ];
+          };
+          readonly TenantPlan: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'ESSENTIAL'; readonly value: 'ESSENTIAL' },
+              { readonly name: 'ELITE'; readonly value: 'ELITE' },
+              { readonly name: 'SIGNATURE'; readonly value: 'SIGNATURE' },
             ];
           };
           readonly TenantType: {

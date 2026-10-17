@@ -1,4 +1,5 @@
 import type { OnboardingFormState } from "../actions";
+import { inputClasses, labelClasses } from "@/components/atoms/input";
 
 export type EcosystemDefaults = {
   websiteUrl: string;
@@ -58,7 +59,7 @@ export default function StepEcosystem({
           <div key={field}>
             <label
               htmlFor={field}
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               {helper.label}{" "}
               {helper.optional && (
@@ -73,7 +74,7 @@ export default function StepEcosystem({
               type="text"
               defaultValue={value}
               placeholder={helper.placeholder}
-              className="mt-1 block h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-600/30"
+              className={`${inputClasses}`}
             />
             <p className="mt-1 text-xs text-muted-foreground">{helper.helper}</p>
             {errors?.[field] && (

@@ -1,3 +1,4 @@
+import { bogotaDayKey, buildFinanceSeries, cumulativeByDay, lastBogotaDays, type FinanceSeries } from "@/lib/finance-series";
 import {
   and,
   or,
@@ -54,6 +55,16 @@ export type CustomerSearchInput = {
   sort?: "recent" | "name_asc" | "name_desc";
   page?: number;
   pageSize?: number;
+};
+
+/** Fila de la lista de movimientos de Finanzas (ver `finance.getMovements`). */
+export type MovementRow = {
+  id: string;
+  type: "in" | "out";
+  title: string;
+  subtitle: string;
+  amount: number;
+  at: string;
 };
 
 export type FinanceMetrics = {
@@ -477,6 +488,29 @@ export function createTenantDb(tenantId: string) {
           .where((customer) => customer.active.eq(true))
           .aggregate((aggregate) => ({ total: aggregate.count() }))
           .then(({ total }) => total),
+
+      /**
+       * Clientes activos día a día en los últimos `days` días (Bogotá), para
+       * el minigráfico del inicio, más cuántos se sumaron en el periodo.
+       */
+      activeGrowth: async (days: number): Promise<{ series: number[]; added: number }> => {
+        const keys = lastBogotaDays(Math.max(2, days));
+        const since = Temporal.Instant.fromEpochMilliseconds(Date.now() - (keys.length + 1) * 86_400_000);
+        const [{ total }, recent] = await Promise.all([
+          db.orm.public.Customer
+            .where({ tenantId })
+            .where((customer) => customer.active.eq(true))
+            .aggregate((aggregate) => ({ total: aggregate.count() })),
+          db.orm.public.Customer
+            .where({ tenantId })
+            .where((customer) => and(customer.active.eq(true), customer.createdAt.gte(since)))
+            .select("createdAt")
+            .all(),
+        ]);
+        const createdAt = recent.map((c) => String(c.createdAt));
+        const inWindow = createdAt.filter((at) => keys.includes(bogotaDayKey(at))).length;
+        return { series: cumulativeByDay(total - inWindow, createdAt, keys), added: inWindow };
+      },
 
       /**
        * Ficha 360°: información general, pagos, membresías, notas, timeline
@@ -924,6 +958,36 @@ export function createTenantDb(tenantId: string) {
       },
 
       /**
+       * Serie diaria (Bogotá) de ingresos aprobados y gastos de los últimos
+       * `days` días, más los totales del periodo anterior del mismo largo.
+       * Trae solo monto y fecha de la ventana y agrupa en lib/finance-series.
+       */
+      getSeries: async (days: 1 | 7 | 30 = 30): Promise<FinanceSeries> => {
+        const since = Temporal.Instant.fromEpochMilliseconds(
+          Date.now() - (days * 2 + 1) * 86_400_000,
+        );
+        const [payments, expenses] = await Promise.all([
+          db.orm.public.Payment
+            .where({ tenantId })
+            .where((payment) =>
+              and(payment.status.eq("APPROVED"), payment.createdAt.gte(since)),
+            )
+            .select("amount", "createdAt")
+            .all(),
+          db.orm.public.Expense
+            .where({ tenantId })
+            .where((expense) => expense.date.gte(since))
+            .select("amount", "date")
+            .all(),
+        ]);
+        return buildFinanceSeries({
+          days,
+          payments: payments.map((p) => ({ amount: toNumber(p.amount), at: String(p.createdAt) })),
+          expenses: expenses.map((e) => ({ amount: toNumber(e.amount), at: String(e.date) })),
+        });
+      },
+
+      /**
        * Historial de pagos paginado, con nombre/email del cliente.
        * Aislamiento: `tenantId` siempre en el filtro base.
        */
@@ -1049,6 +1113,59 @@ export function createTenantDb(tenantId: string) {
           })),
           total,
         };
+      },
+
+      /**
+       * Movimientos para la lista de Finanzas (pagos aprobados + gastos):
+       * el pago se titula con el cliente y lleva "concepto · medio"; el gasto
+       * se titula con su descripción y lleva "categoría · Caja menor".
+       */
+      getMovements: async (limit = 30): Promise<MovementRow[]> => {
+        const safeLimit = Math.min(60, Math.max(1, Math.trunc(limit)));
+        const [payments, expenses] = await Promise.all([
+          db.orm.public.Payment
+            .where({ tenantId })
+            .where((payment) => payment.status.eq("APPROVED"))
+            .orderBy((payment) => payment.createdAt.desc())
+            .limit(safeLimit)
+            .all(),
+          db.orm.public.Expense
+            .where({ tenantId })
+            .orderBy((expense) => expense.date.desc())
+            .limit(safeLimit)
+            .all(),
+        ]);
+        const customerIds = [
+          ...new Set(payments.map((p) => p.customerId).filter((id): id is string => Boolean(id))),
+        ];
+        const customers =
+          customerIds.length === 0
+            ? []
+            : await db.orm.public.Customer
+                .where({ tenantId })
+                .where((customer) => customer.id.in(customerIds))
+                .all();
+        const nameById = new Map(customers.map((c) => [c.id, c.name]));
+        const rows: MovementRow[] = [
+          ...payments.map((p) => ({
+            id: `payment-${p.id}`,
+            type: "in" as const,
+            title: p.customerId ? (nameById.get(p.customerId) ?? "Cliente eliminado") : "Venta de mostrador",
+            subtitle: `${p.description?.trim() || "Pago"} · ${paymentMethodLabel(p.provider as PaymentMethodValue)}`,
+            amount: toNumber(p.amount),
+            at: String(p.createdAt),
+          })),
+          ...expenses.map((e) => ({
+            id: `expense-${e.id}`,
+            type: "out" as const,
+            title: e.description,
+            subtitle: `${e.category} · Caja menor`,
+            amount: toNumber(e.amount),
+            at: String(e.date),
+          })),
+        ];
+        rows.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0));
+        return rows.slice(0, safeLimit);
       },
 
       /**

@@ -9,9 +9,9 @@ export type ProfileTab = {
 };
 
 /**
- * Pestañas de la ficha 360° (Server Component, sin estado client):
- * la URL es la fuente de verdad (`?tab=`), igual que en el CRM.
- * Links navegan con cliente-side de Next; nada de pestañas falsas.
+ * Pestañas de la ficha 360° (Server Component): la URL es la fuente de verdad
+ * (`?tab=`). Mismo estilo que las pestañas de la obra: subrayado oro en la
+ * activa y desplazamiento horizontal en el celular.
  */
 export default function ProfileTabs({
   baseHref,
@@ -23,10 +23,7 @@ export default function ProfileTabs({
   activeTab: ProfileTabKey;
 }) {
   return (
-    <nav
-      aria-label="Secciones de la ficha"
-      className="flex gap-1 overflow-x-auto rounded-lg border border-border bg-card p-1"
-    >
+    <nav aria-label="Secciones de la ficha" className="flex gap-1 overflow-x-auto border-b border-border [scrollbar-width:none]">
       {tabs.map((tab) => {
         const isActive = tab.key === activeTab;
         return (
@@ -35,10 +32,10 @@ export default function ProfileTabs({
             href={`${baseHref}?tab=${tab.key}`}
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+              "-mb-px shrink-0 whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition-colors",
               isActive
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                ? "border-accent text-foreground"
+                : "border-transparent text-muted-foreground hover:border-border-strong hover:text-foreground",
             )}
           >
             {tab.label}

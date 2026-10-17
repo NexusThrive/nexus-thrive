@@ -3,6 +3,9 @@
 import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useVerticalTerms } from "../../vertical-terms-context";
+import { fieldClasses } from "@/components/atoms/input";
+import { cn } from "@/lib/utils";
+import { SegmentedControl } from "@/components/molecules/segmented-control";
 
 export type CustomerStatus = "active" | "archived";
 export type CustomerSort = "recent" | "name_asc" | "name_desc";
@@ -46,30 +49,14 @@ export default function CustomerFilters({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <div
-        role="group"
-        aria-label="Filtrar por estado"
-        className="inline-flex rounded-lg border border-border bg-card p-0.5"
-      >
-        {STATUS_OPTIONS.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            aria-pressed={status === option.value}
-            onClick={() =>
-              status !== option.value &&
-              updateParams((params) => params.set("status", option.value))
-            }
-            className={
-              status === option.value
-                ? "rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
-                : "rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
-            }
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        ariaLabel="Filtrar por estado"
+        value={status}
+        options={STATUS_OPTIONS}
+        onChange={(next) => {
+          if (next !== status) updateParams((params) => params.set("status", next));
+        }}
+      />
 
       <label className="sr-only" htmlFor="customer-sort">
         {`Ordenar ${terms.customers.toLowerCase()}`}
@@ -83,7 +70,7 @@ export default function CustomerFilters({
             updateParams((params) => params.set("sort", next));
           }
         }}
-        className="h-9 cursor-pointer rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground/80 transition hover:border-foreground/20 focus:border-gold-500 focus:outline-2 focus:outline-gold-600/30"
+        className={cn(fieldClasses, "h-[var(--control-h)] w-auto cursor-pointer")}
       >
         {SORT_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>

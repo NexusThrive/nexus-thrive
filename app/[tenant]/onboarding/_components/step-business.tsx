@@ -1,4 +1,5 @@
 import type { OnboardingFormState } from "../actions";
+import { inputClasses, labelClasses } from "@/components/atoms/input";
 
 export type StepDefaults = {
   name: string;
@@ -26,7 +27,7 @@ export default function StepBusiness({
       <div>
         <label
           htmlFor="name"
-          className="text-sm font-medium text-foreground/80"
+          className={labelClasses}
         >
           Nombre del negocio <span className="text-destructive">*</span>
         </label>
@@ -36,7 +37,7 @@ export default function StepBusiness({
           type="text"
           defaultValue={defaults.name}
           placeholder="Ej. Gimnasio Carlos Fitness"
-          className="mt-1 block h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-600/30"
+          className={`${inputClasses}`}
         />
         {errors?.name && (
           <p className="mt-1 text-xs text-destructive">{errors.name}</p>
@@ -46,7 +47,7 @@ export default function StepBusiness({
       <div>
         <label
           htmlFor="city"
-          className="text-sm font-medium text-foreground/80"
+          className={labelClasses}
         >
           Ciudad / región <span className="text-destructive">*</span>
         </label>
@@ -56,7 +57,7 @@ export default function StepBusiness({
           type="text"
           defaultValue={defaults.city}
           placeholder="Ej. Bogotá"
-          className="mt-1 block h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-600/30"
+          className={`${inputClasses}`}
         />
         {errors?.city && (
           <p className="mt-1 text-xs text-destructive">{errors.city}</p>
@@ -66,7 +67,7 @@ export default function StepBusiness({
       <div>
         <label
           htmlFor="whatsappNumber"
-          className="text-sm font-medium text-foreground/80"
+          className={labelClasses}
         >
           WhatsApp (con indicativo) <span className="text-destructive">*</span>
         </label>
@@ -76,7 +77,7 @@ export default function StepBusiness({
           type="tel"
           defaultValue={defaults.whatsappNumber}
           placeholder="Ej. +57 300 123 4567"
-          className="mt-1 block h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-600/30"
+          className={`${inputClasses}`}
         />
         {errors?.whatsappNumber && (
           <p className="mt-1 text-xs text-destructive">{errors.whatsappNumber}</p>
@@ -86,7 +87,7 @@ export default function StepBusiness({
       <div>
         <label
           htmlFor="tenantSlugDisplay"
-          className="text-sm font-medium text-foreground/80"
+          className={labelClasses}
         >
           Dirección web de tu negocio
         </label>

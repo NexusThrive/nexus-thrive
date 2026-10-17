@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/atoms/skeleton";
 
 /**
  * Skeleton de `/admin` mientras la page (auth + métricas + listado +

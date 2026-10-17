@@ -8,9 +8,12 @@ import { canGovernBudget, type TenantRole } from "@/lib/tenant-context";
 import { getQuoteTerms } from "@/lib/vertical-terms";
 import { formatDateShort } from "@/lib/format";
 import { isValidCategory } from "@/lib/apu-engine";
-import TabNav from "@/components/construction/tab-nav";
+import TabNav from "@/components/molecules/tab-nav";
 import ItemsBank from "./_components/items-bank";
 import ActivityCatalog from "./_components/activity-catalog";
+import { PageHeader } from "@/components/molecules/page-header";
+import { KpiCard } from "@/components/molecules/kpi-card";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 const ITEMS_PAGE_SIZE = 10;
 const ACTIVITIES_PAGE_SIZE = 50;
@@ -21,16 +24,19 @@ function firstString(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
 }
 
-function Stat({ icon, label, value, hint }: { icon: React.ReactNode; label: string; value: string; hint: string }) {
+/** Métrica del catálogo: `KpiCard` con el icono discreto dentro de la etiqueta. */
+function Stat({ icon, label, value, hint }: { icon: React.ReactNode; label: string; value: number | string; hint: string }) {
   return (
-    <article className="rounded-lg border border-border bg-card p-4">
-      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-        {icon}
-        {label}
-      </div>
-      <p className="mt-2 text-2xl font-semibold tabular-nums tracking-tight text-foreground">{value}</p>
-      <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
-    </article>
+    <KpiCard
+      label={label}
+      value={value}
+      hint={
+        <span className="inline-flex items-center gap-1.5 [&_svg]:size-3.5">
+          {icon}
+          {hint}
+        </span>
+      }
+    />
   );
 }
 
@@ -142,47 +148,44 @@ export default async function CatalogPage({
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Catálogo APU</h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Análisis de precios unitarios e insumos de{" "}
+      <PageHeader
+        eyebrow="Construcción"
+        title="Catálogo APU"
+        description={<>Análisis de precios unitarios e insumos de{" "}
             <span className="font-medium text-foreground/80">{tenantRecord.name}</span>. Las obras
-            importan actividades de aquí a su presupuesto.
-          </p>
-        </div>
-        <Link
+            importan actividades de aquí a su presupuesto.</>}
+        actions={<Link
           href={`/${tenantSlug}/catalog/import`}
-          className="inline-flex h-10 shrink-0 items-center gap-1.5 self-start rounded-lg border border-accent/30 bg-accent-subtle px-3 text-sm font-medium text-accent-text transition hover:border-accent/40"
+          className={buttonVariants({ variant: "outline" })}
         >
           <Upload aria-hidden="true" className="h-4 w-4" />
           Importar APU
-        </Link>
-      </header>
+        </Link>}
+      />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat
           icon={<BookOpen aria-hidden="true" className="h-4 w-4" />}
           label={terms.apuActivities}
-          value={String(overview.activities)}
+          value={overview.activities}
           hint={`${overview.chapters} capítulos`}
         />
         <Stat
           icon={<Layers aria-hidden="true" className="h-4 w-4" />}
           label="APU auxiliares"
-          value={String(overview.auxiliaries)}
+          value={overview.auxiliaries}
           hint="Usados dentro de otros APU"
         />
         <Stat
           icon={<Package aria-hidden="true" className="h-4 w-4" />}
           label={terms.apuItems}
-          value={String(overview.items)}
+          value={overview.items}
           hint="Vigentes"
         />
         <Stat
           icon={<ImageIcon aria-hidden="true" className="h-4 w-4" />}
           label="Con foto"
-          value={String(overview.itemsWithImage)}
+          value={overview.itemsWithImage}
           hint={overview.lastImport ? `Última importación ${formatDateShort(overview.lastImport.createdAt)}` : "Sin importaciones"}
         />
       </div>

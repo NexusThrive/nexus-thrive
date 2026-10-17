@@ -4,9 +4,10 @@ import { useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, FolderOpen } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import type { ProjectRow } from "@/lib/tenant-db";
 import { ProjectStatusBadge } from "./project-status-badge";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 const PAGE_SIZE = 12;
 
@@ -61,7 +62,7 @@ export default function ProjectsTable({
     <div className="space-y-4">
       <div className="overflow-x-auto rounded-lg border border-border bg-card">
         <table className="min-w-full divide-y divide-border text-sm">
-          <thead className="bg-muted text-left text-xs uppercase tracking-wide text-muted-foreground">
+          <thead className="bg-muted text-left text-xs font-semibold text-muted-foreground">
             <tr>
               <th className="px-4 py-3 font-medium">Código</th>
               <th className="px-4 py-3 font-medium">Proyecto</th>
@@ -122,7 +123,7 @@ export default function ProjectsTable({
                   <td className="px-4 py-3 text-right">
                     <Link
                       href={`/${tenantSlug}/projects/${row.id}`}
-                      className="inline-flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                      className={buttonVariants({ variant: "outline", size: "sm" })}
                     >
                       <FolderOpen aria-hidden="true" className="h-3.5 w-3.5" />
                       Ver
@@ -145,7 +146,7 @@ export default function ProjectsTable({
               type="button"
               disabled={page <= 1 || isPending}
               onClick={() => navigate("ppage", String(page - 1))}
-              className="inline-flex h-9 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
             >
               <ChevronLeft aria-hidden="true" className="h-4 w-4" />
               Anterior
@@ -154,7 +155,7 @@ export default function ProjectsTable({
               type="button"
               disabled={page >= totalPages || isPending}
               onClick={() => navigate("ppage", String(page + 1))}
-              className="inline-flex h-9 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
             >
               {isPending ? (
                 <NLoader size={16} className="text-current" />

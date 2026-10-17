@@ -33,6 +33,8 @@ const eslintConfig = defineConfig([
     ".devin/**",
     "nexus-thrive-brand/**",
     "nexus-ui-kit/**",
+    // Build estático de Storybook.
+    "storybook-static/**",
   ]),
 ]);
 

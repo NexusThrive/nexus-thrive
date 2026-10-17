@@ -8,9 +8,10 @@ import {
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
 import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/projects";
-import { cn } from "@/lib/cn";
-import SearchInput from "@/app/components/tenant/search-input";
-import FilterSelect from "@/app/components/tenant/filter-select";
+import { KpiCard } from "@/components/molecules/kpi-card";
+import { PageHeader } from "@/components/molecules/page-header";
+import SearchInput from "@/components/molecules/search-input";
+import FilterSelect from "@/components/molecules/filter-select";
 import ProjectsTable from "./_components/projects-table";
 import NewProjectModal from "./_components/new-project-modal";
 
@@ -20,40 +21,6 @@ function firstString(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
 }
 
-function card(
-  icon: React.ReactNode,
-  title: string,
-  value: string,
-  description: string,
-  tone: string,
-) {
-  return (
-    <article className="rounded-lg border border-border bg-card p-5">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-muted-foreground">
-            {title}
-          </p>
-          <p className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-            {value}
-          </p>
-        </div>
-        <span
-          aria-hidden="true"
-          className={cn(
-            "grid h-10 w-10 shrink-0 place-items-center rounded-lg",
-            tone,
-          )}
-        >
-          {icon}
-        </span>
-      </div>
-      <p className="mt-3 border-t border-border pt-2 text-xs text-muted-foreground">
-        {description}
-      </p>
-    </article>
-  );
-}
 
 /**
  * Contenedor de proyectos de obra (FASE 1 del vertical construcción).
@@ -111,65 +78,28 @@ export default async function ProjectsPage({
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-            Proyectos de obra
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Contenedor de proyectos de{" "}
-            <span className="font-medium text-foreground/80">
-              {tenantRecord.name}
-            </span>
-            : ficha del cliente y de la obra, y las bases para presupuestar y
-            hacer seguimiento.
-          </p>
-        </div>
-        <div className="mt-3 flex shrink-0 items-center gap-2 sm:mt-0">
-          <NewProjectModal
-            tenantSlug={tenantSlug}
-            customers={customerOptions}
-          />
-        </div>
-      </header>
+      <PageHeader
+        eyebrow="Construcción"
+        title="Obras"
+        description={
+          <>
+            Ficha del cliente y de la obra, presupuesto y seguimiento de{" "}
+            <span className="font-medium text-foreground">{tenantRecord.name}</span>.
+          </>
+        }
+        actions={<NewProjectModal tenantSlug={tenantSlug} customers={customerOptions} />}
+      />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {card(
-          <FolderKanban aria-hidden="true" className="h-5 w-5 text-accent-text" />,
-          "Proyectos",
-          String(metrics.total),
-          "Total registrados",
-          "bg-accent-subtle text-accent-text",
-        )}
-        {card(
-          <Hammer aria-hidden="true" className="h-5 w-5 text-success" />,
-          "En ejecución",
-          String(metrics.inExecution),
-          "Obras activas",
-          "bg-success/10 text-success",
-        )}
-        {card(
-          <CheckCircle2 aria-hidden="true" className="h-5 w-5 text-gold-700" />,
-          "Aprobados",
-          String(metrics.approved),
-          "Listos para iniciar",
-          "bg-gold-100 text-gold-700",
-        )}
-        {card(
-          <ListChecks
-            aria-hidden="true"
-            className="h-5 w-5 text-muted-foreground"
-          />,
-          "Completados",
-          String(metrics.completed),
-          "Obras finalizadas",
-          "bg-muted text-muted-foreground",
-        )}
-      </div>
+      <section aria-label="Resumen de obras" className="grid grid-cols-2 gap-3.5 xl:grid-cols-4">
+        <KpiCard index={0} label="Obras" value={metrics.total} icon={FolderKanban} hint="Total registradas" />
+        <KpiCard index={1} label="En ejecución" value={metrics.inExecution} icon={Hammer} hint="Obras activas" />
+        <KpiCard index={2} label="Aprobadas" value={metrics.approved} icon={CheckCircle2} hint="Listas para iniciar" />
+        <KpiCard index={3} label="Completadas" value={metrics.completed} icon={ListChecks} hint="Obras finalizadas" />
+      </section>
 
       <div className="space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex w-full flex-wrap items-center gap-2">
             <SearchInput
               paramKey="pq"
               pageParam="ppage"

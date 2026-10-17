@@ -2,12 +2,14 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import type { Customer360Note } from "@/lib/tenant-db";
 import { formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { NOTE_MAX_LENGTH } from "@/lib/customer-notes";
 import { createCustomerNoteAction } from "../actions";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { labelClasses } from "@/components/atoms/input";
 
 const INITIAL_STATE = { status: "idle" as const };
 
@@ -50,7 +52,7 @@ export default function NotesPanel({
 
         <label
           htmlFor="note-content"
-          className="block text-sm font-medium text-foreground/80"
+          className={labelClasses}
         >
           Nueva nota
         </label>
@@ -82,7 +84,7 @@ export default function NotesPanel({
           <button
             type="submit"
             disabled={isPending}
-            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+            className={`${buttonVariants()} shrink-0`}
           >
             {isPending ? (
               <NLoader size={16} className="text-current" />

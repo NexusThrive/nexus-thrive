@@ -2,20 +2,22 @@
 
 import { useEffect, useActionState } from "react";
 import { useRouter } from "next/navigation";
-import { NLoader } from "@/components/brand/n-loader";
-import Modal from "@/components/construction/modal";
+import { NLoader } from "@/components/atoms/n-loader";
+import Modal from "@/components/organisms/modal";
 import { APU_UNITS, moneyToString } from "@/lib/apu-engine";
 import {
   createBudgetItemAction,
   updateBudgetItemAction,
   type BudgetItemFormState,
 } from "../budget/actions";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { labelClasses } from "@/components/atoms/input";
 
 const IDLE_STATE: BudgetItemFormState = { status: "idle" };
 
 const FIELD_CLASS = (hasError: boolean) =>
   [
-    "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
+    "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
     hasError
       ? "border-destructive/30 focus:border-destructive focus:outline-destructive/30"
       : "border-border hover:border-foreground/20 focus:border-gold-500 focus:outline-gold-600/30",
@@ -119,7 +121,7 @@ export default function ItemModal({
           <div className="sm:col-span-2">
             <label
               htmlFor="item-description"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Descripción <span className="text-destructive">*</span>
             </label>
@@ -141,7 +143,7 @@ export default function ItemModal({
           <div>
             <label
               htmlFor="item-code"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Código
             </label>
@@ -163,7 +165,7 @@ export default function ItemModal({
           <div>
             <label
               htmlFor="item-unit"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Unidad <span className="text-destructive">*</span>
             </label>
@@ -191,7 +193,7 @@ export default function ItemModal({
           <div>
             <label
               htmlFor="item-quantity"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Cantidad <span className="text-destructive">*</span>
             </label>
@@ -214,7 +216,7 @@ export default function ItemModal({
           <div>
             <label
               htmlFor="item-unit-cost"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Costo unitario directo{" "}
               <span className="text-destructive">*</span>
@@ -244,7 +246,7 @@ export default function ItemModal({
         {state.status === "error" && state.message ? (
           <p
             role="alert"
-            className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+            className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
           >
             {state.message}
           </p>
@@ -255,14 +257,14 @@ export default function ItemModal({
             type="button"
             disabled={isPending}
             onClick={onClose}
-            className="h-10 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
+            className={buttonVariants({ variant: "outline" })}
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={isPending}
-            className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+            className={buttonVariants()}
           >
             {isPending ? (
               <NLoader size={16} className="text-current" />

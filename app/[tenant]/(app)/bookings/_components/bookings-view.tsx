@@ -4,14 +4,21 @@ import { useEffect, useState, useActionState, startTransition } from "react";
 import { CalendarPlus, X } from "lucide-react";
 
 import { cn } from "@/lib/cn";
-import { NLoader } from "@/components/brand/n-loader";
-import { useToast, ToastProvider } from "@/components/brand/toast";
+import { NLoader } from "@/components/atoms/n-loader";
+import { useToast } from "@/components/molecules/toast";
+import { StatTile } from "@/components/molecules/stat-tile";
+import { EmptyState } from "@/components/molecules/empty-state";
 import {
   createBookingAction,
   updateBookingStatusAction,
   type BookingFormState,
   type BookingStatusFormState,
 } from "../actions";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { PageHeader } from "@/components/molecules/page-header";
+import { SegmentedControl } from "@/components/molecules/segmented-control";
+import BookingsAgenda from "./bookings-agenda";
+import { labelClasses } from "@/components/atoms/input";
 
 export type BookingStatusValue =
   | "PENDING"
@@ -28,6 +35,9 @@ export type BookingView = {
   status: BookingStatusValue;
   amountLabel: string;
   notes: string | null;
+  /** ISO de inicio y fin (la agenda las ubica en el día y la hora de Bogotá). */
+  startAt: string;
+  endAt: string;
 };
 
 export type BookingCustomerOption = { id: string; name: string };
@@ -74,11 +84,7 @@ export default function BookingsView(props: {
   bookings: BookingView[];
   customers: BookingCustomerOption[];
 }) {
-  return (
-    <ToastProvider>
-      <BookingsContent {...props} />
-    </ToastProvider>
-  );
+  return <BookingsContent {...props} />;
 }
 
 function BookingsContent({
@@ -105,6 +111,7 @@ function BookingsContent({
 
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [view, setView] = useState<"agenda" | "list">("agenda");
 
   // Notificaciones toast: useEffect para no llamar setState del provider durante render.
   const [prevCreateState, setPrevCreateState] = useState<BookingFormState>(CREATE_IDLE);
@@ -163,20 +170,15 @@ function BookingsContent({
   const noCustomers = customers.length === 0;
 
   return (
-    <div className="mx-auto w-full max-w-5xl">
-      <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Reservas
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Gestiona las reservas y su estado.
-          </p>
-        </div>
-        <button
+    <div className="w-full">
+      <PageHeader
+        eyebrow="Gestión"
+        title="Reservas"
+        description="Gestiona las reservas y su estado."
+        actions={<button
           type="button"
           onClick={() => setShowForm((prev) => !prev)}
-          className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+          className={buttonVariants()}
         >
           {showForm ? (
             <X aria-hidden="true" className="h-4 w-4" />
@@ -184,15 +186,15 @@ function BookingsContent({
             <CalendarPlus aria-hidden="true" className="h-4 w-4" />
           )}
           {showForm ? "Cerrar" : "Nueva reserva"}
-        </button>
-      </header>
+        </button>}
+      />
 
       {/* KPIs reales */}
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <KpiCard label="Reservas totales" value={metrics.total} tone="gold" />
-        <KpiCard label="Confirmadas" value={metrics.confirmed} tone="success" />
-        <KpiCard label="Pendientes" value={metrics.pending} tone="warning" />
-      </div>
+      <section aria-label="Resumen de reservas" className="mb-6 grid grid-cols-2 gap-3.5 sm:grid-cols-3">
+        <StatTile index={0} label="Reservas totales" value={metrics.total} tone="neutral" note="Todas las registradas" />
+        <StatTile index={1} label="Confirmadas" value={metrics.confirmed} tone="success" note="Listas para atender" />
+        <StatTile index={2} label="Pendientes" value={metrics.pending} tone="warning" pulse={metrics.pending > 0} note="Esperan confirmación" />
+      </section>
 
       {showForm && (
         <form
@@ -201,7 +203,7 @@ function BookingsContent({
           className="mb-6 rounded-lg border border-border bg-card p-6"
         >
           <input type="hidden" name="tenantSlug" value={tenantSlug} />
-          <h2 className="mb-4 font-semibold text-foreground">Nueva reserva</h2>
+          <h2 className="font-display text-[15px] mb-4 font-semibold text-foreground">Nueva reserva</h2>
 
           {noCustomers && (
             <p className="mb-4 rounded-lg bg-warning/10 px-3 py-2 text-sm text-warning-foreground">
@@ -212,7 +214,7 @@ function BookingsContent({
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label htmlFor="booking-customer" className="text-sm font-medium text-foreground/80">
+              <label htmlFor="booking-customer" className={labelClasses}>
                 Cliente <span className="text-destructive">*</span>
               </label>
               <select
@@ -221,7 +223,7 @@ function BookingsContent({
                 value={form.customerId}
                 onChange={(event) => setField("customerId", event.target.value)}
                 aria-invalid={Boolean(errors.customerId)}
-                className={cn("mt-1", fieldClass(Boolean(errors.customerId)))}
+                className={cn(fieldClass(Boolean(errors.customerId)))}
               >
                 <option value="">Selecciona un cliente…</option>
                 {customers.map((customer) => (
@@ -238,7 +240,7 @@ function BookingsContent({
             </div>
 
             <div>
-              <label htmlFor="booking-service" className="text-sm font-medium text-foreground/80">
+              <label htmlFor="booking-service" className={labelClasses}>
                 Servicio <span className="text-destructive">*</span>
               </label>
               <input
@@ -248,7 +250,7 @@ function BookingsContent({
                 onChange={(event) => setField("serviceName", event.target.value)}
                 aria-invalid={Boolean(errors.serviceName)}
                 placeholder="Ej. Entrenamiento personal"
-                className={cn("mt-1", fieldClass(Boolean(errors.serviceName)))}
+                className={cn(fieldClass(Boolean(errors.serviceName)))}
               />
               {errors.serviceName && (
                 <p role="alert" className="mt-1 text-xs text-destructive">
@@ -258,7 +260,7 @@ function BookingsContent({
             </div>
 
             <div>
-              <label htmlFor="booking-start" className="text-sm font-medium text-foreground/80">
+              <label htmlFor="booking-start" className={labelClasses}>
                 Fecha de inicio <span className="text-destructive">*</span>
               </label>
               <input
@@ -268,7 +270,7 @@ function BookingsContent({
                 value={form.startDate}
                 onChange={(event) => setField("startDate", event.target.value)}
                 aria-invalid={Boolean(errors.startDate)}
-                className={cn("mt-1", fieldClass(Boolean(errors.startDate)))}
+                className={cn(fieldClass(Boolean(errors.startDate)))}
               />
               {errors.startDate && (
                 <p role="alert" className="mt-1 text-xs text-destructive">
@@ -278,7 +280,7 @@ function BookingsContent({
             </div>
 
             <div>
-              <label htmlFor="booking-end" className="text-sm font-medium text-foreground/80">
+              <label htmlFor="booking-end" className={labelClasses}>
                 Fecha de fin <span className="text-destructive">*</span>
               </label>
               <input
@@ -288,7 +290,7 @@ function BookingsContent({
                 value={form.endDate}
                 onChange={(event) => setField("endDate", event.target.value)}
                 aria-invalid={Boolean(errors.endDate)}
-                className={cn("mt-1", fieldClass(Boolean(errors.endDate)))}
+                className={cn(fieldClass(Boolean(errors.endDate)))}
               />
               {errors.endDate && (
                 <p role="alert" className="mt-1 text-xs text-destructive">
@@ -298,7 +300,7 @@ function BookingsContent({
             </div>
 
             <div>
-              <label htmlFor="booking-amount" className="text-sm font-medium text-foreground/80">
+              <label htmlFor="booking-amount" className={labelClasses}>
                 Importe (COP) <span className="text-destructive">*</span>
               </label>
               <input
@@ -309,7 +311,7 @@ function BookingsContent({
                 onChange={(event) => setField("totalAmount", event.target.value)}
                 aria-invalid={Boolean(errors.totalAmount)}
                 placeholder="Ej. 50000 o 50.000"
-                className={cn("mt-1", fieldClass(Boolean(errors.totalAmount)))}
+                className={cn(fieldClass(Boolean(errors.totalAmount)))}
               />
               {errors.totalAmount && (
                 <p role="alert" className="mt-1 text-xs text-destructive">
@@ -319,7 +321,7 @@ function BookingsContent({
             </div>
 
             <div>
-              <label htmlFor="booking-notes" className="text-sm font-medium text-foreground/80">
+              <label htmlFor="booking-notes" className={labelClasses}>
                 Notas
               </label>
               <input
@@ -328,7 +330,7 @@ function BookingsContent({
                 value={form.notes}
                 onChange={(event) => setField("notes", event.target.value)}
                 placeholder="Observaciones (opcional)"
-                className={cn("mt-1", fieldClass(false))}
+                className={cn(fieldClass(false))}
               />
             </div>
           </div>
@@ -338,14 +340,14 @@ function BookingsContent({
               type="button"
               onClick={() => setShowForm(false)}
               disabled={isCreatePending}
-              className="h-10 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
+              className={buttonVariants({ variant: "outline" })}
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isCreatePending || noCustomers}
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className={buttonVariants()}
             >
               {isCreatePending && <NLoader size={16} className="text-current" />}
               {isCreatePending ? "Creando…" : "Crear reserva"}
@@ -354,15 +356,38 @@ function BookingsContent({
         </form>
       )}
 
-      {bookings.length === 0 ? (
-        <p className="rounded-lg border border-border bg-card py-12 text-center text-sm text-muted-foreground">
-          Aún no tienes reservas. Crea la primera con “Nueva reserva”.
-        </p>
+      <div className="mb-3.5 flex items-center justify-between gap-3">
+        <SegmentedControl
+          ariaLabel="Vista de reservas"
+          value={view}
+          onChange={setView}
+          options={[
+            { value: "agenda", label: "Agenda" },
+            { value: "list", label: "Lista", count: bookings.length },
+          ]}
+        />
+      </div>
+
+      {view === "agenda" ? (
+        <BookingsAgenda
+          tenantSlug={tenantSlug}
+          bookings={bookings}
+          onNew={() => {
+            setShowForm(true);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
+      ) : bookings.length === 0 ? (
+        <EmptyState
+          className="rounded-lg border border-border bg-card"
+          title="Aún no tienes reservas"
+          description="Crea la primera con “Nueva reserva”."
+        />
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border bg-card">
           <table className="w-full border-collapse text-sm">
             <thead>
-              <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+              <tr className="border-b border-border-strong text-left text-xs font-semibold text-muted-foreground">
                 <th className="px-4 py-3 font-medium">Cliente</th>
                 <th className="px-4 py-3 font-medium">Servicio</th>
                 <th className="px-4 py-3 font-medium">Fechas</th>
@@ -455,26 +480,3 @@ function BookingsContent({
   );
 }
 
-function KpiCard({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: number;
-  tone: "gold" | "success" | "warning";
-}) {
-  const toneClass =
-    tone === "gold"
-      ? "text-gold-600"
-      : tone === "success"
-        ? "text-success"
-        : "text-warning-foreground";
-
-  return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <div className={cn("text-2xl font-bold", toneClass)}>{value}</div>
-      <div className="mt-1 text-sm text-muted-foreground">{label}</div>
-    </div>
-  );
-}

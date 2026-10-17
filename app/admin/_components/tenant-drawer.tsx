@@ -12,16 +12,16 @@ import {
   Power,
   RotateCcw,
 } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@/components/organisms/sheet";
+import { Button } from "@/components/atoms/button";
+import { Skeleton } from "@/components/atoms/skeleton";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { MODULE_LABELS, VERTICAL_LABELS } from "@/lib/admin-catalogs";
 import { TEAM_SIZE_LABELS, type TeamSizeValue } from "@/lib/onboarding/types";

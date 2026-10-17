@@ -7,6 +7,8 @@
  * (colisión) se chequea aparte contra la base de datos.
  */
 
+import type { Billing, PlanKey } from "@/lib/plans/catalog";
+import { resolvePlanModules } from "@/lib/plans/quote";
 import {
   isVertical,
   isModule,
@@ -75,6 +77,8 @@ export function validateAdaptiveOnboarding(raw: {
   address?: unknown;
   city: unknown;
   selectedModules: unknown;
+  plan?: unknown;
+  billing?: unknown;
 }): AdaptiveValidationResult {
   const errors: OnboardingFieldErrors = {};
 
@@ -180,10 +184,17 @@ export function validateAdaptiveOnboarding(raw: {
       }
     }
   }
-  // `dashboard` es la landing de `(app)`: se activa siempre, aunque el
-  // usuario la apague en el paso 3 (decisión del servidor).
+  // --- plan ------------------------------------------------------------------
+  const plan: PlanKey = raw.plan === "ELITE" || raw.plan === "SIGNATURE" ? raw.plan : "ESSENTIAL";
+  const billing: Billing = raw.billing === "ANNUAL" ? "ANNUAL" : "MONTHLY";
+
+  // El plan manda (decisión del servidor): Essential solo los incluidos,
+  // Signature todo el rubro, Elite lo elegido que pertenece al rubro.
+  // `dashboard` es la landing de `(app)` y siempre queda activo.
   selectedModules.add("dashboard");
-  const modules = sortModules([...selectedModules]);
+  const modules = vertical
+    ? resolvePlanModules(plan, vertical, [...selectedModules])
+    : sortModules([...selectedModules]);
   if (modules.length === 0) {
     errors.selectedModules = "Selecciona al menos un módulo.";
   }
@@ -224,6 +235,8 @@ export function validateAdaptiveOnboarding(raw: {
       address,
       city,
       selectedModules: modules,
+      plan,
+      billing,
     },
   };
 }

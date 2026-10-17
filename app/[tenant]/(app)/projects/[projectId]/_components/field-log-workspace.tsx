@@ -3,17 +3,19 @@
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { HardHat, ImagePlus, Trash2, User, X } from "lucide-react";
-import { KpiCard } from "@/components/brand/kpi-card";
-import { EmptyState } from "@/components/brand/empty-state";
-import { NLoader } from "@/components/brand/n-loader";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { KpiCard } from "@/components/molecules/kpi-card";
+import { EmptyState } from "@/components/molecules/empty-state";
+import { NLoader } from "@/components/atoms/n-loader";
+import { Button } from "@/components/atoms/button";
+import { Badge } from "@/components/atoms/badge";
 import { formatDateShort } from "@/lib/format";
 import { getLogSummaryStats, type FieldLogEntryData } from "@/lib/field-log-engine";
 import type { FieldLogData } from "@/lib/tenant-db";
 import type { ItemProgressRow } from "@/lib/construction/progress";
 import { createFieldLogEntryAction, deleteFieldLogEntryAction } from "../field-log/actions";
 import ProgressPanel from "./progress-panel";
+import { fieldClasses, inputClasses, labelClasses } from "@/components/atoms/input";
+import { cn } from "@/lib/utils";
 
 const TYPE_STYLES: Record<FieldLogEntryData["type"], { label: string; className: string }> = {
   ADVANCE: { label: "Avance", className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" },
@@ -30,7 +32,7 @@ const WEATHER_LABELS: Record<FieldLogEntryData["weather"], string> = {
 };
 
 const inputClass =
-  "h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-border-strong focus:border-accent focus:outline-2 focus:outline-accent/30";
+  inputClasses;
 
 function bogotaTodayIso(): string {
   return new Date(Date.now() - 5 * 3600 * 1000).toISOString().slice(0, 10);
@@ -155,7 +157,7 @@ function FieldLogEntryCard({
         <span className="text-xs text-muted-foreground">{formatDateShort(entry.entryDate)}</span>
       </div>
 
-      <h3 className="font-medium text-foreground">{entry.title}</h3>
+      <h3 className="font-display text-[15px] font-medium text-foreground">{entry.title}</h3>
       <p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{entry.description}</p>
 
       <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
@@ -255,7 +257,7 @@ function NewEntryForm({
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <label htmlFor="fl-type" className="block">
-          <span className="mb-1 block text-xs font-medium text-foreground/80">Tipo</span>
+          <span className={labelClasses}>Tipo</span>
           <select id="fl-type" name="type" defaultValue="ADVANCE" className={inputClass}>
             {Object.entries(TYPE_STYLES).map(([value, style]) => (
               <option key={value} value={value}>
@@ -265,29 +267,29 @@ function NewEntryForm({
           </select>
         </label>
         <label htmlFor="fl-date" className="block">
-          <span className="mb-1 block text-xs font-medium text-foreground/80">Fecha</span>
+          <span className={labelClasses}>Fecha</span>
           <input id="fl-date" name="entryDate" type="date" required defaultValue={bogotaTodayIso()} max={bogotaTodayIso()} className={inputClass} />
           {fieldError("entryDate")}
         </label>
         <label htmlFor="fl-title" className="block sm:col-span-2">
-          <span className="mb-1 block text-xs font-medium text-foreground/80">Título</span>
+          <span className={labelClasses}>Título</span>
           <input id="fl-title" name="title" required maxLength={150} placeholder="Fundida de placa nivel 2" className={inputClass} />
           {fieldError("title")}
         </label>
         <label htmlFor="fl-description" className="block sm:col-span-2">
-          <span className="mb-1 block text-xs font-medium text-foreground/80">Descripción</span>
+          <span className={labelClasses}>Descripción</span>
           <textarea
             id="fl-description"
             name="description"
             required
             rows={4}
             maxLength={4000}
-            className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-border-strong focus:border-accent focus:outline-2 focus:outline-accent/30"
+            className={cn(fieldClasses, "py-2 w-full")}
           />
           {fieldError("description")}
         </label>
         <label htmlFor="fl-weather" className="block">
-          <span className="mb-1 block text-xs font-medium text-foreground/80">Clima</span>
+          <span className={labelClasses}>Clima</span>
           <select id="fl-weather" name="weather" defaultValue="SUNNY" className={inputClass}>
             {Object.entries(WEATHER_LABELS).map(([value, label]) => (
               <option key={value} value={value}>
@@ -297,13 +299,13 @@ function NewEntryForm({
           </select>
         </label>
         <label htmlFor="fl-labor" className="block">
-          <span className="mb-1 block text-xs font-medium text-foreground/80">Personal en obra</span>
+          <span className={labelClasses}>Personal en obra</span>
           <input id="fl-labor" name="laborCount" type="number" min={0} max={1000} defaultValue={0} className={inputClass} />
           {fieldError("laborCount")}
         </label>
         {items.length > 0 ? (
           <label htmlFor="fl-item" className="block sm:col-span-2">
-            <span className="mb-1 block text-xs font-medium text-foreground/80">Partida del presupuesto (opcional)</span>
+            <span className={labelClasses}>Partida del presupuesto (opcional)</span>
             <select id="fl-item" name="budgetItemId" defaultValue="" className={inputClass}>
               <option value="">Sin partida</option>
               {items.map((item) => (

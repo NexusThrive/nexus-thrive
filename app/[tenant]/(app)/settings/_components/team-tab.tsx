@@ -43,7 +43,7 @@ export default function TeamTab({ members }: { members: TeamMember[] }) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-semibold text-foreground">Equipo del negocio</h2>
+        <h2 className="font-display text-[15px] font-semibold text-foreground">Equipo del negocio</h2>
         <p className="mt-0.5 text-sm text-muted-foreground">
           Usuarios vinculados a este negocio y sus roles.
         </p>
@@ -57,7 +57,7 @@ export default function TeamTab({ members }: { members: TeamMember[] }) {
         <div className="overflow-x-auto rounded-lg border border-border bg-card">
           <table className="w-full border-collapse text-sm">
             <thead>
-              <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+              <tr className="border-b border-border-strong text-left text-xs font-semibold text-muted-foreground">
                 <th className="px-4 py-3 font-medium">Nombre</th>
                 <th className="px-4 py-3 font-medium">Correo</th>
                 <th className="px-4 py-3 text-right font-medium">Rol</th>

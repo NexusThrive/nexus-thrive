@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Check, Copy, ExternalLink, X } from "lucide-react";
+import { useState } from "react";
+import { Check, Copy, ExternalLink } from "lucide-react";
 import {
   expiryReminderMessage,
   normalizeWhatsAppPhone,
@@ -10,6 +10,8 @@ import {
 } from "@/lib/memberships";
 import { formatDateShort } from "@/lib/format";
 import type { MembershipViewRow } from "./membership-table";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 
 /**
  * Previsualización del recordatorio de vencimiento por WhatsApp.
@@ -25,23 +27,6 @@ export default function WhatsAppReminder({
 }) {
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-    document.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [onClose]);
-
   const endPlain = plainFromInstant(membership.endDate);
   const message = expiryReminderMessage(membership.customerName, endPlain);
   const phone = normalizeWhatsAppPhone(membership.customerPhone);
@@ -54,41 +39,12 @@ export default function WhatsAppReminder({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center">
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 bg-ink/45 backdrop-blur-[1px]"
-        onClick={onClose}
-      />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="whatsapp-modal-title"
-        className="relative mt-10 w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-popover sm:mt-0"
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2
-              id="whatsapp-modal-title"
-              className="text-lg font-semibold text-foreground"
-            >
-              Recordatorio de vencimiento
-            </h2>
-            <p className="mt-0.5 text-sm text-muted-foreground">
-              {membership.customerName} · vence{" "}
-              {formatDateShort(membership.endDate)}
-            </p>
-          </div>
-          <button
-            type="button"
-            aria-label="Cerrar"
-            onClick={onClose}
-            className="-m-1 rounded-lg p-1 text-muted-foreground transition hover:bg-muted hover:text-foreground"
-          >
-            <X aria-hidden="true" className="h-5 w-5" />
-          </button>
-        </div>
-
+    <ResponsiveSheet
+      open
+      onOpenChange={(open) => { if (!open) onClose(); }}
+      title="Recordatorio de vencimiento"
+      description={<>{membership.customerName} · vence{" "} {formatDateShort(membership.endDate)}</>}
+    >
         <div className="mt-4">
           <p className="text-sm font-medium text-foreground/80">Mensaje</p>
           <p className="mt-2 whitespace-pre-wrap rounded-lg border border-border bg-muted p-3 text-sm text-foreground/80">
@@ -111,7 +67,7 @@ export default function WhatsAppReminder({
           <button
             type="button"
             onClick={copyMessage}
-            className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted"
+            className={buttonVariants({ variant: "outline" })}
           >
             {copied ? (
               <Check aria-hidden="true" className="h-4 w-4 text-success" />
@@ -132,7 +88,7 @@ export default function WhatsAppReminder({
             </a>
           ) : null}
         </div>
-      </div>
-    </div>
+      
+    </ResponsiveSheet>
   );
 }

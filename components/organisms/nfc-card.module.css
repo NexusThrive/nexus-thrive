@@ -1,0 +1,65 @@
+/* Tarjeta NFC (MAR·01 del artefacto): modo noche y acabado blanco. */
+.stage {
+  --c1: #202024; --c2: #0b0b0c; --c3: #000; --ink: #f7f6f3; --sub: #a1a1a8;
+  --e0: #141416; --e1: #6b6b73; --top: #f7f6f3; --edge: #2a2a2e;
+  --tex: rgba(255, 255, 255, 0.022); --bd: rgba(255, 255, 255, 0.1); --shine: rgba(255, 255, 255, 0.16);
+  position: relative; width: 100%; min-height: clamp(340px, 44vw, 460px);
+  display: grid; place-items: center; overflow: hidden; border-radius: 8px; isolation: isolate;
+  background: radial-gradient(110% 80% at 50% 28%, #1a1a1d 0%, #070708 62%, #000 100%);
+  touch-action: pan-y;
+}
+.stage[data-finish="blanco"] {
+  --c1: #fff; --c2: #f4f3f0; --c3: #dedcd6; --ink: #0a0a0b; --sub: #6b6b73;
+  --e0: #b9b7b1; --e1: #3a3a40; --top: #0a0a0b; --edge: #c9c7c1;
+  --tex: rgba(0, 0, 0, 0.025); --bd: rgba(0, 0, 0, 0.08); --shine: rgba(255, 255, 255, 0.55);
+}
+.word { position: absolute; left: 50%; top: 50%; width: min(94%, 980px); color: #fff; opacity: 0.055; transform: translate(-50%, -50%); pointer-events: none; z-index: -1; }
+.wrap { position: relative; width: min(380px, 82%); aspect-ratio: 1.586; perspective: 1100px; }
+.card { position: absolute; inset: 0; transform-style: preserve-3d; cursor: pointer; outline: none; border-radius: 16px; will-change: transform; }
+.card:focus-visible { outline: 2px solid #d4af37; outline-offset: 8px; }
+.edge { position: absolute; inset: 0; border-radius: 16px; background: var(--edge); transform: translateZ(calc(var(--e) * -1px)); }
+.face {
+  position: absolute; inset: 0; border-radius: 16px; transform-style: preserve-3d; backface-visibility: hidden;
+  color: var(--ink); background: linear-gradient(150deg, var(--c1) 0%, var(--c2) 46%, var(--c3) 100%);
+  border: 1px solid var(--bd); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08); transition: box-shadow 0.3s;
+}
+.back { transform: rotateY(180deg) translateZ(3px); }
+.deco { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; pointer-events: none; }
+.tex { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, var(--tex) 0 1px, transparent 1px 3px); }
+.slashes::before, .slashes::after { content: ""; position: absolute; top: -30%; height: 160%; transform: skewX(-24deg); }
+.slashes::before { right: -6%; width: 24%; background: linear-gradient(180deg, rgba(212, 175, 55, 0.26), rgba(212, 175, 55, 0) 85%); }
+.slashes::after { right: 23%; width: 3.5%; background: linear-gradient(180deg, rgba(212, 175, 55, 0.18), rgba(212, 175, 55, 0) 80%); }
+.logo { position: absolute; left: 7%; top: 9%; width: 19%; aspect-ratio: 744.4 / 779.5; transform-style: preserve-3d; transform: translateZ(1px); }
+.layer { position: absolute; inset: 0; width: 100%; height: 100%; color: color-mix(in srgb, var(--e1) calc(var(--z) * 18%), var(--e0)); transform: translateZ(calc(var(--z) * 0.42px)); }
+.layerTop { color: var(--top); filter: drop-shadow(0 0 0.5px rgba(0, 0, 0, 0.35)); }
+.card[data-side="b"] .front .logo { visibility: hidden; }
+.mid { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) translateZ(2px); display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.waves { width: 68px; height: 34px; fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
+.waves path { opacity: 0.18; animation: nfw 1.8s ease-in-out infinite; }
+.waves path:nth-child(2) { animation-delay: 0.18s; }
+.waves path:nth-child(3) { animation-delay: 0.36s; }
+@keyframes nfw { 0%, 100% { opacity: 0.16; } 35% { opacity: 1; } }
+.chip { width: 54px; height: 42px; border-radius: 7px; background: linear-gradient(135deg, #f6ebc4 0%, #d4af37 40%, #9a7716 72%, #e6cb74 100%); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.28), 0 1px 2px rgba(0, 0, 0, 0.45); }
+.chip svg { display: block; width: 100%; height: 100%; fill: none; stroke: rgba(0, 0, 0, 0.38); stroke-width: 1.2; }
+.foot { position: absolute; left: 7%; right: 7%; bottom: 9%; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+.foot b { display: block; font: 600 clamp(10px, 2.8vw, 12.5px) var(--font-display, Montserrat), sans-serif; letter-spacing: 0.22em; text-transform: uppercase; }
+.foot small { display: block; font-size: 10.5px; color: var(--sub); margin-top: 3px; }
+.tag { display: flex; align-items: center; gap: 6px; font: 600 10px ui-monospace, monospace; letter-spacing: 0.14em; color: var(--sub); }
+.tag::before { content: ""; width: 3px; height: 11px; background: #d4af37; transform: skewX(-24deg); }
+.shine { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; mix-blend-mode: soft-light;
+  background: radial-gradient(55% 75% at var(--sx, 50%) var(--sy, 40%), var(--shine), transparent 62%),
+    linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.08) calc(var(--sx, 50%) - 4%), transparent calc(var(--sx, 50%) + 14%)); }
+.thrive { position: absolute; left: 50%; top: 46%; width: 64%; transform: translate(-50%, -50%); color: var(--ink); }
+.line { position: absolute; left: 50%; top: 60%; width: 30px; height: 3px; background: #d4af37; transform: translateX(-50%) skewX(-24deg); }
+.markBack { position: absolute; right: 7%; top: 10%; width: 8%; color: var(--ink); }
+.backFoot { position: absolute; left: 7%; right: 7%; bottom: 9%; display: flex; justify-content: space-between; gap: 10px; font-size: 10.5px; color: var(--sub); }
+.shadow { position: absolute; left: 10%; right: 10%; bottom: -12%; height: 18%; background: radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0.85), transparent 72%); filter: blur(6px); z-index: -1; }
+.phone { position: absolute; left: 50%; top: 0; z-index: 3; width: 60px; height: 108px; border-radius: 13px; border: 2px solid #3a3a40; background: linear-gradient(160deg, #16161a, #050505); opacity: 0; transform: translate(-50%, -120%); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); }
+.phone i { position: absolute; left: 50%; top: 7px; width: 16px; height: 3px; margin-left: -8px; border-radius: 2px; background: #3a3a40; }
+.reading .waves path { stroke: #d4af37; animation-duration: 0.55s; }
+.reading .front { box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.75), 0 0 36px rgba(212, 175, 55, 0.2); }
+.read .chip { animation: chipflash 0.9s ease-out; }
+@keyframes chipflash { 0% { filter: brightness(1.7) saturate(1.2); } 100% { filter: none; } }
+.status { position: absolute; bottom: 14px; left: 0; right: 0; text-align: center; margin: 0; font-size: 12.5px; color: #a1a1a8; min-height: 18px; }
+@media (prefers-reduced-motion: reduce) { .waves path { animation: none; opacity: 0.7; } }
+:global(html[data-motion="off"]) .waves path { animation: none; opacity: 0.7; }

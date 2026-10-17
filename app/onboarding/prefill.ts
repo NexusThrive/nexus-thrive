@@ -32,6 +32,8 @@ type TenantForDraft = {
   city: string | null;
   onboardingCompleted: boolean;
   modules: { moduleName: string; active: boolean }[];
+  plan?: OnboardingDraft["plan"];
+  billingCycle?: OnboardingDraft["billing"];
 };
 
 function tenantToDraft(tenant: TenantForDraft): OnboardingDraft {
@@ -50,6 +52,8 @@ function tenantToDraft(tenant: TenantForDraft): OnboardingDraft {
         .filter((module) => module.active)
         .map((module) => module.moduleName as ModuleValue),
     ),
+    plan: tenant.plan ?? "ESSENTIAL",
+    billing: tenant.billingCycle ?? "MONTHLY",
   };
 }
 

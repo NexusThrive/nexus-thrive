@@ -2,14 +2,16 @@
 
 import { useEffect, useRef, useState, useActionState } from "react";
 import { useRouter } from "next/navigation";
-import { NLoader } from "@/components/brand/n-loader";
-import { useToast } from "@/components/brand/toast";
+import { NLoader } from "@/components/atoms/n-loader";
+import { useToast } from "@/components/molecules/toast";
 import { cn } from "@/lib/cn";
 import {
   updateTenantProfileAction,
   type ProfileFormState,
 } from "../actions";
 import type { ProfileInitialValues, SystemInfoItem } from "./settings-shell";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { labelClasses } from "@/components/atoms/input";
 
 const IDLE_STATE: ProfileFormState = { status: "idle" };
 
@@ -75,7 +77,7 @@ export default function ProfileTab({
         <input type="hidden" name="tenantSlug" value={tenantSlug} />
 
         <div className="mb-4">
-          <h2 className="font-semibold text-foreground">Datos del negocio</h2>
+          <h2 className="font-display text-[15px] font-semibold text-foreground">Datos del negocio</h2>
           <p className="mt-0.5 text-sm text-muted-foreground">
             Estos datos identifican tu negocio dentro de la plataforma.
           </p>
@@ -89,7 +91,7 @@ export default function ProfileTab({
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
-            <label htmlFor="profile-name" className="text-sm font-medium text-foreground/80">
+            <label htmlFor="profile-name" className={labelClasses}>
               Nombre comercial <span className="text-destructive">*</span>
             </label>
             <input
@@ -100,7 +102,7 @@ export default function ProfileTab({
               disabled={!canManage || isPending}
               aria-invalid={Boolean(errors.name)}
               placeholder="Ej. Mi Negocio"
-              className={cn("mt-1", fieldClass(Boolean(errors.name)))}
+              className={cn(fieldClass(Boolean(errors.name)))}
             />
             {errors.name && (
               <p role="alert" className="mt-1 text-xs text-destructive">
@@ -110,7 +112,7 @@ export default function ProfileTab({
           </div>
 
           <div>
-            <label htmlFor="profile-slug" className="text-sm font-medium text-foreground/80">
+            <label htmlFor="profile-slug" className={labelClasses}>
               Slug (URL) <span className="text-destructive">*</span>
             </label>
             <input
@@ -121,7 +123,7 @@ export default function ProfileTab({
               disabled={!canManage || isPending}
               aria-invalid={Boolean(errors.slug)}
               placeholder="mi-negocio"
-              className={cn("mt-1", fieldClass(Boolean(errors.slug)))}
+              className={cn(fieldClass(Boolean(errors.slug)))}
             />
             {errors.slug ? (
               <p role="alert" className="mt-1 text-xs text-destructive">
@@ -135,7 +137,7 @@ export default function ProfileTab({
           </div>
 
           <div className="md:col-span-2">
-            <label htmlFor="profile-city" className="text-sm font-medium text-foreground/80">
+            <label htmlFor="profile-city" className={labelClasses}>
               Ciudad
             </label>
             <input
@@ -145,12 +147,12 @@ export default function ProfileTab({
               onChange={(event) => setField("city", event.target.value)}
               disabled={!canManage || isPending}
               placeholder="Ciudad"
-              className={cn("mt-1", fieldClass(Boolean(errors.city)))}
+              className={cn(fieldClass(Boolean(errors.city)))}
             />
           </div>
 
           <div className="md:col-span-2">
-            <label htmlFor="profile-address" className="text-sm font-medium text-foreground/80">
+            <label htmlFor="profile-address" className={labelClasses}>
               Dirección
             </label>
             <input
@@ -160,12 +162,12 @@ export default function ProfileTab({
               onChange={(event) => setField("address", event.target.value)}
               disabled={!canManage || isPending}
               placeholder="Calle y número"
-              className={cn("mt-1", fieldClass(Boolean(errors.address)))}
+              className={cn(fieldClass(Boolean(errors.address)))}
             />
           </div>
 
           <div>
-            <label htmlFor="profile-taxId" className="text-sm font-medium text-foreground/80">
+            <label htmlFor="profile-taxId" className={labelClasses}>
               NIT / RUT
             </label>
             <input
@@ -175,12 +177,12 @@ export default function ProfileTab({
               onChange={(event) => setField("taxId", event.target.value)}
               disabled={!canManage || isPending}
               placeholder="NIT o RUT"
-              className={cn("mt-1", fieldClass(Boolean(errors.taxId)))}
+              className={cn(fieldClass(Boolean(errors.taxId)))}
             />
           </div>
 
           <div>
-            <label htmlFor="profile-phone" className="text-sm font-medium text-foreground/80">
+            <label htmlFor="profile-phone" className={labelClasses}>
               Teléfono / WhatsApp
             </label>
             <input
@@ -191,7 +193,7 @@ export default function ProfileTab({
               onChange={(event) => setField("phone", event.target.value)}
               disabled={!canManage || isPending}
               placeholder="+57 300 123 4567"
-              className={cn("mt-1", fieldClass(Boolean(errors.phone)))}
+              className={cn(fieldClass(Boolean(errors.phone)))}
             />
           </div>
         </div>
@@ -201,7 +203,7 @@ export default function ProfileTab({
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className={buttonVariants()}
             >
               {isPending && <NLoader size={16} className="text-current" />}
               {isPending ? "Guardando…" : "Guardar cambios"}
@@ -211,7 +213,7 @@ export default function ProfileTab({
       </form>
 
       <div className="rounded-lg border border-border bg-card p-6">
-        <h3 className="mb-3 font-semibold text-foreground">Información del sistema</h3>
+        <h3 className="font-display text-[15px] mb-3 font-semibold text-foreground">Información del sistema</h3>
         <dl className="grid grid-cols-2 gap-4 text-sm">
           {systemInfo.map((item) => (
             <div key={item.label}>

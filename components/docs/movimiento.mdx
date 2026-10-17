@@ -1,0 +1,58 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Fundamentos/Movimiento" />
+
+# Movimiento
+
+Todo nace de la N: el trazo recorre el contorno, el texto entra con enfoque como THRIVE en el
+logo y los cortes caen con el ángulo de 24°. El movimiento **explica** (de dónde viene algo,
+qué cambió, que se guardó); nunca adorna sin motivo.
+
+## Escala
+
+| Token | Duración | Para |
+| --- | --- | --- |
+| `--d1` | 120 ms | Microinteracciones (presionar) |
+| `--d2` | 200 ms | Hover, color, bordes |
+| `--d3` | 320 ms | Paneles, barra lateral |
+| `--d4` | 600 ms | Entradas de vista |
+
+| Curva | Valor | Para |
+| --- | --- | --- |
+| `--nx-ease-out` | `cubic-bezier(.16,1,.3,1)` | Entradas, casi todo |
+| `--nx-ease-in` | `cubic-bezier(.7,0,.84,0)` | Salidas |
+| `--nx-ease-in-out` | `cubic-bezier(.65,0,.35,1)` | Barridos (cambio de tema) |
+| `--nx-ease-spring` | `cubic-bezier(.34,1.3,.64,1)` | Indicadores que se deslizan |
+| `--nx-ease-bounce` | `cubic-bezier(.34,1.56,.64,1)` | Interruptores, imán |
+
+## Rendimiento
+
+- **Cero librerías de animación.** El artifact usaba GSAP, Motion y AutoAnimate; aquí todo es
+  CSS o Web Animations API (corren en el compositor, sin JS por cuadro).
+- Solo se animan `transform`, `opacity`, `filter` y `clip-path`.
+- Los resortes se **precalculan** (`lib/motion/spring.ts`) y se reproducen como keyframes.
+- Contadores y odómetro escriben en el DOM sin re-renderizar React.
+- Un solo listener delegado para presión, foco de luz e imán (`MotionProvider`).
+
+## API (`lib/motion`)
+
+| Función | Qué hace |
+| --- | --- |
+| `spring(el, "scale" \| "x" \| "y" \| "rotate", from, to)` | Resorte físico |
+| `shake(el)` | Sacudida de error |
+| `flash(el)` | Destello oro de dato que cambió |
+| `drawPath(path)` | Dibuja un trazo SVG |
+| `burst(x, y)` / `burstFrom(el)` | Lluvia de cortes oro y tinta |
+| `reveal(elements)` | Entrada escalonada |
+| `withThemeSweep(apply)` | Cambio de tema con barrido a 24° |
+| `motionOff()` | ¿Hay que apagar el movimiento? |
+
+Atributos: `data-press` (se hunde y rebota), `data-press="card"` (más sutil), `data-mag`
+(imán, CTA principal), clase `nx-spot` (foco de luz), clase `nx-rise` con `--i` (entrada
+escalonada).
+
+## Reducir movimiento
+
+`prefers-reduced-motion` o **Ajustes → Reducir movimiento** (`<html data-motion="off">`)
+apagan todo: CSS en `app/styles/motion.css` y JS vía `motionOff()`. Los contadores muestran
+el valor final de inmediato.

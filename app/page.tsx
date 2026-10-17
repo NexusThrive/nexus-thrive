@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Brand } from "@/components/brand/brand";
+import { Brand } from "@/components/atoms/logo";
 
 /**
  * Página pública raíz: presentación de marca NEXUS THRIVE con acceso a

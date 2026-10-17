@@ -1,4 +1,4 @@
-import { Badge, StatusDot } from "@/components/ui/badge";
+import { Badge, StatusDot } from "@/components/atoms/badge";
 import {
   paymentStatusLabel,
   type PaymentStatusValue,

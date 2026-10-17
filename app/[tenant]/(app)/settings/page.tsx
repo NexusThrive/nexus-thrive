@@ -9,6 +9,8 @@ import {
   sortModules,
 } from "@/lib/admin-catalogs";
 import SettingsShell, {
+  type CardOwner,
+  type PlanInfo,
   type ModuleState,
   type ProfileInitialValues,
   type SystemInfoItem,
@@ -94,6 +96,21 @@ export default async function SettingsPage({
     },
   ];
 
+  const plan: PlanInfo = {
+    plan: tenantRecord.plan,
+    billing: tenantRecord.billingCycle,
+    monthlyUsdCents: tenantRecord.planMonthlyUsdCents,
+    selectedAt: tenantRecord.planSelectedAt ? String(tenantRecord.planSelectedAt) : null,
+    activeModules: modules.filter((m) => m.active).map((m) => m.moduleName),
+  };
+
+  const ROLE_LABELS = { OWNER: "Propietario", STAFF: "Equipo", SUPERADMIN: "Administrador" } as const;
+  const card: CardOwner = {
+    name: localUser?.name?.trim() || "Tu nombre",
+    role: `${ROLE_LABELS[(localUser?.role as keyof typeof ROLE_LABELS) ?? "OWNER"] ?? "Propietario"} · ${tenantRecord.name}`,
+    code: `NT-${tenantRecord.id.replace(/-/g, "").slice(0, 4).toUpperCase()}`,
+  };
+
   return (
     <SettingsShell
       tenantSlug={tenantRecord.slug}
@@ -102,6 +119,8 @@ export default async function SettingsPage({
       modules={modules}
       team={team}
       systemInfo={systemInfo}
+      plan={plan}
+      card={card}
     />
   );
 }

@@ -3,23 +3,9 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  CalendarClock,
-  Check,
-  CheckCircle2,
-  FileText,
-  Mail,
-  MapPin,
-  MessageSquare,
-  Phone,
-  Printer,
-  Send,
-  Trash2,
-  Users,
-  XCircle,
-} from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
-import { QuoteStatusBadge } from "@/components/construction/quote-badges";
+import { CalendarClock, Check, CheckCircle2, Mail, MapPin, MessageSquare, Phone, Printer, Send, Trash2, Users, XCircle } from "lucide-react";
+import { NLoader } from "@/components/atoms/n-loader";
+import { QuoteStatusBadge } from "@/components/molecules/quote-badges";
 import { formatDateShort, formatMoneyMicro } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import type {
@@ -35,6 +21,9 @@ import {
   emitQuoteAction,
   type QuoteActionResult,
 } from "../quotes/actions";
+import { fieldClasses, inputClasses, labelClasses } from "@/components/atoms/input";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { EmptyState } from "@/components/molecules/empty-state";
 
 const FOLLOW_UP_TYPES: { value: FollowUpTypeValue; label: string; icon: typeof Phone }[] = [
   { value: "CALL", label: "Llamada", icon: Phone },
@@ -45,7 +34,7 @@ const FOLLOW_UP_TYPES: { value: FollowUpTypeValue; label: string; icon: typeof P
 ];
 
 const inputClass =
-  "h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-border-strong focus:border-accent focus:outline-2 focus:outline-accent/30";
+  inputClasses;
 
 function Feedback({ result }: { result: QuoteActionResult | null }) {
   if (!result) return null;
@@ -134,7 +123,7 @@ export default function ProjectQuotesWorkspace({
             </div>
             <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
               <label htmlFor="quote-valid-until" className="block sm:w-48">
-                <span className="mb-1 block text-xs font-medium text-foreground/80">Válida hasta</span>
+                <span className={labelClasses}>Válida hasta</span>
                 <input id="quote-valid-until" name="validUntil" type="date" className={inputClass} />
               </label>
               <label htmlFor="quote-show-apu" className="flex items-center gap-2 text-sm text-muted-foreground sm:pb-2.5">
@@ -144,7 +133,7 @@ export default function ProjectQuotesWorkspace({
               <button
                 type="submit"
                 disabled={pending || !budgetHasItems}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60 sm:ml-auto"
+                className={`${buttonVariants()} sm:ml-auto`}
               >
                 {pending ? <NLoader size={14} className="text-current" /> : <Send aria-hidden="true" className="h-4 w-4" />}
                 Emitir versión {quotes.length + 1}
@@ -163,14 +152,11 @@ export default function ProjectQuotesWorkspace({
         ) : null}
 
         {quotes.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-border bg-card p-8 text-center">
-            <FileText aria-hidden="true" className="mx-auto h-8 w-8 text-muted-foreground" />
-            <p className="mt-2 text-sm font-medium text-foreground">Todavía no hay cotizaciones</p>
-            <p className="mx-auto mt-1 max-w-md text-xs text-muted-foreground">
-              Arma el presupuesto en la pestaña Presupuestador y emite la primera versión para el
-              cliente.
-            </p>
-          </div>
+          <EmptyState
+            className="rounded-lg border border-border bg-card"
+            title="Todavía no hay cotizaciones"
+            description="Arma el presupuesto en la pestaña Presupuestador y emite la primera versión para el cliente."
+          />
         ) : (
           <ol className="space-y-3">
             {quotes.map((quote) => {
@@ -205,7 +191,7 @@ export default function ProjectQuotesWorkspace({
                   <div className="mt-3 flex flex-wrap gap-2">
                     <Link
                       href={`/${tenantSlug}/quotes/${quote.id}/print`}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                      className={buttonVariants({ variant: "outline", size: "sm" })}
                     >
                       <Printer aria-hidden="true" className="h-3.5 w-3.5" />
                       Ver e imprimir
@@ -223,7 +209,7 @@ export default function ProjectQuotesWorkspace({
                         <button
                           type="button"
                           onClick={() => setDeciding({ id: quote.id, decision: "REJECT" })}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:bg-muted"
+                          className={buttonVariants({ variant: "outline", size: "sm" })}
                         >
                           <XCircle aria-hidden="true" className="h-3.5 w-3.5" />
                           El cliente rechazó
@@ -248,7 +234,7 @@ export default function ProjectQuotesWorkspace({
                           : "La obra sigue en cotización; puedes emitir una nueva versión."}
                       </p>
                       <label htmlFor={`decision-note-${quote.id}`} className="block">
-                        <span className="mb-1 block text-xs font-medium text-foreground/80">Nota (opcional)</span>
+                        <span className={labelClasses}>Nota (opcional)</span>
                         <input
                           id={`decision-note-${quote.id}`}
                           name="note"
@@ -329,7 +315,7 @@ function FollowUpsPanel({
         <h2 className="text-sm font-semibold text-foreground">Seguimientos</h2>
         <div className="grid grid-cols-2 gap-2">
           <label htmlFor="follow-up-type" className="block">
-            <span className="mb-1 block text-xs font-medium text-foreground/80">Tipo</span>
+            <span className={labelClasses}>Tipo</span>
             <select id="follow-up-type" name="type" defaultValue="CALL" className={inputClass}>
               {FOLLOW_UP_TYPES.map((type) => (
                 <option key={type.value} value={type.value}>
@@ -339,13 +325,13 @@ function FollowUpsPanel({
             </select>
           </label>
           <label htmlFor="follow-up-date" className="block">
-            <span className="mb-1 block text-xs font-medium text-foreground/80">Programar para</span>
+            <span className={labelClasses}>Programar para</span>
             <input id="follow-up-date" name="scheduledFor" type="date" className={inputClass} />
           </label>
         </div>
         {quotes.length > 0 ? (
           <label htmlFor="follow-up-quote" className="block">
-            <span className="mb-1 block text-xs font-medium text-foreground/80">Sobre la versión</span>
+            <span className={labelClasses}>Sobre la versión</span>
             <select id="follow-up-quote" name="quoteId" defaultValue={quotes[0].id} className={inputClass}>
               <option value="">General de la obra</option>
               {quotes.map((quote) => (
@@ -357,7 +343,7 @@ function FollowUpsPanel({
           </label>
         ) : null}
         <label htmlFor="follow-up-note" className="block">
-          <span className="mb-1 block text-xs font-medium text-foreground/80">Qué pasó o qué hay que hacer</span>
+          <span className={labelClasses}>Qué pasó o qué hay que hacer</span>
           <textarea
             id="follow-up-note"
             name="note"
@@ -365,7 +351,7 @@ function FollowUpsPanel({
             minLength={3}
             maxLength={1000}
             rows={3}
-            className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-border-strong focus:border-accent focus:outline-2 focus:outline-accent/30"
+            className={cn(fieldClasses, "py-2 w-full")}
             placeholder="Ej. Llamar para resolver dudas sobre la cimentación"
           />
         </label>
@@ -375,7 +361,7 @@ function FollowUpsPanel({
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-card text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-60"
+          className={`${buttonVariants({ variant: "outline", size: "sm" })} w-full`}
         >
           Guardar seguimiento
         </button>

@@ -17,15 +17,15 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@/components/molecules/tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { EmptyState } from "@/components/brand/empty-state";
+} from "@/components/molecules/dropdown-menu";
+import { EmptyState } from "@/components/molecules/empty-state";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import {
   MODULE_LABELS,
@@ -36,7 +36,7 @@ import type { TenantListRow, TenantSortKey } from "@/lib/admin-db";
 import { cn } from "@/lib/utils";
 import TenantStatusBadge from "./tenant-status-badge";
 import TenantDrawer from "./tenant-drawer";
-import PaginationLinks from "@/app/components/tenant/pagination-links";
+import PaginationLinks from "@/components/molecules/pagination-links";
 
 type SortableColumn = "name" | "created" | "activity";
 

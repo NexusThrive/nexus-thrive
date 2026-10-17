@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import type {
   PaymentMethodValue,
   VerticalValue,
@@ -12,12 +12,16 @@ import {
   type OnboardingFormState,
 } from "../actions";
 import type { OnboardingStep } from "../validators";
-import OnboardingProgress from "./onboarding-progress";
 import StepBusiness, { type StepDefaults } from "./step-business";
 import StepVertical from "./step-vertical";
 import StepEcosystem, { type EcosystemDefaults } from "./step-ecosystem";
 import StepPayments from "./step-payments";
 import StepStart from "./step-start";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { StepIndicator } from "@/components/molecules/step-indicator";
+import { OnboardingLayout } from "@/components/templates/onboarding-layout";
+
+const STEP_LABELS = ["Identidad", "Vertical", "Ecosistema", "Pagos", "Clientes"];
 
 export type OnboardingInitial = StepDefaults &
   EcosystemDefaults & {
@@ -75,24 +79,17 @@ export default function OnboardingShell({
       : "Continuar";
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
-      <main className="mx-auto flex w-full max-w-2xl flex-col px-4 py-10 sm:px-6">
-        <header className="mb-8 text-center">
-          <span className="inline-flex items-center rounded-sm bg-accent-subtle px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent-text">
-            NEXUS
-          </span>
-          <h1 className="mt-3 text-2xl font-bold text-foreground">
-            Configura tu negocio
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Cinco pasos y NEXUS queda listo para operar.
-          </p>
-        </header>
-
-        <OnboardingProgress current={viewing} />
+    <OnboardingLayout
+      width="max-w-2xl"
+      eyebrow={`Paso ${viewing} de 5`}
+      title="Configura tu negocio"
+      description="Cinco pasos y NEXUS queda listo para operar."
+      progress={<StepIndicator steps={STEP_LABELS} current={viewing} />}
+      footer="Guardamos cada paso: puedes cerrar y continuar en cualquier momento."
+    >
 
         {/* Un solo formulario: el paso visible envía sus inputs + el oculto `step` */}
-        <form action={formAction} className="mt-8">
+        <form action={formAction} className="mt-6">
           <input type="hidden" name="tenantSlug" value={tenantSlug} />
           <input type="hidden" name="step" value={viewing} />
 
@@ -148,7 +145,7 @@ export default function OnboardingShell({
                 )
               }
               disabled={viewing === 1 || isPending}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3.5 py-2 text-sm font-medium text-muted-foreground transition hover:border-foreground/20 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+              className={buttonVariants({ variant: "outline" })}
             >
               <ArrowLeft className="h-4 w-4" />
               Atrás
@@ -157,7 +154,8 @@ export default function OnboardingShell({
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className={buttonVariants({ variant: isLastStep ? "accent" : "primary" })}
+              data-mag={isLastStep ? "" : undefined}
             >
               {isPending && <NLoader size={16} className="text-current" />}
               {submitLabel}
@@ -165,10 +163,6 @@ export default function OnboardingShell({
           </div>
         </form>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          Guardamos cada paso: puedes cerrar y continuar en cualquier momento.
-        </p>
-      </main>
-    </div>
+    </OnboardingLayout>
   );
 }

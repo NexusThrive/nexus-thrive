@@ -3,10 +3,10 @@
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
-import { KpiCard } from "@/components/brand/kpi-card";
-import { EmptyState } from "@/components/brand/empty-state";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { KpiCard } from "@/components/molecules/kpi-card";
+import { EmptyState } from "@/components/molecules/empty-state";
+import { Button } from "@/components/atoms/button";
+import { Badge } from "@/components/atoms/badge";
 import { formatDateShort } from "@/lib/format";
 import {
   NON_COMPLIANCE_CAUSES,
@@ -30,6 +30,8 @@ import {
   createWeeklyCommitmentAction,
   updateCommitmentStatusAction,
 } from "../lean/actions";
+import { inputClasses, labelClasses } from "@/components/atoms/input";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 /** Partida del presupuesto para enlazar tareas y compromisos (opcional). */
 export type BudgetItemOption = { id: string; label: string };
@@ -42,7 +44,7 @@ type ActionState = {
 const IDLE: ActionState = { status: "idle" };
 
 const inputClass =
-  "h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-border-strong focus:border-accent focus:outline-2 focus:outline-accent/30";
+  inputClasses;
 
 function statusBadge(status: CommitmentStatusValue) {
   if (status === "COMPLETED") {
@@ -68,7 +70,7 @@ function BudgetItemField({ id, items }: { id: string; items: BudgetItemOption[] 
   if (items.length === 0) return null;
   return (
     <label htmlFor={id} className="block">
-      <span className="mb-1 block text-xs font-medium text-foreground/80">Partida del presupuesto (opcional)</span>
+      <span className={labelClasses}>Partida del presupuesto (opcional)</span>
       <select id={id} name="budgetItemId" defaultValue="" className={inputClass}>
         <option value="">Sin partida</option>
         {items.map((item) => (
@@ -116,22 +118,22 @@ function LookaheadTaskForm({
     <form action={action} className="grid gap-3 border-b border-border p-4 md:grid-cols-2">
       <input type="hidden" name="weekNumber" value={week} />
       <label htmlFor="la-code" className="block">
-        <span className="mb-1 block text-xs font-medium text-foreground/80">Código</span>
+        <span className={labelClasses}>Código</span>
         <input id="la-code" name="code" required maxLength={20} placeholder="T-01" className={inputClass} />
         <FieldError state={state} field="code" />
       </label>
       <label htmlFor="la-responsible" className="block">
-        <span className="mb-1 block text-xs font-medium text-foreground/80">Responsable</span>
+        <span className={labelClasses}>Responsable</span>
         <input id="la-responsible" name="responsible" required maxLength={80} placeholder="Maestro de obra" className={inputClass} />
         <FieldError state={state} field="responsible" />
       </label>
       <label htmlFor="la-description" className="block md:col-span-2">
-        <span className="mb-1 block text-xs font-medium text-foreground/80">Descripción</span>
+        <span className={labelClasses}>Descripción</span>
         <input id="la-description" name="description" required maxLength={200} placeholder="Fundir placa de entrepiso nivel 2" className={inputClass} />
         <FieldError state={state} field="description" />
       </label>
       <label htmlFor="la-start" className="block">
-        <span className="mb-1 block text-xs font-medium text-foreground/80">
+        <span className={labelClasses}>
           Inicio {week >= 1 && week <= WINDOW_WEEKS ? `(semana W${week})` : "(fuera de la ventana de 6 semanas)"}
         </span>
         <input
@@ -146,13 +148,13 @@ function LookaheadTaskForm({
         <FieldError state={state} field="startDate" />
       </label>
       <label htmlFor="la-end" className="block">
-        <span className="mb-1 block text-xs font-medium text-foreground/80">Fin</span>
+        <span className={labelClasses}>Fin</span>
         <input id="la-end" name="endDate" type="date" required defaultValue={windowStart} className={inputClass} />
         <FieldError state={state} field="endDate" />
       </label>
       <BudgetItemField id="la-item" items={items} />
       <label htmlFor="la-notes" className="block">
-        <span className="mb-1 block text-xs font-medium text-foreground/80">Notas (opcional)</span>
+        <span className={labelClasses}>Notas (opcional)</span>
         <input id="la-notes" name="notes" maxLength={300} className={inputClass} />
       </label>
       <label htmlFor="la-restricted" className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -201,17 +203,17 @@ function CommitmentForm({
   return (
     <form action={action} className="grid gap-3 border-b border-border p-4 md:grid-cols-2">
       <label htmlFor="wc-description" className="block md:col-span-2">
-        <span className="mb-1 block text-xs font-medium text-foreground/80">Compromiso</span>
+        <span className={labelClasses}>Compromiso</span>
         <input id="wc-description" name="description" required maxLength={200} placeholder="Terminar mampostería del eje A" className={inputClass} />
         <FieldError state={state} field="description" />
       </label>
       <label htmlFor="wc-responsible" className="block">
-        <span className="mb-1 block text-xs font-medium text-foreground/80">Responsable</span>
+        <span className={labelClasses}>Responsable</span>
         <input id="wc-responsible" name="responsible" required maxLength={80} className={inputClass} />
         <FieldError state={state} field="responsible" />
       </label>
       <label htmlFor="wc-week" className="block">
-        <span className="mb-1 block text-xs font-medium text-foreground/80">Semana (lunes)</span>
+        <span className={labelClasses}>Semana (lunes)</span>
         <input id="wc-week" name="weekStartDate" type="date" required defaultValue={weekStart} className={inputClass} />
         <FieldError state={state} field="weekStartDate" />
       </label>
@@ -289,7 +291,7 @@ function CommitmentEvaluation({
         </form>
       ) : null}
       {current !== "FAILED" ? (
-        <button type="button" onClick={() => setFailing(true)} className="rounded-lg border border-border px-2 py-1 text-xs font-medium text-muted-foreground transition hover:bg-muted">
+        <button type="button" onClick={() => setFailing(true)} className={buttonVariants({ variant: "outline", size: "sm" })}>
           No cumplido
         </button>
       ) : null}
@@ -366,13 +368,13 @@ export default function LeanWorkspace({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border">
-                <th className="px-3 py-2 text-left text-xs uppercase tracking-wide text-muted-foreground">Código</th>
-                <th className="px-3 py-2 text-left text-xs uppercase tracking-wide text-muted-foreground">Descripción</th>
-                <th className="px-3 py-2 text-left text-xs uppercase tracking-wide text-muted-foreground">Semana</th>
-                <th className="px-3 py-2 text-left text-xs uppercase tracking-wide text-muted-foreground">Fechas</th>
-                <th className="px-3 py-2 text-left text-xs uppercase tracking-wide text-muted-foreground">Responsable</th>
-                <th className="px-3 py-2 text-left text-xs uppercase tracking-wide text-muted-foreground">Restricción</th>
-                <th className="px-3 py-2 text-left text-xs uppercase tracking-wide text-muted-foreground">Notas</th>
+                <th className="h-11 whitespace-nowrap px-3.5 text-left text-xs font-semibold text-muted-foreground">Código</th>
+                <th className="h-11 whitespace-nowrap px-3.5 text-left text-xs font-semibold text-muted-foreground">Descripción</th>
+                <th className="h-11 whitespace-nowrap px-3.5 text-left text-xs font-semibold text-muted-foreground">Semana</th>
+                <th className="h-11 whitespace-nowrap px-3.5 text-left text-xs font-semibold text-muted-foreground">Fechas</th>
+                <th className="h-11 whitespace-nowrap px-3.5 text-left text-xs font-semibold text-muted-foreground">Responsable</th>
+                <th className="h-11 whitespace-nowrap px-3.5 text-left text-xs font-semibold text-muted-foreground">Restricción</th>
+                <th className="h-11 whitespace-nowrap px-3.5 text-left text-xs font-semibold text-muted-foreground">Notas</th>
               </tr>
             </thead>
             <tbody>
@@ -438,11 +440,11 @@ export default function LeanWorkspace({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border">
-                <th className="px-3 py-2 text-left text-xs uppercase tracking-wide text-muted-foreground">Descripción</th>
-                <th className="px-3 py-2 text-left text-xs uppercase tracking-wide text-muted-foreground">Responsable</th>
-                <th className="px-3 py-2 text-left text-xs uppercase tracking-wide text-muted-foreground">Estado</th>
-                <th className="px-3 py-2 text-left text-xs uppercase tracking-wide text-muted-foreground">Causa CNC</th>
-                <th className="px-3 py-2 text-left text-xs uppercase tracking-wide text-muted-foreground">Evaluar</th>
+                <th className="h-11 whitespace-nowrap px-3.5 text-left text-xs font-semibold text-muted-foreground">Descripción</th>
+                <th className="h-11 whitespace-nowrap px-3.5 text-left text-xs font-semibold text-muted-foreground">Responsable</th>
+                <th className="h-11 whitespace-nowrap px-3.5 text-left text-xs font-semibold text-muted-foreground">Estado</th>
+                <th className="h-11 whitespace-nowrap px-3.5 text-left text-xs font-semibold text-muted-foreground">Causa CNC</th>
+                <th className="h-11 whitespace-nowrap px-3.5 text-left text-xs font-semibold text-muted-foreground">Evaluar</th>
               </tr>
             </thead>
             <tbody>

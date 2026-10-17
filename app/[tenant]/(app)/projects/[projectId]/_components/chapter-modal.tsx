@@ -2,19 +2,22 @@
 
 import { useEffect, useActionState } from "react";
 import { useRouter } from "next/navigation";
-import { NLoader } from "@/components/brand/n-loader";
-import Modal from "@/components/construction/modal";
+import { NLoader } from "@/components/atoms/n-loader";
+import Modal from "@/components/organisms/modal";
 import {
   createChapterAction,
   updateChapterAction,
   type ChapterFormState,
 } from "../budget/actions";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { fieldClasses, labelClasses } from "@/components/atoms/input";
+import { cn } from "@/lib/utils";
 
 const IDLE_STATE: ChapterFormState = { status: "idle" };
 
 const FIELD_CLASS = (hasError: boolean) =>
   [
-    "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
+    "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
     hasError
       ? "border-destructive/30 focus:border-destructive focus:outline-destructive/30"
       : "border-border hover:border-foreground/20 focus:border-gold-500 focus:outline-gold-600/30",
@@ -88,7 +91,7 @@ export default function ChapterModal({
         <div>
           <label
             htmlFor="chapter-name"
-            className="text-sm font-medium text-foreground/80"
+            className={labelClasses}
           >
             Nombre del capítulo <span className="text-destructive">*</span>
           </label>
@@ -110,7 +113,7 @@ export default function ChapterModal({
         <div>
           <label
             htmlFor="chapter-description"
-            className="text-sm font-medium text-foreground/80"
+            className={labelClasses}
           >
             Descripción
           </label>
@@ -121,7 +124,7 @@ export default function ChapterModal({
             defaultValue={defaults.description}
             placeholder="Notas del capítulo (opcional)."
             aria-invalid={Boolean(errors.description)}
-            className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-foreground/20 focus:border-gold-500 focus:outline-2 focus:outline-gold-600/30"
+            className={cn(fieldClasses, "py-2")}
           />
           {errors.description ? (
             <p role="alert" className="mt-1 text-xs text-destructive">
@@ -133,7 +136,7 @@ export default function ChapterModal({
         {state.status === "error" && state.message ? (
           <p
             role="alert"
-            className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+            className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
           >
             {state.message}
           </p>
@@ -144,14 +147,14 @@ export default function ChapterModal({
             type="button"
             disabled={isPending}
             onClick={onClose}
-            className="h-10 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
+            className={buttonVariants({ variant: "outline" })}
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={isPending}
-            className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+            className={buttonVariants()}
           >
             {isPending ? (
               <NLoader size={16} className="text-current" />

@@ -1,4 +1,4 @@
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 
 /**
  * Carga del onboarding (aparece durante la navegación a /onboarding

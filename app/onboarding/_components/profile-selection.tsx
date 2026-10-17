@@ -33,7 +33,7 @@ export default function ProfileSelection({
   onChange: (value: OnboardingTenantType) => void;
 }) {
   return (
-    <fieldset>
+    <fieldset className="min-w-0">
       <legend className="sr-only">Elige tu perfil de negocio</legend>
       <div className="grid gap-3 sm:grid-cols-2">
         {PROFILES.map((profile) => {
@@ -45,19 +45,20 @@ export default function ProfileSelection({
               type="button"
               onClick={() => onChange(profile.value)}
               aria-pressed={isSelected}
+              data-press="card"
               className={cn(
-                "group rounded-lg border p-5 text-left transition",
+                "group rounded-lg border p-5 text-left transition-[border-color,background-color,box-shadow] duration-200",
                 isSelected
-                  ? "border-gold-500 bg-gold-100/60 ring-2 ring-gold-600/30"
-                  : "border-border bg-card hover:border-foreground/20 hover:bg-muted",
+                  ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_3px_rgba(212,175,55,.18)]"
+                  : "border-border-input bg-surface hover:border-border-input-hover",
               )}
             >
               <span
                 className={cn(
                   "grid size-10 place-items-center rounded-lg transition",
                   isSelected
-                    ? "bg-gold-500 text-ink"
-                    : "bg-muted text-muted-foreground group-hover:bg-foreground/10",
+                    ? "bg-accent text-ink"
+                    : "bg-surface-muted text-muted-foreground group-hover:text-foreground",
                 )}
               >
                 <Icon className="size-5" aria-hidden="true" />

@@ -25,7 +25,7 @@ export default function PaymentsTable({
     <div className="rounded-lg border border-border bg-card">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-border text-sm">
-          <thead className="bg-muted text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <thead className="bg-muted text-left text-xs font-semibold text-muted-foreground">
             <tr>
               <th scope="col" className="px-4 py-3">
                 Fecha

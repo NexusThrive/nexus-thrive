@@ -1,3 +1,5 @@
+import type { Billing, PlanKey } from "@/lib/plans/catalog";
+
 /**
  * Tipos compartidos del onboarding adaptativo (auto-servicio).
  *
@@ -21,8 +23,6 @@ export function isOnboardingTenantType(
   return (ONBOARDING_TENANT_TYPES as readonly string[]).includes(value);
 }
 
-export const ONBOARDING_STEPS = [1, 2, 3, 4] as const;
-export type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
 
 /** Tamaños de equipo válidos (guardados como texto validado por la app). */
 export const TEAM_SIZES = ["SOLO", "2-5", "6-20", "20+"] as const;
@@ -55,6 +55,9 @@ export type OnboardingDraft = {
   address: string;
   city: string;
   selectedModules: ModuleValue[];
+  /** Plan elegido (Essential gratis por defecto) y ciclo de facturación. */
+  plan: PlanKey;
+  billing: Billing;
 };
 
 export const EMPTY_DRAFT: OnboardingDraft = {
@@ -68,6 +71,8 @@ export const EMPTY_DRAFT: OnboardingDraft = {
   address: "",
   city: "",
   selectedModules: [],
+  plan: "ESSENTIAL",
+  billing: "MONTHLY",
 };
 
 /**
@@ -87,6 +92,8 @@ export type AdaptiveOnboardingInput = {
   address?: string;
   city: string;
   selectedModules: ModuleValue[];
+  plan?: PlanKey;
+  billing?: Billing;
 };
 
 export type OnboardingFieldName =
@@ -107,7 +114,7 @@ export type OnboardingFieldErrors = Partial<
 
 export type OnboardingActionResult =
   | { status: "error"; message: string; errors?: OnboardingFieldErrors }
-  | { status: "ok"; slug: string };
+  | { status: "ok"; slug: string; plan: PlanKey };
 
 /**
  * Prefill inyectado desde el servidor (app/onboarding/page.tsx):

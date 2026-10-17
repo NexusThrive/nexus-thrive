@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getOnboardingPrefill } from "./prefill";
 import OnboardingWizard from "./_components/onboarding-wizard";
@@ -38,5 +38,6 @@ export default async function OnboardingPage({
     redirect(`/${prefill.doneSlug}`);
   }
 
-  return <OnboardingWizard prefill={prefill} />;
+  const user = await currentUser();
+  return <OnboardingWizard prefill={prefill} firstName={user?.firstName ?? undefined} />;
 }

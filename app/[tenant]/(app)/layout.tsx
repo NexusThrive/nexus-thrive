@@ -2,12 +2,9 @@ import { notFound, redirect } from "next/navigation";
 import { db } from "@/prisma/db";
 import { sortModules } from "@/lib/admin-catalogs";
 import { getVerticalTerms } from "@/lib/vertical-terms";
-import { RouteBar } from "@/components/brand/loaders";
-import { ModuleEntry } from "@/components/brand/module-intro";
-import Header from "../../components/tenant/header";
-import Sidebar from "../../components/tenant/sidebar";
-import { SidebarProvider } from "../../components/tenant/sidebar-context";
+import { TenantShell } from "@/components/templates/tenant-shell";
 import { VerticalTermsProvider } from "./vertical-terms-context";
+import TenantNotifications from "./_components/tenant-notifications";
 
 /**
  * Ruta `(app)`: shell del negocio + gate de onboarding.
@@ -56,24 +53,16 @@ export default async function AppLayout({
   );
 
   return (
-    <SidebarProvider>
-      <VerticalTermsProvider terms={getVerticalTerms(tenantRecord.vertical)}>
-        <div className="min-h-screen bg-background font-sans text-foreground">
-          <Header tenantName={tenantRecord.name} />
-
-          <Sidebar
-            tenantSlug={tenantRecord.slug}
-            tenantName={tenantRecord.name}
-            vertical={tenantRecord.vertical}
-            activeModules={activeModules}
-          />
-
-          <main className="px-4 py-6 sm:px-6 lg:py-8 lg:pl-[15.5rem] lg:pr-8">
-            <RouteBar />
-            <ModuleEntry>{children}</ModuleEntry>
-          </main>
-        </div>
-      </VerticalTermsProvider>
-    </SidebarProvider>
+    <VerticalTermsProvider terms={getVerticalTerms(tenantRecord.vertical)}>
+      <TenantShell
+        tenantSlug={tenantRecord.slug}
+        tenantName={tenantRecord.name}
+        vertical={tenantRecord.vertical}
+        activeModules={activeModules}
+        topbarActions={<TenantNotifications tenantSlug={tenantRecord.slug} />}
+      >
+        {children}
+      </TenantShell>
+    </VerticalTermsProvider>
   );
 }

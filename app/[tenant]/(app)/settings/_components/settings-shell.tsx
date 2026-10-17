@@ -3,12 +3,16 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 
-import { cn } from "@/lib/cn";
-import { ToastProvider } from "@/components/brand/toast";
 import type { ModuleValue } from "@/lib/admin-catalogs";
 import ProfileTab from "./profile-tab";
 import ModulesTab from "./modules-tab";
 import TeamTab from "./team-tab";
+import PlanTab, { type PlanInfo } from "./plan-tab";
+import NfcTab, { type CardOwner } from "./nfc-tab";
+import { Blocks, CreditCard, Nfc, Palette, Store, Users } from "lucide-react";
+import { SectionNav } from "@/components/molecules/section-nav";
+import { PageHeader } from "@/components/molecules/page-header";
+import { AppearanceSettings } from "@/components/organisms/appearance-settings";
 
 export type RoleValue = "SUPERADMIN" | "OWNER" | "STAFF";
 
@@ -34,14 +38,18 @@ export type TeamMember = {
 };
 
 export type SystemInfoItem = { label: string; value: string };
+export type { CardOwner, PlanInfo };
 
-type Tab = "profile" | "modules" | "team";
+type Tab = "profile" | "plan" | "modules" | "team" | "card" | "appearance";
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: "profile", label: "Perfil del negocio" },
-  { id: "modules", label: "Módulos activos" },
-  { id: "team", label: "Equipo" },
-];
+const TABS = [
+  { id: "profile", label: "Perfil del negocio", icon: Store, hint: "Nombre, enlace y contacto" },
+  { id: "plan", label: "Plan", icon: CreditCard, hint: "Thrive y lo que incluye" },
+  { id: "modules", label: "Módulos", icon: Blocks, hint: "Activa lo que usas" },
+  { id: "team", label: "Equipo", icon: Users, hint: "Quién entra al negocio" },
+  { id: "card", label: "Tarjeta NFC", icon: Nfc, hint: "Tu tarjeta de contacto" },
+  { id: "appearance", label: "Apariencia", icon: Palette, hint: "Tema, densidad y movimiento" },
+] as const satisfies readonly { id: Tab; label: string; icon: unknown; hint: string }[];
 
 /**
  * Shell cliente del módulo de Ajustes: pestañas + provider de notificaciones.
@@ -54,6 +62,8 @@ export default function SettingsShell({
   modules,
   team,
   systemInfo,
+  plan,
+  card,
 }: {
   tenantSlug: string;
   canManage: boolean;
@@ -61,6 +71,8 @@ export default function SettingsShell({
   modules: ModuleState[];
   team: TeamMember[];
   systemInfo: SystemInfoItem[];
+  plan: PlanInfo;
+  card: CardOwner;
 }) {
   const params = useParams();
   const currentSlug = Array.isArray(params?.tenant)
@@ -70,36 +82,16 @@ export default function SettingsShell({
   const [tab, setTab] = useState<Tab>("profile");
 
   return (
-    <ToastProvider>
-      <div className="mx-auto w-full max-w-4xl">
-        <header className="mb-6">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Ajustes
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Configura el perfil, los módulos y el equipo de tu negocio.
-          </p>
-        </header>
+    <div className="w-full">
+        <PageHeader
+          eyebrow="Sistema"
+          title="Ajustes"
+          description="Perfil, plan, módulos, equipo y apariencia de tu negocio."
+        />
 
-        <div className="mb-6 flex gap-1 border-b border-border">
-          {TABS.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setTab(item.id)}
-              aria-current={tab === item.id ? "page" : undefined}
-              className={cn(
-                "border-b-2 px-4 py-2.5 text-sm font-medium transition-colors",
-                tab === item.id
-                  ? "border-primary text-foreground"
-                  : "border-transparent text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-
+        <div className="lg:grid lg:grid-cols-[248px_minmax(0,1fr)] lg:gap-8">
+        <SectionNav ariaLabel="Secciones de ajustes" items={TABS} value={tab} onChange={setTab} />
+        <div key={tab} className="nx-rise min-w-0">
         {tab === "profile" && (
           <ProfileTab
             tenantSlug={currentSlug}
@@ -115,8 +107,12 @@ export default function SettingsShell({
             modules={modules}
           />
         )}
+        {tab === "plan" && <PlanTab info={plan} />}
         {tab === "team" && <TeamTab members={team} />}
-      </div>
-    </ToastProvider>
+        {tab === "card" && <NfcTab owner={card} />}
+        {tab === "appearance" && <AppearanceSettings />}
+        </div>
+        </div>
+    </div>
   );
 }

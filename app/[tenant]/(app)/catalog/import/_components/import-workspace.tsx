@@ -12,8 +12,8 @@ import {
   Sparkles,
   UploadCloud,
 } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
-import { Badge } from "@/components/ui/badge";
+import { NLoader } from "@/components/atoms/n-loader";
+import { Badge } from "@/components/atoms/badge";
 import FileDropzone from "./file-dropzone";
 import MetricsPanel from "./metrics-panel";
 import MappingEditor from "./mapping-editor";
@@ -29,6 +29,7 @@ import type {
   ImportResult,
 } from "@/lib/apu-importer/types";
 import { cn } from "@/lib/cn";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 type Step = "upload" | "preview" | "done" | "pack" | "pack-done";
 
@@ -198,7 +199,7 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
           {parseError && (
             <p
               role="alert"
-              className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              className="flex items-center gap-2 rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
             >
               <AlertTriangle aria-hidden="true" className="h-4 w-4 shrink-0" />
               {parseError}
@@ -258,7 +259,7 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
             <button
               type="button"
               onClick={reset}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium text-muted-foreground transition hover:bg-muted"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
             >
               <RefreshCw aria-hidden="true" className="h-3.5 w-3.5" />
               Cambiar archivo
@@ -268,7 +269,7 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
           {parseError && (
             <p
               role="alert"
-              className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              className="flex items-center gap-2 rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
             >
               <AlertTriangle aria-hidden="true" className="h-4 w-4 shrink-0" />
               {parseError}
@@ -311,7 +312,7 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
           {executeError && (
             <p
               role="alert"
-              className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              className="flex items-center gap-2 rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
             >
               <AlertTriangle aria-hidden="true" className="h-4 w-4 shrink-0" />
               {executeError}
@@ -439,14 +440,14 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
               <div className="mt-5 flex flex-wrap gap-2">
                 <Link
                   href={`/${tenantSlug}/catalog`}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+                  className={buttonVariants()}
                 >
                   Ir a presupuestos
                 </Link>
                 <button
                   type="button"
                   onClick={reset}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted"
+                  className={buttonVariants({ variant: "outline" })}
                 >
                   <RefreshCw aria-hidden="true" className="h-3.5 w-3.5" />
                   Importar otro archivo

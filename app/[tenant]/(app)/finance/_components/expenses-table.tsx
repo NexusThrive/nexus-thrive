@@ -1,7 +1,8 @@
-import { Receipt } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+
+import { Badge } from "@/components/atoms/badge";
 import { formatCurrency, formatDate } from "@/lib/format";
-import PaginationLinks from "@/app/components/tenant/pagination-links";
+import PaginationLinks from "@/components/molecules/pagination-links";
+import { EmptyState } from "@/components/molecules/empty-state";
 
 export type ExpenseViewRow = {
   id: string;
@@ -28,28 +29,18 @@ export default function ExpensesTable({
   return (
     <div className="space-y-4">
       {rows.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card px-6 py-12 text-center">
-          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-sm bg-muted text-muted-foreground">
-            <Receipt aria-hidden="true" className="h-6 w-6" />
-          </span>
-          <p className="mt-4 text-sm font-medium text-foreground">
-            {query
-              ? `Sin coincidencias para «${query}»`
-              : "Aún no hay gastos registrados"}
-          </p>
-          <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-            {query
-              ? "Prueba con otro término o limpia los filtros."
-              : "Registra la caja menor con el botón «Registrar gasto»."}
-          </p>
-        </div>
+        <EmptyState
+          className="rounded-lg border border-border bg-card"
+          title={query ? `Sin coincidencias para «${query}»` : "Aún no hay gastos registrados"}
+          description={query ? "Prueba con otro término o limpia los filtros." : "Registra la caja menor con el botón «Registrar gasto»."}
+        />
       ) : (
         <>
           {/* ---------- Tabla (desktop) ---------- */}
           <div className="hidden overflow-hidden rounded-lg border border-border bg-card sm:block">
             <table className="w-full text-left text-sm">
               <caption className="sr-only">Gastos de caja menor</caption>
-              <thead className="border-b border-border bg-muted text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <thead className="border-b border-border bg-muted text-xs font-semibold text-muted-foreground">
                 <tr>
                   <th scope="col" className="px-4 py-3">
                     Concepto

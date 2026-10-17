@@ -50,3 +50,7 @@ next-env.d.ts
 # contract emitido viejo (el vigente vive en prisma/) y volcado manual de esquema
 /generated
 /migration.sql
+
+# Storybook
+/storybook-static
+*storybook.log

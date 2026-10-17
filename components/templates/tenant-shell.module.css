@@ -1,0 +1,47 @@
+/* Layout del negocio: ancho de la barra lateral por tamaño de pantalla.
+   Móvil = barra inferior (sin lateral); tablet = riel de iconos (76 px);
+   PC ≥ 1200 = barra completa (248 px) salvo que el usuario la contraiga. */
+.root {
+  --sw: 0px;
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
+}
+@media (min-width: 768px) {
+  .root {
+    --sw: 76px;
+  }
+}
+@media (min-width: 1200px) {
+  .root {
+    --sw: 248px;
+  }
+  :global(html[data-rail]) .root {
+    --sw: 76px;
+  }
+}
+
+.main {
+  min-width: 0;
+  margin-left: var(--sw);
+  transition: margin-left var(--d3) var(--nx-ease-out);
+}
+
+.view {
+  max-width: var(--content-max);
+  min-height: calc(100vh - var(--topbar-height));
+  margin: 0 auto;
+  padding: 20px max(16px, env(safe-area-inset-right, 0px))
+    calc(112px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  outline: none;
+}
+@media (min-width: 768px) {
+  .view {
+    padding: 24px 24px 64px;
+  }
+}
+@media (min-width: 1200px) {
+  .view {
+    padding-inline: 32px;
+  }
+}

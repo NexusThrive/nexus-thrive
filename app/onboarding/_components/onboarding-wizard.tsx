@@ -1,87 +1,73 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { ArrowRight } from "lucide-react";
 import { completeAdaptiveOnboardingAction } from "../actions";
 import { validateAdaptiveOnboarding } from "@/lib/onboarding/validation";
+import { FLOW_META, PROGRESS_STEPS, nextStep, previousStep, progressIndex, type FlowStep } from "@/lib/onboarding/flow";
 import {
   EMPTY_DRAFT,
+  TEAM_SIZE_LABELS,
   type AdaptiveOnboardingInput,
-  type OnboardingActionResult,
   type OnboardingDraft,
   type OnboardingPrefill,
-  type OnboardingStep,
 } from "@/lib/onboarding/types";
-import OnboardingProgress, {
-  ONBOARDING_STEP_TITLES,
-} from "./onboarding-progress";
+import { MODULE_LABELS } from "@/lib/admin-catalogs";
+import { PLANS } from "@/lib/plans/catalog";
+import { formatUsdCents, moduleMonthlyCents, quotePlan } from "@/lib/plans/quote";
 import ProfileSelection from "./profile-selection";
 import AdaptiveBusinessForm from "./adaptive-business-form";
-import ModuleSelection from "./module-selection";
-import OnboardingSummary from "./onboarding-summary";
-import OnboardingComplete from "./onboarding-complete";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { Odometer } from "@/components/atoms/odometer";
+import { Alert } from "@/components/molecules/alert";
+import { IntroDots, IntroStory, INTRO_SLIDES } from "@/components/organisms/onboarding/intro-story";
+import { OnboardingScene } from "@/components/organisms/onboarding/onboarding-scene";
+import { PlanPicker } from "@/components/organisms/onboarding/plan-picker";
+import { OnboardingReview } from "@/components/organisms/onboarding/onboarding-review";
+import { CreationCinematic, type CinematicStatus } from "@/components/organisms/onboarding/creation-cinematic";
+import { OnboardingSplit } from "@/components/templates/onboarding-split";
+import { cn } from "@/lib/utils";
+
+/** Duración mínima de "Creando negocio…" para que la cinemática se lea. */
+const MIN_CINEMATIC_MS = 2600;
 
 function storageKey(prefill: OnboardingPrefill): string {
-  return prefill.tenantId
-    ? `nexus:onboarding:draft:${prefill.tenantId}`
-    : "nexus:onboarding:draft:new";
+  return prefill.tenantId ? `nexus:onboarding:draft:${prefill.tenantId}` : "nexus:onboarding:draft:new";
 }
 
 function loadDraft(prefill: OnboardingPrefill): OnboardingDraft {
-  if (prefill.mode === "resume") {
-    return prefill.draft;
-  }
+  if (prefill.mode === "resume") return { ...EMPTY_DRAFT, ...prefill.draft };
   try {
     const raw = window.localStorage.getItem(storageKey(prefill));
-    if (raw) {
-      const parsed = JSON.parse(raw) as Partial<OnboardingDraft>;
-      return { ...EMPTY_DRAFT, ...parsed };
-    }
+    if (raw) return { ...EMPTY_DRAFT, ...(JSON.parse(raw) as Partial<OnboardingDraft>) };
   } catch {
     // almacenamiento corrupto/inaccesible: se empieza de cero
   }
   return { ...EMPTY_DRAFT };
 }
 
-/** Errores de validación visibles para el paso 2 (formulario adaptativo). */
-const STEP2_FIELDS = new Set([
-  "name",
-  "legalName",
-  "taxId",
-  "slug",
-  "vertical",
-  "teamSize",
-  "address",
-  "city",
-]);
+/** Campos del paso "Tu negocio" (para volver a él si el servidor los rechaza). */
+const BUSINESS_FIELDS = new Set(["name", "legalName", "taxId", "slug", "vertical", "teamSize", "address", "city"]);
+
+const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
 /**
- * Orquestador del onboarding adaptativo (4 pasos + pantalla final).
- *
- * - El borrador vive en React state y se persiste en localStorage (modo
- *   `create`): recargar o cerrar no pierde lo escrito.
- * - La validación usa EXACTAMENTE la misma función que el servidor
- *   (lib/onboarding/validation.ts); la acción re-valida al finalizar.
- * - El paso final llama a la Server Action; en éxito se limpia el borrador
- *   y se muestra la pantalla "Tu espacio NEXUS está listo".
+ * Orquestador del onboarding: presentación → perfil → negocio → plan y
+ * módulos → confirmación → cinemática. El borrador se guarda en
+ * localStorage (modo `create`); la validación es la misma del servidor y el
+ * precio se recalcula en el servidor al crear.
  */
-export default function OnboardingWizard({
-  prefill,
-}: {
-  prefill: OnboardingPrefill;
-}) {
-  const [viewing, setViewing] = useState<OnboardingStep>(1);
-  const [draft, setDraft] = useState<OnboardingDraft>(() =>
-    loadDraft(prefill),
-  );
+export default function OnboardingWizard({ prefill, firstName }: { prefill: OnboardingPrefill; firstName?: string }) {
+  const firstStep: FlowStep = prefill.mode === "resume" ? "profile" : "intro";
+  const [step, setStep] = useState<FlowStep>(firstStep);
+  const [slide, setSlide] = useState(0);
+  const [draft, setDraft] = useState<OnboardingDraft>(() => loadDraft(prefill));
   const [showErrors, setShowErrors] = useState(false);
-  const [actionResult, setActionResult] =
-    useState<OnboardingActionResult | null>(null);
-  const [completedSlug, setCompletedSlug] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const [cinematic, setCinematic] = useState<CinematicStatus | null>(null);
+  const [slug, setSlug] = useState<string | null>(null);
+  const [, startTransition] = useTransition();
 
-  // La misma validación del servidor, en vivo (sin disponibilidad de slug).
   const validation = useMemo(
     () =>
       validateAdaptiveOnboarding({
@@ -96,201 +82,255 @@ export default function OnboardingWizard({
         address: draft.address,
         city: draft.city,
         selectedModules: draft.selectedModules,
+        plan: draft.plan,
+        billing: draft.billing,
       }),
     [draft, prefill.tenantId],
   );
 
-  const persist = (next: OnboardingDraft) => {
-    setDraft(next);
-    try {
-      window.localStorage.setItem(storageKey(prefill), JSON.stringify(next));
-    } catch {
-      // sin almacenamiento: el wizard sigue funcionando en memoria
-    }
+  const quote = draft.vertical
+    ? quotePlan({ plan: draft.plan, vertical: draft.vertical, billing: draft.billing, selected: draft.selectedModules })
+    : null;
+
+  // Siempre sobre el borrador más reciente: varios cambios en el mismo
+  // instante (autocompletado del navegador) no se pisan entre sí.
+  const patch = (partial: Partial<OnboardingDraft>) => {
+    setDraft((prev) => {
+      const next = { ...prev, ...partial };
+      try {
+        window.localStorage.setItem(storageKey(prefill), JSON.stringify(next));
+      } catch {
+        // sin almacenamiento: el flujo sigue en memoria
+      }
+      return next;
+    });
   };
 
-  const step2Valid = validation.ok;
-  const step3Valid = (draft.selectedModules?.length ?? 0) > 0;
+  const go = (to: FlowStep) => {
+    setStep(to);
+    setError(null);
+    window.scrollTo({ top: 0 });
+  };
 
   const goNext = () => {
-    if (viewing === 1 && !draft.tenantType) {
+    if (step === "intro") {
+      if (slide < INTRO_SLIDES.length - 1) setSlide(slide + 1);
+      else go("profile");
+      return;
+    }
+    if (step === "profile" && !draft.tenantType) {
       setShowErrors(true);
       return;
     }
-    if (viewing === 2) {
+    if (step === "business") {
       setShowErrors(true);
-      if (!step2Valid) return;
+      if (!validation.ok) return;
       setShowErrors(false);
     }
-    if (viewing === 3 && !step3Valid) {
-      return;
-    }
-    setViewing((value) => Math.min(4, value + 1) as OnboardingStep);
-    setActionResult(null);
+    go(nextStep(step));
   };
 
   const goBack = () => {
-    setViewing((value) => Math.max(1, value - 1) as OnboardingStep);
-    setActionResult(null);
+    if (step === "intro") {
+      setSlide(Math.max(0, slide - 1));
+      return;
+    }
+    if (step === "profile" && firstStep === "intro") {
+      setSlide(INTRO_SLIDES.length - 1);
+    }
+    go(previousStep(step, firstStep));
   };
 
   const submit = () => {
-    if (!validation.ok) return;
-    setActionResult(null);
-    const input: AdaptiveOnboardingInput = {
-      tenantId: prefill.tenantId,
-      tenantType: validation.values.tenantType,
-      name: validation.values.name,
-      legalName: validation.values.legalName,
-      taxId: validation.values.taxId,
-      slug: validation.values.slug,
-      vertical: validation.values.vertical,
-      teamSize: validation.values.teamSize,
-      address: validation.values.address,
-      city: validation.values.city,
-      selectedModules: validation.values.selectedModules,
-    };
-
+    if (!validation.ok) {
+      setShowErrors(true);
+      go("business");
+      return;
+    }
+    const v = validation.values;
+    const input: AdaptiveOnboardingInput = { ...v, tenantId: prefill.tenantId };
+    setError(null);
+    setCinematic("creating");
     startTransition(async () => {
-      const result = await completeAdaptiveOnboardingAction(input);
+      const [result] = await Promise.all([completeAdaptiveOnboardingAction(input), sleep(MIN_CINEMATIC_MS)]);
       if (result.status === "ok") {
         try {
           window.localStorage.removeItem(storageKey(prefill));
         } catch {
-          // sin almacenamiento: nada que limpiar
+          // nada que limpiar
         }
-        setCompletedSlug(result.slug);
-        setViewing(4);
-      } else {
-        setActionResult(result);
-        // Si el error es de un campo del formulario, vuelve a ese paso
-        // con la validación visible (p. ej. "enlace ya en uso").
-        if (result.errors) {
-          const field = Object.keys(result.errors)[0];
-          if (field && STEP2_FIELDS.has(field)) {
-            setShowErrors(true);
-            setViewing(2);
-          } else if (field === "selectedModules") {
-            setViewing(3);
-          }
-        }
+        setSlug(result.slug);
+        setCinematic("ready");
+        return;
+      }
+      setError(result.message);
+      setCinematic("error");
+      const field = result.errors ? Object.keys(result.errors)[0] : undefined;
+      if (field && BUSINESS_FIELDS.has(field)) {
+        setShowErrors(true);
+        setStep("business");
       }
     });
   };
 
-  const isSubmitting = isPending;
+  const meta = FLOW_META[step];
+  const introMeta = INTRO_SLIDES[slide];
+  const greeting = firstName ? `Hola, ${firstName}` : undefined;
+
+  const title =
+    step === "intro"
+      ? introMeta.title
+      : step === "business" && draft.tenantType === "COMPANY"
+        ? "Cuéntanos de tu empresa"
+        : meta.title;
+
+  const scene = (
+    <OnboardingScene
+      mode={step === "intro" ? "intro" : "preview"}
+      introSlide={slide}
+      preview={{
+        name: draft.name,
+        slug: validation.ok ? validation.values.slug : draft.slugRaw,
+        vertical: draft.vertical,
+        city: draft.city,
+        tenantType: draft.tenantType,
+        planName: step === "plan" || step === "confirm" ? PLANS[draft.plan].name : undefined,
+        price: quote ? (quote.monthlyCents / 100).toFixed(quote.monthlyCents % 100 ? 2 : 0) : undefined,
+        modules:
+          quote && (step === "plan" || step === "confirm")
+            ? quote.modules.map((module) => {
+                const cents = draft.vertical ? moduleMonthlyCents(module, draft.vertical, draft.plan) : 0;
+                return { module, price: cents ? formatUsdCents(cents) : "Incluido" };
+              })
+            : [],
+      }}
+    />
+  );
+
+  const primaryLabel =
+    step === "intro"
+      ? slide === INTRO_SLIDES.length - 1
+        ? "Comenzar"
+        : "Continuar"
+      : step === "confirm"
+        ? "Crear mi negocio"
+        : step === "plan" && draft.plan === "ESSENTIAL"
+          ? "Continuar gratis"
+          : "Continuar";
+
+  const actions = (
+    <>
+      {step === "intro" ? (
+        <IntroDots slide={slide} />
+      ) : step === "plan" && quote ? (
+        <p className="flex items-baseline gap-1 lg:hidden">
+          <Odometer value={(quote.monthlyCents / 100).toFixed(quote.monthlyCents % 100 ? 2 : 0)} prefix="$" className="font-display text-[22px] font-bold" />
+          <span className="text-[12px] text-muted-foreground">/mes</span>
+        </p>
+      ) : null}
+      <span className="flex-1" />
+      <button
+        type="button"
+        onClick={step === "confirm" ? submit : goNext}
+        data-mag=""
+        disabled={cinematic === "creating"}
+        className={cn(buttonVariants({ variant: step === "confirm" ? "accent" : "primary", size: "lg" }), "min-w-40 max-sm:flex-1")}
+      >
+        {primaryLabel}
+        <ArrowRight aria-hidden="true" className="size-4" />
+      </button>
+    </>
+  );
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
-      <main className="mx-auto flex w-full max-w-3xl flex-col px-4 py-10 sm:px-6">
-        <header className="mb-8 text-center">
-          <span className="inline-flex items-center rounded-sm bg-gold-100 px-3 py-1 text-xs font-semibold tracking-wide text-gold-700 uppercase">
-            NEXUS
-          </span>
-          <h1 className="mt-3 text-2xl font-bold text-foreground">
-            {completedSlug
-              ? "Listo"
-              : prefill.mode === "resume"
-                ? `Termina de configurar ${prefill.tenantName ?? "tu espacio"}`
-                : "Crea tu espacio NEXUS"}
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {prefill.mode === "resume"
-              ? "Cuatro pasos y tu negocio queda operando."
-              : "Cuatro pasos: perfil, información, módulos y listo."}
-          </p>
-        </header>
+    <>
+      <OnboardingSplit
+        scene={scene}
+        steps={PROGRESS_STEPS.map((s) => FLOW_META[s].label)}
+        current={progressIndex(step)}
+        stepKey={step === "intro" ? `intro-${slide}` : step}
+        eyebrow={step === "intro" ? (slide === 0 && greeting ? greeting : introMeta.eyebrow) : step === "profile" ? greeting : undefined}
+        title={title}
+        description={step === "intro" ? introMeta.description : meta.description}
+        onBack={step === firstStep && slide === 0 ? undefined : goBack}
+        actions={actions}
+      >
+        {step === "intro" ? <IntroStory slide={slide} /> : null}
 
-        {!completedSlug && <OnboardingProgress current={viewing} />}
+        {step === "profile" ? (
+          <>
+            <ProfileSelection value={draft.tenantType} onChange={(tenantType) => patch({ tenantType })} />
+            {showErrors && !draft.tenantType ? (
+              <p role="alert" className="mt-3 text-sm text-danger">
+                Elige un perfil para continuar.
+              </p>
+            ) : null}
+          </>
+        ) : null}
 
-        <section
-          aria-live="polite"
-          className="mt-8 rounded-lg border border-border bg-card p-5 sm:p-6"
-        >
-          {completedSlug ? (
-            <OnboardingComplete draft={draft} slug={completedSlug} />
-          ) : (
-            <>
-              <h2 className="mb-5 text-base font-semibold text-foreground">
-                {ONBOARDING_STEP_TITLES[viewing]}
-              </h2>
+        {step === "business" ? (
+          <AdaptiveBusinessForm
+            draft={draft}
+            onPatch={patch}
+            errors={validation.ok ? {} : validation.errors}
+            showErrors={showErrors}
+          />
+        ) : null}
 
-              {viewing === 1 && (
-                <>
-                  <ProfileSelection
-                    value={draft.tenantType}
-                    onChange={(tenantType) =>
-                      persist({ ...draft, tenantType })
-                    }
-                  />
-                  {showErrors && !draft.tenantType && (
-                    <p
-                      role="alert"
-                      className="mt-3 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
-                    >
-                      Elige un perfil para continuar.
-                    </p>
-                  )}
-                </>
-              )}
+        {step === "plan" && draft.vertical ? (
+          <PlanPicker
+            vertical={draft.vertical}
+            value={{ plan: draft.plan, billing: draft.billing, selected: draft.selectedModules }}
+            onChange={({ plan, billing, selected }) => patch({ plan, billing, selectedModules: selected })}
+          />
+        ) : null}
 
-              {viewing === 2 && (
-                <AdaptiveBusinessForm
-                  draft={draft}
-                  onChange={persist}
-                  errors={validation.ok ? {} : validation.errors}
-                  showErrors={showErrors}
-                />
-              )}
+        {step === "confirm" && quote ? (
+          <>
+            {error && cinematic !== "error" ? (
+              <Alert tone="danger" className="mb-4">
+                {error}
+              </Alert>
+            ) : null}
+            <OnboardingReview
+              data={{
+                tenantType: draft.tenantType,
+                name: draft.name,
+                legalName: draft.tenantType === "COMPANY" ? draft.legalName : undefined,
+                taxId: draft.taxId,
+                slug: validation.ok ? validation.values.slug : draft.slugRaw,
+                vertical: draft.vertical,
+                address: draft.tenantType === "COMPANY" ? draft.address : undefined,
+                city: draft.city,
+                plan: draft.plan,
+                billing: draft.billing,
+                quote,
+              }}
+              teamSizeLabel={draft.tenantType === "COMPANY" && draft.teamSize ? TEAM_SIZE_LABELS[draft.teamSize] : undefined}
+              onEdit={go}
+            />
+            <p className="mt-4 text-[12.5px] text-muted-foreground">
+              Al crear tu negocio aceptas los términos de NEXUS THRIVE. {MODULE_LABELS.dashboard}, clientes y finanzas
+              quedan activos desde el primer día.
+            </p>
+          </>
+        ) : null}
+      </OnboardingSplit>
 
-              {viewing === 3 && (
-                <ModuleSelection draft={draft} onChange={persist} />
-              )}
-
-              {viewing === 4 && (
-                <OnboardingSummary
-                  prefill={prefill}
-                  draft={draft}
-                  actionResult={actionResult}
-                  isPending={isSubmitting}
-                  onSubmit={submit}
-                />
-              )}
-
-              {viewing < 4 && (
-                <div className="mt-6 flex items-center justify-between gap-3">
-                  <button
-                    type="button"
-                    onClick={goBack}
-                    disabled={viewing === 1 || isSubmitting}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3.5 py-2 text-sm font-medium text-muted-foreground transition hover:border-foreground/20 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    <ArrowLeft className="size-4" aria-hidden="true" />
-                    Atrás
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={goNext}
-                    disabled={isSubmitting}
-                    className="inline-flex items-center gap-2 rounded-lg bg-gold-500 px-4 py-2 text-sm font-semibold text-ink transition hover:bg-gold-600 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    Continuar
-                    <ArrowRight className="size-4" aria-hidden="true" />
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </section>
-
-        {isSubmitting && (
-          <p className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-            <NLoader size={14} className="text-current" />
-            Guardando tu configuración…
-          </p>
-        )}
-      </main>
-    </div>
+      {cinematic ? (
+        <CreationCinematic
+          status={cinematic}
+          planName={PLANS[draft.plan].name}
+          businessName={draft.name.trim()}
+          error={error ?? undefined}
+          onBack={() => setCinematic(null)}
+          onEnter={() => {
+            // Recarga completa a propósito: la app arranca con su intro de la N.
+            // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+            if (slug) window.location.assign(`/${slug}`);
+          }}
+        />
+      ) : null}
+    </>
   );
 }

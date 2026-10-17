@@ -55,7 +55,7 @@ export default function CustomerHeader({
           </span>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="truncate text-2xl font-semibold tracking-tight text-foreground">
+              <h1 className="truncate font-display text-[clamp(22px,3.6vw,30px)] font-bold tracking-[-0.02em] text-foreground">
                 {customer.name}
               </h1>
               {!customer.active ? (

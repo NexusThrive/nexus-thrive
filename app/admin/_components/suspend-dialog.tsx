@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { ShieldAlert } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { NLoader } from "@/components/atoms/n-loader";
 import {
   Dialog,
   DialogClose,
@@ -11,8 +11,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+} from "@/components/organisms/dialog";
+import { Button } from "@/components/atoms/button";
 import { suspendTenantAction, type AdminFormState } from "../actions";
 
 const IDLE: AdminFormState = { status: "idle" };

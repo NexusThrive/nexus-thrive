@@ -1,7 +1,8 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/atoms/button";
+import { EmptyState } from "@/components/molecules/empty-state";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -22,17 +23,13 @@ export default function PrepareProject({
   action: () => Promise<void>;
 }) {
   return (
-    <div className="rounded-lg border border-dashed border-border bg-card p-8 text-center">
-      <p className="text-sm font-medium text-foreground">
-        Esta obra todavía no tiene presupuesto, plan ni bitácora
-      </p>
-      <p className="mx-auto mt-1 max-w-md text-xs text-muted-foreground">
-        Se creó antes de que se generaran automáticamente. Prepárala una vez y
-        todas las pestañas quedan disponibles.
-      </p>
-      <form action={action} className="mt-4">
+    <EmptyState
+      className="rounded-lg border border-border bg-card"
+      title="Esta obra todavía no tiene presupuesto, plan ni bitácora"
+      description="Se creó antes de que se generaran automáticamente. Prepárala una vez y todas las pestañas quedan disponibles."
+      action={<><form action={action}>
         <SubmitButton />
-      </form>
-    </div>
+      </form></>}
+    />
   );
 }

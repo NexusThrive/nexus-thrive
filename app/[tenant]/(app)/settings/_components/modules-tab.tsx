@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useActionState } from "react";
-import { Switch } from "@/components/ui/switch";
-import { NLoader } from "@/components/brand/n-loader";
-import { useToast } from "@/components/brand/toast";
+import { Switch } from "@/components/atoms/switch";
+import { NLoader } from "@/components/atoms/n-loader";
+import { useToast } from "@/components/molecules/toast";
 import { MODULE_LABELS } from "@/lib/admin-catalogs";
 import { cn } from "@/lib/cn";
 import { toggleModuleAction, type ModulesFormState } from "../actions";
@@ -65,7 +65,7 @@ export default function ModulesTab({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-semibold text-foreground">Módulos activos</h2>
+          <h2 className="font-display text-[15px] font-semibold text-foreground">Módulos activos</h2>
           <p className="mt-0.5 text-sm text-muted-foreground">
             {activeCount} de {modules.length} módulos habilitados. Se reflejan en
             la navegación del negocio.

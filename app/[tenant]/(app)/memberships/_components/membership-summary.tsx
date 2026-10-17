@@ -1,51 +1,18 @@
-import { Clock, CreditCard, RefreshCw, XCircle } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
-import { KpiCard } from "@/components/brand/kpi-card";
+import { StatTile } from "@/components/molecules/stat-tile";
 import type { MembershipMetrics } from "@/lib/tenant-db";
 
 /**
- * Resumen del módulo (Server Component). Métricas reales, sin números de
- * color: Activas / Por vencer / Vencidas / Renovaciones del mes.
+ * Resumen de membresías (Server Component, datos reales): Activas, Por vencer
+ * (el punto late: esperan acción), Vencidas y Renovaciones del mes.
  */
-export default function MembershipSummary({
-  metrics,
-}: {
-  metrics: MembershipMetrics;
-}) {
+export default function MembershipSummary({ metrics }: { metrics: MembershipMetrics }) {
   return (
-    <section
-      aria-label="Resumen de membresías"
-      className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
-    >
-      <KpiCard
-        compact
-        label="Activas"
-        value={String(metrics.activeCount)}
-        hint="Con más de 3 días de vigencia"
-        icon={CreditCard}
-      />
-      <KpiCard
-        compact
-        label="Por vencer"
-        value={String(metrics.expiringCount)}
-        hint="Vencen en los próximos 3 días"
-        icon={Clock}
-      />
-      <KpiCard
-        compact
-        label="Vencidas"
-        value={String(metrics.expiredCount)}
-        hint="Pendientes de renovación"
-        icon={XCircle}
-        alert={metrics.expiredCount > 0}
-      />
-      <KpiCard
-        compact
-        label="Renovaciones del mes"
-        value={formatCurrency(metrics.renewalRevenueProjection)}
-        hint="Precio de membresías que vencen este mes"
-        icon={RefreshCw}
-      />
+    <section aria-label="Resumen de membresías" className="grid grid-cols-2 gap-3.5 lg:grid-cols-4">
+      <StatTile index={0} label="Activas" value={metrics.activeCount} tone="success" note="Con más de 3 días de vigencia" />
+      <StatTile index={1} label="Por vencer" value={metrics.expiringCount} tone="warning" pulse={metrics.expiringCount > 0} note="En los próximos 3 días" />
+      <StatTile index={2} label="Vencidas" value={metrics.expiredCount} tone="danger" note="Pendientes de renovación" />
+      <StatTile index={3} label="Renovaciones" value={formatCurrency(metrics.renewalRevenueProjection)} note="Valor por cobrar este mes" />
     </section>
   );
 }

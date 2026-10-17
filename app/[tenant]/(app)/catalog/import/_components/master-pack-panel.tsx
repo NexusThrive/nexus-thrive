@@ -10,11 +10,12 @@ import {
   RefreshCw,
   ShieldCheck,
 } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
-import { Badge } from "@/components/ui/badge";
+import { NLoader } from "@/components/atoms/n-loader";
+import { Badge } from "@/components/atoms/badge";
 import { cn } from "@/lib/cn";
 import type { MasterPackSummary } from "@/lib/apu-importer/master-pack-summary";
 import type { MasterPackImportResult } from "@/lib/apu-importer/master-pack-import";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 const number = new Intl.NumberFormat("es-CO");
 
@@ -56,7 +57,7 @@ export function MasterPackPreview({
         <button
           type="button"
           onClick={onReset}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-sm font-medium text-muted-foreground transition hover:bg-muted"
+          className={buttonVariants({ variant: "outline", size: "sm" })}
         >
           <RefreshCw aria-hidden="true" className="h-3.5 w-3.5" />
           Cambiar archivo
@@ -171,7 +172,7 @@ export function MasterPackPreview({
       {error && (
         <p
           role="alert"
-          className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          className="flex items-center gap-2 rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
         >
           <AlertTriangle aria-hidden="true" className="h-4 w-4 shrink-0" />
           {error}
@@ -260,14 +261,14 @@ export function MasterPackResult({
           <div className="mt-5 flex flex-wrap gap-2">
             <Link
               href={`/${tenantSlug}/catalog`}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+              className={buttonVariants()}
             >
               Ver catálogo
             </Link>
             <button
               type="button"
               onClick={onReset}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground transition hover:bg-muted"
+              className={buttonVariants({ variant: "outline" })}
             >
               <RefreshCw aria-hidden="true" className="h-3.5 w-3.5" />
               Importar otro archivo

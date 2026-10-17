@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useActionState, useMemo, useState } from "react";
-import { Check, Plus, X } from "lucide-react";
-import { NLoader } from "@/components/brand/n-loader";
+import { Check, Plus } from "lucide-react";
+import { NLoader } from "@/components/atoms/n-loader";
 import {
   createMembershipAction,
   type MembershipFormState,
@@ -17,6 +17,9 @@ import {
   typeMonths,
   type MembershipTypeValue,
 } from "@/lib/memberships";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
+import { labelClasses } from "@/components/atoms/input";
 
 export type MembershipCustomerOption = {
   id: string;
@@ -43,7 +46,7 @@ export function NewMembershipButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
+        className={buttonVariants()}
       >
         <Plus aria-hidden="true" className="h-4 w-4" />
         Nueva membresía
@@ -109,70 +112,24 @@ function MembershipForm({
     return () => clearTimeout(timer);
   }, [state, onClose]);
 
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !isPending) {
-        onClose();
-      }
-    };
-    document.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [onClose, isPending]);
-
   const errors = state.errors ?? {};
 
   const fieldClass = (hasError: boolean) =>
     [
-      "mt-1 h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
+      "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition placeholder:text-muted-foreground focus:outline-2",
       hasError
         ? "border-destructive focus:border-destructive focus:outline-destructive/30"
         : "border-border hover:border-ring/50 focus:border-ring focus:outline-ring/30",
     ].join(" ");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center">
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 bg-ink/45 backdrop-blur-[1px]"
-        onClick={() => !isPending && onClose()}
-      />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="membership-form-title"
-        className="relative mt-10 w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-popover sm:mt-0"
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2
-              id="membership-form-title"
-              className="text-lg font-semibold text-foreground"
-            >
-              Nueva membresía
-            </h2>
-            <p className="mt-0.5 text-sm text-muted-foreground">
-              Registra un plan de membresía para un cliente.
-            </p>
-          </div>
-          <button
-            type="button"
-            aria-label="Cerrar"
-            disabled={isPending}
-            onClick={onClose}
-            className="-m-1 rounded-lg p-1 text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-50"
-          >
-            <X aria-hidden="true" className="h-5 w-5" />
-          </button>
-        </div>
-
-        <form action={formAction} className="mt-5 space-y-4" noValidate>
+    <ResponsiveSheet
+      open
+      onOpenChange={(open) => { if (!open && !isPending) onClose(); }}
+      title="Nueva membresía"
+      description="Registra un plan de membresía para un cliente."
+    >
+        <form action={formAction} className="space-y-4" noValidate>
           <input type="hidden" name="tenantSlug" value={tenantSlug} />
           <input type="hidden" name="type" value={type} />
           <input type="hidden" name="startDate" value={startDate} />
@@ -181,7 +138,7 @@ function MembershipForm({
           <div>
             <label
               htmlFor="membership-customer"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Cliente <span className="text-destructive">*</span>
             </label>
@@ -214,7 +171,7 @@ function MembershipForm({
             <div>
               <label
                 htmlFor="membership-type"
-                className="text-sm font-medium text-foreground/80"
+                className={labelClasses}
               >
                 Plan <span className="text-destructive">*</span>
               </label>
@@ -237,7 +194,7 @@ function MembershipForm({
             <div>
               <label
                 htmlFor="membership-start"
-                className="text-sm font-medium text-foreground/80"
+                className={labelClasses}
               >
                 Inicio <span className="text-destructive">*</span>
               </label>
@@ -260,7 +217,7 @@ function MembershipForm({
           <div>
             <label
               htmlFor="membership-price"
-              className="text-sm font-medium text-foreground/80"
+              className={labelClasses}
             >
               Precio (COP) <span className="text-destructive">*</span>
             </label>
@@ -305,7 +262,7 @@ function MembershipForm({
             <div>
               <label
                 htmlFor="membership-provider"
-                className="text-sm font-medium text-foreground/80"
+                className={labelClasses}
               >
                 Método de pago <span className="text-destructive">*</span>
               </label>
@@ -333,7 +290,7 @@ function MembershipForm({
           {state.status === "error" && state.message ? (
             <p
               role="alert"
-              className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
             >
               {state.message}
             </p>
@@ -354,14 +311,14 @@ function MembershipForm({
               type="button"
               disabled={isPending}
               onClick={onClose}
-              className="h-10 rounded-lg border border-border bg-card px-4 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
+              className={buttonVariants({ variant: "outline" })}
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+              className={buttonVariants()}
             >
               {isPending ? (
                 <NLoader size={16} className="text-current" />
@@ -370,7 +327,7 @@ function MembershipForm({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      
+    </ResponsiveSheet>
   );
 }

@@ -5,6 +5,7 @@ import { getVerticalTerms } from "@/lib/vertical-terms";
 import CustomerToolbar from "./_components/customer-toolbar";
 import CustomerTable, { type CustomerRow } from "./_components/customer-table";
 import type { CustomerSort, CustomerStatus } from "./_components/customer-filters";
+import { PageHeader } from "@/components/molecules/page-header";
 
 const PAGE_SIZE = 20;
 
@@ -108,15 +109,12 @@ export default async function CrmPage({
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-          {terms.customers}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Administra los {terms.customers.toLowerCase()} de{" "}
-          <span className="font-medium text-foreground/80">{tenantRecord.name}</span>.
-        </p>
-      </header>
+      <PageHeader
+        eyebrow="Gestión"
+        title={<>{terms.customers}</>}
+        description={<>Administra los {terms.customers.toLowerCase()} de{" "}
+          <span className="font-medium text-foreground/80">{tenantRecord.name}</span>.</>}
+      />
 
       <CustomerToolbar
         tenantSlug={tenantSlug}

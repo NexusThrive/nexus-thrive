@@ -12,6 +12,13 @@
   --color-surface-inverse: var(--surface-inverse);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
+  --color-border-input: var(--border-input);
+  --color-border-input-hover: var(--border-input-hover);
+  --color-surface-hover: var(--surface-hover);
+  --color-success-subtle: var(--success-subtle);
+  --color-danger-subtle: var(--danger-subtle);
+  --color-glass: var(--glass);
+  --color-overlay: var(--overlay);
   --color-foreground: var(--foreground);
   --color-muted: var(--foreground-muted);
   --color-primary: var(--primary);
@@ -45,4 +52,8 @@
   --radius-md: 4px;
   --radius-lg: 6px;
   --radius-xl: 8px;
+  --shadow-overlay: var(--nx-shadow-overlay);
+  --ease-out: var(--nx-ease-out);
+  --ease-in: var(--nx-ease-in);
+  --ease-spring: var(--nx-ease-spring);
 }

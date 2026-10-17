@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { ClerkProvider } from "@clerk/nextjs";
+import { clerkLocalization, clerkProviderAppearance } from "@/lib/auth/clerk-appearance";
 import { fontVariables } from "@/lib/fonts";
-import { themeInitScript } from "@/components/brand/theme";
-import { SplashIntro } from "@/components/brand/splash-intro";
+import { themeInitScript } from "@/components/atoms/theme-toggle";
+import { MotionProvider } from "@/components/providers/motion-provider";
+import { PreferencesProvider, prefsInitScript } from "@/components/providers/preferences";
+import { SplashIntro } from "@/components/organisms/splash-intro";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,18 +21,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider localization={clerkLocalization} appearance={clerkProviderAppearance}>
       <html
         lang="es"
         className={`${fontVariables} h-full antialiased`}
         suppressHydrationWarning
       >
         <head>
-          <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+          {/* Tema y preferencias antes del primer pintado (sin parpadeo). */}
+          <Script id="nx-init" strategy="beforeInteractive">
+            {themeInitScript + prefsInitScript}
+          </Script>
         </head>
         <body className="min-h-full flex flex-col bg-background text-foreground">
-          <SplashIntro />
-          {children}
+          <PreferencesProvider>
+            <MotionProvider />
+            <SplashIntro />
+            {children}
+          </PreferencesProvider>
         </body>
       </html>
     </ClerkProvider>

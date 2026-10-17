@@ -1,13 +1,17 @@
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
-import FinanceSummary from "./_components/finance-summary";
 import FinanceActions from "./_components/finance-actions";
-import SearchInput from "@/app/components/tenant/search-input";
-import FilterSelect from "@/app/components/tenant/filter-select";
+import SearchInput from "@/components/molecules/search-input";
+import FilterSelect from "@/components/molecules/filter-select";
 import PaymentsTable, { type PaymentViewRow } from "./_components/payments-table";
 import ExpensesTable, { type ExpenseViewRow } from "./_components/expenses-table";
 import { PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/finance";
+import { PageHeader } from "@/components/molecules/page-header";
+import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
+import { BalanceCard } from "@/components/organisms/balance-card";
+import { MovementsList } from "@/components/organisms/movements-list";
+import PettyCashCard from "./_components/petty-cash-card";
 
 const PAGE_SIZE = 10;
 
@@ -56,6 +60,12 @@ export default async function FinancePage({
   const gcat = firstString(sp.gcat) || undefined;
   const gpage = firstNumber(sp.gpage);
 
+  // --- Periodo de la tarjeta de balance (7 o 30 días) ------------------
+  const period = firstString(sp.p) === "7d" ? 7 : 30;
+  const nuevo = firstString(sp.nuevo);
+  const initialSheet = nuevo === "pago" || nuevo === "gasto" ? nuevo : null;
+  const initialCustomerId = firstString(sp.cliente);
+
   const tenantRecord = await db.orm.public.Tenant.where({
     slug: tenantSlug,
     active: true,
@@ -66,9 +76,11 @@ export default async function FinancePage({
 
   const tenantDb = createTenantDb(tenantRecord.id);
 
-  const [metrics, paymentResult, expenseResult, activeCustomers] =
+  const [metrics, series, movements, paymentResult, expenseResult, activeCustomers] =
     await Promise.all([
       tenantDb.finance.getMetrics(),
+      tenantDb.finance.getSeries(period),
+      tenantDb.finance.getMovements(30),
       tenantDb.finance.listPayments({
         q: pq,
         method: pmethod,
@@ -125,29 +137,62 @@ export default async function FinancePage({
     id: row.id,
     name: row.name,
     email: row.email ?? "",
+    phone: row.phone ?? null,
   }));
+
+  const periodLabel = period === 7 ? "últimos 7 días" : "últimos 30 días";
 
   return (
     <div className="space-y-8">
-      {/* Encabezado */}
-      <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-          Finanzas y caja menor
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Cobros y gastos de{" "}
-          <span className="font-medium text-foreground/80">{tenantRecord.name}</span>{" "}
-          · {monthLabel}.
-        </p>
-      </header>
-
-      {/* Resumen del mes */}
-      <FinanceSummary
-        income={metrics.income}
-        expenses={metrics.expenses}
-        balance={metrics.balance}
-        byMethod={metrics.byMethod}
+      <PageHeader
+        eyebrow="Gestión"
+        title="Finanzas"
+        description={<>Ingresos, gastos y caja menor de{" "}
+          <span className="font-medium text-foreground/80">{tenantRecord.name}</span>.</>}
+        actions={
+          <UrlSegmentedControl
+            param="p"
+            ariaLabel="Periodo"
+            value={period === 7 ? "7d" : "30d"}
+            defaultValue="30d"
+            options={[
+              { value: "7d", label: "7 días" },
+              { value: "30d", label: "30 días" },
+            ]}
+          />
+        }
       />
+
+      <div>
+        <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
+          <BalanceCard
+            label={`Balance · ${periodLabel}`}
+            balance={series.current.balance}
+            income={series.current.income}
+            expenses={series.current.expenses}
+            actions={
+              <FinanceActions
+                tenantSlug={tenantSlug}
+                business={{ name: tenantRecord.name, subtitle: tenantRecord.city ?? undefined }}
+                customers={customerOptions}
+                initial={initialSheet}
+                initialCustomerId={initialCustomerId}
+              />
+            }
+          />
+          <PettyCashCard
+            spent={series.current.expenses}
+            income={series.current.income}
+            periodLabel={periodLabel}
+            byMethod={metrics.byMethod}
+            monthLabel={monthLabel}
+          />
+        </div>
+
+        <MovementsList items={movements} />
+      </div>
+
+      <h2 className="border-t border-border pt-6 font-display text-[17px] font-semibold">Detalle</h2>
 
       {/* ---------- Cobros (pagos) ---------- */}
       <section aria-labelledby="payments-title" className="space-y-4">
@@ -157,14 +202,13 @@ export default async function FinancePage({
               id="payments-title"
               className="text-base font-semibold text-foreground"
             >
-              Cobros (pagos)
+              Cobros
             </h2>
             <p className="text-sm text-muted-foreground">
               {paymentResult.total}{" "}
               {paymentResult.total === 1 ? "pago registrado" : "pagos registrados"}
             </p>
           </div>
-          <FinanceActions tenantSlug={tenantSlug} customers={customerOptions} />
         </div>
 
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">

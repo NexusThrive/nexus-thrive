@@ -3,12 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { MessageCircle, RefreshCw, UserRound } from "lucide-react";
-import PaginationLinks from "@/app/components/tenant/pagination-links";
+import PaginationLinks from "@/components/molecules/pagination-links";
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import { typeLabel, type MembershipStatusValue, type MembershipTypeValue } from "@/lib/memberships";
 import MembershipStatusBadge from "./membership-status-badge";
 import MembershipModal from "./membership-modal";
 import WhatsAppReminder from "./whatsapp-reminder";
+import { buttonVariants } from "@/components/atoms/button-variants";
 
 export type MembershipViewRow = {
   id: string;
@@ -66,7 +67,7 @@ export default function MembershipTable({
       {/* Desktop */}
       <div className="hidden overflow-hidden rounded-lg border border-border bg-card md:block">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-border bg-muted text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <thead className="border-b border-border bg-muted text-xs font-semibold text-muted-foreground">
             <tr>
               <th scope="col" className="px-4 py-3">
                 Cliente
@@ -165,7 +166,7 @@ export default function MembershipTable({
               <button
                 type="button"
                 onClick={() => setRenewTarget(row)}
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground transition hover:bg-primary/90"
+                className={buttonVariants({ size: "sm" })}
               >
                 <RefreshCw aria-hidden="true" className="h-3.5 w-3.5" />
                 Renovar
@@ -173,7 +174,7 @@ export default function MembershipTable({
               <button
                 type="button"
                 onClick={() => setReminderTarget(row)}
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                className={buttonVariants({ variant: "outline", size: "sm" })}
               >
                 <MessageCircle aria-hidden="true" className="h-3.5 w-3.5" />
                 Recordatorio
@@ -181,7 +182,7 @@ export default function MembershipTable({
               <Link
                 href={`/${tenantSlug}/crm?q=${encodeURIComponent(row.customerName)}`}
                 aria-label={`Ver a ${row.customerName} en el CRM`}
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium text-foreground/80 transition hover:bg-muted"
+                className={buttonVariants({ variant: "outline", size: "sm" })}
               >
                 <UserRound aria-hidden="true" className="h-3.5 w-3.5" />
                 Cliente
