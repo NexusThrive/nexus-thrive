@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { AlertTriangle, Headphones, Rocket, Target, UserX, Wrench } from "lucide-react";
+import { AlertTriangle, Headphones, Receipt, Rocket, Target, UserX, Wrench } from "lucide-react";
 import { RevealText } from "@/components/atoms/reveal-text";
 import { PageHeader } from "@/components/molecules/page-header";
 import { createAdminDb } from "@/lib/admin-db";
 import { greetingFor } from "@/lib/dashboard";
 import { getPriorities } from "@/lib/ops/accounts";
 import type { PermissionKey } from "@/lib/ops/permissions";
-import { leadPriorities, ticketPriorities } from "@/lib/ops/work-priorities";
+import { billingPriorities, leadPriorities, ticketPriorities } from "@/lib/ops/work-priorities";
 import { getStaffContext } from "@/lib/ops/access";
 import ActivityFeed from "./_components/activity-feed";
 import AuditLog from "./_components/audit-log";
@@ -24,10 +24,11 @@ export default async function OpsHome() {
   const staff = await getStaffContext();
   const adminDb = createAdminDb();
   const can = (p: PermissionKey) => !!staff?.permissions.includes(p);
-  const [priorities, leads, tickets, metrics, activity, audit] = await Promise.all([
+  const [priorities, leads, tickets, billing, metrics, activity, audit] = await Promise.all([
     getPriorities(),
     can("leads.view") ? leadPriorities() : Promise.resolve(null),
     can("tickets.view") ? ticketPriorities() : Promise.resolve(null),
+    can("billing.view") ? billingPriorities() : Promise.resolve(null),
     adminDb.getExecutiveMetrics(),
     adminDb.getActivityFeed({ limit: 8 }),
     staff?.permissions.includes("audit.view") ? adminDb.listAuditLogs(8) : Promise.resolve([]),
@@ -46,6 +47,7 @@ export default async function OpsHome() {
       <PriorityBoard
         groups={[
           ...(tickets ? [{ key: "tickets", title: "Soporte que vence", hint: "SLA vencido, en riesgo o sin asignar", icon: Headphones, itemIcon: Headphones, tone: "danger" as const, items: tickets, href: "/admin/soporte" }] : []),
+          ...(billing ? [{ key: "billing", title: "Cobros que piden acción", hint: "Por confirmar, aviso de suspensión o suspendibles", icon: Receipt, itemIcon: Receipt, tone: "danger" as const, items: billing, href: "/admin/facturacion" }] : []),
           ...(leads ? [{ key: "leads", title: "Seguimientos comerciales", hint: "Próximos pasos vencidos o para hoy", icon: Target, itemIcon: Target, tone: "warning" as const, items: leads, href: "/admin/crm" }] : []),
           { key: "setup", title: "Negocios por configurar", hint: "Onboarding sin terminar", icon: Wrench, tone: "warning", items: priorities.needSetup },
           { key: "suspended", title: "Cuentas suspendidas", hint: "Revisar motivo y siguiente paso", icon: AlertTriangle, tone: "danger", items: priorities.suspended },

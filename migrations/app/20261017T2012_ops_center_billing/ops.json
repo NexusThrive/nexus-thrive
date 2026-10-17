@@ -1,0 +1,482 @@
+[
+  {
+    "id": "table.BillingPolicy",
+    "label": "Create table \"BillingPolicy\"",
+    "summary": "Creates table \"BillingPolicy\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "BillingPolicy"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"BillingPolicy\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BillingPolicy\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"BillingPolicy\"",
+        "sql": "CREATE TABLE \"public\".\"BillingPolicy\" (\n  \"graceDays\" int4 NOT NULL,\n  \"id\" text NOT NULL,\n  \"noticeDays\" int4 NOT NULL,\n  \"reminderDays\" int4[] NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"BillingPolicy_reminderDays_elem_not_null_5bb4f22d\" CHECK (array_position(\"reminderDays\", NULL) IS NULL)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"BillingPolicy\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BillingPolicy\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Charge",
+    "label": "Create table \"Charge\"",
+    "summary": "Creates table \"Charge\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Charge"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Charge\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Charge\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Charge\"",
+        "sql": "CREATE TABLE \"public\".\"Charge\" (\n  \"amountUsdCents\" int4 NOT NULL,\n  \"confirmedAt\" timestamptz,\n  \"confirmedById\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"dueAt\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"method\" text,\n  \"notes\" text,\n  \"noticeSentAt\" timestamptz,\n  \"paidAt\" timestamptz,\n  \"periodEnd\" timestamptz NOT NULL,\n  \"periodStart\" timestamptz NOT NULL,\n  \"recordedById\" text,\n  \"reference\" text,\n  \"refundReason\" text,\n  \"refundedAt\" timestamptz,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"subscriptionId\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"voidReason\" text,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"Charge_status_check_4344c7d5\" CHECK (\"status\" IN ('PENDING', 'PAID', 'VOID', 'REFUNDED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Charge\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Charge\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ChargeEvidence",
+    "label": "Create table \"ChargeEvidence\"",
+    "summary": "Creates table \"ChargeEvidence\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ChargeEvidence"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ChargeEvidence\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ChargeEvidence\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ChargeEvidence\"",
+        "sql": "CREATE TABLE \"public\".\"ChargeEvidence\" (\n  \"byteSize\" int4 NOT NULL,\n  \"chargeId\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"data\" bytea NOT NULL,\n  \"fileName\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"mimeType\" text NOT NULL,\n  \"sha256\" text NOT NULL,\n  \"uploadedById\" text,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ChargeEvidence\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ChargeEvidence\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Subscription",
+    "label": "Create table \"Subscription\"",
+    "summary": "Creates table \"Subscription\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Subscription"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Subscription\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Subscription\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Subscription\"",
+        "sql": "CREATE TABLE \"public\".\"Subscription\" (\n  \"billingCycle\" text NOT NULL,\n  \"cancelReason\" text,\n  \"cancelledAt\" timestamptz,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"currentPeriodEnd\" timestamptz NOT NULL,\n  \"currentPeriodStart\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"notes\" text,\n  \"plan\" text NOT NULL,\n  \"priceUsdCents\" int4 NOT NULL,\n  \"status\" text DEFAULT 'ACTIVE' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"Subscription_status_check_fc886289\" CHECK (\"status\" IN ('TRIAL', 'ACTIVE', 'PAST_DUE', 'SUSPENDED', 'CANCELLED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Subscription\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Subscription\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Charge.Charge_subscriptionId_periodStart_key",
+    "label": "Add unique constraint on \"Charge\" (subscriptionId, periodStart)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Charge_subscriptionId_periodStart_key",
+        "table": "Charge"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Charge_subscriptionId_periodStart_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Charge_subscriptionId_periodStart_key",
+          "public",
+          "\"public\".\"Charge\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Charge_subscriptionId_periodStart_key\"",
+        "sql": "ALTER TABLE \"public\".\"Charge\" ADD CONSTRAINT \"Charge_subscriptionId_periodStart_key\" UNIQUE (\"subscriptionId\", \"periodStart\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Charge_subscriptionId_periodStart_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Charge_subscriptionId_periodStart_key",
+          "public",
+          "\"public\".\"Charge\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Subscription.Subscription_tenantId_key",
+    "label": "Add unique constraint on \"Subscription\" (tenantId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Subscription_tenantId_key",
+        "table": "Subscription"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Subscription_tenantId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Subscription_tenantId_key",
+          "public",
+          "\"public\".\"Subscription\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Subscription_tenantId_key\"",
+        "sql": "ALTER TABLE \"public\".\"Subscription\" ADD CONSTRAINT \"Subscription_tenantId_key\" UNIQUE (\"tenantId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Subscription_tenantId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Subscription_tenantId_key",
+          "public",
+          "\"public\".\"Subscription\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Charge.Charge_status_idx_e98638ab",
+    "label": "Create index \"Charge_status_idx_e98638ab\" on \"Charge\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Charge_status_idx_e98638ab",
+        "table": "Charge"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Charge_status_idx_e98638ab\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Charge_status_idx_e98638ab\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Charge_status_idx_e98638ab\"",
+        "sql": "CREATE INDEX \"Charge_status_idx_e98638ab\" ON \"public\".\"Charge\" (\"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Charge_status_idx_e98638ab\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Charge_status_idx_e98638ab\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Charge.Charge_subscriptionId_idx_edbe96bf",
+    "label": "Create index \"Charge_subscriptionId_idx_edbe96bf\" on \"Charge\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Charge_subscriptionId_idx_edbe96bf",
+        "table": "Charge"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Charge_subscriptionId_idx_edbe96bf\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Charge_subscriptionId_idx_edbe96bf\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Charge_subscriptionId_idx_edbe96bf\"",
+        "sql": "CREATE INDEX \"Charge_subscriptionId_idx_edbe96bf\" ON \"public\".\"Charge\" (\"subscriptionId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Charge_subscriptionId_idx_edbe96bf\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Charge_subscriptionId_idx_edbe96bf\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Charge.Charge_tenantId_idx_c93ed4f1",
+    "label": "Create index \"Charge_tenantId_idx_c93ed4f1\" on \"Charge\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Charge_tenantId_idx_c93ed4f1",
+        "table": "Charge"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Charge_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Charge_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Charge_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"Charge_tenantId_idx_c93ed4f1\" ON \"public\".\"Charge\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Charge_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Charge_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ChargeEvidence.ChargeEvidence_chargeId_idx_3fcf5f1d",
+    "label": "Create index \"ChargeEvidence_chargeId_idx_3fcf5f1d\" on \"ChargeEvidence\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ChargeEvidence_chargeId_idx_3fcf5f1d",
+        "table": "ChargeEvidence"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ChargeEvidence_chargeId_idx_3fcf5f1d\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ChargeEvidence_chargeId_idx_3fcf5f1d\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ChargeEvidence_chargeId_idx_3fcf5f1d\"",
+        "sql": "CREATE INDEX \"ChargeEvidence_chargeId_idx_3fcf5f1d\" ON \"public\".\"ChargeEvidence\" (\"chargeId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ChargeEvidence_chargeId_idx_3fcf5f1d\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ChargeEvidence_chargeId_idx_3fcf5f1d\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Charge.Charge_subscriptionId_fkey",
+    "label": "Add foreign key \"Charge_subscriptionId_fkey\" on \"Charge\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Charge_subscriptionId_fkey",
+        "table": "Charge"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Charge_subscriptionId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Charge_subscriptionId_fkey",
+          "public",
+          "\"public\".\"Charge\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Charge_subscriptionId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Charge\"\nADD CONSTRAINT \"Charge_subscriptionId_fkey\"\nFOREIGN KEY (\"subscriptionId\")\nREFERENCES \"public\".\"Subscription\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Charge_subscriptionId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Charge_subscriptionId_fkey",
+          "public",
+          "\"public\".\"Charge\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ChargeEvidence.ChargeEvidence_chargeId_fkey",
+    "label": "Add foreign key \"ChargeEvidence_chargeId_fkey\" on \"ChargeEvidence\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ChargeEvidence_chargeId_fkey",
+        "table": "ChargeEvidence"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ChargeEvidence_chargeId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ChargeEvidence_chargeId_fkey",
+          "public",
+          "\"public\".\"ChargeEvidence\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ChargeEvidence_chargeId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ChargeEvidence\"\nADD CONSTRAINT \"ChargeEvidence_chargeId_fkey\"\nFOREIGN KEY (\"chargeId\")\nREFERENCES \"public\".\"Charge\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ChargeEvidence_chargeId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ChargeEvidence_chargeId_fkey",
+          "public",
+          "\"public\".\"ChargeEvidence\""
+        ]
+      }
+    ]
+  }
+]
