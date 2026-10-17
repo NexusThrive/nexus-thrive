@@ -58,6 +58,8 @@ export type OnboardingDraft = {
   /** Plan elegido (Essential gratis por defecto) y ciclo de facturación. */
   plan: PlanKey;
   billing: Billing;
+  /** Tramo de clientes elegido (precio por cantidad de clientes). */
+  customerTierId: string | null;
 };
 
 export const EMPTY_DRAFT: OnboardingDraft = {
@@ -73,6 +75,7 @@ export const EMPTY_DRAFT: OnboardingDraft = {
   selectedModules: [],
   plan: "ESSENTIAL",
   billing: "MONTHLY",
+  customerTierId: null,
 };
 
 /**
@@ -94,6 +97,7 @@ export type AdaptiveOnboardingInput = {
   selectedModules: ModuleValue[];
   plan?: PlanKey;
   billing?: Billing;
+  customerTierId?: string | null;
 };
 
 export type OnboardingFieldName =

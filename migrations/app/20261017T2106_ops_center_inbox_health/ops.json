@@ -1,0 +1,485 @@
+[
+  {
+    "id": "table.InboxConversation",
+    "label": "Create table \"InboxConversation\"",
+    "summary": "Creates table \"InboxConversation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "InboxConversation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"InboxConversation\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"InboxConversation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"InboxConversation\"",
+        "sql": "CREATE TABLE \"public\".\"InboxConversation\" (\n  \"assigneeId\" text,\n  \"channel\" text NOT NULL,\n  \"contactHandle\" text NOT NULL,\n  \"contactName\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"lastInboundAt\" timestamptz,\n  \"lastMessageAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"status\" text DEFAULT 'OPEN' NOT NULL,\n  \"subject\" text,\n  \"tenantId\" text,\n  \"ticketId\" text,\n  \"unread\" int4 DEFAULT 0 NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"InboxConversation_channel_check_a1390589\" CHECK (\"channel\" IN ('WHATSAPP', 'EMAIL')),\n  CONSTRAINT \"InboxConversation_status_check_403d7b80\" CHECK (\"status\" IN ('OPEN', 'PENDING', 'CLOSED'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"InboxConversation\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"InboxConversation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.InboxMessage",
+    "label": "Create table \"InboxMessage\"",
+    "summary": "Creates table \"InboxMessage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "InboxMessage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"InboxMessage\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"InboxMessage\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"InboxMessage\"",
+        "sql": "CREATE TABLE \"public\".\"InboxMessage\" (\n  \"authorName\" text,\n  \"authorStaffId\" text,\n  \"body\" text NOT NULL,\n  \"conversationId\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"delivery\" text NOT NULL,\n  \"direction\" text NOT NULL,\n  \"error\" text,\n  \"externalId\" text,\n  \"id\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"InboxMessage\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"InboxMessage\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.SatisfactionSurvey",
+    "label": "Create table \"SatisfactionSurvey\"",
+    "summary": "Creates table \"SatisfactionSurvey\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "SatisfactionSurvey"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"SatisfactionSurvey\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SatisfactionSurvey\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"SatisfactionSurvey\"",
+        "sql": "CREATE TABLE \"public\".\"SatisfactionSurvey\" (\n  \"answeredAt\" timestamptz,\n  \"assigneeId\" text,\n  \"comment\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"nps\" int4,\n  \"score\" int4,\n  \"sentAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"tenantId\" text,\n  \"ticketId\" text NOT NULL,\n  \"token\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"SatisfactionSurvey\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SatisfactionSurvey\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.InboxConversation.InboxConversation_channel_contactHandle_key",
+    "label": "Add unique constraint on \"InboxConversation\" (channel, contactHandle)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "InboxConversation_channel_contactHandle_key",
+        "table": "InboxConversation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"InboxConversation_channel_contactHandle_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "InboxConversation_channel_contactHandle_key",
+          "public",
+          "\"public\".\"InboxConversation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"InboxConversation_channel_contactHandle_key\"",
+        "sql": "ALTER TABLE \"public\".\"InboxConversation\" ADD CONSTRAINT \"InboxConversation_channel_contactHandle_key\" UNIQUE (\"channel\", \"contactHandle\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"InboxConversation_channel_contactHandle_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "InboxConversation_channel_contactHandle_key",
+          "public",
+          "\"public\".\"InboxConversation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.InboxMessage.InboxMessage_externalId_key",
+    "label": "Add unique constraint on \"InboxMessage\" (externalId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "InboxMessage_externalId_key",
+        "table": "InboxMessage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"InboxMessage_externalId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "InboxMessage_externalId_key",
+          "public",
+          "\"public\".\"InboxMessage\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"InboxMessage_externalId_key\"",
+        "sql": "ALTER TABLE \"public\".\"InboxMessage\" ADD CONSTRAINT \"InboxMessage_externalId_key\" UNIQUE (\"externalId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"InboxMessage_externalId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "InboxMessage_externalId_key",
+          "public",
+          "\"public\".\"InboxMessage\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.SatisfactionSurvey.SatisfactionSurvey_ticketId_key",
+    "label": "Add unique constraint on \"SatisfactionSurvey\" (ticketId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "SatisfactionSurvey_ticketId_key",
+        "table": "SatisfactionSurvey"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"SatisfactionSurvey_ticketId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SatisfactionSurvey_ticketId_key",
+          "public",
+          "\"public\".\"SatisfactionSurvey\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"SatisfactionSurvey_ticketId_key\"",
+        "sql": "ALTER TABLE \"public\".\"SatisfactionSurvey\" ADD CONSTRAINT \"SatisfactionSurvey_ticketId_key\" UNIQUE (\"ticketId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"SatisfactionSurvey_ticketId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SatisfactionSurvey_ticketId_key",
+          "public",
+          "\"public\".\"SatisfactionSurvey\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.SatisfactionSurvey.SatisfactionSurvey_token_key",
+    "label": "Add unique constraint on \"SatisfactionSurvey\" (token)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "SatisfactionSurvey_token_key",
+        "table": "SatisfactionSurvey"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"SatisfactionSurvey_token_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SatisfactionSurvey_token_key",
+          "public",
+          "\"public\".\"SatisfactionSurvey\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"SatisfactionSurvey_token_key\"",
+        "sql": "ALTER TABLE \"public\".\"SatisfactionSurvey\" ADD CONSTRAINT \"SatisfactionSurvey_token_key\" UNIQUE (\"token\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"SatisfactionSurvey_token_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SatisfactionSurvey_token_key",
+          "public",
+          "\"public\".\"SatisfactionSurvey\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.InboxConversation.InboxConversation_status_idx_e98638ab",
+    "label": "Create index \"InboxConversation_status_idx_e98638ab\" on \"InboxConversation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "InboxConversation_status_idx_e98638ab",
+        "table": "InboxConversation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"InboxConversation_status_idx_e98638ab\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"InboxConversation_status_idx_e98638ab\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"InboxConversation_status_idx_e98638ab\"",
+        "sql": "CREATE INDEX \"InboxConversation_status_idx_e98638ab\" ON \"public\".\"InboxConversation\" (\"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"InboxConversation_status_idx_e98638ab\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"InboxConversation_status_idx_e98638ab\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.InboxConversation.InboxConversation_tenantId_idx_c93ed4f1",
+    "label": "Create index \"InboxConversation_tenantId_idx_c93ed4f1\" on \"InboxConversation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "InboxConversation_tenantId_idx_c93ed4f1",
+        "table": "InboxConversation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"InboxConversation_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"InboxConversation_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"InboxConversation_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"InboxConversation_tenantId_idx_c93ed4f1\" ON \"public\".\"InboxConversation\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"InboxConversation_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"InboxConversation_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.InboxMessage.InboxMessage_conversationId_idx_669215a6",
+    "label": "Create index \"InboxMessage_conversationId_idx_669215a6\" on \"InboxMessage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "InboxMessage_conversationId_idx_669215a6",
+        "table": "InboxMessage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"InboxMessage_conversationId_idx_669215a6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"InboxMessage_conversationId_idx_669215a6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"InboxMessage_conversationId_idx_669215a6\"",
+        "sql": "CREATE INDEX \"InboxMessage_conversationId_idx_669215a6\" ON \"public\".\"InboxMessage\" (\"conversationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"InboxMessage_conversationId_idx_669215a6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"InboxMessage_conversationId_idx_669215a6\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SatisfactionSurvey.SatisfactionSurvey_tenantId_idx_c93ed4f1",
+    "label": "Create index \"SatisfactionSurvey_tenantId_idx_c93ed4f1\" on \"SatisfactionSurvey\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SatisfactionSurvey_tenantId_idx_c93ed4f1",
+        "table": "SatisfactionSurvey"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SatisfactionSurvey_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SatisfactionSurvey_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SatisfactionSurvey_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"SatisfactionSurvey_tenantId_idx_c93ed4f1\" ON \"public\".\"SatisfactionSurvey\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SatisfactionSurvey_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SatisfactionSurvey_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.InboxMessage.InboxMessage_conversationId_fkey",
+    "label": "Add foreign key \"InboxMessage_conversationId_fkey\" on \"InboxMessage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "InboxMessage_conversationId_fkey",
+        "table": "InboxMessage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"InboxMessage_conversationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "InboxMessage_conversationId_fkey",
+          "public",
+          "\"public\".\"InboxMessage\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"InboxMessage_conversationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"InboxMessage\"\nADD CONSTRAINT \"InboxMessage_conversationId_fkey\"\nFOREIGN KEY (\"conversationId\")\nREFERENCES \"public\".\"InboxConversation\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"InboxMessage_conversationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "InboxMessage_conversationId_fkey",
+          "public",
+          "\"public\".\"InboxMessage\""
+        ]
+      }
+    ]
+  }
+]

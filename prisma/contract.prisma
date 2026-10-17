@@ -6,6 +6,74 @@ enum Role {
   STAFF
 }
 
+/// Etapa comercial de una cuenta en el Operations Center. Distinta del
+/// estado de servicio (`Tenant.active` + `suspendedReason`): un problema de
+/// pago o técnico no es una cancelación comercial.
+/// Embudo comercial de NEXUS (Operations Center · CRM).
+enum LeadStage {
+  NEW
+  CONTACTED
+  QUALIFIED
+  DEMO
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+}
+
+enum TicketStatus {
+  NEW
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  ESCALATED
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+/// Suscripción de un negocio a NEXUS THRIVE (Operations Center · Facturación).
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  SUSPENDED
+  CANCELLED
+}
+
+/// Vencido no es un estado: se calcula con la fecha de vencimiento.
+enum ChargeStatus {
+  PENDING
+  PAID
+  VOID
+  REFUNDED
+}
+
+/// Bandeja de NEXUS (canales propios con los negocios).
+enum InboxChannel {
+  WHATSAPP
+  EMAIL
+}
+
+enum ConversationStatus {
+  OPEN
+  PENDING
+  CLOSED
+}
+
+enum AccountStage {
+  ONBOARDING
+  ACTIVE
+  CANCELLED
+  ARCHIVED
+}
+
 /// Plan de NEXUS elegido en el onboarding (Thrive Essential / Elite / Signature).
 enum TenantPlan {
   /// Gratis: módulos base para conocer NEXUS.
@@ -222,6 +290,14 @@ model Tenant {
   /// Precio mensual en centavos de USD (0 en Essential).
   planMonthlyUsdCents Int          @default(0)
   planSelectedAt      DateTime?
+  /// Tramo de clientes elegido (CustomerTierSetting.id) y módulos contratados
+  /// con el plan. "Contratado" ≠ "habilitado" (TenantModule) ≠ "operativo"
+  /// (ModuleSetting.status).
+  customerTierId    String?
+  contractedModules String[]?
+  /// Operations Center: etapa comercial y responsable de cuenta (StaffMember.id).
+  accountStage     AccountStage @default(ACTIVE)
+  accountManagerId String?
   /// Métodos de pago aceptados (Paso 4 del onboarding; catálogo PaymentProvider).
   /// Nullable en DB: un tenant nuevo aún no los configuró; el código normaliza a [].
   paymentMethods    PaymentProvider[]?
@@ -1146,4 +1222,345 @@ model FieldLogEntry {
   @@index([tenantId])
   @@index([logId])
   @@index([tenantId, entryDate])
+}
+
+
+/// Rol del equipo interno de NEXUS (Operations Center). Los permisos son
+/// claves controladas por `lib/ops/permissions.ts`; `system` = rol base que
+/// no se puede borrar (sí editar, salvo el de Propietario).
+model StaffRole {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  name        String
+  description String?
+  permissions String[]
+  system      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   temporal.updatedAt()
+
+  members StaffMember[]
+}
+
+/// Integrante del equipo NEXUS. No pertenece a ningún negocio: su acceso al
+/// panel sale de su rol. Se invita por correo; `clerkUserId` se completa la
+/// primera vez que entra con ese correo.
+model StaffMember {
+  id          String    @id @default(uuid())
+  clerkUserId String?   @unique
+  email       String    @unique
+  name        String?
+  title       String?
+  roleId      String
+  role        StaffRole @relation(fields: [roleId], references: [id])
+  active      Boolean   @default(true)
+  invitedById String?
+  joinedAt    DateTime?
+  lastSeenAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   temporal.updatedAt()
+
+  @@index([roleId])
+}
+
+/// Contactos de un negocio para el equipo NEXUS (no son clientes del
+/// negocio): para qué sirve cada canal y cuándo contactarlo.
+model TenantContact {
+  id               String   @id @default(uuid())
+  tenantId         String
+  name             String
+  /// Dueño, administrativo, técnico, comercial…
+  purpose          String
+  phone            String?
+  whatsapp         String?
+  email            String?
+  preferredChannel String?
+  hours            String?
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        temporal.updatedAt()
+
+  @@index([tenantId])
+}
+
+
+/// Catálogo comercial editable desde el Operations Center (Planes y módulos).
+/// El onboarding y el servidor calculan precios con estas filas; los valores
+/// iniciales salen de `defaultPricingConfig()` (lib/plans/pricing.ts).
+model PlanSetting {
+  key                String   @id
+  name               String
+  tagline            String
+  features           String[]
+  basePriceUsdCents  Int
+  moduleDiscountPct  Int
+  includesAllModules Boolean
+  chargesModules     Boolean
+  annualDiscountPct  Int
+  recommended        Boolean  @default(false)
+  active             Boolean  @default(true)
+  order              Int
+  updatedAt          temporal.updatedAt()
+}
+
+model ModuleSetting {
+  module        String  @id
+  label         String
+  description   String
+  priceUsdCents Int
+  /// READY | BETA | PLANNED (controlado por el código).
+  status        String
+  included      Boolean
+  order         Int
+  updatedAt     temporal.updatedAt()
+}
+
+model VerticalSetting {
+  vertical          String   @id
+  label             String
+  signupEnabled     Boolean
+  priceFactorPct    Int
+  modules           String[]
+  recommended       String[]
+  dashboardTemplate String?
+  order             Int
+  updatedAt         temporal.updatedAt()
+}
+
+model CustomerTierSetting {
+  id            String @id
+  label         String
+  maxCustomers  Int?
+  priceUsdCents Int
+  order         Int
+  updatedAt     temporal.updatedAt()
+}
+
+
+/// Prospecto comercial de NEXUS. Regla: ningún lead activo sin responsable
+/// (StaffMember.id) ni próximo paso con fecha.
+model Lead {
+  id             String    @id @default(uuid())
+  company        String
+  contactName    String?
+  phone          String?
+  email          String?
+  vertical       String?
+  city           String?
+  source         String
+  stage          LeadStage @default(NEW)
+  ownerId        String?
+  nextStep       String?
+  nextStepAt     DateTime?
+  valueUsdCents  Int       @default(0)
+  plan           String?
+  notes          String?
+  lostReason     String?
+  /// Negocio en el que se convirtió (al ganarse).
+  tenantId       String?
+  stageChangedAt DateTime  @default(now())
+  createdAt      DateTime  @default(now())
+  updatedAt      temporal.updatedAt()
+  activities     LeadActivity[]
+
+  @@index([stage])
+  @@index([ownerId])
+}
+
+model LeadActivity {
+  id        String   @id @default(uuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  /// note | call | whatsapp | email | meeting | stage
+  kind      String
+  body      String
+  staffId   String?
+  staffName String?
+  createdAt DateTime @default(now())
+
+  @@index([leadId])
+}
+
+/// Ticket de soporte de un negocio (SUP-2026-00124 = año + consecutivo).
+model SupportTicket {
+  id               String         @id @default(uuid())
+  year             Int
+  seq              Int
+  tenantId         String?
+  subject          String
+  description      String
+  category         String
+  priority         TicketPriority @default(NORMAL)
+  status           TicketStatus   @default(NEW)
+  channel          String
+  assigneeId       String?
+  requesterName    String?
+  requesterContact String?
+  solution         String?
+  firstResponseAt  DateTime?
+  resolvedAt       DateTime?
+  closedAt         DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        temporal.updatedAt()
+  messages         TicketMessage[]
+
+  @@unique([year, seq])
+  @@index([status])
+  @@index([tenantId])
+}
+
+model TicketMessage {
+  id            String        @id @default(uuid())
+  ticketId      String
+  ticket        SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  /// Nota interna: solo la ve el equipo NEXUS.
+  internal      Boolean       @default(false)
+  body          String
+  authorStaffId String?
+  authorName    String
+  createdAt     DateTime      @default(now())
+
+  @@index([ticketId])
+}
+
+
+/// Suscripción vigente de un negocio. El precio se fija al crearla (no cambia
+/// si luego se edita el catálogo).
+model Subscription {
+  id                 String             @id @default(uuid())
+  tenantId           String             @unique
+  plan               String
+  billingCycle       String
+  /// Precio mensual equivalente (USD centavos).
+  priceUsdCents      Int
+  status             SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  notes              String?
+  cancelledAt        DateTime?
+  cancelReason       String?
+  createdAt          DateTime           @default(now())
+  updatedAt          temporal.updatedAt()
+  charges            Charge[]
+}
+
+/// Cobro de un período. Regla: no se confirma sin comprobante.
+model Charge {
+  id             String       @id @default(uuid())
+  tenantId       String
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  periodStart    DateTime
+  periodEnd      DateTime
+  amountUsdCents Int
+  status         ChargeStatus @default(PENDING)
+  dueAt          DateTime
+  method         String?
+  reference      String?
+  paidAt         DateTime?
+  recordedById   String?
+  confirmedById  String?
+  confirmedAt    DateTime?
+  /// Aviso de suspensión enviado al negocio (requisito para suspender).
+  noticeSentAt   DateTime?
+  refundedAt     DateTime?
+  refundReason   String?
+  voidReason     String?
+  notes          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      temporal.updatedAt()
+  evidence       ChargeEvidence[]
+
+  @@unique([subscriptionId, periodStart])
+  @@index([tenantId])
+  @@index([status])
+}
+
+/// Comprobante de pago guardado en el sistema (no un enlace externo).
+model ChargeEvidence {
+  id           String   @id @default(uuid())
+  chargeId     String
+  charge       Charge   @relation(fields: [chargeId], references: [id], onDelete: Cascade)
+  fileName     String
+  mimeType     String
+  byteSize     Int
+  sha256       String
+  data         Bytes
+  uploadedById String?
+  createdAt    DateTime @default(now())
+
+  @@index([chargeId])
+}
+
+/// Política de cobro y suspensión (una fila, id "default").
+model BillingPolicy {
+  id           String @id
+  reminderDays Int[]
+  graceDays    Int
+  noticeDays   Int
+  updatedAt    temporal.updatedAt()
+}
+
+
+/// Conversación de la bandeja de NEXUS con un contacto (un hilo por canal y
+/// contacto). Se vincula al negocio por sus contactos o usuarios.
+model InboxConversation {
+  id            String             @id @default(uuid())
+  channel       InboxChannel
+  /// WhatsApp: solo dígitos con indicativo. Correo: en minúsculas.
+  contactHandle String
+  contactName   String?
+  tenantId      String?
+  subject       String?
+  status        ConversationStatus @default(OPEN)
+  assigneeId    String?
+  ticketId      String?
+  unread        Int                @default(0)
+  lastMessageAt DateTime           @default(now())
+  /// Último mensaje del contacto (ventana de 24 h de WhatsApp).
+  lastInboundAt DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     temporal.updatedAt()
+  messages      InboxMessage[]
+
+  @@unique([channel, contactHandle])
+  @@index([status])
+  @@index([tenantId])
+}
+
+model InboxMessage {
+  id             String            @id @default(uuid())
+  conversationId String
+  conversation   InboxConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  /// IN (del contacto) | OUT (del equipo) | NOTE (nota interna)
+  direction      String
+  body           String
+  /// Id del proveedor (evita duplicar reintentos del webhook).
+  externalId     String?           @unique
+  /// received | sent | manual | failed
+  delivery       String
+  error          String?
+  authorStaffId  String?
+  authorName     String?
+  createdAt      DateTime          @default(now())
+
+  @@index([conversationId])
+}
+
+/// Encuesta de satisfacción de un ticket resuelto (enlace público con token).
+model SatisfactionSurvey {
+  id         String    @id @default(uuid())
+  ticketId   String    @unique
+  tenantId   String?
+  assigneeId String?
+  token      String    @unique
+  /// 1 a 5 (CSAT).
+  score      Int?
+  /// 0 a 10 (¿recomendarías NEXUS?).
+  nps        Int?
+  comment    String?
+  sentAt     DateTime  @default(now())
+  answeredAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([tenantId])
 }

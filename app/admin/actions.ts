@@ -1,7 +1,13 @@
 "use server";
 
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { isVertical } from "@/lib/admin-catalogs";
+import { checkModuleToggle } from "@/lib/plans/compat";
+import { loadPricingConfig } from "@/lib/plans/settings";
+
+import { clerkClient } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
+import { requireStaff } from "@/lib/ops/access";
+import type { PermissionKey } from "@/lib/ops/permissions";
 import { revalidatePath } from "next/cache";
 import { createAdminDb, type AuditLogInput } from "@/lib/admin-db";
 import { validateSlug, type SlugValidation } from "@/lib/admin-catalogs";
@@ -42,23 +48,13 @@ const ACCESS_DENIED: AdminFormState = {
 type Actor = { userId: string; email: string | null };
 
 /**
- * Autorización de todas las actions /admin: sesión de Clerk + fila
- * `User.role = SUPERADMIN`. Devuelve el actor (para auditoría) o `null`.
+ * Autorización de las actions del Operations Center: integrante activo del
+ * equipo NEXUS con el permiso de la acción (lib/ops/access.ts). Devuelve el
+ * actor (para auditoría) o `null`.
  */
-async function requireSuperAdmin(): Promise<Actor | null> {
-  const { userId, sessionClaims } = await auth();
-  if (!userId) {
-    return null;
-  }
-  const isAdmin = await createAdminDb().isSuperAdmin(userId);
-  if (!isAdmin) {
-    return null;
-  }
-  const claims = sessionClaims as { email?: unknown } | null;
-  return {
-    userId,
-    email: typeof claims?.email === "string" ? claims.email : null,
-  };
+async function requireActor(permission: PermissionKey): Promise<Actor | null> {
+  const ctx = await requireStaff(permission);
+  return ctx ? { userId: ctx.clerkUserId, email: ctx.email } : null;
 }
 
 function revalidateAdmin(): void {
@@ -112,7 +108,7 @@ export async function createTenantAction(
   _prevState: AdminFormState,
   formData: FormData,
 ): Promise<AdminFormState> {
-  const actor = await requireSuperAdmin();
+  const actor = await requireActor("accounts.create");
   if (!actor) {
     return ACCESS_DENIED;
   }
@@ -183,7 +179,7 @@ export async function suspendTenantAction(
   _prevState: AdminFormState,
   formData: FormData,
 ): Promise<AdminFormState> {
-  const actor = await requireSuperAdmin();
+  const actor = await requireActor("accounts.suspend");
   if (!actor) {
     return ACCESS_DENIED;
   }
@@ -222,7 +218,7 @@ export async function activateTenantAction(
   _prevState: AdminFormState,
   formData: FormData,
 ): Promise<AdminFormState> {
-  const actor = await requireSuperAdmin();
+  const actor = await requireActor("accounts.suspend");
   if (!actor) {
     return ACCESS_DENIED;
   }
@@ -258,7 +254,7 @@ export async function toggleTenantModuleAction(
   _prevState: AdminFormState,
   formData: FormData,
 ): Promise<AdminFormState> {
-  const actor = await requireSuperAdmin();
+  const actor = await requireActor("accounts.modules");
   if (!actor) {
     return ACCESS_DENIED;
   }
@@ -274,6 +270,12 @@ export async function toggleTenantModuleAction(
   const tenant = await adminDb.getTenantModules(tenantId);
   if (!tenant) {
     return { status: "error", message: "El negocio no fue encontrado." };
+  }
+
+  // Compatibilidad con el rubro y estado del catálogo (Planes y módulos).
+  if (isVertical(tenant.vertical)) {
+    const check = checkModuleToggle(await loadPricingConfig(), tenant.vertical, moduleName, active);
+    if (!check.ok) return { status: "error", message: check.message };
   }
 
   await adminDb.toggleModule(tenantId, moduleName, active);
@@ -294,7 +296,7 @@ export async function toggleTenantModuleAction(
 
 /** Detalle de un negocio para el drawer (autorizado server-side). */
 export async function getTenantDetailAction(tenantId: string) {
-  const actor = await requireSuperAdmin();
+  const actor = await requireActor("accounts.view");
   if (!actor) {
     return null;
   }
@@ -313,7 +315,7 @@ export async function getTenantDetailAction(tenantId: string) {
 export async function createImpersonationAction(
   tenantId: string,
 ): Promise<ImpersonationState> {
-  const actor = await requireSuperAdmin();
+  const actor = await requireActor("accounts.impersonate");
   if (!actor) {
     return { status: "error", message: "No tienes permisos de administración." };
   }
@@ -386,7 +388,7 @@ export async function createImpersonationAction(
 export async function checkSlugAvailabilityAction(
   slug: string,
 ): Promise<SlugCheckState> {
-  if (!(await requireSuperAdmin())) {
+  if (!(await requireActor("accounts.create"))) {
     return { status: "unauthorized" };
   }
 
