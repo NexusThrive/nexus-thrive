@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'81e83fb69f41e879f55f151fbec685f0b43b52036cde68fc6523c63229ba41f5'>;
+  StorageHashBase<'4d479615e0086909de7d497934e19f33bcc4486ef01df3b954278498796f6fba'>;
 export type ExecutionHash =
-  ExecutionHashBase<'89a397361e84c1a121a252a8aac08c91870f7f567c995b919b2dccc20271c88c'>;
+  ExecutionHashBase<'a746309f368a277efc860d868da6952273101d5bb53587498d73e4b61a2789d6'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -548,6 +548,34 @@ export type FieldOutputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly weather: 'SUNNY' | 'CLOUDY' | 'RAIN_LIGHT' | 'RAIN_HEAVY';
     };
+    readonly InboxConversation: {
+      readonly assigneeId: CodecTypes['pg/text@1']['output'] | null;
+      readonly channel: 'WHATSAPP' | 'EMAIL';
+      readonly contactHandle: CodecTypes['pg/text@1']['output'];
+      readonly contactName: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly lastInboundAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly lastMessageAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly status: 'OPEN' | 'PENDING' | 'CLOSED';
+      readonly subject: CodecTypes['pg/text@1']['output'] | null;
+      readonly tenantId: CodecTypes['pg/text@1']['output'] | null;
+      readonly ticketId: CodecTypes['pg/text@1']['output'] | null;
+      readonly unread: CodecTypes['pg/int4@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly InboxMessage: {
+      readonly authorName: CodecTypes['pg/text@1']['output'] | null;
+      readonly authorStaffId: CodecTypes['pg/text@1']['output'] | null;
+      readonly body: CodecTypes['pg/text@1']['output'];
+      readonly conversationId: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly delivery: CodecTypes['pg/text@1']['output'];
+      readonly direction: CodecTypes['pg/text@1']['output'];
+      readonly error: CodecTypes['pg/text@1']['output'] | null;
+      readonly externalId: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+    };
     readonly Lead: {
       readonly city: CodecTypes['pg/text@1']['output'] | null;
       readonly company: CodecTypes['pg/text@1']['output'];
@@ -762,6 +790,19 @@ export type FieldOutputTypes = {
       readonly totalCost: CodecTypes['pg/numeric@1']['output'];
       readonly unit: CodecTypes['pg/text@1']['output'];
       readonly unitCost: CodecTypes['pg/numeric@1']['output'];
+    };
+    readonly SatisfactionSurvey: {
+      readonly answeredAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly assigneeId: CodecTypes['pg/text@1']['output'] | null;
+      readonly comment: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly nps: CodecTypes['pg/int4@1']['output'] | null;
+      readonly score: CodecTypes['pg/int4@1']['output'] | null;
+      readonly sentAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'] | null;
+      readonly ticketId: CodecTypes['pg/text@1']['output'];
+      readonly token: CodecTypes['pg/text@1']['output'];
     };
     readonly StaffMember: {
       readonly active: CodecTypes['pg/bool@1']['output'];
@@ -1260,6 +1301,34 @@ export type FieldInputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly weather: 'SUNNY' | 'CLOUDY' | 'RAIN_LIGHT' | 'RAIN_HEAVY';
     };
+    readonly InboxConversation: {
+      readonly assigneeId: CodecTypes['pg/text@1']['input'] | null;
+      readonly channel: 'WHATSAPP' | 'EMAIL';
+      readonly contactHandle: CodecTypes['pg/text@1']['input'];
+      readonly contactName: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly lastInboundAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly lastMessageAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly status: 'OPEN' | 'PENDING' | 'CLOSED';
+      readonly subject: CodecTypes['pg/text@1']['input'] | null;
+      readonly tenantId: CodecTypes['pg/text@1']['input'] | null;
+      readonly ticketId: CodecTypes['pg/text@1']['input'] | null;
+      readonly unread: CodecTypes['pg/int4@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly InboxMessage: {
+      readonly authorName: CodecTypes['pg/text@1']['input'] | null;
+      readonly authorStaffId: CodecTypes['pg/text@1']['input'] | null;
+      readonly body: CodecTypes['pg/text@1']['input'];
+      readonly conversationId: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly delivery: CodecTypes['pg/text@1']['input'];
+      readonly direction: CodecTypes['pg/text@1']['input'];
+      readonly error: CodecTypes['pg/text@1']['input'] | null;
+      readonly externalId: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+    };
     readonly Lead: {
       readonly city: CodecTypes['pg/text@1']['input'] | null;
       readonly company: CodecTypes['pg/text@1']['input'];
@@ -1474,6 +1543,19 @@ export type FieldInputTypes = {
       readonly totalCost: CodecTypes['pg/numeric@1']['input'];
       readonly unit: CodecTypes['pg/text@1']['input'];
       readonly unitCost: CodecTypes['pg/numeric@1']['input'];
+    };
+    readonly SatisfactionSurvey: {
+      readonly answeredAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly assigneeId: CodecTypes['pg/text@1']['input'] | null;
+      readonly comment: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly nps: CodecTypes['pg/int4@1']['input'] | null;
+      readonly score: CodecTypes['pg/int4@1']['input'] | null;
+      readonly sentAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'] | null;
+      readonly ticketId: CodecTypes['pg/text@1']['input'];
+      readonly token: CodecTypes['pg/text@1']['input'];
     };
     readonly StaffMember: {
       readonly active: CodecTypes['pg/bool@1']['input'];
@@ -1972,6 +2054,34 @@ export type StorageColumnTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly weather: 'SUNNY' | 'CLOUDY' | 'RAIN_LIGHT' | 'RAIN_HEAVY';
     };
+    readonly InboxConversation: {
+      readonly assigneeId: CodecTypes['pg/text@1']['output'] | null;
+      readonly channel: 'WHATSAPP' | 'EMAIL';
+      readonly contactHandle: CodecTypes['pg/text@1']['output'];
+      readonly contactName: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly lastInboundAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly lastMessageAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly status: 'OPEN' | 'PENDING' | 'CLOSED';
+      readonly subject: CodecTypes['pg/text@1']['output'] | null;
+      readonly tenantId: CodecTypes['pg/text@1']['output'] | null;
+      readonly ticketId: CodecTypes['pg/text@1']['output'] | null;
+      readonly unread: CodecTypes['pg/int4@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly InboxMessage: {
+      readonly authorName: CodecTypes['pg/text@1']['output'] | null;
+      readonly authorStaffId: CodecTypes['pg/text@1']['output'] | null;
+      readonly body: CodecTypes['pg/text@1']['output'];
+      readonly conversationId: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly delivery: CodecTypes['pg/text@1']['output'];
+      readonly direction: CodecTypes['pg/text@1']['output'];
+      readonly error: CodecTypes['pg/text@1']['output'] | null;
+      readonly externalId: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+    };
     readonly Lead: {
       readonly city: CodecTypes['pg/text@1']['output'] | null;
       readonly company: CodecTypes['pg/text@1']['output'];
@@ -2186,6 +2296,19 @@ export type StorageColumnTypes = {
       readonly totalCost: CodecTypes['pg/numeric@1']['output'];
       readonly unit: CodecTypes['pg/text@1']['output'];
       readonly unitCost: CodecTypes['pg/numeric@1']['output'];
+    };
+    readonly SatisfactionSurvey: {
+      readonly answeredAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly assigneeId: CodecTypes['pg/text@1']['output'] | null;
+      readonly comment: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly nps: CodecTypes['pg/int4@1']['output'] | null;
+      readonly score: CodecTypes['pg/int4@1']['output'] | null;
+      readonly sentAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'] | null;
+      readonly ticketId: CodecTypes['pg/text@1']['output'];
+      readonly token: CodecTypes['pg/text@1']['output'];
     };
     readonly StaffMember: {
       readonly active: CodecTypes['pg/bool@1']['output'];
@@ -2684,6 +2807,34 @@ export type StorageColumnInputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly weather: 'SUNNY' | 'CLOUDY' | 'RAIN_LIGHT' | 'RAIN_HEAVY';
     };
+    readonly InboxConversation: {
+      readonly assigneeId: CodecTypes['pg/text@1']['input'] | null;
+      readonly channel: 'WHATSAPP' | 'EMAIL';
+      readonly contactHandle: CodecTypes['pg/text@1']['input'];
+      readonly contactName: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly lastInboundAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly lastMessageAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly status: 'OPEN' | 'PENDING' | 'CLOSED';
+      readonly subject: CodecTypes['pg/text@1']['input'] | null;
+      readonly tenantId: CodecTypes['pg/text@1']['input'] | null;
+      readonly ticketId: CodecTypes['pg/text@1']['input'] | null;
+      readonly unread: CodecTypes['pg/int4@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly InboxMessage: {
+      readonly authorName: CodecTypes['pg/text@1']['input'] | null;
+      readonly authorStaffId: CodecTypes['pg/text@1']['input'] | null;
+      readonly body: CodecTypes['pg/text@1']['input'];
+      readonly conversationId: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly delivery: CodecTypes['pg/text@1']['input'];
+      readonly direction: CodecTypes['pg/text@1']['input'];
+      readonly error: CodecTypes['pg/text@1']['input'] | null;
+      readonly externalId: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+    };
     readonly Lead: {
       readonly city: CodecTypes['pg/text@1']['input'] | null;
       readonly company: CodecTypes['pg/text@1']['input'];
@@ -2898,6 +3049,19 @@ export type StorageColumnInputTypes = {
       readonly totalCost: CodecTypes['pg/numeric@1']['input'];
       readonly unit: CodecTypes['pg/text@1']['input'];
       readonly unitCost: CodecTypes['pg/numeric@1']['input'];
+    };
+    readonly SatisfactionSurvey: {
+      readonly answeredAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly assigneeId: CodecTypes['pg/text@1']['input'] | null;
+      readonly comment: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly nps: CodecTypes['pg/int4@1']['input'] | null;
+      readonly score: CodecTypes['pg/int4@1']['input'] | null;
+      readonly sentAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'] | null;
+      readonly ticketId: CodecTypes['pg/text@1']['input'];
+      readonly token: CodecTypes['pg/text@1']['input'];
     };
     readonly StaffMember: {
       readonly active: CodecTypes['pg/bool@1']['input'];
@@ -3487,6 +3651,38 @@ export namespace Models {
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'budgetItem' | 'log' | 'tenant';
   };
+  export type public_InboxConversation = {
+    assigneeId: CodecTypes['pg/text@1']['output'] | null;
+    channel: 'WHATSAPP' | 'EMAIL';
+    contactHandle: CodecTypes['pg/text@1']['output'];
+    contactName: CodecTypes['pg/text@1']['output'] | null;
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    lastInboundAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    lastMessageAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    status: 'OPEN' | 'PENDING' | 'CLOSED';
+    subject: CodecTypes['pg/text@1']['output'] | null;
+    tenantId: CodecTypes['pg/text@1']['output'] | null;
+    ticketId: CodecTypes['pg/text@1']['output'] | null;
+    unread: CodecTypes['pg/int4@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    messages: public_InboxMessage[];
+    readonly [RelationKeys]?: 'messages';
+  };
+  export type public_InboxMessage = {
+    authorName: CodecTypes['pg/text@1']['output'] | null;
+    authorStaffId: CodecTypes['pg/text@1']['output'] | null;
+    body: CodecTypes['pg/text@1']['output'];
+    conversationId: CodecTypes['pg/text@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    delivery: CodecTypes['pg/text@1']['output'];
+    direction: CodecTypes['pg/text@1']['output'];
+    error: CodecTypes['pg/text@1']['output'] | null;
+    externalId: CodecTypes['pg/text@1']['output'] | null;
+    id: CodecTypes['pg/text@1']['output'];
+    conversation: public_InboxConversation;
+    readonly [RelationKeys]?: 'conversation';
+  };
   export type public_Lead = {
     city: CodecTypes['pg/text@1']['output'] | null;
     company: CodecTypes['pg/text@1']['output'];
@@ -3752,6 +3948,20 @@ export namespace Models {
     activity: public_ApuActivity | null;
     quote: public_Quote;
     readonly [RelationKeys]?: 'activity' | 'quote';
+  };
+  export type public_SatisfactionSurvey = {
+    answeredAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    assigneeId: CodecTypes['pg/text@1']['output'] | null;
+    comment: CodecTypes['pg/text@1']['output'] | null;
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    nps: CodecTypes['pg/int4@1']['output'] | null;
+    score: CodecTypes['pg/int4@1']['output'] | null;
+    sentAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'] | null;
+    ticketId: CodecTypes['pg/text@1']['output'];
+    token: CodecTypes['pg/text@1']['output'];
+    readonly [RelationKeys]?: never;
   };
   export type public_StaffMember = {
     active: CodecTypes['pg/bool@1']['output'];
@@ -4050,6 +4260,8 @@ export declare const models: {
     Expense: Models.public_Expense;
     FieldLog: Models.public_FieldLog;
     FieldLogEntry: Models.public_FieldLogEntry;
+    InboxConversation: Models.public_InboxConversation;
+    InboxMessage: Models.public_InboxMessage;
     Lead: Models.public_Lead;
     LeadActivity: Models.public_LeadActivity;
     LookaheadTask: Models.public_LookaheadTask;
@@ -4064,6 +4276,7 @@ export declare const models: {
     ProjectPlan: Models.public_ProjectPlan;
     Quote: Models.public_Quote;
     QuoteItem: Models.public_QuoteItem;
+    SatisfactionSurvey: Models.public_SatisfactionSurvey;
     StaffMember: Models.public_StaffMember;
     StaffRole: Models.public_StaffRole;
     Subscription: Models.public_Subscription;
@@ -6433,6 +6646,186 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly InboxConversation: {
+              columns: {
+                readonly assigneeId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly channel: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly contactHandle: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly contactName: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly lastInboundAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly lastMessageAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'OPEN'>;
+                  };
+                };
+                readonly subject: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly ticketId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly unread: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+                  };
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['channel', 'contactHandle'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'InboxConversation_status_idx_e98638ab';
+                  readonly prefix: 'InboxConversation_status_idx';
+                  readonly columns: readonly ['status'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'InboxConversation_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'InboxConversation_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [];
+            };
+            readonly InboxMessage: {
+              columns: {
+                readonly authorName: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly authorStaffId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly body: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly conversationId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly delivery: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly direction: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly error: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly externalId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['externalId'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'InboxMessage_conversationId_idx_669215a6';
+                  readonly prefix: 'InboxMessage_conversationId_idx';
+                  readonly columns: readonly ['conversationId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'InboxMessage';
+                    readonly columns: readonly ['conversationId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'InboxConversation';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly Lead: {
               columns: {
                 readonly city: {
@@ -8111,6 +8504,81 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly SatisfactionSurvey: {
+              columns: {
+                readonly answeredAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly assigneeId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly comment: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly nps: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
+                readonly score: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
+                readonly sentAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly ticketId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly token: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [
+                { readonly columns: readonly ['ticketId'] },
+                { readonly columns: readonly ['token'] },
+              ];
+              indexes: readonly [
+                {
+                  readonly name: 'SatisfactionSurvey_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'SatisfactionSurvey_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [];
+            };
             readonly StaffMember: {
               columns: {
                 readonly active: {
@@ -9170,6 +9638,10 @@ type ContractBase = Omit<
               readonly kind: 'valueSet';
               readonly values: readonly ['IMPORT', 'MANUAL'];
             };
+            readonly ConversationStatus: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['OPEN', 'PENDING', 'CLOSED'];
+            };
             readonly FieldNoteType: {
               readonly kind: 'valueSet';
               readonly values: readonly ['ADVANCE', 'OBSERVATION', 'AUTHORIZATION', 'INCIDENT'];
@@ -9177,6 +9649,10 @@ type ContractBase = Omit<
             readonly FollowUpType: {
               readonly kind: 'valueSet';
               readonly values: readonly ['NOTE', 'CALL', 'EMAIL', 'MEETING', 'VISIT'];
+            };
+            readonly InboxChannel: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['WHATSAPP', 'EMAIL'];
             };
             readonly LeadStage: {
               readonly kind: 'valueSet';
@@ -9401,6 +9877,14 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'FieldLogEntry';
     };
+    readonly InboxConversation: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'InboxConversation';
+    };
+    readonly InboxMessage: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'InboxMessage';
+    };
     readonly Lead: { readonly namespace: 'public' & NamespaceId; readonly model: 'Lead' };
     readonly LeadActivity: {
       readonly namespace: 'public' & NamespaceId;
@@ -9442,6 +9926,10 @@ type ContractBase = Omit<
     };
     readonly Quote: { readonly namespace: 'public' & NamespaceId; readonly model: 'Quote' };
     readonly QuoteItem: { readonly namespace: 'public' & NamespaceId; readonly model: 'QuoteItem' };
+    readonly SatisfactionSurvey: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'SatisfactionSurvey';
+    };
     readonly StaffMember: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'StaffMember';
@@ -11835,6 +12323,188 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly InboxConversation: {
+            readonly fields: {
+              readonly assigneeId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly channel: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly contactHandle: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly contactName: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly lastInboundAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly lastMessageAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly subject: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly ticketId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly unread: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly messages: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'InboxMessage';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['conversationId'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'InboxConversation';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly assigneeId: { readonly column: 'assigneeId' };
+                readonly channel: { readonly column: 'channel' };
+                readonly contactHandle: { readonly column: 'contactHandle' };
+                readonly contactName: { readonly column: 'contactName' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly id: { readonly column: 'id' };
+                readonly lastInboundAt: { readonly column: 'lastInboundAt' };
+                readonly lastMessageAt: { readonly column: 'lastMessageAt' };
+                readonly status: { readonly column: 'status' };
+                readonly subject: { readonly column: 'subject' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly ticketId: { readonly column: 'ticketId' };
+                readonly unread: { readonly column: 'unread' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly InboxMessage: {
+            readonly fields: {
+              readonly authorName: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly authorStaffId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly body: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly conversationId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly delivery: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly direction: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly error: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly externalId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly conversation: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'InboxConversation';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['conversationId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'InboxMessage';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly authorName: { readonly column: 'authorName' };
+                readonly authorStaffId: { readonly column: 'authorStaffId' };
+                readonly body: { readonly column: 'body' };
+                readonly conversationId: { readonly column: 'conversationId' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly delivery: { readonly column: 'delivery' };
+                readonly direction: { readonly column: 'direction' };
+                readonly error: { readonly column: 'error' };
+                readonly externalId: { readonly column: 'externalId' };
+                readonly id: { readonly column: 'id' };
+              };
+            };
+          };
           readonly Lead: {
             readonly fields: {
               readonly city: {
@@ -13477,6 +14147,81 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly SatisfactionSurvey: {
+            readonly fields: {
+              readonly answeredAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly assigneeId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly comment: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly nps: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly score: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly sentAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly tenantId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly ticketId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly token: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: Record<string, never>;
+            readonly storage: {
+              readonly table: 'SatisfactionSurvey';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly answeredAt: { readonly column: 'answeredAt' };
+                readonly assigneeId: { readonly column: 'assigneeId' };
+                readonly comment: { readonly column: 'comment' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly id: { readonly column: 'id' };
+                readonly nps: { readonly column: 'nps' };
+                readonly score: { readonly column: 'score' };
+                readonly sentAt: { readonly column: 'sentAt' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly ticketId: { readonly column: 'ticketId' };
+                readonly token: { readonly column: 'token' };
+              };
+            };
+          };
           readonly StaffMember: {
             readonly fields: {
               readonly active: {
@@ -14860,6 +15605,14 @@ type ContractBase = Omit<
               { readonly name: 'MANUAL'; readonly value: 'MANUAL' },
             ];
           };
+          readonly ConversationStatus: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'OPEN'; readonly value: 'OPEN' },
+              { readonly name: 'PENDING'; readonly value: 'PENDING' },
+              { readonly name: 'CLOSED'; readonly value: 'CLOSED' },
+            ];
+          };
           readonly FieldNoteType: {
             readonly codecId: 'pg/text@1';
             readonly members: readonly [
@@ -14877,6 +15630,13 @@ type ContractBase = Omit<
               { readonly name: 'EMAIL'; readonly value: 'EMAIL' },
               { readonly name: 'MEETING'; readonly value: 'MEETING' },
               { readonly name: 'VISIT'; readonly value: 'VISIT' },
+            ];
+          };
+          readonly InboxChannel: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'WHATSAPP'; readonly value: 'WHATSAPP' },
+              { readonly name: 'EMAIL'; readonly value: 'EMAIL' },
             ];
           };
           readonly LeadStage: {
@@ -15404,6 +16164,31 @@ type ContractBase = Omit<
         {
           readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
           readonly ref: {
+            readonly entry: 'InboxConversation';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'InboxConversation';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'InboxMessage';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
             readonly entry: 'Lead';
             readonly field: 'id';
             readonly namespace: 'public';
@@ -15601,6 +16386,14 @@ type ContractBase = Omit<
           readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'QuoteItem';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'SatisfactionSurvey';
             readonly field: 'id';
             readonly namespace: 'public';
           };

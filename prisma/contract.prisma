@@ -55,6 +55,18 @@ enum ChargeStatus {
   REFUNDED
 }
 
+/// Bandeja de NEXUS (canales propios con los negocios).
+enum InboxChannel {
+  WHATSAPP
+  EMAIL
+}
+
+enum ConversationStatus {
+  OPEN
+  PENDING
+  CLOSED
+}
+
 enum AccountStage {
   ONBOARDING
   ACTIVE
@@ -1486,4 +1498,69 @@ model BillingPolicy {
   graceDays    Int
   noticeDays   Int
   updatedAt    temporal.updatedAt()
+}
+
+
+/// Conversación de la bandeja de NEXUS con un contacto (un hilo por canal y
+/// contacto). Se vincula al negocio por sus contactos o usuarios.
+model InboxConversation {
+  id            String             @id @default(uuid())
+  channel       InboxChannel
+  /// WhatsApp: solo dígitos con indicativo. Correo: en minúsculas.
+  contactHandle String
+  contactName   String?
+  tenantId      String?
+  subject       String?
+  status        ConversationStatus @default(OPEN)
+  assigneeId    String?
+  ticketId      String?
+  unread        Int                @default(0)
+  lastMessageAt DateTime           @default(now())
+  /// Último mensaje del contacto (ventana de 24 h de WhatsApp).
+  lastInboundAt DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     temporal.updatedAt()
+  messages      InboxMessage[]
+
+  @@unique([channel, contactHandle])
+  @@index([status])
+  @@index([tenantId])
+}
+
+model InboxMessage {
+  id             String            @id @default(uuid())
+  conversationId String
+  conversation   InboxConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  /// IN (del contacto) | OUT (del equipo) | NOTE (nota interna)
+  direction      String
+  body           String
+  /// Id del proveedor (evita duplicar reintentos del webhook).
+  externalId     String?           @unique
+  /// received | sent | manual | failed
+  delivery       String
+  error          String?
+  authorStaffId  String?
+  authorName     String?
+  createdAt      DateTime          @default(now())
+
+  @@index([conversationId])
+}
+
+/// Encuesta de satisfacción de un ticket resuelto (enlace público con token).
+model SatisfactionSurvey {
+  id         String    @id @default(uuid())
+  ticketId   String    @unique
+  tenantId   String?
+  assigneeId String?
+  token      String    @unique
+  /// 1 a 5 (CSAT).
+  score      Int?
+  /// 0 a 10 (¿recomendarías NEXUS?).
+  nps        Int?
+  comment    String?
+  sentAt     DateTime  @default(now())
+  answeredAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([tenantId])
 }

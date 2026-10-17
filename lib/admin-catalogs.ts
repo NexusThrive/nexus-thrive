@@ -427,6 +427,7 @@ export const PAYMENT_METHOD_LABELS: Record<PaymentMethodValue, string> = {
  */
 export const RESERVED_SLUGS = [
   "admin",
+  "encuesta",
   "app",
   "www",
   "api",
