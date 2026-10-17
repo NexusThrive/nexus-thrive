@@ -6,7 +6,17 @@ import type { VerticalValue } from "@/lib/admin-catalogs";
 import type { AccountStageValue } from "./account-stages";
 export { ACCOUNT_STAGES, type AccountStageValue } from "./account-stages";
 
-export type PriorityItem = { id: string; name: string; slug: string; vertical: VerticalValue; detail: string; at: string };
+export type PriorityItem = {
+  id: string;
+  name: string;
+  slug: string;
+  /** Sin rubro: lead o ticket (icono propio). */
+  vertical: VerticalValue | null;
+  detail: string;
+  at: string;
+  /** Destino; por defecto la ficha 360° del negocio. */
+  href?: string;
+};
 export type Priorities = {
   needSetup: PriorityItem[];
   suspended: PriorityItem[];

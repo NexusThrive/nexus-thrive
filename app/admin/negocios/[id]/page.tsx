@@ -13,9 +13,12 @@ import { getStaffContext } from "@/lib/ops/access";
 import { moduleStatusRow } from "@/lib/plans/compat";
 import { planOf } from "@/lib/plans/pricing";
 import { loadPricingConfig } from "@/lib/plans/settings";
+import { isOpenStatus, statusMeta } from "@/lib/ops/support-rules";
+import { listTickets } from "@/lib/ops/tickets";
 import type { PlanKey } from "@/lib/plans/catalog";
 import { formatUsdCents } from "@/lib/plans/quote";
 import AuditLog from "../../_components/audit-log";
+import Panel from "../../_components/panel";
 import { ResumenTab, UsuariosTab } from "../../_components/tenant-drawer";
 import AccountForm from "./_components/account-form";
 import ContactsPanel from "./_components/contacts-panel";
@@ -32,17 +35,6 @@ const TABS: { value: Tab; label: string }[] = [
   { value: "actividad", label: "Actividad" },
 ];
 
-function Panel({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
-  return (
-    <section className="min-w-0 overflow-hidden rounded-lg border border-border bg-surface">
-      <header className="border-b border-border px-[18px] py-3.5">
-        <h2 className="font-display text-[15px] font-semibold">{title}</h2>
-        {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
-      </header>
-      {children}
-    </section>
-  );
-}
 
 /**
  * Ficha 360° de un negocio: quién es, en qué etapa está, quién lo atiende,
@@ -58,12 +50,13 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
   const can = (p: (typeof staff.permissions)[number]) => staff.permissions.includes(p);
 
   const adminDb = createAdminDb();
-  const [detail, extras, managers, audit, pricing] = await Promise.all([
+  const [detail, extras, managers, audit, pricing, tickets] = await Promise.all([
     adminDb.getTenantDetail(id),
     getAccountExtras(id),
     listManagers(),
     can("audit.view") ? adminDb.listAuditLogs(50, { tenantId: id }) : Promise.resolve([]),
     loadPricingConfig(),
+    can("tickets.view") ? listTickets({ tenantId: id }) : Promise.resolve([]),
   ]);
   if (!detail || !extras) notFound();
 
@@ -183,11 +176,41 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
       ) : null}
 
       {tab === "actividad" ? (
-        <Panel title="Actividad del equipo en esta cuenta" hint="Cambios de estado, módulos, contactos y accesos.">
-          <div className="p-[18px]">
-            {can("audit.view") ? <AuditLog rows={audit} /> : <p className="text-[13px] text-muted-foreground">Tu rol no consulta la auditoría.</p>}
-          </div>
-        </Panel>
+        <div className="grid grid-cols-1 items-start gap-3.5 lg:grid-cols-2">
+          {can("tickets.view") ? (
+            <Panel
+              title="Soporte"
+              hint={`${tickets.filter((t) => isOpenStatus(t.status)).length} abiertos · ${tickets.length} en total`}
+              action={
+                can("tickets.reply") ? (
+                  <Link href={`/admin/soporte?nuevo=1&negocio=${detail.id}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                    Nuevo ticket
+                  </Link>
+                ) : null
+              }
+            >
+              <ul className="divide-y divide-border">
+                {tickets.slice(0, 8).map((t) => (
+                  <li key={t.id}>
+                    <Link href={`/admin/soporte/${t.id}`} className="flex items-center gap-3 px-[18px] py-2.5 hover:bg-surface-muted">
+                      <span className="min-w-0 flex-1">
+                        <b className="block truncate text-[13.5px] font-medium">{t.subject}</b>
+                        <small className="font-mono text-xs text-muted-foreground">{t.code}</small>
+                      </span>
+                      <Badge tone={statusMeta(t.status).tone}>{statusMeta(t.status).label}</Badge>
+                    </Link>
+                  </li>
+                ))}
+                {tickets.length === 0 ? <li className="px-[18px] py-4 text-[13px] text-muted-foreground">Sin tickets.</li> : null}
+              </ul>
+            </Panel>
+          ) : null}
+          <Panel title="Actividad del equipo en esta cuenta" hint="Cambios de estado, módulos, contactos y accesos.">
+            <div className="p-[18px]">
+              {can("audit.view") ? <AuditLog rows={audit} /> : <p className="text-[13px] text-muted-foreground">Tu rol no consulta la auditoría.</p>}
+            </div>
+          </Panel>
+        </div>
       ) : null}
     </div>
   );

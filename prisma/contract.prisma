@@ -9,6 +9,35 @@ enum Role {
 /// Etapa comercial de una cuenta en el Operations Center. Distinta del
 /// estado de servicio (`Tenant.active` + `suspendedReason`): un problema de
 /// pago o técnico no es una cancelación comercial.
+/// Embudo comercial de NEXUS (Operations Center · CRM).
+enum LeadStage {
+  NEW
+  CONTACTED
+  QUALIFIED
+  DEMO
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+}
+
+enum TicketStatus {
+  NEW
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  ESCALATED
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
 enum AccountStage {
   ONBOARDING
   ACTIVE
@@ -1275,4 +1304,91 @@ model CustomerTierSetting {
   priceUsdCents Int
   order         Int
   updatedAt     temporal.updatedAt()
+}
+
+
+/// Prospecto comercial de NEXUS. Regla: ningún lead activo sin responsable
+/// (StaffMember.id) ni próximo paso con fecha.
+model Lead {
+  id             String    @id @default(uuid())
+  company        String
+  contactName    String?
+  phone          String?
+  email          String?
+  vertical       String?
+  city           String?
+  source         String
+  stage          LeadStage @default(NEW)
+  ownerId        String?
+  nextStep       String?
+  nextStepAt     DateTime?
+  valueUsdCents  Int       @default(0)
+  plan           String?
+  notes          String?
+  lostReason     String?
+  /// Negocio en el que se convirtió (al ganarse).
+  tenantId       String?
+  stageChangedAt DateTime  @default(now())
+  createdAt      DateTime  @default(now())
+  updatedAt      temporal.updatedAt()
+  activities     LeadActivity[]
+
+  @@index([stage])
+  @@index([ownerId])
+}
+
+model LeadActivity {
+  id        String   @id @default(uuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  /// note | call | whatsapp | email | meeting | stage
+  kind      String
+  body      String
+  staffId   String?
+  staffName String?
+  createdAt DateTime @default(now())
+
+  @@index([leadId])
+}
+
+/// Ticket de soporte de un negocio (SUP-2026-00124 = año + consecutivo).
+model SupportTicket {
+  id               String         @id @default(uuid())
+  year             Int
+  seq              Int
+  tenantId         String?
+  subject          String
+  description      String
+  category         String
+  priority         TicketPriority @default(NORMAL)
+  status           TicketStatus   @default(NEW)
+  channel          String
+  assigneeId       String?
+  requesterName    String?
+  requesterContact String?
+  solution         String?
+  firstResponseAt  DateTime?
+  resolvedAt       DateTime?
+  closedAt         DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        temporal.updatedAt()
+  messages         TicketMessage[]
+
+  @@unique([year, seq])
+  @@index([status])
+  @@index([tenantId])
+}
+
+model TicketMessage {
+  id            String        @id @default(uuid())
+  ticketId      String
+  ticket        SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  /// Nota interna: solo la ve el equipo NEXUS.
+  internal      Boolean       @default(false)
+  body          String
+  authorStaffId String?
+  authorName    String
+  createdAt     DateTime      @default(now())
+
+  @@index([ticketId])
 }

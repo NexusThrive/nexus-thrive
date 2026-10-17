@@ -37,15 +37,15 @@ export const OPS_NAV: { label: string; items: OpsItem[] }[] = [
     label: "Operaciones",
     items: [
       { key: "inicio", label: "Inicio", href: "/admin", icon: LayoutDashboard, ready: true },
-      { key: "crm", label: "CRM comercial", href: "/admin/crm", icon: Target, permission: "leads.view", ready: false },
+      { key: "crm", label: "CRM comercial", href: "/admin/crm", icon: Target, permission: "leads.view", ready: true },
       { key: "negocios", label: "Negocios", href: "/admin/negocios", icon: Building2, permission: "accounts.view", ready: true },
-      { key: "onboarding", label: "Onboarding", href: "/admin/onboarding", icon: ClipboardList, permission: "accounts.view", ready: false },
+      { key: "onboarding", label: "Onboarding", href: "/admin/onboarding", icon: ClipboardList, permission: "accounts.view", ready: true },
     ],
   },
   {
     label: "Clientes",
     items: [
-      { key: "soporte", label: "Soporte", href: "/admin/soporte", icon: Headphones, permission: "tickets.view", ready: false },
+      { key: "soporte", label: "Soporte", href: "/admin/soporte", icon: Headphones, permission: "tickets.view", ready: true },
       { key: "bandeja", label: "Bandeja", href: "/admin/bandeja", icon: Inbox, permission: "tickets.reply", ready: false },
       { key: "satisfaccion", label: "Satisfacción", href: "/admin/satisfaccion", icon: Smile, permission: "accounts.view", ready: false },
     ],

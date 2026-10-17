@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Building2, UserPlus } from "lucide-react";
+import { Building2, Headphones, Target, UserPlus } from "lucide-react";
 import { ToastProvider } from "@/components/molecules/toast";
 import { AppSidebar } from "@/components/organisms/app-sidebar";
 import { AppTopbar } from "@/components/organisms/app-topbar";
@@ -43,11 +43,13 @@ export default function OpsShell({ staff, children }: { staff: OpsStaff; childre
   const [formOpen, setFormOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  // "Nuevo negocio" desde el botón Crear del celular llega como ?nuevo=1.
-  const createOpen = formOpen || searchParams.get("nuevo") === "1";
+  // "Nuevo negocio" desde el botón Crear del celular llega como
+  // /admin/negocios?nuevo=1 (en CRM y Soporte ?nuevo=1 abre su propio formulario).
+  const tenantParam = pathname === "/admin/negocios" && searchParams.get("nuevo") === "1";
+  const createOpen = formOpen || tenantParam;
   const closeCreate = () => {
     setFormOpen(false);
-    if (searchParams.get("nuevo") === "1") router.replace(pathname, { scroll: false });
+    if (tenantParam) router.replace(pathname, { scroll: false });
   };
   const groups = useMemo(() => opsNavFor(staff.permissions), [staff.permissions]);
   const activeKey = opsActiveKey(groups, pathname);
@@ -57,6 +59,8 @@ export default function OpsShell({ staff, children }: { staff: OpsStaff; childre
     if (staff.permissions.includes("accounts.create")) {
       list.push({ key: "new-tenant", label: "Nuevo negocio", hint: "Crear una cuenta", href: "/admin/negocios?nuevo=1", icon: Building2 });
     }
+    if (staff.permissions.includes("leads.edit")) list.push({ key: "new-lead", label: "Nuevo lead", hint: "CRM comercial", href: "/admin/crm?nuevo=1", icon: Target });
+    if (staff.permissions.includes("tickets.reply")) list.push({ key: "new-ticket", label: "Nuevo ticket", hint: "Soporte", href: "/admin/soporte?nuevo=1", icon: Headphones });
     if (staff.permissions.includes("team.invite")) {
       list.push({ key: "invite", label: "Invitar integrante", hint: "Equipo NEXUS", href: "/admin/equipo?invitar=1", icon: UserPlus });
     }

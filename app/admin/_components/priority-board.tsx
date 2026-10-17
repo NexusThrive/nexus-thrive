@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, CircleDot } from "lucide-react";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import type { PriorityItem } from "@/lib/ops/accounts";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,8 @@ export type PriorityGroup = {
   items: PriorityItem[];
   /** Ruta para ver todos (opcional). */
   href?: string;
+  /** Icono de cada fila cuando no es un negocio (leads, tickets). */
+  itemIcon?: LucideIcon;
 };
 
 const TONE: Record<PriorityGroup["tone"], string> = {
@@ -65,10 +67,10 @@ export function PriorityBoard({ groups }: { groups: PriorityGroup[] }) {
             {g.items.length ? (
               <ul className="divide-y divide-border">
                 {g.items.slice(0, 5).map((it) => {
-                  const { icon: Icon } = getVerticalIcon(it.vertical);
+                  const Icon = it.vertical ? getVerticalIcon(it.vertical).icon : (g.itemIcon ?? CircleDot);
                   return (
                     <li key={it.id}>
-                      <Link href={`/admin/negocios/${it.id}`} className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-surface-muted">
+                      <Link href={it.href ?? `/admin/negocios/${it.id}`} className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-surface-muted">
                         <i aria-hidden="true" className={cn("block size-1.5 shrink-0", TONE[g.tone])} />
                         <Icon aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
                         <span className="min-w-0 flex-1">
