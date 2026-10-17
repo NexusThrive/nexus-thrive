@@ -1,12 +1,13 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "@/prisma/db";
+import { getStaffContext } from "@/lib/ops/access";
 
 /**
  * Callback post-login de Clerk.
  *
  * Decide a dónde enviar al usuario según su rol/tenant en la BD:
- * - SUPERADMIN → /admin
+ * - Equipo NEXUS (o el SUPERADMIN heredado) → /admin (Operations Center)
  * - Usuario con tenant y onboarding completado → /{tenantSlug}
  * - Usuario con tenant SIN onboarding → /onboarding
  * - Sin usuario en BD (recién registrado) → /onboarding
@@ -19,12 +20,8 @@ export default async function AuthCallback() {
     return null;
   }
 
-  // ¿Es SuperAdmin?
-  const superAdmin = await db.orm.public.User
-    .where({ clerkUserId: userId, role: "SUPERADMIN" })
-    .first();
-
-  if (superAdmin) {
+  // ¿Es del equipo NEXUS? (también vincula invitaciones y el primer Propietario)
+  if (await getStaffContext()) {
     redirect("/admin");
   }
 

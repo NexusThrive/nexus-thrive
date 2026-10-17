@@ -263,7 +263,28 @@ export type AuditAction =
   | "ACTIVATE_TENANT"
   | "TOGGLE_MODULE"
   | "EXPORT_TENANTS"
-  | "IMPERSONATE";
+  | "IMPERSONATE"
+  // Operations Center (equipo, cuentas, catálogo, comercial, soporte, cobros)
+  | "STAFF_INVITE"
+  | "STAFF_ROLE_CHANGE"
+  | "STAFF_DEACTIVATE"
+  | "STAFF_REACTIVATE"
+  | "ROLE_CREATE"
+  | "ROLE_UPDATE"
+  | "ROLE_DELETE"
+  | "ACCOUNT_UPDATE"
+  | "CONTACT_SAVE"
+  | "CONTACT_DELETE"
+  | "CATALOG_UPDATE"
+  | "LEAD_SAVE"
+  | "LEAD_STAGE"
+  | "LEAD_CONVERT"
+  | "TICKET_SAVE"
+  | "TICKET_STATUS"
+  | "SUBSCRIPTION_SAVE"
+  | "CHARGE_RECORD"
+  | "CHARGE_CONFIRM"
+  | "CHARGE_REFUND";
 
 export type AuditLogInput = {
   actorId: string;
@@ -320,13 +341,33 @@ const ROLE_LABELS: Record<"SUPERADMIN" | "OWNER" | "STAFF", string> = {
   STAFF: "Equipo",
 };
 
-const AUDIT_ACTION_LABELS: Record<string, string> = {
+export const AUDIT_ACTION_LABELS: Record<string, string> = {
   CREATE_TENANT: "Negocio creado",
   SUSPEND_TENANT: "Negocio suspendido",
   ACTIVATE_TENANT: "Negocio reactivado",
   TOGGLE_MODULE: "Módulo actualizado",
   EXPORT_TENANTS: "Exportación de negocios",
   IMPERSONATE: "Acceso como negocio (impersonación)",
+  STAFF_INVITE: "Integrante invitado",
+  STAFF_ROLE_CHANGE: "Rol de integrante cambiado",
+  STAFF_DEACTIVATE: "Integrante desactivado",
+  STAFF_REACTIVATE: "Integrante reactivado",
+  ROLE_CREATE: "Rol creado",
+  ROLE_UPDATE: "Permisos de rol cambiados",
+  ROLE_DELETE: "Rol eliminado",
+  ACCOUNT_UPDATE: "Cuenta actualizada",
+  CONTACT_SAVE: "Contacto guardado",
+  CONTACT_DELETE: "Contacto eliminado",
+  CATALOG_UPDATE: "Catálogo de planes y módulos actualizado",
+  LEAD_SAVE: "Lead guardado",
+  LEAD_STAGE: "Lead cambió de etapa",
+  LEAD_CONVERT: "Lead convertido en negocio",
+  TICKET_SAVE: "Ticket actualizado",
+  TICKET_STATUS: "Ticket cambió de estado",
+  SUBSCRIPTION_SAVE: "Suscripción actualizada",
+  CHARGE_RECORD: "Cobro registrado",
+  CHARGE_CONFIRM: "Cobro confirmado",
+  CHARGE_REFUND: "Cobro reembolsado",
 };
 
 /** Escapa los comodines de LIKE para que la búsqueda sea literal. */
@@ -1181,12 +1222,19 @@ export function createAdminDb() {
     },
 
     /** Últimas entradas de la bitácora de auditoría (más recientes primero). */
-    listAuditLogs: async (limit = 20): Promise<AuditLogRow[]> => {
-      const safeLimit = Math.min(100, Math.max(1, Math.trunc(limit)));
-      const rows = await db.orm.public.AuditLog
-        .where({})
+    listAuditLogs: async (
+      limit = 20,
+      filter: { tenantId?: string; action?: string; actorEmail?: string; offset?: number } = {},
+    ): Promise<AuditLogRow[]> => {
+      const safeLimit = Math.min(200, Math.max(1, Math.trunc(limit)));
+      let query = db.orm.public.AuditLog.where({});
+      if (filter.tenantId) query = query.where({ targetTenantId: filter.tenantId });
+      if (filter.action) query = query.where({ action: filter.action });
+      if (filter.actorEmail) query = query.where({ actorEmail: filter.actorEmail });
+      const rows = await query
         .orderBy((entry) => entry.createdAt.desc())
         .limit(safeLimit)
+        .offset(Math.max(0, filter.offset ?? 0))
         .all();
       return rows.map((row) => ({
         id: row.id,

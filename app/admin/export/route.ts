@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { requireStaff } from "@/lib/ops/access";
 import { headers } from "next/headers";
 import { createAdminDb, type TenantListRow } from "@/lib/admin-db";
 import { isVertical } from "@/lib/admin-catalogs";
@@ -54,18 +54,17 @@ function toCsv(rows: TenantListRow[]): string {
 
 /**
  * Exportación CSV del listado de negocios (respeta todos los filtros del
- * panel). Requiere SuperAdmin: no es un endpoint público. Queda auditado.
+ * panel). Requiere el permiso accounts.view: no es un endpoint público. Queda auditado.
  */
 export async function GET(request: Request): Promise<Response> {
-  const { userId, sessionClaims } = await auth();
-  if (!userId) {
-    return new Response("No autorizado.", { status: 401 });
-  }
-
-  const adminDb = createAdminDb();
-  if (!(await adminDb.isSuperAdmin(userId))) {
+  // Integrante del equipo NEXUS con acceso a cuentas (lib/ops/access.ts).
+  const staff = await requireStaff("accounts.view");
+  if (!staff) {
     return new Response("No autorizado.", { status: 403 });
   }
+  const userId = staff.clerkUserId;
+  const sessionClaims = { email: staff.email };
+  const adminDb = createAdminDb();
 
   const { searchParams } = new URL(request.url);
   const q = searchParams.get("q")?.trim() ?? "";

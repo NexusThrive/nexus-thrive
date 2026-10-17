@@ -100,7 +100,29 @@ export default function TenantTable({
 
   return (
     <>
-      <div className="overflow-hidden rounded-lg border bg-card">
+      {/* Celular: tarjetas que llevan a la ficha 360°. */}
+      <ul className="grid gap-2.5 md:hidden">
+        {rows.map((row) => {
+          const { icon: Icon } = getVerticalIcon(row.vertical);
+          return (
+            <li key={row.id}>
+              <Link href={`/admin/negocios/${row.id}`} className="flex items-center gap-3 rounded-lg border border-border bg-surface p-3.5 transition-colors active:bg-surface-muted">
+                <span className="grid size-10 shrink-0 place-items-center rounded-md bg-surface-muted">
+                  <Icon aria-hidden="true" className="size-5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <b className="block truncate font-medium">{row.name}</b>
+                  <small className="block truncate text-xs text-muted-foreground">
+                    {VERTICAL_LABELS[row.vertical]} · {row.lastActivityLabel}
+                  </small>
+                </span>
+                <TenantStatusBadge active={row.active} />
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="hidden overflow-hidden rounded-lg border bg-card md:block">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[860px] border-collapse text-sm [&_td]:align-middle [&_td:first-child]:sticky [&_td:first-child]:left-0 [&_td:first-child]:z-10 [&_td:first-child]:bg-card [&_tbody_tr]:h-14 [&_th:first-child]:sticky [&_th:first-child]:left-0 [&_th:first-child]:z-10 [&_th:first-child]:bg-card">
             <thead>

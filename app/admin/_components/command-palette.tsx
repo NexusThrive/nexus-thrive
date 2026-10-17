@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useShell } from "@/components/providers/shell-context";
 import { Building2, Download, Plus, TriangleAlert } from "lucide-react";
 import {
   CommandDialog,
@@ -28,6 +29,7 @@ export default function CommandPalette({
 }) {
   const [query, setQuery] = useState("");
   const router = useRouter();
+  const { groups } = useShell();
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -59,6 +61,14 @@ export default function CommandPalette({
       />
       <CommandList>
         <CommandEmpty>Sin resultados.</CommandEmpty>
+        <CommandGroup heading="Ir a">
+          {groups.flatMap((g) => g.items).map((item) => (
+            <CommandItem key={item.key} value={`ir ${item.label}`} onSelect={() => run(() => router.push(item.href))}>
+              <item.icon aria-hidden="true" />
+              {item.label}
+            </CommandItem>
+          ))}
+        </CommandGroup>
         <CommandGroup heading="Acciones">
           <CommandItem
             value={`nuevo negocio ${query}`}
@@ -71,7 +81,7 @@ export default function CommandPalette({
             value={`buscar ${query}`}
             onSelect={() =>
               run(() =>
-                router.push(`/admin?q=${encodeURIComponent(query.trim())}`),
+                router.push(`/admin/negocios?q=${encodeURIComponent(query.trim())}`),
               )
             }
           >
@@ -82,7 +92,7 @@ export default function CommandPalette({
           </CommandItem>
           <CommandItem
             value="requieren atencion alertas"
-            onSelect={() => run(() => router.push("/admin?attention=1"))}
+            onSelect={() => run(() => router.push("/admin/negocios?attention=1"))}
           >
             <TriangleAlert aria-hidden="true" />
             Negocios que requieren atención
