@@ -1,4 +1,6 @@
 import type { PriorityItem } from "./accounts";
+import { listCharges } from "./billing";
+import { dunningLabel } from "./billing-rules";
 import { followUpState, stageMeta } from "./crm-rules";
 import { listLeads, todayBogota } from "./leads";
 import { priorityMeta, slaState } from "./support-rules";
@@ -38,5 +40,23 @@ export async function ticketPriorities(now = Date.now()): Promise<PriorityItem[]
       detail: `${s.state === "breached" ? "SLA vencido" : s.state === "at_risk" ? "SLA en riesgo" : "Sin asignar"} · ${priorityMeta(t.priority).label} · ${t.tenantName ?? "sin negocio"}`,
       at: new Date(t.createdAt).toISOString(),
       href: `/admin/soporte/${t.id}`,
+    }));
+}
+
+/** Prioridades de cobro: por confirmar, aviso pendiente o suspendibles. */
+export async function billingPriorities(): Promise<PriorityItem[]> {
+  const charges = await listCharges();
+  const rank = { suspend_eligible: 0, notice_needed: 1 } as Record<string, number>;
+  return charges
+    .filter((c) => c.status === "PENDING" && ((c.evidence.length > 0 && c.method) || c.dunning.stage === "notice_needed" || c.dunning.stage === "suspend_eligible"))
+    .sort((a, b) => (rank[a.dunning.stage] ?? 2) - (rank[b.dunning.stage] ?? 2) || a.dueDate.localeCompare(b.dueDate))
+    .map((c) => ({
+      id: c.id,
+      name: c.tenantName,
+      slug: c.id,
+      vertical: null,
+      detail: c.evidence.length && c.method ? "Pago con comprobante · por confirmar" : dunningLabel(c.dunning),
+      at: `${c.dueDate}T12:00:00Z`,
+      href: `/admin/facturacion?cobro=${c.id}`,
     }));
 }

@@ -15,6 +15,8 @@ import { planOf } from "@/lib/plans/pricing";
 import { loadPricingConfig } from "@/lib/plans/settings";
 import { isOpenStatus, statusMeta } from "@/lib/ops/support-rules";
 import { listTickets } from "@/lib/ops/tickets";
+import { getSubscriptionByTenant, listCharges } from "@/lib/ops/billing";
+import { CHARGE_STATUSES, dunningLabel, SUBSCRIPTION_STATUSES } from "@/lib/ops/billing-rules";
 import type { PlanKey } from "@/lib/plans/catalog";
 import { formatUsdCents } from "@/lib/plans/quote";
 import AuditLog from "../../_components/audit-log";
@@ -50,13 +52,15 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
   const can = (p: (typeof staff.permissions)[number]) => staff.permissions.includes(p);
 
   const adminDb = createAdminDb();
-  const [detail, extras, managers, audit, pricing, tickets] = await Promise.all([
+  const [detail, extras, managers, audit, pricing, tickets, subscription, charges] = await Promise.all([
     adminDb.getTenantDetail(id),
     getAccountExtras(id),
     listManagers(),
     can("audit.view") ? adminDb.listAuditLogs(50, { tenantId: id }) : Promise.resolve([]),
     loadPricingConfig(),
     can("tickets.view") ? listTickets({ tenantId: id }) : Promise.resolve([]),
+    can("billing.view") ? getSubscriptionByTenant(id) : Promise.resolve(null),
+    can("billing.view") ? listCharges({ tenantId: id }) : Promise.resolve([]),
   ]);
   if (!detail || !extras) notFound();
 
@@ -90,7 +94,7 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
           <div className="mt-2.5 flex flex-wrap gap-1.5">
             <Badge tone={detail.active ? "success" : "danger"}>{detail.active ? "Servicio activo" : "Suspendido"}</Badge>
             <Badge tone="neutral">Cuenta: {stageLabel.toLowerCase()}</Badge>
-            <Badge variant="gold">Thrive {plan?.name ?? extras.plan} · {formatUsdCents(extras.planMonthlyUsdCents)}/mes</Badge>
+            <Badge variant="gold">Thrive {plan?.name ?? extras.plan} · {formatUsdCents(subscription?.priceUsdCents ?? extras.planMonthlyUsdCents)}/mes</Badge>
             <Badge tone={extras.managerName ? "success" : "warning"}>{extras.managerName ? `Responsable: ${extras.managerName}` : "Sin responsable"}</Badge>
           </div>
         </div>
@@ -134,6 +138,7 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
 
       {tab === "plan" ? (
         <div className="grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+          <div className="grid gap-3.5">
           <Panel title="Plan contratado">
             <div className="grid gap-1 p-[18px]">
               <p className="font-display text-[22px] font-bold">
@@ -141,12 +146,45 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
               </p>
               <p className="text-[13px] text-muted-foreground">{plan?.tagline}</p>
               <p className="mt-3 font-display text-[28px] font-bold tabular-nums">
-                {formatUsdCents(extras.planMonthlyUsdCents)} <span className="text-[13px] font-normal text-muted-foreground">USD/mes · {extras.billingCycle === "ANNUAL" ? "anual" : "mensual"}</span>
+                {formatUsdCents(subscription?.priceUsdCents ?? extras.planMonthlyUsdCents)} <span className="text-[13px] font-normal text-muted-foreground">USD/mes · {(subscription?.billingCycle ?? extras.billingCycle) === "ANNUAL" ? "anual" : "mensual"}</span>
               </p>
               <p className="text-[13px] text-muted-foreground">Clientes: {tier?.label ?? "sin tramo (negocio anterior al catálogo)"}</p>
-              <p className="mt-2 text-xs text-muted-foreground">Precio fijado al registrarse; los cambios del catálogo aplican a registros nuevos.</p>
+              <p className="mt-2 text-xs text-muted-foreground">{subscription ? "Precio de la suscripción vigente." : "Precio elegido al registrarse; los cambios del catálogo aplican a registros nuevos."}</p>
             </div>
           </Panel>
+          {can("billing.view") ? (
+            <Panel
+              title="Suscripción y cobros"
+              hint={subscription ? `${SUBSCRIPTION_STATUSES.find((x) => x.value === subscription.displayStatus)?.label} · período hasta ${subscription.periodEnd}` : "Sin suscripción todavía"}
+              action={
+                subscription ? (
+                  <Link href="/admin/facturacion?tab=suscripciones" className={buttonVariants({ variant: "outline", size: "sm" })}>
+                    Facturación
+                  </Link>
+                ) : can("billing.record") ? (
+                  <Link href={`/admin/facturacion?tab=suscripciones&suscribir=${detail.id}`} className={buttonVariants({ size: "sm" })}>
+                    Crear suscripción
+                  </Link>
+                ) : null
+              }
+            >
+              <ul className="divide-y divide-border">
+                {charges.slice(0, 6).map((c) => (
+                  <li key={c.id}>
+                    <Link href={`/admin/facturacion?cobro=${c.id}`} className="flex flex-wrap items-center gap-3 px-[18px] py-2.5 hover:bg-surface-muted">
+                      <span className="min-w-0 flex-1 text-[13px]">
+                        {c.periodStart} → {c.periodEnd}
+                        <small className="block text-xs text-muted-foreground">{c.status === "PENDING" ? dunningLabel(c.dunning) : CHARGE_STATUSES.find((x) => x.value === c.status)?.label}</small>
+                      </span>
+                      <span className="font-mono text-[13px] tabular-nums">{formatUsdCents(c.amountUsdCents)}</span>
+                    </Link>
+                  </li>
+                ))}
+                {charges.length === 0 ? <li className="px-[18px] py-4 text-[13px] text-muted-foreground">Sin cobros.</li> : null}
+              </ul>
+            </Panel>
+          ) : null}
+          </div>
           <Panel title="Módulos" hint={can("accounts.modules") ? "Activa o desactiva módulos de este negocio." : "Solo lectura: tu rol no cambia módulos."}>
             <ModuleToggles tenantId={detail.id} modules={moduleRows} canEdit={can("accounts.modules")} />
           </Panel>
