@@ -15,6 +15,8 @@ import { planOf } from "@/lib/plans/pricing";
 import { loadPricingConfig } from "@/lib/plans/settings";
 import { isOpenStatus, statusMeta } from "@/lib/ops/support-rules";
 import { listTickets } from "@/lib/ops/tickets";
+import { accountHealth } from "@/lib/ops/health";
+import { HEALTH_LEVELS } from "@/lib/ops/health-rules";
 import { getSubscriptionByTenant, listCharges } from "@/lib/ops/billing";
 import { CHARGE_STATUSES, dunningLabel, SUBSCRIPTION_STATUSES } from "@/lib/ops/billing-rules";
 import type { PlanKey } from "@/lib/plans/catalog";
@@ -52,7 +54,7 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
   const can = (p: (typeof staff.permissions)[number]) => staff.permissions.includes(p);
 
   const adminDb = createAdminDb();
-  const [detail, extras, managers, audit, pricing, tickets, subscription, charges] = await Promise.all([
+  const [detail, extras, managers, audit, pricing, tickets, subscription, charges, health] = await Promise.all([
     adminDb.getTenantDetail(id),
     getAccountExtras(id),
     listManagers(),
@@ -61,6 +63,7 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
     can("tickets.view") ? listTickets({ tenantId: id }) : Promise.resolve([]),
     can("billing.view") ? getSubscriptionByTenant(id) : Promise.resolve(null),
     can("billing.view") ? listCharges({ tenantId: id }) : Promise.resolve([]),
+    accountHealth({ tenantId: id }).then((r) => r[0] ?? null),
   ]);
   if (!detail || !extras) notFound();
 
@@ -94,6 +97,13 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
           <div className="mt-2.5 flex flex-wrap gap-1.5">
             <Badge tone={detail.active ? "success" : "danger"}>{detail.active ? "Servicio activo" : "Suspendido"}</Badge>
             <Badge tone="neutral">Cuenta: {stageLabel.toLowerCase()}</Badge>
+            {health ? (
+              <Link href="/admin/salud" title={health.factors.map((f) => `${f.label} ${f.points}/${f.max}: ${f.reason}`).join("\n")}>
+                <Badge tone={HEALTH_LEVELS[health.level].tone}>
+                  Salud {health.score} · {HEALTH_LEVELS[health.level].label}
+                </Badge>
+              </Link>
+            ) : null}
             <Badge variant="gold">Thrive {plan?.name ?? extras.plan} · {formatUsdCents(subscription?.priceUsdCents ?? extras.planMonthlyUsdCents)}/mes</Badge>
             <Badge tone={extras.managerName ? "success" : "warning"}>{extras.managerName ? `Responsable: ${extras.managerName}` : "Sin responsable"}</Badge>
           </div>

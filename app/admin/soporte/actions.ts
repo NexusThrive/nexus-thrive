@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/ops/access";
 import { logOps } from "@/lib/ops/audit";
 import { checkTransition, isTicketPriority, isTicketStatus, statusMeta, TICKET_CATEGORIES, validateTicket, type TicketInput } from "@/lib/ops/support-rules";
+import { ensureSurvey } from "@/lib/ops/satisfaction";
 import { addTicketMessage, createTicket, getTicket, markFirstResponse, setTicketStatus, updateTicketFields } from "@/lib/ops/tickets";
 
 export type TicketResult = { ok: true; id: string; code?: string } | { ok: false; message: string; errors?: Partial<Record<keyof TicketInput, string>> };
@@ -55,6 +56,10 @@ export async function setTicketStatusAction(id: string, status: string, solution
   if (!check.ok) return { ok: false, message: check.message };
   await setTicketStatus(id, status, status === "RESOLVED" ? sol : null);
   await addTicketMessage(id, `Estado: ${statusMeta(t.status).label} → ${statusMeta(status).label}.${status === "RESOLVED" ? `\nSolución: ${sol}` : ""}`, true, ctx);
+  if (status === "RESOLVED") {
+    const url = await ensureSurvey(id);
+    if (url) await addTicketMessage(id, `Encuesta de satisfacción lista para el cliente: ${url}`, true, ctx);
+  }
   await logOps(ctx, "TICKET_STATUS", { targetTenantId: t.tenantId ?? undefined, targetTenantName: t.tenantName ?? undefined, metadata: { ticketId: id, code: t.code, from: t.status, to: status } });
   refresh(id, t.tenantId);
   return { ok: true, id };

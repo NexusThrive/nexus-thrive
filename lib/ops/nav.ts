@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  HeartPulse,
   Building2,
   ClipboardList,
   CreditCard,
@@ -46,8 +47,9 @@ export const OPS_NAV: { label: string; items: OpsItem[] }[] = [
     label: "Clientes",
     items: [
       { key: "soporte", label: "Soporte", href: "/admin/soporte", icon: Headphones, permission: "tickets.view", ready: true },
-      { key: "bandeja", label: "Bandeja", href: "/admin/bandeja", icon: Inbox, permission: "tickets.reply", ready: false },
-      { key: "satisfaccion", label: "Satisfacción", href: "/admin/satisfaccion", icon: Smile, permission: "accounts.view", ready: false },
+      { key: "bandeja", label: "Bandeja", href: "/admin/bandeja", icon: Inbox, permission: "tickets.view", ready: true },
+      { key: "satisfaccion", label: "Satisfacción", href: "/admin/satisfaccion", icon: Smile, permission: "tickets.view", ready: true },
+      { key: "salud", label: "Salud de cuentas", href: "/admin/salud", icon: HeartPulse, permission: "accounts.view", ready: true },
     ],
   },
   {

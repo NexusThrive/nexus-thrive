@@ -1,5 +1,7 @@
 import type { PriorityItem } from "./accounts";
 import { listCharges } from "./billing";
+import { accountHealth } from "./health";
+import { listConversations } from "./inbox";
 import { dunningLabel } from "./billing-rules";
 import { followUpState, stageMeta } from "./crm-rules";
 import { listLeads, todayBogota } from "./leads";
@@ -58,5 +60,37 @@ export async function billingPriorities(): Promise<PriorityItem[]> {
       detail: c.evidence.length && c.method ? "Pago con comprobante · por confirmar" : dunningLabel(c.dunning),
       at: `${c.dueDate}T12:00:00Z`,
       href: `/admin/facturacion?cobro=${c.id}`,
+    }));
+}
+
+/** Conversaciones de la bandeja con mensajes sin leer. */
+export async function inboxPriorities(): Promise<PriorityItem[]> {
+  const list = await listConversations();
+  return list
+    .filter((c) => c.unread > 0 && c.status !== "CLOSED")
+    .map((c) => ({
+      id: c.id,
+      name: c.contactName ?? c.contactHandle,
+      slug: c.id,
+      vertical: null,
+      detail: `${c.unread} sin leer · ${c.channel === "WHATSAPP" ? "WhatsApp" : "Correo"} · ${c.tenantName ?? "sin negocio"}`,
+      at: new Date(c.lastMessageAt).toISOString(),
+      href: `/admin/bandeja?c=${c.id}`,
+    }));
+}
+
+/** Cuentas en riesgo o críticas, con la acción sugerida. */
+export async function healthPriorities(): Promise<PriorityItem[]> {
+  const rows = await accountHealth();
+  return rows
+    .filter((r) => r.level === "critical" || r.level === "at_risk")
+    .map((r) => ({
+      id: r.id,
+      name: `${r.name} · ${r.score}`,
+      slug: r.id,
+      vertical: null,
+      detail: r.nextAction ?? "Revisar la cuenta",
+      at: r.lastActivity ? `${r.lastActivity}T12:00:00Z` : new Date().toISOString(),
+      href: `/admin/negocios/${r.id}`,
     }));
 }
