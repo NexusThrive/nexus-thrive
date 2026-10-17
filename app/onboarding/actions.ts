@@ -1,10 +1,10 @@
 "use server";
 
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
 import { validateAdaptiveOnboarding } from "@/lib/onboarding/validation";
 import { suggestSlug } from "@/lib/onboarding/slug";
+import { quotePlan } from "@/lib/plans/quote";
 import type {
   AdaptiveOnboardingInput,
   ModuleValue,
@@ -23,8 +23,10 @@ import type {
  * - Idempotente: reintentos/doble click no crean duplicados (módulos via
  *   upsert sobre [tenantId, moduleName]; tenant via @unique en slug).
  * - Mensajes legibles; los errores de Prisma/DB JAMÁS llegan al usuario.
- * - En éxito: revalidate + devuelve el slug; el cliente muestra la pantalla
- *   final y el CTA "Entrar a mi espacio NEXUS" navega a `/[slug]`.
+ * - En éxito devuelve el slug SIN revalidar: revalidar re-renderizaría
+ *   /onboarding, que ya ve el negocio completo y redirige, cortando la
+ *   cinemática. El cliente entra con una recarga completa (las rutas del
+ *   negocio son dinámicas, no hay caché que invalidar).
  */
 
 type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -81,6 +83,18 @@ export async function completeAdaptiveOnboardingAction(
   }
   const values = result.values;
 
+  // Plan: precio calculado SIEMPRE aquí (el navegador solo muestra). Aún no
+  // hay cobro: se guarda la elección y el precio mensual que se le mostró.
+  const plan = values.plan ?? "ESSENTIAL";
+  const billing = values.billing ?? "MONTHLY";
+  const quote = quotePlan({ plan, vertical: values.vertical, billing, selected: values.selectedModules });
+  const planFields = {
+    plan,
+    billingCycle: billing,
+    planMonthlyUsdCents: quote.monthlyCents,
+    planSelectedAt: Temporal.Instant.fromEpochMilliseconds(Date.now()),
+  };
+
   // 3) Modo resume: el tenant debe pertenecer al usuario ---------------
   if (values.tenantId) {
     const tenantId = values.tenantId;
@@ -104,8 +118,7 @@ export async function completeAdaptiveOnboardingAction(
 
     // Si ya estaba completo: idempotente, simplemente entra.
     if (tenant.onboardingCompleted) {
-      revalidatePath(`/${tenant.slug}`);
-      return { status: "ok", slug: tenant.slug };
+      return { status: "ok", slug: tenant.slug, plan: tenant.plan };
     }
 
     // Disponibilidad del slug si va a cambiar (sin contar el propio tenant).
@@ -135,6 +148,7 @@ export async function completeAdaptiveOnboardingAction(
           teamSize: values.teamSize,
           address: values.address,
           onboardingCompleted: true,
+          ...planFields,
         });
         await syncModules(tx, tenantId, values.selectedModules);
       });
@@ -145,9 +159,7 @@ export async function completeAdaptiveOnboardingAction(
       };
     }
 
-    revalidatePath(`/${values.slug}`);
-    revalidatePath("/");
-    return { status: "ok", slug: values.slug };
+    return { status: "ok", slug: values.slug, plan };
   }
 
   // 4) Modo create: dispersión de identidad desde Clerk -----------------
@@ -191,6 +203,7 @@ export async function completeAdaptiveOnboardingAction(
         teamSize: values.teamSize,
         address: values.address,
         onboardingCompleted: true,
+        ...planFields,
       });
 
       await tx.orm.public.User.create({
@@ -210,7 +223,5 @@ export async function completeAdaptiveOnboardingAction(
     };
   }
 
-  revalidatePath(`/${values.slug}`);
-  revalidatePath("/");
-  return { status: "ok", slug: values.slug };
+  return { status: "ok", slug: values.slug, plan };
 }

@@ -6,6 +6,22 @@ enum Role {
   STAFF
 }
 
+/// Plan de NEXUS elegido en el onboarding (Thrive Essential / Elite / Signature).
+enum TenantPlan {
+  /// Gratis: módulos base para conocer NEXUS.
+  ESSENTIAL
+  /// Módulos a la medida del negocio.
+  ELITE
+  /// Todos los módulos del rubro con acompañamiento.
+  SIGNATURE
+}
+
+/// Ciclo de facturación del plan.
+enum BillingCycle {
+  MONTHLY
+  ANNUAL
+}
+
 /// Perfil del negocio en el onboarding auto-servicio: persona natural vs empresa.
 enum TenantType {
   /// Emprendedor / persona natural (perfil liviano: sin NIT obligatorio).
@@ -199,6 +215,13 @@ model Tenant {
   websiteUrl        String?
   instagramHandle   String?
   googleBusinessUrl String?
+  /// Plan elegido en el onboarding. Aún no hay cobro: se guarda la elección y
+  /// el precio que se le mostró (calculado en el servidor con lib/plans).
+  plan                TenantPlan   @default(ESSENTIAL)
+  billingCycle        BillingCycle @default(MONTHLY)
+  /// Precio mensual en centavos de USD (0 en Essential).
+  planMonthlyUsdCents Int          @default(0)
+  planSelectedAt      DateTime?
   /// Métodos de pago aceptados (Paso 4 del onboarding; catálogo PaymentProvider).
   /// Nullable en DB: un tenant nuevo aún no los configuró; el código normaliza a [].
   paymentMethods    PaymentProvider[]?

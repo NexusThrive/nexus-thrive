@@ -174,6 +174,19 @@
               }
             ]
           },
+          "BillingCycle": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "MONTHLY",
+                "value": "MONTHLY"
+              },
+              {
+                "name": "ANNUAL",
+                "value": "ANNUAL"
+              }
+            ]
+          },
           "BookingStatus": {
             "codecId": "pg/text@1",
             "members": [
@@ -526,6 +539,23 @@
               {
                 "name": "STAFF",
                 "value": "STAFF"
+              }
+            ]
+          },
+          "TenantPlan": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "ESSENTIAL",
+                "value": "ESSENTIAL"
+              },
+              {
+                "name": "ELITE",
+                "value": "ELITE"
+              },
+              {
+                "name": "SIGNATURE",
+                "value": "SIGNATURE"
               }
             ]
           },
@@ -5964,6 +5994,19 @@
                   "kind": "scalar"
                 }
               },
+              "billingCycle": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "BillingCycle",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
               "city": {
                 "nullable": true,
                 "type": {
@@ -6032,6 +6075,33 @@
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "plan": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "TenantPlan",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "planMonthlyUsdCents": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "planSelectedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
                   "kind": "scalar"
                 }
               },
@@ -6518,6 +6588,9 @@
                 "address": {
                   "column": "address"
                 },
+                "billingCycle": {
+                  "column": "billingCycle"
+                },
                 "city": {
                   "column": "city"
                 },
@@ -6547,6 +6620,15 @@
                 },
                 "paymentMethods": {
                   "column": "paymentMethods"
+                },
+                "plan": {
+                  "column": "plan"
+                },
+                "planMonthlyUsdCents": {
+                  "column": "planMonthlyUsdCents"
+                },
+                "planSelectedAt": {
+                  "column": "planSelectedAt"
                 },
                 "slug": {
                   "column": "slug"
@@ -11351,6 +11433,11 @@
             "Tenant": {
               "checks": [
                 {
+                  "expression": "\"billingCycle\" IN ('MONTHLY', 'ANNUAL')",
+                  "name": "Tenant_billingCycle_check_3dc757ce",
+                  "prefix": "Tenant_billingCycle_check"
+                },
+                {
                   "expression": "\"paymentMethods\"::text[] <@ ARRAY['WOMPI', 'NEQUI', 'CASH', 'TRANSFER']::text[]",
                   "name": "Tenant_paymentMethods_check_08fe4dd4",
                   "prefix": "Tenant_paymentMethods_check"
@@ -11359,6 +11446,11 @@
                   "expression": "array_position(\"paymentMethods\", NULL) IS NULL",
                   "name": "Tenant_paymentMethods_elem_not_null_7b2f47d4",
                   "prefix": "Tenant_paymentMethods_elem_not_null"
+                },
+                {
+                  "expression": "\"plan\" IN ('ESSENTIAL', 'ELITE', 'SIGNATURE')",
+                  "name": "Tenant_plan_check_f1a20b28",
+                  "prefix": "Tenant_plan_check"
                 },
                 {
                   "expression": "\"tenantType\" IN ('INDIVIDUAL', 'COMPANY')",
@@ -11385,6 +11477,21 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
+                },
+                "billingCycle": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "MONTHLY"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "BillingCycle",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
                 },
                 "city": {
                   "codecId": "pg/text@1",
@@ -11450,6 +11557,35 @@
                     "namespaceId": "public",
                     "plane": "storage"
                   }
+                },
+                "plan": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "ESSENTIAL"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "TenantPlan",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "planMonthlyUsdCents": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "planSelectedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
                 },
                 "slug": {
                   "codecId": "pg/text@1",
@@ -11960,6 +12096,13 @@
                 "SUBCONTRATO"
               ]
             },
+            "BillingCycle": {
+              "kind": "valueSet",
+              "values": [
+                "MONTHLY",
+                "ANNUAL"
+              ]
+            },
             "BookingStatus": {
               "kind": "valueSet",
               "values": [
@@ -12105,6 +12248,14 @@
                 "STAFF"
               ]
             },
+            "TenantPlan": {
+              "kind": "valueSet",
+              "values": [
+                "ESSENTIAL",
+                "ELITE",
+                "SIGNATURE"
+              ]
+            },
             "TenantType": {
               "kind": "valueSet",
               "values": [
@@ -12148,7 +12299,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "5c796da84a2812cda89958292183d686ab17b12ddac66c131b160f9cd9952792"
+    "storageHash": "8be75ffc85a7020108206a5f06fd19614674399b48b6fcc1d261180d665fe619"
   },
   "execution": {
     "executionHash": "d957155aa23c772602ee4e39c786ac703e3319d82f2888e87b831a0f30928e75",
