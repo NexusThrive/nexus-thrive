@@ -4,6 +4,7 @@ import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant
 import { revalidatePath } from "next/cache";
 import { createTenantDb } from "@/lib/tenant-db";
 import { formatDateShort } from "@/lib/format";
+import { recordCharge } from "@/lib/business/charge";
 import {
   addMonths,
   bogotaEndOfDay,
@@ -52,12 +53,12 @@ type TenantDb = ReturnType<typeof createTenantDb>;
  * Verifica sesión de Clerk + tenant activo + membresía del usuario.
  * Devuelve `null` cuando algo falla (el caller responde con mensaje genérico).
  */
-async function requireTenantDb(tenantSlug: string): Promise<TenantDb | null> {
+async function requireTenantDb(tenantSlug: string): Promise<(TenantDb & { tenantId: string; memberId: string }) | null> {
   const context = await requireSharedTenantContext(tenantSlug);
   if (!context) {
     return null;
   }
-  return context.tenantDb;
+  return Object.assign(context.tenantDb, { tenantId: context.tenantId, memberId: context.memberId });
 }
 
 /** Revalida el módulo de membresías, Finanzas y el dashboard juntos. */
@@ -143,14 +144,20 @@ export async function createMembershipAction(
   });
 
   if (registerInitialPayment) {
-    await tenantDb.payments.create({
-      customerId,
-      membershipId: membership.id,
-      provider,
-      status: "APPROVED",
-      amount: priceAmount,
-      description: `Membresía ${typeLabel(type)} — cobro inicial`,
-    });
+    // Cobro con recibo consecutivo; en efectivo entra a la caja abierta.
+    await recordCharge(
+      tenantDb.tenantId,
+      {
+        customerId,
+        membershipId: membership.id,
+        method: provider,
+        amount: Number(priceAmount),
+        description: `Membresía ${typeLabel(type)} — cobro inicial`,
+        sourceType: "MEMBERSHIP",
+        sourceId: membership.id,
+      },
+      tenantDb.memberId,
+    );
   }
 
   revalidateMembershipViews(tenantSlug);
@@ -222,14 +229,19 @@ export async function renewMembershipAction(
   });
 
   if (registerPayment) {
-    await tenantDb.payments.create({
-      customerId: membership.customerId,
-      membershipId,
-      provider,
-      status: "APPROVED",
-      amount: priceAmount,
-      description: `Membresía ${typeLabel(membership.type)} — renovación`,
-    });
+    await recordCharge(
+      tenantDb.tenantId,
+      {
+        customerId: membership.customerId,
+        membershipId,
+        method: provider,
+        amount: Number(priceAmount),
+        description: `Membresía ${typeLabel(membership.type)} — renovación`,
+        sourceType: "MEMBERSHIP",
+        sourceId: membershipId,
+      },
+      tenantDb.memberId,
+    );
   }
 
   revalidateMembershipViews(tenantSlug);

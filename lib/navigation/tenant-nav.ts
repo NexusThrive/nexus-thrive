@@ -7,11 +7,14 @@ import {
   CreditCard,
   FolderOpen,
   LayoutDashboard,
+  Map as MapIcon,
   MessageCircle,
   Package,
   Receipt,
+  ScanLine,
   Settings,
   ShoppingCart,
+  Ticket,
   Users,
   Wallet,
 } from "lucide-react";
@@ -35,14 +38,23 @@ type ModuleNav = {
   href: string;
   icon: LucideIcon;
   label: (terms: VerticalTerms, vertical: VerticalValue) => string;
+  /** Solo para estos rubros (pantallas propias del rubro). */
+  verticals?: readonly VerticalValue[];
 };
 
 /** Un módulo puede ocupar varias entradas (cotizaciones = obras + carpetas + catálogo). */
 const MODULE_NAV: Record<ModuleValue, ModuleNav | ModuleNav[]> = {
   dashboard: { href: "", icon: LayoutDashboard, label: () => "Inicio" },
   crm: { href: "/crm", icon: Users, label: (terms) => terms.customers },
-  bookings: { href: "/bookings", icon: CalendarDays, label: (terms) => terms.bookings },
-  memberships: { href: "/memberships", icon: CreditCard, label: () => "Membresías" },
+  bookings: [
+    { href: "/bookings", icon: CalendarDays, label: (terms) => terms.bookings },
+    { href: "/tickets", icon: Ticket, label: () => "Taquilla", verticals: ["museum"] },
+    { href: "/departures", icon: MapIcon, label: () => "Salidas", verticals: ["tourism_agency", "tour_guides"] },
+  ],
+  memberships: [
+    { href: "/memberships", icon: CreditCard, label: () => "Membresías" },
+    { href: "/checkin", icon: ScanLine, label: () => "Control de acceso", verticals: ["gym"] },
+  ],
   orders: { href: "/orders", icon: ShoppingCart, label: () => "Pedidos" },
   quotes: [
     {
@@ -78,7 +90,7 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
   const active = new Set(activeModules);
   const items = (moduleName: ModuleValue): NavItem[] => {
     const entry = MODULE_NAV[moduleName];
-    return (Array.isArray(entry) ? entry : [entry]).map((nav) => ({
+    return (Array.isArray(entry) ? entry : [entry]).filter((nav) => !nav.verticals || nav.verticals.includes(vertical)).map((nav) => ({
       key: nav.href || "home",
       module: moduleName,
       href: nav.href,

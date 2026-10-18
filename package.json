@@ -47,7 +47,6 @@
     "@storybook/nextjs-vite": "10.6.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
-    "@types/qrcode": "1.5.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

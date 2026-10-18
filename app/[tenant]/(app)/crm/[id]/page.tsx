@@ -26,6 +26,8 @@ import PaymentsTable from "./_components/payments-table";
 import MembershipsTable from "./_components/memberships-table";
 import NotesPanel from "./_components/notes-panel";
 import AccountSummaryCard from "./_components/account-summary-card";
+import AccessCard from "./_components/access-card";
+import { memberStatus } from "@/lib/business/gym-db";
 import { ACCOUNT_STATUS_LABELS } from "./_components/status-pills";
 
 const ACCOUNT_STATUS_TONE: Record<CustomerAccountStatus, "emerald" | "amber" | "rose" | "slate"> = {
@@ -107,7 +109,9 @@ export default async function CustomerPage({
     : "resumen";
 
   const baseHref = `/${tenantSlug}/crm/${customer.id}`;
-  const extra = await db.orm.public.Customer.where({ tenantId: tenantRecord.id, id: customer.id }).select("profile", "documentId", "birthDate", "city", "tags", "photoId").first();
+  const extra = await db.orm.public.Customer.where({ tenantId: tenantRecord.id, id: customer.id }).select("profile", "documentId", "birthDate", "city", "tags", "photoId", "accessCode", "nfcUid").first();
+  const isGym = tenantRecord.vertical === "gym" && showMemberships;
+  const access = isGym ? await memberStatus(tenantRecord.id, customer.id) : null;
 
   const latestActiveMembership =
     memberships.find((membership) => membership.status !== "expired") ?? null;
@@ -187,6 +191,9 @@ export default async function CustomerPage({
             />
           </div>
           <div className="grid content-start gap-6">
+          {access ? (
+            <AccessCard slug={tenantSlug} customerId={customer.id} code={extra?.accessCode ?? null} nfcUid={extra?.nfcUid ?? null} status={access} />
+          ) : null}
           <VerticalProfileCard
             tenantSlug={tenantSlug}
             customerId={customer.id}
