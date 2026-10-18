@@ -67,7 +67,7 @@ export default async function FinancePage({
   // --- Periodo de la tarjeta de balance (7 o 30 días) ------------------
   const period = firstString(sp.p) === "7d" ? 7 : 30;
   const nuevo = firstString(sp.nuevo);
-  const initialSheet = nuevo === "pago" || nuevo === "gasto" ? nuevo : null;
+  const initialSheet = nuevo === "pago" || nuevo === "gasto" ? nuevo : firstString(sp.scan) === "1" ? "escaneo" : null;
   const initialCustomerId = firstString(sp.cliente);
 
   const tenantRecord = await db.orm.public.Tenant.where({

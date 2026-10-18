@@ -137,6 +137,100 @@ export async function createPaymentAction(
   };
 }
 
+export type ScannedPaymentFormState = {
+  status: "idle" | "error" | "ok";
+  message?: string;
+  errors?: PaymentFieldErrors;
+  values?: PaymentFormValues;
+  /** En éxito: datos del comprobante (recibo consecutivo, fecha y enlace público). */
+  receipt?: { reference: string; createdAt: string; paymentId: string; link: string };
+};
+
+/**
+ * Registra un pago a partir de un comprobante escaneado (FLU·05): la foto
+ * llega como archivo y se guarda como soporte del pago (Attachment PAYMENT).
+ * El monto y el método los confirmó el personal en el diálogo; la validación
+ * es la misma que `createPaymentAction`.
+ */
+export async function registerScannedPaymentAction(
+  _prevState: ScannedPaymentFormState,
+  formData: FormData,
+): Promise<ScannedPaymentFormState> {
+  const tenantSlug = String(formData.get("tenantSlug") ?? "");
+  const context = await requireSharedTenantContext(tenantSlug);
+  if (!context || !canHandleCash(context.role)) {
+    return ACCESS_DENIED_PAYMENT;
+  }
+  const tenantDb = context.tenantDb;
+
+  const photo = formData.get("photo");
+  if (!(photo instanceof File) || photo.size === 0) {
+    return { status: "error", message: "Adjunta la foto del comprobante." };
+  }
+  const photoError = checkAttachment(photo);
+  if (photoError) {
+    return { status: "error", message: photoError };
+  }
+
+  // Estado fijo APPROVED: el personal confirma el pago en el diálogo.
+  formData.set("status", "APPROVED");
+  const validation = validatePayment(formData);
+  if (!validation.ok) {
+    return { status: "error", errors: validation.errors, values: validation.values };
+  }
+  const { customerId, provider, amount, description } = validation.values;
+
+  if (customerId) {
+    const customer = await tenantDb.customers.get(customerId);
+    if (!customer) {
+      return { status: "error", message: "El cliente seleccionado no fue encontrado en este negocio.", values: validation.values };
+    }
+  }
+
+  // Referencia del QR si la trae: única en todo el sistema (mismo criterio
+  // que createPaymentAction).
+  const providerRefId = String(formData.get("providerRefId") ?? "").trim();
+  if (providerRefId) {
+    const existing = await db.orm.public.Payment.where({ providerRefId }).first();
+    if (existing) {
+      return { status: "error", message: "Ya existe un pago con esa referencia. Revisa el dato e inténtalo de nuevo.", values: validation.values };
+    }
+  }
+
+  const created = await tenantDb.payments.create({
+    customerId: customerId || null,
+    provider,
+    status: "APPROVED",
+    amount,
+    providerRefId: providerRefId || null,
+    description: description || null,
+  });
+
+  const number = await assignReceiptNumber(context.tenantId, created.id);
+  if (provider === "CASH") {
+    const cash = await currentCashSession(context.tenantId);
+    if (cash) {
+      await db.orm.public.Payment.where({ tenantId: context.tenantId, id: created.id }).update({ cashSessionId: cash.sessionId });
+      await addCashMovement(context.tenantId, { sessionId: cash.sessionId, kind: "INCOME", amount: Number(amount), description: description || `Recibo ${receiptCode(number)}`, paymentId: created.id }, context.memberId);
+    }
+  }
+
+  // Soporte: la foto del comprobante (Nequi, transferencia, etc.).
+  await addAttachment(context.tenantId, "PAYMENT", created.id, photo, context.memberId);
+
+  revalidatePath(`/${tenantSlug}/finance`);
+  revalidatePath(`/${tenantSlug}`);
+  return {
+    status: "ok",
+    receipt: {
+      reference: receiptCode(number),
+      createdAt: String(created.createdAt),
+      paymentId: created.id,
+      link: `${getAppBaseUrl()}/r/${receiptToken(created.id)}`,
+    },
+  };
+}
+
 /** Registra un gasto de caja menor. Revalida Finanzas y el dashboard. */
 export async function createExpenseAction(
   _prevState: ExpenseFormState,
