@@ -1,0 +1,899 @@
+[
+  {
+    "id": "dropCheckConstraint.Tenant.Tenant_vertical_check_739779ca",
+    "label": "Drop check constraint \"Tenant_vertical_check_739779ca\" on \"Tenant\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "Tenant_vertical_check_739779ca",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Tenant_vertical_check_739779ca\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Tenant_vertical_check_739779ca",
+          "public",
+          "\"public\".\"Tenant\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"Tenant_vertical_check_739779ca\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" DROP CONSTRAINT \"Tenant_vertical_check_739779ca\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Tenant_vertical_check_739779ca\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Tenant_vertical_check_739779ca",
+          "public",
+          "\"public\".\"Tenant\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Attendance",
+    "label": "Create table \"Attendance\"",
+    "summary": "Creates table \"Attendance\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Attendance"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Attendance\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Attendance\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Attendance\"",
+        "sql": "CREATE TABLE \"public\".\"Attendance\" (\n  \"allowed\" bool NOT NULL,\n  \"at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"customerId\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"membershipId\" text,\n  \"method\" text NOT NULL,\n  \"reason\" text,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Attendance\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Attendance\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Departure",
+    "label": "Create table \"Departure\"",
+    "summary": "Creates table \"Departure\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Departure"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Departure\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Departure\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Departure\"",
+        "sql": "CREATE TABLE \"public\".\"Departure\" (\n  \"capacity\" int4 NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"date\" timestamptz NOT NULL,\n  \"guide\" text,\n  \"id\" text NOT NULL,\n  \"meetingPoint\" text,\n  \"notes\" text,\n  \"productId\" text NOT NULL,\n  \"status\" text DEFAULT 'SCHEDULED' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"time\" text,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Departure\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Departure\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.TicketSale",
+    "label": "Create table \"TicketSale\"",
+    "summary": "Creates table \"TicketSale\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "TicketSale"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"TicketSale\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TicketSale\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"TicketSale\"",
+        "sql": "CREATE TABLE \"public\".\"TicketSale\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"customerId\" text,\n  \"groupName\" text,\n  \"id\" text NOT NULL,\n  \"kind\" text DEFAULT 'TAQUILLA' NOT NULL,\n  \"lines\" json NOT NULL,\n  \"number\" int4 NOT NULL,\n  \"paymentId\" text,\n  \"slot\" text NOT NULL,\n  \"status\" text DEFAULT 'PAID' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"total\" numeric NOT NULL,\n  \"visitDate\" timestamptz NOT NULL,\n  \"visitors\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"TicketSale\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TicketSale\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.TourBooking",
+    "label": "Create table \"TourBooking\"",
+    "summary": "Creates table \"TourBooking\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "TourBooking"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"TourBooking\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TourBooking\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"TourBooking\"",
+        "sql": "CREATE TABLE \"public\".\"TourBooking\" (\n  \"code\" text NOT NULL,\n  \"commissionPct\" int4,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"customerId\" text NOT NULL,\n  \"departureId\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"notes\" text,\n  \"passengers\" json NOT NULL,\n  \"seats\" int4 NOT NULL,\n  \"sellerUserId\" text,\n  \"status\" text DEFAULT 'RESERVED' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"total\" numeric NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"TourBooking\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TourBooking\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Customer.accessCode",
+    "label": "Add column \"accessCode\" to \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "accessCode",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"accessCode\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "accessCode"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"accessCode\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD COLUMN \"accessCode\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"accessCode\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "accessCode"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Customer.nfcUid",
+    "label": "Add column \"nfcUid\" to \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "nfcUid",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"nfcUid\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "nfcUid"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"nfcUid\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD COLUMN \"nfcUid\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"nfcUid\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "nfcUid"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Invoice.projectId",
+    "label": "Add column \"projectId\" to \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "projectId",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"projectId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "projectId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"projectId\"",
+        "sql": "ALTER TABLE \"public\".\"Invoice\" ADD COLUMN \"projectId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"projectId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "projectId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Membership.cancelReason",
+    "label": "Add column \"cancelReason\" to \"Membership\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "cancelReason",
+        "table": "Membership"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"cancelReason\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Membership",
+          "cancelReason"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"cancelReason\"",
+        "sql": "ALTER TABLE \"public\".\"Membership\" ADD COLUMN \"cancelReason\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"cancelReason\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Membership",
+          "cancelReason"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Membership.cancelledAt",
+    "label": "Add column \"cancelledAt\" to \"Membership\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "cancelledAt",
+        "table": "Membership"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"cancelledAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Membership",
+          "cancelledAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"cancelledAt\"",
+        "sql": "ALTER TABLE \"public\".\"Membership\" ADD COLUMN \"cancelledAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"cancelledAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Membership",
+          "cancelledAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Membership.frozenFrom",
+    "label": "Add column \"frozenFrom\" to \"Membership\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "frozenFrom",
+        "table": "Membership"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"frozenFrom\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Membership",
+          "frozenFrom"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"frozenFrom\"",
+        "sql": "ALTER TABLE \"public\".\"Membership\" ADD COLUMN \"frozenFrom\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"frozenFrom\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Membership",
+          "frozenFrom"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Membership.frozenUntil",
+    "label": "Add column \"frozenUntil\" to \"Membership\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "frozenUntil",
+        "table": "Membership"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"frozenUntil\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Membership",
+          "frozenUntil"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"frozenUntil\"",
+        "sql": "ALTER TABLE \"public\".\"Membership\" ADD COLUMN \"frozenUntil\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"frozenUntil\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Membership",
+          "frozenUntil"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Membership.productId",
+    "label": "Add column \"productId\" to \"Membership\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "productId",
+        "table": "Membership"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"productId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Membership",
+          "productId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"productId\"",
+        "sql": "ALTER TABLE \"public\".\"Membership\" ADD COLUMN \"productId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"productId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Membership",
+          "productId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.settings",
+    "label": "Add column \"settings\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "settings",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"settings\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "settings"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"settings\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"settings\" json"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"settings\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "settings"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.Tenant.Tenant_vertical_check_7ca0b77e",
+    "label": "Add check constraint \"Tenant_vertical_check_7ca0b77e\" on \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "Tenant_vertical_check_7ca0b77e",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Tenant_vertical_check_7ca0b77e\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Tenant_vertical_check_7ca0b77e",
+          "public",
+          "\"public\".\"Tenant\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"Tenant_vertical_check_7ca0b77e\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD CONSTRAINT \"Tenant_vertical_check_7ca0b77e\" CHECK (\"vertical\" IN ('gym', 'tourism_agency', 'hospitality', 'construction', 'carpentry', 'restaurant', 'retail', 'beauty', 'healthcare', 'mechanic', 'education', 'real_estate', 'hardware_store', 'nautical_transport', 'tour_guides', 'events', 'museum'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Tenant_vertical_check_7ca0b77e\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Tenant_vertical_check_7ca0b77e",
+          "public",
+          "\"public\".\"Tenant\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.TicketSale.TicketSale_tenantId_number_key",
+    "label": "Add unique constraint on \"TicketSale\" (tenantId, number)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "TicketSale_tenantId_number_key",
+        "table": "TicketSale"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"TicketSale_tenantId_number_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "TicketSale_tenantId_number_key",
+          "public",
+          "\"public\".\"TicketSale\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"TicketSale_tenantId_number_key\"",
+        "sql": "ALTER TABLE \"public\".\"TicketSale\" ADD CONSTRAINT \"TicketSale_tenantId_number_key\" UNIQUE (\"tenantId\", \"number\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"TicketSale_tenantId_number_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "TicketSale_tenantId_number_key",
+          "public",
+          "\"public\".\"TicketSale\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.TourBooking.TourBooking_tenantId_code_key",
+    "label": "Add unique constraint on \"TourBooking\" (tenantId, code)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "TourBooking_tenantId_code_key",
+        "table": "TourBooking"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"TourBooking_tenantId_code_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "TourBooking_tenantId_code_key",
+          "public",
+          "\"public\".\"TourBooking\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"TourBooking_tenantId_code_key\"",
+        "sql": "ALTER TABLE \"public\".\"TourBooking\" ADD CONSTRAINT \"TourBooking_tenantId_code_key\" UNIQUE (\"tenantId\", \"code\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"TourBooking_tenantId_code_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "TourBooking_tenantId_code_key",
+          "public",
+          "\"public\".\"TourBooking\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Attendance.Attendance_customerId_idx_b2a8a46c",
+    "label": "Create index \"Attendance_customerId_idx_b2a8a46c\" on \"Attendance\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Attendance_customerId_idx_b2a8a46c",
+        "table": "Attendance"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Attendance_customerId_idx_b2a8a46c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Attendance_customerId_idx_b2a8a46c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Attendance_customerId_idx_b2a8a46c\"",
+        "sql": "CREATE INDEX \"Attendance_customerId_idx_b2a8a46c\" ON \"public\".\"Attendance\" (\"customerId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Attendance_customerId_idx_b2a8a46c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Attendance_customerId_idx_b2a8a46c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Attendance.Attendance_tenantId_at_idx_21a9eddd",
+    "label": "Create index \"Attendance_tenantId_at_idx_21a9eddd\" on \"Attendance\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Attendance_tenantId_at_idx_21a9eddd",
+        "table": "Attendance"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Attendance_tenantId_at_idx_21a9eddd\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Attendance_tenantId_at_idx_21a9eddd\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Attendance_tenantId_at_idx_21a9eddd\"",
+        "sql": "CREATE INDEX \"Attendance_tenantId_at_idx_21a9eddd\" ON \"public\".\"Attendance\" (\"tenantId\", \"at\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Attendance_tenantId_at_idx_21a9eddd\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Attendance_tenantId_at_idx_21a9eddd\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Departure.Departure_tenantId_date_idx_3ef944c7",
+    "label": "Create index \"Departure_tenantId_date_idx_3ef944c7\" on \"Departure\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Departure_tenantId_date_idx_3ef944c7",
+        "table": "Departure"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Departure_tenantId_date_idx_3ef944c7\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Departure_tenantId_date_idx_3ef944c7\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Departure_tenantId_date_idx_3ef944c7\"",
+        "sql": "CREATE INDEX \"Departure_tenantId_date_idx_3ef944c7\" ON \"public\".\"Departure\" (\"tenantId\", \"date\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Departure_tenantId_date_idx_3ef944c7\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Departure_tenantId_date_idx_3ef944c7\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.TicketSale.TicketSale_tenantId_visitDate_idx_d723b863",
+    "label": "Create index \"TicketSale_tenantId_visitDate_idx_d723b863\" on \"TicketSale\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "TicketSale_tenantId_visitDate_idx_d723b863",
+        "table": "TicketSale"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"TicketSale_tenantId_visitDate_idx_d723b863\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TicketSale_tenantId_visitDate_idx_d723b863\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"TicketSale_tenantId_visitDate_idx_d723b863\"",
+        "sql": "CREATE INDEX \"TicketSale_tenantId_visitDate_idx_d723b863\" ON \"public\".\"TicketSale\" (\"tenantId\", \"visitDate\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"TicketSale_tenantId_visitDate_idx_d723b863\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TicketSale_tenantId_visitDate_idx_d723b863\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.TourBooking.TourBooking_departureId_idx_24d39b35",
+    "label": "Create index \"TourBooking_departureId_idx_24d39b35\" on \"TourBooking\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "TourBooking_departureId_idx_24d39b35",
+        "table": "TourBooking"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"TourBooking_departureId_idx_24d39b35\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TourBooking_departureId_idx_24d39b35\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"TourBooking_departureId_idx_24d39b35\"",
+        "sql": "CREATE INDEX \"TourBooking_departureId_idx_24d39b35\" ON \"public\".\"TourBooking\" (\"departureId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"TourBooking_departureId_idx_24d39b35\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TourBooking_departureId_idx_24d39b35\""
+        ]
+      }
+    ]
+  }
+]

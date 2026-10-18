@@ -145,6 +145,7 @@ enum Vertical {
   nautical_transport
   tour_guides
   events
+  museum
 }
 
 enum ModuleName {
@@ -337,6 +338,8 @@ model Tenant {
   suspendedReason String?
   suspendedAt     DateTime?
 
+  /// Ajustes operativos del rubro (aforo del museo, franjas, horarios…).
+  settings          Json?
   createdAt DateTime @default(now())
   updatedAt temporal.updatedAt()
 
@@ -423,6 +426,9 @@ model Customer {
   /// Foto (Attachment.id, kind CUSTOMER_PHOTO).
   photoId    String?
   city       String?
+  /// Código de acceso (QR) y tarjeta NFC vinculada.
+  accessCode String?
+  nfcUid     String?
   createdAt DateTime @default(now())
   updatedAt temporal.updatedAt()
 
@@ -506,6 +512,12 @@ model Membership {
   /// Historial de cobros registrados (JSON serializable: [{ date, amount, provider, kind }]).
   payments   Json?
   charges    Payment[]
+  /// Plan del catálogo con el que se vendió.
+  productId    String?
+  frozenFrom   DateTime?
+  frozenUntil  DateTime?
+  cancelledAt  DateTime?
+  cancelReason String?
   createdAt  DateTime         @default(now())
   updatedAt  temporal.updatedAt()
 
@@ -1777,6 +1789,8 @@ model Invoice {
   total        Decimal
   voidReason   String?
   createdById  String?
+  /// Obra a la que pertenece la cuenta de cobro (constructoras).
+  projectId    String?
   createdAt    DateTime      @default(now())
   updatedAt    temporal.updatedAt()
   lines        InvoiceLine[]
@@ -1825,4 +1839,91 @@ model DismissedNotification {
   createdAt DateTime @default(now())
 
   @@unique([userId, key])
+}
+
+
+/// Entrada al gimnasio (o al sitio) con su resultado: permitida o negada y por qué.
+model Attendance {
+  id           String   @id @default(uuid())
+  tenantId     String
+  customerId   String
+  membershipId String?
+  /// NFC | QR | MANUAL
+  method       String
+  allowed      Boolean
+  reason       String?
+  createdById  String?
+  at           DateTime @default(now())
+
+  @@index([tenantId, at])
+  @@index([customerId])
+}
+
+/// Venta de taquilla (museo): entradas por tipo para una fecha y franja.
+model TicketSale {
+  id          String   @id @default(uuid())
+  tenantId    String
+  number      Int
+  visitDate   DateTime
+  /// Franja horaria "10:00".
+  slot        String
+  visitors    Int
+  /// [{ productId, name, qty, unitPrice }]
+  lines       Json
+  total       Decimal
+  /// TAQUILLA | GRUPO | COLEGIO | GUIADA
+  kind        String   @default("TAQUILLA")
+  groupName   String?
+  customerId  String?
+  paymentId   String?
+  /// PAID | RESERVED | VOID
+  status      String   @default("PAID")
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@unique([tenantId, number])
+  @@index([tenantId, visitDate])
+}
+
+/// Salida programada de un tour o paquete (agencias de turismo).
+model Departure {
+  id           String   @id @default(uuid())
+  tenantId     String
+  productId    String
+  date         DateTime
+  time         String?
+  capacity     Int
+  guide        String?
+  meetingPoint String?
+  /// SCHEDULED | DONE | CANCELLED
+  status       String   @default("SCHEDULED")
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    temporal.updatedAt()
+
+  @@index([tenantId, date])
+}
+
+/// Reserva de un cliente en una salida: pasajeros, valor, abonos y voucher.
+model TourBooking {
+  id            String   @id @default(uuid())
+  tenantId      String
+  departureId   String
+  customerId    String
+  seats         Int
+  /// [{ name, document, nationality }]
+  passengers    Json
+  total         Decimal
+  /// Código del voucher (ej. NX-7K2P9).
+  code          String
+  sellerUserId  String?
+  commissionPct Int?
+  /// RESERVED | CONFIRMED | CANCELLED
+  status        String   @default("RESERVED")
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     temporal.updatedAt()
+
+  @@unique([tenantId, code])
+  @@index([departureId])
 }
