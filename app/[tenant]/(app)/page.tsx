@@ -88,11 +88,13 @@ export default async function TenantDashboard({
     ? await tenantDb.users.findByClerkUserId(userId)
     : null;
 
-  // El nombre de la persona en el equipo; si no lo ha escrito, el de su cuenta (nunca el usuario del correo, salvo último recurso).
-  const clerkUser = localUser?.name?.trim() ? null : await currentUser();
+  // El saludo prefiere el nombre vivo de Clerk (si cambia en la cuenta, se
+  // refleja al instante); el nombre del equipo (Ajustes → Equipo) es el
+  // fallback, y el usuario del correo el último recurso.
+  const clerkUser = await currentUser();
   const greetingName =
-    localUser?.name?.trim().split(/\s+/)[0] ||
     clerkUser?.firstName?.trim() ||
+    localUser?.name?.trim().split(/\s+/)[0] ||
     localUser?.email?.split("@")[0] ||
     "Hola";
 
