@@ -53,9 +53,9 @@ const MODULE_NAV: Record<ModuleValue, ModuleNav | ModuleNav[]> = {
     { href: "/quotes", icon: FolderOpen, label: () => "Cotizaciones" },
     { href: "/catalog", icon: BookOpen, label: () => "Catálogo APU" },
   ],
-  inventory: { href: "/inventory", icon: Package, label: (terms) => terms.items },
+  inventory: { href: "/inventory", icon: Package, label: () => "Catálogo" },
   finance: { href: "/finance", icon: Wallet, label: () => "Finanzas" },
-  payments: { href: "/payments", icon: Banknote, label: () => "Pagos" },
+  payments: { href: "/finance?tab=cobros", icon: Banknote, label: () => "Pagos" },
   billing: { href: "/billing", icon: Receipt, label: () => "Facturación" },
   whatsapp: { href: "/whatsapp", icon: MessageCircle, label: () => "WhatsApp" },
 };
@@ -86,7 +86,8 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
       label: nav.label(terms, vertical),
     }));
   };
-  const enabled = MODULES.filter((moduleName) => active.has(moduleName));
+  // Pagos vive dentro de Finanzas: con Finanzas activa no se repite en el menú.
+  const enabled = MODULES.filter((moduleName) => active.has(moduleName) && !(moduleName === "payments" && active.has("finance")));
   return [
     // El inicio existe siempre (es la raíz del negocio), con o sin el módulo.
     { label: "General", items: items("dashboard") },

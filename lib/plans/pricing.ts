@@ -92,8 +92,8 @@ const DESCRIPTIONS: Record<ModuleValue, string> = {
   crm: "Clientes, fichas 360° y seguimiento.",
   bookings: "Reservas, citas y agenda.",
   payments: "Cobros y control de pagos.",
-  billing: "Facturas para tus clientes.",
-  inventory: "Productos, stock y reposiciones.",
+  billing: "Cuentas de cobro y recibos numerados.",
+  inventory: "Productos, servicios, planes y stock.",
   finance: "Cobros, gastos y caja menor.",
   whatsapp: "Plantillas y envío por WhatsApp.",
   memberships: "Planes y membresías recurrentes.",
@@ -107,7 +107,7 @@ const LABELS: Record<ModuleValue, string> = {
   bookings: "Reservas",
   payments: "Pagos",
   billing: "Facturación",
-  inventory: "Inventario",
+  inventory: "Catálogo e inventario",
   finance: "Finanzas",
   whatsapp: "WhatsApp",
   memberships: "Membresías",
@@ -116,7 +116,7 @@ const LABELS: Record<ModuleValue, string> = {
 };
 
 /** Módulos que ya funcionan de verdad; el resto empieza como PLANNED. */
-const READY_MODULES: ModuleValue[] = ["dashboard", "crm", "bookings", "finance", "whatsapp", "memberships", "quotes"];
+const READY_MODULES: ModuleValue[] = ["dashboard", "crm", "bookings", "finance", "payments", "billing", "inventory", "whatsapp", "memberships", "quotes"];
 
 /** Configuración inicial (la que había en el código). */
 export function defaultPricingConfig(): PricingConfig {

@@ -487,3 +487,15 @@
     transition: none;
   }
 }
+
+/* Imprimir (cuentas de cobro, recibos): solo el documento, sin la app alrededor. */
+@media print {
+  [aria-label="Navegación principal"],
+  header[data-app-topbar],
+  nav[data-mobile-tabbar] {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
+}

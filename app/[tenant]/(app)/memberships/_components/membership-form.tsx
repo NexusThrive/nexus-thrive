@@ -1,5 +1,7 @@
 "use client";
 
+import { MoneyInput } from "@/components/molecules/money-input";
+import { parseMoney } from "@/lib/business/money";
 import { useEffect, useActionState, useMemo, useState } from "react";
 import { Check, Plus } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
@@ -221,12 +223,11 @@ function MembershipForm({
             >
               Precio (COP) <span className="text-destructive">*</span>
             </label>
-            <input
+            <MoneyInput
               id="membership-price"
               name="price"
-              inputMode="decimal"
-              placeholder="Ej. 120000"
-              defaultValue={state.values?.price ?? ""}
+              placeholder="120.000"
+              defaultValue={parseMoney(state.values?.price ?? "")}
               aria-invalid={Boolean(errors.price)}
               className={fieldClass(Boolean(errors.price))}
             />
