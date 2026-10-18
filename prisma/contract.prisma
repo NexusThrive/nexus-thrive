@@ -1878,6 +1878,8 @@ model TicketSale {
   paymentId   String?
   /// PAID | RESERVED | VOID
   status      String   @default("PAID")
+  /// Cita en la agenda (visitas guiadas y colegios).
+  bookingId   String?
   createdById String?
   createdAt   DateTime @default(now())
 
@@ -1926,4 +1928,35 @@ model TourBooking {
 
   @@unique([tenantId, code])
   @@index([departureId])
+}
+
+/// Solicitud de web profesional de un negocio (visibilidad digital). El
+/// equipo NEXUS la diseña, la cobra una vez y la publica.
+model WebsiteRequest {
+  id            String    @id @default(uuid())
+  tenantId      String
+  /// PENDING | DESIGN | REVIEW | PUBLISHED | CANCELLED
+  status        String    @default("PENDING")
+  businessName  String
+  domain        String?
+  slogan        String?
+  /// Colores de marca separados por coma (#0B0B0C,#D4AF37).
+  colors        String?
+  notes         String?
+  contactName   String
+  contactPhone  String
+  contactEmail  String?
+  /// Precio único acordado (COP, sin decimales).
+  priceCop      Int?
+  paidAt        DateTime?
+  paymentMethod String?
+  paymentRef    String?
+  publishedUrl  String?
+  staffNotes    String?
+  requestedById String?
+  createdAt     DateTime  @default(now())
+  updatedAt     temporal.updatedAt()
+
+  @@index([tenantId])
+  @@index([status])
 }

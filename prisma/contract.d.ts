@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'47c8b990d1bc508088a7d5b550b9db62cf5cc222ada84264356f77b0e869640a'>;
+  StorageHashBase<'78cb411e53926df1cd9fa9e8caf90edb51601f66d99d9f5c4a7f96e720de2477'>;
 export type ExecutionHash =
-  ExecutionHashBase<'fea78767b38e2d887e22b114ab123917469adce392beeebb76055c1e1c52aaf4'>;
+  ExecutionHashBase<'f6095c49df70d8bbcde2f59eb6fae58e181f03e9143dc218955b0988442bbad8'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -1145,6 +1145,7 @@ export type FieldOutputTypes = {
       readonly ticketId: CodecTypes['pg/text@1']['output'];
     };
     readonly TicketSale: {
+      readonly bookingId: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly createdById: CodecTypes['pg/text@1']['output'] | null;
       readonly customerId: CodecTypes['pg/text@1']['output'] | null;
@@ -1202,6 +1203,28 @@ export type FieldOutputTypes = {
       readonly signupEnabled: CodecTypes['pg/bool@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly vertical: CodecTypes['pg/text@1']['output'];
+    };
+    readonly WebsiteRequest: {
+      readonly businessName: CodecTypes['pg/text@1']['output'];
+      readonly colors: CodecTypes['pg/text@1']['output'] | null;
+      readonly contactEmail: CodecTypes['pg/text@1']['output'] | null;
+      readonly contactName: CodecTypes['pg/text@1']['output'];
+      readonly contactPhone: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly domain: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly notes: CodecTypes['pg/text@1']['output'] | null;
+      readonly paidAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly paymentMethod: CodecTypes['pg/text@1']['output'] | null;
+      readonly paymentRef: CodecTypes['pg/text@1']['output'] | null;
+      readonly priceCop: CodecTypes['pg/int4@1']['output'] | null;
+      readonly publishedUrl: CodecTypes['pg/text@1']['output'] | null;
+      readonly requestedById: CodecTypes['pg/text@1']['output'] | null;
+      readonly slogan: CodecTypes['pg/text@1']['output'] | null;
+      readonly staffNotes: CodecTypes['pg/text@1']['output'] | null;
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly WeeklyCommitment: {
       readonly budgetItemId: CodecTypes['pg/text@1']['output'] | null;
@@ -2125,6 +2148,7 @@ export type FieldInputTypes = {
       readonly ticketId: CodecTypes['pg/text@1']['input'];
     };
     readonly TicketSale: {
+      readonly bookingId: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly createdById: CodecTypes['pg/text@1']['input'] | null;
       readonly customerId: CodecTypes['pg/text@1']['input'] | null;
@@ -2182,6 +2206,28 @@ export type FieldInputTypes = {
       readonly signupEnabled: CodecTypes['pg/bool@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly vertical: CodecTypes['pg/text@1']['input'];
+    };
+    readonly WebsiteRequest: {
+      readonly businessName: CodecTypes['pg/text@1']['input'];
+      readonly colors: CodecTypes['pg/text@1']['input'] | null;
+      readonly contactEmail: CodecTypes['pg/text@1']['input'] | null;
+      readonly contactName: CodecTypes['pg/text@1']['input'];
+      readonly contactPhone: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly domain: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly notes: CodecTypes['pg/text@1']['input'] | null;
+      readonly paidAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly paymentMethod: CodecTypes['pg/text@1']['input'] | null;
+      readonly paymentRef: CodecTypes['pg/text@1']['input'] | null;
+      readonly priceCop: CodecTypes['pg/int4@1']['input'] | null;
+      readonly publishedUrl: CodecTypes['pg/text@1']['input'] | null;
+      readonly requestedById: CodecTypes['pg/text@1']['input'] | null;
+      readonly slogan: CodecTypes['pg/text@1']['input'] | null;
+      readonly staffNotes: CodecTypes['pg/text@1']['input'] | null;
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly WeeklyCommitment: {
       readonly budgetItemId: CodecTypes['pg/text@1']['input'] | null;
@@ -3105,6 +3151,7 @@ export type StorageColumnTypes = {
       readonly ticketId: CodecTypes['pg/text@1']['output'];
     };
     readonly TicketSale: {
+      readonly bookingId: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly createdById: CodecTypes['pg/text@1']['output'] | null;
       readonly customerId: CodecTypes['pg/text@1']['output'] | null;
@@ -3162,6 +3209,28 @@ export type StorageColumnTypes = {
       readonly signupEnabled: CodecTypes['pg/bool@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly vertical: CodecTypes['pg/text@1']['output'];
+    };
+    readonly WebsiteRequest: {
+      readonly businessName: CodecTypes['pg/text@1']['output'];
+      readonly colors: CodecTypes['pg/text@1']['output'] | null;
+      readonly contactEmail: CodecTypes['pg/text@1']['output'] | null;
+      readonly contactName: CodecTypes['pg/text@1']['output'];
+      readonly contactPhone: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly domain: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly notes: CodecTypes['pg/text@1']['output'] | null;
+      readonly paidAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly paymentMethod: CodecTypes['pg/text@1']['output'] | null;
+      readonly paymentRef: CodecTypes['pg/text@1']['output'] | null;
+      readonly priceCop: CodecTypes['pg/int4@1']['output'] | null;
+      readonly publishedUrl: CodecTypes['pg/text@1']['output'] | null;
+      readonly requestedById: CodecTypes['pg/text@1']['output'] | null;
+      readonly slogan: CodecTypes['pg/text@1']['output'] | null;
+      readonly staffNotes: CodecTypes['pg/text@1']['output'] | null;
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly WeeklyCommitment: {
       readonly budgetItemId: CodecTypes['pg/text@1']['output'] | null;
@@ -4085,6 +4154,7 @@ export type StorageColumnInputTypes = {
       readonly ticketId: CodecTypes['pg/text@1']['input'];
     };
     readonly TicketSale: {
+      readonly bookingId: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly createdById: CodecTypes['pg/text@1']['input'] | null;
       readonly customerId: CodecTypes['pg/text@1']['input'] | null;
@@ -4142,6 +4212,28 @@ export type StorageColumnInputTypes = {
       readonly signupEnabled: CodecTypes['pg/bool@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly vertical: CodecTypes['pg/text@1']['input'];
+    };
+    readonly WebsiteRequest: {
+      readonly businessName: CodecTypes['pg/text@1']['input'];
+      readonly colors: CodecTypes['pg/text@1']['input'] | null;
+      readonly contactEmail: CodecTypes['pg/text@1']['input'] | null;
+      readonly contactName: CodecTypes['pg/text@1']['input'];
+      readonly contactPhone: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly domain: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly notes: CodecTypes['pg/text@1']['input'] | null;
+      readonly paidAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly paymentMethod: CodecTypes['pg/text@1']['input'] | null;
+      readonly paymentRef: CodecTypes['pg/text@1']['input'] | null;
+      readonly priceCop: CodecTypes['pg/int4@1']['input'] | null;
+      readonly publishedUrl: CodecTypes['pg/text@1']['input'] | null;
+      readonly requestedById: CodecTypes['pg/text@1']['input'] | null;
+      readonly slogan: CodecTypes['pg/text@1']['input'] | null;
+      readonly staffNotes: CodecTypes['pg/text@1']['input'] | null;
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly WeeklyCommitment: {
       readonly budgetItemId: CodecTypes['pg/text@1']['input'] | null;
@@ -5298,6 +5390,7 @@ export namespace Models {
     readonly [RelationKeys]?: 'ticket';
   };
   export type public_TicketSale = {
+    bookingId: CodecTypes['pg/text@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     createdById: CodecTypes['pg/text@1']['output'] | null;
     customerId: CodecTypes['pg/text@1']['output'] | null;
@@ -5360,6 +5453,29 @@ export namespace Models {
     signupEnabled: CodecTypes['pg/bool@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     vertical: CodecTypes['pg/text@1']['output'];
+    readonly [RelationKeys]?: never;
+  };
+  export type public_WebsiteRequest = {
+    businessName: CodecTypes['pg/text@1']['output'];
+    colors: CodecTypes['pg/text@1']['output'] | null;
+    contactEmail: CodecTypes['pg/text@1']['output'] | null;
+    contactName: CodecTypes['pg/text@1']['output'];
+    contactPhone: CodecTypes['pg/text@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    domain: CodecTypes['pg/text@1']['output'] | null;
+    id: CodecTypes['pg/text@1']['output'];
+    notes: CodecTypes['pg/text@1']['output'] | null;
+    paidAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    paymentMethod: CodecTypes['pg/text@1']['output'] | null;
+    paymentRef: CodecTypes['pg/text@1']['output'] | null;
+    priceCop: CodecTypes['pg/int4@1']['output'] | null;
+    publishedUrl: CodecTypes['pg/text@1']['output'] | null;
+    requestedById: CodecTypes['pg/text@1']['output'] | null;
+    slogan: CodecTypes['pg/text@1']['output'] | null;
+    staffNotes: CodecTypes['pg/text@1']['output'] | null;
+    status: CodecTypes['pg/text@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     readonly [RelationKeys]?: never;
   };
   export type public_WeeklyCommitment = {
@@ -5458,6 +5574,7 @@ export declare const models: {
     TourBooking: Models.public_TourBooking;
     User: Models.public_User;
     VerticalSetting: Models.public_VerticalSetting;
+    WebsiteRequest: Models.public_WebsiteRequest;
     WeeklyCommitment: Models.public_WeeklyCommitment;
   };
 };
@@ -11633,6 +11750,11 @@ type ContractBase = Omit<
             };
             readonly TicketSale: {
               columns: {
+                readonly bookingId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly createdAt: {
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
@@ -11973,6 +12095,132 @@ type ContractBase = Omit<
               primaryKey: { readonly columns: readonly ['vertical'] };
               uniques: readonly [];
               indexes: readonly [];
+              foreignKeys: readonly [];
+            };
+            readonly WebsiteRequest: {
+              columns: {
+                readonly businessName: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly colors: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly contactEmail: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly contactName: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly contactPhone: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly domain: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly notes: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly paidAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly paymentMethod: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly paymentRef: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly priceCop: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
+                readonly publishedUrl: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly requestedById: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly slogan: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly staffNotes: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'PENDING'>;
+                  };
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'WebsiteRequest_status_idx_e98638ab';
+                  readonly prefix: 'WebsiteRequest_status_idx';
+                  readonly columns: readonly ['status'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'WebsiteRequest_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'WebsiteRequest_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
               foreignKeys: readonly [];
             };
             readonly WeeklyCommitment: {
@@ -12545,6 +12793,10 @@ type ContractBase = Omit<
     readonly VerticalSetting: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'VerticalSetting';
+    };
+    readonly WebsiteRequest: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'WebsiteRequest';
     };
     readonly WeeklyCommitment: {
       readonly namespace: 'public' & NamespaceId;
@@ -19008,6 +19260,10 @@ type ContractBase = Omit<
           };
           readonly TicketSale: {
             readonly fields: {
+              readonly bookingId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly createdAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -19080,6 +19336,7 @@ type ContractBase = Omit<
               readonly table: 'TicketSale';
               readonly namespaceId: 'public';
               readonly fields: {
+                readonly bookingId: { readonly column: 'bookingId' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly createdById: { readonly column: 'createdById' };
                 readonly customerId: { readonly column: 'customerId' };
@@ -19352,6 +19609,126 @@ type ContractBase = Omit<
                 readonly signupEnabled: { readonly column: 'signupEnabled' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
                 readonly vertical: { readonly column: 'vertical' };
+              };
+            };
+          };
+          readonly WebsiteRequest: {
+            readonly fields: {
+              readonly businessName: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly colors: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly contactEmail: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly contactName: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly contactPhone: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly domain: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly notes: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly paidAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly paymentMethod: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly paymentRef: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly priceCop: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly publishedUrl: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly requestedById: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly slogan: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly staffNotes: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: Record<string, never>;
+            readonly storage: {
+              readonly table: 'WebsiteRequest';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly businessName: { readonly column: 'businessName' };
+                readonly colors: { readonly column: 'colors' };
+                readonly contactEmail: { readonly column: 'contactEmail' };
+                readonly contactName: { readonly column: 'contactName' };
+                readonly contactPhone: { readonly column: 'contactPhone' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly domain: { readonly column: 'domain' };
+                readonly id: { readonly column: 'id' };
+                readonly notes: { readonly column: 'notes' };
+                readonly paidAt: { readonly column: 'paidAt' };
+                readonly paymentMethod: { readonly column: 'paymentMethod' };
+                readonly paymentRef: { readonly column: 'paymentRef' };
+                readonly priceCop: { readonly column: 'priceCop' };
+                readonly publishedUrl: { readonly column: 'publishedUrl' };
+                readonly requestedById: { readonly column: 'requestedById' };
+                readonly slogan: { readonly column: 'slogan' };
+                readonly staffNotes: { readonly column: 'staffNotes' };
+                readonly status: { readonly column: 'status' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
               };
             };
           };
@@ -20668,6 +21045,23 @@ type ContractBase = Omit<
           readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'VerticalSetting';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'WebsiteRequest';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'WebsiteRequest';
             readonly field: 'updatedAt';
             readonly namespace: 'public';
           };

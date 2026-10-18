@@ -14,7 +14,7 @@ const dec = (n: number) => n.toFixed(2);
 const isUnique = (e: unknown) => /unique|duplicate/i.test(String((e as Error)?.message ?? e));
 
 /** Siguiente número libre: max + 1 con reintento si dos chocan (restricción única). */
-async function withNextNumber<T>(current: () => Promise<number | null>, write: (n: number) => Promise<T>): Promise<T> {
+export async function withNextNumber<T>(current: () => Promise<number | null>, write: (n: number) => Promise<T>): Promise<T> {
   for (let attempt = 0; attempt < 6; attempt++) {
     const n = ((await current()) ?? 0) + 1;
     try {
