@@ -12,11 +12,13 @@ import { Field } from "@/components/molecules/field";
 import { Keypad, applyKey, type KeypadKey } from "@/components/molecules/keypad";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
+import { ReceiptPrinter, type ReceiptData } from "@/components/organisms/receipt-printer";
 import { PAYMENT_METHODS, type PaymentMethodValue } from "@/lib/finance";
 import { spring } from "@/lib/motion";
+import { receiptQrDataUrl, receiptQrPayload } from "@/lib/business/receipt-qr";
 import { bestCopAmount, guessPaymentMethod, parseQrPaymentPayload } from "@/lib/payment-scan";
 import { cn } from "@/lib/utils";
-import { registerScannedPaymentAction, type ScannedPaymentFormState } from "../actions";
+import { registerScannedPaymentAction } from "../actions";
 
 const cop = (n: number) => `$ ${n.toLocaleString("es-CO")}`;
 
@@ -74,7 +76,7 @@ export function ScanPaymentSheet({
   const [providerRefId, setProviderRefId] = useState("");
   const [detected, setDetected] = useState<string[]>([]); // notas de lo que se pudo leer
   const [error, setError] = useState<string | null>(null);
-  const [receipt, setReceipt] = useState<ScannedPaymentFormState["receipt"] | null>(null);
+  const [receipt, setReceipt] = useState<ReceiptData | null>(null);
   const [pending, start] = useTransition();
   const [cameraOn, setCameraOn] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -84,6 +86,7 @@ export function ScanPaymentSheet({
   const { toast } = useToast();
 
   const customer = customers.find((c) => c.id === customerId);
+  const methodLabel = PAYMENT_METHODS.find((m) => m.value === method)?.label ?? method;
 
   // --- Cámara (solo mientras se muestra el paso de foto) --------------------
   useEffect(() => {
@@ -249,7 +252,24 @@ export function ScanPaymentSheet({
       form.set("photo", photo);
       const state = await registerScannedPaymentAction({ status: "idle" }, form);
       if (state.status === "ok" && state.receipt) {
-        setReceipt(state.receipt);
+        const total = cop(amount);
+        const qr = await receiptQrDataUrl(
+          receiptQrPayload({ link: state.receipt.link, reference: state.receipt.reference, total, business: business.name }),
+        ).catch(() => undefined);
+        setReceipt({
+          business: business.name,
+          subtitle: business.subtitle,
+          client: customer?.name ?? "Mostrador",
+          concept: description.trim() || "Pago escaneado",
+          total,
+          qr,
+          meta: [
+            { label: "Recibo", value: state.receipt.reference },
+            { label: "Cliente", value: customer?.name ?? "Mostrador" },
+            { label: "Medio", value: methodLabel },
+            { label: "Fecha", value: new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", dateStyle: "short", timeStyle: "short" }).format(new Date(state.receipt.createdAt)) },
+          ],
+        });
         setStage("done");
         return;
       }
@@ -296,17 +316,7 @@ export function ScanPaymentSheet({
       footer={footer}
     >
       {stage === "done" && receipt ? (
-        <section aria-live="assertive" className="nx-rise grid gap-3 rounded-xl border-2 border-emerald-500 bg-emerald-500/10 p-5 text-center">
-          <CheckCircle2 aria-hidden="true" className="mx-auto size-10 text-emerald-600 dark:text-emerald-400" />
-          <p className="font-display text-xl font-bold text-emerald-700 dark:text-emerald-400">Pago registrado</p>
-          <p className="text-sm text-muted-foreground">
-            Recibo <b className="font-mono text-foreground">{receipt.reference}</b> de {business.name}
-            {customer ? ` para ${customer.name}` : ""}.
-          </p>
-          <a href={receipt.link} target="_blank" rel="noreferrer" className="text-sm font-medium text-accent-text underline-offset-4 hover:underline">
-            Ver recibo verificable
-          </a>
-        </section>
+        <ReceiptPrinter data={receipt} />
       ) : stage === "confirm" && photoUrl ? (
         <div className="nx-rise grid grid-cols-1 gap-4">
           <div ref={photoWrapRef} className="mx-auto w-full max-w-xs">

@@ -13,6 +13,7 @@ import { Keypad, applyKey, type KeypadKey } from "@/components/molecules/keypad"
 import { ReceiptPrinter, type ReceiptData } from "@/components/organisms/receipt-printer";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { drawReceiptPng, shareReceiptOnWhatsapp } from "@/lib/business/receipt-share";
+import { receiptQrDataUrl, receiptQrPayload } from "@/lib/business/receipt-qr";
 import { useToast } from "@/components/molecules/toast";
 import { cn } from "@/lib/utils";
 
@@ -116,12 +117,16 @@ export function PaymentSheet({
       hour: "numeric",
       minute: "2-digit",
     }).format(new Date(result.createdAt));
+    const qr = await receiptQrDataUrl(
+      receiptQrPayload({ link: result.link, reference: result.reference, total: cop(amount), business: business.name }),
+    ).catch(() => undefined);
     setReceipt({
       business: business.name,
       subtitle: business.subtitle,
-      client: customer?.name ?? "Venta de mostrador",
+      client: customer?.name ?? "Mostrador",
       concept,
       total: cop(amount),
+      qr,
       meta: [
         { label: "Recibo", value: result.reference },
         { label: "Cliente", value: customer?.name ?? "Mostrador" },
@@ -146,6 +151,7 @@ export function PaymentSheet({
         total: receipt.total,
         concept: receipt.concept,
         rows: receipt.meta,
+        qr: receipt.qr,
         footer: link ? "Recibo verificable en el enlace" : undefined,
       });
       const first = customer ? ` ${customer.name.split(" ")[0]}` : "";
