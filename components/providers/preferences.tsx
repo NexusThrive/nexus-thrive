@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useMemo, useSyncExternalStore } from "react";
+import { PREFS_STORAGE_KEY, prefsInitScript } from "@/lib/init-scripts";
 
 /**
  * Preferencias de interfaz por navegador (Ajustes → Apariencia y movimiento).
@@ -15,11 +16,11 @@ export type Preferences = {
   motion: "on" | "off";
 };
 
-const STORAGE_KEY = "nx-prefs";
+export { prefsInitScript };
+
+const STORAGE_KEY = PREFS_STORAGE_KEY;
 const EVENT = "nx-prefs-change";
 const DEFAULTS: Preferences = { rail: false, density: "comfortable", motion: "on" };
-
-export const prefsInitScript = `(function(){try{var p=JSON.parse(localStorage.getItem("${STORAGE_KEY}")||"{}"),r=document.documentElement;if(p.rail)r.setAttribute("data-rail","");if(p.density==="compact")r.setAttribute("data-density","compact");if(p.motion==="off")r.setAttribute("data-motion","off")}catch(e){}})();`;
 
 function read(): Preferences {
   if (typeof document === "undefined") return DEFAULTS;
