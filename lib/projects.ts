@@ -93,7 +93,7 @@ export function projectStatusNeedsBaselineWarning(
 }
 
 /** Roles de la organización (espejo de `TenantRole` de tenant-context). */
-export type NexusRole = "SUPERADMIN" | "OWNER" | "STAFF";
+export type NexusRole = "SUPERADMIN" | "OWNER" | "STAFF" | "ADMIN" | "RECEPTION" | "ADVISOR";
 
 /**
  * D7 — El cambio de estado de un proyecto lo gobierna solo el OWNER
@@ -101,11 +101,12 @@ export type NexusRole = "SUPERADMIN" | "OWNER" | "STAFF";
  * miembro con sesión válida (OWNER y STAFF).
  */
 export function canChangeProjectStatus(role: NexusRole): boolean {
-  return role === "OWNER" || role === "SUPERADMIN";
+  return role === "OWNER" || role === "SUPERADMIN" || role === "ADMIN";
 }
 
+/** Recepción no edita obras; administración y asesores sí. */
 export function canEditProjectContent(role: NexusRole): boolean {
-  return role === "SUPERADMIN" || role === "OWNER" || role === "STAFF";
+  return role === "SUPERADMIN" || role === "OWNER" || role === "STAFF" || role === "ADMIN" || role === "ADVISOR";
 }
 
 /** Tipos de obra (ficha del proyecto, sección B). */

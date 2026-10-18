@@ -49,6 +49,9 @@ function PlanCard({ plan, canPrice, canStructure }: { plan: PlanConfig; canPrice
           {(c) => <input {...c} type="number" min={0} max={100} disabled={!canPrice} value={p.annualDiscountPct} onChange={(e) => set("annualDiscountPct", Number(e.target.value))} className={cn(inputClasses, "font-mono")} />}
         </Field>
       </div>
+      <Field label="Usuarios incluidos" hint="Personas del equipo del negocio. Vacío = sin límite.">
+        {(c) => <input {...c} type="number" min={1} disabled={!canStructure} value={p.maxUsers ?? ""} onChange={(e) => set("maxUsers", e.target.value ? Number(e.target.value) : null)} className={cn(inputClasses, "font-mono")} placeholder="Sin límite" />}
+      </Field>
       <div className="grid gap-2.5 rounded-md bg-surface-muted p-3">
         {(
           [

@@ -4,14 +4,6 @@ import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant
 import { revalidatePath } from "next/cache";
 import { createTenantDb } from "@/lib/tenant-db";
 import { getVerticalTerms, type VerticalTerms } from "@/lib/vertical-terms";
-import { validateCustomer, type CustomerFieldErrors } from "./validators";
-
-export type CustomerFormState = {
-  status: "idle" | "error" | "ok";
-  message?: string;
-  errors?: CustomerFieldErrors;
-  values?: { name: string; email: string; phone: string };
-};
 
 /** Resultado de las acciones de fila / acciones masivas. */
 export type CustomerActionResult = {
@@ -20,10 +12,6 @@ export type CustomerActionResult = {
   deleted?: number;
 };
 
-const ACCESS_DENIED_FORM: CustomerFormState = {
-  status: "error",
-  message: "No tienes acceso a este negocio.",
-};
 
 type TenantDb = ReturnType<typeof createTenantDb>;
 
@@ -51,72 +39,7 @@ async function requireTenantContext(
 // Formulario (create / update) — firma compatible con useActionState
 // ---------------------------------------------------------------------------
 
-export async function createCustomerAction(
-  _prevState: CustomerFormState,
-  formData: FormData,
-): Promise<CustomerFormState> {
-  const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const context = await requireTenantContext(tenantSlug);
-  if (!context) {
-    return ACCESS_DENIED_FORM;
-  }
-  const { tenantDb } = context;
 
-  const validation = validateCustomer(formData);
-  if (!validation.ok) {
-    return { status: "error", errors: validation.errors, values: validation.values };
-  }
-
-  await tenantDb.customers.create({
-    name: validation.values.name,
-    email: validation.values.email || null,
-    phone: validation.values.phone || null,
-    active: true,
-  });
-
-  revalidatePath(`/${tenantSlug}/crm`);
-  return { status: "ok" };
-}
-
-export async function updateCustomerAction(
-  _prevState: CustomerFormState,
-  formData: FormData,
-): Promise<CustomerFormState> {
-  const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const customerId = String(formData.get("customerId") ?? "");
-
-  const context = await requireTenantContext(tenantSlug);
-  if (!context) {
-    return ACCESS_DENIED_FORM;
-  }
-  const { tenantDb, terms } = context;
-  const customerLabel = terms.customer.toLowerCase();
-
-  if (!customerId) {
-    return { status: "error", message: `${terms.customer} no válido.` };
-  }
-
-  const validation = validateCustomer(formData);
-  if (!validation.ok) {
-    return { status: "error", errors: validation.errors, values: validation.values };
-  }
-
-  const updated = await tenantDb.customers.update(customerId, {
-    name: validation.values.name,
-    email: validation.values.email || null,
-    phone: validation.values.phone || null,
-  });
-
-  if (!updated) {
-    return {
-      status: "error",
-      message: `No se encontró el ${customerLabel} a editar.`,
-    };
-  }
-
-  revalidatePath(`/${tenantSlug}/crm`);
-  return { status: "ok" };
-}
 
 // ---------------------------------------------------------------------------
 // Acciones de fila / masivas

@@ -11,7 +11,7 @@ import { canGovernBudget } from "@/lib/tenant-context";
 import * as Projects from "@/lib/projects";
 
 /** Rol D7 del usuario en el tenant. */
-export type NexusRole = "SUPERADMIN" | "OWNER" | "STAFF";
+export type NexusRole = "SUPERADMIN" | "OWNER" | "STAFF" | "ADMIN" | "RECEPTION" | "ADVISOR";
 
 /** Contexto mínimo que la action ya resolvió (via requireTenantContext). */
 export type AuthContext = {

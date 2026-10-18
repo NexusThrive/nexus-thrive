@@ -1,6 +1,7 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "@/prisma/db";
+import { acceptInvitesFor } from "@/lib/business/team-db";
 import { getStaffContext } from "@/lib/ops/access";
 
 /**
@@ -25,9 +26,15 @@ export default async function AuthCallback() {
     redirect("/admin");
   }
 
-  // Buscar tenant del usuario
+  // Invitaciones pendientes a su correo: lo suman al equipo de esos negocios.
+  const me = await currentUser();
+  const email = me?.primaryEmailAddress?.emailAddress ?? me?.emailAddresses?.[0]?.emailAddress ?? "";
+  const invitedTo = await acceptInvitesFor(userId, email, me?.fullName ?? null);
+  if (invitedTo.length) redirect(`/${invitedTo[0]}`);
+
+  // Buscar tenant del usuario (solo membresías activas)
   const user = await db.orm.public.User
-    .where({ clerkUserId: userId })
+    .where({ clerkUserId: userId, active: true })
     .include("tenant", (t) => t.select("slug", "onboardingCompleted"))
     .first();
 

@@ -104,6 +104,10 @@
       "model": "CustomerTierSetting",
       "namespace": "public"
     },
+    "DismissedNotification": {
+      "model": "DismissedNotification",
+      "namespace": "public"
+    },
     "Expense": {
       "model": "Expense",
       "namespace": "public"
@@ -222,6 +226,10 @@
     },
     "TenantContact": {
       "model": "TenantContact",
+      "namespace": "public"
+    },
+    "TenantInvite": {
+      "model": "TenantInvite",
       "namespace": "public"
     },
     "TenantModule": {
@@ -823,6 +831,18 @@
               {
                 "name": "STAFF",
                 "value": "STAFF"
+              },
+              {
+                "name": "ADMIN",
+                "value": "ADMIN"
+              },
+              {
+                "name": "RECEPTION",
+                "value": "RECEPTION"
+              },
+              {
+                "name": "ADVISOR",
+                "value": "ADVISOR"
               }
             ]
           },
@@ -4462,10 +4482,31 @@
                   "kind": "scalar"
                 }
               },
+              "birthDate": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "city": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "documentId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -4491,6 +4532,28 @@
                 }
               },
               "phone": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "photoId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "profile": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
+              "tags": {
+                "many": true,
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
@@ -4610,8 +4673,17 @@
                 "active": {
                   "column": "active"
                 },
+                "birthDate": {
+                  "column": "birthDate"
+                },
+                "city": {
+                  "column": "city"
+                },
                 "createdAt": {
                   "column": "createdAt"
+                },
+                "documentId": {
+                  "column": "documentId"
                 },
                 "email": {
                   "column": "email"
@@ -4624,6 +4696,15 @@
                 },
                 "phone": {
                   "column": "phone"
+                },
+                "photoId": {
+                  "column": "photoId"
+                },
+                "profile": {
+                  "column": "profile"
+                },
+                "tags": {
+                  "column": "tags"
                 },
                 "tenantId": {
                   "column": "tenantId"
@@ -4835,6 +4916,57 @@
               },
               "namespaceId": "public",
               "table": "CustomerTierSetting"
+            }
+          },
+          "DismissedNotification": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "key": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "key": {
+                  "column": "key"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "DismissedNotification"
             }
           },
           "Expense": {
@@ -7072,6 +7204,13 @@
                   "kind": "scalar"
                 }
               },
+              "maxUsers": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "moduleDiscountPct": {
                 "nullable": false,
                 "type": {
@@ -7138,6 +7277,9 @@
                 },
                 "key": {
                   "column": "key"
+                },
+                "maxUsers": {
+                  "column": "maxUsers"
                 },
                 "moduleDiscountPct": {
                   "column": "moduleDiscountPct"
@@ -10673,6 +10815,123 @@
               "table": "TenantContact"
             }
           },
+          "TenantInvite": {
+            "fields": {
+              "acceptedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "email": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "expiresAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "invitedById": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "revokedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "role": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "Role",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "acceptedAt": {
+                  "column": "acceptedAt"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "email": {
+                  "column": "email"
+                },
+                "expiresAt": {
+                  "column": "expiresAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "invitedById": {
+                  "column": "invitedById"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "revokedAt": {
+                  "column": "revokedAt"
+                },
+                "role": {
+                  "column": "role"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "TenantInvite"
+            }
+          },
           "TenantModule": {
             "fields": {
               "active": {
@@ -10867,6 +11126,13 @@
           },
           "User": {
             "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "clerkUserId": {
                 "nullable": false,
                 "type": {
@@ -10902,6 +11168,20 @@
                   "kind": "scalar"
                 }
               },
+              "phone": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "removedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
               "role": {
                 "nullable": false,
                 "type": {
@@ -10917,6 +11197,20 @@
               },
               "tenantId": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "theme": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "title": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -10965,6 +11259,9 @@
             },
             "storage": {
               "fields": {
+                "active": {
+                  "column": "active"
+                },
                 "clerkUserId": {
                   "column": "clerkUserId"
                 },
@@ -10980,11 +11277,23 @@
                 "name": {
                   "column": "name"
                 },
+                "phone": {
+                  "column": "phone"
+                },
+                "removedAt": {
+                  "column": "removedAt"
+                },
                 "role": {
                   "column": "role"
                 },
                 "tenantId": {
                   "column": "tenantId"
+                },
+                "theme": {
+                  "column": "theme"
+                },
+                "title": {
+                  "column": "title"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
@@ -13973,6 +14282,13 @@
               "uniques": []
             },
             "Customer": {
+              "checks": [
+                {
+                  "expression": "array_position(\"tags\", NULL) IS NULL",
+                  "name": "Customer_tags_elem_not_null_aecbe9e2",
+                  "prefix": "Customer_tags_elem_not_null"
+                }
+              ],
               "columns": {
                 "active": {
                   "codecId": "pg/bool@1",
@@ -13983,6 +14299,16 @@
                   "nativeType": "bool",
                   "nullable": false
                 },
+                "birthDate": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "city": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "default": {
@@ -13991,6 +14317,11 @@
                   },
                   "nativeType": "timestamptz",
                   "nullable": false
+                },
+                "documentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "email": {
                   "codecId": "pg/text@1",
@@ -14009,6 +14340,22 @@
                 },
                 "phone": {
                   "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "photoId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "profile": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
+                  "nullable": true
+                },
+                "tags": {
+                  "codecId": "pg/text@1",
+                  "many": true,
                   "nativeType": "text",
                   "nullable": true
                 },
@@ -14228,6 +14575,49 @@
                 ]
               },
               "uniques": []
+            },
+            "DismissedNotification": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "key": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "userId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "userId",
+                    "key"
+                  ]
+                }
+              ]
             },
             "Expense": {
               "columns": {
@@ -16048,6 +16438,11 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "maxUsers": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
                 },
                 "moduleDiscountPct": {
                   "codecId": "pg/int4@1",
@@ -18473,6 +18868,102 @@
               },
               "uniques": []
             },
+            "TenantInvite": {
+              "checks": [
+                {
+                  "expression": "\"role\" IN ('SUPERADMIN', 'OWNER', 'STAFF', 'ADMIN', 'RECEPTION', 'ADVISOR')",
+                  "name": "TenantInvite_role_check_972a86d0",
+                  "prefix": "TenantInvite_role_check"
+                }
+              ],
+              "columns": {
+                "acceptedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "email": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "expiresAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "invitedById": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "revokedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "role": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "Role",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [
+                {
+                  "columns": [
+                    "email"
+                  ],
+                  "name": "TenantInvite_email_idx_46df9cad",
+                  "prefix": "TenantInvite_email_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "TenantInvite_tenantId_idx_c93ed4f1",
+                  "prefix": "TenantInvite_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "TenantModule": {
               "checks": [
                 {
@@ -18655,12 +19146,21 @@
             "User": {
               "checks": [
                 {
-                  "expression": "\"role\" IN ('SUPERADMIN', 'OWNER', 'STAFF')",
-                  "name": "User_role_check_40dd20e3",
+                  "expression": "\"role\" IN ('SUPERADMIN', 'OWNER', 'STAFF', 'ADMIN', 'RECEPTION', 'ADVISOR')",
+                  "name": "User_role_check_972a86d0",
                   "prefix": "User_role_check"
                 }
               ],
               "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
                 "clerkUserId": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -18690,6 +19190,16 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "phone": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "removedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
                 "role": {
                   "codecId": "pg/text@1",
                   "default": {
@@ -18709,6 +19219,16 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "theme": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "title": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "updatedAt": {
                   "codecId": "pg/timestamptz-temporal@1",
@@ -19263,7 +19783,10 @@
               "values": [
                 "SUPERADMIN",
                 "OWNER",
-                "STAFF"
+                "STAFF",
+                "ADMIN",
+                "RECEPTION",
+                "ADVISOR"
               ]
             },
             "SubscriptionStatus": {
@@ -19348,10 +19871,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "e1669d18d84d2e44337ff86c43b5a7d4fcba93f74b4f12aaeb47c31e7656d87f"
+    "storageHash": "5782a74647fd9027352d758675a5c71ce110afcc5a3b31f1550672e1bf8a3a91"
   },
   "execution": {
-    "executionHash": "3deb4537ebfb55d6da6d864035a906544949364e5ab9758fd013779b173b3fe3",
+    "executionHash": "648e34b5e8a51ee40a695118afc85f7f656b47579c872b06dd164043b25666c1",
     "mutations": {
       "defaults": [
         {
@@ -19784,6 +20307,17 @@
           "ref": {
             "entry": "CustomerTierSetting",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "DismissedNotification",
+            "field": "id",
             "namespace": "public"
           }
         },
@@ -20452,6 +20986,17 @@
           "ref": {
             "entry": "TenantContact",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "TenantInvite",
+            "field": "id",
             "namespace": "public"
           }
         },

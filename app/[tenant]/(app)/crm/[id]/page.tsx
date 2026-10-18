@@ -15,6 +15,7 @@ import { getVerticalTerms } from "@/lib/vertical-terms";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { paymentMethodLabel } from "@/lib/finance";
 import CustomerHeader from "./_components/customer-header";
+import VerticalProfileCard from "./_components/vertical-profile-card";
 import KpiCard from "./_components/kpi-card";
 import ProfileTabs, {
   type ProfileTab,
@@ -106,6 +107,7 @@ export default async function CustomerPage({
     : "resumen";
 
   const baseHref = `/${tenantSlug}/crm/${customer.id}`;
+  const extra = await db.orm.public.Customer.where({ tenantId: tenantRecord.id, id: customer.id }).select("profile", "documentId", "birthDate", "city", "tags", "photoId").first();
 
   const latestActiveMembership =
     memberships.find((membership) => membership.status !== "expired") ?? null;
@@ -119,6 +121,7 @@ export default async function CustomerPage({
         tenantName={tenantRecord.name}
         customer={customer}
         terms={terms}
+        photoId={extra?.photoId ?? null}
       />
 
       <section
@@ -183,6 +186,19 @@ export default async function CustomerPage({
               emptyText={`Sin actividad registrada para este ${terms.customer.toLowerCase()}.`}
             />
           </div>
+          <div className="grid content-start gap-6">
+          <VerticalProfileCard
+            tenantSlug={tenantSlug}
+            customerId={customer.id}
+            data={{
+              vertical: tenantRecord.vertical,
+              profile: (extra?.profile as Record<string, string | number> | null) ?? {},
+              documentId: extra?.documentId ?? null,
+              birthDate: extra?.birthDate ? String(extra.birthDate).slice(0, 10) : null,
+              city: extra?.city ?? null,
+              tags: [...(extra?.tags ?? [])],
+            }}
+          />
           <AccountSummaryCard
             customer={customer}
             metrics={metrics}
@@ -192,6 +208,7 @@ export default async function CustomerPage({
             showMemberships={showMemberships}
             terms={terms}
           />
+          </div>
         </section>
       ) : null}
 

@@ -6,7 +6,8 @@ import { useParams } from "next/navigation";
 import type { ModuleValue } from "@/lib/admin-catalogs";
 import ProfileTab from "./profile-tab";
 import ModulesTab from "./modules-tab";
-import TeamTab from "./team-tab";
+import TeamTab, { type Seats } from "./team-tab";
+import type { PendingInvite, TeamMember as BusinessMember } from "@/lib/business/team-db";
 import PlanTab, { type PlanInfo } from "./plan-tab";
 import NfcTab, { type CardOwner } from "./nfc-tab";
 import { Blocks, CreditCard, Nfc, Palette, Store, Users } from "lucide-react";
@@ -14,7 +15,6 @@ import { SectionNav } from "@/components/molecules/section-nav";
 import { PageHeader } from "@/components/molecules/page-header";
 import { AppearanceSettings } from "@/components/organisms/appearance-settings";
 
-export type RoleValue = "SUPERADMIN" | "OWNER" | "STAFF";
 
 export type ProfileInitialValues = {
   name: string;
@@ -30,12 +30,6 @@ export type ModuleState = {
   active: boolean;
 };
 
-export type TeamMember = {
-  id: string;
-  name: string;
-  email: string;
-  role: RoleValue;
-};
 
 export type SystemInfoItem = { label: string; value: string };
 export type { CardOwner, PlanInfo };
@@ -69,7 +63,7 @@ export default function SettingsShell({
   canManage: boolean;
   profile: ProfileInitialValues;
   modules: ModuleState[];
-  team: TeamMember[];
+  team: { members: BusinessMember[]; invites: PendingInvite[]; seats: Seats; canManage: boolean; meRole: string };
   systemInfo: SystemInfoItem[];
   plan: PlanInfo;
   card: CardOwner;
@@ -108,7 +102,7 @@ export default function SettingsShell({
           />
         )}
         {tab === "plan" && <PlanTab info={plan} />}
-        {tab === "team" && <TeamTab members={team} />}
+        {tab === "team" && <TeamTab slug={initialTenantSlug} {...team} />}
         {tab === "card" && <NfcTab owner={card} />}
         {tab === "appearance" && <AppearanceSettings />}
         </div>

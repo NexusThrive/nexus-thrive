@@ -418,6 +418,8 @@ export function createTenantDb(tenantId: string) {
                   customer.name.ilike(pattern),
                   customer.email.ilike(pattern),
                   customer.phone.ilike(pattern),
+                  customer.documentId.ilike(pattern),
+                  customer.city.ilike(pattern),
                 ),
               )
             : byTenantAndStatus;
