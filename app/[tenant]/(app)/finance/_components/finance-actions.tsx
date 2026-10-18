@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Banknote, MinusCircle } from "lucide-react";
+import { Banknote, Camera, MinusCircle } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ExpenseSheet } from "@/components/organisms/expense-sheet";
 import { PaymentSheet } from "@/components/organisms/payment-sheet";
 import { EXPENSE_CATEGORIES, PAYMENT_METHODS } from "@/lib/finance";
 import { cn } from "@/lib/utils";
 import { createExpenseAction, createPaymentAction } from "../actions";
+import { ScanPaymentSheet } from "./scan-payment-sheet";
 
 export type CustomerOption = {
   id: string;
@@ -17,14 +18,16 @@ export type CustomerOption = {
   phone?: string | null;
 };
 
-type Open = "pago" | "gasto" | null;
+type Open = "pago" | "gasto" | "escaneo" | null;
 
 /**
- * Registrar pago (teclado + recibo impreso) y registrar gasto (chips de
- * categoría). Los botones van dentro de la tarjeta de balance (`tone="dark"`)
- * o sobre fondo claro. `?nuevo=pago|gasto` abre la hoja al llegar (acciones
- * rápidas del inicio y del botón Crear). Las escrituras son las Server
- * Actions de siempre: validan, guardan y revalidan Finanzas e Inicio.
+ * Registrar pago (teclado + recibo impreso), registrar gasto (chips de
+ * categoría) y escanear pago (foto del comprobante con lectura OCR/QR
+ * best-effort). Los botones van dentro de la tarjeta de balance
+ * (`tone="dark"`) o sobre fondo claro. `?nuevo=pago|gasto` y `?scan=1` abren
+ * la hoja al llegar (acciones rápidas del inicio y del botón Crear). Las
+ * escrituras son las Server Actions de siempre: validan, guardan y
+ * revalidan Finanzas e Inicio.
  */
 export default function FinanceActions({
   tenantSlug,
@@ -52,11 +55,12 @@ export default function FinanceActions({
 
   const setSheet = (next: Open) => {
     setOpen(next);
-    // Quita ?nuevo= al cerrar para que recargar no la vuelva a abrir.
-    if (!next && (searchParams.has("nuevo") || searchParams.has("cliente"))) {
+    // Quita ?nuevo=/?scan= al cerrar para que recargar no la vuelva a abrir.
+    if (!next && (searchParams.has("nuevo") || searchParams.has("cliente") || searchParams.has("scan"))) {
       const params = new URLSearchParams(searchParams);
       params.delete("nuevo");
       params.delete("cliente");
+      params.delete("scan");
       router.replace(params.size ? `${pathname}?${params}` : pathname, { scroll: false });
     }
   };
@@ -74,6 +78,14 @@ export default function FinanceActions({
       </button>
       <button
         type="button"
+        onClick={() => setSheet("escaneo")}
+        className={cn(buttonVariants({ variant: "outline" }), "order-1")}
+      >
+        <Camera aria-hidden="true" className="size-4" />
+        Escanear pago
+      </button>
+      <button
+        type="button"
         onClick={() => setSheet("gasto")}
         className={cn(
           buttonVariants({ variant: "outline" }),
@@ -83,6 +95,15 @@ export default function FinanceActions({
         <MinusCircle aria-hidden="true" className="size-4" />
         Registrar gasto
       </button>
+
+      <ScanPaymentSheet
+        open={open === "escaneo"}
+        onOpenChange={(next) => setSheet(next ? "escaneo" : null)}
+        tenantSlug={tenantSlug}
+        business={business}
+        customers={customers.map((c) => ({ id: c.id, name: c.name, hint: c.email || undefined, phone: c.phone }))}
+        defaultCustomerId={customers.some((c) => c.id === initialCustomerId) ? initialCustomerId : ""}
+      />
 
       <PaymentSheet
         open={open === "pago"}
