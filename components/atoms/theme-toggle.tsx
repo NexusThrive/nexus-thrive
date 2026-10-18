@@ -18,7 +18,7 @@ export const THEME_STORAGE_KEY = "nx-theme";
 
 export const themeInitScript = `(function(){try{var t=localStorage.getItem("${THEME_STORAGE_KEY}");if(t!=="dark"){t="light"}if(t==="dark"){document.documentElement.classList.add("dark")}}catch(e){}})();`;
 
-const THEME_EVENT = "nx-theme-change";
+export const THEME_EVENT = "nx-theme-change";
 
 /* El tema vive en la clase `dark` de <html> (fuente de verdad), así que lo
    leemos con useSyncExternalStore en vez de duplicarlo en estado. */

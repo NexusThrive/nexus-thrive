@@ -4,6 +4,10 @@ enum Role {
   SUPERADMIN
   OWNER
   STAFF
+  /// Equipo del negocio (fase V1): administración, recepción y asesores.
+  ADMIN
+  RECEPTION
+  ADVISOR
 }
 
 /// Etapa comercial de una cuenta en el Operations Center. Distinta del
@@ -387,6 +391,13 @@ model User {
   role        Role     @default(STAFF)
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Retirado del negocio: conserva su historial pero ya no entra.
+  active      Boolean  @default(true)
+  phone       String?
+  title       String?
+  /// Tema elegido (light | dark), guardado en la cuenta.
+  theme       String?
+  removedAt   DateTime?
   createdAt   DateTime @default(now())
   updatedAt   temporal.updatedAt()
 
@@ -404,6 +415,14 @@ model Customer {
   email     String?
   phone     String?
   active    Boolean  @default(true)
+  documentId String?
+  birthDate  DateTime?
+  tags       String[]?
+  /// Campos propios del rubro (gym: peso, talla, objetivo…; turismo: pasaporte…).
+  profile    Json?
+  /// Foto (Attachment.id, kind CUSTOMER_PHOTO).
+  photoId    String?
+  city       String?
   createdAt DateTime @default(now())
   updatedAt temporal.updatedAt()
 
@@ -1347,6 +1366,8 @@ model PlanSetting {
   recommended        Boolean  @default(false)
   active             Boolean  @default(true)
   order              Int
+  /// Usuarios del negocio incluidos (null = sin límite).
+  maxUsers           Int?
   updatedAt          temporal.updatedAt()
 }
 
@@ -1767,4 +1788,33 @@ model InvoiceLine {
   total       Decimal
 
   @@index([invoiceId])
+}
+
+
+/// Invitación para unirse al equipo de un negocio (se acepta al iniciar
+/// sesión con ese correo).
+model TenantInvite {
+  id          String    @id @default(uuid())
+  tenantId    String
+  email       String
+  name        String?
+  role        Role
+  invitedById String?
+  acceptedAt  DateTime?
+  revokedAt   DateTime?
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+
+  @@index([tenantId])
+  @@index([email])
+}
+
+/// Notificaciones que la persona descartó (deslizando).
+model DismissedNotification {
+  id        String   @id @default(uuid())
+  userId    String
+  key       String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, key])
 }

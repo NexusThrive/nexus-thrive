@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MinusCircle, TrendingUp, Users, Wallet } from "lucide-react";
@@ -88,10 +88,13 @@ export default async function TenantDashboard({
     ? await tenantDb.users.findByClerkUserId(userId)
     : null;
 
+  // El nombre de la persona en el equipo; si no lo ha escrito, el de su cuenta (nunca el usuario del correo, salvo último recurso).
+  const clerkUser = localUser?.name?.trim() ? null : await currentUser();
   const greetingName =
     localUser?.name?.trim().split(/\s+/)[0] ||
+    clerkUser?.firstName?.trim() ||
     localUser?.email?.split("@")[0] ||
-    "Usuario";
+    "Hola";
 
   const rawDate = new Intl.DateTimeFormat("es-CO", {
     timeZone: "America/Bogota",

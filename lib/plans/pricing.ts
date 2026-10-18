@@ -38,6 +38,8 @@ export type PlanConfig = {
   recommended: boolean;
   active: boolean;
   order: number;
+  /** Usuarios del negocio incluidos (null = sin límite). */
+  maxUsers: number | null;
 };
 
 export type ModuleConfig = {
@@ -135,6 +137,7 @@ export function defaultPricingConfig(): PricingConfig {
       recommended: key === "ELITE",
       active: true,
       order: i,
+      maxUsers: key === "ESSENTIAL" ? 1 : key === "ELITE" ? 3 : null,
     })),
     modules: MODULES.map((m, i) => ({
       module: m,

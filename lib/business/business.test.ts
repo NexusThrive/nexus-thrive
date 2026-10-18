@@ -82,3 +82,44 @@ describe("catálogo por rubro", () => {
     expect(validateProduct({ ...base, capacity: 0 }).ok).toBe(false);
   });
 });
+
+import { COUNTRIES, joinPhone, searchCountries, splitPhone } from "./countries";
+
+describe("indicativos de país", () => {
+  it("Colombia primero y el resto alfabético", () => {
+    expect(COUNTRIES[0].iso).toBe("CO");
+    expect(COUNTRIES[1].name).toBe("Alemania");
+    const names = COUNTRIES.slice(1).map((c) => c.name);
+    expect([...names].sort((a, b) => a.localeCompare(b, "es"))).toEqual(names);
+  });
+  it("busca por nombre sin tildes o por número y separa el teléfono", () => {
+    expect(searchCountries("peru")[0].iso).toBe("PE");
+    expect(searchCountries("+593")[0].iso).toBe("EC");
+    expect(splitPhone("+593 99 123 4567")).toMatchObject({ number: "991234567" });
+    expect(splitPhone("+593 99 123 4567").country.iso).toBe("EC");
+    expect(splitPhone("300 123 4567").country.iso).toBe("CO");
+    expect(joinPhone(COUNTRIES[0], "300 123 4567")).toBe("+57 3001234567");
+  });
+});
+
+import { bmi, cleanProfile, membershipTypeFor, profileFor } from "./customer-fields";
+
+describe("ficha del cliente por rubro", () => {
+  it("el gym pide foto, medidas y plan; otros rubros sus propios datos", () => {
+    expect(profileFor("gym").photo).toBe(true);
+    expect(profileFor("gym").fields.map((f) => f.key)).toContain("weightKg");
+    expect(profileFor("tour_guides").title).toBe("Datos del viajero");
+    expect(profileFor("retail").fields).toEqual([]);
+  });
+  it("limpia y valida el perfil", () => {
+    expect(cleanProfile("gym", { weightKg: "72,5", heightCm: "170", goal: "Tonificar", otra: "x" })).toEqual({ ok: true, value: { weightKg: 72.5, heightCm: 170, goal: "Tonificar" } });
+    expect(cleanProfile("gym", { weightKg: "900" }).ok).toBe(false);
+    expect(cleanProfile("gym", { goal: "Volar" }).ok).toBe(false);
+  });
+  it("IMC y tipo de membresía", () => {
+    expect(bmi(72.5, 170)).toEqual({ value: 25.1, label: "Sobrepeso" });
+    expect(membershipTypeFor(30)).toBe("mensual");
+    expect(membershipTypeFor(90)).toBe("trimestral");
+    expect(membershipTypeFor(365)).toBe("anual");
+  });
+});

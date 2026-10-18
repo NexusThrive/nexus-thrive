@@ -103,6 +103,9 @@ export default async function CrmPage({
     phone: row.phone ?? "",
     active: row.active,
     createdAt: formatCustomerDate(row.createdAt),
+    photoId: row.photoId,
+    tags: [...(row.tags ?? [])],
+    documentId: row.documentId,
   }));
 
   const terms = getVerticalTerms(tenantRecord.vertical);

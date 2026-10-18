@@ -25,11 +25,13 @@ export default function CustomerHeader({
   tenantName,
   customer,
   terms,
+  photoId = null,
 }: {
   tenantSlug: string;
   tenantName: string;
   customer: Customer360Profile;
   terms: VerticalTerms;
+  photoId?: string | null;
 }) {
   const hasPhone = Boolean(customer.phone);
   const whatsappMessage = `Hola ${customer.name}, te escribimos desde ${tenantName}.`;
@@ -47,12 +49,14 @@ export default function CustomerHeader({
 
       <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-4">
-          <span
-            aria-hidden="true"
-            className="grid h-14 w-14 shrink-0 place-items-center rounded-sm bg-accent-subtle text-lg font-semibold text-accent-text"
-          >
-            {initialsOf(customer.name)}
-          </span>
+          {photoId ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={`/api/files/${photoId}`} alt={`Foto de ${customer.name}`} className="h-16 w-16 shrink-0 rounded-full object-cover" />
+          ) : (
+            <span aria-hidden="true" className="grid h-14 w-14 shrink-0 place-items-center rounded-sm bg-accent-subtle text-lg font-semibold text-accent-text">
+              {initialsOf(customer.name)}
+            </span>
+          )}
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="truncate font-display text-[clamp(22px,3.6vw,30px)] font-bold tracking-[-0.02em] text-foreground">
