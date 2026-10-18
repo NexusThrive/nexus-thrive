@@ -19,6 +19,8 @@ export type ReceiptData = {
   lines?: ReceiptLine[];
   /** Pie del papel (recibo, cliente, medio, fecha). */
   meta: ReceiptLine[];
+  /** QR del recibo como data URL base64 (`receiptQrDataUrl`). */
+  qr?: string;
 };
 
 /** Borde inferior en dientes de sierra de 6 px (24 dientes). */
@@ -36,6 +38,9 @@ const PRINT_MS = 1600;
  * con borde dentado. Al terminar, la N se rellena, el estado pasa a "Pago
  * registrado" y saltan cortes dorados desde el papel. Imprime al montar;
  * cambia `printKey` para volver a imprimir.
+ *
+ * El papel se ve como una etiqueta: ojete de colgado, franja dorada,
+ * separadores punteados y, al pie, el QR firmado del recibo.
  */
 export function ReceiptPrinter({
   data,
@@ -82,7 +87,7 @@ export function ReceiptPrinter({
       window.clearTimeout(timer);
       setDone(false);
     };
-  }, [printKey]);
+  }, [printKey, data.qr]);
 
   return (
     <div className={`relative mx-auto flex w-full max-w-[340px] flex-col items-center ${className ?? ""}`}>
@@ -104,12 +109,17 @@ export function ReceiptPrinter({
         <div
           ref={paperRef}
           style={{ clipPath: SAWTOOTH }}
-          className="bg-white px-4 pb-6 pt-[18px] font-mono text-[11.5px] leading-[1.55] text-[#0A0A0B]"
+          className="relative bg-white px-4 pb-6 pt-5 font-mono text-[11.5px] leading-[1.55] text-[#0A0A0B]"
         >
-          <div className="text-center">
-            <BrandLogo variant="lockup" size={48} className="mx-auto text-[#0A0A0B]" />
-            <p className="mt-2 font-display text-[13px] font-semibold">Comprobante de pago</p>
-            <p className="text-[#6B6B73]">{[data.business, data.subtitle].filter(Boolean).join(" · ")}</p>
+          <i aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-[#D4AF37]" />
+          <span aria-hidden="true" className="absolute left-1/2 top-[10px] size-[11px] -translate-x-1/2 rounded-full border border-dashed border-[#C9C7C1]" />
+          <div className="pt-3 text-center">
+            <BrandLogo variant="lockup" size={44} className="mx-auto text-[#0A0A0B]" />
+            <p className="mt-2 font-display text-[13px] font-semibold leading-tight">{data.business}</p>
+            {data.subtitle ? <p className="text-[#6B6B73]">{data.subtitle}</p> : null}
+            <span className="mt-1.5 inline-block rounded-full border border-[#0A0A0B]/15 px-2 py-[2px] text-[9.5px] font-semibold uppercase tracking-[0.16em] text-[#6B6B73]">
+              Comprobante de pago
+            </span>
           </div>
           <hr className="my-2.5 border-0 border-t border-dashed border-[#A1A1A8]" />
           {(data.lines ?? [{ label: data.concept, value: data.total }]).map((line) => (
@@ -132,6 +142,18 @@ export function ReceiptPrinter({
               <span className="min-w-0 truncate text-right">{line.value}</span>
             </p>
           ))}
+          {data.qr ? (
+            <>
+              <hr className="my-2.5 border-0 border-t border-dashed border-[#A1A1A8]" />
+              <div className="grid justify-items-center gap-1.5">
+                <div className="rounded-md border border-[#0A0A0B]/12 bg-white p-1.5">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={data.qr} alt="QR para verificar el recibo" width={116} height={116} className="size-[116px]" />
+                </div>
+                <p className="text-[9.5px] uppercase tracking-[0.14em] text-[#6B6B73]">Escanea para verificar</p>
+              </div>
+            </>
+          ) : null}
           <hr className="my-2.5 border-0 border-t border-dashed border-[#A1A1A8]" />
           <p className="text-center text-[#6B6B73]">Gracias por tu pago</p>
         </div>
