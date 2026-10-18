@@ -153,7 +153,17 @@ export type MembershipRow = {
   startDate: string;
   endDate: string;
   createdAt: string;
+  /** Congelada o cancelada (prima sobre el estado por fechas). */
+  hold: "frozen" | "cancelled" | null;
 };
+
+/** Congelada (ahora dentro del congelamiento) o cancelada. */
+function membershipHold(m: { frozenFrom?: unknown; frozenUntil?: unknown; cancelledAt?: unknown }): MembershipRow["hold"] {
+  if (m.cancelledAt) return "cancelled";
+  const now = Date.now();
+  if (m.frozenFrom && m.frozenUntil && now >= Date.parse(String(m.frozenFrom)) && now < Date.parse(String(m.frozenUntil))) return "frozen";
+  return null;
+}
 
 /** Detalle de membresía con historial de cobros (Json). */
 export type MembershipDetail = MembershipRow & {
@@ -1335,6 +1345,7 @@ export function createTenantDb(tenantId: string) {
             startDate: String(row.startDate),
             endDate: String(row.endDate),
             createdAt: String(row.createdAt),
+            hold: membershipHold(row),
           })),
           total,
         };
@@ -1372,6 +1383,7 @@ export function createTenantDb(tenantId: string) {
           startDate: String(membership.startDate),
           endDate: String(membership.endDate),
           createdAt: String(membership.createdAt),
+          hold: membershipHold(membership),
           payments,
         };
       },
