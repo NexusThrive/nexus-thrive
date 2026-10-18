@@ -1,5 +1,7 @@
 "use client";
 
+import { MoneyInput } from "@/components/molecules/money-input";
+import { parseMoney } from "@/lib/business/money";
 import { useEffect, useState, useActionState, startTransition } from "react";
 import { CalendarPlus, X } from "lucide-react";
 
@@ -303,14 +305,13 @@ function BookingsContent({
               <label htmlFor="booking-amount" className={labelClasses}>
                 Importe (COP) <span className="text-destructive">*</span>
               </label>
-              <input
+              <MoneyInput
                 id="booking-amount"
                 name="totalAmount"
-                inputMode="numeric"
-                value={form.totalAmount}
-                onChange={(event) => setField("totalAmount", event.target.value)}
+                value={parseMoney(form.totalAmount)}
+                onValueChange={(v) => setField("totalAmount", v == null ? "" : String(v))}
                 aria-invalid={Boolean(errors.totalAmount)}
-                placeholder="Ej. 50000 o 50.000"
+                placeholder="50.000"
                 className={cn(fieldClass(Boolean(errors.totalAmount)))}
               />
               {errors.totalAmount && (

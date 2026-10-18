@@ -94,6 +94,10 @@ export type PaymentRow = {
   providerRefId: string | null;
   description: string | null;
   createdAt: string;
+  receiptNumber: number | null;
+  voidReason: string | null;
+  notes: string | null;
+  customerPhone: string | null;
 };
 
 export type ExpenseListInput = {
@@ -111,6 +115,10 @@ export type ExpenseRow = {
   amount: number;
   date: string;
   createdAt: string;
+  supplier: string | null;
+  paidFrom: string;
+  voidReason: string | null;
+  voided: boolean;
 };
 
 export type RecentActivityRow = {
@@ -923,6 +931,7 @@ export function createTenantDb(tenantId: string) {
             .aggregate((aggregate) => ({ total: aggregate.sum("amount") })),
           db.orm.public.Expense
             .where({ tenantId })
+            .where((expense) => expense.voidedAt.isNull())
             .where((expense) =>
               and(expense.date.gte(start), expense.date.lt(end)),
             )
@@ -976,6 +985,7 @@ export function createTenantDb(tenantId: string) {
             .all(),
           db.orm.public.Expense
             .where({ tenantId })
+            .where((expense) => expense.voidedAt.isNull())
             .where((expense) => expense.date.gte(since))
             .select("amount", "date")
             .all(),
@@ -1063,6 +1073,10 @@ export function createTenantDb(tenantId: string) {
             providerRefId: row.providerRefId,
             description: row.description,
             createdAt: String(row.createdAt),
+            receiptNumber: row.receiptNumber,
+            voidReason: row.voidReason,
+            notes: row.notes,
+            customerPhone: row.customerId ? (customerById.get(row.customerId)?.phone ?? null) : null,
           })),
           total,
         };
@@ -1089,7 +1103,7 @@ export function createTenantDb(tenantId: string) {
         }
         if (text) {
           filtered = filtered.where((expense) =>
-            expense.description.ilike(pattern),
+            or(expense.description.ilike(pattern), expense.supplier.ilike(pattern)),
           );
         }
 
@@ -1110,6 +1124,10 @@ export function createTenantDb(tenantId: string) {
             amount: toNumber(row.amount),
             date: String(row.date),
             createdAt: String(row.createdAt),
+            supplier: row.supplier,
+            paidFrom: row.paidFrom,
+            voidReason: row.voidReason,
+            voided: !!row.voidedAt,
           })),
           total,
         };
@@ -1131,6 +1149,7 @@ export function createTenantDb(tenantId: string) {
             .all(),
           db.orm.public.Expense
             .where({ tenantId })
+            .where((expense) => expense.voidedAt.isNull())
             .orderBy((expense) => expense.date.desc())
             .limit(safeLimit)
             .all(),
@@ -1186,6 +1205,7 @@ export function createTenantDb(tenantId: string) {
             .all(),
           db.orm.public.Expense
             .where({ tenantId })
+            .where((expense) => expense.voidedAt.isNull())
             .orderBy((expense) => expense.date.desc())
             .limit(safeLimit)
             .all(),

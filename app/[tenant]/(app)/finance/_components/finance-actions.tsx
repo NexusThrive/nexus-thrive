@@ -33,6 +33,7 @@ export default function FinanceActions({
   initial = null,
   initialCustomerId = "",
   tone = "dark",
+  cashOpen = false,
 }: {
   tenantSlug: string;
   business: { name: string; subtitle?: string };
@@ -41,6 +42,8 @@ export default function FinanceActions({
   /** Cliente preseleccionado en el cobro (?cliente=, desde la ficha o la lista). */
   initialCustomerId?: string;
   tone?: "dark" | "light";
+  /** Hay un turno de caja abierto: el gasto sale de caja por defecto. */
+  cashOpen?: boolean;
 }) {
   const [open, setOpen] = useState<Open>(initial);
   const router = useRouter();
@@ -108,12 +111,16 @@ export default function FinanceActions({
         open={open === "gasto"}
         onOpenChange={(next) => setSheet(next ? "gasto" : null)}
         categories={EXPENSE_CATEGORIES}
-        onSave={async ({ amount, category, description }) => {
+        defaultPaidFrom={cashOpen ? "CASH" : "BANK"}
+        onSave={async ({ amount, category, description, supplier, paidFrom, file }) => {
           const form = new FormData();
           form.set("tenantSlug", tenantSlug);
           form.set("amount", String(amount));
           form.set("category", category);
           form.set("description", description);
+          form.set("supplier", supplier ?? "");
+          form.set("paidFrom", paidFrom ?? "BANK");
+          if (file) form.set("receipt", file);
           const state = await createExpenseAction({ status: "idle" }, form);
           if (state.status === "ok") return { ok: true };
           const field = state.errors?.amount ? "amount" : state.errors?.description ? "description" : state.errors?.category ? "category" : undefined;

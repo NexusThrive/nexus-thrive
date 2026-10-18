@@ -1,13 +1,36 @@
-import { Receipt } from "lucide-react";
-import ModulePlaceholder from "@/components/templates/module-placeholder";
+import { notFound } from "next/navigation";
+import { PageHeader } from "@/components/molecules/page-header";
+import { listInvoices } from "@/lib/business/invoices-db";
+import { listProducts } from "@/lib/business/products-db";
+import { canHandleCash } from "@/lib/business/roles";
+import { todayBogota } from "@/lib/ops/leads";
+import { requireTenantContext } from "@/lib/tenant-context";
+import { db } from "@/prisma/db";
+import BillingList from "./_components/billing-list";
 
-/** Módulo Facturación: habilitado por TenantModule; implementación en roadmap. */
-export default function BillingPage() {
+/** Facturación V1: cuentas de cobro y recibos numerados (la factura electrónica DIAN llega con un proveedor). */
+export default async function BillingPage({ params, searchParams }: { params: Promise<{ tenant: string }>; searchParams: Promise<{ nuevo?: string }> }) {
+  const { tenant } = await params;
+  const { nuevo } = await searchParams;
+  const ctx = await requireTenantContext(tenant);
+  if (!ctx) notFound();
+  const [rows, customers, products] = await Promise.all([
+    listInvoices(ctx.tenantId),
+    db.orm.public.Customer.where({ tenantId: ctx.tenantId, active: true }).select("id", "name").orderBy((c) => c.name.asc()).limit(300).all(),
+    listProducts(ctx.tenantId, { activeOnly: true }),
+  ]);
   return (
-    <ModulePlaceholder
-      title="Facturación"
-      description="Genera facturas y documentos de cobro para tus clientes."
-      icon={Receipt}
-    />
+    <div className="grid gap-5">
+      <PageHeader eyebrow="Gestión" title="Facturación" description="Cuentas de cobro y recibos numerados. Al marcarlos como pagados se registra el cobro con su recibo." />
+      <BillingList
+        slug={tenant}
+        rows={rows}
+        customers={customers}
+        products={products.map((p) => ({ id: p.id, name: p.name, price: p.price }))}
+        today={todayBogota()}
+        canCreate={canHandleCash(ctx.role)}
+        initialNew={nuevo === "1"}
+      />
+    </div>
   );
 }

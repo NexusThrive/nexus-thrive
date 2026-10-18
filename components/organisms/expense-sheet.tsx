@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Paperclip } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { Chip, ChipRow } from "@/components/atoms/chip";
 import { inputClasses, textareaClasses } from "@/components/atoms/input";
@@ -12,7 +12,16 @@ import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { burstFrom, shake } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-export type ExpenseSaveInput = { amount: number; category: string; description: string };
+export type ExpenseSaveInput = {
+  amount: number;
+  category: string;
+  description: string;
+  supplier?: string;
+  /** CASH (caja menor) | BANK | CARD */
+  paidFrom?: string;
+  /** Foto o PDF de la factura. */
+  file?: File | null;
+};
 export type ExpenseSaveResult = { ok: true } | { ok: false; message: string; field?: "amount" | "description" | "category" };
 
 /**
@@ -25,15 +34,21 @@ export function ExpenseSheet({
   onOpenChange,
   categories,
   onSave,
+  defaultPaidFrom = "BANK",
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   categories: readonly string[];
   onSave: (input: ExpenseSaveInput) => Promise<ExpenseSaveResult>;
+  /** De dónde sale por defecto (CASH si hay una caja abierta). */
+  defaultPaidFrom?: string;
 }) {
   const [raw, setRaw] = useState("");
   const [category, setCategory] = useState(categories[0] ?? "");
   const [description, setDescription] = useState("");
+  const [supplier, setSupplier] = useState("");
+  const [paidFrom, setPaidFrom] = useState(defaultPaidFrom);
+  const [file, setFile] = useState<File | null>(null);
   const [state, setState] = useState<"idle" | "busy" | "done">("idle");
   const [errors, setErrors] = useState<{ amount?: string; description?: string; form?: string }>({});
   const amountRef = useRef<HTMLInputElement>(null);
@@ -45,6 +60,9 @@ export function ExpenseSheet({
     setRaw("");
     setCategory(categories[0] ?? "");
     setDescription("");
+    setSupplier("");
+    setPaidFrom(defaultPaidFrom);
+    setFile(null);
     setState("idle");
     setErrors({});
   };
@@ -67,7 +85,7 @@ export function ExpenseSheet({
       return;
     }
     setState("busy");
-    const result = await onSave({ amount, category, description: description.trim() });
+    const result = await onSave({ amount, category, description: description.trim(), supplier: supplier.trim(), paidFrom, file });
     if (!result.ok) {
       setState("idle");
       setErrors(result.field === "amount" || result.field === "description" ? { [result.field]: result.message } : { form: result.message });
@@ -145,6 +163,32 @@ export function ExpenseSheet({
               placeholder="Ej. Compra de cuchillas y toallas"
               className={textareaClasses}
             />
+          )}
+        </Field>
+        <div>
+          <p className="mb-2 text-[13px] font-medium">Se pagó con</p>
+          <ChipRow role="group" aria-label="Se pagó con">
+            {[
+              ["CASH", "Caja menor"],
+              ["BANK", "Banco / transferencia"],
+              ["CARD", "Tarjeta"],
+            ].map(([v, l]) => (
+              <Chip key={v} selected={paidFrom === v} onClick={() => setPaidFrom(v)}>
+                {l}
+              </Chip>
+            ))}
+          </ChipRow>
+        </div>
+        <Field label="Proveedor">
+          {(control) => <input {...control} value={supplier} onChange={(e) => setSupplier(e.target.value)} maxLength={120} placeholder="Ej. Distribuidora El Sol" className={inputClasses} />}
+        </Field>
+        <Field label="Foto de la factura" hint="Opcional · JPG, PNG o PDF hasta 8 MB. Queda guardada en NEXUS.">
+          {(control) => (
+            <label htmlFor={control.id} className="flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-border-input bg-surface px-3 py-3 text-[13px] hover:border-border-input-hover">
+              <Paperclip aria-hidden="true" className="size-4 text-muted-foreground" />
+              <span className="min-w-0 flex-1 truncate">{file ? file.name : "Elegir o tomar foto…"}</span>
+              <input id={control.id} type="file" accept="image/*,application/pdf" capture="environment" className="sr-only" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+            </label>
           )}
         </Field>
         {errors.form ? <Alert tone="danger">{errors.form}</Alert> : null}

@@ -1,0 +1,1547 @@
+[
+  {
+    "id": "table.Attachment",
+    "label": "Create table \"Attachment\"",
+    "summary": "Creates table \"Attachment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Attachment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Attachment\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Attachment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Attachment\"",
+        "sql": "CREATE TABLE \"public\".\"Attachment\" (\n  \"byteSize\" int4 NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"data\" bytea NOT NULL,\n  \"fileName\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"kind\" text NOT NULL,\n  \"mimeType\" text NOT NULL,\n  \"ownerId\" text NOT NULL,\n  \"sha256\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"uploadedById\" text,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Attachment\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Attachment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.CashBox",
+    "label": "Create table \"CashBox\"",
+    "summary": "Creates table \"CashBox\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "CashBox"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"CashBox\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CashBox\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"CashBox\"",
+        "sql": "CREATE TABLE \"public\".\"CashBox\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"fundAmount\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"responsibleUserId\" text,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"CashBox\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CashBox\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.CashMovement",
+    "label": "Create table \"CashMovement\"",
+    "summary": "Creates table \"CashMovement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "CashMovement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"CashMovement\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CashMovement\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"CashMovement\"",
+        "sql": "CREATE TABLE \"public\".\"CashMovement\" (\n  \"amount\" numeric NOT NULL,\n  \"beneficiary\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"description\" text NOT NULL,\n  \"expenseId\" text,\n  \"id\" text NOT NULL,\n  \"kind\" text NOT NULL,\n  \"paymentId\" text,\n  \"sessionId\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"CashMovement_kind_check_a2f7cbee\" CHECK (\"kind\" IN ('OPENING', 'INCOME', 'EXPENSE', 'VOUCHER', 'REPLENISH', 'ADJUST'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"CashMovement\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CashMovement\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.CashSession",
+    "label": "Create table \"CashSession\"",
+    "summary": "Creates table \"CashSession\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "CashSession"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"CashSession\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CashSession\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"CashSession\"",
+        "sql": "CREATE TABLE \"public\".\"CashSession\" (\n  \"boxId\" text NOT NULL,\n  \"closedAt\" timestamptz,\n  \"closedById\" text,\n  \"closingNotes\" text,\n  \"countedAmount\" numeric,\n  \"difference\" numeric,\n  \"expectedAmount\" numeric,\n  \"id\" text NOT NULL,\n  \"openedAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"openedById\" text NOT NULL,\n  \"openingAmount\" numeric NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"CashSession\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CashSession\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Invoice",
+    "label": "Create table \"Invoice\"",
+    "summary": "Creates table \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Invoice\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Invoice\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Invoice\"",
+        "sql": "CREATE TABLE \"public\".\"Invoice\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"customerDoc\" text,\n  \"customerId\" text,\n  \"customerName\" text NOT NULL,\n  \"dueDate\" timestamptz,\n  \"id\" text NOT NULL,\n  \"issueDate\" timestamptz NOT NULL,\n  \"kind\" text NOT NULL,\n  \"notes\" text,\n  \"number\" int4 NOT NULL,\n  \"status\" text DEFAULT 'ISSUED' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"total\" numeric NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"voidReason\" text,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"Invoice_status_check_e10bd6e9\" CHECK (\"status\" IN ('ISSUED', 'PAID', 'VOID'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Invoice\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Invoice\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.InvoiceLine",
+    "label": "Create table \"InvoiceLine\"",
+    "summary": "Creates table \"InvoiceLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "InvoiceLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"InvoiceLine\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"InvoiceLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"InvoiceLine\"",
+        "sql": "CREATE TABLE \"public\".\"InvoiceLine\" (\n  \"description\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"invoiceId\" text NOT NULL,\n  \"productId\" text,\n  \"quantity\" numeric NOT NULL,\n  \"total\" numeric NOT NULL,\n  \"unitPrice\" numeric NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"InvoiceLine\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"InvoiceLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Product",
+    "label": "Create table \"Product\"",
+    "summary": "Creates table \"Product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Product\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Product\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Product\"",
+        "sql": "CREATE TABLE \"public\".\"Product\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"capacity\" int4,\n  \"category\" text,\n  \"cost\" numeric,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text,\n  \"durationDays\" int4,\n  \"durationMinutes\" int4,\n  \"id\" text NOT NULL,\n  \"kind\" text DEFAULT 'PRODUCT' NOT NULL,\n  \"minStock\" int4 DEFAULT 0 NOT NULL,\n  \"name\" text NOT NULL,\n  \"price\" numeric NOT NULL,\n  \"sku\" text,\n  \"stock\" int4 DEFAULT 0 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"trackStock\" bool DEFAULT false NOT NULL,\n  \"unit\" text,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"Product_kind_check_63510ff3\" CHECK (\"kind\" IN ('PRODUCT', 'SERVICE', 'PLAN', 'TICKET', 'TOUR'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Product\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Product\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.StockMovement",
+    "label": "Create table \"StockMovement\"",
+    "summary": "Creates table \"StockMovement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "StockMovement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"StockMovement\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockMovement\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"StockMovement\"",
+        "sql": "CREATE TABLE \"public\".\"StockMovement\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"id\" text NOT NULL,\n  \"kind\" text NOT NULL,\n  \"note\" text,\n  \"paymentId\" text,\n  \"productId\" text NOT NULL,\n  \"quantity\" int4 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"StockMovement\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockMovement\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Expense.cashSessionId",
+    "label": "Add column \"cashSessionId\" to \"Expense\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "cashSessionId",
+        "table": "Expense"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"cashSessionId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Expense",
+          "cashSessionId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"cashSessionId\"",
+        "sql": "ALTER TABLE \"public\".\"Expense\" ADD COLUMN \"cashSessionId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"cashSessionId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Expense",
+          "cashSessionId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Expense.createdById",
+    "label": "Add column \"createdById\" to \"Expense\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "createdById",
+        "table": "Expense"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"createdById\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Expense",
+          "createdById"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"createdById\"",
+        "sql": "ALTER TABLE \"public\".\"Expense\" ADD COLUMN \"createdById\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"createdById\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Expense",
+          "createdById"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Expense.paidFrom",
+    "label": "Add column \"paidFrom\" to \"Expense\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "paidFrom",
+        "table": "Expense"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"paidFrom\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Expense",
+          "paidFrom"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"paidFrom\"",
+        "sql": "ALTER TABLE \"public\".\"Expense\" ADD COLUMN \"paidFrom\" text DEFAULT 'BANK' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"paidFrom\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Expense",
+          "paidFrom"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Expense.projectId",
+    "label": "Add column \"projectId\" to \"Expense\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "projectId",
+        "table": "Expense"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"projectId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Expense",
+          "projectId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"projectId\"",
+        "sql": "ALTER TABLE \"public\".\"Expense\" ADD COLUMN \"projectId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"projectId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Expense",
+          "projectId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Expense.supplier",
+    "label": "Add column \"supplier\" to \"Expense\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "supplier",
+        "table": "Expense"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"supplier\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Expense",
+          "supplier"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"supplier\"",
+        "sql": "ALTER TABLE \"public\".\"Expense\" ADD COLUMN \"supplier\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"supplier\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Expense",
+          "supplier"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Expense.voidReason",
+    "label": "Add column \"voidReason\" to \"Expense\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "voidReason",
+        "table": "Expense"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"voidReason\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Expense",
+          "voidReason"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"voidReason\"",
+        "sql": "ALTER TABLE \"public\".\"Expense\" ADD COLUMN \"voidReason\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"voidReason\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Expense",
+          "voidReason"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Expense.voidedAt",
+    "label": "Add column \"voidedAt\" to \"Expense\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "voidedAt",
+        "table": "Expense"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"voidedAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Expense",
+          "voidedAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"voidedAt\"",
+        "sql": "ALTER TABLE \"public\".\"Expense\" ADD COLUMN \"voidedAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"voidedAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Expense",
+          "voidedAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Payment.cashSessionId",
+    "label": "Add column \"cashSessionId\" to \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "cashSessionId",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"cashSessionId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "cashSessionId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"cashSessionId\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD COLUMN \"cashSessionId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"cashSessionId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "cashSessionId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Payment.invoiceId",
+    "label": "Add column \"invoiceId\" to \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "invoiceId",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"invoiceId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "invoiceId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"invoiceId\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD COLUMN \"invoiceId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"invoiceId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "invoiceId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Payment.notes",
+    "label": "Add column \"notes\" to \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "notes",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"notes\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "notes"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"notes\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD COLUMN \"notes\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"notes\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "notes"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Payment.receiptNumber",
+    "label": "Add column \"receiptNumber\" to \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "receiptNumber",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"receiptNumber\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "receiptNumber"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"receiptNumber\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD COLUMN \"receiptNumber\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"receiptNumber\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "receiptNumber"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Payment.sourceId",
+    "label": "Add column \"sourceId\" to \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sourceId",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sourceId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "sourceId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sourceId\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD COLUMN \"sourceId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sourceId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "sourceId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Payment.sourceType",
+    "label": "Add column \"sourceType\" to \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sourceType",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sourceType\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "sourceType"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sourceType\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD COLUMN \"sourceType\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sourceType\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "sourceType"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Payment.voidReason",
+    "label": "Add column \"voidReason\" to \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "voidReason",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"voidReason\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "voidReason"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"voidReason\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD COLUMN \"voidReason\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"voidReason\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "voidReason"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Payment.voidedAt",
+    "label": "Add column \"voidedAt\" to \"Payment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "voidedAt",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"voidedAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "voidedAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"voidedAt\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD COLUMN \"voidedAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"voidedAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Payment",
+          "voidedAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Invoice.Invoice_tenantId_kind_number_key",
+    "label": "Add unique constraint on \"Invoice\" (tenantId, kind, number)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Invoice_tenantId_kind_number_key",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Invoice_tenantId_kind_number_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Invoice_tenantId_kind_number_key",
+          "public",
+          "\"public\".\"Invoice\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Invoice_tenantId_kind_number_key\"",
+        "sql": "ALTER TABLE \"public\".\"Invoice\" ADD CONSTRAINT \"Invoice_tenantId_kind_number_key\" UNIQUE (\"tenantId\", \"kind\", \"number\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Invoice_tenantId_kind_number_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Invoice_tenantId_kind_number_key",
+          "public",
+          "\"public\".\"Invoice\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Payment.Payment_tenantId_receiptNumber_key",
+    "label": "Add unique constraint on \"Payment\" (tenantId, receiptNumber)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Payment_tenantId_receiptNumber_key",
+        "table": "Payment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Payment_tenantId_receiptNumber_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Payment_tenantId_receiptNumber_key",
+          "public",
+          "\"public\".\"Payment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Payment_tenantId_receiptNumber_key\"",
+        "sql": "ALTER TABLE \"public\".\"Payment\" ADD CONSTRAINT \"Payment_tenantId_receiptNumber_key\" UNIQUE (\"tenantId\", \"receiptNumber\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Payment_tenantId_receiptNumber_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Payment_tenantId_receiptNumber_key",
+          "public",
+          "\"public\".\"Payment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Attachment.Attachment_tenantId_kind_ownerId_idx_b6da39dc",
+    "label": "Create index \"Attachment_tenantId_kind_ownerId_idx_b6da39dc\" on \"Attachment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Attachment_tenantId_kind_ownerId_idx_b6da39dc",
+        "table": "Attachment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Attachment_tenantId_kind_ownerId_idx_b6da39dc\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Attachment_tenantId_kind_ownerId_idx_b6da39dc\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Attachment_tenantId_kind_ownerId_idx_b6da39dc\"",
+        "sql": "CREATE INDEX \"Attachment_tenantId_kind_ownerId_idx_b6da39dc\" ON \"public\".\"Attachment\" (\"tenantId\", \"kind\", \"ownerId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Attachment_tenantId_kind_ownerId_idx_b6da39dc\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Attachment_tenantId_kind_ownerId_idx_b6da39dc\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.CashBox.CashBox_tenantId_idx_c93ed4f1",
+    "label": "Create index \"CashBox_tenantId_idx_c93ed4f1\" on \"CashBox\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "CashBox_tenantId_idx_c93ed4f1",
+        "table": "CashBox"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"CashBox_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CashBox_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"CashBox_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"CashBox_tenantId_idx_c93ed4f1\" ON \"public\".\"CashBox\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"CashBox_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CashBox_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.CashMovement.CashMovement_sessionId_idx_29f415d4",
+    "label": "Create index \"CashMovement_sessionId_idx_29f415d4\" on \"CashMovement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "CashMovement_sessionId_idx_29f415d4",
+        "table": "CashMovement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"CashMovement_sessionId_idx_29f415d4\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CashMovement_sessionId_idx_29f415d4\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"CashMovement_sessionId_idx_29f415d4\"",
+        "sql": "CREATE INDEX \"CashMovement_sessionId_idx_29f415d4\" ON \"public\".\"CashMovement\" (\"sessionId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"CashMovement_sessionId_idx_29f415d4\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CashMovement_sessionId_idx_29f415d4\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.CashSession.CashSession_boxId_idx_63a016fa",
+    "label": "Create index \"CashSession_boxId_idx_63a016fa\" on \"CashSession\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "CashSession_boxId_idx_63a016fa",
+        "table": "CashSession"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"CashSession_boxId_idx_63a016fa\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CashSession_boxId_idx_63a016fa\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"CashSession_boxId_idx_63a016fa\"",
+        "sql": "CREATE INDEX \"CashSession_boxId_idx_63a016fa\" ON \"public\".\"CashSession\" (\"boxId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"CashSession_boxId_idx_63a016fa\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CashSession_boxId_idx_63a016fa\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.CashSession.CashSession_tenantId_boxId_idx_9abd5c49",
+    "label": "Create index \"CashSession_tenantId_boxId_idx_9abd5c49\" on \"CashSession\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "CashSession_tenantId_boxId_idx_9abd5c49",
+        "table": "CashSession"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"CashSession_tenantId_boxId_idx_9abd5c49\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CashSession_tenantId_boxId_idx_9abd5c49\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"CashSession_tenantId_boxId_idx_9abd5c49\"",
+        "sql": "CREATE INDEX \"CashSession_tenantId_boxId_idx_9abd5c49\" ON \"public\".\"CashSession\" (\"tenantId\", \"boxId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"CashSession_tenantId_boxId_idx_9abd5c49\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CashSession_tenantId_boxId_idx_9abd5c49\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Invoice.Invoice_tenantId_idx_c93ed4f1",
+    "label": "Create index \"Invoice_tenantId_idx_c93ed4f1\" on \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Invoice_tenantId_idx_c93ed4f1",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Invoice_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Invoice_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Invoice_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"Invoice_tenantId_idx_c93ed4f1\" ON \"public\".\"Invoice\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Invoice_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Invoice_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.InvoiceLine.InvoiceLine_invoiceId_idx_d5c4f70e",
+    "label": "Create index \"InvoiceLine_invoiceId_idx_d5c4f70e\" on \"InvoiceLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "InvoiceLine_invoiceId_idx_d5c4f70e",
+        "table": "InvoiceLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"InvoiceLine_invoiceId_idx_d5c4f70e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"InvoiceLine_invoiceId_idx_d5c4f70e\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"InvoiceLine_invoiceId_idx_d5c4f70e\"",
+        "sql": "CREATE INDEX \"InvoiceLine_invoiceId_idx_d5c4f70e\" ON \"public\".\"InvoiceLine\" (\"invoiceId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"InvoiceLine_invoiceId_idx_d5c4f70e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"InvoiceLine_invoiceId_idx_d5c4f70e\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Product.Product_tenantId_kind_idx_1e76dd5c",
+    "label": "Create index \"Product_tenantId_kind_idx_1e76dd5c\" on \"Product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Product_tenantId_kind_idx_1e76dd5c",
+        "table": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Product_tenantId_kind_idx_1e76dd5c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Product_tenantId_kind_idx_1e76dd5c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Product_tenantId_kind_idx_1e76dd5c\"",
+        "sql": "CREATE INDEX \"Product_tenantId_kind_idx_1e76dd5c\" ON \"public\".\"Product\" (\"tenantId\", \"kind\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Product_tenantId_kind_idx_1e76dd5c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Product_tenantId_kind_idx_1e76dd5c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockMovement.StockMovement_productId_idx_5858600a",
+    "label": "Create index \"StockMovement_productId_idx_5858600a\" on \"StockMovement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockMovement_productId_idx_5858600a",
+        "table": "StockMovement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockMovement_productId_idx_5858600a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockMovement_productId_idx_5858600a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockMovement_productId_idx_5858600a\"",
+        "sql": "CREATE INDEX \"StockMovement_productId_idx_5858600a\" ON \"public\".\"StockMovement\" (\"productId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockMovement_productId_idx_5858600a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockMovement_productId_idx_5858600a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.CashMovement.CashMovement_sessionId_fkey",
+    "label": "Add foreign key \"CashMovement_sessionId_fkey\" on \"CashMovement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "CashMovement_sessionId_fkey",
+        "table": "CashMovement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"CashMovement_sessionId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CashMovement_sessionId_fkey",
+          "public",
+          "\"public\".\"CashMovement\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"CashMovement_sessionId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"CashMovement\"\nADD CONSTRAINT \"CashMovement_sessionId_fkey\"\nFOREIGN KEY (\"sessionId\")\nREFERENCES \"public\".\"CashSession\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"CashMovement_sessionId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CashMovement_sessionId_fkey",
+          "public",
+          "\"public\".\"CashMovement\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.CashSession.CashSession_boxId_fkey",
+    "label": "Add foreign key \"CashSession_boxId_fkey\" on \"CashSession\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "CashSession_boxId_fkey",
+        "table": "CashSession"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"CashSession_boxId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CashSession_boxId_fkey",
+          "public",
+          "\"public\".\"CashSession\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"CashSession_boxId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"CashSession\"\nADD CONSTRAINT \"CashSession_boxId_fkey\"\nFOREIGN KEY (\"boxId\")\nREFERENCES \"public\".\"CashBox\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"CashSession_boxId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CashSession_boxId_fkey",
+          "public",
+          "\"public\".\"CashSession\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.InvoiceLine.InvoiceLine_invoiceId_fkey",
+    "label": "Add foreign key \"InvoiceLine_invoiceId_fkey\" on \"InvoiceLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "InvoiceLine_invoiceId_fkey",
+        "table": "InvoiceLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"InvoiceLine_invoiceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "InvoiceLine_invoiceId_fkey",
+          "public",
+          "\"public\".\"InvoiceLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"InvoiceLine_invoiceId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"InvoiceLine\"\nADD CONSTRAINT \"InvoiceLine_invoiceId_fkey\"\nFOREIGN KEY (\"invoiceId\")\nREFERENCES \"public\".\"Invoice\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"InvoiceLine_invoiceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "InvoiceLine_invoiceId_fkey",
+          "public",
+          "\"public\".\"InvoiceLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockMovement.StockMovement_productId_fkey",
+    "label": "Add foreign key \"StockMovement_productId_fkey\" on \"StockMovement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockMovement_productId_fkey",
+        "table": "StockMovement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockMovement_productId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockMovement_productId_fkey",
+          "public",
+          "\"public\".\"StockMovement\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockMovement_productId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockMovement\"\nADD CONSTRAINT \"StockMovement_productId_fkey\"\nFOREIGN KEY (\"productId\")\nREFERENCES \"public\".\"Product\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockMovement_productId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockMovement_productId_fkey",
+          "public",
+          "\"public\".\"StockMovement\""
+        ]
+      }
+    ]
+  }
+]
