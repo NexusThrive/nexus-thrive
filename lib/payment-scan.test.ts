@@ -24,6 +24,22 @@ describe("bestCopAmount", () => {
     expect(bestCopAmount("Fecha 18/10 valor $ 250.000,00")).toBe("250000");
   });
 
+  test("prefiere el número con $ aunque haya uno más grande (celular, referencia)", () => {
+    expect(bestCopAmount("Celular 3001234567\nEnviado a JUAN\n$ 45.000")).toBe("45000");
+  });
+
+  test("prefiere el número con $ antes de una referencia más larga", () => {
+    expect(bestCopAmount("NEQUI\nComprobante 84123456789012\n$ 80.000\nfeliz día")).toBe("80000");
+  });
+
+  test("sin $ usa palabras clave como 'total'/'valor'", () => {
+    expect(bestCopAmount("Documento 1020567890\nTotal 120.000\nAutorización 999888777")).toBe("120000");
+  });
+
+  test("el $ puede ir separado por espacio o en línea previa", () => {
+    expect(bestCopAmount("Pagaste $\n55.500 a Comercio")).toBe("55500");
+  });
+
   test("null sin candidatos", () => {
     expect(bestCopAmount("sin datos")).toBeNull();
   });
