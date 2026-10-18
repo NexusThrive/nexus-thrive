@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { ClerkProvider } from "@clerk/nextjs";
 import { clerkLocalization, clerkProviderAppearance } from "@/lib/auth/clerk-appearance";
 import { fontVariables } from "@/lib/fonts";
-import { themeInitScript } from "@/components/atoms/theme-toggle";
+import { prefsInitScript, themeInitScript } from "@/lib/init-scripts";
 import { MotionProvider } from "@/components/providers/motion-provider";
-import { PreferencesProvider, prefsInitScript } from "@/components/providers/preferences";
+import { PreferencesProvider } from "@/components/providers/preferences";
 import { SplashIntro } from "@/components/organisms/splash-intro";
 import "./globals.css";
 
@@ -28,10 +27,11 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <head>
-          {/* Tema y preferencias antes del primer pintado (sin parpadeo). */}
-          <Script id="nx-init" strategy="beforeInteractive">
-            {themeInitScript + prefsInitScript}
-          </Script>
+          {/* Tema y preferencias antes del primer pintado (sin parpadeo).
+              Script inline crudo: se ejecuta síncrono durante el parseo del
+              HTML, antes del primer paint. next/script no aplica aquí porque
+              React 19 no ejecuta <script> renderizados en el cliente. */}
+          <script dangerouslySetInnerHTML={{ __html: themeInitScript + prefsInitScript }} />
         </head>
         <body className="min-h-full flex flex-col bg-background text-foreground">
           <PreferencesProvider>

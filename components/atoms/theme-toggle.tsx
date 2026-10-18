@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
+import { THEME_STORAGE_KEY, themeInitScript } from "@/lib/init-scripts";
 import { withThemeSweep } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -14,9 +15,7 @@ import { cn } from "@/lib/utils";
 
 export type Theme = "light" | "dark";
 
-export const THEME_STORAGE_KEY = "nx-theme";
-
-export const themeInitScript = `(function(){try{var t=localStorage.getItem("${THEME_STORAGE_KEY}");if(t!=="dark"){t="light"}if(t==="dark"){document.documentElement.classList.add("dark")}}catch(e){}})();`;
+export { THEME_STORAGE_KEY, themeInitScript };
 
 export const THEME_EVENT = "nx-theme-change";
 
