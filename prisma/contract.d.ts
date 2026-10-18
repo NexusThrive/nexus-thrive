@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'5782a74647fd9027352d758675a5c71ce110afcc5a3b31f1550672e1bf8a3a91'>;
+  StorageHashBase<'543e2fe289e43cd1e19e7ad37f540cc7e1d574149d465c69899ea5d261ec176f'>;
 export type ExecutionHash =
   ExecutionHashBase<'648e34b5e8a51ee40a695118afc85f7f656b47579c872b06dd164043b25666c1'>;
 export type ProfileHash =
@@ -374,8 +374,13 @@ export type FieldOutputTypes = {
       readonly customerId: CodecTypes['pg/text@1']['output'];
       readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
+      readonly kind: CodecTypes['pg/text@1']['output'];
       readonly notes: CodecTypes['pg/text@1']['output'] | null;
+      readonly partySize: CodecTypes['pg/int4@1']['output'];
+      readonly productId: CodecTypes['pg/text@1']['output'] | null;
+      readonly reminderSentAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly serviceName: CodecTypes['pg/text@1']['output'];
+      readonly staffUserId: CodecTypes['pg/text@1']['output'] | null;
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
       readonly tenantId: CodecTypes['pg/text@1']['output'];
@@ -1281,8 +1286,13 @@ export type FieldInputTypes = {
       readonly customerId: CodecTypes['pg/text@1']['input'];
       readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
+      readonly kind: CodecTypes['pg/text@1']['input'];
       readonly notes: CodecTypes['pg/text@1']['input'] | null;
+      readonly partySize: CodecTypes['pg/int4@1']['input'];
+      readonly productId: CodecTypes['pg/text@1']['input'] | null;
+      readonly reminderSentAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly serviceName: CodecTypes['pg/text@1']['input'];
+      readonly staffUserId: CodecTypes['pg/text@1']['input'] | null;
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
       readonly tenantId: CodecTypes['pg/text@1']['input'];
@@ -2188,8 +2198,13 @@ export type StorageColumnTypes = {
       readonly customerId: CodecTypes['pg/text@1']['output'];
       readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
+      readonly kind: CodecTypes['pg/text@1']['output'];
       readonly notes: CodecTypes['pg/text@1']['output'] | null;
+      readonly partySize: CodecTypes['pg/int4@1']['output'];
+      readonly productId: CodecTypes['pg/text@1']['output'] | null;
+      readonly reminderSentAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly serviceName: CodecTypes['pg/text@1']['output'];
+      readonly staffUserId: CodecTypes['pg/text@1']['output'] | null;
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
       readonly tenantId: CodecTypes['pg/text@1']['output'];
@@ -3095,8 +3110,13 @@ export type StorageColumnInputTypes = {
       readonly customerId: CodecTypes['pg/text@1']['input'];
       readonly endDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
+      readonly kind: CodecTypes['pg/text@1']['input'];
       readonly notes: CodecTypes['pg/text@1']['input'] | null;
+      readonly partySize: CodecTypes['pg/int4@1']['input'];
+      readonly productId: CodecTypes['pg/text@1']['input'] | null;
+      readonly reminderSentAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly serviceName: CodecTypes['pg/text@1']['input'];
+      readonly staffUserId: CodecTypes['pg/text@1']['input'] | null;
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
       readonly tenantId: CodecTypes['pg/text@1']['input'];
@@ -4034,8 +4054,13 @@ export namespace Models {
     customerId: CodecTypes['pg/text@1']['output'];
     endDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
     id: CodecTypes['pg/text@1']['output'];
+    kind: CodecTypes['pg/text@1']['output'];
     notes: CodecTypes['pg/text@1']['output'] | null;
+    partySize: CodecTypes['pg/int4@1']['output'];
+    productId: CodecTypes['pg/text@1']['output'] | null;
+    reminderSentAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     serviceName: CodecTypes['pg/text@1']['output'];
+    staffUserId: CodecTypes['pg/text@1']['output'] | null;
     startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
     status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
     tenantId: CodecTypes['pg/text@1']['output'];
@@ -6023,15 +6048,48 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
+                readonly kind: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'APPOINTMENT'>;
+                  };
+                };
                 readonly notes: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly partySize: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 1>;
+                  };
+                };
+                readonly productId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly reminderSentAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: true;
                 };
                 readonly serviceName: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                };
+                readonly staffUserId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                 };
                 readonly startDate: {
                   readonly nativeType: 'timestamptz';
@@ -12672,12 +12730,35 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly kind: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly notes: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly partySize: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly productId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly reminderSentAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
               readonly serviceName: {
                 readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly staffUserId: {
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly startDate: {
@@ -12716,8 +12797,13 @@ type ContractBase = Omit<
                 readonly customerId: { readonly column: 'customerId' };
                 readonly endDate: { readonly column: 'endDate' };
                 readonly id: { readonly column: 'id' };
+                readonly kind: { readonly column: 'kind' };
                 readonly notes: { readonly column: 'notes' };
+                readonly partySize: { readonly column: 'partySize' };
+                readonly productId: { readonly column: 'productId' };
+                readonly reminderSentAt: { readonly column: 'reminderSentAt' };
                 readonly serviceName: { readonly column: 'serviceName' };
+                readonly staffUserId: { readonly column: 'staffUserId' };
                 readonly startDate: { readonly column: 'startDate' };
                 readonly status: { readonly column: 'status' };
                 readonly tenantId: { readonly column: 'tenantId' };

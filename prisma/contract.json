@@ -2515,6 +2515,13 @@
                   "kind": "scalar"
                 }
               },
+              "kind": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "notes": {
                 "nullable": true,
                 "type": {
@@ -2522,8 +2529,36 @@
                   "kind": "scalar"
                 }
               },
+              "partySize": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "productId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "reminderSentAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
               "serviceName": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "staffUserId": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -2586,11 +2621,26 @@
                 "id": {
                   "column": "id"
                 },
+                "kind": {
+                  "column": "kind"
+                },
                 "notes": {
                   "column": "notes"
                 },
+                "partySize": {
+                  "column": "partySize"
+                },
+                "productId": {
+                  "column": "productId"
+                },
+                "reminderSentAt": {
+                  "column": "reminderSentAt"
+                },
                 "serviceName": {
                   "column": "serviceName"
+                },
+                "staffUserId": {
+                  "column": "staffUserId"
                 },
                 "startDate": {
                   "column": "startDate"
@@ -12782,15 +12832,48 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "kind": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "APPOINTMENT"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
                 "notes": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
+                  "nullable": true
+                },
+                "partySize": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 1
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "productId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "reminderSentAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
                   "nullable": true
                 },
                 "serviceName": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "staffUserId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "startDate": {
                   "codecId": "pg/timestamptz-temporal@1",
@@ -19871,7 +19954,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "5782a74647fd9027352d758675a5c71ce110afcc5a3b31f1550672e1bf8a3a91"
+    "storageHash": "543e2fe289e43cd1e19e7ad37f540cc7e1d574149d465c69899ea5d261ec176f"
   },
   "execution": {
     "executionHash": "648e34b5e8a51ee40a695118afc85f7f656b47579c872b06dd164043b25666c1",
