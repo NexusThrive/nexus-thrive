@@ -61,10 +61,10 @@ export function AppSidebar() {
       <div className={styles.head}>
         <BrandLogo variant="mark" size={30} className={styles.mark} />
         <BrandLogo variant="lockup" size={78} className={styles.lockup} title="NEXUS THRIVE" />
-        <div className={styles.workspace}>
+         {/* <div className={styles.workspace}>
           <b>{brandName}</b>
           <small>{brandSub}</small>
-        </div>
+        </div>*/}
       </div>
 
       <nav ref={navRef} className={styles.nav} onPointerOver={showTip} onPointerLeave={() => setTip(null)}>
