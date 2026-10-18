@@ -26,9 +26,32 @@ export function extractCopAmounts(text: string): string[] {
   return [...found].sort((a, b) => (Number(b) - Number(a)) || b.length - a.length);
 }
 
-/** El monto más grande del texto (lo que un comprobante pone en grande). */
+/** Palabras que suelen anteceder al valor real en un comprobante. */
+const AMOUNT_CONTEXT = /\b(?:valor|total|monto|importe|pagad[oa]|pagaste|recibist[ea]|recibido|pago)\b/i;
+
+/**
+ * El monto más probable del texto. Prioriza el número precedido por `$`
+ * (como hace Nequi: "Enviado a … $ 45.000"), porque referencias, cédulas
+ * o celulares sueltos suelen ser más grandes que el valor real. Si no hay
+ * signo, usa palabras clave ("total", "valor", "pagaste"…) y solo como
+ * último recurso el número más grande.
+ */
 export function bestCopAmount(text: string): string | null {
-  return extractCopAmounts(text)[0] ?? null;
+  const withSign: string[] = [];
+  const withWord: string[] = [];
+  const plain: string[] = [];
+  for (const match of text.matchAll(AMOUNT_TOKEN)) {
+    const raw = match[0];
+    const amount = parseCopAmount(raw);
+    if (!amount) continue;
+    const at = match.index ?? 0;
+    const before = text.slice(Math.max(0, at - 18), at);
+    if (/^\s*\$/.test(raw) || /\$\s*$/.test(before)) withSign.push(amount);
+    else if (AMOUNT_CONTEXT.test(before)) withWord.push(amount);
+    else plain.push(amount);
+  }
+  const largest = (list: string[]) => list.reduce<string | null>((best, current) => (best === null || Number(current) > Number(best) ? current : best), null);
+  return largest(withSign) ?? largest(withWord) ?? largest(plain);
 }
 
 const METHOD_HINTS: { re: RegExp; method: PaymentMethodValue }[] = [
