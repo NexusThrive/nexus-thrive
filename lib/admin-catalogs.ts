@@ -29,6 +29,7 @@ export const VERTICALS = [
   "nautical_transport",
   "tour_guides",
   "events",
+  "museum",
 ] as const;
 export type VerticalValue = (typeof VERTICALS)[number];
 
@@ -49,6 +50,7 @@ export const VERTICAL_LABELS: Record<VerticalValue, string> = {
   nautical_transport: "Náutica",
   tour_guides: "Guías Turísticos",
   events: "Eventos",
+  museum: "Museo",
 };
 
 /** Íconos emoji por vertical (badges del Panel CEO y selección del onboarding). */
@@ -69,6 +71,7 @@ export const VERTICAL_ICONS: Record<VerticalValue, string> = {
   nautical_transport: "🚤",
   tour_guides: "🧭",
   events: "🎉",
+  museum: "🏛️",
 };
 
 /**
@@ -209,7 +212,8 @@ export type VerticalRecipe = {
 
 export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
   gym: {
-    modules: ["dashboard", "crm", "memberships", "finance", "whatsapp"],
+    // Gimnasio [11]: clientes, pagos, membresías (con tarjeta NFC), WhatsApp, agenda de clases y catálogo.
+    modules: ["dashboard", "crm", "memberships", "finance", "payments", "whatsapp", "bookings", "inventory"],
     terms: {
       customer: "Socio",
       customers: "Socios",
@@ -220,7 +224,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   tourism_agency: {
-    modules: ["dashboard", "crm", "bookings", "payments", "finance", "whatsapp"],
+    modules: ["dashboard", "crm", "bookings", "payments", "finance", "whatsapp", "inventory", "billing"],
     terms: {
       customer: "Turista",
       customers: "Turistas",
@@ -384,6 +388,18 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
       bookings: "Eventos",
       item: "Paquete",
       items: "Paquetes",
+    },
+  },
+  museum: {
+    // Taquilla (entradas por franja con aforo), visitas guiadas y colegios en agenda, tienda.
+    modules: ["dashboard", "crm", "bookings", "inventory", "finance", "payments", "billing", "whatsapp"],
+    terms: {
+      customer: "Visitante",
+      customers: "Visitantes",
+      booking: "Visita guiada",
+      bookings: "Visitas guiadas",
+      item: "Entrada",
+      items: "Entradas",
     },
   },
 };

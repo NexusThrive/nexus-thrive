@@ -156,3 +156,30 @@ describe("agenda", () => {
     expect(reminderText({ customer: "Valentina Ríos", service: "Yoga", start: bogotaToMs("2026-10-17", "18:00"), business: "Gym Carlos" })).toContain("sábado, 17 de octubre a las 6:00 p. m.");
   });
 });
+
+import { accessCode, checkAccess, countdown, freezePlan, membershipState } from "./gym";
+
+describe("gimnasio", () => {
+  const D = 86_400_000;
+  const now = Date.UTC(2026, 9, 17, 15);
+  const m = { id: "m1", start: now - 10 * D, end: now + 20 * D, frozenFrom: null, frozenUntil: null, cancelledAt: null };
+  it("estado y acceso", () => {
+    expect(membershipState(m, now)).toBe("active");
+    expect(checkAccess([m], now)).toMatchObject({ allowed: true, daysLeft: 20 });
+    expect(checkAccess([{ ...m, end: now - D }], now)).toMatchObject({ allowed: false, reason: expect.stringContaining("vencida") });
+    expect(checkAccess([{ ...m, frozenFrom: now - D, frozenUntil: now + D }], now).reason).toContain("congelada");
+    expect(checkAccess([], now).allowed).toBe(false);
+    expect(checkAccess([{ ...m, end: now + 2 * D }], now).reason).toContain("vence en 2 días");
+  });
+  it("congelar corre el vencimiento", () => {
+    const r = freezePlan(m, now, 15, now);
+    expect(r.ok && r.newEnd).toBe(m.end + 15 * D);
+    expect(freezePlan(m, now, 90, now).ok).toBe(false);
+    expect(freezePlan({ ...m, end: now - D }, now, 5, now).ok).toBe(false);
+  });
+  it("contador y código", () => {
+    expect(countdown(now + 2 * D + 3 * 3_600_000 + 5 * 60_000, now)).toEqual({ text: "2 d 03 h 05 min", urgent: true, expired: false });
+    expect(countdown(now - 1, now).expired).toBe(true);
+    expect(accessCode(() => 0)).toBe("AAAAAAAA");
+  });
+});
