@@ -123,3 +123,36 @@ describe("ficha del cliente por rubro", () => {
     expect(membershipTypeFor(365)).toBe("anual");
   });
 });
+
+import { bogotaParts, bogotaToMs, capacityLeft, monthGrid, occupancy, reminderText, slotPosition, staffConflict, weekStart } from "./calendar";
+
+describe("agenda", () => {
+  it("cuadrícula del mes empieza en lunes", () => {
+    const g = monthGrid(2026, 10); // octubre 2026: el 1 es jueves
+    expect(g[0][0].day).toBe("2026-09-28");
+    expect(g[0][3]).toEqual({ day: "2026-10-01", inMonth: true });
+    expect(g.flat().filter((d) => d.inMonth)).toHaveLength(31);
+    expect(weekStart("2026-10-18")).toBe("2026-10-12");
+  });
+  it("horario de Bogotá", () => {
+    const ms = bogotaToMs("2026-10-17", "15:30");
+    expect(new Date(ms).toISOString()).toBe("2026-10-17T20:30:00.000Z");
+    expect(bogotaParts(ms)).toEqual({ day: "2026-10-17", hour: 15, minute: 30 });
+    expect(slotPosition(ms, ms + 3_600_000, 6)).toEqual({ top: 570, height: 60 });
+  });
+  it("choques del responsable y cupo del servicio", () => {
+    const h = (t: string) => bogotaToMs("2026-10-17", t);
+    const existing = [
+      { id: "a", start: h("09:00"), end: h("10:00"), staffUserId: "u1", productId: "yoga", partySize: 8 },
+      { id: "b", start: h("09:30"), end: h("10:30"), staffUserId: "u2", productId: "yoga", partySize: 1, status: "CANCELLED" },
+    ];
+    expect(staffConflict({ start: h("09:30"), end: h("10:00"), staffUserId: "u1" }, existing)?.id).toBe("a");
+    expect(staffConflict({ start: h("10:00"), end: h("11:00"), staffUserId: "u1" }, existing)).toBeNull();
+    expect(capacityLeft({ start: h("09:00"), end: h("10:00"), productId: "yoga", partySize: 3 }, existing, 10)).toBe(-1);
+    expect(occupancy(0, 8)).toBe(0);
+    expect(occupancy(8, 8)).toBe(3);
+  });
+  it("texto del recordatorio", () => {
+    expect(reminderText({ customer: "Valentina Ríos", service: "Yoga", start: bogotaToMs("2026-10-17", "18:00"), business: "Gym Carlos" })).toContain("sábado, 17 de octubre a las 6:00 p. m.");
+  });
+});
