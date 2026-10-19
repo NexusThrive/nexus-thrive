@@ -74,6 +74,23 @@ Pruebas: 331+ pruebas, tipos y lint sin errores; cada fase probada en el navegad
 - Checkout **Wompi** para la suscripción (webhook confirma el cobro solo).
 - **Tarjetas CREATE**: códigos únicos (NFC/QR → `/c/CODIGO`), beneficio configurable (30 días Elite + precio fundador + tarjeta propia), seguimiento en el panel.
 
+#### Estado (piloto interno, 19 de octubre de 2026)
+Como todavía no hay Wompi, el acceso se administra **a mano** con dos tipos de código
+(panel **Accesos** → `/admin/beneficios`):
+- **PROMO (gratis)**: regalo/promoción (QR fijo `ELITE30` de las tarjetas, ilimitado).
+  Quien lo usa ve "N días gratis".
+- **PAID (acceso pagado)**: se emite **después** de confirmar el pago por WhatsApp
+  (1 uso, con los días pagados). Quien lo usa ve "Cuenta NEXUS activada", nunca "gratis".
+
+Onboarding sin precios (`lib/onboarding/flags.ts` → `SHOW_PRICING = false`): tres caminos
+(código de acceso / coordinar pago por WhatsApp / probar gratis con Essential). El
+servidor decide el plan y los módulos (nunca el navegador), el canje de un uso es
+atómico y hay rate limit en la validación de códigos. Al vencer el acceso, el negocio
+vuelve a Essential.
+
+**Pendiente:** Wompi (checkout real) y el SQL de producción de estas tablas
+(`docs/prod-sql/2026-10-19-beneficios.sql`).
+
 ### Fase 7 · WhatsApp de cada negocio [11][13][17][15][21]
 - "Conecta tu WhatsApp" (botón verde) con Embedded Signup de Meta; chat integrado por negocio (reutiliza la bandeja del Operations Center); WhatsApp desde la ficha del cliente.
 - API para el bot **n8n** (crear clientes, agendar entregas, registrar pagos **con confirmación** antes de cambiar algo) + plantilla del flujo.
