@@ -1,4 +1,4 @@
-import { MODULES, VERTICALS, VERTICAL_LABELS, VERTICAL_RECIPES, type ModuleValue, type VerticalValue } from "@/lib/admin-catalogs";
+import { MODULES, SIGNUP_VERTICALS, VERTICALS, VERTICAL_LABELS, VERTICAL_RECIPES, type ModuleValue, type VerticalValue } from "@/lib/admin-catalogs";
 import {
   ANNUAL_DISCOUNT,
   GENERAL_MODULES,
@@ -154,7 +154,7 @@ export function defaultPricingConfig(): PricingConfig {
       return {
         vertical: v,
         label: VERTICAL_LABELS[v],
-        signupEnabled: true,
+        signupEnabled: (SIGNUP_VERTICALS as readonly VerticalValue[]).includes(v),
         priceFactorPct: Math.round(VERTICAL_FACTORS[v] * 100),
         modules,
         recommended: recipe.filter((m) => m !== "dashboard"),

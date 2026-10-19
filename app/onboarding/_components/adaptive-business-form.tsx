@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Link2, MapPin, MapPinned, Receipt } from "lucide-react";
+import { Check, Link2, MapPin, Receipt } from "lucide-react";
 import type { VerticalValue } from "@/lib/admin-catalogs";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { normalizeSlug, normalizeAndValidateSlug } from "@/lib/onboarding/slug";
@@ -10,12 +10,11 @@ import {
   TEAM_SIZE_LABELS,
   type OnboardingDraft,
   type OnboardingFieldErrors,
-  type TeamSizeValue,
 } from "@/lib/onboarding/types";
 import { inputClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
-import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { cn } from "@/lib/utils";
+import { AddressAutocomplete } from "./address-autocomplete";
 
 type FieldProps = {
   /** Rubros habilitados para registrarse (catálogo del Operations Center). */
@@ -99,7 +98,7 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
         {(control) => (
           <div className={cn(inputClasses, "flex items-center gap-2 px-3 focus-within:border-ring focus-within:shadow-[0_0_0_3px_rgba(212,175,55,0.18)]")}>
             <Link2 aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
-            <span className="shrink-0 text-sm text-muted-foreground">nexusthrive.co/</span>
+            <span className="shrink-0 text-sm text-muted-foreground">nexusthrive.com.co/</span>
             <input
               {...control}
               value={draft.slugRaw}
@@ -121,7 +120,7 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
         <legend className="mb-2 text-[13px] font-medium">
           Rubro del negocio <span className="text-muted-foreground">*</span>
         </legend>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {verticals.map(({ value: vertical, label }) => {
             const { icon: Icon } = getVerticalIcon(vertical);
             const selected = draft.vertical === vertical;
@@ -153,12 +152,28 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
           <p className="mb-2 text-[13px] font-medium">
             Tamaño del equipo <span className="text-muted-foreground">*</span>
           </p>
-          <SegmentedControl
-            ariaLabel="Tamaño del equipo"
-            value={(draft.teamSize ?? "") as TeamSizeValue}
-            onChange={(teamSize) => patch({ teamSize })}
-            options={TEAM_SIZES.map((size) => ({ value: size as TeamSizeValue, label: TEAM_SIZE_LABELS[size as TeamSizeValue] }))}
-          />
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {TEAM_SIZES.map((size) => {
+              const selected = draft.teamSize === size;
+              return (
+                <button
+                  key={size}
+                  type="button"
+                  aria-pressed={selected}
+                  data-press=""
+                  onClick={() => patch({ teamSize: size })}
+                  className={cn(
+                    "rounded-md border px-3 py-2 text-center text-[12.5px] font-medium leading-tight transition-[border-color,background-color,box-shadow] duration-200",
+                    selected
+                      ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_3px_rgba(212,175,55,.18)]"
+                      : "border-border-input bg-surface hover:border-border-input-hover",
+                  )}
+                >
+                  {TEAM_SIZE_LABELS[size]}
+                </button>
+              );
+            })}
+          </div>
           {err("teamSize") ? <p className="mt-2 text-xs text-danger">{err("teamSize")}</p> : null}
         </div>
       ) : null}
@@ -178,39 +193,37 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
             />
           )}
         </Field>
-        <Field label="Ciudad" required error={err("city")}>
+        <Field
+          label={isCompany ? "Dirección del local" : "Ubicación"}
+          required={isCompany}
+          hint={isCompany ? "Escribe REMOTE si no tienes un local físico." : "Opcional"}
+          error={err("address")}
+          className="sm:col-span-2"
+        >
           {(control) => (
-            <IconInput
-              {...control}
-              icon={MapPin}
-              value={draft.city}
-              onChange={(event) => patch({ city: event.target.value })}
-              placeholder="Ej. Bogotá"
-              maxLength={80}
-              autoComplete="address-level2"
+            <AddressAutocomplete
+              id={control.id}
+              ariaDescribedBy={control["aria-describedby"]}
+              ariaInvalid={control["aria-invalid"]}
+              value={draft.address}
+              location={
+                draft.latitude != null && draft.longitude != null
+                  ? { latitude: draft.latitude, longitude: draft.longitude }
+                  : null
+              }
+              onChange={(change) =>
+                patch({
+                  address: change.address,
+                  latitude: change.latitude,
+                  longitude: change.longitude,
+                  placeId: change.placeId,
+                  ...(change.city ? { city: change.city } : {}),
+                })
+              }
+              placeholder="Ej. Cra 7 # 72-41"
             />
           )}
         </Field>
-        {isCompany ? (
-          <Field
-            label="Dirección del local"
-            required
-            hint="Escribe REMOTE si no tienes un local físico."
-            error={err("address")}
-            className="sm:col-span-2"
-          >
-            {(control) => (
-              <IconInput
-                {...control}
-                icon={MapPinned}
-                value={draft.address}
-                onChange={(event) => patch({ address: event.target.value })}
-                placeholder="Ej. Cra 7 # 72-41"
-                maxLength={200}
-              />
-            )}
-          </Field>
-        ) : null}
       </div>
     </div>
   );

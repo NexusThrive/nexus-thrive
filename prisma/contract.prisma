@@ -307,6 +307,12 @@ model Tenant {
   teamSize String?
   /// Dirección física; "REMOTE" si el negocio no tiene local.
   address String?
+  /// Coordenadas confirmadas con Google Places durante el onboarding
+  /// (opcionales: si no se confirmó la ubicación, quedan en null).
+  latitude  Float?
+  longitude Float?
+  /// `place_id` de Google Places, para refrescar/ubicar el local luego.
+  placeId String?
   /// Identidad y ubicación (Paso 1 del onboarding).
   city              String?
   whatsappNumber    String?
