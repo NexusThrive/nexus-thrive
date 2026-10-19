@@ -11,6 +11,7 @@ import {
   LineChart,
   ScrollText,
   Smile,
+  Sparkles,
   Target,
   UsersRound,
 } from "lucide-react";
@@ -50,6 +51,7 @@ export const OPS_NAV: { label: string; items: OpsItem[] }[] = [
       { key: "bandeja", label: "Bandeja", href: "/admin/bandeja", icon: Inbox, permission: "tickets.view", ready: true },
       { key: "satisfaccion", label: "Satisfacción", href: "/admin/satisfaccion", icon: Smile, permission: "tickets.view", ready: true },
       { key: "salud", label: "Salud de cuentas", href: "/admin/salud", icon: HeartPulse, permission: "accounts.view", ready: true },
+      { key: "presence", label: "Presence Thrive", href: "/admin/presence", icon: Sparkles, permission: "presence.view", ready: true },
     ],
   },
   {
