@@ -48,6 +48,14 @@ export const PERMISSION_GROUPS = [
     ],
   },
   {
+    key: "presence",
+    label: "Presence Thrive",
+    permissions: [
+      { key: "presence.view", label: "Ver la presencia digital" },
+      { key: "presence.manage", label: "Gestionar solicitudes de sitio" },
+    ],
+  },
+  {
     key: "admin",
     label: "Administración",
     permissions: [
@@ -102,13 +110,13 @@ export const SYSTEM_ROLES: SystemRole[] = [
     key: "support",
     name: "Soporte",
     description: "Tickets, respuestas y diagnóstico de los negocios. No cambia precios ni permisos.",
-    permissions: ["accounts.view", "tickets.view", "tickets.reply", "tickets.escalate", "diagnostics.view"],
+    permissions: ["accounts.view", "tickets.view", "tickets.reply", "tickets.escalate", "diagnostics.view", "presence.view"],
   },
   {
     key: "ops",
     name: "Técnico",
     description: "Diagnóstico y mantenimiento: módulos, estado de cuentas e incidencias escaladas.",
-    permissions: ["accounts.view", "accounts.modules", "accounts.suspend", "tickets.view", "tickets.escalate", "diagnostics.view", "audit.view"],
+    permissions: ["accounts.view", "accounts.modules", "accounts.suspend", "tickets.view", "tickets.escalate", "diagnostics.view", "audit.view", "presence.view", "presence.manage"],
   },
 ];
 
