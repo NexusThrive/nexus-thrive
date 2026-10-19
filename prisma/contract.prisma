@@ -375,6 +375,7 @@ model Tenant {
   lookaheadTasks    LookaheadTask[]
   weeklyCommitments WeeklyCommitment[]
   fieldLogs         FieldLog[]
+  presenceScans     PresenceScan[]
 
   @@index([slug])
 }
@@ -1936,9 +1937,11 @@ model TourBooking {
   @@index([departureId])
 }
 
-/// Solicitud de web profesional de un negocio (visibilidad digital). El
-/// equipo NEXUS la diseña, la cobra una vez y la publica.
-model WebsiteRequest {
+/// Solicitud de "Presence Thrive": el negocio pide su presencia digital
+/// (web profesional, redes, ficha de Google). El equipo NEXUS la diseña, la
+/// cobra una vez y la publica. `publishedUrl` alimenta la vista previa del
+/// panel de presencia en el dashboard.
+model PresenceRequest {
   id            String    @id @default(uuid())
   tenantId      String
   /// PENDING | DESIGN | REVIEW | PUBLISHED | CANCELLED
@@ -1957,12 +1960,38 @@ model WebsiteRequest {
   paidAt        DateTime?
   paymentMethod String?
   paymentRef    String?
+  /// URL del sitio publicado; alimenta la vista previa (iframe) del panel.
   publishedUrl  String?
   staffNotes    String?
+  /// Servicios solicitados: WEB | INSTAGRAM | GOOGLE. Null = solo WEB.
+  services      String[]?
   requestedById String?
   createdAt     DateTime  @default(now())
   updatedAt     temporal.updatedAt()
 
   @@index([tenantId])
   @@index([status])
+}
+
+/// Foto del estado de presencia digital de un negocio en un momento dado.
+/// `score` (0-100) lo calcula lib/presence; `breakdown` guarda el detalle por
+/// criterio (auto verificado vs. declarado) y `website` el resultado del
+/// sondeo al sitio publicado. El panel del Inicio lee el último escaneo.
+model PresenceScan {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// 0-100.
+  score     Int
+  /// INVISIBLE | VISIBLE | CONECTADO | DOMINANTE
+  state     String
+  /// AUTO (sondeo del servidor) | MANUAL (lo disparó el negocio).
+  source    String   @default("MANUAL")
+  /// Detalle por criterio: { key, label, points, earned, verified, hint }[].
+  breakdown Json
+  /// Sondeo del sitio: { reachable, https, statusCode, title, meta, viewport }.
+  website   Json?
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, createdAt])
 }
