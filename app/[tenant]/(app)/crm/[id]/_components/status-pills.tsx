@@ -37,8 +37,11 @@ const MEMBERSHIP_TONES: Record<MembershipStatusValue, DotTone> = {
 
 export function MembershipStatusPill({
   status,
+  prefix,
 }: {
   status: MembershipStatusValue;
+  /** Texto previo al estado (p. ej. el tipo: "Mensual Activa"). */
+  prefix?: string;
 }) {
   const label =
     MEMBERSHIP_STATUSES.find((option) => option.value === status)?.label ??
@@ -46,7 +49,7 @@ export function MembershipStatusPill({
   return (
     <Badge variant="default">
       <StatusDot tone={MEMBERSHIP_TONES[status]} />
-      {label}
+      {prefix ? `${prefix} ${label}` : label}
     </Badge>
   );
 }

@@ -64,6 +64,7 @@ export const loadPricingConfig = cache(async (): Promise<PricingConfig> => {
           recommended: p.recommended,
           active: p.active,
           order: p.order,
+          maxUsers: p.maxUsers ?? null,
         }),
       ),
     modules: modules

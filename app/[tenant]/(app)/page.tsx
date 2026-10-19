@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MinusCircle, TrendingUp, Users, Wallet } from "lucide-react";
@@ -20,6 +20,8 @@ import { IncomeChart, type ChartPoint } from "@/components/organisms/income-char
 import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
 import { PullToRefresh } from "@/components/molecules/pull-to-refresh";
 import RecentActivity from "@/components/organisms/recent-activity";
+import { loadPresence } from "@/lib/presence/load";
+import PresenceSummary from "./_components/presence-summary";
 import MembershipSummary from "./memberships/_components/membership-summary";
 
 /**
@@ -88,10 +90,15 @@ export default async function TenantDashboard({
     ? await tenantDb.users.findByClerkUserId(userId)
     : null;
 
+  // El saludo prefiere el nombre vivo de Clerk (si cambia en la cuenta, se
+  // refleja al instante); el nombre del equipo (Ajustes → Equipo) es el
+  // fallback, y el usuario del correo el último recurso.
+  const clerkUser = await currentUser();
   const greetingName =
+    clerkUser?.firstName?.trim() ||
     localUser?.name?.trim().split(/\s+/)[0] ||
     localUser?.email?.split("@")[0] ||
-    "Usuario";
+    "Hola";
 
   const rawDate = new Intl.DateTimeFormat("es-CO", {
     timeZone: "America/Bogota",
@@ -109,6 +116,7 @@ export default async function TenantDashboard({
     tenantDb.finance.getRecentActivity(6),
     tenantDb.memberships.getMetrics(),
   ]);
+  const presence = await loadPresence(tenantRecord);
   const { current, previous } = series;
   const activeCustomers = growth.series.at(-1) ?? 0;
   const incomeTrend = period === "hoy" && series.hours ? series.hours.map((h) => h.income) : series.days.map((d) => d.income);
@@ -156,6 +164,7 @@ export default async function TenantDashboard({
             ariaLabel="Periodo"
             value={period}
             defaultValue="7d"
+            className="w-full [&>button]:flex-1 sm:w-auto sm:[&>button]:flex-none"
             options={[
               { value: "hoy", label: "Hoy" },
               { value: "7d", label: "7 días" },
@@ -164,6 +173,10 @@ export default async function TenantDashboard({
           />
         }
       />
+
+      <div className="mb-3.5">
+        <PresenceSummary presence={presence} href={`${base}/presence`} />
+      </div>
 
       <section aria-label="Métricas del negocio" className="grid grid-cols-2 gap-3.5 lg:grid-cols-4">
         <KpiCard

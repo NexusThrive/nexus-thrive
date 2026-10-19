@@ -1,0 +1,830 @@
+[
+  {
+    "id": "dropCheckConstraint.User.User_role_check_40dd20e3",
+    "label": "Drop check constraint \"User_role_check_40dd20e3\" on \"User\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "User_role_check_40dd20e3",
+        "table": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"User_role_check_40dd20e3\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "User_role_check_40dd20e3",
+          "public",
+          "\"public\".\"User\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"User_role_check_40dd20e3\"",
+        "sql": "ALTER TABLE \"public\".\"User\" DROP CONSTRAINT \"User_role_check_40dd20e3\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"User_role_check_40dd20e3\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "User_role_check_40dd20e3",
+          "public",
+          "\"public\".\"User\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.DismissedNotification",
+    "label": "Create table \"DismissedNotification\"",
+    "summary": "Creates table \"DismissedNotification\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "DismissedNotification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"DismissedNotification\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DismissedNotification\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"DismissedNotification\"",
+        "sql": "CREATE TABLE \"public\".\"DismissedNotification\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"key\" text NOT NULL,\n  \"userId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"DismissedNotification\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"DismissedNotification\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.TenantInvite",
+    "label": "Create table \"TenantInvite\"",
+    "summary": "Creates table \"TenantInvite\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "TenantInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"TenantInvite\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TenantInvite\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"TenantInvite\"",
+        "sql": "CREATE TABLE \"public\".\"TenantInvite\" (\n  \"acceptedAt\" timestamptz,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text NOT NULL,\n  \"expiresAt\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"invitedById\" text,\n  \"name\" text,\n  \"revokedAt\" timestamptz,\n  \"role\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"TenantInvite_role_check_972a86d0\" CHECK (\"role\" IN ('SUPERADMIN', 'OWNER', 'STAFF', 'ADMIN', 'RECEPTION', 'ADVISOR'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"TenantInvite\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TenantInvite\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Customer.birthDate",
+    "label": "Add column \"birthDate\" to \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "birthDate",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"birthDate\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "birthDate"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"birthDate\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD COLUMN \"birthDate\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"birthDate\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "birthDate"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Customer.city",
+    "label": "Add column \"city\" to \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "city",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"city\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "city"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"city\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD COLUMN \"city\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"city\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "city"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Customer.documentId",
+    "label": "Add column \"documentId\" to \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "documentId",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"documentId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "documentId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"documentId\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD COLUMN \"documentId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"documentId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "documentId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Customer.photoId",
+    "label": "Add column \"photoId\" to \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "photoId",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"photoId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "photoId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"photoId\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD COLUMN \"photoId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"photoId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "photoId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Customer.profile",
+    "label": "Add column \"profile\" to \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "profile",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"profile\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "profile"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"profile\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD COLUMN \"profile\" json"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"profile\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "profile"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Customer.tags",
+    "label": "Add column \"tags\" to \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "tags",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"tags\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "tags"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"tags\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD COLUMN \"tags\" text[]"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"tags\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "tags"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.PlanSetting.maxUsers",
+    "label": "Add column \"maxUsers\" to \"PlanSetting\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "maxUsers",
+        "table": "PlanSetting"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"maxUsers\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PlanSetting",
+          "maxUsers"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"maxUsers\"",
+        "sql": "ALTER TABLE \"public\".\"PlanSetting\" ADD COLUMN \"maxUsers\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"maxUsers\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PlanSetting",
+          "maxUsers"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.User.active",
+    "label": "Add column \"active\" to \"User\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "active",
+        "table": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"active\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "active"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"active\"",
+        "sql": "ALTER TABLE \"public\".\"User\" ADD COLUMN \"active\" bool DEFAULT true NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"active\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "active"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.User.phone",
+    "label": "Add column \"phone\" to \"User\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "phone",
+        "table": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"phone\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "phone"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"phone\"",
+        "sql": "ALTER TABLE \"public\".\"User\" ADD COLUMN \"phone\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"phone\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "phone"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.User.removedAt",
+    "label": "Add column \"removedAt\" to \"User\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "removedAt",
+        "table": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"removedAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "removedAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"removedAt\"",
+        "sql": "ALTER TABLE \"public\".\"User\" ADD COLUMN \"removedAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"removedAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "removedAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.User.theme",
+    "label": "Add column \"theme\" to \"User\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "theme",
+        "table": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"theme\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "theme"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"theme\"",
+        "sql": "ALTER TABLE \"public\".\"User\" ADD COLUMN \"theme\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"theme\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "theme"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.User.title",
+    "label": "Add column \"title\" to \"User\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "title",
+        "table": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"title\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "title"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"title\"",
+        "sql": "ALTER TABLE \"public\".\"User\" ADD COLUMN \"title\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"title\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "User",
+          "title"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.Customer.Customer_tags_elem_not_null_aecbe9e2",
+    "label": "Add check constraint \"Customer_tags_elem_not_null_aecbe9e2\" on \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "Customer_tags_elem_not_null_aecbe9e2",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Customer_tags_elem_not_null_aecbe9e2\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Customer_tags_elem_not_null_aecbe9e2",
+          "public",
+          "\"public\".\"Customer\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"Customer_tags_elem_not_null_aecbe9e2\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD CONSTRAINT \"Customer_tags_elem_not_null_aecbe9e2\" CHECK (array_position(\"tags\", NULL) IS NULL)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Customer_tags_elem_not_null_aecbe9e2\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Customer_tags_elem_not_null_aecbe9e2",
+          "public",
+          "\"public\".\"Customer\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.DismissedNotification.DismissedNotification_userId_key_key",
+    "label": "Add unique constraint on \"DismissedNotification\" (userId, key)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "DismissedNotification_userId_key_key",
+        "table": "DismissedNotification"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"DismissedNotification_userId_key_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DismissedNotification_userId_key_key",
+          "public",
+          "\"public\".\"DismissedNotification\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"DismissedNotification_userId_key_key\"",
+        "sql": "ALTER TABLE \"public\".\"DismissedNotification\" ADD CONSTRAINT \"DismissedNotification_userId_key_key\" UNIQUE (\"userId\", \"key\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"DismissedNotification_userId_key_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "DismissedNotification_userId_key_key",
+          "public",
+          "\"public\".\"DismissedNotification\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.User.User_role_check_972a86d0",
+    "label": "Add check constraint \"User_role_check_972a86d0\" on \"User\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "User_role_check_972a86d0",
+        "table": "User"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"User_role_check_972a86d0\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "User_role_check_972a86d0",
+          "public",
+          "\"public\".\"User\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"User_role_check_972a86d0\"",
+        "sql": "ALTER TABLE \"public\".\"User\" ADD CONSTRAINT \"User_role_check_972a86d0\" CHECK (\"role\" IN ('SUPERADMIN', 'OWNER', 'STAFF', 'ADMIN', 'RECEPTION', 'ADVISOR'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"User_role_check_972a86d0\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "User_role_check_972a86d0",
+          "public",
+          "\"public\".\"User\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.TenantInvite.TenantInvite_email_idx_46df9cad",
+    "label": "Create index \"TenantInvite_email_idx_46df9cad\" on \"TenantInvite\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "TenantInvite_email_idx_46df9cad",
+        "table": "TenantInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"TenantInvite_email_idx_46df9cad\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TenantInvite_email_idx_46df9cad\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"TenantInvite_email_idx_46df9cad\"",
+        "sql": "CREATE INDEX \"TenantInvite_email_idx_46df9cad\" ON \"public\".\"TenantInvite\" (\"email\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"TenantInvite_email_idx_46df9cad\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TenantInvite_email_idx_46df9cad\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.TenantInvite.TenantInvite_tenantId_idx_c93ed4f1",
+    "label": "Create index \"TenantInvite_tenantId_idx_c93ed4f1\" on \"TenantInvite\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "TenantInvite_tenantId_idx_c93ed4f1",
+        "table": "TenantInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"TenantInvite_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TenantInvite_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"TenantInvite_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"TenantInvite_tenantId_idx_c93ed4f1\" ON \"public\".\"TenantInvite\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"TenantInvite_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TenantInvite_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  }
+]

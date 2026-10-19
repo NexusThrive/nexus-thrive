@@ -4,6 +4,10 @@ enum Role {
   SUPERADMIN
   OWNER
   STAFF
+  /// Equipo del negocio (fase V1): administración, recepción y asesores.
+  ADMIN
+  RECEPTION
+  ADVISOR
 }
 
 /// Etapa comercial de una cuenta en el Operations Center. Distinta del
@@ -67,6 +71,32 @@ enum ConversationStatus {
   CLOSED
 }
 
+/// Movimientos de la caja menor.
+enum CashMovementKind {
+  OPENING
+  INCOME
+  EXPENSE
+  VOUCHER
+  REPLENISH
+  ADJUST
+}
+
+/// Qué vende el negocio: producto con stock, servicio con duración, plan de
+/// membresía, entrada de museo o tour/paquete.
+enum ProductKind {
+  PRODUCT
+  SERVICE
+  PLAN
+  TICKET
+  TOUR
+}
+
+enum InvoiceStatus {
+  ISSUED
+  PAID
+  VOID
+}
+
 enum AccountStage {
   ONBOARDING
   ACTIVE
@@ -115,6 +145,7 @@ enum Vertical {
   nautical_transport
   tour_guides
   events
+  museum
 }
 
 enum ModuleName {
@@ -276,6 +307,12 @@ model Tenant {
   teamSize String?
   /// Dirección física; "REMOTE" si el negocio no tiene local.
   address String?
+  /// Coordenadas confirmadas con Google Places durante el onboarding
+  /// (opcionales: si no se confirmó la ubicación, quedan en null).
+  latitude  Float?
+  longitude Float?
+  /// `place_id` de Google Places, para refrescar/ubicar el local luego.
+  placeId String?
   /// Identidad y ubicación (Paso 1 del onboarding).
   city              String?
   whatsappNumber    String?
@@ -307,6 +344,8 @@ model Tenant {
   suspendedReason String?
   suspendedAt     DateTime?
 
+  /// Ajustes operativos del rubro (aforo del museo, franjas, horarios…).
+  settings          Json?
   createdAt DateTime @default(now())
   updatedAt temporal.updatedAt()
 
@@ -336,6 +375,7 @@ model Tenant {
   lookaheadTasks    LookaheadTask[]
   weeklyCommitments WeeklyCommitment[]
   fieldLogs         FieldLog[]
+  presenceScans     PresenceScan[]
 
   @@index([slug])
 }
@@ -361,6 +401,13 @@ model User {
   role        Role     @default(STAFF)
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Retirado del negocio: conserva su historial pero ya no entra.
+  active      Boolean  @default(true)
+  phone       String?
+  title       String?
+  /// Tema elegido (light | dark), guardado en la cuenta.
+  theme       String?
+  removedAt   DateTime?
   createdAt   DateTime @default(now())
   updatedAt   temporal.updatedAt()
 
@@ -378,6 +425,17 @@ model Customer {
   email     String?
   phone     String?
   active    Boolean  @default(true)
+  documentId String?
+  birthDate  DateTime?
+  tags       String[]?
+  /// Campos propios del rubro (gym: peso, talla, objetivo…; turismo: pasaporte…).
+  profile    Json?
+  /// Foto (Attachment.id, kind CUSTOMER_PHOTO).
+  photoId    String?
+  city       String?
+  /// Código de acceso (QR) y tarjeta NFC vinculada.
+  accessCode String?
+  nfcUid     String?
   createdAt DateTime @default(now())
   updatedAt temporal.updatedAt()
 
@@ -403,12 +461,25 @@ model Payment {
   provider      PaymentProvider @default(CASH)
   providerRefId String?         @unique
   description   String?
+  /// Recibo consecutivo del negocio (R-000123).
+  receiptNumber Int?
+  /// Anulación con motivo (el pago no se borra).
+  voidedAt      DateTime?
+  voidReason    String?
+  notes         String?
+  /// Qué pagó: MEMBERSHIP, INVOICE, TOUR_BOOKING, TICKET_SALE, PROJECT, SALE.
+  sourceType    String?
+  sourceId      String?
+  /// Sesión de caja en la que entró (si fue en efectivo).
+  cashSessionId String?
+  invoiceId     String?
   createdAt     DateTime        @default(now())
   updatedAt     temporal.updatedAt()
 
   @@index([tenantId])
   @@index([providerRefId])
   @@index([membershipId])
+  @@unique([tenantId, receiptNumber])
 }
 
 model Expense {
@@ -419,6 +490,15 @@ model Expense {
   category    String
   description String
   date        DateTime @default(now())
+  supplier      String?
+  /// CASH (caja menor) | BANK | CARD
+  paidFrom      String    @default("BANK")
+  voidedAt      DateTime?
+  voidReason    String?
+  cashSessionId String?
+  /// Obra a la que se carga el gasto (constructoras).
+  projectId     String?
+  createdById   String?
   createdAt   DateTime @default(now())
   updatedAt   temporal.updatedAt()
 
@@ -439,6 +519,12 @@ model Membership {
   /// Historial de cobros registrados (JSON serializable: [{ date, amount, provider, kind }]).
   payments   Json?
   charges    Payment[]
+  /// Plan del catálogo con el que se vendió.
+  productId    String?
+  frozenFrom   DateTime?
+  frozenUntil  DateTime?
+  cancelledAt  DateTime?
+  cancelReason String?
   createdAt  DateTime         @default(now())
   updatedAt  temporal.updatedAt()
 
@@ -658,6 +744,14 @@ model Booking {
   status      BookingStatus @default(PENDING)
   totalAmount BigInt        @default(0)
   notes       String?
+  /// Servicio, clase o tour del catálogo (Product).
+  productId      String?
+  /// Persona del equipo que atiende (User.id).
+  staffUserId    String?
+  partySize      Int       @default(1)
+  /// APPOINTMENT | CLASS | DELIVERY | VISIT | DEPARTURE
+  kind           String    @default("APPOINTMENT")
+  reminderSentAt DateTime?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @default(now())
 
@@ -1299,6 +1393,8 @@ model PlanSetting {
   recommended        Boolean  @default(false)
   active             Boolean  @default(true)
   order              Int
+  /// Usuarios del negocio incluidos (null = sin límite).
+  maxUsers           Int?
   updatedAt          temporal.updatedAt()
 }
 
@@ -1563,4 +1659,339 @@ model SatisfactionSurvey {
   createdAt  DateTime  @default(now())
 
   @@index([tenantId])
+}
+
+
+/// Archivo del negocio guardado en la base (comprobantes, fotos de clientes,
+/// soportes de gastos, logos). `kind` + `ownerId` dicen a qué pertenece.
+model Attachment {
+  id           String   @id @default(uuid())
+  tenantId     String
+  kind         String
+  ownerId      String
+  fileName     String
+  mimeType     String
+  byteSize     Int
+  sha256       String
+  data         Bytes
+  uploadedById String?
+  createdAt    DateTime @default(now())
+
+  @@index([tenantId, kind, ownerId])
+}
+
+/// Caja menor: un fondo fijo con responsable.
+model CashBox {
+  id                String   @id @default(uuid())
+  tenantId          String
+  name              String
+  fundAmount        Decimal  @default(0)
+  responsibleUserId String?
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         temporal.updatedAt()
+  sessions          CashSession[]
+
+  @@index([tenantId])
+}
+
+/// Turno de caja: apertura, movimientos y cierre con arqueo.
+model CashSession {
+  id             String   @id @default(uuid())
+  tenantId       String
+  boxId          String
+  box            CashBox  @relation(fields: [boxId], references: [id], onDelete: Cascade)
+  openedAt       DateTime @default(now())
+  openedById     String
+  openingAmount  Decimal
+  closedAt       DateTime?
+  closedById     String?
+  expectedAmount Decimal?
+  countedAmount  Decimal?
+  difference     Decimal?
+  closingNotes   String?
+  movements      CashMovement[]
+
+  @@index([tenantId, boxId])
+}
+
+model CashMovement {
+  id          String           @id @default(uuid())
+  tenantId    String
+  sessionId   String
+  session     CashSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  kind        CashMovementKind
+  amount      Decimal
+  description String
+  /// Quién recibe el vale.
+  beneficiary String?
+  paymentId   String?
+  expenseId   String?
+  createdById String?
+  createdAt   DateTime         @default(now())
+
+  @@index([sessionId])
+}
+
+/// Catálogo del negocio: productos, servicios, planes, entradas y tours.
+model Product {
+  id              String      @id @default(uuid())
+  tenantId        String
+  kind            ProductKind @default(PRODUCT)
+  name            String
+  description     String?
+  sku             String?
+  category        String?
+  price           Decimal
+  cost            Decimal?
+  trackStock      Boolean     @default(false)
+  stock           Int         @default(0)
+  minStock        Int         @default(0)
+  unit            String?
+  /// Servicios y tours: duración de la cita / del recorrido.
+  durationMinutes Int?
+  /// Planes de membresía: días de vigencia.
+  durationDays    Int?
+  /// Cupo por cita, clase o salida.
+  capacity        Int?
+  active          Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       temporal.updatedAt()
+  movements       StockMovement[]
+
+  @@index([tenantId, kind])
+}
+
+model StockMovement {
+  id          String   @id @default(uuid())
+  tenantId    String
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  /// IN (entrada) | OUT (salida) | SALE (venta) | ADJUST (ajuste de inventario)
+  kind        String
+  quantity    Int
+  note        String?
+  paymentId   String?
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([productId])
+}
+
+/// Recibo o cuenta de cobro numerada (la factura electrónica DIAN llega
+/// después, con un proveedor).
+model Invoice {
+  id           String        @id @default(uuid())
+  tenantId     String
+  /// RECEIPT (recibo) | BILL (cuenta de cobro)
+  kind         String
+  number       Int
+  customerId   String?
+  customerName String
+  customerDoc  String?
+  issueDate    DateTime
+  dueDate      DateTime?
+  status       InvoiceStatus @default(ISSUED)
+  notes        String?
+  total        Decimal
+  voidReason   String?
+  createdById  String?
+  /// Obra a la que pertenece la cuenta de cobro (constructoras).
+  projectId    String?
+  createdAt    DateTime      @default(now())
+  updatedAt    temporal.updatedAt()
+  lines        InvoiceLine[]
+
+  @@unique([tenantId, kind, number])
+  @@index([tenantId])
+}
+
+model InvoiceLine {
+  id          String  @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  productId   String?
+  description String
+  quantity    Decimal
+  unitPrice   Decimal
+  total       Decimal
+
+  @@index([invoiceId])
+}
+
+
+/// Invitación para unirse al equipo de un negocio (se acepta al iniciar
+/// sesión con ese correo).
+model TenantInvite {
+  id          String    @id @default(uuid())
+  tenantId    String
+  email       String
+  name        String?
+  role        Role
+  invitedById String?
+  acceptedAt  DateTime?
+  revokedAt   DateTime?
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+
+  @@index([tenantId])
+  @@index([email])
+}
+
+/// Notificaciones que la persona descartó (deslizando).
+model DismissedNotification {
+  id        String   @id @default(uuid())
+  userId    String
+  key       String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, key])
+}
+
+
+/// Entrada al gimnasio (o al sitio) con su resultado: permitida o negada y por qué.
+model Attendance {
+  id           String   @id @default(uuid())
+  tenantId     String
+  customerId   String
+  membershipId String?
+  /// NFC | QR | MANUAL
+  method       String
+  allowed      Boolean
+  reason       String?
+  createdById  String?
+  at           DateTime @default(now())
+
+  @@index([tenantId, at])
+  @@index([customerId])
+}
+
+/// Venta de taquilla (museo): entradas por tipo para una fecha y franja.
+model TicketSale {
+  id          String   @id @default(uuid())
+  tenantId    String
+  number      Int
+  visitDate   DateTime
+  /// Franja horaria "10:00".
+  slot        String
+  visitors    Int
+  /// [{ productId, name, qty, unitPrice }]
+  lines       Json
+  total       Decimal
+  /// TAQUILLA | GRUPO | COLEGIO | GUIADA
+  kind        String   @default("TAQUILLA")
+  groupName   String?
+  customerId  String?
+  paymentId   String?
+  /// PAID | RESERVED | VOID
+  status      String   @default("PAID")
+  /// Cita en la agenda (visitas guiadas y colegios).
+  bookingId   String?
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@unique([tenantId, number])
+  @@index([tenantId, visitDate])
+}
+
+/// Salida programada de un tour o paquete (agencias de turismo).
+model Departure {
+  id           String   @id @default(uuid())
+  tenantId     String
+  productId    String
+  date         DateTime
+  time         String?
+  capacity     Int
+  guide        String?
+  meetingPoint String?
+  /// SCHEDULED | DONE | CANCELLED
+  status       String   @default("SCHEDULED")
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    temporal.updatedAt()
+
+  @@index([tenantId, date])
+}
+
+/// Reserva de un cliente en una salida: pasajeros, valor, abonos y voucher.
+model TourBooking {
+  id            String   @id @default(uuid())
+  tenantId      String
+  departureId   String
+  customerId    String
+  seats         Int
+  /// [{ name, document, nationality }]
+  passengers    Json
+  total         Decimal
+  /// Código del voucher (ej. NX-7K2P9).
+  code          String
+  sellerUserId  String?
+  commissionPct Int?
+  /// RESERVED | CONFIRMED | CANCELLED
+  status        String   @default("RESERVED")
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     temporal.updatedAt()
+
+  @@unique([tenantId, code])
+  @@index([departureId])
+}
+
+/// Solicitud de "Presence Thrive": el negocio pide su presencia digital
+/// (web profesional, redes, ficha de Google). El equipo NEXUS la diseña, la
+/// cobra una vez y la publica. `publishedUrl` alimenta la vista previa del
+/// panel de presencia en el dashboard.
+model PresenceRequest {
+  id            String    @id @default(uuid())
+  tenantId      String
+  /// PENDING | DESIGN | REVIEW | PUBLISHED | CANCELLED
+  status        String    @default("PENDING")
+  businessName  String
+  domain        String?
+  slogan        String?
+  /// Colores de marca separados por coma (#0B0B0C,#D4AF37).
+  colors        String?
+  notes         String?
+  contactName   String
+  contactPhone  String
+  contactEmail  String?
+  /// Precio único acordado (COP, sin decimales).
+  priceCop      Int?
+  paidAt        DateTime?
+  paymentMethod String?
+  paymentRef    String?
+  /// URL del sitio publicado; alimenta la vista previa (iframe) del panel.
+  publishedUrl  String?
+  staffNotes    String?
+  /// Servicios solicitados: WEB | INSTAGRAM | GOOGLE. Null = solo WEB.
+  services      String[]?
+  requestedById String?
+  createdAt     DateTime  @default(now())
+  updatedAt     temporal.updatedAt()
+
+  @@index([tenantId])
+  @@index([status])
+}
+
+/// Foto del estado de presencia digital de un negocio en un momento dado.
+/// `score` (0-100) lo calcula lib/presence; `breakdown` guarda el detalle por
+/// criterio (auto verificado vs. declarado) y `website` el resultado del
+/// sondeo al sitio publicado. El panel del Inicio lee el último escaneo.
+model PresenceScan {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// 0-100.
+  score     Int
+  /// INVISIBLE | VISIBLE | CONECTADO | DOMINANTE
+  state     String
+  /// AUTO (sondeo del servidor) | MANUAL (lo disparó el negocio).
+  source    String   @default("MANUAL")
+  /// Detalle por criterio: { key, label, points, earned, verified, hint }[].
+  breakdown Json
+  /// Sondeo del sitio: { reachable, https, statusCode, title, meta, viewport }.
+  website   Json?
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, createdAt])
 }

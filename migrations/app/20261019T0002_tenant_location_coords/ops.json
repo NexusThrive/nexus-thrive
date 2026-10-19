@@ -1,0 +1,128 @@
+[
+  {
+    "id": "column.public.Tenant.latitude",
+    "label": "Add column \"latitude\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "latitude",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"latitude\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "latitude"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"latitude\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"latitude\" float8"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"latitude\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "latitude"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.longitude",
+    "label": "Add column \"longitude\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "longitude",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"longitude\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "longitude"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"longitude\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"longitude\" float8"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"longitude\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "longitude"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.placeId",
+    "label": "Add column \"placeId\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "placeId",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"placeId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "placeId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"placeId\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"placeId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"placeId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "placeId"
+        ]
+      }
+    ]
+  }
+]

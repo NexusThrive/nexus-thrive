@@ -95,6 +95,7 @@ export function MobileTabBar() {
   return (
     <>
       <nav
+        data-mobile-tabbar=""
         ref={barRef}
         aria-label="Navegación"
         className={cn(

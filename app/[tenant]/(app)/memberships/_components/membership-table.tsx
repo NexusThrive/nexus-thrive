@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { MessageCircle, RefreshCw, UserRound } from "lucide-react";
+import { MessageCircle, PauseCircle, RefreshCw, UserRound } from "lucide-react";
+import { Badge } from "@/components/atoms/badge";
+import MembershipHoldSheet from "./membership-hold-sheet";
 import PaginationLinks from "@/components/molecules/pagination-links";
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import { typeLabel, type MembershipStatusValue, type MembershipTypeValue } from "@/lib/memberships";
@@ -21,6 +23,7 @@ export type MembershipViewRow = {
   price: number;
   startDate: string;
   endDate: string;
+  hold: "frozen" | "cancelled" | null;
 };
 
 /**
@@ -46,6 +49,9 @@ export default function MembershipTable({
   const [reminderTarget, setReminderTarget] = useState<MembershipViewRow | null>(
     null,
   );
+  const [holdTarget, setHoldTarget] = useState<MembershipViewRow | null>(null);
+  const badge = (row: MembershipViewRow) =>
+    row.hold ? <Badge tone={row.hold === "frozen" ? "neutral" : "muted"}>{row.hold === "frozen" ? "Congelada" : "Cancelada"}</Badge> : <MembershipStatusBadge status={row.status} />;
 
   if (rows.length === 0) {
     return (
@@ -110,7 +116,7 @@ export default function MembershipTable({
                   {formatCurrency(row.price)}
                 </td>
                 <td className="px-4 py-3">
-                  <MembershipStatusBadge status={row.status} />
+                  {badge(row)}
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-1">
@@ -125,6 +131,12 @@ export default function MembershipTable({
                       onClick={() => setReminderTarget(row)}
                     >
                       <MessageCircle aria-hidden="true" className="h-4 w-4" />
+                    </RowAction>
+                    <RowAction
+                      label={`Congelar o cancelar la membresía de ${row.customerName}`}
+                      onClick={() => setHoldTarget(row)}
+                    >
+                      <PauseCircle aria-hidden="true" className="h-4 w-4" />
                     </RowAction>
                     <Link
                       href={`/${tenantSlug}/crm?q=${encodeURIComponent(row.customerName)}`}
@@ -157,7 +169,7 @@ export default function MembershipTable({
                   {typeLabel(row.type)} · {formatCurrency(row.price)}
                 </p>
               </div>
-              <MembershipStatusBadge status={row.status} />
+              {badge(row)}
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
               {formatDateShort(row.startDate)} → {formatDateShort(row.endDate)}
@@ -178,6 +190,14 @@ export default function MembershipTable({
               >
                 <MessageCircle aria-hidden="true" className="h-3.5 w-3.5" />
                 Recordatorio
+              </button>
+              <button
+                type="button"
+                aria-label={`Congelar o cancelar la membresía de ${row.customerName}`}
+                onClick={() => setHoldTarget(row)}
+                className={buttonVariants({ variant: "outline", size: "icon-sm" })}
+              >
+                <PauseCircle aria-hidden="true" className="h-3.5 w-3.5" />
               </button>
               <Link
                 href={`/${tenantSlug}/crm?q=${encodeURIComponent(row.customerName)}`}
@@ -206,6 +226,13 @@ export default function MembershipTable({
           tenantSlug={tenantSlug}
           membership={renewTarget}
           onClose={() => setRenewTarget(null)}
+        />
+      ) : null}
+      {holdTarget ? (
+        <MembershipHoldSheet
+          tenantSlug={tenantSlug}
+          membership={holdTarget}
+          onClose={() => setHoldTarget(null)}
         />
       ) : null}
       {reminderTarget ? (

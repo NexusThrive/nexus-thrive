@@ -1,5 +1,7 @@
 "use client";
 
+import { MoneyInput } from "@/components/molecules/money-input";
+import { parseMoney } from "@/lib/business/money";
 import { apuImageUrl } from "@/lib/apu-images";
 import { useEffect, useState, useTransition } from "react";
 import { useActionState } from "react";
@@ -182,11 +184,10 @@ function ItemForm({
           <span className={labelClasses}>
             Precio unitario (COP)
           </span>
-          <input
+          <MoneyInput
             name="unitPrice"
-            inputMode="decimal"
-            defaultValue={defaults.unitPrice}
-            placeholder="Ej: 35000"
+            defaultValue={parseMoney(String(defaults.unitPrice ?? ""))}
+            placeholder="35.000"
             className={inputClass}
           />
           {fieldError(state.errors, "unitPrice") ? (

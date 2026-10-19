@@ -2,6 +2,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
+import { acceptInvitesFor } from "@/lib/business/team-db";
 
 /**
  * Shell multi-tenant: acceso.
@@ -49,6 +50,18 @@ export default async function TenantLayout({
 
   // 3) Usuario local asociado al tenant (con bootstrap del primer OWNER).
   let localUser = await tenantDb.users.findByClerkUserId(userId);
+
+  // ¿Lo invitaron a este negocio? Acepta la invitación al entrar.
+  if (!localUser || !localUser.active) {
+    const me = await currentUser();
+    const email = me?.primaryEmailAddress?.emailAddress ?? me?.emailAddresses?.[0]?.emailAddress ?? "";
+    const accepted = await acceptInvitesFor(userId, email, me?.fullName ?? null, tenantRecord.id);
+    if (accepted.length) localUser = await tenantDb.users.findByClerkUserId(userId);
+  }
+
+  if (localUser && !localUser.active) {
+    return <AccessDenied tenantName={tenantRecord.name} />;
+  }
 
   if (!localUser) {
     const hasMembers = (await tenantDb.users.findFirst()) !== null;

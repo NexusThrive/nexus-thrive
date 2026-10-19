@@ -10,7 +10,7 @@ import { createTenantDb } from "@/lib/tenant-db";
  * servidor → rol D7 → cadena de pertenencia → `isLocked` → validación →
  * transacción. Este helper cubre los tres primeros pasos.
  */
-export type TenantRole = "SUPERADMIN" | "OWNER" | "STAFF";
+export type TenantRole = "SUPERADMIN" | "OWNER" | "STAFF" | "ADMIN" | "RECEPTION" | "ADVISOR";
 
 export type TenantContext = {
   tenantId: string;
@@ -49,7 +49,8 @@ export async function requireTenantContext(
   }
   const tenantDb = createTenantDb(tenantRecord.id);
   const member = await tenantDb.users.findByClerkUserId(userId);
-  if (!member) {
+  // Retirado del equipo: conserva su historial pero ya no opera.
+  if (!member || !member.active) {
     return null;
   }
   return {
@@ -68,5 +69,5 @@ export async function requireTenantContext(
  * mientras el presupuesto no esté bloqueado.
  */
 export function canGovernBudget(role: TenantRole): boolean {
-  return role === "OWNER" || role === "SUPERADMIN";
+  return role === "OWNER" || role === "SUPERADMIN" || role === "ADMIN";
 }

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { NLoader } from "@/components/atoms/n-loader";
 import { useToast } from "@/components/molecules/toast";
+import { PhoneInput } from "@/components/molecules/phone-input";
 import { cn } from "@/lib/cn";
 import {
   updateTenantProfileAction,
@@ -185,16 +186,7 @@ export default function ProfileTab({
             <label htmlFor="profile-phone" className={labelClasses}>
               Teléfono / WhatsApp
             </label>
-            <input
-              id="profile-phone"
-              name="phone"
-              type="tel"
-              value={values.phone}
-              onChange={(event) => setField("phone", event.target.value)}
-              disabled={!canManage || isPending}
-              placeholder="+57 300 123 4567"
-              className={cn(fieldClass(Boolean(errors.phone)))}
-            />
+            <PhoneInput id="profile-phone" name="phone" value={values.phone} onChange={(v) => setField("phone", v)} disabled={!canManage || isPending} />
           </div>
         </div>
 

@@ -93,6 +93,7 @@ export default async function MembershipsPage({
     price: row.price,
     startDate: row.startDate,
     endDate: row.endDate,
+    hold: row.hold,
   }));
 
   const totalPages = Math.max(

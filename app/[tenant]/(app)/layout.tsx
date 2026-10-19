@@ -5,6 +5,8 @@ import { getVerticalTerms } from "@/lib/vertical-terms";
 import { TenantShell } from "@/components/templates/tenant-shell";
 import { VerticalTermsProvider } from "./vertical-terms-context";
 import TenantNotifications from "./_components/tenant-notifications";
+import ThemeSync from "./_components/theme-sync";
+import { auth } from "@clerk/nextjs/server";
 
 /**
  * Ruta `(app)`: shell del negocio + gate de onboarding.
@@ -52,6 +54,10 @@ export default async function AppLayout({
       .map((module) => module.moduleName),
   );
 
+  const { userId } = await auth();
+  const me = userId ? await db.orm.public.User.where({ tenantId: tenantRecord.id, clerkUserId: userId }).select("theme").first() : null;
+  const savedTheme = me?.theme === "dark" || me?.theme === "light" ? me.theme : null;
+
   return (
     <VerticalTermsProvider terms={getVerticalTerms(tenantRecord.vertical)}>
       <TenantShell
@@ -61,6 +67,7 @@ export default async function AppLayout({
         activeModules={activeModules}
         topbarActions={<TenantNotifications tenantSlug={tenantRecord.slug} />}
       >
+        <ThemeSync tenantSlug={tenantRecord.slug} saved={savedTheme} />
         {children}
       </TenantShell>
     </VerticalTermsProvider>

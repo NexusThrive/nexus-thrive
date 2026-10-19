@@ -73,6 +73,7 @@ export const VERTICAL_FACTORS: Record<VerticalValue, number> = {
   nautical_transport: 1.1,
   tour_guides: 0.9,
   events: 1,
+  museum: 1,
 };
 
 /** Signature cobra cada módulo al 60 % (40 % menos). */

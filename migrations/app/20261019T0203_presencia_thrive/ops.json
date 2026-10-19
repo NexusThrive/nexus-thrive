@@ -1,0 +1,315 @@
+[
+  {
+    "id": "dropTable.WebsiteRequest",
+    "label": "Drop table \"WebsiteRequest\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "WebsiteRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"WebsiteRequest\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebsiteRequest\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"WebsiteRequest\"",
+        "sql": "DROP TABLE \"public\".\"WebsiteRequest\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"WebsiteRequest\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebsiteRequest\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.PresenceRequest",
+    "label": "Create table \"PresenceRequest\"",
+    "summary": "Creates table \"PresenceRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "PresenceRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"PresenceRequest\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PresenceRequest\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"PresenceRequest\"",
+        "sql": "CREATE TABLE \"public\".\"PresenceRequest\" (\n  \"businessName\" text NOT NULL,\n  \"colors\" text,\n  \"contactEmail\" text,\n  \"contactName\" text NOT NULL,\n  \"contactPhone\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"domain\" text,\n  \"id\" text NOT NULL,\n  \"notes\" text,\n  \"paidAt\" timestamptz,\n  \"paymentMethod\" text,\n  \"paymentRef\" text,\n  \"priceCop\" int4,\n  \"publishedUrl\" text,\n  \"requestedById\" text,\n  \"services\" text[],\n  \"slogan\" text,\n  \"staffNotes\" text,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"PresenceRequest_services_elem_not_null_4d2c6c0f\" CHECK (array_position(\"services\", NULL) IS NULL)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"PresenceRequest\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PresenceRequest\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.PresenceScan",
+    "label": "Create table \"PresenceScan\"",
+    "summary": "Creates table \"PresenceScan\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "PresenceScan"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"PresenceScan\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PresenceScan\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"PresenceScan\"",
+        "sql": "CREATE TABLE \"public\".\"PresenceScan\" (\n  \"breakdown\" json NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"score\" int4 NOT NULL,\n  \"source\" text DEFAULT 'MANUAL' NOT NULL,\n  \"state\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"website\" json,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"PresenceScan\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PresenceScan\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PresenceRequest.PresenceRequest_status_idx_e98638ab",
+    "label": "Create index \"PresenceRequest_status_idx_e98638ab\" on \"PresenceRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PresenceRequest_status_idx_e98638ab",
+        "table": "PresenceRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PresenceRequest_status_idx_e98638ab\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PresenceRequest_status_idx_e98638ab\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PresenceRequest_status_idx_e98638ab\"",
+        "sql": "CREATE INDEX \"PresenceRequest_status_idx_e98638ab\" ON \"public\".\"PresenceRequest\" (\"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PresenceRequest_status_idx_e98638ab\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PresenceRequest_status_idx_e98638ab\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PresenceRequest.PresenceRequest_tenantId_idx_c93ed4f1",
+    "label": "Create index \"PresenceRequest_tenantId_idx_c93ed4f1\" on \"PresenceRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PresenceRequest_tenantId_idx_c93ed4f1",
+        "table": "PresenceRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PresenceRequest_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PresenceRequest_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PresenceRequest_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"PresenceRequest_tenantId_idx_c93ed4f1\" ON \"public\".\"PresenceRequest\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PresenceRequest_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PresenceRequest_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PresenceScan.PresenceScan_tenantId_createdAt_idx_88162366",
+    "label": "Create index \"PresenceScan_tenantId_createdAt_idx_88162366\" on \"PresenceScan\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PresenceScan_tenantId_createdAt_idx_88162366",
+        "table": "PresenceScan"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PresenceScan_tenantId_createdAt_idx_88162366\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PresenceScan_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PresenceScan_tenantId_createdAt_idx_88162366\"",
+        "sql": "CREATE INDEX \"PresenceScan_tenantId_createdAt_idx_88162366\" ON \"public\".\"PresenceScan\" (\"tenantId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PresenceScan_tenantId_createdAt_idx_88162366\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PresenceScan_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PresenceScan.PresenceScan_tenantId_idx_c93ed4f1",
+    "label": "Create index \"PresenceScan_tenantId_idx_c93ed4f1\" on \"PresenceScan\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PresenceScan_tenantId_idx_c93ed4f1",
+        "table": "PresenceScan"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PresenceScan_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PresenceScan_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PresenceScan_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"PresenceScan_tenantId_idx_c93ed4f1\" ON \"public\".\"PresenceScan\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PresenceScan_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PresenceScan_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PresenceScan.PresenceScan_tenantId_fkey",
+    "label": "Add foreign key \"PresenceScan_tenantId_fkey\" on \"PresenceScan\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PresenceScan_tenantId_fkey",
+        "table": "PresenceScan"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PresenceScan_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PresenceScan_tenantId_fkey",
+          "public",
+          "\"public\".\"PresenceScan\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PresenceScan_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PresenceScan\"\nADD CONSTRAINT \"PresenceScan_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PresenceScan_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PresenceScan_tenantId_fkey",
+          "public",
+          "\"public\".\"PresenceScan\""
+        ]
+      }
+    ]
+  }
+]

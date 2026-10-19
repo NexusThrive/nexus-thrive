@@ -33,9 +33,9 @@ export default function ProfileSelection({
   onChange: (value: OnboardingTenantType) => void;
 }) {
   return (
-    <fieldset className="min-w-0">
+    <fieldset className="flex min-w-0 flex-1 flex-col justify-center">
       <legend className="sr-only">Elige tu perfil de negocio</legend>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid flex-1 auto-rows-fr gap-4 sm:flex-none sm:auto-rows-auto sm:grid-cols-2">
         {PROFILES.map((profile) => {
           const Icon = profile.icon;
           const isSelected = value === profile.value;
@@ -47,7 +47,7 @@ export default function ProfileSelection({
               aria-pressed={isSelected}
               data-press="card"
               className={cn(
-                "group rounded-lg border p-5 text-left transition-[border-color,background-color,box-shadow] duration-200",
+                "group flex flex-col justify-center rounded-lg border p-5 text-left transition-[border-color,background-color,box-shadow] duration-200 sm:min-h-[240px] sm:p-6",
                 isSelected
                   ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_3px_rgba(212,175,55,.18)]"
                   : "border-border-input bg-surface hover:border-border-input-hover",
@@ -55,7 +55,7 @@ export default function ProfileSelection({
             >
               <span
                 className={cn(
-                  "grid size-10 place-items-center rounded-lg transition",
+                  "grid size-11 place-items-center rounded-lg transition sm:size-10",
                   isSelected
                     ? "bg-accent text-ink"
                     : "bg-surface-muted text-muted-foreground group-hover:text-foreground",
@@ -63,10 +63,10 @@ export default function ProfileSelection({
               >
                 <Icon className="size-5" aria-hidden="true" />
               </span>
-              <span className="mt-3 block text-sm font-semibold text-foreground">
+              <span className="mt-3 block text-[15px] font-semibold text-foreground">
                 {profile.title}
               </span>
-              <span className="mt-1 block text-xs leading-5 text-muted-foreground">
+              <span className="mt-1 block text-[13px] leading-5 text-muted-foreground">
                 {profile.description}
               </span>
             </button>

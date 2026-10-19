@@ -7,11 +7,14 @@ import {
   CreditCard,
   FolderOpen,
   LayoutDashboard,
+  Map as MapIcon,
   MessageCircle,
   Package,
   Receipt,
+  ScanLine,
   Settings,
   ShoppingCart,
+  Ticket,
   Users,
   Wallet,
 } from "lucide-react";
@@ -35,14 +38,23 @@ type ModuleNav = {
   href: string;
   icon: LucideIcon;
   label: (terms: VerticalTerms, vertical: VerticalValue) => string;
+  /** Solo para estos rubros (pantallas propias del rubro). */
+  verticals?: readonly VerticalValue[];
 };
 
 /** Un módulo puede ocupar varias entradas (cotizaciones = obras + carpetas + catálogo). */
 const MODULE_NAV: Record<ModuleValue, ModuleNav | ModuleNav[]> = {
   dashboard: { href: "", icon: LayoutDashboard, label: () => "Inicio" },
   crm: { href: "/crm", icon: Users, label: (terms) => terms.customers },
-  bookings: { href: "/bookings", icon: CalendarDays, label: (terms) => terms.bookings },
-  memberships: { href: "/memberships", icon: CreditCard, label: () => "Membresías" },
+  bookings: [
+    { href: "/bookings", icon: CalendarDays, label: (terms) => terms.bookings },
+    { href: "/tickets", icon: Ticket, label: () => "Taquilla", verticals: ["museum"] },
+    { href: "/departures", icon: MapIcon, label: () => "Salidas", verticals: ["tourism_agency", "tour_guides"] },
+  ],
+  memberships: [
+    { href: "/memberships", icon: CreditCard, label: () => "Membresías" },
+    { href: "/checkin", icon: ScanLine, label: () => "Control de acceso", verticals: ["gym"] },
+  ],
   orders: { href: "/orders", icon: ShoppingCart, label: () => "Pedidos" },
   quotes: [
     {
@@ -53,9 +65,9 @@ const MODULE_NAV: Record<ModuleValue, ModuleNav | ModuleNav[]> = {
     { href: "/quotes", icon: FolderOpen, label: () => "Cotizaciones" },
     { href: "/catalog", icon: BookOpen, label: () => "Catálogo APU" },
   ],
-  inventory: { href: "/inventory", icon: Package, label: (terms) => terms.items },
+  inventory: { href: "/inventory", icon: Package, label: () => "Catálogo" },
   finance: { href: "/finance", icon: Wallet, label: () => "Finanzas" },
-  payments: { href: "/payments", icon: Banknote, label: () => "Pagos" },
+  payments: { href: "/finance?tab=cobros", icon: Banknote, label: () => "Pagos" },
   billing: { href: "/billing", icon: Receipt, label: () => "Facturación" },
   whatsapp: { href: "/whatsapp", icon: MessageCircle, label: () => "WhatsApp" },
 };
@@ -78,7 +90,7 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
   const active = new Set(activeModules);
   const items = (moduleName: ModuleValue): NavItem[] => {
     const entry = MODULE_NAV[moduleName];
-    return (Array.isArray(entry) ? entry : [entry]).map((nav) => ({
+    return (Array.isArray(entry) ? entry : [entry]).filter((nav) => !nav.verticals || nav.verticals.includes(vertical)).map((nav) => ({
       key: nav.href || "home",
       module: moduleName,
       href: nav.href,
@@ -86,7 +98,8 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
       label: nav.label(terms, vertical),
     }));
   };
-  const enabled = MODULES.filter((moduleName) => active.has(moduleName));
+  // Pagos vive dentro de Finanzas: con Finanzas activa no se repite en el menú.
+  const enabled = MODULES.filter((moduleName) => active.has(moduleName) && !(moduleName === "payments" && active.has("finance")));
   return [
     // El inicio existe siempre (es la raíz del negocio), con o sin el módulo.
     { label: "General", items: items("dashboard") },

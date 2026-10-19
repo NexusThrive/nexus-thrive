@@ -54,3 +54,7 @@ next-env.d.ts
 # Storybook
 /storybook-static
 *storybook.log
+
+# Scripts destructivos y parches sueltos: se guardan fuera del repo
+docs/prod-sql/*limpieza*.sql
+*.patch

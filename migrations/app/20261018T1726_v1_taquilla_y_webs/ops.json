@@ -1,0 +1,161 @@
+[
+  {
+    "id": "table.WebsiteRequest",
+    "label": "Create table \"WebsiteRequest\"",
+    "summary": "Creates table \"WebsiteRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "WebsiteRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"WebsiteRequest\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebsiteRequest\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"WebsiteRequest\"",
+        "sql": "CREATE TABLE \"public\".\"WebsiteRequest\" (\n  \"businessName\" text NOT NULL,\n  \"colors\" text,\n  \"contactEmail\" text,\n  \"contactName\" text NOT NULL,\n  \"contactPhone\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"domain\" text,\n  \"id\" text NOT NULL,\n  \"notes\" text,\n  \"paidAt\" timestamptz,\n  \"paymentMethod\" text,\n  \"paymentRef\" text,\n  \"priceCop\" int4,\n  \"publishedUrl\" text,\n  \"requestedById\" text,\n  \"slogan\" text,\n  \"staffNotes\" text,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"WebsiteRequest\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebsiteRequest\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.TicketSale.bookingId",
+    "label": "Add column \"bookingId\" to \"TicketSale\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "bookingId",
+        "table": "TicketSale"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"bookingId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TicketSale",
+          "bookingId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"bookingId\"",
+        "sql": "ALTER TABLE \"public\".\"TicketSale\" ADD COLUMN \"bookingId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"bookingId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TicketSale",
+          "bookingId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WebsiteRequest.WebsiteRequest_status_idx_e98638ab",
+    "label": "Create index \"WebsiteRequest_status_idx_e98638ab\" on \"WebsiteRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WebsiteRequest_status_idx_e98638ab",
+        "table": "WebsiteRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WebsiteRequest_status_idx_e98638ab\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebsiteRequest_status_idx_e98638ab\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WebsiteRequest_status_idx_e98638ab\"",
+        "sql": "CREATE INDEX \"WebsiteRequest_status_idx_e98638ab\" ON \"public\".\"WebsiteRequest\" (\"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WebsiteRequest_status_idx_e98638ab\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebsiteRequest_status_idx_e98638ab\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WebsiteRequest.WebsiteRequest_tenantId_idx_c93ed4f1",
+    "label": "Create index \"WebsiteRequest_tenantId_idx_c93ed4f1\" on \"WebsiteRequest\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WebsiteRequest_tenantId_idx_c93ed4f1",
+        "table": "WebsiteRequest"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WebsiteRequest_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebsiteRequest_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WebsiteRequest_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"WebsiteRequest_tenantId_idx_c93ed4f1\" ON \"public\".\"WebsiteRequest\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WebsiteRequest_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebsiteRequest_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  }
+]

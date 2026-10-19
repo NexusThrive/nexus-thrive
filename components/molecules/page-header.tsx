@@ -49,7 +49,10 @@ export function PageHeader({
         {description ? <p className="mt-1.5 max-w-[62ch] text-muted-foreground">{description}</p> : null}
       </div>
       {actions ? (
-        <div className="nx-rise flex flex-wrap items-center gap-2" style={{ ["--i" as string]: 1 }}>
+        <div
+          className="nx-rise ml-auto flex grow flex-wrap items-center justify-end gap-2"
+          style={{ ["--i" as string]: 1 }}
+        >
           {actions}
         </div>
       ) : null}
