@@ -132,7 +132,7 @@ export async function createPaymentAction(
       reference: receiptCode(number),
       createdAt: String(created.createdAt),
       paymentId: created.id,
-      link: `${getAppBaseUrl()}/r/${receiptToken(created.id)}`,
+      link: `${await getAppBaseUrl()}/r/${receiptToken(created.id)}`,
     },
   };
 }
@@ -226,7 +226,7 @@ export async function registerScannedPaymentAction(
       reference: receiptCode(number),
       createdAt: String(created.createdAt),
       paymentId: created.id,
-      link: `${getAppBaseUrl()}/r/${receiptToken(created.id)}`,
+      link: `${await getAppBaseUrl()}/r/${receiptToken(created.id)}`,
     },
   };
 }

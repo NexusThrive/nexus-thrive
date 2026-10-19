@@ -165,7 +165,7 @@ export async function moneyDetailAction(slug: string, kind: "PAYMENT" | "EXPENSE
   const files = await listAttachments(ctx.tenantId, kind, [id]);
   return {
     files,
-    link: kind === "PAYMENT" ? `${getAppBaseUrl()}/r/${receiptToken(id)}` : null,
+    link: kind === "PAYMENT" ? `${await getAppBaseUrl()}/r/${receiptToken(id)}` : null,
     canManage: canManage(ctx.role),
   };
 }
