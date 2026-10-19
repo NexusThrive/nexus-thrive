@@ -1,0 +1,86 @@
+[
+  {
+    "id": "column.public.BenefitCode.kind",
+    "label": "Add column \"kind\" to \"BenefitCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "kind",
+        "table": "BenefitCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"kind\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BenefitCode",
+          "kind"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"kind\"",
+        "sql": "ALTER TABLE \"public\".\"BenefitCode\" ADD COLUMN \"kind\" text DEFAULT 'PROMO' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"kind\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BenefitCode",
+          "kind"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.BenefitCode.BenefitCode_kind_check_af337109",
+    "label": "Add check constraint \"BenefitCode_kind_check_af337109\" on \"BenefitCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "BenefitCode_kind_check_af337109",
+        "table": "BenefitCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"BenefitCode_kind_check_af337109\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BenefitCode_kind_check_af337109",
+          "public",
+          "\"public\".\"BenefitCode\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"BenefitCode_kind_check_af337109\"",
+        "sql": "ALTER TABLE \"public\".\"BenefitCode\" ADD CONSTRAINT \"BenefitCode_kind_check_af337109\" CHECK (\"kind\" IN ('PROMO', 'PAID'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"BenefitCode_kind_check_af337109\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BenefitCode_kind_check_af337109",
+          "public",
+          "\"public\".\"BenefitCode\""
+        ]
+      }
+    ]
+  }
+]

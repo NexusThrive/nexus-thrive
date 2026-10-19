@@ -1,0 +1,86 @@
+[
+  {
+    "id": "column.public.BenefitRedemption.kind",
+    "label": "Add column \"kind\" to \"BenefitRedemption\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "kind",
+        "table": "BenefitRedemption"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"kind\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BenefitRedemption",
+          "kind"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"kind\"",
+        "sql": "ALTER TABLE \"public\".\"BenefitRedemption\" ADD COLUMN \"kind\" text DEFAULT 'PROMO' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"kind\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BenefitRedemption",
+          "kind"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.BenefitRedemption.BenefitRedemption_kind_check_af337109",
+    "label": "Add check constraint \"BenefitRedemption_kind_check_af337109\" on \"BenefitRedemption\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "BenefitRedemption_kind_check_af337109",
+        "table": "BenefitRedemption"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"BenefitRedemption_kind_check_af337109\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BenefitRedemption_kind_check_af337109",
+          "public",
+          "\"public\".\"BenefitRedemption\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"BenefitRedemption_kind_check_af337109\"",
+        "sql": "ALTER TABLE \"public\".\"BenefitRedemption\" ADD CONSTRAINT \"BenefitRedemption_kind_check_af337109\" CHECK (\"kind\" IN ('PROMO', 'PAID'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"BenefitRedemption_kind_check_af337109\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BenefitRedemption_kind_check_af337109",
+          "public",
+          "\"public\".\"BenefitRedemption\""
+        ]
+      }
+    ]
+  }
+]

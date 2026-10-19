@@ -130,7 +130,13 @@ export type OnboardingFieldErrors = Partial<
 
 export type OnboardingActionResult =
   | { status: "error"; message: string; errors?: OnboardingFieldErrors }
-  | { status: "ok"; slug: string; plan: PlanKey };
+  | {
+      status: "ok";
+      slug: string;
+      plan: PlanKey;
+      /** Acceso aplicado (código promo o de pago), si lo hubo. */
+      benefit?: { plan: string; kind: "PROMO" | "PAID"; endsAt: string };
+    };
 
 /**
  * Prefill inyectado desde el servidor (app/onboarding/page.tsx):
@@ -144,4 +150,18 @@ export type OnboardingPrefill = {
   tenantName?: string;
   doneSlug?: string;
   draft: OnboardingDraft;
+};
+
+/**
+ * Acceso pendiente que llega desde una tarjeta NFC/QR (`/c/{code}`) o que la
+ * persona teclea en el onboarding: el onboarding lo muestra como "gratis" (si
+ * es promo) o "cuenta activada" (si es un acceso pagado) y el servidor lo
+ * aplica al crear el negocio. Se resuelve en el servidor (cookie `nx_benefit`)
+ * y baja al wizard.
+ */
+export type OnboardingBenefit = {
+  code: string;
+  plan: PlanKey;
+  kind: "PROMO" | "PAID";
+  durationDays: number;
 };

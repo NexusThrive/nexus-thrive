@@ -16,6 +16,7 @@ if [ "$(normalize "$DATABASE_URL")" != "$(normalize "$TEST_DATABASE_URL")" ]; th
 fi
 
 pnpm exec vitest run \
+  lib/benefits/benefits-db.integration.test.ts \
   lib/tenant-db.integration.test.ts \
   lib/prisma8-query-patterns.integration.test.ts \
   lib/tenant-db.cache-invalidation.test.ts \

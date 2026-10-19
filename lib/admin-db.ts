@@ -284,7 +284,10 @@ export type AuditAction =
   | "SUBSCRIPTION_SAVE"
   | "CHARGE_RECORD"
   | "CHARGE_CONFIRM"
-  | "CHARGE_REFUND";
+  | "CHARGE_REFUND"
+  | "BENEFIT_CREATE"
+  | "BENEFIT_UPDATE"
+  | "BENEFIT_REDEEM";
 
 export type AuditLogInput = {
   actorId: string;

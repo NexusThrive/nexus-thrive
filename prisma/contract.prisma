@@ -81,6 +81,14 @@ enum CashMovementKind {
   ADJUST
 }
 
+/// Tipo de código de acceso: `PROMO` es un regalo (cortesía/promoción) y `PAID`
+/// es un acceso pagado que NEXUS emite tras confirmar el pago. Cambia el texto
+/// que ve la persona ("gratis" vs "cuenta activada"), no el canje.
+enum BenefitKind {
+  PROMO
+  PAID
+}
+
 /// Qué vende el negocio: producto con stock, servicio con duración, plan de
 /// membresía, entrada de museo o tour/paquete.
 enum ProductKind {
@@ -1594,6 +1602,58 @@ model BillingPolicy {
   graceDays    Int
   noticeDays   Int
   updatedAt    temporal.updatedAt()
+}
+
+/// Beneficio promocional canjeable. Es el destino de la tarjeta NFC/QR
+/// (`/c/{code}`): otorga un plan por N días sin costo (p. ej. 30 días de Elite).
+model BenefitCode {
+  id           String          @id @default(uuid())
+  /// Código legible que viaja en la URL (único, en mayúsculas).
+  code         String          @unique
+  label        String
+  /// Plan que se otorga al canjear.
+  plan         TenantPlan      @default(ELITE)
+  /// Regalo (promoción) o acceso pagado confirmado.
+  kind         BenefitKind     @default(PROMO)
+  /// Duración del beneficio en días (30 = un mes).
+  durationDays Int             @default(30)
+  /// Usos máximos; null = ilimitado.
+  maxUses      Int?
+  usedCount    Int             @default(0)
+  active       Boolean         @default(true)
+  /// Caducidad del código (opcional).
+  expiresAt    DateTime?
+  notes        String?
+  /// StaffMember.id que lo creó.
+  createdById  String?
+  createdAt    DateTime        @default(now())
+  updatedAt    temporal.updatedAt()
+  redemptions  BenefitRedemption[]
+
+  @@index([active])
+}
+
+/// Canje de un beneficio por un negocio. Un negocio no puede canjear el mismo
+/// código dos veces (`@@unique([codeId, tenantId])`).
+model BenefitRedemption {
+  id           String      @id @default(uuid())
+  codeId       String
+  code         BenefitCode @relation(fields: [codeId], references: [id], onDelete: Cascade)
+  tenantId     String
+  tenantName   String
+  plan         String
+  /// Regalo o acceso pagado (se copia del código al momento del canje).
+  kind         BenefitKind @default(PROMO)
+  durationDays Int
+  startsAt     DateTime
+  endsAt       DateTime
+  clerkUserId  String?
+  email        String?
+  createdAt    DateTime    @default(now())
+
+  @@unique([codeId, tenantId])
+  @@index([tenantId])
+  @@index([codeId])
 }
 
 
