@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   LayoutGrid,
   LineChart,
+  QrCode,
   ScrollText,
   Smile,
   Sparkles,
@@ -58,6 +59,7 @@ export const OPS_NAV: { label: string; items: OpsItem[] }[] = [
     label: "Administración",
     items: [
       { key: "planes", label: "Planes y módulos", href: "/admin/planes", icon: LayoutGrid, permission: ["catalog.edit", "pricing.edit"], ready: true },
+      { key: "beneficios", label: "Accesos", href: "/admin/beneficios", icon: QrCode, permission: "catalog.edit", ready: true },
       { key: "facturacion", label: "Facturación", href: "/admin/facturacion", icon: CreditCard, permission: "billing.view", ready: true },
       { key: "equipo", label: "Equipo y permisos", href: "/admin/equipo", icon: UsersRound, permission: "team.invite", ready: true },
       { key: "informes", label: "Informes", href: "/admin/informes", icon: LineChart, permission: "billing.view", ready: false },

@@ -22,4 +22,17 @@ describe("permisos alternativos", () => {
     expect(opsNavFor(["catalog.edit"]).flatMap((g) => g.items.map((i) => i.key))).toContain("planes");
     expect(opsNavFor(["leads.view"]).flatMap((g) => g.items.map((i) => i.key))).not.toContain("planes");
   });
+
+  it("Accesos se ve solo con catalog.edit", () => {
+    const keys = opsNavFor(["catalog.edit"]).flatMap((g) => g.items.map((i) => i.key));
+    expect(keys).toContain("beneficios");
+    expect(opsNavFor(["pricing.edit"]).flatMap((g) => g.items.map((i) => i.key))).not.toContain("beneficios");
+  });
+
+  it("el ítem de accesos se llama Accesos", () => {
+    const item = opsNavFor(["catalog.edit"])
+      .flatMap((g) => g.items)
+      .find((i) => i.key === "beneficios");
+    expect(item?.label).toBe("Accesos");
+  });
 });

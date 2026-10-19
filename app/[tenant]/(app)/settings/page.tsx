@@ -5,6 +5,7 @@ import { createTenantDb } from "@/lib/tenant-db";
 import { listTeam, seatLimit } from "@/lib/business/team-db";
 import { canManageTeam } from "@/lib/business/roles";
 import { paymentMethodLabel } from "@/lib/finance";
+import { getTenantAccess } from "@/lib/benefits/benefits-db";
 import {
   MODULES,
   VERTICAL_LABELS,
@@ -98,6 +99,7 @@ export default async function SettingsPage({
     monthlyUsdCents: tenantRecord.planMonthlyUsdCents,
     selectedAt: tenantRecord.planSelectedAt ? String(tenantRecord.planSelectedAt) : null,
     activeModules: modules.filter((m) => m.active).map((m) => m.moduleName),
+    access: await getTenantAccess(tenantRecord.id),
   };
 
   const ROLE_LABELS = { OWNER: "Propietario", STAFF: "Equipo", SUPERADMIN: "Administrador" } as const;
