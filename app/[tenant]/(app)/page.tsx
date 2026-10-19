@@ -164,6 +164,7 @@ export default async function TenantDashboard({
             ariaLabel="Periodo"
             value={period}
             defaultValue="7d"
+            className="w-full [&>button]:flex-1 sm:w-auto sm:[&>button]:flex-none"
             options={[
               { value: "hoy", label: "Hoy" },
               { value: "7d", label: "7 días" },
