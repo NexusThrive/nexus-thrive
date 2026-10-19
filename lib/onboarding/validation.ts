@@ -75,7 +75,10 @@ export function validateAdaptiveOnboarding(raw: {
   vertical: unknown;
   teamSize?: unknown;
   address?: unknown;
-  city: unknown;
+  latitude?: unknown;
+  longitude?: unknown;
+  placeId?: unknown;
+  city?: unknown;
   selectedModules: unknown;
   plan?: unknown;
   billing?: unknown;
@@ -171,10 +174,31 @@ export function validateAdaptiveOnboarding(raw: {
     address = addressClean.slice(0, ADDRESS_MAX);
   }
 
-  const city = clean(raw.city);
-  if (!city || city.length > CITY_MAX) {
-    errors.city = "Escribe tu ciudad (máx. 80 caracteres).";
+  // Ubicación confirmada con Google Places (opcional): se guarda solo si hay
+  // dirección real (no REMOTE) y las coordenadas caen dentro de rango.
+  let latitude: number | undefined;
+  let longitude: number | undefined;
+  let placeId: string | undefined;
+  if (
+    address &&
+    address !== "REMOTE" &&
+    typeof raw.latitude === "number" &&
+    Number.isFinite(raw.latitude) &&
+    raw.latitude >= -90 &&
+    raw.latitude <= 90 &&
+    typeof raw.longitude === "number" &&
+    Number.isFinite(raw.longitude) &&
+    raw.longitude >= -180 &&
+    raw.longitude <= 180
+  ) {
+    latitude = raw.latitude;
+    longitude = raw.longitude;
+    const pid = clean(raw.placeId);
+    if (pid) placeId = pid.slice(0, 200);
   }
+
+  // La ciudad se deduce del autocompletado (Photon) y es opcional.
+  const city = clean(raw.city);
 
   // --- módulos --------------------------------------------------------------
   const selectedModules = new Set<ModuleValue>();
@@ -223,7 +247,6 @@ export function validateAdaptiveOnboarding(raw: {
     errors.taxId ||
     errors.teamSize ||
     errors.address ||
-    errors.city ||
     errors.selectedModules
   ) {
     return { ok: false, errors };
@@ -246,7 +269,10 @@ export function validateAdaptiveOnboarding(raw: {
       vertical,
       teamSize: tenantType === "COMPANY" ? teamSize : undefined,
       address,
-      city,
+      latitude,
+      longitude,
+      placeId,
+      city: city ? city.slice(0, CITY_MAX) : undefined,
       selectedModules: modules,
       plan,
       billing,

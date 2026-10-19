@@ -303,7 +303,7 @@ export function ResumenTab({ detail }: { detail: TenantDetail }) {
   ];
 
   return (
-    <>
+    <div className="grid gap-6">
       <section className="grid grid-cols-2 gap-3">
         <Stat label="Clientes" value={String(metrics.customersCount)} />
         <Stat
@@ -323,10 +323,10 @@ export function ResumenTab({ detail }: { detail: TenantDetail }) {
       </section>
 
       <section>
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <h3 className="font-display text-sm font-semibold">
           Identidad y ubicación
         </h3>
-        <dl className="mt-2 grid grid-cols-1 gap-1 text-sm sm:grid-cols-2">
+        <dl className="mt-2 grid grid-cols-1 gap-x-8 sm:grid-cols-2">
           <InfoRow
             label="Perfil"
             value={
@@ -348,10 +348,7 @@ export function ResumenTab({ detail }: { detail: TenantDetail }) {
           />
           <InfoRow label="Dirección" value={detail.address} />
           <InfoRow label="Ciudad" value={detail.city} />
-          <InfoRow
-            label="Dominio personalizado"
-            value={detail.customDomain}
-          />
+          <InfoRow label="Dominio personalizado" value={detail.customDomain} />
           <InfoRow
             label="Métodos de pago"
             value={
@@ -371,30 +368,24 @@ export function ResumenTab({ detail }: { detail: TenantDetail }) {
             }
           />
           <InfoRow label="Creado" value={formatDateTime(detail.createdAtIso)} />
-          <InfoRow
-            label="Última actividad"
-            value={detail.lastActivityLabel}
-          />
+          <InfoRow label="Última actividad" value={detail.lastActivityLabel} />
         </dl>
       </section>
 
       <section>
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <h3 className="font-display text-sm font-semibold">
           Ecosistema digital
         </h3>
-        <ul className="mt-2 space-y-1.5">
+        <ul className="mt-2 grid grid-cols-1 gap-x-8 sm:grid-cols-2">
           {ecosystem.map((row) => {
             const Icon = row.icon;
             return (
               <li
                 key={row.label}
-                className="flex items-center gap-2.5 rounded-lg border px-3 py-2 text-sm"
+                className="flex items-baseline justify-between gap-3 py-1.5"
               >
-                <Icon
-                  aria-hidden="true"
-                  className="h-4 w-4 shrink-0 text-muted-foreground"
-                />
-                <span className="w-24 shrink-0 text-muted-foreground">
+                <span className="flex shrink-0 items-center gap-1.5 text-sm text-muted-foreground">
+                  <Icon aria-hidden="true" className="size-3.5 shrink-0" />
                   {row.label}
                 </span>
                 {row.value ? (
@@ -403,30 +394,42 @@ export function ResumenTab({ detail }: { detail: TenantDetail }) {
                       href={row.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="min-w-0 truncate font-medium text-gold-700 hover:underline"
+                      className="min-w-0 break-words text-right text-sm font-medium text-gold-700 hover:underline"
                     >
                       {row.value}
                     </a>
                   ) : (
-                    <span className="min-w-0 truncate">{row.value}</span>
+                    <span className="min-w-0 break-words text-right text-sm font-medium">
+                      {row.value}
+                    </span>
                   )
                 ) : (
-                  <span className="text-xs text-muted-foreground">Sin dato</span>
+                  <span className="shrink-0 text-right text-sm text-muted-foreground">
+                    Sin dato
+                  </span>
                 )}
               </li>
             );
           })}
         </ul>
       </section>
-    </>
+    </div>
   );
 }
 
 function InfoRow({ label, value }: { label: string; value: string | null }) {
+  const empty = !value || value.trim() === "";
   return (
-    <div className="flex items-baseline gap-2">
-      <dt className="w-40 shrink-0 text-muted-foreground">{label}</dt>
-      <dd className="min-w-0 truncate">{value ?? "—"}</dd>
+    <div className="flex items-baseline justify-between gap-3 py-1.5">
+      <dt className="shrink-0 text-sm text-muted-foreground">{label}</dt>
+      <dd
+        className={cn(
+          "min-w-0 break-words text-right text-sm",
+          empty ? "text-muted-foreground" : "font-medium",
+        )}
+      >
+        {empty ? "—" : value}
+      </dd>
     </div>
   );
 }

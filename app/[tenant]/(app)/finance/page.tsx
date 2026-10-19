@@ -4,9 +4,13 @@ import { createTenantDb } from "@/lib/tenant-db";
 import FinanceActions from "./_components/finance-actions";
 import SearchInput from "@/components/molecules/search-input";
 import FilterSelect from "@/components/molecules/filter-select";
-import PaymentsTable, { type PaymentViewRow } from "./_components/payments-table";
-import ExpensesTable, { type ExpenseViewRow } from "./_components/expenses-table";
-import { PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/finance";
+import MoneyList from "./_components/money-list";
+import type { MoneyItem } from "./_components/money-detail-sheet";
+import CashPanel from "./_components/cash-panel";
+import { cashHistory, listCashBoxes, sessionMovements } from "@/lib/business/finance-db";
+import { canManage } from "@/lib/business/roles";
+import { requireTenantContext } from "@/lib/tenant-context";
+import { EXPENSE_CATEGORIES, PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/finance";
 import { PageHeader } from "@/components/molecules/page-header";
 import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
 import { BalanceCard } from "@/components/organisms/balance-card";
@@ -63,7 +67,7 @@ export default async function FinancePage({
   // --- Periodo de la tarjeta de balance (7 o 30 días) ------------------
   const period = firstString(sp.p) === "7d" ? 7 : 30;
   const nuevo = firstString(sp.nuevo);
-  const initialSheet = nuevo === "pago" || nuevo === "gasto" ? nuevo : null;
+  const initialSheet = nuevo === "pago" || nuevo === "gasto" ? nuevo : firstString(sp.scan) === "1" ? "escaneo" : null;
   const initialCustomerId = firstString(sp.cliente);
 
   const tenantRecord = await db.orm.public.Tenant.where({
@@ -103,25 +107,6 @@ export default async function FinancePage({
     timeZone: "America/Bogota",
   }).format(new Date());
 
-  const paymentRows: PaymentViewRow[] = paymentResult.rows.map((row) => ({
-    id: row.id,
-    customerName: row.customerName,
-    customerEmail: row.customerEmail,
-    amount: row.amount,
-    provider: row.provider,
-    status: row.status,
-    description: row.description,
-    createdAt: row.createdAt,
-  }));
-
-  const expenseRows: ExpenseViewRow[] = expenseResult.rows.map((row) => ({
-    id: row.id,
-    category: row.category,
-    description: row.description,
-    amount: row.amount,
-    date: row.date,
-  }));
-
   const paymentTotalPages = Math.max(
     1,
     Math.ceil(paymentResult.total / PAGE_SIZE),
@@ -142,155 +127,162 @@ export default async function FinancePage({
 
   const periodLabel = period === 7 ? "últimos 7 días" : "últimos 30 días";
 
+  const tab = (["resumen", "cobros", "gastos", "caja"] as const).find((t) => t === firstString(sp.tab)) ?? "resumen";
+  const [cashBoxes, cashHist, members, ctx] = await Promise.all([
+    listCashBoxes(tenantRecord.id),
+    tab === "caja" ? cashHistory(tenantRecord.id, 10) : Promise.resolve([]),
+    db.orm.public.User.where({ tenantId: tenantRecord.id }).select("id", "name", "email").all(),
+    requireTenantContext(tenantSlug),
+  ]);
+  const openBox = cashBoxes.find((b) => b.openSession) ?? null;
+  const cashMoves = tab === "caja" && openBox?.openSession ? await sessionMovements(tenantRecord.id, openBox.openSession.id) : [];
+  const business = { name: tenantRecord.name, subtitle: tenantRecord.city ?? undefined };
+  const paymentItems: MoneyItem[] = paymentResult.rows.map((r) => ({
+    kind: "PAYMENT",
+    id: r.id,
+    amount: r.amount,
+    // Sin cliente registrado: el concepto dice qué se vendió o a quién se cobró.
+    title: r.customerName ?? r.description ?? "Venta de mostrador",
+    concept: r.description ?? "Pago de servicio",
+    method: r.provider,
+    status: r.status,
+    receiptNumber: r.receiptNumber,
+    date: r.createdAt,
+    phone: r.customerPhone,
+    voidReason: r.voidReason,
+    notes: r.notes,
+  }));
+  const expenseItems: MoneyItem[] = expenseResult.rows.map((r) => ({
+    kind: "EXPENSE",
+    id: r.id,
+    amount: r.amount,
+    title: r.description,
+    concept: r.description,
+    category: r.category,
+    supplier: r.supplier,
+    paidFrom: r.paidFrom,
+    date: r.date,
+    voided: r.voided,
+    voidReason: r.voidReason,
+  }));
+
   return (
-    <div className="space-y-8">
+    <div className="grid gap-6">
       <PageHeader
         eyebrow="Gestión"
         title="Finanzas"
-        description={<>Ingresos, gastos y caja menor de{" "}
+        description={<>Cobros, gastos y caja menor de{" "}
           <span className="font-medium text-foreground/80">{tenantRecord.name}</span>.</>}
         actions={
-          <UrlSegmentedControl
-            param="p"
-            ariaLabel="Periodo"
-            value={period === 7 ? "7d" : "30d"}
-            defaultValue="30d"
-            options={[
-              { value: "7d", label: "7 días" },
-              { value: "30d", label: "30 días" },
-            ]}
-          />
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
+            <FinanceActions
+              tenantSlug={tenantSlug}
+              business={business}
+              customers={customerOptions}
+              initial={initialSheet}
+              initialCustomerId={initialCustomerId}
+              tone="light"
+              cashOpen={!!openBox}
+            />
+          </div>
         }
       />
 
-      <div>
-        <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
-          <BalanceCard
-            label={`Balance · ${periodLabel}`}
-            balance={series.current.balance}
-            income={series.current.income}
-            expenses={series.current.expenses}
-            actions={
-              <FinanceActions
-                tenantSlug={tenantSlug}
-                business={{ name: tenantRecord.name, subtitle: tenantRecord.city ?? undefined }}
-                customers={customerOptions}
-                initial={initialSheet}
-                initialCustomerId={initialCustomerId}
-              />
-            }
-          />
-          <PettyCashCard
-            spent={series.current.expenses}
-            income={series.current.income}
-            periodLabel={periodLabel}
-            byMethod={metrics.byMethod}
-            monthLabel={monthLabel}
-          />
-        </div>
-
-        <MovementsList items={movements} />
+      <div className="overflow-x-auto [scrollbar-width:none]">
+        <UrlSegmentedControl
+          param="tab"
+          ariaLabel="Secciones de finanzas"
+          value={tab}
+          defaultValue="resumen"
+          options={[
+            { value: "resumen", label: "Resumen" },
+            { value: "cobros", label: "Cobros", count: paymentResult.total },
+            { value: "gastos", label: "Gastos", count: expenseResult.total },
+            { value: "caja", label: "Caja menor" },
+          ]}
+          className="w-full [&>button]:min-w-0 [&>button]:flex-1 sm:w-auto sm:[&>button]:flex-none"
+        />
       </div>
 
-      <h2 className="border-t border-border pt-6 font-display text-[17px] font-semibold">Detalle</h2>
-
-      {/* ---------- Cobros (pagos) ---------- */}
-      <section aria-labelledby="payments-title" className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2
-              id="payments-title"
-              className="text-base font-semibold text-foreground"
-            >
-              Cobros
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              {paymentResult.total}{" "}
-              {paymentResult.total === 1 ? "pago registrado" : "pagos registrados"}
-            </p>
+      {tab === "resumen" ? (
+        <div className="grid gap-3.5">
+          <div className="flex sm:justify-end">
+            <UrlSegmentedControl
+              param="p"
+              ariaLabel="Periodo"
+              value={period === 7 ? "7d" : "30d"}
+              defaultValue="30d"
+              options={[
+                { value: "7d", label: "7 días" },
+                { value: "30d", label: "30 días" },
+              ]}
+              className="w-full [&>button]:flex-1 sm:w-auto sm:[&>button]:flex-none"
+            />
           </div>
-        </div>
-
-        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          <SearchInput
-            paramKey="pq"
-            pageParam="ppage"
-            ariaLabel="Buscar pagos"
-            placeholder="Buscar por referencia o descripción…"
-            defaultValue={pq}
-          />
-          <FilterSelect
-            paramKey="pmethod"
-            pageParam="ppage"
-            allLabel="Todos los métodos"
-            options={PAYMENT_METHODS}
-            value={pmethod ?? ""}
-          />
-          <FilterSelect
-            paramKey="pstatus"
-            pageParam="ppage"
-            allLabel="Todos los estados"
-            options={PAYMENT_STATUSES}
-            value={pstatus ?? ""}
-          />
-        </div>
-
-        <PaymentsTable
-          rows={paymentRows}
-          query={pq}
-          page={safePaymentPage}
-          totalPages={paymentTotalPages}
-        />
-      </section>
-
-      {/* ---------- Gastos de caja menor ---------- */}
-      <section aria-labelledby="expenses-title" className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2
-              id="expenses-title"
-              className="text-base font-semibold text-foreground"
-            >
-              Gastos de caja menor
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              {expenseResult.total}{" "}
-              {expenseResult.total === 1 ? "gasto registrado" : "gastos registrados"}
-            </p>
+          <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
+            <BalanceCard label={`Balance · ${periodLabel}`} balance={series.current.balance} income={series.current.income} expenses={series.current.expenses} />
+            <PettyCashCard
+              spent={series.current.expenses}
+              income={series.current.income}
+              periodLabel={periodLabel}
+              byMethod={metrics.byMethod}
+              monthLabel={monthLabel}
+              cash={openBox?.openSession ? { box: openBox.name, amount: openBox.openSession.expected, href: `/${tenantSlug}/finance?tab=caja` } : { box: cashBoxes[0]?.name ?? null, amount: null, href: `/${tenantSlug}/finance?tab=caja` }}
+            />
           </div>
-          {/* El botón de gasto vive dentro de FinanceActions (mismo row). */}
+          <MovementsList items={movements} />
         </div>
+      ) : null}
 
-        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          <SearchInput
-            paramKey="gq"
-            pageParam="gpage"
-            ariaLabel="Buscar gastos"
-            placeholder="Buscar por descripción…"
-            defaultValue={gq}
+      {tab === "cobros" ? (
+        <section aria-label="Cobros" className="grid gap-3">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+            <SearchInput paramKey="pq" pageParam="ppage" ariaLabel="Buscar pagos" placeholder="Buscar por cliente, recibo o concepto…" defaultValue={pq} />
+            <FilterSelect paramKey="pmethod" pageParam="ppage" allLabel="Todos los métodos" options={PAYMENT_METHODS} value={pmethod ?? ""} />
+            <FilterSelect paramKey="pstatus" pageParam="ppage" allLabel="Todos los estados" options={PAYMENT_STATUSES} value={pstatus ?? ""} />
+          </div>
+          <MoneyList
+            slug={tenantSlug}
+            items={paymentItems}
+            business={business}
+            page={safePaymentPage}
+            totalPages={paymentTotalPages}
+            pageParam="ppage"
+            totalLabel={`${paymentResult.total} ${paymentResult.total === 1 ? "cobro" : "cobros"}`}
+            empty={pq ? { title: `Sin coincidencias para «${pq}»`, description: "Prueba con otro término o limpia los filtros." } : { title: "Aún no hay cobros", description: "Registra tu primer cobro con «Registrar pago»." }}
           />
-          <FilterSelect
-            paramKey="gcat"
-            pageParam="gpage"
-            allLabel="Todas las categorías"
-            options={[
-              "Servicios",
-              "Nómina",
-              "Insumos",
-              "Arriendo",
-              "Otros",
-            ].map((value) => ({ value, label: value }))}
-            value={gcat ?? ""}
-          />
-        </div>
+        </section>
+      ) : null}
 
-        <ExpensesTable
-          rows={expenseRows}
-          query={gq}
-          page={safeExpensePage}
-          totalPages={expenseTotalPages}
+      {tab === "gastos" ? (
+        <section aria-label="Gastos" className="grid gap-3">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+            <SearchInput paramKey="gq" pageParam="gpage" ariaLabel="Buscar gastos" placeholder="Buscar por descripción o proveedor…" defaultValue={gq} />
+            <FilterSelect paramKey="gcat" pageParam="gpage" allLabel="Todas las categorías" options={EXPENSE_CATEGORIES.map((value) => ({ value, label: value }))} value={gcat ?? ""} />
+          </div>
+          <MoneyList
+            slug={tenantSlug}
+            items={expenseItems}
+            business={business}
+            page={safeExpensePage}
+            totalPages={expenseTotalPages}
+            pageParam="gpage"
+            totalLabel={`${expenseResult.total} ${expenseResult.total === 1 ? "gasto" : "gastos"}`}
+            empty={gq ? { title: `Sin coincidencias para «${gq}»`, description: "Prueba con otro término." } : { title: "Aún no hay gastos", description: "Registra tus gastos con su soporte para saber en qué se va el dinero." }}
+          />
+        </section>
+      ) : null}
+
+      {tab === "caja" ? (
+        <CashPanel
+          slug={tenantSlug}
+          boxes={cashBoxes}
+          moves={cashMoves}
+          history={cashHist}
+          members={members.map((m) => ({ id: m.id, name: m.name ?? m.email }))}
+          canManage={!!ctx && canManage(ctx.role)}
         />
-      </section>
+      ) : null}
     </div>
   );
 }

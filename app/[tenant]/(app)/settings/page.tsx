@@ -2,6 +2,8 @@ import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
+import { listTeam, seatLimit } from "@/lib/business/team-db";
+import { canManageTeam } from "@/lib/business/roles";
 import { paymentMethodLabel } from "@/lib/finance";
 import {
   MODULES,
@@ -14,7 +16,6 @@ import SettingsShell, {
   type ModuleState,
   type ProfileInitialValues,
   type SystemInfoItem,
-  type TeamMember,
 } from "./_components/settings-shell";
 
 /**
@@ -70,14 +71,9 @@ export default async function SettingsPage({
     phone: tenantRecord.whatsappNumber ?? "",
   };
 
-  const team: TeamMember[] = users
-    .map((user) => ({
-      id: user.id,
-      name: user.name || "Sin nombre",
-      email: user.email,
-      role: user.role as TeamMember["role"],
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name, "es"));
+  const [teamData, seats] = await Promise.all([listTeam(tenantRecord.id, localUser?.id ?? ""), seatLimit(tenantRecord.id)]);
+  void users;
+  const team = { ...teamData, seats, canManage: !!localUser && canManageTeam(localUser.role), meRole: localUser?.role ?? "STAFF" };
 
   const paymentMethods = (tenantRecord.paymentMethods ?? [])
     .map((method) => paymentMethodLabel(method))

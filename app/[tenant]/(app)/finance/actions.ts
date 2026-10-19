@@ -3,7 +3,11 @@
 import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { getAppBaseUrl } from "@/lib/app-url";
+import { formatCurrency } from "@/lib/format";
+import { receiptCode } from "@/lib/business/invoice";
+import { canHandleCash } from "@/lib/business/roles";
+import { addAttachment, addCashMovement, assignReceiptNumber, checkAttachment, currentCashSession, receiptToken } from "@/lib/business/finance-db";
 import {
   validateExpense,
   validatePayment,
@@ -18,8 +22,8 @@ export type PaymentFormState = {
   message?: string;
   errors?: PaymentFieldErrors;
   values?: PaymentFormValues;
-  /** En éxito: datos del comprobante (referencia y fecha reales del pago). */
-  receipt?: { reference: string; createdAt: string };
+  /** En éxito: datos del comprobante (recibo consecutivo, fecha y enlace público). */
+  receipt?: { reference: string; createdAt: string; paymentId: string; link: string };
 };
 
 export type ExpenseFormState = {
@@ -39,19 +43,6 @@ const ACCESS_DENIED_EXPENSE: ExpenseFormState = {
   message: "No tienes acceso a este negocio.",
 };
 
-type TenantDb = ReturnType<typeof createTenantDb>;
-
-/**
- * Verifica sesión de Clerk + tenant activo + membresía del usuario.
- * Devuelve `null` cuando algo falla (el caller responde con mensaje genérico).
- */
-async function requireTenantDb(tenantSlug: string): Promise<TenantDb | null> {
-  const context = await requireSharedTenantContext(tenantSlug);
-  if (!context) {
-    return null;
-  }
-  return context.tenantDb;
-}
 
 // ---------------------------------------------------------------------------
 // Formularios — firma compatible con useActionState
@@ -68,10 +59,11 @@ export async function createPaymentAction(
   formData: FormData,
 ): Promise<PaymentFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const tenantDb = await requireTenantDb(tenantSlug);
-  if (!tenantDb) {
+  const context = await requireSharedTenantContext(tenantSlug);
+  if (!context || !canHandleCash(context.role)) {
     return ACCESS_DENIED_PAYMENT;
   }
+  const tenantDb = context.tenantDb;
 
   const validation = validatePayment(formData);
   if (!validation.ok) {
@@ -122,13 +114,119 @@ export async function createPaymentAction(
     description: description || null,
   });
 
+  // Recibo consecutivo del negocio y, si fue en efectivo con caja abierta, entra a la caja.
+  const number = await assignReceiptNumber(context.tenantId, created.id);
+  if (provider === "CASH" && status === "APPROVED") {
+    const cash = await currentCashSession(context.tenantId);
+    if (cash) {
+      await db.orm.public.Payment.where({ tenantId: context.tenantId, id: created.id }).update({ cashSessionId: cash.sessionId });
+      await addCashMovement(context.tenantId, { sessionId: cash.sessionId, kind: "INCOME", amount: Number(amount), description: description || `Recibo ${receiptCode(number)}`, paymentId: created.id }, context.memberId);
+    }
+  }
+
   revalidatePath(`/${tenantSlug}/finance`);
   revalidatePath(`/${tenantSlug}`);
   return {
     status: "ok",
     receipt: {
-      reference: providerRefId || `REC-${created.id.replace(/-/g, "").slice(0, 6).toUpperCase()}`,
+      reference: receiptCode(number),
       createdAt: String(created.createdAt),
+      paymentId: created.id,
+      link: `${getAppBaseUrl()}/r/${receiptToken(created.id)}`,
+    },
+  };
+}
+
+export type ScannedPaymentFormState = {
+  status: "idle" | "error" | "ok";
+  message?: string;
+  errors?: PaymentFieldErrors;
+  values?: PaymentFormValues;
+  /** En éxito: datos del comprobante (recibo consecutivo, fecha y enlace público). */
+  receipt?: { reference: string; createdAt: string; paymentId: string; link: string };
+};
+
+/**
+ * Registra un pago a partir de un comprobante escaneado (FLU·05): la foto
+ * llega como archivo y se guarda como soporte del pago (Attachment PAYMENT).
+ * El monto y el método los confirmó el personal en el diálogo; la validación
+ * es la misma que `createPaymentAction`.
+ */
+export async function registerScannedPaymentAction(
+  _prevState: ScannedPaymentFormState,
+  formData: FormData,
+): Promise<ScannedPaymentFormState> {
+  const tenantSlug = String(formData.get("tenantSlug") ?? "");
+  const context = await requireSharedTenantContext(tenantSlug);
+  if (!context || !canHandleCash(context.role)) {
+    return ACCESS_DENIED_PAYMENT;
+  }
+  const tenantDb = context.tenantDb;
+
+  const photo = formData.get("photo");
+  if (!(photo instanceof File) || photo.size === 0) {
+    return { status: "error", message: "Adjunta la foto del comprobante." };
+  }
+  const photoError = checkAttachment(photo);
+  if (photoError) {
+    return { status: "error", message: photoError };
+  }
+
+  // Estado fijo APPROVED: el personal confirma el pago en el diálogo.
+  formData.set("status", "APPROVED");
+  const validation = validatePayment(formData);
+  if (!validation.ok) {
+    return { status: "error", errors: validation.errors, values: validation.values };
+  }
+  const { customerId, provider, amount, description } = validation.values;
+
+  if (customerId) {
+    const customer = await tenantDb.customers.get(customerId);
+    if (!customer) {
+      return { status: "error", message: "El cliente seleccionado no fue encontrado en este negocio.", values: validation.values };
+    }
+  }
+
+  // Referencia del QR si la trae: única en todo el sistema (mismo criterio
+  // que createPaymentAction).
+  const providerRefId = String(formData.get("providerRefId") ?? "").trim();
+  if (providerRefId) {
+    const existing = await db.orm.public.Payment.where({ providerRefId }).first();
+    if (existing) {
+      return { status: "error", message: "Ya existe un pago con esa referencia. Revisa el dato e inténtalo de nuevo.", values: validation.values };
+    }
+  }
+
+  const created = await tenantDb.payments.create({
+    customerId: customerId || null,
+    provider,
+    status: "APPROVED",
+    amount,
+    providerRefId: providerRefId || null,
+    description: description || null,
+  });
+
+  const number = await assignReceiptNumber(context.tenantId, created.id);
+  if (provider === "CASH") {
+    const cash = await currentCashSession(context.tenantId);
+    if (cash) {
+      await db.orm.public.Payment.where({ tenantId: context.tenantId, id: created.id }).update({ cashSessionId: cash.sessionId });
+      await addCashMovement(context.tenantId, { sessionId: cash.sessionId, kind: "INCOME", amount: Number(amount), description: description || `Recibo ${receiptCode(number)}`, paymentId: created.id }, context.memberId);
+    }
+  }
+
+  // Soporte: la foto del comprobante (Nequi, transferencia, etc.).
+  await addAttachment(context.tenantId, "PAYMENT", created.id, photo, context.memberId);
+
+  revalidatePath(`/${tenantSlug}/finance`);
+  revalidatePath(`/${tenantSlug}`);
+  return {
+    status: "ok",
+    receipt: {
+      reference: receiptCode(number),
+      createdAt: String(created.createdAt),
+      paymentId: created.id,
+      link: `${getAppBaseUrl()}/r/${receiptToken(created.id)}`,
     },
   };
 }
@@ -139,10 +237,11 @@ export async function createExpenseAction(
   formData: FormData,
 ): Promise<ExpenseFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const tenantDb = await requireTenantDb(tenantSlug);
-  if (!tenantDb) {
+  const context = await requireSharedTenantContext(tenantSlug);
+  if (!context || !canHandleCash(context.role)) {
     return ACCESS_DENIED_EXPENSE;
   }
+  const tenantDb = context.tenantDb;
 
   const validation = validateExpense(formData);
   if (!validation.ok) {
@@ -154,12 +253,36 @@ export async function createExpenseAction(
   }
 
   const { category, description, amount } = validation.values;
+  const supplier = String(formData.get("supplier") ?? "").trim().slice(0, 120) || null;
+  const paidFrom = ["CASH", "BANK", "CARD"].includes(String(formData.get("paidFrom"))) ? String(formData.get("paidFrom")) : "BANK";
+  const projectId = String(formData.get("projectId") ?? "") || null;
 
-  await tenantDb.expenses.create({
+  // Pagado desde la caja menor: necesita un turno abierto con efectivo suficiente.
+  const cash = paidFrom === "CASH" ? await currentCashSession(context.tenantId) : null;
+  if (paidFrom === "CASH") {
+    if (!cash) return { status: "error", message: "Abre la caja menor antes de registrar un gasto en efectivo.", values: validation.values };
+    if (Number(amount) > cash.available) return { status: "error", message: `En la caja solo hay ${formatCurrency(cash.available)}.`, values: validation.values };
+  }
+
+  const expense = await tenantDb.expenses.create({
     category,
     description,
     amount,
+    supplier,
+    paidFrom,
+    projectId,
+    createdById: context.memberId,
+    cashSessionId: cash?.sessionId ?? null,
   });
+  if (cash) {
+    await addCashMovement(context.tenantId, { sessionId: cash.sessionId, kind: "EXPENSE", amount: Number(amount), description: `${category}: ${description}`, expenseId: expense.id }, context.memberId);
+  }
+  // Soporte (foto o PDF de la factura).
+  const file = formData.get("receipt");
+  if (file instanceof File && file.size > 0) {
+    const err = checkAttachment(file);
+    if (!err) await addAttachment(context.tenantId, "EXPENSE", expense.id, file, context.memberId);
+  }
 
   revalidatePath(`/${tenantSlug}/finance`);
   revalidatePath(`/${tenantSlug}`);

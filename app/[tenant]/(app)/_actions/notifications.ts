@@ -48,7 +48,8 @@ export async function loadNotificationsAction(tenantSlug: string): Promise<AppNo
     : [];
   const names = new Map(customers.map((c) => [c.id, c.name]));
 
-  return buildNotifications({
+  const dismissed = new Set((await db.orm.public.DismissedNotification.where({ userId: ctx.memberId }).select("key").all()).map((d) => d.key));
+  const all = buildNotifications({
     movements: movements.filter((m) => bogotaDayKey(m.at) === today),
     bookings: bookings
       .filter((b) => b.status !== "CANCELLED")
@@ -58,4 +59,12 @@ export async function loadNotificationsAction(tenantSlug: string): Promise<AppNo
     todayStart: new Date(startMs).toISOString(),
     modules,
   });
+  return all.filter((n) => !dismissed.has(n.id));
+}
+
+/** Descarta una notificación para esta persona (deslizar o ×). */
+export async function dismissNotificationAction(tenantSlug: string, key: string): Promise<void> {
+  const ctx = await requireTenantContext(tenantSlug);
+  if (!ctx || !key || key.length > 200) return;
+  await db.orm.public.DismissedNotification.upsert({ create: { userId: ctx.memberId, key }, update: {}, conflictOn: { userId: ctx.memberId, key } });
 }

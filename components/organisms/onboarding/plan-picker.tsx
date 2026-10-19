@@ -1,7 +1,6 @@
 "use client";
 
 import { Check, Lock, Sparkles, Users } from "lucide-react";
-import { Chip, ChipRow } from "@/components/atoms/chip";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import type { ModuleValue, VerticalValue } from "@/lib/admin-catalogs";
 import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
@@ -32,7 +31,12 @@ export function PlanPicker({
 }) {
   const plans = activePlans(config);
   const modules = offeredModules(config, vertical);
-  const tiers = [...config.tiers].sort((a, b) => a.order - b.order);
+  // Orden lógico por cantidad de clientes (y el `order` como desempate).
+  const tiers = [...config.tiers].sort((a, b) => {
+    const am = a.maxCustomers ?? Number.POSITIVE_INFINITY;
+    const bm = b.maxCustomers ?? Number.POSITIVE_INFINITY;
+    return am - bm || a.order - b.order;
+  });
   const tierId = value.tierId ?? tiers[0]?.id ?? null;
   const current = plans.find((p) => p.key === value.plan) ?? plans[0];
   const q = (plan: PlanKey) => quote(config, { plan, vertical, billing: value.billing, selected: value.selected, tierId });
@@ -63,22 +67,41 @@ export function PlanPicker({
     <div className="grid grid-cols-1 gap-5">
       {tiers.length > 1 ? (
         <section aria-labelledby="tier-title">
-          <h2 id="tier-title" className="mb-2 flex items-center gap-2 font-display text-[15px] font-semibold">
+          <h2 id="tier-title" className="mb-2.5 flex items-center gap-2 font-display text-[15px] font-semibold">
             <Users aria-hidden="true" className="size-4 text-accent-text" /> ¿Cuántos clientes atiendes?
           </h2>
-          <ChipRow className="flex-wrap">
-            {tiers.map((t) => (
-              <Chip key={t.id} selected={t.id === tierId} onClick={() => onChange({ ...value, tierId: t.id })}>
-                {t.label}
-                {t.priceUsdCents > 0 ? ` · +${formatUsdCents(t.priceUsdCents)}` : ""}
-              </Chip>
-            ))}
-          </ChipRow>
+          <div role="radiogroup" aria-label="Cantidad de clientes" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {tiers.map((t) => {
+              const selected = t.id === tierId;
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  data-press="card"
+                  onClick={() => onChange({ ...value, tierId: t.id })}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-0.5 rounded-md border px-3 py-2.5 text-center transition-[border-color,background-color,box-shadow] duration-200",
+                    selected
+                      ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_3px_rgba(212,175,55,.18)]"
+                      : "border-border-input bg-surface hover:border-border-input-hover",
+                  )}
+                >
+                  <span className="text-[12.5px] font-medium leading-tight">{t.label}</span>
+                  <span className={cn("font-mono text-[11px] tabular-nums", t.priceUsdCents > 0 ? "text-muted-foreground" : "text-success")}>
+                    {t.priceUsdCents > 0 ? `+${formatUsdCents(t.priceUsdCents)}/mes` : "Sin costo"}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </section>
       ) : null}
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="grid gap-3">
         <SegmentedControl
+          block
           ariaLabel="Ciclo de facturación"
           value={value.billing}
           onChange={(billing) => onChange({ ...value, billing, tierId })}

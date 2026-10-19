@@ -21,8 +21,16 @@ export function PullToRefresh({ children }: { children: ReactNode }) {
   const [pull, setPull] = useState(0);
   const [pending, startTransition] = useTransition();
   const [waiting, setWaiting] = useState(false);
+  // El server no conoce `motionOff()` (sin window): tras montar recién se
+  // habilita la transición real para que el primer render coincida con el HTML.
+  const [ready, setReady] = useState(false);
   const startY = useRef<number | null>(null);
   const pullRef = useRef(0);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setReady(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   useEffect(() => {
     const onStart = (e: TouchEvent) => {
@@ -85,7 +93,10 @@ export function PullToRefresh({ children }: { children: ReactNode }) {
       <div
         aria-hidden={!waiting}
         className="flex items-center justify-center gap-2.5 overflow-hidden text-[12.5px] text-muted-foreground md:hidden"
-        style={{ height, transition: pull ? "none" : motionOff() ? "none" : "height .3s var(--nx-ease-out)" }}
+        style={{
+          height: `${height}px`,
+          transition: !ready || pull || motionOff() ? "none" : "height .3s var(--nx-ease-out)",
+        }}
       >
         {waiting ? (
           <>

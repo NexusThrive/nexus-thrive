@@ -42,6 +42,17 @@
 }
 
 /* ==========================================================================
+   Sin scroll horizontal accidental: el recorte va en la ventana, no en un
+   contenedor de scroll (así `position: sticky` sigue funcionando igual). Los
+   adornos de las tarjetas (p. ej. el corte dorado del balance) ya se recortan
+   en su propia tarjeta; esto atrapa cualquier sobrante a nivel de página.
+   ========================================================================== */
+html,
+body {
+  overflow-x: clip;
+}
+
+/* ==========================================================================
    Tailwind v4: mapeo tokens → utilidades (complementa theme-v4.css con los
    alias que consumen los componentes de `components/ui`).
    ========================================================================== */
@@ -485,5 +496,17 @@
   .nx-splash-trace,
   .nx-splash-edge {
     transition: none;
+  }
+}
+
+/* Imprimir (cuentas de cobro, recibos): solo el documento, sin la app alrededor. */
+@media print {
+  [aria-label="Navegación principal"],
+  header[data-app-topbar],
+  nav[data-mobile-tabbar] {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
   }
 }

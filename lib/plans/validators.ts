@@ -35,9 +35,11 @@ export function validatePlan(raw: PlanConfig): Result<PlanConfig> {
   if (typeof disc === "string") return { ok: false, message: disc };
   const annual = pct(raw.annualDiscountPct, "Descuento anual");
   if (typeof annual === "string") return { ok: false, message: annual };
+  const maxUsers = raw.maxUsers == null ? null : int(raw.maxUsers);
+  if (maxUsers != null && (!Number.isFinite(maxUsers) || maxUsers < 1 || maxUsers > 500)) return { ok: false, message: "Usuarios incluidos: de 1 a 500, o vacío para sin límite." };
   return {
     ok: true,
-    value: { ...raw, name, tagline, features, basePriceUsdCents: base, moduleDiscountPct: disc, annualDiscountPct: annual, includesAllModules: !!raw.includesAllModules, chargesModules: !!raw.chargesModules || !!raw.includesAllModules, recommended: !!raw.recommended, active: !!raw.active },
+    value: { ...raw, name, tagline, features, basePriceUsdCents: base, moduleDiscountPct: disc, annualDiscountPct: annual, maxUsers, includesAllModules: !!raw.includesAllModules, chargesModules: !!raw.chargesModules || !!raw.includesAllModules, recommended: !!raw.recommended, active: !!raw.active },
   };
 }
 

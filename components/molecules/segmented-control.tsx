@@ -25,6 +25,7 @@ export function SegmentedControl<T extends string>({
   onChange,
   ariaLabel,
   size = "md",
+  block = false,
   className,
 }: {
   options: readonly SegmentedOption<T>[];
@@ -32,6 +33,8 @@ export function SegmentedControl<T extends string>({
   onChange: (value: T) => void;
   ariaLabel: string;
   size?: "sm" | "md";
+  /** Ocupa el ancho disponible con segmentos de igual tamaño. */
+  block?: boolean;
   className?: string;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -60,6 +63,7 @@ export function SegmentedControl<T extends string>({
       aria-label={ariaLabel}
       className={cn(
         "relative inline-flex max-w-full gap-0.5 rounded-md border border-border bg-surface-muted p-[3px]",
+        block && "flex w-full",
         className,
       )}
     >
@@ -80,6 +84,7 @@ export function SegmentedControl<T extends string>({
             onClick={() => onChange(option.value)}
             className={cn(
               "relative z-10 inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-sm font-medium transition-colors duration-200 outline-none focus-visible:outline-2 focus-visible:outline-ring [&_svg]:size-4",
+              block && "flex-1",
               size === "sm" ? "h-[22px] px-2.5 text-xs" : "h-[30px] px-[13px] text-[13px]",
               active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
             )}

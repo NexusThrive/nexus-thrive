@@ -12,6 +12,9 @@ import { Field } from "@/components/molecules/field";
 import { Keypad, applyKey, type KeypadKey } from "@/components/molecules/keypad";
 import { ReceiptPrinter, type ReceiptData } from "@/components/organisms/receipt-printer";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
+import { drawReceiptPng, shareReceiptOnWhatsapp } from "@/lib/business/receipt-share";
+import { receiptQrDataUrl, receiptQrPayload } from "@/lib/business/receipt-qr";
+import { useToast } from "@/components/molecules/toast";
 import { cn } from "@/lib/utils";
 
 export type PaymentChargeInput = {
@@ -22,7 +25,7 @@ export type PaymentChargeInput = {
 };
 
 export type PaymentChargeResult =
-  | { ok: true; reference: string; createdAt: string }
+  | { ok: true; reference: string; createdAt: string; /** Enlace público del recibo. */ link?: string }
   | { ok: false; message: string };
 
 const cop = (n: number) => `$ ${n.toLocaleString("es-CO")}`;
@@ -105,6 +108,7 @@ export function PaymentSheet({
       setError(result.message);
       return;
     }
+    setLink(result.link ?? null);
     const date = new Intl.DateTimeFormat("es-CO", {
       timeZone: "America/Bogota",
       day: "2-digit",
@@ -113,12 +117,16 @@ export function PaymentSheet({
       hour: "numeric",
       minute: "2-digit",
     }).format(new Date(result.createdAt));
+    const qr = await receiptQrDataUrl(
+      receiptQrPayload({ link: result.link, reference: result.reference, total: cop(amount), business: business.name }),
+    ).catch(() => undefined);
     setReceipt({
       business: business.name,
       subtitle: business.subtitle,
-      client: customer?.name ?? "Venta de mostrador",
+      client: customer?.name ?? "Mostrador",
       concept,
       total: cop(amount),
+      qr,
       meta: [
         { label: "Recibo", value: result.reference },
         { label: "Cliente", value: customer?.name ?? "Mostrador" },
@@ -128,24 +136,48 @@ export function PaymentSheet({
     });
   };
 
-  const whatsappHref = receipt
-    ? `https://wa.me/${(customer?.phone ?? "").replace(/\D/g, "")}?text=${encodeURIComponent(
-        `Hola${customer ? ` ${customer.name.split(" ")[0]}` : ""}, este es tu comprobante de ${business.name}: ${receipt.total} por ${receipt.concept} (${receipt.meta[0].value}). ¡Gracias por tu pago!`,
-      )}`
-    : "";
+  const [link, setLink] = useState<string | null>(null);
+  const [sharing, setSharing] = useState(false);
+  const { toast } = useToast();
+
+  /** Imagen del recibo + texto + enlace: hoja de compartir en celular, portapapeles + chat en computador. */
+  const sendWhatsapp = async () => {
+    if (!receipt || sharing) return;
+    setSharing(true);
+    try {
+      const image = await drawReceiptPng({
+        business: receipt.business,
+        subtitle: receipt.subtitle,
+        total: receipt.total,
+        concept: receipt.concept,
+        rows: receipt.meta,
+        qr: receipt.qr,
+        footer: link ? "Recibo verificable en el enlace" : undefined,
+      });
+      const first = customer ? ` ${customer.name.split(" ")[0]}` : "";
+      const text = `Hola${first}, este es tu comprobante de ${business.name}: ${receipt.total} por ${receipt.concept} (${receipt.meta[0].value}).${link ? `\nVer recibo: ${link}` : ""}\n¡Gracias por tu pago!`;
+      const r = await shareReceiptOnWhatsapp({ image, fileName: `recibo-${receipt.meta[0].value}.png`, text, phone: customer?.phone });
+      if (r === "copied") toast({ title: "Imagen del recibo copiada", description: "En el chat de WhatsApp pégala con Ctrl+V (o Cmd+V) y envía.", variant: "success" });
+      if (r === "text-only") toast({ title: "Abrimos WhatsApp con el texto", description: "Tu navegador no permite copiar la imagen; el enlace del recibo va en el mensaje.", variant: "info" });
+      if (r !== "cancelled") close(false);
+    } catch {
+      toast({ title: "No se pudo preparar el recibo", variant: "error" });
+    } finally {
+      setSharing(false);
+    }
+  };
 
   const footer = receipt ? (
     <>
-      <a
-        href={whatsappHref}
-        target="_blank"
-        rel="noreferrer"
-        onClick={() => close(false)}
-        className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none", !printed && "pointer-events-none opacity-45")}
+      <button
+        type="button"
+        onClick={sendWhatsapp}
+        disabled={!printed || sharing}
+        className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none")}
       >
         <Send aria-hidden="true" className="size-4" />
-        Enviar por WhatsApp
-      </a>
+        {sharing ? "Preparando…" : "Enviar por WhatsApp"}
+      </button>
       <button type="button" onClick={() => close(false)} className={cn(buttonVariants(), "flex-1 sm:flex-none")}>
         <Check aria-hidden="true" className="size-4" />
         Listo

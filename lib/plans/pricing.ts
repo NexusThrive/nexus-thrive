@@ -1,4 +1,4 @@
-import { MODULES, VERTICALS, VERTICAL_LABELS, VERTICAL_RECIPES, type ModuleValue, type VerticalValue } from "@/lib/admin-catalogs";
+import { MODULES, SIGNUP_VERTICALS, VERTICALS, VERTICAL_LABELS, VERTICAL_RECIPES, type ModuleValue, type VerticalValue } from "@/lib/admin-catalogs";
 import {
   ANNUAL_DISCOUNT,
   GENERAL_MODULES,
@@ -38,6 +38,8 @@ export type PlanConfig = {
   recommended: boolean;
   active: boolean;
   order: number;
+  /** Usuarios del negocio incluidos (null = sin límite). */
+  maxUsers: number | null;
 };
 
 export type ModuleConfig = {
@@ -92,8 +94,8 @@ const DESCRIPTIONS: Record<ModuleValue, string> = {
   crm: "Clientes, fichas 360° y seguimiento.",
   bookings: "Reservas, citas y agenda.",
   payments: "Cobros y control de pagos.",
-  billing: "Facturas para tus clientes.",
-  inventory: "Productos, stock y reposiciones.",
+  billing: "Cuentas de cobro y recibos numerados.",
+  inventory: "Productos, servicios, planes y stock.",
   finance: "Cobros, gastos y caja menor.",
   whatsapp: "Plantillas y envío por WhatsApp.",
   memberships: "Planes y membresías recurrentes.",
@@ -107,7 +109,7 @@ const LABELS: Record<ModuleValue, string> = {
   bookings: "Reservas",
   payments: "Pagos",
   billing: "Facturación",
-  inventory: "Inventario",
+  inventory: "Catálogo e inventario",
   finance: "Finanzas",
   whatsapp: "WhatsApp",
   memberships: "Membresías",
@@ -116,7 +118,7 @@ const LABELS: Record<ModuleValue, string> = {
 };
 
 /** Módulos que ya funcionan de verdad; el resto empieza como PLANNED. */
-const READY_MODULES: ModuleValue[] = ["dashboard", "crm", "bookings", "finance", "whatsapp", "memberships", "quotes"];
+const READY_MODULES: ModuleValue[] = ["dashboard", "crm", "bookings", "finance", "payments", "billing", "inventory", "whatsapp", "memberships", "quotes"];
 
 /** Configuración inicial (la que había en el código). */
 export function defaultPricingConfig(): PricingConfig {
@@ -135,6 +137,7 @@ export function defaultPricingConfig(): PricingConfig {
       recommended: key === "ELITE",
       active: true,
       order: i,
+      maxUsers: key === "ESSENTIAL" ? 1 : key === "ELITE" ? 3 : null,
     })),
     modules: MODULES.map((m, i) => ({
       module: m,
@@ -151,7 +154,7 @@ export function defaultPricingConfig(): PricingConfig {
       return {
         vertical: v,
         label: VERTICAL_LABELS[v],
-        signupEnabled: true,
+        signupEnabled: (SIGNUP_VERTICALS as readonly VerticalValue[]).includes(v),
         priceFactorPct: Math.round(VERTICAL_FACTORS[v] * 100),
         modules,
         recommended: recipe.filter((m) => m !== "dashboard"),

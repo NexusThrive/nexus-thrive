@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { Banknote, Bell, CalendarClock, Clock, MinusCircle } from "lucide-react";
+import { Banknote, Bell, CalendarClock, Clock, MinusCircle, X } from "lucide-react";
 import { flash, spring } from "@/lib/motion";
 import { unreadCount, type AppNotification, type NotificationKind } from "@/lib/notifications";
 import { cn } from "@/lib/utils";
@@ -53,10 +53,13 @@ export function NotificationCenter({
   load,
   hrefFor,
   storageKey,
+  onDismiss,
 }: {
   load: () => Promise<AppNotification[]>;
   hrefFor: (path: string) => string;
   storageKey: string;
+  /** Descartar (deslizando o con ×). Sin esto, no se pueden borrar. */
+  onDismiss?: (id: string) => Promise<void> | void;
 }) {
   const [items, setItems] = useState<AppNotification[]>([]);
   const lastSeen = useSyncExternalStore(subscribeSeen, () => readSeen(storageKey), () => null);
@@ -167,9 +170,10 @@ export function NotificationCenter({
                 const Icon = ICONS[n.kind];
                 const isNew = !lastSeen || n.at > lastSeen;
                 return (
-                  <li key={n.id} data-unread={isNew || undefined} className="relative border-b border-border last:border-b-0">
+                  <DismissRow key={n.id} unread={isNew} onDismiss={onDismiss ? () => { setItems((xs) => xs.filter((x) => x.id !== n.id)); void onDismiss(n.id); } : undefined}>
                     <Link
                       href={hrefFor(n.href)}
+                      draggable={false}
                       onClick={() => setOpen(false)}
                       className="flex items-center gap-2.5 py-2.5 pl-3.5 pr-8 text-[13px] transition-colors hover:bg-surface-muted"
                     >
@@ -183,8 +187,8 @@ export function NotificationCenter({
                         </small>
                       </span>
                     </Link>
-                    {isNew ? <i aria-hidden="true" className="absolute right-3.5 top-1/2 size-1.5 -translate-y-1/2 -skew-x-[24deg] bg-accent" /> : null}
-                  </li>
+                    {isNew ? <i aria-hidden="true" className="pointer-events-none absolute right-3.5 top-1/2 size-1.5 -translate-y-1/2 -skew-x-[24deg] bg-accent group-hover:hidden" /> : null}
+                  </DismissRow>
                 );
               })}
             </ul>
@@ -194,5 +198,76 @@ export function NotificationCenter({
         </div>
       ) : null}
     </div>
+  );
+}
+
+
+/**
+ * Fila que se descarta deslizándola (más de 90 px a cualquier lado) o con la
+ * × que aparece al pasar el cursor. Respeta "reducir movimiento".
+ */
+function DismissRow({ children, unread, onDismiss }: { children: React.ReactNode; unread: boolean; onDismiss?: () => void }) {
+  const [dx, setDx] = useState(0);
+  const [leaving, setLeaving] = useState<0 | 1 | -1>(0);
+  const [dragging, setDragging] = useState(false);
+  const start = useRef<{ x: number; y: number; id: number } | null>(null);
+  const moved = useRef(false);
+  const out = (dir: 1 | -1) => {
+    setLeaving(dir);
+    window.setTimeout(() => onDismiss?.(), 180);
+  };
+  return (
+    <li
+      data-unread={unread || undefined}
+      className="group relative overflow-hidden border-b border-border last:border-b-0"
+      onClickCapture={(e) => {
+        if (moved.current) {
+          e.preventDefault();
+          e.stopPropagation();
+          moved.current = false;
+        }
+      }}
+    >
+      {onDismiss ? <span aria-hidden="true" className="absolute inset-0 grid place-items-center bg-danger/10 text-[12px] font-medium text-danger">Descartar</span> : null}
+      <div
+        className="relative bg-surface motion-safe:transition-transform motion-safe:duration-200"
+        style={{ transform: leaving ? `translateX(${leaving * 110}%)` : dx ? `translateX(${dx}px)` : undefined, transitionDuration: dragging ? "0ms" : undefined, touchAction: "pan-y" }}
+        onPointerDown={(e) => {
+          if (!onDismiss || e.button !== 0) return;
+          start.current = { x: e.clientX, y: e.clientY, id: e.pointerId };
+          moved.current = false;
+        }}
+        onPointerMove={(e) => {
+          const s = start.current;
+          if (!s || s.id !== e.pointerId) return;
+          const x = e.clientX - s.x;
+          if (!moved.current && Math.abs(x) > 8 && Math.abs(x) > Math.abs(e.clientY - s.y)) {
+            moved.current = true;
+            setDragging(true);
+            e.currentTarget.setPointerCapture(e.pointerId);
+          }
+          if (moved.current) setDx(x);
+        }}
+        onPointerUp={() => {
+          const x = dx;
+          start.current = null;
+          setDragging(false);
+          if (Math.abs(x) > 90) out(x > 0 ? 1 : -1);
+          else setDx(0);
+        }}
+        onPointerCancel={() => {
+          start.current = null;
+          setDragging(false);
+          setDx(0);
+        }}
+      >
+        {children}
+        {onDismiss ? (
+          <button type="button" aria-label="Descartar notificación" onClick={() => out(1)} className="absolute right-1.5 top-1/2 hidden size-6 -translate-y-1/2 place-items-center rounded text-muted-foreground hover:bg-surface-muted hover:text-foreground group-hover:grid focus-visible:grid">
+            <X aria-hidden="true" className="size-3.5" />
+          </button>
+        ) : null}
+      </div>
+    </li>
   );
 }

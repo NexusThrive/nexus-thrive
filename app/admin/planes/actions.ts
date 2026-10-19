@@ -32,7 +32,7 @@ export async function savePlanAction(input: PlanConfig): Promise<CatalogResult> 
   if (!before) return { ok: false, message: "El plan no existe." };
   const priceChanged = before.basePriceUsdCents !== v.value.basePriceUsdCents || before.moduleDiscountPct !== v.value.moduleDiscountPct || before.annualDiscountPct !== v.value.annualDiscountPct;
   const structureChanged =
-    before.name !== v.value.name || before.tagline !== v.value.tagline || before.features.join("|") !== v.value.features.join("|") || before.includesAllModules !== v.value.includesAllModules || before.chargesModules !== v.value.chargesModules || before.recommended !== v.value.recommended || before.active !== v.value.active;
+    before.name !== v.value.name || before.tagline !== v.value.tagline || before.features.join("|") !== v.value.features.join("|") || before.includesAllModules !== v.value.includesAllModules || before.chargesModules !== v.value.chargesModules || before.recommended !== v.value.recommended || before.active !== v.value.active || before.maxUsers !== v.value.maxUsers;
   const ctx = await allowed(priceChanged, structureChanged);
   if (!ctx) return DENIED;
   await savePlan(v.value);

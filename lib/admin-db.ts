@@ -190,7 +190,7 @@ export type TenantDetailUser = {
   id: string;
   name: string | null;
   email: string;
-  role: "SUPERADMIN" | "OWNER" | "STAFF";
+  role: "SUPERADMIN" | "OWNER" | "STAFF" | "ADMIN" | "RECEPTION" | "ADVISOR";
   roleLabel: string;
   createdAt: string;
 };
@@ -335,10 +335,13 @@ type TenantRowSource = {
   modules: { moduleName: ModuleValue; active: boolean }[];
 };
 
-const ROLE_LABELS: Record<"SUPERADMIN" | "OWNER" | "STAFF", string> = {
+const ROLE_LABELS: Record<"SUPERADMIN" | "OWNER" | "STAFF" | "ADMIN" | "RECEPTION" | "ADVISOR", string> = {
   SUPERADMIN: "SuperAdmin",
   OWNER: "Propietario",
   STAFF: "Equipo",
+  ADMIN: "Administración",
+  RECEPTION: "Recepción",
+  ADVISOR: "Asesor",
 };
 
 import { AUDIT_ACTION_LABELS } from "./audit-labels";
@@ -855,7 +858,7 @@ export function createAdminDb() {
 
       const users: TenantDetailUser[] = [...tenant.users]
         .sort((a, b) => {
-          const roleOrder = { OWNER: 0, SUPERADMIN: 1, STAFF: 2 } as const;
+          const roleOrder = { OWNER: 0, SUPERADMIN: 1, ADMIN: 2, RECEPTION: 3, ADVISOR: 4, STAFF: 5 } as const;
           const diff = roleOrder[a.role] - roleOrder[b.role];
           return diff !== 0
             ? diff

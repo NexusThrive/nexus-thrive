@@ -114,7 +114,7 @@ export function OnboardingSplit({
               </p>
             ) : null}
           </div>
-          <div key={`${stepKey}-body`} className="nx-rise flex-1" style={{ ["--i" as string]: 3 }}>
+          <div key={`${stepKey}-body`} className="nx-rise flex min-h-0 flex-1 flex-col" style={{ ["--i" as string]: 3 }}>
             {children}
           </div>
         </main>

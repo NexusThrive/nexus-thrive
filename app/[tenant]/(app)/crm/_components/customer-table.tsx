@@ -13,7 +13,7 @@ import {
   type CustomerActionResult,
 } from "../actions";
 import ConfirmDialog from "./confirm-dialog";
-import CustomerForm from "./customer-form";
+import CustomerSheet from "./customer-sheet";
 import { useVerticalTerms } from "../../vertical-terms-context";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { EmptyState } from "@/components/molecules/empty-state";
@@ -26,7 +26,22 @@ export type CustomerRow = {
   active: boolean;
   /** Fecha ya formateada en el servidor (hidratación estable). */
   createdAt: string;
+  photoId: string | null;
+  tags: string[];
+  documentId: string | null;
 };
+
+/** Foto del cliente o sus iniciales. */
+function Face({ row, className }: { row: CustomerRow; className: string }) {
+  return row.photoId ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={`/api/files/${row.photoId}`} alt="" className={`${className} object-cover`} />
+  ) : (
+    <span aria-hidden="true" className={className}>
+      {initialsOf(row.name)}
+    </span>
+  );
+}
 
 type Notice = { kind: "error" | "success"; text: string } | null;
 
@@ -291,12 +306,7 @@ export default function CustomerTable({
                     ) : null}
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <span
-                          aria-hidden="true"
-                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-accent-subtle text-xs font-semibold text-accent-text"
-                        >
-                          {initialsOf(row.name)}
-                        </span>
+                        <Face row={row} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-accent-subtle text-xs font-semibold text-accent-text" />
                         <div className="min-w-0">
                           <p className="flex items-center gap-2 font-medium text-foreground">
                             <Link
@@ -436,12 +446,19 @@ export default function CustomerTable({
                       ]}
                     >
                       <Link href={`/${tenantSlug}/crm/${row.id}`} draggable={false} className="flex items-center gap-3 px-3.5 py-3">
-                        <span aria-hidden="true" className="grid size-[34px] shrink-0 place-items-center rounded-md bg-primary font-display text-xs font-bold text-primary-foreground">
-                          {initialsOf(row.name)}
-                        </span>
+                        <Face row={row} className="grid size-[38px] shrink-0 place-items-center rounded-full bg-primary font-display text-xs font-bold text-primary-foreground" />
                         <span className="min-w-0 flex-1">
                           <b className="block truncate font-medium">{row.name}</b>
-                          <small className="block truncate text-xs text-muted-foreground">{row.phone || row.email || "Sin contacto"}</small>
+                          <small className="block truncate text-xs text-muted-foreground">{[row.phone || row.email || "Sin contacto", row.documentId].filter(Boolean).join(" · ")}</small>
+                          {row.tags.length ? (
+                            <span className="mt-1 flex flex-wrap gap-1">
+                              {row.tags.slice(0, 3).map((t) => (
+                                <span key={t} className="rounded-sm bg-surface-muted px-1.5 py-0.5 text-[10.5px] font-medium text-muted-foreground">
+                                  {t}
+                                </span>
+                              ))}
+                            </span>
+                          ) : null}
                         </span>
                         <small className="shrink-0 text-xs text-muted-foreground">{row.createdAt}</small>
                       </Link>
@@ -485,12 +502,7 @@ export default function CustomerTable({
 
       {/* ---------- Modales ---------- */}
       {editTarget ? (
-        <CustomerForm
-          tenantSlug={tenantSlug}
-          mode="edit"
-          customer={editTarget}
-          onClose={() => setEditTarget(null)}
-        />
+        <CustomerSheet tenantSlug={tenantSlug} customerId={editTarget.id} onClose={() => setEditTarget(null)} />
       ) : null}
 
       {confirmOpen ? (
