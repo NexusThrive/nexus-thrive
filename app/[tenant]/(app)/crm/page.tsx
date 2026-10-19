@@ -114,7 +114,14 @@ export default async function CrmPage({
     <div className="space-y-6">
       <PageHeader
         eyebrow="Gestión"
-        title={<>{terms.customers}</>}
+        title={
+          <span className="inline-flex items-baseline gap-2.5">
+            {terms.customers}
+            <span className="text-sm font-semibold text-muted-foreground lg:hidden">
+              {result.total}
+            </span>
+          </span>
+        }
         description={<>Administra los {terms.customers.toLowerCase()} de{" "}
           <span className="font-medium text-foreground/80">{tenantRecord.name}</span>.</>}
       />
