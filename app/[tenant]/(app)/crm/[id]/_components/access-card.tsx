@@ -78,7 +78,10 @@ export default function AccessCard({ slug, customerId, code, nfcUid, status }: {
           <div className="flex items-center gap-4">
             <QrCode value={code} size={112} label={`QR de acceso ${code}`} />
             <div className="grid gap-2">
-              <p className="font-mono text-lg font-semibold tracking-widest">{code}</p>
+              <div>
+                <p className="text-xs text-muted-foreground">Código de socio (para el QR)</p>
+                <p className="font-mono text-lg font-semibold tracking-widest">{code}</p>
+              </div>
               <div className="flex flex-wrap gap-2">
                 <Link href={`/${slug}/crm/${customerId}/carnet`} target="_blank" className={buttonVariants({ size: "sm", variant: "outline" })}>
                   <Printer aria-hidden="true" className="size-3.5" /> Carné
