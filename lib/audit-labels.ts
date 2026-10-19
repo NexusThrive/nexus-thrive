@@ -26,4 +26,7 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   CHARGE_RECORD: "Cobro registrado",
   CHARGE_CONFIRM: "Cobro confirmado",
   CHARGE_REFUND: "Cobro reembolsado",
+  BENEFIT_CREATE: "Beneficio creado",
+  BENEFIT_UPDATE: "Beneficio actualizado",
+  BENEFIT_REDEEM: "Beneficio canjeado",
 };

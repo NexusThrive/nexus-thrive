@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'23a070c5985cb96091dd3bf742eb907b59cfbd7d0f3fc2ee153ba3d7f9405546'>;
+  StorageHashBase<'fc5396d5aae600c31df52c51b6bddd5b012544494515a65147cbfafad4f632c1'>;
 export type ExecutionHash =
-  ExecutionHashBase<'74b9b85bbfdc0237c81e2b58ef19870934fd991436992e98755d3cbb49ab7be0'>;
+  ExecutionHashBase<'1bb2b0409221f1c27f4e1c287aef8646d94594a120cc49aea06b43a3cbba9717'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -372,6 +372,36 @@ export type FieldOutputTypes = {
       readonly targetTenantId: CodecTypes['pg/text@1']['output'] | null;
       readonly targetTenantName: CodecTypes['pg/text@1']['output'] | null;
       readonly userAgent: CodecTypes['pg/text@1']['output'] | null;
+    };
+    readonly BenefitCode: {
+      readonly active: CodecTypes['pg/bool@1']['output'];
+      readonly code: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly createdById: CodecTypes['pg/text@1']['output'] | null;
+      readonly durationDays: CodecTypes['pg/int4@1']['output'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly kind: 'PROMO' | 'PAID';
+      readonly label: CodecTypes['pg/text@1']['output'];
+      readonly maxUses: CodecTypes['pg/int4@1']['output'] | null;
+      readonly notes: CodecTypes['pg/text@1']['output'] | null;
+      readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly usedCount: CodecTypes['pg/int4@1']['output'];
+    };
+    readonly BenefitRedemption: {
+      readonly clerkUserId: CodecTypes['pg/text@1']['output'] | null;
+      readonly codeId: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly durationDays: CodecTypes['pg/int4@1']['output'];
+      readonly email: CodecTypes['pg/text@1']['output'] | null;
+      readonly endsAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly kind: 'PROMO' | 'PAID';
+      readonly plan: CodecTypes['pg/text@1']['output'];
+      readonly startsAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly tenantName: CodecTypes['pg/text@1']['output'];
     };
     readonly BillingPolicy: {
       readonly graceDays: CodecTypes['pg/int4@1']['output'];
@@ -1390,6 +1420,36 @@ export type FieldInputTypes = {
       readonly targetTenantName: CodecTypes['pg/text@1']['input'] | null;
       readonly userAgent: CodecTypes['pg/text@1']['input'] | null;
     };
+    readonly BenefitCode: {
+      readonly active: CodecTypes['pg/bool@1']['input'];
+      readonly code: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly createdById: CodecTypes['pg/text@1']['input'] | null;
+      readonly durationDays: CodecTypes['pg/int4@1']['input'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly kind: 'PROMO' | 'PAID';
+      readonly label: CodecTypes['pg/text@1']['input'];
+      readonly maxUses: CodecTypes['pg/int4@1']['input'] | null;
+      readonly notes: CodecTypes['pg/text@1']['input'] | null;
+      readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly usedCount: CodecTypes['pg/int4@1']['input'];
+    };
+    readonly BenefitRedemption: {
+      readonly clerkUserId: CodecTypes['pg/text@1']['input'] | null;
+      readonly codeId: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly durationDays: CodecTypes['pg/int4@1']['input'];
+      readonly email: CodecTypes['pg/text@1']['input'] | null;
+      readonly endsAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly kind: 'PROMO' | 'PAID';
+      readonly plan: CodecTypes['pg/text@1']['input'];
+      readonly startsAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly tenantName: CodecTypes['pg/text@1']['input'];
+    };
     readonly BillingPolicy: {
       readonly graceDays: CodecTypes['pg/int4@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
@@ -2407,6 +2467,36 @@ export type StorageColumnTypes = {
       readonly targetTenantName: CodecTypes['pg/text@1']['output'] | null;
       readonly userAgent: CodecTypes['pg/text@1']['output'] | null;
     };
+    readonly BenefitCode: {
+      readonly active: CodecTypes['pg/bool@1']['output'];
+      readonly code: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly createdById: CodecTypes['pg/text@1']['output'] | null;
+      readonly durationDays: CodecTypes['pg/int4@1']['output'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly kind: 'PROMO' | 'PAID';
+      readonly label: CodecTypes['pg/text@1']['output'];
+      readonly maxUses: CodecTypes['pg/int4@1']['output'] | null;
+      readonly notes: CodecTypes['pg/text@1']['output'] | null;
+      readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly usedCount: CodecTypes['pg/int4@1']['output'];
+    };
+    readonly BenefitRedemption: {
+      readonly clerkUserId: CodecTypes['pg/text@1']['output'] | null;
+      readonly codeId: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly durationDays: CodecTypes['pg/int4@1']['output'];
+      readonly email: CodecTypes['pg/text@1']['output'] | null;
+      readonly endsAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly kind: 'PROMO' | 'PAID';
+      readonly plan: CodecTypes['pg/text@1']['output'];
+      readonly startsAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly tenantName: CodecTypes['pg/text@1']['output'];
+    };
     readonly BillingPolicy: {
       readonly graceDays: CodecTypes['pg/int4@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
@@ -3423,6 +3513,36 @@ export type StorageColumnInputTypes = {
       readonly targetTenantId: CodecTypes['pg/text@1']['input'] | null;
       readonly targetTenantName: CodecTypes['pg/text@1']['input'] | null;
       readonly userAgent: CodecTypes['pg/text@1']['input'] | null;
+    };
+    readonly BenefitCode: {
+      readonly active: CodecTypes['pg/bool@1']['input'];
+      readonly code: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly createdById: CodecTypes['pg/text@1']['input'] | null;
+      readonly durationDays: CodecTypes['pg/int4@1']['input'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly kind: 'PROMO' | 'PAID';
+      readonly label: CodecTypes['pg/text@1']['input'];
+      readonly maxUses: CodecTypes['pg/int4@1']['input'] | null;
+      readonly notes: CodecTypes['pg/text@1']['input'] | null;
+      readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly usedCount: CodecTypes['pg/int4@1']['input'];
+    };
+    readonly BenefitRedemption: {
+      readonly clerkUserId: CodecTypes['pg/text@1']['input'] | null;
+      readonly codeId: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly durationDays: CodecTypes['pg/int4@1']['input'];
+      readonly email: CodecTypes['pg/text@1']['input'] | null;
+      readonly endsAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly kind: 'PROMO' | 'PAID';
+      readonly plan: CodecTypes['pg/text@1']['input'];
+      readonly startsAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly tenantName: CodecTypes['pg/text@1']['input'];
     };
     readonly BillingPolicy: {
       readonly graceDays: CodecTypes['pg/int4@1']['input'];
@@ -4472,6 +4592,40 @@ export namespace Models {
     targetTenantName: CodecTypes['pg/text@1']['output'] | null;
     userAgent: CodecTypes['pg/text@1']['output'] | null;
     readonly [RelationKeys]?: never;
+  };
+  export type public_BenefitCode = {
+    active: CodecTypes['pg/bool@1']['output'];
+    code: CodecTypes['pg/text@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    createdById: CodecTypes['pg/text@1']['output'] | null;
+    durationDays: CodecTypes['pg/int4@1']['output'];
+    expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    id: CodecTypes['pg/text@1']['output'];
+    kind: 'PROMO' | 'PAID';
+    label: CodecTypes['pg/text@1']['output'];
+    maxUses: CodecTypes['pg/int4@1']['output'] | null;
+    notes: CodecTypes['pg/text@1']['output'] | null;
+    plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    usedCount: CodecTypes['pg/int4@1']['output'];
+    redemptions: public_BenefitRedemption[];
+    readonly [RelationKeys]?: 'redemptions';
+  };
+  export type public_BenefitRedemption = {
+    clerkUserId: CodecTypes['pg/text@1']['output'] | null;
+    codeId: CodecTypes['pg/text@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    durationDays: CodecTypes['pg/int4@1']['output'];
+    email: CodecTypes['pg/text@1']['output'] | null;
+    endsAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    kind: 'PROMO' | 'PAID';
+    plan: CodecTypes['pg/text@1']['output'];
+    startsAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    tenantName: CodecTypes['pg/text@1']['output'];
+    code: public_BenefitCode;
+    readonly [RelationKeys]?: 'code';
   };
   export type public_BillingPolicy = {
     graceDays: CodecTypes['pg/int4@1']['output'];
@@ -5593,6 +5747,8 @@ export declare const models: {
     Attachment: Models.public_Attachment;
     Attendance: Models.public_Attendance;
     AuditLog: Models.public_AuditLog;
+    BenefitCode: Models.public_BenefitCode;
+    BenefitRedemption: Models.public_BenefitRedemption;
     BillingPolicy: Models.public_BillingPolicy;
     Booking: Models.public_Booking;
     BudgetBaseline: Models.public_BudgetBaseline;
@@ -6598,6 +6754,211 @@ type ContractBase = Omit<
                 },
               ];
               foreignKeys: readonly [];
+            };
+            readonly BenefitCode: {
+              columns: {
+                readonly active: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+                  };
+                };
+                readonly code: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly createdById: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly durationDays: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 30>;
+                  };
+                };
+                readonly expiresAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly kind: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'PROMO'>;
+                  };
+                };
+                readonly label: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly maxUses: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
+                readonly notes: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly plan: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'ELITE'>;
+                  };
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly usedCount: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+                  };
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['code'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'BenefitCode_active_idx_8af4daed';
+                  readonly prefix: 'BenefitCode_active_idx';
+                  readonly columns: readonly ['active'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [];
+            };
+            readonly BenefitRedemption: {
+              columns: {
+                readonly clerkUserId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly codeId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly durationDays: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly email: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly endsAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly kind: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'PROMO'>;
+                  };
+                };
+                readonly plan: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly startsAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly tenantName: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['codeId', 'tenantId'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'BenefitRedemption_codeId_idx_f2336e15';
+                  readonly prefix: 'BenefitRedemption_codeId_idx';
+                  readonly columns: readonly ['codeId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'BenefitRedemption_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'BenefitRedemption_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'BenefitRedemption';
+                    readonly columns: readonly ['codeId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'BenefitCode';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly BillingPolicy: {
               columns: {
@@ -12554,6 +12915,10 @@ type ContractBase = Omit<
                 'SUBCONTRATO',
               ];
             };
+            readonly BenefitKind: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['PROMO', 'PAID'];
+            };
             readonly BillingCycle: {
               readonly kind: 'valueSet';
               readonly values: readonly ['MONTHLY', 'ANNUAL'];
@@ -12799,6 +13164,14 @@ type ContractBase = Omit<
       readonly model: 'Attendance';
     };
     readonly AuditLog: { readonly namespace: 'public' & NamespaceId; readonly model: 'AuditLog' };
+    readonly BenefitCode: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'BenefitCode';
+    };
+    readonly BenefitRedemption: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'BenefitRedemption';
+    };
     readonly BillingPolicy: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'BillingPolicy';
@@ -13895,6 +14268,201 @@ type ContractBase = Omit<
                 readonly targetTenantId: { readonly column: 'targetTenantId' };
                 readonly targetTenantName: { readonly column: 'targetTenantName' };
                 readonly userAgent: { readonly column: 'userAgent' };
+              };
+            };
+          };
+          readonly BenefitCode: {
+            readonly fields: {
+              readonly active: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly code: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly createdById: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly durationDays: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly expiresAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly kind: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly label: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly maxUses: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly notes: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly plan: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly usedCount: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+            };
+            readonly relations: {
+              readonly redemptions: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'BenefitRedemption';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['codeId'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'BenefitCode';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly active: { readonly column: 'active' };
+                readonly code: { readonly column: 'code' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly createdById: { readonly column: 'createdById' };
+                readonly durationDays: { readonly column: 'durationDays' };
+                readonly expiresAt: { readonly column: 'expiresAt' };
+                readonly id: { readonly column: 'id' };
+                readonly kind: { readonly column: 'kind' };
+                readonly label: { readonly column: 'label' };
+                readonly maxUses: { readonly column: 'maxUses' };
+                readonly notes: { readonly column: 'notes' };
+                readonly plan: { readonly column: 'plan' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+                readonly usedCount: { readonly column: 'usedCount' };
+              };
+            };
+          };
+          readonly BenefitRedemption: {
+            readonly fields: {
+              readonly clerkUserId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly codeId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly durationDays: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly email: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly endsAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly kind: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly plan: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly startsAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantName: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly code: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'BenefitCode';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['codeId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'BenefitRedemption';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly clerkUserId: { readonly column: 'clerkUserId' };
+                readonly codeId: { readonly column: 'codeId' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly durationDays: { readonly column: 'durationDays' };
+                readonly email: { readonly column: 'email' };
+                readonly endsAt: { readonly column: 'endsAt' };
+                readonly id: { readonly column: 'id' };
+                readonly kind: { readonly column: 'kind' };
+                readonly plan: { readonly column: 'plan' };
+                readonly startsAt: { readonly column: 'startsAt' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly tenantName: { readonly column: 'tenantName' };
               };
             };
           };
@@ -20150,6 +20718,13 @@ type ContractBase = Omit<
               { readonly name: 'SUBCONTRATO'; readonly value: 'SUBCONTRATO' },
             ];
           };
+          readonly BenefitKind: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'PROMO'; readonly value: 'PROMO' },
+              { readonly name: 'PAID'; readonly value: 'PAID' },
+            ];
+          };
           readonly BillingCycle: {
             readonly codecId: 'pg/text@1';
             readonly members: readonly [
@@ -20580,6 +21155,31 @@ type ContractBase = Omit<
           readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'AuditLog';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'BenefitCode';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'BenefitCode';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'BenefitRedemption';
             readonly field: 'id';
             readonly namespace: 'public';
           };

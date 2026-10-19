@@ -1,0 +1,323 @@
+[
+  {
+    "id": "table.BenefitCode",
+    "label": "Create table \"BenefitCode\"",
+    "summary": "Creates table \"BenefitCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "BenefitCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"BenefitCode\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BenefitCode\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"BenefitCode\"",
+        "sql": "CREATE TABLE \"public\".\"BenefitCode\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"code\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"durationDays\" int4 DEFAULT 30 NOT NULL,\n  \"expiresAt\" timestamptz,\n  \"id\" text NOT NULL,\n  \"label\" text NOT NULL,\n  \"maxUses\" int4,\n  \"notes\" text,\n  \"plan\" text DEFAULT 'ELITE' NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"usedCount\" int4 DEFAULT 0 NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"BenefitCode_plan_check_f1a20b28\" CHECK (\"plan\" IN ('ESSENTIAL', 'ELITE', 'SIGNATURE'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"BenefitCode\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BenefitCode\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.BenefitRedemption",
+    "label": "Create table \"BenefitRedemption\"",
+    "summary": "Creates table \"BenefitRedemption\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "BenefitRedemption"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"BenefitRedemption\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BenefitRedemption\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"BenefitRedemption\"",
+        "sql": "CREATE TABLE \"public\".\"BenefitRedemption\" (\n  \"clerkUserId\" text,\n  \"codeId\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"durationDays\" int4 NOT NULL,\n  \"email\" text,\n  \"endsAt\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"plan\" text NOT NULL,\n  \"startsAt\" timestamptz NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"tenantName\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"BenefitRedemption\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BenefitRedemption\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.BenefitCode.BenefitCode_code_key",
+    "label": "Add unique constraint on \"BenefitCode\" (code)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "BenefitCode_code_key",
+        "table": "BenefitCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"BenefitCode_code_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BenefitCode_code_key",
+          "public",
+          "\"public\".\"BenefitCode\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"BenefitCode_code_key\"",
+        "sql": "ALTER TABLE \"public\".\"BenefitCode\" ADD CONSTRAINT \"BenefitCode_code_key\" UNIQUE (\"code\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"BenefitCode_code_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BenefitCode_code_key",
+          "public",
+          "\"public\".\"BenefitCode\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.BenefitRedemption.BenefitRedemption_codeId_tenantId_key",
+    "label": "Add unique constraint on \"BenefitRedemption\" (codeId, tenantId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "BenefitRedemption_codeId_tenantId_key",
+        "table": "BenefitRedemption"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"BenefitRedemption_codeId_tenantId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BenefitRedemption_codeId_tenantId_key",
+          "public",
+          "\"public\".\"BenefitRedemption\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"BenefitRedemption_codeId_tenantId_key\"",
+        "sql": "ALTER TABLE \"public\".\"BenefitRedemption\" ADD CONSTRAINT \"BenefitRedemption_codeId_tenantId_key\" UNIQUE (\"codeId\", \"tenantId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"BenefitRedemption_codeId_tenantId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BenefitRedemption_codeId_tenantId_key",
+          "public",
+          "\"public\".\"BenefitRedemption\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BenefitCode.BenefitCode_active_idx_8af4daed",
+    "label": "Create index \"BenefitCode_active_idx_8af4daed\" on \"BenefitCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BenefitCode_active_idx_8af4daed",
+        "table": "BenefitCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BenefitCode_active_idx_8af4daed\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BenefitCode_active_idx_8af4daed\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BenefitCode_active_idx_8af4daed\"",
+        "sql": "CREATE INDEX \"BenefitCode_active_idx_8af4daed\" ON \"public\".\"BenefitCode\" (\"active\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BenefitCode_active_idx_8af4daed\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BenefitCode_active_idx_8af4daed\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BenefitRedemption.BenefitRedemption_codeId_idx_f2336e15",
+    "label": "Create index \"BenefitRedemption_codeId_idx_f2336e15\" on \"BenefitRedemption\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BenefitRedemption_codeId_idx_f2336e15",
+        "table": "BenefitRedemption"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BenefitRedemption_codeId_idx_f2336e15\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BenefitRedemption_codeId_idx_f2336e15\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BenefitRedemption_codeId_idx_f2336e15\"",
+        "sql": "CREATE INDEX \"BenefitRedemption_codeId_idx_f2336e15\" ON \"public\".\"BenefitRedemption\" (\"codeId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BenefitRedemption_codeId_idx_f2336e15\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BenefitRedemption_codeId_idx_f2336e15\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BenefitRedemption.BenefitRedemption_tenantId_idx_c93ed4f1",
+    "label": "Create index \"BenefitRedemption_tenantId_idx_c93ed4f1\" on \"BenefitRedemption\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BenefitRedemption_tenantId_idx_c93ed4f1",
+        "table": "BenefitRedemption"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BenefitRedemption_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BenefitRedemption_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BenefitRedemption_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"BenefitRedemption_tenantId_idx_c93ed4f1\" ON \"public\".\"BenefitRedemption\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BenefitRedemption_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BenefitRedemption_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.BenefitRedemption.BenefitRedemption_codeId_fkey",
+    "label": "Add foreign key \"BenefitRedemption_codeId_fkey\" on \"BenefitRedemption\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "BenefitRedemption_codeId_fkey",
+        "table": "BenefitRedemption"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"BenefitRedemption_codeId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BenefitRedemption_codeId_fkey",
+          "public",
+          "\"public\".\"BenefitRedemption\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"BenefitRedemption_codeId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"BenefitRedemption\"\nADD CONSTRAINT \"BenefitRedemption_codeId_fkey\"\nFOREIGN KEY (\"codeId\")\nREFERENCES \"public\".\"BenefitCode\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"BenefitRedemption_codeId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BenefitRedemption_codeId_fkey",
+          "public",
+          "\"public\".\"BenefitRedemption\""
+        ]
+      }
+    ]
+  }
+]
