@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 
-export type ProfileTabKey = "resumen" | "pagos" | "membresias" | "notas";
+export type ProfileTabKey =
+  | "resumen"
+  | "pagos"
+  | "membresias"
+  | "notas"
+  | "timeline";
 
 export type ProfileTab = {
   key: ProfileTabKey;
