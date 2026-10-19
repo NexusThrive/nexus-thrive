@@ -9,7 +9,7 @@ import { whatsappReminderLink } from "@/lib/memberships";
 /** Membresías que vencen pronto o vencieron hace poco: aviso por WhatsApp y renovación. */
 export default function ExpiringList({ slug, rows }: { slug: string; rows: ExpiringRow[] }) {
   return (
-    <aside className="grid content-start gap-2">
+    <aside className="grid grid-cols-1 content-start gap-2">
       <h2 className="text-sm font-semibold">Vencimientos</h2>
       <ul className="divide-y divide-border rounded-lg border border-border bg-card">
         {rows.map((r) => {
@@ -18,7 +18,7 @@ export default function ExpiringList({ slug, rows }: { slug: string; rows: Expir
             ? `Hola ${r.name}, tu membresía venció el ${formatDateShort(r.endsAt)}. ¡Te esperamos! Renuévala para seguir entrenando.`
             : `Hola ${r.name}, tu membresía vence el ${formatDateShort(r.endsAt)} (${r.daysLeft === 1 ? "mañana" : `en ${r.daysLeft} días`}). Renuévala para no perder ningún día.`;
           return (
-            <li key={r.membershipId} className="grid gap-2 px-3 py-2.5">
+            <li key={r.membershipId} className="grid grid-cols-1 gap-2 px-3 py-2.5">
               <div className="flex items-center gap-2">
                 <Link href={`/${slug}/crm/${r.customerId}`} className="min-w-0 flex-1 truncate text-sm font-medium hover:underline">
                   {r.name}

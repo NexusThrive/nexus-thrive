@@ -54,7 +54,7 @@ export function MovementsList({ items, title = "Movimientos" }: { items: Movemen
 
   let index = 0;
   return (
-    <section aria-labelledby="movements-title">
+    <section aria-labelledby="movements-title" className="min-w-0">
       <div className="mb-3 mt-7 flex flex-wrap items-center justify-between gap-2.5">
         <h2 id="movements-title" className="font-display text-[17px] font-semibold">
           {title}

@@ -70,7 +70,7 @@ export default function FinanceActions({
       <button
         type="button"
         onClick={() => setSheet("pago")}
-        className={cn(buttonVariants({ variant: "accent" }), tone === "light" && "order-2")}
+        className={cn(buttonVariants({ variant: "accent" }), "w-full sm:w-auto", tone === "light" && "sm:order-2")}
         data-mag=""
       >
         <Banknote aria-hidden="true" className="size-4" />
@@ -79,7 +79,7 @@ export default function FinanceActions({
       <button
         type="button"
         onClick={() => setSheet("escaneo")}
-        className={cn(buttonVariants({ variant: "outline" }), "order-1")}
+        className={cn(buttonVariants({ variant: "outline" }), "w-full sm:order-1 sm:w-auto")}
       >
         <Camera aria-hidden="true" className="size-4" />
         Escanear pago
@@ -89,6 +89,7 @@ export default function FinanceActions({
         onClick={() => setSheet("gasto")}
         className={cn(
           buttonVariants({ variant: "outline" }),
+          "w-full sm:w-auto",
           tone === "dark" && "border-[#3A3A40] text-[#F7F6F3] hover:border-[#55555c] hover:bg-[#1E1E21]",
         )}
       >

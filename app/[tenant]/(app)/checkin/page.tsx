@@ -44,7 +44,7 @@ export default async function CheckinPage({ params }: { params: Promise<{ tenant
         <StatTile index={3} label="Por vencer" value={expiring.filter((e) => e.daysLeft > 0).length} tone="warning" pulse={expiring.some((e) => e.daysLeft > 0 && e.daysLeft <= 3)} note="En los próximos 7 días" />
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <CheckinStation slug={slug} canScan={canHandleCash(ctx.role)} entries={entries} customerTerm={terms.customer} />
         <ExpiringList slug={slug} rows={expiring} />
       </div>
