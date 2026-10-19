@@ -20,6 +20,8 @@ import { IncomeChart, type ChartPoint } from "@/components/organisms/income-char
 import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
 import { PullToRefresh } from "@/components/molecules/pull-to-refresh";
 import RecentActivity from "@/components/organisms/recent-activity";
+import { loadPresence } from "@/lib/presence/load";
+import PresenceSummary from "./_components/presence-summary";
 import MembershipSummary from "./memberships/_components/membership-summary";
 
 /**
@@ -114,6 +116,7 @@ export default async function TenantDashboard({
     tenantDb.finance.getRecentActivity(6),
     tenantDb.memberships.getMetrics(),
   ]);
+  const presence = await loadPresence(tenantRecord);
   const { current, previous } = series;
   const activeCustomers = growth.series.at(-1) ?? 0;
   const incomeTrend = period === "hoy" && series.hours ? series.hours.map((h) => h.income) : series.days.map((d) => d.income);
@@ -169,6 +172,10 @@ export default async function TenantDashboard({
           />
         }
       />
+
+      <div className="mb-3.5">
+        <PresenceSummary presence={presence} href={`${base}/presence`} />
+      </div>
 
       <section aria-label="Métricas del negocio" className="grid grid-cols-2 gap-3.5 lg:grid-cols-4">
         <KpiCard
