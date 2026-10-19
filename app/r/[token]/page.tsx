@@ -30,7 +30,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ token:
   const date = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", dateStyle: "long", timeStyle: "short" }).format(new Date(String(p.createdAt)));
   const reference = p.receiptNumber ? receiptCode(p.receiptNumber) : "—";
   const total = formatCurrency(toNumber(p.amount));
-  const link = `${getAppBaseUrl()}/r/${token}`;
+  const link = `${await getAppBaseUrl()}/r/${token}`;
   const qr = await receiptQrDataUrl(receiptQrPayload({ link, reference, total, business: tenant?.name })).catch(() => null);
   const rows: [string, string][] = [
     ["Recibo", reference],
