@@ -6,6 +6,17 @@ import { validateAdaptiveOnboarding } from "@/lib/onboarding/validation";
 import { suggestSlug } from "@/lib/onboarding/slug";
 import { quote as quotePlan } from "@/lib/plans/pricing";
 import { loadPricingConfig } from "@/lib/plans/settings";
+import {
+  applyBenefitCookie,
+  clearBenefitCookie,
+  setBenefitCookie,
+} from "@/lib/benefits/benefit-cookie";
+import { getBenefitByCode } from "@/lib/benefits/benefits-db";
+import { normalizeBenefitCode, type BenefitKind } from "@/lib/benefits/benefits";
+import { SHOW_PRICING } from "@/lib/onboarding/flags";
+import { allowAttempt, recordAttempt } from "@/lib/benefits/rate-limit";
+import type { PlanKey, Billing } from "@/lib/plans/catalog";
+import { resolveModules } from "@/lib/plans/pricing";
 import type {
   AdaptiveOnboardingInput,
   ModuleValue,
@@ -61,10 +72,86 @@ async function syncModules(
   }
 }
 
+/**
+ * Si hay un código pendiente en la cookie (tarjeta NFC/QR o tecleado en el
+ * onboarding), lo canjea para el negocio dado y limpia la cookie. Nunca
+ * lanza: el acceso es un extra, jamás debe romper la creación del negocio.
+ * Si el canje falla (código agotado, carrera), el negocio se queda en el plan
+ * gratuito: nunca se queda con un plan que nadie pagó.
+ */
+async function benefitPatch(params: {
+  tenantId: string;
+  tenantName: string;
+  clerkUserId?: string | null;
+  email?: string | null;
+}): Promise<{ benefit?: { plan: string; kind: BenefitKind; endsAt: string } }> {
+  const result = await applyBenefitCookie(params);
+  if (result?.ok) {
+    return { benefit: { plan: result.plan, kind: result.kind, endsAt: result.endsAt } };
+  }
+  return {};
+}
+
+/**
+ * Valida un código de acceso tecleado en el onboarding (mismo sistema que las
+ * tarjetas: `BenefitCode`). Si está vigente, deja la cookie `nx_benefit` para
+ * que se canjee al crear el negocio y devuelve el plan/duración/tipo a la UI.
+ * No canjea todavía: el plan definitivo lo fija el servidor en la creación.
+ */
+export type AccessCodeResult =
+  | { ok: true; code: string; plan: PlanKey; kind: BenefitKind; durationDays: number }
+  | { ok: false; message: string };
+
+export async function claimAccessCodeAction(
+  raw: string,
+): Promise<AccessCodeResult> {
+  const { userId } = await auth();
+  if (!userId) {
+    return { ok: false, message: "Tu sesión expiró. Vuelve a entrar." };
+  }
+
+  // Freno a la fuerza bruta de códigos: pocos intentos por usuario.
+  if (!allowAttempt(`access-code:${userId}`)) {
+    return {
+      ok: false,
+      message: "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.",
+    };
+  }
+  recordAttempt(`access-code:${userId}`);
+
+  const code = normalizeBenefitCode(raw);
+  if (!code) {
+    return { ok: false, message: "Escribe el código de tu tarjeta." };
+  }
+
+  const benefit = await getBenefitByCode(code);
+  if (!benefit) {
+    return { ok: false, message: "No encontramos ese código." };
+  }
+  if (benefit.status !== "active") {
+    return { ok: false, message: benefit.message };
+  }
+
+  await setBenefitCookie(code);
+  return {
+    ok: true,
+    code,
+    plan: benefit.plan as PlanKey,
+    kind: benefit.kind,
+    durationDays: benefit.durationDays,
+  };
+}
+
+/** Descarta el código pendiente (p. ej. si el usuario prefiere probar gratis). */
+export async function clearAccessCodeAction(): Promise<void> {
+  const { userId } = await auth();
+  if (!userId) return;
+  await clearBenefitCookie();
+}
+
 export async function completeAdaptiveOnboardingAction(
   input: AdaptiveOnboardingInput,
-): Promise<OnboardingActionResult> {
-  // 1) Sesión (Clerk) ------------------------------------------------
+): Promise<OnboardingActionResult> {  // 1) Sesión (Clerk) ------------------------------------------------
   const { userId } = await auth();
   if (!userId) {
     return {
@@ -86,15 +173,21 @@ export async function completeAdaptiveOnboardingAction(
   }
   const values = result.values;
 
-  // Plan: precio calculado SIEMPRE aquí (el navegador solo muestra). Aún no
-  // hay cobro: se guarda la elección y el precio mensual que se le mostró.
-  const plan = values.plan ?? "ESSENTIAL";
-  const billing = values.billing ?? "MONTHLY";
+  // Plan y módulos: en el piloto los decide el SERVIDOR, nunca el navegador.
+  // Sin precios visibles, el plan solo puede venir de un acceso válido
+  // (código promo o de pago); si no hay, el negocio nace en Essential. El
+  // canje del código (si lo hay) es lo que sube el plan después.
+  const pilot = !SHOW_PRICING;
+  const plan: PlanKey = pilot ? "ESSENTIAL" : (values.plan ?? "ESSENTIAL");
+  const billing: Billing = pilot ? "MONTHLY" : (values.billing ?? "MONTHLY");
+  const selectedModules = pilot
+    ? resolveModules(pricing, plan, values.vertical, values.selectedModules)
+    : values.selectedModules;
   const quote = quotePlan(pricing, {
     plan,
     vertical: values.vertical,
     billing,
-    selected: values.selectedModules,
+    selected: selectedModules,
     tierId: values.customerTierId ?? null,
   });
   const planFields = {
@@ -102,7 +195,7 @@ export async function completeAdaptiveOnboardingAction(
     customerTierId: quote.tierId,
     contractedModules: quote.modules,
     billingCycle: billing,
-    planMonthlyUsdCents: quote.monthlyCents,
+    planMonthlyUsdCents: pilot ? 0 : quote.monthlyCents,
     planSelectedAt: Temporal.Instant.fromEpochMilliseconds(Date.now()),
   };
 
@@ -129,7 +222,16 @@ export async function completeAdaptiveOnboardingAction(
 
     // Si ya estaba completo: idempotente, simplemente entra.
     if (tenant.onboardingCompleted) {
-      return { status: "ok", slug: tenant.slug, plan: tenant.plan };
+      return {
+        status: "ok",
+        slug: tenant.slug,
+        plan: tenant.plan,
+        ...(await benefitPatch({
+          tenantId,
+          tenantName: tenant.name,
+          clerkUserId: userId,
+        })),
+      };
     }
 
     // Disponibilidad del slug si va a cambiar (sin contar el propio tenant).
@@ -164,7 +266,7 @@ export async function completeAdaptiveOnboardingAction(
           onboardingCompleted: true,
           ...planFields,
         });
-        await syncModules(tx, tenantId, values.selectedModules);
+        await syncModules(tx, tenantId, selectedModules);
       });
     } catch {
       return {
@@ -173,10 +275,35 @@ export async function completeAdaptiveOnboardingAction(
       };
     }
 
-    return { status: "ok", slug: values.slug, plan };
+    const benefit = await benefitPatch({
+      tenantId,
+      tenantName: values.name,
+      clerkUserId: userId,
+    });
+    return {
+      status: "ok",
+      slug: values.slug,
+      // Si hubo canje, el plan real es el del código (el Essential de partida
+      // se sube en el canje); si no, el plan con el que se creó.
+      plan: (benefit.benefit?.plan as PlanKey | undefined) ?? plan,
+      ...benefit,
+    };
   }
 
   // 4) Modo create: dispersión de identidad desde Clerk -----------------
+  // En el piloto, una cuenta de Clerk es un negocio: si ya tiene uno, no
+  // puede crear otro (ni canjear el mismo código dos veces).
+  const existingMembership = await db.orm.public.User.where({ clerkUserId: userId }).first();
+  if (existingMembership?.tenantId) {
+    const owned = await db.orm.public.Tenant.where({ id: existingMembership.tenantId }).first();
+    if (owned?.onboardingCompleted) {
+      return {
+        status: "error",
+        message: `Ya tienes un negocio en NEXUS (${owned.name}). Escríbenos si necesitas otro.`,
+      };
+    }
+  }
+
   const clerkUser = await currentUser();
   const primaryEmail =
     clerkUser?.primaryEmailAddress?.emailAddress ??
@@ -204,6 +331,7 @@ export async function completeAdaptiveOnboardingAction(
     };
   }
 
+  let createdTenantId = "";
   try {
     await db.transaction(async (tx) => {
       const tenant = await tx.orm.public.Tenant.create({
@@ -231,7 +359,9 @@ export async function completeAdaptiveOnboardingAction(
         tenantId: tenant.id,
       });
 
-      await syncModules(tx, tenant.id, values.selectedModules);
+      await syncModules(tx, tenant.id, selectedModules);
+
+      createdTenantId = tenant.id;
     });
   } catch {
     return {
@@ -240,5 +370,16 @@ export async function completeAdaptiveOnboardingAction(
     };
   }
 
-  return { status: "ok", slug: values.slug, plan };
+  const benefit = await benefitPatch({
+    tenantId: createdTenantId,
+    tenantName: values.name,
+    clerkUserId: userId,
+    email: primaryEmail,
+  });
+  return {
+    status: "ok",
+    slug: values.slug,
+    plan: (benefit.benefit?.plan as PlanKey | undefined) ?? plan,
+    ...benefit,
+  };
 }
