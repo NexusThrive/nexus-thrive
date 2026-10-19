@@ -2,8 +2,7 @@ import { Check, Sparkles } from "lucide-react";
 import { MODULE_LABELS, type ModuleValue } from "@/lib/admin-catalogs";
 import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
 import { PLANS, type Billing, type PlanKey } from "@/lib/plans/catalog";
-import { formatUsdCents } from "@/lib/plans/quote";
-import { cn } from "@/lib/utils";
+import type { TenantAccess } from "@/lib/benefits/benefits-db";
 
 export type PlanInfo = {
   plan: PlanKey;
@@ -11,17 +10,37 @@ export type PlanInfo = {
   monthlyUsdCents: number;
   selectedAt: string | null;
   activeModules: ModuleValue[];
+  /** Último acceso (canje): si fue promo o pagado, y hasta cuándo. */
+  access?: TenantAccess | null;
 };
 
-const ORDER: PlanKey[] = ["ESSENTIAL", "ELITE", "SIGNATURE"];
+function formatDate(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString("es-CO", { day: "numeric", month: "short", year: "numeric" });
+}
 
 /**
- * Plan del negocio (el que se eligió en el onboarding): nombre, precio
- * guardado, ciclo y módulos activos, con los tres planes al lado. El cambio
- * de plan y el cobro llegan cuando se definan los precios finales.
+ * Plan del negocio en el piloto: solo se muestra el plan que NEXUS le asignó
+ * (sin precios ni comparación de planes, que siguen ocultos hasta que haya
+ * cobro automático). El cambio de plan y la vigencia los administra el equipo
+ * NEXUS desde el Operations Center.
  */
 export default function PlanTab({ info }: { info: PlanInfo }) {
   const current = PLANS[info.plan];
+  const access = info.access ?? null;
+  const paid = access?.kind === "PAID";
+  const accessLabel = access
+    ? paid
+      ? "Acceso pagado"
+      : "Cortesía"
+    : "Plan asignado por NEXUS";
+  const accessDetail = access
+    ? access.expired
+      ? `El acceso terminó el ${formatDate(access.endsAt)}.`
+      : `Activo hasta el ${formatDate(access.endsAt)}.`
+    : "NEXUS administra los planes y la vigencia; escríbenos si quieres cambiarlo.";
+
   return (
     <div className="grid gap-3.5">
       <section className="relative isolate overflow-hidden rounded-lg bg-black p-[22px] text-[#F7F6F3]">
@@ -31,11 +50,10 @@ export default function PlanTab({ info }: { info: PlanInfo }) {
           Thrive <span className="text-[#D4AF37]">{current.name}</span>
         </p>
         <p className="mt-1 text-[13px] text-[#A1A1A8]">{current.tagline}</p>
-        <p className="mt-4 flex items-baseline gap-1.5">
-          <span className="font-display text-[34px] font-bold tabular-nums">{formatUsdCents(info.monthlyUsdCents)}</span>
-          <span className="text-[13px] text-[#A1A1A8]">USD/mes · {info.billing === "ANNUAL" ? "pago anual" : "pago mensual"}</span>
+        <p className="mt-4 inline-flex items-center gap-1.5 rounded-sm border border-[rgba(212,175,55,.35)] bg-[rgba(212,175,55,.12)] px-2.5 py-1 text-[12px] font-medium text-[#D4AF37]">
+          <Sparkles aria-hidden="true" className="size-3.5" /> {accessLabel}
         </p>
-        <p className="mt-3 text-xs text-[#A1A1A8]">Aún no se cobra nada. Muy pronto podrás cambiar de plan y pagarlo desde aquí.</p>
+        <p className="mt-3 text-xs text-[#A1A1A8]">{accessDetail}</p>
       </section>
 
       <section className="rounded-lg border border-border bg-surface">
@@ -53,30 +71,18 @@ export default function PlanTab({ info }: { info: PlanInfo }) {
         </ul>
       </section>
 
-      <section className="grid gap-2.5 sm:grid-cols-3" aria-label="Planes">
-        {ORDER.map((key) => {
-          const plan = PLANS[key];
-          const on = key === info.plan;
-          return (
-            <div key={key} className={cn("relative rounded-lg border p-4", on ? "border-accent bg-accent-subtle/50" : "border-border bg-surface")}>
-              {on ? (
-                <span className="absolute -top-2.5 left-3 inline-flex items-center gap-1 rounded-sm bg-primary px-2 py-0.5 text-[10.5px] font-semibold text-primary-foreground">
-                  <Sparkles aria-hidden="true" className="size-3" /> Actual
-                </span>
-              ) : null}
-              <p className="font-display text-[15px] font-bold">{plan.name}</p>
-              <p className="mt-1 text-[12.5px] text-muted-foreground">{plan.tagline}</p>
-              <ul className="mt-3 grid gap-1.5">
-                {plan.features.map((f) => (
-                  <li key={f} className="flex gap-1.5 text-[12px] text-foreground/80">
-                    <Check aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-accent-text" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          );
-        })}
+      <section className="rounded-lg border border-border bg-surface">
+        <h2 className="border-b border-border px-[18px] py-4 font-display text-[15px] font-semibold">
+          Qué incluye Thrive {current.name}
+        </h2>
+        <ul className="grid gap-2 p-[18px] sm:grid-cols-2">
+          {current.features.map((feature) => (
+            <li key={feature} className="flex gap-1.5 text-[12.5px] text-foreground/80">
+              <Check aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-accent-text" />
+              {feature}
+            </li>
+          ))}
+        </ul>
       </section>
     </div>
   );

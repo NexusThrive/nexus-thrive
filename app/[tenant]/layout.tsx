@@ -2,6 +2,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant-db";
+import { expireBenefitTrial } from "@/lib/benefits/benefits-db";
 import { acceptInvitesFor } from "@/lib/business/team-db";
 
 /**
@@ -44,6 +45,10 @@ export default async function TenantLayout({
   if (!tenantRecord) {
     notFound();
   }
+
+  // Vencimiento del mes gratis (beneficio de tarjeta): si su período ya pasó,
+  // el negocio revierte a Essential (gratis). Idempotente y silencioso.
+  await expireBenefitTrial(tenantRecord.id);
 
   // 2) Contexto de acceso a la base de datos del tenant.
   const tenantDb = createTenantDb(tenantRecord.id);
