@@ -58,10 +58,16 @@ function Card({ title, onEdit, children }: { title: string; onEdit: () => void; 
 export function OnboardingReview({
   data,
   teamSizeLabel,
+  benefit,
+  showPricing = true,
   onEdit,
 }: {
   data: ReviewData;
   teamSizeLabel?: string;
+  /** Acceso pendiente: regalo (PROMO) o acceso pagado (PAID). */
+  benefit?: { planName: string; durationDays: number; kind: "PROMO" | "PAID" };
+  /** Piloto: oculta los precios y muestra el plan como gratuito. */
+  showPricing?: boolean;
   onEdit: (step: "profile" | "business" | "plan") => void;
 }) {
   const visual = data.vertical ? getVerticalIcon(data.vertical) : null;
@@ -92,14 +98,36 @@ export function OnboardingReview({
               Thrive <span className="text-accent-text">{data.planName}</span>
             </p>
             <p className="text-[12.5px] text-muted-foreground">
-              {data.billing === "ANNUAL" ? `Anual · ${formatUsdCents(data.quote.yearlyCents)} al año` : "Mensual"}
-              {data.tierLabel ? ` · ${data.tierLabel}` : ""} · sin cobro todavía
+              {benefit
+                ? benefit.kind === "PAID"
+                  ? `Activo durante ${benefit.durationDays} días · pago confirmado`
+                  : `Gratis durante ${benefit.durationDays} días · beneficio de tu tarjeta`
+                : !showPricing
+                  ? "Plan del piloto · sin cobro"
+                  : data.billing === "ANNUAL"
+                    ? `Anual · ${formatUsdCents(data.quote.yearlyCents)} al año`
+                    : "Mensual"}
+              {!benefit && showPricing && data.tierLabel ? ` · ${data.tierLabel}` : ""}
+              {!benefit && showPricing ? " · sin cobro todavía" : ""}
             </p>
           </div>
-          <p className="flex items-baseline gap-1">
-            <span className="font-display text-[26px] font-bold tabular-nums">{formatUsdCents(data.quote.monthlyCents)}</span>
-            <span className="text-[12px] text-muted-foreground">USD/mes</span>
-          </p>
+          {benefit ? (
+            <p className="flex items-baseline gap-1">
+              <span className="font-display text-[26px] font-bold text-accent-text">
+                {benefit.kind === "PAID" ? "Activada" : "Gratis"}
+              </span>
+              <span className="text-[12px] text-muted-foreground">{benefit.durationDays} días</span>
+            </p>
+          ) : !showPricing ? (
+            <p className="flex items-baseline gap-1">
+              <span className="font-display text-[26px] font-bold text-accent-text">Gratis</span>
+            </p>
+          ) : (
+            <p className="flex items-baseline gap-1">
+              <span className="font-display text-[26px] font-bold tabular-nums">{formatUsdCents(data.quote.monthlyCents)}</span>
+              <span className="text-[12px] text-muted-foreground">USD/mes</span>
+            </p>
+          )}
         </div>
         <ul className="flex flex-wrap gap-1.5 border-t border-border py-3">
           {data.quote.modules.filter((m: ModuleValue) => m !== "dashboard").map((m: ModuleValue) => {

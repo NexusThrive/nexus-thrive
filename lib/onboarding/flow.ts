@@ -21,9 +21,9 @@ export const FLOW_META: Record<FlowStep, { label: string; title: string; descrip
     description: "Con esto armamos tu espacio y tu enlace en NEXUS.",
   },
   plan: {
-    label: "Plan y módulos",
+    label: "Acceso",
     title: "Elige cómo empezar",
-    description: "Solo ves los módulos que sirven a tu rubro. Empieza gratis o elige un plan; aún no se cobra nada.",
+    description: "Solo ves los módulos que sirven a tu rubro. Empieza gratis o entra con tu código de acceso; aún no se cobra nada.",
   },
   confirm: {
     label: "Confirmación",

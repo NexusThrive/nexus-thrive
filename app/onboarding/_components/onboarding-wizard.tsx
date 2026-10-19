@@ -9,11 +9,14 @@ import {
   EMPTY_DRAFT,
   TEAM_SIZE_LABELS,
   type AdaptiveOnboardingInput,
+  type OnboardingBenefit,
   type OnboardingDraft,
   type OnboardingPrefill,
 } from "@/lib/onboarding/types";
+import { SHOW_PRICING } from "@/lib/onboarding/flags";
 import { MODULE_LABELS } from "@/lib/admin-catalogs";
 import { modulePriceCents, planOf, quote as quotePlan, signupVerticals, type PricingConfig } from "@/lib/plans/pricing";
+import type { PlanKey } from "@/lib/plans/catalog";
 import { formatUsdCents } from "@/lib/plans/quote";
 import ProfileSelection from "./profile-selection";
 import AdaptiveBusinessForm from "./adaptive-business-form";
@@ -23,6 +26,8 @@ import { Alert } from "@/components/molecules/alert";
 import { IntroDots, IntroStory, INTRO_SLIDES } from "@/components/organisms/onboarding/intro-story";
 import { OnboardingScene } from "@/components/organisms/onboarding/onboarding-scene";
 import { PlanPicker } from "@/components/organisms/onboarding/plan-picker";
+import { AccessStep } from "@/components/organisms/onboarding/access-step";
+import { BenefitCard } from "@/components/organisms/onboarding/benefit-card";
 import { OnboardingReview } from "@/components/organisms/onboarding/onboarding-review";
 import { CreationCinematic, type CinematicStatus } from "@/components/organisms/onboarding/creation-cinematic";
 import { OnboardingSplit } from "@/components/templates/onboarding-split";
@@ -57,15 +62,31 @@ const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve
  * localStorage (modo `create`); la validación es la misma del servidor y el
  * precio se recalcula en el servidor al crear.
  */
-export default function OnboardingWizard({ prefill, firstName, config }: { prefill: OnboardingPrefill; firstName?: string; config: PricingConfig }) {
+export default function OnboardingWizard({
+  prefill,
+  firstName,
+  config,
+  pendingBenefit,
+}: {
+  prefill: OnboardingPrefill;
+  firstName?: string;
+  config: PricingConfig;
+  pendingBenefit?: OnboardingBenefit | null;
+}) {
   const firstStep: FlowStep = prefill.mode === "resume" ? "profile" : "intro";
   const [step, setStep] = useState<FlowStep>(firstStep);
   const [slide, setSlide] = useState(0);
-  const [draft, setDraft] = useState<OnboardingDraft>(() => loadDraft(prefill));
+  const [draft, setDraft] = useState<OnboardingDraft>(() => {
+    const base = loadDraft(prefill);
+    // Con un beneficio pendiente el plan lo define la tarjeta (mes gratis):
+    // se fija de una vez para que el resto del flujo (review y servidor) lo refleje.
+    return pendingBenefit ? { ...base, plan: pendingBenefit.plan, billing: "MONTHLY" } : base;
+  });
   const [showErrors, setShowErrors] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cinematic, setCinematic] = useState<CinematicStatus | null>(null);
   const [slug, setSlug] = useState<string | null>(null);
+  const [benefit, setBenefit] = useState<OnboardingBenefit | null>(pendingBenefit ?? null);
   const [, startTransition] = useTransition();
 
   const validation = useMemo(
@@ -96,6 +117,18 @@ export default function OnboardingWizard({ prefill, firstName, config }: { prefi
     ? quotePlan(config, { plan: draft.plan, vertical: draft.vertical, billing: draft.billing, selected: draft.selectedModules, tierId: draft.customerTierId })
     : null;
   const planName = planOf(config, draft.plan)?.name ?? draft.plan;
+  const freePlanName = planOf(config, "ESSENTIAL")?.name ?? "Essential";
+  /** Planes que se pueden contratar (sin precio: se coordina el pago). */
+  const accessPlans = useMemo(
+    () =>
+      (["ELITE", "SIGNATURE"] as PlanKey[])
+        .map((key) => {
+          const plan = planOf(config, key);
+          return plan ? { key, name: plan.name, tagline: plan.tagline } : null;
+        })
+        .filter((plan): plan is { key: PlanKey; name: string; tagline: string } => Boolean(plan)),
+    [config],
+  );
 
   // Siempre sobre el borrador más reciente: varios cambios en el mismo
   // instante (autocompletado del navegador) no se pisan entre sí.
@@ -109,6 +142,15 @@ export default function OnboardingWizard({ prefill, firstName, config }: { prefi
       }
       return next;
     });
+  };
+
+  /**
+   * El código de acceso tecleado (o el de la tarjeta) fija el plan y el módulos
+   * que verá en el resto del flujo. Al quitarlo se vuelve al plan gratis.
+   */
+  const applyBenefit = (next: OnboardingBenefit | null) => {
+    setBenefit(next);
+    patch({ plan: next ? next.plan : "ESSENTIAL", billing: "MONTHLY" });
   };
 
   const go = (to: FlowStep) => {
@@ -200,11 +242,20 @@ export default function OnboardingWizard({ prefill, firstName, config }: { prefi
         city: draft.city,
         tenantType: draft.tenantType,
         planName: step === "plan" || step === "confirm" ? planName : undefined,
-        price: quote ? (quote.monthlyCents / 100).toFixed(quote.monthlyCents % 100 ? 2 : 0) : undefined,
+        price: SHOW_PRICING
+          ? pendingBenefit
+            ? "0"
+            : quote
+              ? (quote.monthlyCents / 100).toFixed(quote.monthlyCents % 100 ? 2 : 0)
+              : undefined
+          : "0",
         modules:
           quote && (step === "plan" || step === "confirm")
             ? quote.modules.map((module) => {
-                const cents = draft.vertical ? modulePriceCents(config, module, draft.vertical, draft.plan) : 0;
+                const cents =
+                  SHOW_PRICING && draft.vertical
+                    ? modulePriceCents(config, module, draft.vertical, draft.plan)
+                    : 0;
                 return { module, price: cents ? formatUsdCents(cents) : "Incluido" };
               })
             : [],
@@ -219,15 +270,19 @@ export default function OnboardingWizard({ prefill, firstName, config }: { prefi
         : "Continuar"
       : step === "confirm"
         ? "Crear mi negocio"
-        : step === "plan" && draft.plan === "ESSENTIAL"
-          ? "Continuar gratis"
-          : "Continuar";
+        : step === "plan" && benefit
+          ? benefit.kind === "PAID"
+            ? "Activar mi cuenta"
+            : "Activar mi mes gratis"
+          : step === "plan" && draft.plan === "ESSENTIAL"
+            ? "Continuar gratis"
+            : "Continuar";
 
   const actions = (
     <>
       {step === "intro" ? (
         <IntroDots slide={slide} />
-      ) : step === "plan" && quote ? (
+      ) : step === "plan" && SHOW_PRICING && quote && !benefit ? (
         <p className="flex items-baseline gap-1 lg:hidden">
           <Odometer value={(quote.monthlyCents / 100).toFixed(quote.monthlyCents % 100 ? 2 : 0)} prefix="$" className="font-display text-[22px] font-bold" />
           <span className="text-[12px] text-muted-foreground">/mes</span>
@@ -256,7 +311,15 @@ export default function OnboardingWizard({ prefill, firstName, config }: { prefi
         stepKey={step === "intro" ? `intro-${slide}` : step}
         eyebrow={step === "intro" ? (slide === 0 && greeting ? greeting : introMeta.eyebrow) : step === "profile" ? greeting : undefined}
         title={title}
-        description={step === "intro" ? introMeta.description : meta.description}
+        description={
+          step === "intro"
+            ? introMeta.description
+            : step === "plan" && benefit
+              ? benefit.kind === "PAID"
+                ? "Tu pago está confirmado. Activa tu cuenta al crear el negocio."
+                : "Tu beneficio ya está listo. Actívalo al crear tu negocio: nada de tarjeta ni cobro."
+              : meta.description
+        }
         onBack={step === firstStep && slide === 0 ? undefined : goBack}
         actions={actions}
       >
@@ -284,12 +347,28 @@ export default function OnboardingWizard({ prefill, firstName, config }: { prefi
         ) : null}
 
         {step === "plan" && draft.vertical ? (
-          <PlanPicker
-            config={config}
-            vertical={draft.vertical}
-            value={{ plan: draft.plan, billing: draft.billing, selected: draft.selectedModules, tierId: draft.customerTierId }}
-            onChange={({ plan, billing, selected, tierId }) => patch({ plan, billing, selectedModules: selected, customerTierId: tierId })}
-          />
+          SHOW_PRICING ? (
+            pendingBenefit ? (
+              <BenefitCard planName={planName} durationDays={pendingBenefit.durationDays} code={pendingBenefit.code} />
+            ) : (
+              <PlanPicker
+                config={config}
+                vertical={draft.vertical}
+                value={{ plan: draft.plan, billing: draft.billing, selected: draft.selectedModules, tierId: draft.customerTierId }}
+                onChange={({ plan, billing, selected, tierId }) => patch({ plan, billing, selectedModules: selected, customerTierId: tierId })}
+              />
+            )
+          ) : (
+            <AccessStep
+              planName={planName}
+              freePlanName={freePlanName}
+              plans={accessPlans}
+              businessName={draft.name.trim() || undefined}
+              city={draft.city || undefined}
+              benefit={benefit}
+              onBenefit={applyBenefit}
+            />
+          )
         ) : null}
 
         {step === "confirm" && quote ? (
@@ -316,6 +395,8 @@ export default function OnboardingWizard({ prefill, firstName, config }: { prefi
                 quote,
               }}
               teamSizeLabel={draft.tenantType === "COMPANY" && draft.teamSize ? TEAM_SIZE_LABELS[draft.teamSize] : undefined}
+              benefit={benefit ? { planName, durationDays: benefit.durationDays, kind: benefit.kind } : undefined}
+              showPricing={SHOW_PRICING}
               onEdit={go}
             />
             <p className="mt-4 text-[12.5px] text-muted-foreground">

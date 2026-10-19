@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getOnboardingPrefill } from "./prefill";
 import OnboardingWizard from "./_components/onboarding-wizard";
 import { loadPricingConfig } from "@/lib/plans/settings";
+import { getPendingBenefit } from "@/lib/benefits/benefit-cookie";
 
 /**
  * Onboarding adaptativo (auto-servicio).
@@ -42,5 +43,15 @@ export default async function OnboardingPage({
   const user = await currentUser();
   // Rubros, planes, módulos y precios del catálogo del Operations Center.
   const config = await loadPricingConfig();
-  return <OnboardingWizard prefill={prefill} firstName={user?.firstName ?? undefined} config={config} />;
+  // Beneficio pendiente (tarjeta NFC/QR): el paso de plan muestra el "mes
+  // gratis" y el servidor lo aplica al crear el negocio.
+  const pendingBenefit = await getPendingBenefit();
+  return (
+    <OnboardingWizard
+      prefill={prefill}
+      firstName={user?.firstName ?? undefined}
+      config={config}
+      pendingBenefit={pendingBenefit}
+    />
+  );
 }

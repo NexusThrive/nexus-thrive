@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Eyebrow } from "@/components/molecules/page-header";
 import { PricingConfigurator } from "@/components/organisms/pricing/pricing-configurator";
 import { PublicLayout } from "@/components/templates/public-layout";
+import { SHOW_PRICING } from "@/lib/onboarding/flags";
 
 export const metadata: Metadata = {
   title: "Precios · NEXUS THRIVE",
@@ -9,6 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default function PricingPage() {
+  // Piloto: sin cobro automático todavía, los precios no se publican.
+  if (!SHOW_PRICING) redirect("/");
+
   return (
     <PublicLayout footerNote={<span>Precios en USD; se ajustan en la configuración.</span>}>
       <section className="grid max-w-[44rem] gap-3 py-7">
