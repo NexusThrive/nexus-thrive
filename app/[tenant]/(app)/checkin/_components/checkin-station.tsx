@@ -152,8 +152,8 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
   const cd = result?.endsAt && now ? countdown(result.endsAt, now) : null;
 
   return (
-    <div className="grid content-start gap-6">
-      <section className="grid gap-3 rounded-lg border border-border bg-card p-4">
+    <div className="grid grid-cols-1 content-start gap-6">
+      <section className="grid grid-cols-1 gap-3 rounded-lg border border-border bg-card p-4">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -169,7 +169,7 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
             placeholder="Escanea el QR, acerca la tarjeta o escribe el código"
             aria-label="Código del QR, tarjeta o documento"
             autoComplete="off"
-            className={cn(inputClasses, "h-12 text-base")}
+            className={cn(inputClasses, "h-12 min-w-0 flex-1 text-base")}
           />
           <button type="submit" disabled={pending || !code.trim()} className={buttonVariants({ size: "lg" })}>
             Validar
@@ -194,7 +194,7 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
       {result ? (
         <section
           aria-live="assertive"
-          className={cn("grid gap-4 rounded-xl border-2 p-5 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center", result.allowed ? "border-emerald-500 bg-emerald-500/10" : "border-rose-500 bg-rose-500/10")}
+          className={cn("grid grid-cols-1 gap-4 rounded-xl border-2 p-5 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center", result.allowed ? "border-emerald-500 bg-emerald-500/10" : "border-rose-500 bg-rose-500/10")}
         >
           <Photo id={result.member.photoId} className="size-28 rounded-xl" />
           <div className="grid gap-1.5">
@@ -216,7 +216,7 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
         </section>
       ) : null}
 
-      <section className="grid gap-3 rounded-lg border border-border bg-card p-4">
+      <section className="grid grid-cols-1 gap-3 rounded-lg border border-border bg-card p-4">
         <h2 className="text-sm font-semibold">Buscar a mano</h2>
         <label className="relative">
           <Search aria-hidden="true" className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -252,7 +252,7 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
         ) : null}
       </section>
 
-      <section className="grid gap-2">
+      <section className="grid grid-cols-1 gap-2">
         <h2 className="text-sm font-semibold">Entradas de hoy</h2>
         <ul className="divide-y divide-border rounded-lg border border-border bg-card">
           {entries.map((e) => (

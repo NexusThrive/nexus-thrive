@@ -174,7 +174,7 @@ export default async function FinancePage({
         description={<>Cobros, gastos y caja menor de{" "}
           <span className="font-medium text-foreground/80">{tenantRecord.name}</span>.</>}
         actions={
-          <div className="flex flex-wrap gap-2">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
             <FinanceActions
               tenantSlug={tenantSlug}
               business={business}
@@ -198,14 +198,15 @@ export default async function FinancePage({
             { value: "resumen", label: "Resumen" },
             { value: "cobros", label: "Cobros", count: paymentResult.total },
             { value: "gastos", label: "Gastos", count: expenseResult.total },
-            { value: "caja", label: openBox ? "Caja menor · abierta" : "Caja menor" },
+            { value: "caja", label: "Caja menor" },
           ]}
+          className="w-full [&>button]:min-w-0 [&>button]:flex-1 sm:w-auto sm:[&>button]:flex-none"
         />
       </div>
 
       {tab === "resumen" ? (
         <div className="grid gap-3.5">
-          <div className="flex justify-end">
+          <div className="flex sm:justify-end">
             <UrlSegmentedControl
               param="p"
               ariaLabel="Periodo"
@@ -215,6 +216,7 @@ export default async function FinancePage({
                 { value: "7d", label: "7 días" },
                 { value: "30d", label: "30 días" },
               ]}
+              className="w-full [&>button]:flex-1 sm:w-auto sm:[&>button]:flex-none"
             />
           </div>
           <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
