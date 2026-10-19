@@ -33,6 +33,20 @@ export const VERTICALS = [
 ] as const;
 export type VerticalValue = (typeof VERTICALS)[number];
 
+/**
+ * Rubros habilitados para registrarse en el onboarding.
+ * El resto del catálogo sigue existiendo (panel CEO/administración), pero no
+ * se ofrece al crear un negocio.
+ */
+export const SIGNUP_VERTICALS = [
+  "gym",
+  "tourism_agency",
+  "construction",
+  "restaurant",
+  "real_estate",
+  "museum",
+] as const satisfies readonly VerticalValue[];
+
 export const VERTICAL_LABELS: Record<VerticalValue, string> = {
   gym: "Gimnasio",
   tourism_agency: "Agencia de Turismo",

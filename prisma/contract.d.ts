@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'78cb411e53926df1cd9fa9e8caf90edb51601f66d99d9f5c4a7f96e720de2477'>;
+  StorageHashBase<'422e6cab8258d84d99cbb4b2b30d5b9c4009204497eae06972736c0930b73a0c'>;
 export type ExecutionHash =
   ExecutionHashBase<'f6095c49df70d8bbcde2f59eb6fae58e181f03e9143dc218955b0988442bbad8'>;
 export type ProfileHash =
@@ -1054,10 +1054,13 @@ export type FieldOutputTypes = {
       readonly googleBusinessUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly instagramHandle: CodecTypes['pg/text@1']['output'] | null;
+      readonly latitude: CodecTypes['pg/float8@1']['output'] | null;
       readonly legalName: CodecTypes['pg/text@1']['output'] | null;
+      readonly longitude: CodecTypes['pg/float8@1']['output'] | null;
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['output'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
+      readonly placeId: CodecTypes['pg/text@1']['output'] | null;
       readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
       readonly planMonthlyUsdCents: CodecTypes['pg/int4@1']['output'];
       readonly planSelectedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
@@ -2057,10 +2060,13 @@ export type FieldInputTypes = {
       readonly googleBusinessUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly instagramHandle: CodecTypes['pg/text@1']['input'] | null;
+      readonly latitude: CodecTypes['pg/float8@1']['input'] | null;
       readonly legalName: CodecTypes['pg/text@1']['input'] | null;
+      readonly longitude: CodecTypes['pg/float8@1']['input'] | null;
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['input'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
+      readonly placeId: CodecTypes['pg/text@1']['input'] | null;
       readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
       readonly planMonthlyUsdCents: CodecTypes['pg/int4@1']['input'];
       readonly planSelectedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
@@ -3060,10 +3066,13 @@ export type StorageColumnTypes = {
       readonly googleBusinessUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly instagramHandle: CodecTypes['pg/text@1']['output'] | null;
+      readonly latitude: CodecTypes['pg/float8@1']['output'] | null;
       readonly legalName: CodecTypes['pg/text@1']['output'] | null;
+      readonly longitude: CodecTypes['pg/float8@1']['output'] | null;
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['output'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
+      readonly placeId: CodecTypes['pg/text@1']['output'] | null;
       readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
       readonly planMonthlyUsdCents: CodecTypes['pg/int4@1']['output'];
       readonly planSelectedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
@@ -4063,10 +4072,13 @@ export type StorageColumnInputTypes = {
       readonly googleBusinessUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly instagramHandle: CodecTypes['pg/text@1']['input'] | null;
+      readonly latitude: CodecTypes['pg/float8@1']['input'] | null;
       readonly legalName: CodecTypes['pg/text@1']['input'] | null;
+      readonly longitude: CodecTypes['pg/float8@1']['input'] | null;
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['input'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
+      readonly placeId: CodecTypes['pg/text@1']['input'] | null;
       readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
       readonly planMonthlyUsdCents: CodecTypes['pg/int4@1']['input'];
       readonly planSelectedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
@@ -5240,10 +5252,13 @@ export namespace Models {
     googleBusinessUrl: CodecTypes['pg/text@1']['output'] | null;
     id: CodecTypes['pg/text@1']['output'];
     instagramHandle: CodecTypes['pg/text@1']['output'] | null;
+    latitude: CodecTypes['pg/float8@1']['output'] | null;
     legalName: CodecTypes['pg/text@1']['output'] | null;
+    longitude: CodecTypes['pg/float8@1']['output'] | null;
     name: CodecTypes['pg/text@1']['output'];
     onboardingCompleted: CodecTypes['pg/bool@1']['output'];
     paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
+    placeId: CodecTypes['pg/text@1']['output'] | null;
     plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
     planMonthlyUsdCents: CodecTypes['pg/int4@1']['output'];
     planSelectedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
@@ -11347,9 +11362,19 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
+                readonly latitude: {
+                  readonly nativeType: 'float8';
+                  readonly codecId: 'pg/float8@1';
+                  readonly nullable: true;
+                };
                 readonly legalName: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly longitude: {
+                  readonly nativeType: 'float8';
+                  readonly codecId: 'pg/float8@1';
                   readonly nullable: true;
                 };
                 readonly name: {
@@ -11367,6 +11392,11 @@ type ContractBase = Omit<
                   };
                 };
                 readonly paymentMethods: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly placeId: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
@@ -18580,9 +18610,17 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly latitude: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/float8@1' };
+              };
               readonly legalName: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly longitude: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/float8@1' };
               };
               readonly name: {
                 readonly nullable: false;
@@ -18596,6 +18634,10 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
                 readonly many: true;
+              };
+              readonly placeId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly plan: {
                 readonly nullable: false;
@@ -18965,10 +19007,13 @@ type ContractBase = Omit<
                 readonly googleBusinessUrl: { readonly column: 'googleBusinessUrl' };
                 readonly id: { readonly column: 'id' };
                 readonly instagramHandle: { readonly column: 'instagramHandle' };
+                readonly latitude: { readonly column: 'latitude' };
                 readonly legalName: { readonly column: 'legalName' };
+                readonly longitude: { readonly column: 'longitude' };
                 readonly name: { readonly column: 'name' };
                 readonly onboardingCompleted: { readonly column: 'onboardingCompleted' };
                 readonly paymentMethods: { readonly column: 'paymentMethods' };
+                readonly placeId: { readonly column: 'placeId' };
                 readonly plan: { readonly column: 'plan' };
                 readonly planMonthlyUsdCents: { readonly column: 'planMonthlyUsdCents' };
                 readonly planSelectedAt: { readonly column: 'planSelectedAt' };

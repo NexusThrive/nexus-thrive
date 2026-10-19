@@ -53,6 +53,10 @@ export type OnboardingDraft = {
   vertical: VerticalValue | null;
   teamSize: TeamSizeValue | null;
   address: string;
+  /// Ubicación confirmada con el mapa (OpenStreetMap, opcional).
+  latitude: number | null;
+  longitude: number | null;
+  placeId: string | null;
   city: string;
   selectedModules: ModuleValue[];
   /** Plan elegido (Essential gratis por defecto) y ciclo de facturación. */
@@ -71,6 +75,9 @@ export const EMPTY_DRAFT: OnboardingDraft = {
   vertical: null,
   teamSize: null,
   address: "",
+  latitude: null,
+  longitude: null,
+  placeId: null,
   city: "",
   selectedModules: [],
   plan: "ESSENTIAL",
@@ -93,7 +100,12 @@ export type AdaptiveOnboardingInput = {
   vertical: VerticalValue;
   teamSize?: TeamSizeValue;
   address?: string;
-  city: string;
+  /// Coordenadas confirmadas con el mapa (OpenStreetMap, opcionales).
+  latitude?: number;
+  longitude?: number;
+  placeId?: string;
+  /** Ciudad deducida del autocompletado de dirección (opcional). */
+  city?: string;
   selectedModules: ModuleValue[];
   plan?: PlanKey;
   billing?: Billing;

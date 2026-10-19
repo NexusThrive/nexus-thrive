@@ -158,6 +158,9 @@ export async function completeAdaptiveOnboardingAction(
           taxId: values.taxId,
           teamSize: values.teamSize,
           address: values.address,
+          latitude: values.latitude,
+          longitude: values.longitude,
+          placeId: values.placeId,
           onboardingCompleted: true,
           ...planFields,
         });
@@ -213,6 +216,9 @@ export async function completeAdaptiveOnboardingAction(
         taxId: values.taxId,
         teamSize: values.teamSize,
         address: values.address,
+        latitude: values.latitude,
+        longitude: values.longitude,
+        placeId: values.placeId,
         onboardingCompleted: true,
         ...planFields,
       });

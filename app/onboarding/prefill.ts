@@ -29,6 +29,9 @@ type TenantForDraft = {
   taxId: string | null;
   teamSize: string | null;
   address: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  placeId: string | null;
   city: string | null;
   onboardingCompleted: boolean;
   modules: { moduleName: string; active: boolean }[];
@@ -47,6 +50,9 @@ function tenantToDraft(tenant: TenantForDraft): OnboardingDraft {
     vertical: tenant.vertical,
     teamSize: (tenant.teamSize as OnboardingDraft["teamSize"]) ?? null,
     address: tenant.address ?? "",
+    latitude: tenant.latitude ?? null,
+    longitude: tenant.longitude ?? null,
+    placeId: tenant.placeId ?? null,
     city: tenant.city ?? "",
     selectedModules: sortModules(
       tenant.modules
@@ -78,6 +84,9 @@ export async function getOnboardingPrefill(
           "taxId",
           "teamSize",
           "address",
+          "latitude",
+          "longitude",
+          "placeId",
           "city",
           "onboardingCompleted",
         )

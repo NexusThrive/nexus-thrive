@@ -10442,10 +10442,24 @@
                   "kind": "scalar"
                 }
               },
+              "latitude": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
+                  "kind": "scalar"
+                }
+              },
               "legalName": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "longitude": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/float8@1",
                   "kind": "scalar"
                 }
               },
@@ -10465,6 +10479,13 @@
               },
               "paymentMethods": {
                 "many": true,
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "placeId": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
@@ -11021,8 +11042,14 @@
                 "instagramHandle": {
                   "column": "instagramHandle"
                 },
+                "latitude": {
+                  "column": "latitude"
+                },
                 "legalName": {
                   "column": "legalName"
+                },
+                "longitude": {
+                  "column": "longitude"
                 },
                 "name": {
                   "column": "name"
@@ -11032,6 +11059,9 @@
                 },
                 "paymentMethods": {
                   "column": "paymentMethods"
+                },
+                "placeId": {
+                  "column": "placeId"
                 },
                 "plan": {
                   "column": "plan"
@@ -19798,9 +19828,19 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "latitude": {
+                  "codecId": "pg/float8@1",
+                  "nativeType": "float8",
+                  "nullable": true
+                },
                 "legalName": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
+                  "nullable": true
+                },
+                "longitude": {
+                  "codecId": "pg/float8@1",
+                  "nativeType": "float8",
                   "nullable": true
                 },
                 "name": {
@@ -19828,6 +19868,11 @@
                     "namespaceId": "public",
                     "plane": "storage"
                   }
+                },
+                "placeId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "plan": {
                   "codecId": "pg/text@1",
@@ -21412,7 +21457,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "78cb411e53926df1cd9fa9e8caf90edb51601f66d99d9f5c4a7f96e720de2477"
+    "storageHash": "422e6cab8258d84d99cbb4b2b30d5b9c4009204497eae06972736c0930b73a0c"
   },
   "execution": {
     "executionHash": "f6095c49df70d8bbcde2f59eb6fae58e181f03e9143dc218955b0988442bbad8",
