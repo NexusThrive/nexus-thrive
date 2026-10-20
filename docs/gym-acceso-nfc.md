@@ -16,7 +16,19 @@ de estos tres (`lib/business/gym-db.ts` → `findMemberByScan`):
 | **UID de la tarjeta** | `Customer.nfcUid` | Hexadecimal, 6 a 32 caracteres (`04A1B2C3D4E5`), sin `:` | La **etiqueta NFC** física |
 | **Documento** | `Customer.documentId` | Cédula | Cuando la persona escribe su documento |
 
-## 2. Qué código tiene que tener la tarjeta NFC
+## 2. Cómo leer en la puerta, según el teléfono
+
+| Camino | Qué necesita | Dónde funciona |
+|---|---|---|
+| **QR con la cámara** | Solo la cámara del teléfono | **Todos**: Chrome, Edge, Safari (iPhone), Firefox. Si el navegador tiene `BarcodeDetector` (Chrome/Edge) decodifica nativo; si no (Safari, Firefox), decodifica con jsQR sobre la imagen de la cámara. |
+| **Tarjeta NFC con el teléfono** | NFC del teléfono + Web NFC | **Solo Chrome con Android**. En iPhone y en Firefox **el botón no aparece**: la web de iOS no expone NFC. |
+| **Escribir el código** | Nada | Todos: el código de socio, el serial de la tarjeta o el documento. |
+| **Lector USB** | Nada (se comporta como teclado) | Todos: los lectores de QR y de tarjetas escriben el código en la casilla. |
+
+Resumen: **el QR es el camino universal** (solo cámara), y el NFC es un extra
+para quien tenga Chrome en Android.
+
+### Qué código tiene que tener la tarjeta NFC
 
 **Ninguno.** La etiqueta no lleva un código de NEXUS ni una URL: el sistema
 lee el **número de serie del chip** (UID), que el fabricante graba en la
@@ -35,7 +47,7 @@ etiqueta. Tú solo lo lees y lo escribes en "Vincular".
 | Con el teléfono | Cómo |
 |---|---|
 | **Android + Chrome** | "Vincular" → **"Leer con este teléfono"** → acerca la etiqueta. También en el checkin: "Leer tarjeta con este teléfono". |
-| **iPhone (cualquier navegador)** | No hay NFC web en iOS. Usa una app de NFC (TagInfo, NFC Tools, ChipInfo) → copia el **ID/serial** → pégalo en "Vincular". |
+| **iPhone (cualquier navegador)** | No hay NFC web en iOS, así que el botón no aparece. Usa una app de NFC (TagInfo, NFC Tools, ChipInfo) → copia el **ID/serial** → pégalo en "Vincular". |
 | **PC** | Lector NFC USB: se comporta como teclado y escribe el UID en la casilla. |
 
 En la ficha → **Acceso al gimnasio → Vincular** → escribe el serial →
@@ -87,8 +99,8 @@ Cada escaneo deja rastro en la tabla de asistencia:
 
 | Síntoma | Causa | Solución |
 |---|---|---|
-| No aparece "Leer con este teléfono" | El navegador no tiene Web NFC (iOS, Firefox) | Escribe el serial a mano (lo lees con una app de NFC) |
-| No aparece "Leer con la cámara" | El navegador no tiene BarcodeDetector (Safari, Firefox) | Escribe el código a mano, o usa un lector USB |
+| No aparece "Leer tarjeta con este teléfono" | El navegador no tiene Web NFC (iOS, Firefox) | Escribe el serial a mano (lo lees con una app de NFC) o usa el QR con la cámara |
+| No aparece "Leer con la cámara" | El navegador no tiene cámara o el permiso está negado | Revisa el permiso de cámara del navegador; siempre puedes escribir el código |
 | "El código de la tarjeta no es válido" | El serial no es hexadecimal de 6 a 32 caracteres | Copia el ID completo de la app de NFC |
 | "Esa tarjeta ya es de {otro}" | El serial está vinculado a otro socio | Quítasela al otro socio o usas otra etiqueta |
 | "No se encontró ningún socio con ese código" | El código no existe o el socio está inactivo | Revisa que la membresía esté activa |

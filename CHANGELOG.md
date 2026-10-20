@@ -80,6 +80,10 @@ bandeja, satisfacción, salud, precios y catálogo, auditoría y Accesos.
 ## [No publicado] — Control de acceso: intentos y tarjetas
 
 ### Añadido
+- **El QR se lee con la cámara en cualquier teléfono**: si el navegador no
+  tiene `BarcodeDetector` (Safari en iPhone, Firefox), el lector decodifica
+  con jsQR sobre la imagen de la cámara. El botón "Leer con la cámara"
+  aparece siempre que haya cámara.
 - Los escaneos que **no corresponden a ningún socio** quedan registrados
   (con lo escaneado). Antes se perdían y no había forma de ver que alguien
   probaba códigos o clonaba tarjetas. En el panel del gym sale el contador
@@ -89,7 +93,9 @@ bandeja, satisfacción, salud, precios y catálogo, auditoría y Accesos.
 - Guía del sistema de tarjetas: `docs/gym-acceso-nfc.md`.
 
 ### Cambiado
+- El botón **"Leer tarjeta con este teléfono"** (NFC) solo aparece donde
+  existe Web NFC (Chrome con Android). En iPhone y Firefox no se muestra, y
+  el panel explica que el camino universal es el QR con la cámara.
 - La ficha 360 explica **qué es el número de serie de la etiqueta** y que en
-  iOS hay que leerlo con una app de NFC; el checkin avisa cuando el
-  navegador no puede leer cámara ni NFC (solo Chrome en Android).
+  iOS hay que leerlo con una app de NFC.
 - La nota de que el QR es personal y se puede rotar con "Nuevo".

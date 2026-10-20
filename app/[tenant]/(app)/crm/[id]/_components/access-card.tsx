@@ -54,7 +54,13 @@ export default function AccessCard({ slug, customerId, code, nfcUid, status }: {
       setUid(e.serialNumber.toUpperCase());
       ctrl.abort();
     };
-    reader.scan({ signal: ctrl.signal }).catch(() => toast({ title: "NFC no disponible", description: "Activa el NFC del teléfono.", variant: "error" }));
+    reader.scan({ signal: ctrl.signal }).catch(() =>
+      toast({
+        title: "NFC no disponible",
+        description: "Leer tarjetas con el teléfono solo funciona en Chrome con Android. Escribe el número de serie a mano.",
+        variant: "error",
+      }),
+    );
     toast("Acerca la tarjeta al teléfono", "success");
   };
 
@@ -120,8 +126,9 @@ export default function AccessCard({ slug, customerId, code, nfcUid, status }: {
               <input value={uid} onChange={(e) => setUid(e.target.value)} placeholder="Número de serie de la etiqueta (p. ej. 04A1B2C3D4E5)" aria-label="Código de la tarjeta NFC" className={inputClasses} />
               <p className="text-[12px] text-muted-foreground">
                 Es el <b>número de serie del chip</b> de la etiqueta NFC (no una URL ni un código de
-                NEXUS). Léelo con una app de NFC del teléfono (TagInfo, NFC Tools) o con{" "}
-                <b>&quot;Leer con este teléfono&quot;</b> si usas Chrome en Android.
+                NEXUS). Léelo con una app de NFC del teléfono (TagInfo, NFC Tools) y pégalo aquí; o
+                usa <b>&quot;Leer con este teléfono&quot;</b> si tu navegador puede (Chrome con
+                Android).
               </p>
               <div className="flex flex-wrap gap-2">
                 {canReadNfc ? (

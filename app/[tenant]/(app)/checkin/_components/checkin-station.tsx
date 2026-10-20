@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, CheckCircle2, Nfc, Search, UserRound, XCircle } from "lucide-react";
+import { CheckCircle2, Nfc, Search, UserRound, XCircle } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
 import { useToast } from "@/components/molecules/toast";
+import { CameraScanButton } from "@/components/molecules/qr-scanner";
 import { countdown } from "@/lib/business/gym";
 import type { AttendanceRow, CheckInResult, MemberCard, Method } from "@/lib/business/gym-db";
 import { formatDateTime } from "@/lib/format";
@@ -17,10 +18,9 @@ const METHOD_LABEL: Record<string, string> = { QR: "QR", NFC: "Tarjeta", MANUAL:
 /** Los códigos de acceso usan 8 caracteres sin 0/O/1/I; lo demás llega de un lector NFC. */
 const looksLikeAccessCode = (v: string) => /^[A-HJ-NP-Z2-9]{8}$/.test(v.trim().toUpperCase());
 
-type Detector = { detect: (src: CanvasImageSource) => Promise<{ rawValue: string }[]> };
 type NdefReader = { scan: (o?: { signal?: AbortSignal }) => Promise<void>; onreading: ((e: { serialNumber: string }) => void) | null; onreadingerror: (() => void) | null };
 
-function Photo({ id, className }: { id: string | null; className: string }) {
+function Photo({ id, className }: { id: string | null; className?: string }) {
   if (!id) return <span className={cn(className, "grid place-items-center bg-surface-muted text-muted-foreground")}><UserRound aria-hidden="true" className="size-1/2" /></span>;
   // eslint-disable-next-line @next/next/no-img-element
   return <img src={`/api/files/${id}`} alt="" className={cn(className, "object-cover")} />;
@@ -32,13 +32,11 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
   const [q, setQ] = useState("");
   const [found, setFound] = useState<MemberCard[]>([]);
   const [result, setResult] = useState<CheckInResult | null>(null);
-  const [camera, setCamera] = useState(false);
   const [nfcOn, setNfcOn] = useState(false);
   const [support, setSupport] = useState({ camera: false, nfc: false });
   const [now, setNow] = useState(0);
   const [pending, start] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const busy = useRef(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -46,7 +44,7 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
   useEffect(() => {
     // Detección de capacidades del navegador (solo en el cliente).
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSupport({ camera: "BarcodeDetector" in window && !!navigator.mediaDevices, nfc: "NDEFReader" in window });
+    setSupport({ camera: Boolean(navigator.mediaDevices?.getUserMedia), nfc: "NDEFReader" in window });
   }, []);
 
   // El contador del resultado avanza cada segundo; el resultado se limpia a los 12 s.
@@ -85,42 +83,8 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
     });
   };
 
-  // Cámara: lee QR con BarcodeDetector (Chrome/Android/Edge).
-  useEffect(() => {
-    if (!camera) return;
-    let stream: MediaStream | null = null;
-    let timer = 0;
-    let alive = true;
-    const Ctor = (window as unknown as { BarcodeDetector: new (o: { formats: string[] }) => Detector }).BarcodeDetector;
-    const detector = new Ctor({ formats: ["qr_code"] });
-    void navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: "environment" } })
-      .then(async (s) => {
-        if (!alive) return s.getTracks().forEach((t) => t.stop());
-        stream = s;
-        const v = videoRef.current;
-        if (!v) return;
-        v.srcObject = s;
-        await v.play();
-        timer = window.setInterval(async () => {
-          if (busy.current || v.readyState < 2) return;
-          const codes = await detector.detect(v).catch(() => []);
-          if (codes[0]?.rawValue) submitScan(codes[0].rawValue, "QR");
-        }, 400);
-      })
-      .catch(() => {
-        toast({ title: "Sin cámara", description: "Permite el acceso a la cámara o usa el lector.", variant: "error" });
-        setCamera(false);
-      });
-    return () => {
-      alive = false;
-      window.clearInterval(timer);
-      stream?.getTracks().forEach((t) => t.stop());
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [camera]);
-
-  // NFC del teléfono (Chrome en Android): lee el número de serie de la tarjeta.
+  // NFC del teléfono (solo existe en Chrome con Android): lee el número de
+  // serie de la tarjeta. En el resto de navegadores el botón no aparece.
   useEffect(() => {
     if (!nfcOn) return;
     const ctrl = new AbortController();
@@ -176,26 +140,23 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
           </button>
         </form>
         <div className="flex flex-wrap gap-2">
-          {support.camera ? (
-            <button type="button" onClick={() => setCamera((v) => !v)} className={buttonVariants({ size: "sm", variant: camera ? "default" : "outline" })}>
-              <Camera aria-hidden="true" className="size-3.5" /> {camera ? "Cerrar cámara" : "Leer con la cámara"}
-            </button>
-          ) : null}
+          <CameraScanButton onDetect={(value) => submitScan(value, "QR")} />
           {support.nfc ? (
             <button type="button" onClick={() => setNfcOn((v) => !v)} className={buttonVariants({ size: "sm", variant: nfcOn ? "default" : "outline" })}>
               <Nfc aria-hidden="true" className="size-3.5" /> {nfcOn ? "NFC activo: acerca la tarjeta" : "Leer tarjeta con este teléfono"}
             </button>
           ) : null}
-          <p className="self-center text-xs text-muted-foreground">Los lectores USB de QR y de tarjetas funcionan como teclado: deja el cursor en la casilla.</p>
+          <p className="self-center text-xs text-muted-foreground">
+            El QR se lee con la cámara en cualquier teléfono. Los lectores USB de QR y de tarjetas
+            funcionan como teclado: deja el cursor en la casilla.
+          </p>
         </div>
-        {!support.camera && !support.nfc ? (
+        {!support.nfc ? (
           <p className="rounded-md border border-dashed border-border bg-surface-muted px-3 py-2 text-[12px] text-muted-foreground">
-            Este navegador no puede leer QR por cámara ni tarjetas NFC: la lectura con el teléfono
-            solo existe en <b>Chrome con Android</b>. Mientras tanto, escribe el código de socio o
-            el número de serie de la tarjeta, o usa un lector USB (funcionan como teclado).
+            Leer la tarjeta NFC con el teléfono solo funciona en <b>Chrome con Android</b>. Aquí usa
+            el <b>QR</b> (cámara) o escribe el número de serie de la tarjeta a mano.
           </p>
         ) : null}
-        {camera ? <video ref={videoRef} muted playsInline className="aspect-video w-full max-w-md rounded-md bg-black object-cover" /> : null}
       </section>
 
       {result ? (
