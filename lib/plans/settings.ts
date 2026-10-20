@@ -22,6 +22,34 @@ const STATUSES: ModuleStatus[] = ["READY", "BETA", "PLANNED"];
 const PLAN_KEYS: PlanKey[] = ["ESSENTIAL", "ELITE", "SIGNATURE"];
 const mods = (list: readonly string[] | null | undefined) => (list ?? []).filter(isModule) as ModuleValue[];
 
+/** ¿El error es una violación de clave única (23505)? */
+function isUniqueViolation(error: unknown): boolean {
+  const e = error as {
+    code?: string;
+    sqlState?: string;
+    message?: string;
+    cause?: { code?: string };
+  };
+  const code = e?.code ?? e?.sqlState ?? e?.cause?.code;
+  if (code === "23505") return true;
+  return typeof e?.message === "string" && e.message.includes("duplicate key value");
+}
+
+/**
+ * Inserta tolerando la carrera: si otra petición insertó la misma fila entre
+ * la lectura y el INSERT, el resultado que importa (que la fila exista) ya
+ * está. Sin esto, dos registros simultáneos sobre una base recién sembrada
+ * hacen fallar la petición con "duplicate key value".
+ */
+async function insertIgnoringConflict(insert: () => Promise<unknown>): Promise<void> {
+  try {
+    await insert();
+  } catch (error) {
+    if (isUniqueViolation(error)) return;
+    throw error;
+  }
+}
+
 /** Inserta lo que falte con los valores iniciales (idempotente). */
 export async function ensureCatalogSeeded(): Promise<void> {
   const d = defaultPricingConfig();
@@ -32,10 +60,15 @@ export async function ensureCatalogSeeded(): Promise<void> {
     db.orm.public.CustomerTierSetting.select("id").all(),
   ]);
   const has = { p: new Set(plans.map((x) => x.key)), m: new Set(modules.map((x) => x.module)), v: new Set(verticals.map((x) => x.vertical)) };
-  for (const p of d.plans) if (!has.p.has(p.key)) await db.orm.public.PlanSetting.create({ ...p });
-  for (const m of d.modules) if (!has.m.has(m.module)) await db.orm.public.ModuleSetting.create({ ...m });
-  for (const v of d.verticals) if (!has.v.has(v.vertical)) await db.orm.public.VerticalSetting.create({ ...v });
-  if (tiers.length === 0) for (const t of d.tiers) await db.orm.public.CustomerTierSetting.create({ ...t });
+  for (const p of d.plans)
+    if (!has.p.has(p.key)) await insertIgnoringConflict(() => db.orm.public.PlanSetting.create({ ...p }));
+  for (const m of d.modules)
+    if (!has.m.has(m.module)) await insertIgnoringConflict(() => db.orm.public.ModuleSetting.create({ ...m }));
+  for (const v of d.verticals)
+    if (!has.v.has(v.vertical)) await insertIgnoringConflict(() => db.orm.public.VerticalSetting.create({ ...v }));
+  if (tiers.length === 0)
+    for (const t of d.tiers)
+      await insertIgnoringConflict(() => db.orm.public.CustomerTierSetting.create({ ...t }));
 }
 
 /** Configuración vigente (una lectura por petición). */
