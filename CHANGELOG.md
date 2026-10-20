@@ -74,3 +74,8 @@ bandeja, satisfacción, salud, precios y catálogo, auditoría y Accesos.
 
 [Unreleased]: https://github.com/NexusThrive/nexus-thrive/compare/v1.0.0...HEAD
 [v1.0.0]: https://github.com/NexusThrive/nexus-thrive/releases/tag/v1.0.0
+
+## [v1.0.1] — 2026-10-21
+
+### Corregido
+- Prueba.
