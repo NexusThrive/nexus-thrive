@@ -53,6 +53,21 @@ if git rev-parse "$VERSION" > /dev/null 2>&1; then
   exit 1
 fi
 
+# Regla de oro: si cambió el modelo de datos, tiene que haber SQL de
+# producción en el mismo cambio (si no, la versión se cae al desplegar).
+LAST_TAG="$(git describe --tags --abbrev=0 2>/dev/null || true)"
+if [ -n "$LAST_TAG" ]; then
+  echo "== SQL de producción (desde $LAST_TAG) =="
+  bash ./scripts/check-prod-sql.sh "$LAST_TAG"
+fi
+
+# La versión tiene que estar anotada en el changelog.
+if ! grep -q "## \[$VERSION\]" CHANGELOG.md 2>/dev/null; then
+  echo "El CHANGELOG.md no tiene la sección '## [$VERSION]'."
+  echo "Anótala antes de publicar (ver docs/VERSIONADO.md, sección 7)."
+  exit 1
+fi
+
 echo "== Puertas de calidad =="
 pnpm exec tsc --noEmit
 echo "  tipos OK"

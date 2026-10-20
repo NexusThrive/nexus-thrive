@@ -37,6 +37,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Historial completo: la comprobación del SQL de producción compara
+          # contra la base del PR.
+          fetch-depth: 0
 
       # La versión de pnpm sale de `packageManager` en package.json.
       - uses: pnpm/action-setup@v4
@@ -47,6 +51,13 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+
+      # Regla de oro: si cambió el modelo de datos, el PR tiene que traer su
+      # SQL de producción. Sin él, la app se despliega antes de que la base
+      # esté lista y se cae en producción.
+      - name: SQL de producción si cambió el modelo
+        if: github.event_name == 'pull_request'
+        run: bash ./scripts/check-prod-sql.sh "origin/${{ github.base_ref }}"
 
       - name: Typecheck
         run: pnpm exec tsc --noEmit
