@@ -73,6 +73,25 @@ pnpm build
 
 El CI (`.github/workflows/ci.yml`) ejecuta todo esto sobre un Postgres efímero. El test `lib/apu-importer/master-pack*.file*.test.ts` verifica un pack APU real si se le pasa `MASTER_PACK_FILE=/ruta/al/archivo.xlsx`.
 
+## Versiones
+
+`main` es la única rama que se despliega (Vercel la toma sola) y cada versión
+publicada lleva un tag: `v1.0.0` (V1), `v1.0.1` (parche), `v1.1.0`
+(funcionalidad nueva), `v2.0.0` (rompe algo de lo existente).
+
+```bash
+pnpm release v1.0.1 "fix(ventas): no deja registrar una venta sin fecha"
+```
+
+El script verifica que el árbol esté limpio y en `main`, corre las puertas
+(tipos, lint, pruebas, build) y crea y sube el tag. **No** sube `main` ni
+aplica el SQL de producción: eso es del PR y del SQL Editor de Supabase.
+
+El proceso completo —ramas, cuándo es PATCH o MINOR, qué hacer si producción
+está rota, checklist de verificación— está en
+[`docs/VERSIONADO.md`](docs/VERSIONADO.md), y el historial de versiones en
+[`CHANGELOG.md`](CHANGELOG.md).
+
 ## Vertical de construcción
 
 Una obra es el contenedor de todo; fuera de ella solo existe el catálogo APU.
