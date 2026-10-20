@@ -143,3 +143,29 @@ Y en el CHANGELOG, arriba del todo, con el enlace de comparación.
 - **Lo que no bloquea el piloto se anota, no se frena**: Wompi, Meta, Resend
   y Google Places están pendientes a propósito; siguen en
   `docs/V1-PROGRESO.md`.
+
+### Estas reglas se cumplen solas
+
+| Regla | Dónde se aplica |
+|---|---|
+| El cambio de modelo trae su SQL de producción | `scripts/check-prod-sql.sh`, invocado por `pnpm test:integration` (lo corre el CI) y por `pnpm release` |
+| La versión está anotada en el changelog | `pnpm release` lo comprueba antes de crear el tag |
+| Todo verde antes de publicar | `pnpm release` corre tipos, lint, pruebas, integración y build |
+| `main` es la única rama que se despliega | `pnpm release` publica solo desde `main`, sincronizada con `origin/main` |
+
+> El paso del CI que compara contra la base del PR necesita el historial
+> completo del clon. Si quieres que el CI bloquee el PR (y no solo la
+> publicación), añade esto a `.github/workflows/ci.yml`:
+>
+> ```yaml
+>       - uses: actions/checkout@v4
+>         with:
+>           fetch-depth: 0
+>
+>       - name: SQL de producción si cambió el modelo
+>         if: github.event_name == 'pull_request'
+>         run: bash ./scripts/check-prod-sql.sh "origin/${{ github.base_ref }}"
+> ```
+>
+> (El token con el que se hace el push desde el equipo no tiene el permiso
+> `workflow`, por eso este paso se deja a mano.)

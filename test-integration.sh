@@ -15,6 +15,13 @@ if [ "$(normalize "$DATABASE_URL")" != "$(normalize "$TEST_DATABASE_URL")" ]; th
   exit 1
 fi
 
+# Regla de oro: si el cambio toca el modelo de datos, tiene que traer su SQL
+# de producción. El CI corre este script, así que el faltante se ve ahí.
+# (Si el clon es superficial y no hay historia, se omite sin molestar.)
+if [ -d .git ] && git rev-parse --verify origin/main > /dev/null 2>&1; then
+  bash ./scripts/check-prod-sql.sh origin/main
+fi
+
 pnpm exec vitest run \
   lib/benefits/benefits-db.integration.test.ts \
   lib/plans/settings.integration.test.ts \

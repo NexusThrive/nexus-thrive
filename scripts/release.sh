@@ -40,9 +40,11 @@ if [ "$BRANCH" != "main" ]; then
   exit 1
 fi
 
-git fetch origin main --quiet
+if ! git fetch origin main --quiet; then
+  echo "Aviso: no se pudo actualizar origin/main (fallo de red). Se compara con la copia local."
+fi
 LOCAL="$(git rev-parse main)"
-REMOTE="$(git rev-parse origin/main)"
+REMOTE="$(git rev-parse origin/main 2>/dev/null || echo "$LOCAL")"
 if [ "$LOCAL" != "$REMOTE" ]; then
   echo "main no está sincronizada con origin/main. Sube (o baja) los cambios primero."
   exit 1
@@ -50,6 +52,21 @@ fi
 
 if git rev-parse "$VERSION" > /dev/null 2>&1; then
   echo "El tag $VERSION ya existe."
+  exit 1
+fi
+
+# Regla de oro: si cambió el modelo de datos, tiene que haber SQL de
+# producción en el mismo cambio (si no, la versión se cae al desplegar).
+LAST_TAG="$(git describe --tags --abbrev=0 2>/dev/null || true)"
+if [ -n "$LAST_TAG" ]; then
+  echo "== SQL de producción (desde $LAST_TAG) =="
+  bash ./scripts/check-prod-sql.sh "$LAST_TAG"
+fi
+
+# La versión tiene que estar anotada en el changelog.
+if ! grep -q "## \[$VERSION\]" CHANGELOG.md 2>/dev/null; then
+  echo "El CHANGELOG.md no tiene la sección '## [$VERSION]'."
+  echo "Anótala antes de publicar (ver docs/VERSIONADO.md, sección 7)."
   exit 1
 fi
 
