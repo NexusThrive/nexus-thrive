@@ -24,9 +24,42 @@ Variables de entorno:
 | --- | --- |
 | `DATABASE_URL` | PostgreSQL de la aplicación |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY` | Clerk |
+| `NEXT_PUBLIC_APP_URL` | URL pública de la app (enlaces compartidos, QR, recibos) |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob (solo servidor; los tokens de subida se emiten en `/api/blob-upload`) |
 | `DEV_ALLOWED_ORIGINS` | Hosts extra del dev server separados por coma (Tailscale, LAN) |
 | `TEST_DATABASE_URL` | Base aparte para los tests de integración |
+
+Para **producción** hay una lista completa con valores sugeridos en
+`.env.produccion` y el orden de ejecución del SQL en
+`docs/prod-sql/00-ORDEN.md`.
+
+## La V1 (piloto interno)
+
+La V1 se entrega como **piloto interno**: NEXUS entra por un código de
+acceso, sin cobro automático. El equipo NEXUS administra a mano los planes y
+la vigencia de cada negocio.
+
+| Pieza | Dónde |
+| --- | --- |
+| Códigos de acceso (promo gratis / pago) | `/c/{código}` y el panel *Accesos* (`/admin/beneficios`) |
+| Onboarding sin precios: código, pago por WhatsApp o plan gratis | `/onboarding` |
+| Operations Center (panel de NEXUS) | `/admin` |
+| Tarjeta fija de las tarjetas impresas | QR a `https://app.nexusthrive.com.co/c/ELITE30` |
+
+Los dos tipos de código se distinguen solo en el texto que ve la persona: un
+**promo** anuncia "N días gratis" y un **acceso pagado** (emitido tras
+confirmar el pago por WhatsApp) anuncia "Cuenta NEXUS activada".
+
+El servidor decide el plan y los módulos: nunca los acepta del navegador, y
+el canje de un código de un solo uso es atómico. Al vencer el acceso, el
+negocio vuelve al plan Essential. Ver `docs/V1-PROGRESO.md`.
+
+## Autenticación en producción
+
+El login lo monta Clerk en el navegador, desde un host que viene codificado en
+la Publishable Key. Al cambiar de dominio hay que actualizar la key, el
+CNAME del Frontend API y los orígenes permitidos: todo está en
+[`docs/clerk-produccion.md`](docs/clerk-produccion.md).
 
 ## Verificación
 
