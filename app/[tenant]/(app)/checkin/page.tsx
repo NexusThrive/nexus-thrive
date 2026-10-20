@@ -35,7 +35,9 @@ export default async function CheckinPage({ params }: { params: Promise<{ tenant
   const denied = entries.filter((e) => !e.allowed).length;
 
   return (
-    <div className="space-y-6">
+    // Ver la nota del `CheckinStation`: los gestores de contraseñas añaden
+    // atributos al DOM y provocan un aviso de hydration mismatch.
+    <div className="space-y-6" suppressHydrationWarning>
       <PageHeader eyebrow="Gimnasio" title="Control de acceso" description={`Lee el QR o la tarjeta del ${terms.customer.toLowerCase()}, o búscalo por nombre o documento.`} />
 
       <section aria-label="Asistencia" className="grid grid-cols-2 gap-3 lg:grid-cols-5">

@@ -183,7 +183,10 @@ export default async function CustomerPage({
   }
 
   return (
-    <div className="space-y-5">
+    // Los gestores de contraseñas añaden atributos al DOM antes de que React
+    // hidrate: sin esto aparece un aviso de hydration mismatch que no es
+    // nuestro (la ficha 360 tiene varios formularios).
+    <div className="space-y-5" suppressHydrationWarning>
       <CustomerHeader
         tenantSlug={tenantSlug}
         tenantName={tenantRecord.name}

@@ -116,7 +116,11 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
   const cd = result?.endsAt && now ? countdown(result.endsAt, now) : null;
 
   return (
-    <div className="grid grid-cols-1 content-start gap-6">
+    // `suppressHydrationWarning`: los gestores de contraseñas (Proton Pass,
+    // 1Password, Bitwarden…) añaden atributos al DOM antes de que React
+    // hidrate, y eso dispara un aviso de "hydration mismatch" que no es
+    // nuestro. Solo silencia el desajuste de atributos de este contenedor.
+    <div className="grid grid-cols-1 content-start gap-6" suppressHydrationWarning>
       <section className="grid grid-cols-1 gap-3 rounded-lg border border-border bg-card p-4">
         <form
           onSubmit={(e) => {
