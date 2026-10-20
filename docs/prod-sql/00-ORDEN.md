@@ -13,9 +13,22 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 2 | `2026-10-19-v1-negocio-completo.sql` | V1 del negocio: finanzas, caja, clientes, agenda, rubros, taquilla, Presence | aplicado |
 | 3 | `2026-10-19-beneficios.sql` | Accesos: `BenefitCode`, `BenefitRedemption` + el código fijo `ELITE30` | aplicado |
 | 4 | `2026-10-20-admin-santiago.sql` | Administrador (Propietario) del Operations Center | aplicado |
+| 5 | `2026-10-20-asistencia-intentos.sql` | Control de acceso: columna `scanned` y `customerId` admite null (registrar los escaneos que no son de nadie) | **PENDIENTE** |
 
 > Si en algún momento reseteaste la base, vuelve a correr **3 y 4** (son las
 > que dejan el acceso y el administrador listos para vender).
+
+### Lo que falta ahora
+
+**Corre el archivo 5** (`2026-10-20-asistencia-intentos.sql`) antes de usar
+la versión nueva del control de acceso: sin él, la app que registra los
+códigos desconocidos fallaría al escribir la columna `scanned`.
+
+Los archivos 1 a 4 ya están aplicados.
+
+> Lo que venga después (por ejemplo, el checkout con Wompi) traerá su propio
+> archivo aquí, y la regla de `scripts/check-prod-sql.sh` comprueba que un
+> cambio de modelo de datos siempre venga con su SQL.
 
 ---
 
