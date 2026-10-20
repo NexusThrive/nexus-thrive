@@ -2055,3 +2055,5 @@ model PresenceScan {
 
   @@index([tenantId, createdAt])
 }
+
+// prueba
