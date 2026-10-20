@@ -14,7 +14,7 @@ import {
 import { getBenefitByCode } from "@/lib/benefits/benefits-db";
 import { normalizeBenefitCode, type BenefitKind } from "@/lib/benefits/benefits";
 import { SHOW_PRICING } from "@/lib/onboarding/flags";
-import { allowAttempt, recordAttempt } from "@/lib/benefits/rate-limit";
+import { allowAttempt, recordAttempt } from "@/lib/rate-limit";
 import type { PlanKey, Billing } from "@/lib/plans/catalog";
 import { resolveModules } from "@/lib/plans/pricing";
 import type {

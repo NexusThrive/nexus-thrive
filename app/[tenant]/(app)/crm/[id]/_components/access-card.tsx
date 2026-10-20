@@ -95,6 +95,10 @@ export default function AccessCard({ slug, customerId, code, nfcUid, status }: {
                   <RefreshCw aria-hidden="true" className="size-3.5" /> Nuevo
                 </button>
               </div>
+              <p className="text-[12px] text-muted-foreground">
+                El QR es como una tarjeta: personal. Si se pierde o alguien lo fotografía, genera
+                uno nuevo con <b>Nuevo</b> y el anterior deja de servir.
+              </p>
             </div>
           </div>
         ) : (
@@ -113,7 +117,12 @@ export default function AccessCard({ slug, customerId, code, nfcUid, status }: {
           </p>
           {editingNfc ? (
             <div className="grid gap-2">
-              <input value={uid} onChange={(e) => setUid(e.target.value)} placeholder="Pasa la tarjeta por el lector o escribe su código" aria-label="Código de la tarjeta NFC" className={inputClasses} />
+              <input value={uid} onChange={(e) => setUid(e.target.value)} placeholder="Número de serie de la etiqueta (p. ej. 04A1B2C3D4E5)" aria-label="Código de la tarjeta NFC" className={inputClasses} />
+              <p className="text-[12px] text-muted-foreground">
+                Es el <b>número de serie del chip</b> de la etiqueta NFC (no una URL ni un código de
+                NEXUS). Léelo con una app de NFC del teléfono (TagInfo, NFC Tools) o con{" "}
+                <b>&quot;Leer con este teléfono&quot;</b> si usas Chrome en Android.
+              </p>
               <div className="flex flex-wrap gap-2">
                 {canReadNfc ? (
                   <button type="button" onClick={readNfc} className={buttonVariants({ size: "sm", variant: "outline" })}>

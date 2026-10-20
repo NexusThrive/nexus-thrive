@@ -74,3 +74,22 @@ bandeja, satisfacción, salud, precios y catálogo, auditoría y Accesos.
 
 [Unreleased]: https://github.com/NexusThrive/nexus-thrive/compare/v1.0.0...HEAD
 [v1.0.0]: https://github.com/NexusThrive/nexus-thrive/releases/tag/v1.0.0
+
+---
+
+## [No publicado] — Control de acceso: intentos y tarjetas
+
+### Añadido
+- Los escaneos que **no corresponden a ningún socio** quedan registrados
+  (con lo escaneado). Antes se perdían y no había forma de ver que alguien
+  probaba códigos o clonaba tarjetas. En el panel del gym sale el contador
+  **"Códigos desconocidos"**.
+- Freno a la fuerza bruta en la puerta: quien pasa de 120 escaneos por
+  minuto recibe "Demasiados escaneos seguidos".
+- Guía del sistema de tarjetas: `docs/gym-acceso-nfc.md`.
+
+### Cambiado
+- La ficha 360 explica **qué es el número de serie de la etiqueta** y que en
+  iOS hay que leerlo con una app de NFC; el checkin avisa cuando el
+  navegador no puede leer cámara ni NFC (solo Chrome en Android).
+- La nota de que el QR es personal y se puede rotar con "Nuevo".

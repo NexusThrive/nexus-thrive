@@ -1913,8 +1913,12 @@ model DismissedNotification {
 model Attendance {
   id           String   @id @default(uuid())
   tenantId     String
-  customerId   String
+  /// Socio identificado. Nulo cuando lo escaneado no corresponde a nadie
+  /// (código o tarjeta desconocida): el intento queda registrado igual.
+  customerId   String?
   membershipId String?
+  /// Lo que se escaneó, cuando no se pudo identificar al socio.
+  scanned      String?
   /// NFC | QR | MANUAL
   method       String
   allowed      Boolean

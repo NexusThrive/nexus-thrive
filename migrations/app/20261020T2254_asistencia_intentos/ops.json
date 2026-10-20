@@ -1,0 +1,87 @@
+[
+  {
+    "id": "column.public.Attendance.scanned",
+    "label": "Add column \"scanned\" to \"Attendance\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "scanned",
+        "table": "Attendance"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"scanned\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Attendance",
+          "scanned"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"scanned\"",
+        "sql": "ALTER TABLE \"public\".\"Attendance\" ADD COLUMN \"scanned\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"scanned\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Attendance",
+          "scanned"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.dropNotNull.Attendance.customerId",
+    "label": "Drop NOT NULL on \"Attendance\".\"customerId\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "customerId",
+        "table": "Attendance"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"customerId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Attendance",
+          "customerId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop NOT NULL on \"customerId\"",
+        "sql": "ALTER TABLE \"public\".\"Attendance\" ALTER COLUMN \"customerId\" DROP NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"customerId\" is nullable",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "Attendance",
+          "customerId",
+          "YES"
+        ]
+      }
+    ]
+  }
+]

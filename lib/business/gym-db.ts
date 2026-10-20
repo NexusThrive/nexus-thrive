@@ -1,4 +1,4 @@
-import { and, or } from "@prisma/orm-postgres/orm-client";
+import { and, not, or } from "@prisma/orm-postgres/orm-client";
 import { db } from "@/prisma/db";
 import { escapeLike } from "@/lib/construction/shared";
 import { toNumber } from "@/lib/format";
@@ -27,8 +27,7 @@ export function normalizeScan(raw: string): string {
 
 /** Busca por código de acceso, UID de tarjeta NFC o documento (coincidencia exacta). */
 export async function findMemberByScan(tenantId: string, raw: string): Promise<MemberCard | null> {
-  const code = normalizeScan(raw);
-  if (code.length < 4) return null;
+  const code = normalizeScan(raw);  if (code.length < 4) return null;
   const nfc = code.replace(/:/g, "");
   const row = await db.orm.public.Customer.where({ tenantId, active: true })
     .where((c) => or(c.accessCode.eq(code), c.nfcUid.eq(nfc), c.documentId.eq(raw.trim())))
@@ -93,14 +92,53 @@ export async function checkIn(tenantId: string, member: MemberCard, method: Meth
 
 export type AttendanceRow = { id: string; customerId: string; name: string; photoId: string | null; method: string; allowed: boolean; reason: string | null; at: string };
 
+/**
+ * Registra un escaneo que NO corresponde a ningún socio (código o tarjeta
+ * desconocida). Antes estos intentos no dejaban rastro: no había forma de ver
+ * que alguien estaba probando códigos o clonando una tarjeta. Ahora quedan en
+ * la misma tabla de asistencia, con el socio vacío y lo escaneado guardado.
+ */
+export async function recordUnknownScan(
+  tenantId: string,
+  raw: string,
+  method: Method,
+  userId: string,
+): Promise<void> {
+  const scanned = normalizeScan(raw).slice(0, 64);
+  if (!scanned) return;
+  try {
+    await db.orm.public.Attendance.create({
+      tenantId,
+      customerId: null,
+      membershipId: null,
+      scanned,
+      method,
+      allowed: false,
+      reason: "Código o tarjeta desconocida",
+      createdById: userId,
+    });
+  } catch {
+    // Registrar el intento nunca debe tumbar la puerta.
+  }
+}
+
+/** Intentos fallidos (nadie identificado) en un rango: lo que se ve en el panel. */
+export async function unknownScansBetween(tenantId: string, fromMs: number, toMs: number): Promise<number> {
+  const { total } = await db.orm.public.Attendance
+    .where({ tenantId, allowed: false })
+    .where((a) => and(a.customerId.eq(null), a.at.gte(instant(fromMs)), a.at.lt(instant(toMs))))
+    .aggregate((a) => ({ total: a.count() }));
+  return total;
+}
+
 /** Entradas de un rango (por defecto, hoy en Bogotá), la más reciente primero. */
 export async function attendanceBetween(tenantId: string, fromMs: number, toMs: number, limit = 60): Promise<AttendanceRow[]> {
   const rows = await db.orm.public.Attendance.where({ tenantId })
-    .where((a) => and(a.at.gte(instant(fromMs)), a.at.lt(instant(toMs))))
+    .where((a) => and(not(a.customerId.eq(null)), a.at.gte(instant(fromMs)), a.at.lt(instant(toMs))))
     .orderBy((a) => a.at.desc())
     .limit(limit)
     .all();
-  const ids = [...new Set(rows.map((r) => r.customerId))];
+  const ids = [...new Set(rows.map((r) => r.customerId).filter((id): id is string => Boolean(id)))];
   const people = ids.length
     ? await db.orm.public.Customer.where({ tenantId })
         .where((c) => c.id.in(ids))
@@ -108,7 +146,7 @@ export async function attendanceBetween(tenantId: string, fromMs: number, toMs: 
         .all()
     : [];
   const byId = new Map(people.map((p) => [p.id, p]));
-  return rows.map((r) => ({ id: r.id, customerId: r.customerId, name: byId.get(r.customerId)?.name ?? "Socio", photoId: byId.get(r.customerId)?.photoId ?? null, method: r.method, allowed: r.allowed, reason: r.reason, at: String(r.at) }));
+  return rows.map((r) => ({ id: r.id, customerId: r.customerId ?? "", name: byId.get(r.customerId ?? "")?.name ?? "Socio", photoId: byId.get(r.customerId ?? "")?.photoId ?? null, method: r.method, allowed: r.allowed, reason: r.reason, at: String(r.at) }));
 }
 
 /** Conteo de entradas permitidas en un rango (personas distintas y total). */

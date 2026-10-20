@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { attendanceBetween, attendanceCount, cancelMembership, checkIn, ensureAccessCode, expiringSoon, findMemberByScan, freezeMembership, getMember, linkNfc, memberStatus, unfreezeMembership } from "./gym-db";
+import { attendanceBetween, attendanceCount, cancelMembership, checkIn, ensureAccessCode, expiringSoon, findMemberByScan, freezeMembership, getMember, linkNfc, memberStatus, recordUnknownScan, unfreezeMembership, unknownScansBetween } from "./gym-db";
 
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const normalize = (url: string | undefined) => (url ?? "").replace(/\?.*$/, "");
@@ -49,6 +49,25 @@ describe.skipIf(!TEST_URL)("gimnasio: acceso, asistencia y congelamientos", () =
     const rows = await attendanceBetween(tenantId, now - DAY, now + DAY);
     expect(rows.map((r) => r.name).sort()).toEqual(["Ana Activa", "Beto Vencido"]);
     expect(await attendanceCount(tenantId, now - DAY, now + DAY)).toEqual({ entries: 1, people: 1 });
+  });
+
+  test("un escaneo que no es de nadie queda registrado y no aparece como entrada", async () => {
+    const now = Date.now();
+    await recordUnknownScan(tenantId, " clon-ajeno ", "NFC", "u1");
+    await recordUnknownScan(tenantId, "CLON2", "QR", "u1");
+
+    // Queda en la tabla (se puede ver que alguien probó códigos)…
+    const guardados = await db.orm.public.Attendance.where({ tenantId })
+      .where((a) => a.scanned.eq("CLON-AJENO"))
+      .all();
+    expect(guardados.length).toBe(1);
+    expect(guardados[0].customerId).toBeNull();
+    expect(guardados[0].allowed).toBe(false);
+
+    // …pero no contam la lista de entradas del día.
+    const filas = await attendanceBetween(tenantId, now - DAY, now + DAY);
+    expect(filas.map((r) => r.name)).not.toContain("Socio");
+    expect(await unknownScansBetween(tenantId, now - DAY, now + DAY)).toBe(2);
   });
 
   test("congelar corre el vencimiento, niega la entrada y reactivar devuelve los días no usados", async () => {

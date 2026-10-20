@@ -2385,7 +2385,7 @@
                 }
               },
               "customerId": {
-                "nullable": false,
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -2413,6 +2413,13 @@
                 }
               },
               "reason": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "scanned": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
@@ -2453,6 +2460,9 @@
                 },
                 "reason": {
                   "column": "reason"
+                },
+                "scanned": {
+                  "column": "scanned"
                 },
                 "tenantId": {
                   "column": "tenantId"
@@ -14088,7 +14098,7 @@
                 "customerId": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
-                  "nullable": false
+                  "nullable": true
                 },
                 "id": {
                   "codecId": "pg/text@1",
@@ -14106,6 +14116,11 @@
                   "nullable": false
                 },
                 "reason": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "scanned": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
@@ -22345,7 +22360,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "fc5396d5aae600c31df52c51b6bddd5b012544494515a65147cbfafad4f632c1"
+    "storageHash": "95c4b8718be63ed4b0691ef122307affee2344865c14cdf8110dc094c60aa5b0"
   },
   "execution": {
     "executionHash": "1bb2b0409221f1c27f4e1c287aef8646d94594a120cc49aea06b43a3cbba9717",

@@ -188,6 +188,13 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
           ) : null}
           <p className="self-center text-xs text-muted-foreground">Los lectores USB de QR y de tarjetas funcionan como teclado: deja el cursor en la casilla.</p>
         </div>
+        {!support.camera && !support.nfc ? (
+          <p className="rounded-md border border-dashed border-border bg-surface-muted px-3 py-2 text-[12px] text-muted-foreground">
+            Este navegador no puede leer QR por cámara ni tarjetas NFC: la lectura con el teléfono
+            solo existe en <b>Chrome con Android</b>. Mientras tanto, escribe el código de socio o
+            el número de serie de la tarjeta, o usa un lector USB (funcionan como teclado).
+          </p>
+        ) : null}
         {camera ? <video ref={videoRef} muted playsInline className="aspect-video w-full max-w-md rounded-md bg-black object-cover" /> : null}
       </section>
 
