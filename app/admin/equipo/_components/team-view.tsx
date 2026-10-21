@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { KeyRound, Plus, ShieldCheck, Trash2, UserPlus } from "lucide-react";
+import { Copy, KeyRound, Link2, Plus, ShieldCheck, Trash2, UserPlus } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses, selectClasses } from "@/components/atoms/input";
@@ -14,7 +14,7 @@ import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import type { PermissionKey } from "@/lib/ops/permissions";
 import type { RoleRow, StaffRow } from "@/lib/ops/team";
-import { changeStaffRoleAction, deleteRoleAction, inviteStaffAction, setStaffActiveAction, unlinkStaffAccountAction } from "../actions";
+import { changeStaffRoleAction, createStaffInviteAction, deleteRoleAction, inviteStaffAction, setStaffActiveAction, unlinkStaffAccountAction } from "../actions";
 import RoleBuilder from "./role-builder";
 
 const rel = new Intl.RelativeTimeFormat("es-CO", { numeric: "auto" });
@@ -68,6 +68,21 @@ export default function TeamView({
         toast(done, "success");
         router.refresh();
       } else toast({ title: "No se pudo completar", description: r.message, variant: "error" });
+    });
+
+  // Enlace de invitación generado (se muestra para copiar y mandar).
+  const [inviteLink, setInviteLink] = useState<{ email: string; url: string } | null>(null);
+
+  const makeInvite = (m: StaffRow) =>
+    start(async () => {
+      const r = await createStaffInviteAction(m.id);
+      if (!r.ok) {
+        toast({ title: "No se pudo generar el enlace", description: r.message, variant: "error" });
+        return;
+      }
+      const url = `${window.location.origin}/invitacion/${r.token ?? ""}`;
+      setInviteLink({ email: m.email, url });
+      toast("Enlace generado. Cópialo y mándaselo.", "success");
     });
 
   return (
@@ -161,6 +176,45 @@ export default function TeamView({
                         Desvincular cuenta
                       </button>
                     ) : null}
+                    {can("team.invite") ? (
+                      <button
+                        type="button"
+                        disabled={pending}
+                        title="Genera un enlace de un solo uso: la persona entra con el enlace y queda en el panel, con el correo que sea"
+                        onClick={() => makeInvite(m)}
+                        className={buttonVariants({ variant: "outline", size: "sm" })}
+                      >
+                        <Link2 aria-hidden="true" className="size-3.5" /> Enlace de invitación
+                      </button>
+                    ) : null}
+                  </div>
+                ) : null}
+                {inviteLink?.email === m.email ? (
+                  <div className="grid gap-1.5 rounded-md border border-border bg-surface-muted p-2.5">
+                    <p className="text-[12px] text-muted-foreground">
+                      Mándale este enlace (WhatsApp o correo). Sirve una vez y ata su cuenta al panel:
+                    </p>
+                    <code className="block break-all font-mono text-[11px]">{inviteLink.url}</code>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard?.writeText(inviteLink.url);
+                          toast("Enlace copiado", "success");
+                        }}
+                        className={buttonVariants({ variant: "outline", size: "sm" })}
+                      >
+                        <Copy aria-hidden="true" className="size-3.5" /> Copiar enlace
+                      </button>
+                      <a
+                        href={`https://wa.me/?text=${encodeURIComponent(`Te Tough ${inviteLink.email} — entra al equipo de NEXUS con este enlace: ${inviteLink.url}`)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={buttonVariants({ variant: "outline", size: "sm" })}
+                      >
+                        Abrir WhatsApp
+                      </a>
+                    </div>
                   </div>
                 ) : null}
               </li>

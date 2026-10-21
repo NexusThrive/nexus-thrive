@@ -7,6 +7,7 @@ import { OWNER_ROLE_KEY, canGrantAll, normalizePermissions } from "@/lib/ops/per
 import {
   activeOwnerCount,
   createRole,
+  createStaffInvite,
   deleteRole,
   emailTaken,
   getMember,
@@ -21,7 +22,9 @@ import {
 } from "@/lib/ops/team";
 import { roleKeyFrom, validateInvite, validateRole } from "@/lib/ops/validators";
 
-export type ActionResult = { ok: true } | { ok: false; message: string; errors?: Record<string, string> };
+export type ActionResult =
+  | { ok: true; token?: string }
+  | { ok: false; message: string; errors?: Record<string, string> };
 
 const DENIED: ActionResult = { ok: false, message: "No tienes permiso para esta acción." };
 const refresh = () => revalidatePath("/admin/equipo");
@@ -62,6 +65,26 @@ export async function unlinkStaffAccountAction(memberId: string): Promise<Action
   });
   refresh();
   return { ok: true };
+}
+
+/**
+ * Genera un enlace de invitación de un solo uso para un integrante. El
+ * enlace ata su cuenta de Clerk a la ficha, así que da igual con qué correo
+ * se registre. Todavía no se manda por correo (falta Resend): se copia y se
+ * manda a mano.
+ */
+export async function createStaffInviteAction(memberId: string): Promise<ActionResult> {
+  const ctx = await requireStaff("team.invite");
+  if (!ctx) return DENIED;
+  const member = await getMember(memberId);
+  if (!member) return { ok: false, message: "El integrante ya no existe." };
+  const r = await createStaffInvite({ memberId: member.id, createdById: ctx.staffId });
+  if (!r.ok) return { ok: false, message: r.message };
+  await logOps(ctx, "STAFF_INVITE", {
+    metadata: { email: member.email, event: "link" },
+  });
+  refresh();
+  return { ok: true, token: r.token };
 }
 
 export async function changeStaffRoleAction(memberId: string, roleId: string): Promise<ActionResult> {

@@ -1,0 +1,203 @@
+[
+  {
+    "id": "table.StaffInvite",
+    "label": "Create table \"StaffInvite\"",
+    "summary": "Creates table \"StaffInvite\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "StaffInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"StaffInvite\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StaffInvite\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"StaffInvite\"",
+        "sql": "CREATE TABLE \"public\".\"StaffInvite\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"email\" text NOT NULL,\n  \"expiresAt\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"roleId\" text NOT NULL,\n  \"token\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"usedAt\" timestamptz,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"StaffInvite\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StaffInvite\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.StaffInvite.StaffInvite_token_key",
+    "label": "Add unique constraint on \"StaffInvite\" (token)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "StaffInvite_token_key",
+        "table": "StaffInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"StaffInvite_token_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StaffInvite_token_key",
+          "public",
+          "\"public\".\"StaffInvite\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"StaffInvite_token_key\"",
+        "sql": "ALTER TABLE \"public\".\"StaffInvite\" ADD CONSTRAINT \"StaffInvite_token_key\" UNIQUE (\"token\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"StaffInvite_token_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StaffInvite_token_key",
+          "public",
+          "\"public\".\"StaffInvite\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StaffInvite.StaffInvite_email_idx_46df9cad",
+    "label": "Create index \"StaffInvite_email_idx_46df9cad\" on \"StaffInvite\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StaffInvite_email_idx_46df9cad",
+        "table": "StaffInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StaffInvite_email_idx_46df9cad\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StaffInvite_email_idx_46df9cad\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StaffInvite_email_idx_46df9cad\"",
+        "sql": "CREATE INDEX \"StaffInvite_email_idx_46df9cad\" ON \"public\".\"StaffInvite\" (\"email\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StaffInvite_email_idx_46df9cad\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StaffInvite_email_idx_46df9cad\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StaffInvite.StaffInvite_roleId_idx_ffccc9a4",
+    "label": "Create index \"StaffInvite_roleId_idx_ffccc9a4\" on \"StaffInvite\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StaffInvite_roleId_idx_ffccc9a4",
+        "table": "StaffInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StaffInvite_roleId_idx_ffccc9a4\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StaffInvite_roleId_idx_ffccc9a4\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StaffInvite_roleId_idx_ffccc9a4\"",
+        "sql": "CREATE INDEX \"StaffInvite_roleId_idx_ffccc9a4\" ON \"public\".\"StaffInvite\" (\"roleId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StaffInvite_roleId_idx_ffccc9a4\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StaffInvite_roleId_idx_ffccc9a4\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StaffInvite.StaffInvite_roleId_fkey",
+    "label": "Add foreign key \"StaffInvite_roleId_fkey\" on \"StaffInvite\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StaffInvite_roleId_fkey",
+        "table": "StaffInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StaffInvite_roleId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StaffInvite_roleId_fkey",
+          "public",
+          "\"public\".\"StaffInvite\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StaffInvite_roleId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StaffInvite\"\nADD CONSTRAINT \"StaffInvite_roleId_fkey\"\nFOREIGN KEY (\"roleId\")\nREFERENCES \"public\".\"StaffRole\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StaffInvite_roleId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StaffInvite_roleId_fkey",
+          "public",
+          "\"public\".\"StaffInvite\""
+        ]
+      }
+    ]
+  }
+]

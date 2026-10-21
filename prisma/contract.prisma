@@ -1341,11 +1341,34 @@ model StaffRole {
   updatedAt   temporal.updatedAt()
 
   members StaffMember[]
+  invites StaffInvite[]
+}
+
+/// Invitación al equipo de NEXUS: un enlace de un solo uso que ata una cuenta
+/// de Clerk concreta a la ficha del integrante. Evita depender de que la
+/// persona se registre con el mismo correo.
+model StaffInvite {
+  id          String    @id @default(uuid())
+  token       String    @unique
+  email       String
+  roleId      String
+  role        StaffRole @relation(fields: [roleId], references: [id])
+  /// Quién generó la invitación.
+  createdById String?
+  /// Vence (por defecto 7 días).
+  expiresAt   DateTime
+  /// Cuándo se usó (la cuenta quedó vinculada).
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   temporal.updatedAt()
+
+  @@index([email])
+  @@index([roleId])
 }
 
 /// Integrante del equipo NEXUS. No pertenece a ningún negocio: su acceso al
-/// panel sale de su rol. Se invita por correo; `clerkUserId` se completa la
-/// primera vez que entra con ese correo.
+/// panel sale de su rol. Se invita por correo; `clerkUserId` se completa
+/// la primera vez que entra con ese correo.
 model StaffMember {
   id          String    @id @default(uuid())
   clerkUserId String?   @unique

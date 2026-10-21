@@ -26,6 +26,7 @@ pnpm exec vitest run \
   lib/benefits/benefits-db.integration.test.ts \
   lib/plans/settings.integration.test.ts \
   lib/ops/access.integration.test.ts \
+  lib/ops/team-invite.integration.test.ts \
   lib/business/qr-read.integration.test.ts \
   lib/tenant-db.integration.test.ts \
   lib/prisma8-query-patterns.integration.test.ts \

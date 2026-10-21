@@ -6,7 +6,7 @@ aquí: eso vive en el [CHANGELOG](CHANGELOG.md).
 
 ---
 
-## 1. Invitación al equipo por correo (lo primero)
+## 1. Invitación al equipo por correo (lo primero) — **MITAD LISTA**
 
 **Qué pasa hoy:** el Propietario crea la ficha del integrante en
 *Operaciones Center → Equipo* con su correo y su rol. Después le dice por
@@ -14,31 +14,33 @@ WhatsApp "entra con ese correo". Si la persona se registra con otra cuenta
 (Google en vez de correo, o un segundo registro), el enlace falla y termina
 creando un negocio por error. Nada avisa de eso.
 
-**Qué debería pasar:** al invitar, NEXUS le manda un correo a ese endereço con
-un enlace de un solo uso (`/invitacion/{token}`) que:
-1. valida el token y lo consume (no se puede reutilizar);
-2. crea o abre la cuenta de Clerk con **ese** correo;
-3. deja a la persona ya vinculada a la ficha del equipo y la lleva al panel.
+**Lo que ya está hecho (20 de octubre):**
+- El alta por correo es **fiable**: al registrarse con el correo invitado, la
+  ficha se engancha sola y entra al panel (verificado con pruebas de
+  integración, incluido el caso de la cuenta duplicada).
+- **"Enlace de invitación"**: en *Equipo*, cada integrante tiene un botón que
+  genera un **enlace de un solo uso** (`/invitacion/{token}`). La persona abre
+  el enlace (con su sesión o creando la cuenta) y queda **atada a la ficha
+  aunque se haya registrado con otro correo**. El panel lo muestra para copiar
+  y mandarlo por WhatsApp.
+- Si la ficha está **pausada** o **vinculada a otra cuenta**, la persona ve un
+  aviso que explica qué hacer (cerrar sesión y entrar con la otra cuenta), en
+  vez de caer en el onboarding.
+- **"Desvincular cuenta"**: el equipo puede soltar la cuenta enganchada para
+  que se vuelva a enlazar al entrar.
 
-Así el alta deja de depender de que la persona recuerde con qué cuenta se
-registró, y el equipo se puede auditar ("invitó / se vinculó / entró").
+**Lo que falta (una tarde de trabajo + una clave):**
+- **Mandar el correo automáticamente** (hoy se copia y se manda a mano). Falta
+  `RESEND_API_KEY` + `INBOX_EMAIL_FROM` en producción.
+- Tabla `StaffInvite` ya existe (token, correo, rol, expira, usado); el envío
+  es un `lib/ops/invitations.ts` que la use y un botón "Enviar invitación"
+  junto al enlace.
+- Con el envío automático, el alta deja de depender de que la persona
+  recuerde con qué cuenta se registró, y el equipo se puede auditar
+  ("invitó / se vinculó / entró").
 
-**Cómo hacerlo:**
-- Falta `RESEND_API_KEY` + `INBOX_EMAIL_FROM` en producción (o usar el
-  webhook de Clerk para el envío).
-- Tabla `StaffInvite` (token, correo, rol, expira, usado) → o reutilizar
-  `BenefitCode` con `kind = 'PAID'`… no: mejor una tabla propia, porque el
-  flujo es distinto (no da acceso, da de alta una cuenta).
-- Acción de servidor `acceptStaffInviteAction(token)`: valida, vincula la ficha
-  por correo y redirige a `/auth/callback`.
-- Botón "Copiar invitación" en el panel de equipo, para enviarlo a mano por
-  WhatsApp si el correo no llega.
-- Mientras tanto, el botón **"Desvincular cuenta"** (ya implementado) resuelve
-  a mano el caso de la cuenta duplicada.
-
-**Es medible:** hoy el enlace por correo es silencioso; con la invitación, cada
-alta queda con estado (invitado, vinculado,entró) y nadie cae por error en el
-onboarding.
+**Es medible:** hoy el enlace por correo es silencioso; con la invitación
+automática, cada alta queda con estado y nadie cae por error en el onboarding.
 
 ---
 
