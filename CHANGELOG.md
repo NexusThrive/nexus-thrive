@@ -107,8 +107,10 @@ bandeja, satisfacción, salud, precios y catálogo, auditoría y Accesos.
   vinculada a otra cuenta y desvinculación.
 
 ### Datos
-- Limpiados los dos negocios que se crearon por error al registrarse el
-  equipo (`docs/prod-sql/2026-10-20-limpieza-negocios-por-error.sql`).
+- Limpiados en producción los dos negocios que se crearon por error al
+  registrarse el equipo (`Hshshdhs` y `Electricidad`, con sus módulos y
+  usuarios). El script queda en la carpeta local de SQL de producción, como
+  marca la convención del repo para los scripts de limpieza.
 
 ---
 
