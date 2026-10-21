@@ -14,7 +14,7 @@ import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import type { PermissionKey } from "@/lib/ops/permissions";
 import type { RoleRow, StaffRow } from "@/lib/ops/team";
-import { changeStaffRoleAction, deleteRoleAction, inviteStaffAction, setStaffActiveAction } from "../actions";
+import { changeStaffRoleAction, deleteRoleAction, inviteStaffAction, setStaffActiveAction, unlinkStaffAccountAction } from "../actions";
 import RoleBuilder from "./role-builder";
 
 const rel = new Intl.RelativeTimeFormat("es-CO", { numeric: "auto" });
@@ -146,6 +146,21 @@ export default function TeamView({
                     >
                       {m.active ? "Desactivar" : "Reactivar"}
                     </button>
+                    {m.linked ? (
+                      <button
+                        type="button"
+                        disabled={pending}
+                        title="Suelta la cuenta de Clerk vinculada: la persona se volverá a enlazar al entrar con su correo"
+                        onClick={() =>
+                          window.confirm(
+                            `¿Desvincular la cuenta de ${m.email}? La próxima vez que entre con ese correo se enlazará de nuevo.`,
+                          ) && run(() => unlinkStaffAccountAction(m.id), "Cuenta desvinculada")
+                        }
+                        className={buttonVariants({ variant: "ghost", size: "sm" })}
+                      >
+                        Desvincular cuenta
+                      </button>
+                    ) : null}
                   </div>
                 ) : null}
               </li>

@@ -16,6 +16,7 @@ import {
   roleMemberCount,
   setStaffActive,
   setStaffRole,
+  unlinkStaffAccount,
   updateRole,
 } from "@/lib/ops/team";
 import { roleKeyFrom, validateInvite, validateRole } from "@/lib/ops/validators";
@@ -41,6 +42,24 @@ export async function inviteStaffAction(input: { email: string; name: string; ti
   if (await emailTaken(v.value.email)) return { ok: false, message: "Ese correo ya está en el equipo.", errors: { email: "Ya está en el equipo." } };
   await inviteStaff({ ...v.value, invitedById: ctx.staffId });
   await logOps(ctx, "STAFF_INVITE", { metadata: { email: v.value.email, role: role.key } });
+  refresh();
+  return { ok: true };
+}
+
+/**
+ * Suelta la cuenta de Clerk vinculada. Se usa cuando alguien se registró con
+ * otra cuenta y por eso no puede entrar al panel: al desvincular, la próxima
+ * vez que entre con ese correo se vincula sola.
+ */
+export async function unlinkStaffAccountAction(memberId: string): Promise<ActionResult> {
+  const ctx = await requireStaff("team.roles");
+  if (!ctx) return DENIED;
+  const member = await getMember(memberId);
+  if (!member) return { ok: false, message: "El integrante ya no existe." };
+  await unlinkStaffAccount(member.id);
+  await logOps(ctx, "STAFF_ROLE_CHANGE", {
+    metadata: { email: member.email, event: "unlink" },
+  });
   refresh();
   return { ok: true };
 }
