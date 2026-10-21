@@ -10,7 +10,12 @@ export default function SignUpPage() {
       path="/sign-up"
       routing="path"
       signInUrl="/sign-in"
-      fallbackRedirectUrl="/"
+      // Tras registrarse, la decisión de destino se toma en UNA sola puerta
+      // (/auth/callback): equipo de NEXUS → panel; invitación de negocio → su
+      // negocio; nuevo → onboarding. Antes se iba a "/" y el proxy lo
+      // devolvía al formulario de acceso (donde era fácil crear una segunda
+      // cuenta y terminar en el onboarding por error).
+      fallbackRedirectUrl="/auth/callback"
       appearance={clerkAppearance}
     />
   );

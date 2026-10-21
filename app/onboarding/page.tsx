@@ -4,6 +4,8 @@ import { getOnboardingPrefill } from "./prefill";
 import OnboardingWizard from "./_components/onboarding-wizard";
 import { loadPricingConfig } from "@/lib/plans/settings";
 import { getPendingBenefit } from "@/lib/benefits/benefit-cookie";
+import { findStaffByEmail } from "@/lib/ops/access";
+import { StaffAccessNotice } from "@/components/molecules/staff-access-notice";
 
 /**
  * Onboarding adaptativo (auto-servicio).
@@ -41,6 +43,25 @@ export default async function OnboardingPage({
   }
 
   const user = await currentUser();
+
+  // El equipo de NEXUS trabaja en el panel, no creando negocios: si su correo
+  // está en el equipo, el onboarding no es lo suyo.
+  const staffEmail = user?.primaryEmailAddress?.emailAddress ?? user?.emailAddresses?.[0]?.emailAddress;
+  if (staffEmail) {
+    const staff = await findStaffByEmail(staffEmail);
+    if (staff) {
+      if (staff.active) redirect("/admin");
+      return (
+        <StaffAccessNotice
+          email={staff.email}
+          name={staff.name}
+          roleName={staff.roleName}
+          reason="inactive"
+        />
+      );
+    }
+  }
+
   // Rubros, planes, módulos y precios del catálogo del Operations Center.
   const config = await loadPricingConfig();
   // Beneficio pendiente (tarjeta NFC/QR): el paso de plan muestra el "mes

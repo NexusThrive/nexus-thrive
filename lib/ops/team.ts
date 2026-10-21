@@ -14,6 +14,8 @@ export type StaffRow = {
   active: boolean;
   /** Invitado que aún no entra (sin cuenta vinculada). */
   pending: boolean;
+  /** Ya tiene una cuenta de Clerk vinculada (y por eso no es una invitación). */
+  linked: boolean;
   lastSeenAt: string | null;
   createdAt: string;
 };
@@ -44,6 +46,7 @@ export async function listStaff(): Promise<StaffRow[]> {
     roleName: m.role?.name ?? "Sin rol",
     active: m.active,
     pending: !m.clerkUserId,
+    linked: Boolean(m.clerkUserId),
     lastSeenAt: iso(m.lastSeenAt),
     createdAt: String(m.createdAt),
   }));
@@ -97,6 +100,15 @@ export async function setStaffRole(id: string, roleId: string) {
 
 export async function setStaffActive(id: string, active: boolean) {
   await db.orm.public.StaffMember.where({ id }).update({ active });
+}
+
+/**
+ * Suelta la cuenta de Clerk vinculada a la ficha. Sirve cuando la persona se
+ * registró con otra cuenta (y por eso no puede entrar al panel): al desvincular,
+ * la próxima vez que entre con cualquier cuenta de ese correo se vincula sola.
+ */
+export async function unlinkStaffAccount(id: string) {
+  await db.orm.public.StaffMember.where({ id }).update({ clerkUserId: null, joinedAt: null });
 }
 
 export async function roleKeyTaken(key: string): Promise<boolean> {

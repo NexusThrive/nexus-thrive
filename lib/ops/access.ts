@@ -53,6 +53,58 @@ async function loadMember(where: { clerkUserId: string } | { email: string }) {
     .first();
 }
 
+/** Ficha del equipo por correo, sin efectos secundarios (no vincula nada). */
+export type StaffByEmail = {
+  id: string;
+  email: string;
+  name: string | null;
+  roleName: string;
+  active: boolean;
+  /** Ya está vinculada a una cuenta de Clerk (posiblemente otra). */
+  linked: boolean;
+};
+
+/**
+ * Busca la ficha del equipo por correo. Solo lee: no vincula ni concede
+ * acceso. Sirve para explicarle a la persona qué está pasando cuando su
+ * correo está en el equipo pero no puede entrar al panel.
+ */
+export async function findStaffByEmail(email: string): Promise<StaffByEmail | null> {
+  const clean = email.trim().toLowerCase();
+  if (!clean) return null;
+  const row = await db.orm.public.StaffMember
+    .where((s) => s.email.ilike(clean))
+    .include("role", (role) => role.select("name"))
+    .first();
+  if (!row) return null;
+  return {
+    id: String(row.id),
+    email: String(row.email),
+    name: row.name == null ? null : String(row.name),
+    roleName: row.role?.name ?? "Integrante",
+    active: Boolean(row.active),
+    linked: Boolean(row.clerkUserId),
+  };
+}
+
+/**
+ * Vincula una ficha del equipo con la cuenta de Clerk de esta sesión.
+ * Devuelve el motivo si no se pudo (para poder explicarlo).
+ */
+export async function linkStaffToSession(
+  email: string,
+  clerkUserId: string,
+): Promise<{ ok: true } | { ok: false; reason: "inactive" | "other_account" | "not_found" }> {
+  const staff = await findStaffByEmail(email);
+  if (!staff) return { ok: false, reason: "not_found" };
+  if (!staff.active) return { ok: false, reason: "inactive" };
+  if (staff.linked) return { ok: false, reason: "other_account" };
+  await db.orm.public.StaffMember
+    .where({ id: staff.id })
+    .update({ clerkUserId, joinedAt: now() });
+  return { ok: true };
+}
+
 /**
  * Integrante del equipo para la sesión actual, o `null`:
  * 1. Por `clerkUserId`.
@@ -69,10 +121,26 @@ export async function getStaffContext(): Promise<StaffContext | null> {
   if (!member) {
     const email = await primaryEmail();
     if (email) {
-      const invited = await loadMember({ email });
-      if (invited && !invited.clerkUserId && invited.active) {
-        await db.orm.public.StaffMember.where({ id: invited.id }).update({ clerkUserId: userId, joinedAt: now() });
+      // Vinculación por correo: la ficha pendiente (mismo correo, sin cuenta
+      // aún) se engancha a esta sesión. Si está pausada o ya pertenece a otra
+      // cuenta, NO se vincula (eso lo explica el callback con un aviso).
+      const linked = await linkStaffToSession(email, userId);
+      if (linked.ok) {
         member = await loadMember({ clerkUserId: userId });
+        if (member) {
+          try {
+            await createAdminDb().logAudit({
+              actorId: userId,
+              actorEmail: email,
+              action: "STAFF_INVITE",
+              targetTenantId: null,
+              targetTenantName: null,
+              metadata: { email, event: "linked", roleId: member.roleId },
+            });
+          } catch {
+            // La auditoría nunca rompe el acceso.
+          }
+        }
       }
     }
   }

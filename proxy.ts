@@ -40,9 +40,14 @@ export default clerkMiddleware(
     // Tenant routes: /{tenant}/* pasan tal cual; el layout `[tenant]` valida
     // sesión y membresía (y cada server action lo revalida).
 
-    // Root → sign-in
+    // Raíz: si hay sesión, la decisión de destino se toma en /auth/callback
+    // (equipo de NEXUS → panel, invitación → su negocio, nuevo → onboarding).
+    // Sin sesión, al acceso.
     if (pathname === "/") {
-      return NextResponse.redirect(new URL("/sign-in", request.url));
+      const { userId } = await auth();
+      return NextResponse.redirect(
+        new URL(userId ? "/auth/callback" : "/sign-in", request.url),
+      );
     }
 
     return NextResponse.next();
