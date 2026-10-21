@@ -77,6 +77,41 @@ bandeja, satisfacción, salud, precios y catálogo, auditoría y Accesos.
 
 ---
 
+## [No publicado] — El equipo de NEXUS entra al panel, no a crear negocios
+
+### Corregido
+- **Los integrantes del equipo ya no caen en "crear un negocio"** al
+  registrarse. Pasaba porque, tras registrarse, la app iba a "/" y el proxy
+  la devolvía al formulario de acceso (donde era fácil crear una segunda
+  cuenta de Clerk); y porque el enlace con la ficha del equipo se saltaba en
+  silencio si la ficha estaba **pausada** o ya **vinculada a otra cuenta**.
+  Ahora:
+  - el registro y el acceso con sesión van a una sola puerta (`/auth/callback`),
+    que decide: equipo → panel, invitación de negocio → su negocio, nuevo →
+    onboarding;
+  - si el correo está en el equipo pero no puede entrar, se muestra un aviso
+    que explica qué hacer, en vez de mandarlo al onboarding;
+  - el onboarding de un integrante del equipo va al panel (o al aviso si su
+    acceso está en pausa);
+  - el enlace por correo busca la ficha sin distinguir mayúsculas y queda
+    auditado.
+- Nueva acción **"Desvincular cuenta"** en *Operaciones Center → Equipo*:
+  suelta la cuenta de Clerk enganchada, para el caso de quien se registró con
+  otra cuenta.
+
+### Añadido
+- `IDEAS-E-IMPLEMENTACIONES-IMPORTES.md` en la raíz: la lista de ideas e
+  implementaciones importantes, empezando por la **invitación al equipo por
+  correo** (que es lo que evita este tipo de lío).
+- Pruebas de integración del enlace con el equipo: ficha pausada, ficha
+  vinculada a otra cuenta y desvinculación.
+
+### Datos
+- Limpiados los dos negocios que se crearon por error al registrarse el
+  equipo (`docs/prod-sql/2026-10-20-limpieza-negocios-por-error.sql`).
+
+---
+
 ## [No publicado] — Control de acceso: intentos y tarjetas
 
 ### Añadido
