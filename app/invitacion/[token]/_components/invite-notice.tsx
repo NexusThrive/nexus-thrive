@@ -27,14 +27,17 @@ export function InviteNotice({
 }) {
   const href = token ? `/invitacion/${token}` : "/";
   return (
-    <main className="grid min-h-dvh place-items-center bg-surface px-4 py-10">
+    <main className="flex min-h-dvh w-full items-center justify-center bg-surface px-4 py-10">
       <div className="w-full max-w-md rounded-xl border border-border bg-surface p-6 shadow-sm">
         <h1 className="font-display text-xl font-bold tracking-tight">{title}</h1>
         <p className="mt-2 text-sm text-muted-foreground">{text}</p>
         {email ? (
-          <p className="mt-3 flex items-center gap-2 rounded-sm bg-surface-muted px-3 py-2 text-sm">
+          <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-sm bg-surface-muted px-3 py-2 text-sm">
             <Mail aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
-            <span className="font-mono">{email}</span>
+            {/* El correo va en monoespaciada y sin cortes: si no se parte, empuja
+                la columna más allá de la pantalla y la tarjeta se ve cortada
+                y descentrada. */}
+            <span className="min-w-0 break-all font-mono">{email}</span>
             {roleName ? <span className="text-xs text-muted-foreground">· {roleName}</span> : null}
           </p>
         ) : null}

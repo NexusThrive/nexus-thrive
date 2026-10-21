@@ -16,8 +16,28 @@ function normalize(url: string | undefined): string {
   return (url ?? "").replace(/\?.*$/, "");
 }
 
+
+/**
+ * El rol que necesitan las pruebas. En el CI la base está recién migrada y
+ * sin sembrar, así que no se puede asumir que exista: si falta, se crea (y
+ * se borra al terminar).
+ */
+async function ensureOpsRole(): Promise<{ id: string; created: boolean }> {
+  const existing = await db.orm.public.StaffRole.where({ key: "ops" }).first();
+  if (existing) return { id: String(existing.id), created: false };
+  const created = await db.orm.public.StaffRole.create({
+    key: "ops",
+    name: "Técnico",
+    description: null,
+    permissions: ["accounts.view"],
+    system: true,
+  });
+  return { id: String(created.id), created: true };
+}
+
 describe.skipIf(!enabled)("invitaciones al equipo (integración)", () => {
   const emails: string[] = [];
+  let roleCreated = false;
 
   beforeAll(async () => {
     if (normalize(process.env.DATABASE_URL) !== normalize(TEST_URL)) {
@@ -38,13 +58,16 @@ describe.skipIf(!enabled)("invitaciones al equipo (integración)", () => {
         await db.orm.public.StaffMember.where({ id: member.id }).delete();
       }
     }
+    if (roleCreated) {
+      await db.orm.public.StaffRole.where({ key: "ops" }).delete().catch(() => undefined);
+    }
     await db.close();
   });
 
   async function makeMember(email: string, active = true) {
     emails.push(email);
-    const role = await db.orm.public.StaffRole.where({ key: "ops" }).first();
-    if (!role) throw new Error("Falta el rol 'ops' (ejecuta la siembra del catálogo).");
+    const role = await ensureOpsRole();
+    if (role.created) roleCreated = true;
     return db.orm.public.StaffMember.create({
       email,
       name: "Prueba Invitación",

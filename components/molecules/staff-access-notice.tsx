@@ -36,7 +36,7 @@ export function StaffAccessNotice({
 }) {
   const paused = reason === "inactive";
   return (
-    <main className="grid min-h-dvh place-items-center bg-surface px-4 py-10">
+    <main className="flex min-h-dvh w-full items-center justify-center bg-surface px-4 py-10">
       <div className="w-full max-w-md rounded-xl border border-border bg-surface p-6 shadow-sm">
         <span
           className={cn(
@@ -56,13 +56,13 @@ export function StaffAccessNotice({
         <p className="mt-2 text-sm text-muted-foreground">
           {paused ? (
             <>
-              <b className="text-foreground">{email}</b> está en el equipo de NEXUS con el rol{" "}
+              <b className="break-all text-foreground">{email}</b> está en el equipo de NEXUS con el rol{" "}
               <b className="text-foreground">{roleName}</b>, pero tu acceso está desactivado. Escríbenos
               para reactivarlo.
             </>
           ) : (
             <>
-              <b className="text-foreground">{email}</b> está en el equipo de NEXUS con el rol{" "}
+              <b className="break-all text-foreground">{email}</b> está en el equipo de NEXUS con el rol{" "}
               <b className="text-foreground">{roleName}</b>, pero esta sesión no es la que está
               vinculada. Cierra sesión y entra con la cuenta con la que te registraste la primera vez.
             </>
