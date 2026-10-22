@@ -28,6 +28,7 @@ import AccountForm from "./_components/account-form";
 import ContactsPanel from "./_components/contacts-panel";
 import ModuleToggles from "./_components/module-toggles";
 import ServiceControls from "./_components/service-controls";
+import { DeleteBusinessControl } from "./_components/delete-business-control";
 
 export const metadata: Metadata = { title: "Ficha del negocio · NEXUS Operations Center" };
 
@@ -218,6 +219,11 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
                 canImpersonate={can("accounts.impersonate")}
                 hasUsers={detail.users.length > 0}
               />
+              {can("accounts.edit") ? (
+                <div className="mt-5 border-t border-border pt-4">
+                  <DeleteBusinessControl tenantId={detail.id} tenantName={detail.name} />
+                </div>
+              ) : null}
             </div>
           </Panel>
         </div>

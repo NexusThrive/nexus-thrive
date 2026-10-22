@@ -10,7 +10,8 @@ import TeamTab, { type Seats } from "./team-tab";
 import type { PendingInvite, TeamMember as BusinessMember } from "@/lib/business/team-db";
 import PlanTab, { type PlanInfo } from "./plan-tab";
 import NfcTab, { type CardOwner } from "./nfc-tab";
-import { Blocks, CreditCard, Nfc, Palette, Store, Users } from "lucide-react";
+import DangerTab from "./danger-tab";
+import { Blocks, CreditCard, Nfc, Palette, Store, TriangleAlert, Users } from "lucide-react";
 import { SectionNav } from "@/components/molecules/section-nav";
 import { PageHeader } from "@/components/molecules/page-header";
 import { AppearanceSettings } from "@/components/organisms/appearance-settings";
@@ -34,7 +35,7 @@ export type ModuleState = {
 export type SystemInfoItem = { label: string; value: string };
 export type { CardOwner, PlanInfo };
 
-type Tab = "profile" | "plan" | "modules" | "team" | "card" | "appearance";
+type Tab = "profile" | "plan" | "modules" | "team" | "card" | "appearance" | "danger";
 
 const TABS = [
   { id: "profile", label: "Perfil del negocio", icon: Store, hint: "Nombre, enlace y contacto" },
@@ -43,6 +44,7 @@ const TABS = [
   { id: "team", label: "Equipo", icon: Users, hint: "Quién entra al negocio" },
   { id: "card", label: "Tarjeta NFC", icon: Nfc, hint: "Tu tarjeta de contacto" },
   { id: "appearance", label: "Apariencia", icon: Palette, hint: "Tema, densidad y movimiento" },
+  { id: "danger", label: "Zona de peligro", icon: TriangleAlert, hint: "Eliminar el negocio" },
 ] as const satisfies readonly { id: Tab; label: string; icon: unknown; hint: string }[];
 
 /**
@@ -105,6 +107,7 @@ export default function SettingsShell({
         {tab === "team" && <TeamTab slug={initialTenantSlug} {...team} />}
         {tab === "card" && <NfcTab owner={card} />}
         {tab === "appearance" && <AppearanceSettings />}
+        {tab === "danger" && <DangerTab slug={initialTenantSlug} canManage={canManage} />}
         </div>
         </div>
     </div>

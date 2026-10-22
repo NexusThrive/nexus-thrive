@@ -287,7 +287,8 @@ export type AuditAction =
   | "CHARGE_REFUND"
   | "BENEFIT_CREATE"
   | "BENEFIT_UPDATE"
-  | "BENEFIT_REDEEM";
+  | "BENEFIT_REDEEM"
+  | "TENANT_DELETE";
 
 export type AuditLogInput = {
   actorId: string;

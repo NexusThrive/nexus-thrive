@@ -7,6 +7,7 @@ import { createTenantDb } from "@/lib/tenant-db";
 import { isModule, isVertical, validateSlug } from "@/lib/admin-catalogs";
 import { checkModuleToggle } from "@/lib/plans/compat";
 import { loadPricingConfig } from "@/lib/plans/settings";
+import { deleteTenantCompletely } from "@/lib/tenant-deletion";
 
 type TenantDb = ReturnType<typeof createTenantDb>;
 
@@ -219,4 +220,34 @@ export async function toggleModuleAction(
       message: "Error al actualizar el módulo. Inténtalo de nuevo.",
     };
   }
+}
+
+/**
+ * Elimina el negocio de raíz desde el panel del propio negocio: el negocio y
+ * TODOS sus datos (clientes, membresías, dinero, asistencia, proyectos…). Las
+ * cuentas de Clerk del equipo quedan libres: pueden entrar de nuevo y crear
+ * otro negocio.
+ *
+ * Solo el dueño (o el equipo de NEXUS) puede hacerlo, y pide confirmar
+ * escribiendo "eliminar" (lo comprueba el servidor).
+ */
+export async function deleteOwnBusinessAction(
+  tenantSlug: string,
+  confirm: string,
+): Promise<{ status: "ok"; total: number } | { status: "error"; message: string }> {
+  if (confirm.trim().toLowerCase() !== "eliminar") {
+    return { status: "error", message: "Para confirmar, escribe «eliminar»." };
+  }
+
+  const context = await requireSharedTenantContext(tenantSlug);
+  if (!context) {
+    return { status: "error", message: "Tu sesión expiró. Vuelve a entrar." };
+  }
+  if (context.role !== "OWNER" && context.role !== "SUPERADMIN") {
+    return { status: "error", message: "Solo el dueño del negocio puede eliminarlo." };
+  }
+
+  const result = await deleteTenantCompletely(context.tenantId);
+  if (!result.ok) return { status: "error", message: result.message };
+  return { status: "ok", total: result.total };
 }

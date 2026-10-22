@@ -6,6 +6,7 @@ import { ACCOUNT_STAGES, deleteContact, saveContact, tenantName, updateAccount, 
 import { logOps } from "@/lib/ops/audit";
 import { validateContact } from "@/lib/ops/validators";
 import { db } from "@/prisma/db";
+import { deleteTenantCompletely } from "@/lib/tenant-deletion";
 
 export type ActionResult = { ok: true } | { ok: false; message: string; errors?: Record<string, string> };
 const DENIED: ActionResult = { ok: false, message: "No tienes permiso para esta acción." };
@@ -51,4 +52,38 @@ export async function deleteContactAction(tenantId: string, contactId: string): 
   await logOps(ctx, "CONTACT_DELETE", { targetTenantId: tenantId, targetTenantName: name });
   revalidatePath(`/admin/negocios/${tenantId}`);
   return { ok: true };
+}
+
+/**
+ * Elimina el negocio de raíz: el negocio y TODOS sus datos (clientes,
+ * membresías, dinero, asistencia, proyectos, tickets, leads…). Las cuentas de
+ * Clerk de su equipo quedan libres: pueden entrar y volver a crear un
+ * negocio.
+ *
+ * Pide confirmar escribiendo "eliminar" (lo comprueba el servidor, no solo el
+ * formulario).
+ */
+export async function deleteBusinessAction(
+  tenantId: string,
+  confirm: string,
+): Promise<ActionResult & { total?: number }> {
+  const ctx = await requireStaff("accounts.edit");
+  if (!ctx) return DENIED;
+  if (confirm.trim().toLowerCase() !== "eliminar") {
+    return { ok: false, message: "Para confirmar, escribe «eliminar»." };
+  }
+  const name = await tenantName(tenantId);
+  if (!name) return { ok: false, message: "El negocio ya no existe." };
+
+  const result = await deleteTenantCompletely(tenantId);
+  if (!result.ok) return { ok: false, message: result.message };
+
+  await logOps(ctx, "TENANT_DELETE", {
+    targetTenantId: tenantId,
+    targetTenantName: name,
+    metadata: { tables: result.tables, rows: result.total, clerkUsers: result.clerkUsers.length },
+  });
+  revalidatePath("/admin/negocios");
+  revalidatePath("/admin");
+  return { ok: true, total: result.total };
 }
