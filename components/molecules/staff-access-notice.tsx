@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { SignOutButton } from "@clerk/nextjs";
-import { LifeBuoy, LogOut, RefreshCw, ShieldCheck, UserX } from "lucide-react";
+import { LifeBuoy, Loader2, LogOut, RefreshCw, ShieldCheck, UserX } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { cn } from "@/lib/utils";
+import { takeoverStaffAccountAction } from "@/app/auth/callback/actions";
 
 /**
  * Aviso para quien entra con un correo que está en el equipo de NEXUS pero no
@@ -35,6 +38,9 @@ export function StaffAccessNotice({
   reason: "inactive" | "other_account";
 }) {
   const paused = reason === "inactive";
+  const [pending, start] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   return (
     <main className="flex min-h-dvh w-full items-center justify-center bg-surface px-4 py-10">
       <div className="w-full max-w-md rounded-xl border border-border bg-surface p-6 shadow-sm">
@@ -63,8 +69,8 @@ export function StaffAccessNotice({
           ) : (
             <>
               <b className="break-all text-foreground">{email}</b> está en el equipo de NEXUS con el rol{" "}
-              <b className="text-foreground">{roleName}</b>, pero esta sesión no es la que está
-              vinculada. Cierra sesión y entra con la cuenta con la que te registraste la primera vez.
+              <b className="text-foreground">{roleName}</b>, pero tu plaza está vinculada a otra
+              cuenta. Puedes tomar esta plaza con la cuenta con la que estás entrando ahora.
             </>
           )}
         </p>
@@ -79,11 +85,34 @@ export function StaffAccessNotice({
               <RefreshCw aria-hidden="true" className="size-3.5" /> Reintentar
             </button>
           ) : (
-            <SignOutButton>
-              <button type="button" className={buttonVariants({ size: "sm" })}>
-                <LogOut aria-hidden="true" className="size-3.5" /> Cerrar sesión y entrar de nuevo
+            <>
+              <button
+                type="button"
+                disabled={pending}
+                onClick={() => start(async () => {
+                  const r = await takeoverStaffAccountAction();
+                  if (!r.ok) {
+                    setError(r.message);
+                    return;
+                  }
+                  router.push("/admin");
+                  router.refresh();
+                })}
+                className={buttonVariants({ size: "sm" })}
+              >
+                {pending ? (
+                  <Loader2 aria-hidden="true" className="size-3.5 animate-spin" />
+                ) : (
+                  <ShieldCheck aria-hidden="true" className="size-3.5" />
+                )}
+                Usar esta cuenta
               </button>
-            </SignOutButton>
+              <SignOutButton>
+                <button type="button" className={buttonVariants({ size: "sm", variant: "outline" })}>
+                  <LogOut aria-hidden="true" className="size-3.5" /> Entrar con otra cuenta
+                </button>
+              </SignOutButton>
+            </>
           )}
           <a
             href="mailto:soporte@nexusthrive.com.co?subject=Acceso%20al%20equipo%20NEXUS"
@@ -92,14 +121,16 @@ export function StaffAccessNotice({
             <LifeBuoy aria-hidden="true" className="size-3.5" /> Escríbenos
           </a>
         </div>
+        {error ? <p className="mt-2 text-[13px] text-destructive">{error}</p> : null}
         {paused ? (
           <p className="mt-3 text-[12px] text-muted-foreground">
             Si tu equipo ya te reactivó, vuelve a cargar la página.
           </p>
         ) : (
           <p className="mt-3 text-[12px] text-muted-foreground">
-            Si no recuerdas con qué cuenta te registraste, escríbenos y te lo arreglamos (o el equipo
-            puede usar <b>Desvincular cuenta</b> en Equipo).
+            <b>Usar esta cuenta</b> deja tu plaza del equipo ligada a la cuenta con la que estás
+            entrando ahora. Si prefieres la otra, entra con esa (o pídele al equipo que use{" "}
+            <b>Desvincular cuenta</b> en Equipo).
           </p>
         )}
         <p className="mt-3 text-[12px] text-muted-foreground">
