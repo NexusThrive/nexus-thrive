@@ -112,6 +112,25 @@ export async function unlinkStaffAccount(id: string) {
   await db.orm.public.StaffMember.where({ id }).update({ clerkUserId: null, joinedAt: null });
 }
 
+/** ¿Existe un integrante activo con ese id? (responsable de una cuenta) */
+export async function isActiveStaff(id: string): Promise<boolean> {
+  return (await db.orm.public.StaffMember.where({ id, active: true }).select("id").first()) !== null;
+}
+
+/** Cuenta de Clerk vinculada hoy a la ficha (`null` si no hay). */
+export async function linkedClerkUserId(id: string): Promise<string | null> {
+  const row = await db.orm.public.StaffMember.where({ id }).select("clerkUserId").first();
+  return row?.clerkUserId == null ? null : String(row.clerkUserId);
+}
+
+/** Vincula la ficha a la cuenta de esta sesión (tomar la ficha propia). */
+export async function linkStaffAccount(id: string, clerkUserId: string) {
+  await db.orm.public.StaffMember.where({ id }).update({
+    clerkUserId,
+    joinedAt: Temporal.Instant.fromEpochMilliseconds(Date.now()),
+  });
+}
+
 export async function roleKeyTaken(key: string): Promise<boolean> {
   return (await db.orm.public.StaffRole.where({ key }).first()) !== null;
 }

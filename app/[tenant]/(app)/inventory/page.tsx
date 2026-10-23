@@ -4,7 +4,7 @@ import { kindsForVertical, KIND_LABELS } from "@/lib/business/catalog-kinds";
 import { listProducts } from "@/lib/business/products-db";
 import { canManage } from "@/lib/business/roles";
 import { requireTenantContext } from "@/lib/tenant/context";
-import { db } from "@/prisma/db";
+import { customerOptions } from "@/lib/business/customers-db";
 import CatalogView from "./_components/catalog-view";
 
 /** Catálogo e inventario: lo que vende el negocio (productos, servicios, planes, entradas o tours según su rubro). */
@@ -16,7 +16,7 @@ export default async function InventoryPage({ params, searchParams }: { params: 
   const kinds = kindsForVertical(ctx.vertical);
   const [products, customers] = await Promise.all([
     listProducts(ctx.tenantId, { kind: kinds }),
-    db.orm.public.Customer.where({ tenantId: ctx.tenantId, active: true }).select("id", "name").orderBy((c) => c.name.asc()).limit(300).all(),
+    customerOptions(ctx.tenantId),
   ]);
   return (
     <div className="grid gap-5">

@@ -1,6 +1,6 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { getOnboardingPrefill } from "./prefill";
+import { getOnboardingPrefill } from "@/lib/onboarding/prefill";
 import OnboardingWizard from "./_components/onboarding-wizard";
 import { loadPricingConfig } from "@/lib/plans/settings";
 import { getPendingBenefit } from "@/lib/benefits/benefit-cookie";

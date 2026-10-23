@@ -2,9 +2,9 @@
 
 import { redirect } from "next/navigation";
 import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
-import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
 import { findStaffByEmail } from "@/lib/ops/access";
+import { linkStaffAccount, linkedClerkUserId } from "@/lib/ops/team";
 import { normalizeEmail, verifiedEmailOf } from "@/lib/auth/session-email";
 
 /**
@@ -47,8 +47,7 @@ export async function takeoverStaffAccountAction(): Promise<{ ok: true } | { ok:
     };
   }
 
-  const row = await db.orm.public.StaffMember.where({ id: staff.id }).select("clerkUserId").first();
-  const previous = row?.clerkUserId == null ? null : String(row.clerkUserId);
+  const previous = await linkedClerkUserId(staff.id);
   if (previous && previous !== userId && (await accountStillOwnsEmail(previous, email))) {
     return {
       ok: false,
@@ -57,12 +56,7 @@ export async function takeoverStaffAccountAction(): Promise<{ ok: true } | { ok:
     };
   }
 
-  await db.orm.public.StaffMember
-    .where({ id: staff.id })
-    .update({
-      clerkUserId: userId,
-      joinedAt: Temporal.Instant.fromEpochMilliseconds(Date.now()),
-    });
+  await linkStaffAccount(staff.id, userId);
 
   try {
     await createAdminDb().logAudit({

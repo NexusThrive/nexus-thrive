@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { db } from "@/prisma/db";
+import { activeTenantWithModules, memberTheme } from "@/lib/tenant/membership";
 import { sortModules } from "@/lib/admin/catalogs";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import { TenantShell } from "@/components/templates/tenant-shell";
@@ -28,13 +28,7 @@ export default async function AppLayout({
 }) {
   const { tenant: tenantSlug } = await params;
 
-  const tenantRecord = await db.orm.public.Tenant
-    .where({
-      slug: tenantSlug,
-      active: true,
-    })
-    .include("modules", (module) => module.select("moduleName", "active"))
-    .first();
+  const tenantRecord = await activeTenantWithModules(tenantSlug);
 
   if (!tenantRecord) {
     notFound();
@@ -55,8 +49,7 @@ export default async function AppLayout({
   );
 
   const { userId } = await auth();
-  const me = userId ? await db.orm.public.User.where({ tenantId: tenantRecord.id, clerkUserId: userId }).select("theme").first() : null;
-  const savedTheme = me?.theme === "dark" || me?.theme === "light" ? me.theme : null;
+  const savedTheme = userId ? await memberTheme(tenantRecord.id, userId) : null;
 
   return (
     <VerticalTermsProvider terms={getVerticalTerms(tenantRecord.vertical)}>

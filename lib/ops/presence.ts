@@ -52,6 +52,17 @@ function latestByTenant<T extends { tenantId: string }>(rows: T[]): Map<string, 
   return map;
 }
 
+/** El equipo cambia el estado de una solicitud de página (y la URL publicada). */
+export async function updatePresenceRequest(
+  id: string,
+  fields: { status: string; publishedUrl: string | null; staffNotes: string | null },
+) {
+  await db.orm.public.PresenceRequest.where({ id }).update({
+    ...fields,
+    ...(fields.status === "PUBLISHED" ? { paidAt: Temporal.Instant.fromEpochMilliseconds(Date.now()) } : {}),
+  });
+}
+
 export async function presenceOverview(): Promise<{
   rows: PresenceOverviewRow[];
   requests: PresenceRequestRow[];

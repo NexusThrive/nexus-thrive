@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { db } from "@/prisma/db";
+import { customerProfileExtras } from "@/lib/business/customers-db";
+import { tenantWithModules } from "@/lib/tenant/membership";
 import { createTenantDb } from "@/lib/tenant/db";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import { bmi, profileFor } from "@/lib/business/customer-fields";
@@ -48,9 +49,7 @@ export default async function CustomerPage({
 
   // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
   const pageCtx = await requirePageContext(tenantSlug, "/crm");
-  const tenantRecord = await db.orm.public.Tenant.where({ id: pageCtx.tenantId })
-    .include("modules", (module) => module.select("moduleName", "active"))
-    .first();
+  const tenantRecord = await tenantWithModules(pageCtx.tenantId);
   if (!tenantRecord) {
     notFound();
   }
@@ -99,7 +98,7 @@ export default async function CustomerPage({
     : "resumen";
 
   const baseHref = `/${tenantSlug}/crm/${customer.id}`;
-  const extra = await db.orm.public.Customer.where({ tenantId: tenantRecord.id, id: customer.id }).select("profile", "documentId", "birthDate", "city", "tags", "photoId", "accessCode", "nfcUid").first();
+  const extra = await customerProfileExtras(tenantRecord.id, customer.id);
   const isGym = tenantRecord.vertical === "gym" && showMemberships;
   const access = isGym ? await memberStatus(tenantRecord.id, customer.id) : null;
 

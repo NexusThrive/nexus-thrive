@@ -1,7 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/prisma/db";
-import { getStaffContext } from "@/lib/ops/access";
-import { isActiveMember } from "@/lib/tenant/membership";
+import { readAttachmentFor } from "@/lib/files/stored-files";
 
 /**
  * Archivo de un negocio guardado en NEXUS (comprobantes, soportes, fotos).
@@ -11,11 +9,8 @@ import { isActiveMember } from "@/lib/tenant/membership";
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { userId } = await auth();
-  if (!userId || !/^[0-9a-f-]{36}$/i.test(id)) return new Response("No encontrado.", { status: 404 });
-  const file = await db.orm.public.Attachment.where({ id }).select("tenantId", "fileName", "mimeType", "sha256", "data").first();
+  const file = userId ? await readAttachmentFor(userId, id) : null;
   if (!file) return new Response("No encontrado.", { status: 404 });
-  const member = await isActiveMember(file.tenantId, userId);
-  if (!member && !(await getStaffContext())?.permissions.includes("accounts.view")) return new Response("No encontrado.", { status: 404 });
   return new Response(file.data as Uint8Array<ArrayBuffer>, {
     headers: {
       "Content-Type": file.mimeType,

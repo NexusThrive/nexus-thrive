@@ -5,7 +5,7 @@ import { listProducts } from "@/lib/business/products-db";
 import { canHandleCash } from "@/lib/business/roles";
 import { todayBogota } from "@/lib/ops/leads";
 import { requireTenantContext } from "@/lib/tenant/context";
-import { db } from "@/prisma/db";
+import { customerOptions } from "@/lib/business/customers-db";
 import BillingList from "./_components/billing-list";
 
 /** Facturación V1: cuentas de cobro y recibos numerados (la factura electrónica DIAN llega con un proveedor). */
@@ -16,7 +16,7 @@ export default async function BillingPage({ params, searchParams }: { params: Pr
   if (!ctx) notFound();
   const [rows, customers, products] = await Promise.all([
     listInvoices(ctx.tenantId),
-    db.orm.public.Customer.where({ tenantId: ctx.tenantId, active: true }).select("id", "name").orderBy((c) => c.name.asc()).limit(300).all(),
+    customerOptions(ctx.tenantId),
     listProducts(ctx.tenantId, { activeOnly: true }),
   ]);
   return (

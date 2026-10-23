@@ -41,3 +41,53 @@ export async function isActiveMember(tenantId: string, clerkUserId: string): Pro
   const member = await db.orm.public.User.where({ tenantId, clerkUserId, active: true }).select("id").first();
   return member !== null;
 }
+
+/**
+ * Negocio de una cuenta (membresía activa): a dónde la manda el callback de
+ * inicio de sesión y a qué negocio se aplica un código de beneficio. `null`
+ * si todavía no tiene negocio.
+ */
+export async function homeTenantFor(
+  clerkUserId: string,
+): Promise<{ tenantId: string; slug: string; name: string; onboardingCompleted: boolean } | null> {
+  const user = await db.orm.public.User.where({ clerkUserId, active: true })
+    .include("tenant", (t) => t.select("slug", "name", "onboardingCompleted"))
+    .first();
+  if (!user?.tenant) return null;
+  return { tenantId: user.tenantId, slug: user.tenant.slug, name: user.tenant.name, onboardingCompleted: user.tenant.onboardingCompleted };
+}
+
+/** Registro completo del negocio por id, con sus módulos (Configuración). */
+export async function tenantWithModules(tenantId: string) {
+  return db.orm.public.Tenant.where({ id: tenantId })
+    .include("modules", (module) => module.select("moduleName", "active"))
+    .first();
+}
+
+/** Datos del negocio que van en sus documentos (cuenta de cobro, recibo). */
+export async function tenantLetterhead(tenantId: string) {
+  return db.orm.public.Tenant.where({ id: tenantId }).select("name", "legalName", "taxId", "address", "city", "whatsappNumber").first();
+}
+
+/** Negocio activo por slug, con sus módulos (shell de la app). */
+export async function activeTenantWithModules(slug: string) {
+  return db.orm.public.Tenant.where({ slug, active: true })
+    .include("modules", (module) => module.select("moduleName", "active"))
+    .first();
+}
+
+/** Tema guardado de la persona en ese negocio (`null` si no eligió). */
+export async function memberTheme(tenantId: string, clerkUserId: string): Promise<"dark" | "light" | null> {
+  const me = await db.orm.public.User.where({ tenantId, clerkUserId }).select("theme").first();
+  return me?.theme === "dark" || me?.theme === "light" ? me.theme : null;
+}
+
+/** Integrantes del negocio (id, nombre y correo) para mostrar quién hizo qué. */
+export async function memberDirectory(tenantId: string) {
+  return db.orm.public.User.where({ tenantId }).select("id", "name", "email").all();
+}
+
+/** Guarda el tema (claro u oscuro) en la membresía de la persona en ese negocio. */
+export async function saveMemberTheme(tenantId: string, memberId: string, theme: string) {
+  await db.orm.public.User.where({ id: memberId, tenantId }).update({ theme });
+}

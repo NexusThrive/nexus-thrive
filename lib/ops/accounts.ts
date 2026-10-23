@@ -144,6 +144,12 @@ export async function deleteContact(tenantId: string, id: string) {
   await db.orm.public.TenantContact.where({ id, tenantId }).delete();
 }
 
+/** Pone responsable de cuenta solo si el negocio no tenía (lead ganado). */
+export async function assignManagerIfMissing(tenantId: string, staffId: string) {
+  const t = await db.orm.public.Tenant.where({ id: tenantId }).select("accountManagerId").first();
+  if (t && !t.accountManagerId) await db.orm.public.Tenant.where({ id: tenantId }).update({ accountManagerId: staffId });
+}
+
 export async function tenantName(tenantId: string): Promise<string | null> {
   const t = await db.orm.public.Tenant.where({ id: tenantId }).select("name").first();
   return t?.name ?? null;

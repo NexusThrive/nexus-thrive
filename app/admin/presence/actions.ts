@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { db } from "@/prisma/db";
+import { updatePresenceRequest } from "@/lib/ops/presence";
 import { requireStaff } from "@/lib/ops/access";
 import { scanTenantPresence } from "@/lib/presence/scan";
 
@@ -37,14 +37,7 @@ export async function updatePresenceRequestAction(
 
   const staffNotes = String(formData.get("staffNotes") ?? "").trim() || null;
 
-  await db.orm.public.PresenceRequest.where({ id: requestId }).update({
-    status,
-    publishedUrl: rawUrl || null,
-    staffNotes,
-    ...(status === "PUBLISHED"
-      ? { paidAt: Temporal.Instant.fromEpochMilliseconds(Date.now()) }
-      : {}),
-  });
+  await updatePresenceRequest(requestId, { status, publishedUrl: rawUrl || null, staffNotes });
 
   revalidatePath("/admin/presence");
   return { status: "ok", message: "Solicitud actualizada." };

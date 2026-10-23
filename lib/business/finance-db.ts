@@ -178,3 +178,57 @@ export async function cashHistory(tenantId: string, limit = 20) {
   const rows = await db.orm.public.CashSession.where({ tenantId }).where((s) => s.closedAt.isNotNull()).orderBy((s) => s.closedAt.desc()).limit(limit).all();
   return rows.map((s) => ({ id: s.id, boxId: s.boxId, openedAt: String(s.openedAt), closedAt: String(s.closedAt), openingAmount: toNumber(s.openingAmount), expected: toNumber(s.expectedAmount), counted: toNumber(s.countedAmount), difference: toNumber(s.difference), notes: s.closingNotes }));
 }
+
+/**
+ * ¿Ya hay un pago con esa referencia del proveedor (Nequi, Wompi…)? La
+ * referencia es única en toda la plataforma (`Payment.providerRefId`), así que
+ * se busca sin negocio a propósito; solo se responde sí o no, sin devolver
+ * datos del pago ajeno.
+ */
+export async function paymentRefTaken(providerRefId: string): Promise<boolean> {
+  return (await db.orm.public.Payment.where({ providerRefId }).select("id").first()) !== null;
+}
+
+/**
+ * Recibo público de un pago (enlace firmado de WhatsApp): el pago, los datos
+ * del negocio que van en el comprobante y el nombre del cliente, nada más. El
+ * id llega de un token ya verificado; el cliente se busca dentro del negocio
+ * del pago.
+ */
+export async function publicReceipt(paymentId: string) {
+  const payment = await db.orm.public.Payment.where({ id: paymentId }).first();
+  if (!payment) return null;
+  const [tenant, customer] = await Promise.all([
+    db.orm.public.Tenant.where({ id: payment.tenantId }).select("name", "city", "taxId", "legalName").first(),
+    payment.customerId
+      ? db.orm.public.Customer.where({ id: payment.customerId, tenantId: payment.tenantId }).select("name").first()
+      : null,
+  ]);
+  return { payment, tenant, customer };
+}
+
+/**
+ * Cambia descripción y notas de un pago del negocio (no el dinero). Un pago
+ * anulado no se edita.
+ */
+export async function updatePaymentNotes(tenantId: string, paymentId: string, fields: { description: string | null; notes: string | null }) {
+  const p = await db.orm.public.Payment.where({ tenantId, id: paymentId }).select("status").first();
+  if (!p) return { ok: false as const, message: "El pago no existe." };
+  if (p.status === "VOIDED") return { ok: false as const, message: "Un pago anulado no se edita." };
+  await db.orm.public.Payment.where({ tenantId, id: paymentId }).update(fields);
+  return { ok: true as const };
+}
+
+/** ¿El pago o gasto es de este negocio? (antes de adjuntarle un archivo) */
+export async function moneyRecordExists(tenantId: string, kind: "PAYMENT" | "EXPENSE", id: string): Promise<boolean> {
+  const row =
+    kind === "PAYMENT"
+      ? await db.orm.public.Payment.where({ tenantId, id }).select("id").first()
+      : await db.orm.public.Expense.where({ tenantId, id }).select("id").first();
+  return row !== null;
+}
+
+/** ¿La caja es de este negocio? */
+export async function cashBoxExists(tenantId: string, id: string): Promise<boolean> {
+  return (await db.orm.public.CashBox.where({ tenantId, id }).select("id").first()) !== null;
+}

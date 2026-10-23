@@ -43,6 +43,12 @@ export async function listInvoices(tenantId: string): Promise<InvoiceRow[]> {
   }));
 }
 
+/** Estado de un documento del negocio (antes de anularlo). */
+export async function invoiceStatus(tenantId: string, id: string): Promise<string | null> {
+  const row = await db.orm.public.Invoice.where({ tenantId, id }).select("status").first();
+  return row ? String(row.status) : null;
+}
+
 export async function getInvoice(tenantId: string, id: string) {
   return (await listInvoices(tenantId)).find((i) => i.id === id) ?? null;
 }

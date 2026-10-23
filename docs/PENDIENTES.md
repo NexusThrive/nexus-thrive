@@ -51,7 +51,7 @@ de la factura electrónica, Nequi y los agentes (§5).
 |---|---|---|---|
 | 2.1 | Separar la suite de construcción (`construction`) de la cotización genérica (`quotes`). Hoy un mecánico o un guía turístico ve "Catálogo APU" | ARCH-01 | Ningún rubro no constructor ve pantallas APU |
 | 2.2 | Pasar `ModuleName` de enum a texto validado contra un registro de capacidades en código | ADR-0003 | Agregar un módulo toca ≤ 3 archivos |
-| 2.3 | Sacar las consultas directas a la base de los 42 archivos de `eslint/legacy-db-access.mjs` | ARCH-04 | La lista vacía |
+| 2.3 | ~~Sacar las consultas directas a la base de los 42 archivos de `eslint/legacy-db-access.mjs`~~ (hecho: PR «seguridad: sin acceso directo a la base desde app/») | ARCH-04 | La lista vacía |
 | 2.4 | Estados en texto con `CHECK` (`TicketSale.status`, `Invoice.kind`, `StockMovement.kind`…) y FK compuestas `(tenantId, id)` en dinero | DATA-04 | Migración aplicada |
 | 2.5 | Migrar producción desde el despliegue (paso de CI o de Vercel), no a mano | DATA-03 | Nadie corre `prisma db migrate` a mano |
 | 2.6 | Errores con contexto (Sentry o similar) y `GET /api/health` vigilado | — | Alerta antes de que el cliente avise |

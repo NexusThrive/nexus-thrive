@@ -1,14 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { db } from "@/prisma/db";
-import { cleanProfile, membershipTypeFor, profileFor } from "@/lib/business/customer-fields";
+import { cleanProfile, profileFor } from "@/lib/business/customer-fields";
+import { getCustomer, saveCustomer, setCustomerPhoto } from "@/lib/business/customers-db";
+import { enrollInPlan } from "@/lib/business/enrollment-db";
 import { addAttachment, checkAttachment } from "@/lib/business/finance-db";
-import { getProduct } from "@/lib/business/products-db";
+import { getProduct, planOptions } from "@/lib/business/products-db";
 import { PAYMENT_METHODS } from "@/lib/finance";
-import { bogotaEndOfDay, bogotaStartOfDay, bogotaToday, computeMembershipStatus } from "@/lib/business/memberships";
 import { requireTenantContext } from "@/lib/tenant/context";
-import { moneyTransaction, recordIncome } from "@/lib/business/money-service";
 import { can } from "@/lib/business/permissions";
 
 export type CustomerSaveResult = { ok: true; id: string; message: string } | { ok: false; message: string; errors?: Record<string, string> };
@@ -32,7 +31,7 @@ export type CustomerEdit = {
 export async function getCustomerForEditAction(slug: string, id: string): Promise<CustomerEdit | null> {
   const ctx = await requireTenantContext(slug, "/crm");
   if (!ctx) return null;
-  const c = await db.orm.public.Customer.where({ tenantId: ctx.tenantId, id }).first();
+  const c = await getCustomer(ctx.tenantId, id);
   if (!c) return null;
   return {
     id: c.id,
@@ -87,17 +86,11 @@ export async function saveCustomerAction(form: FormData): Promise<CustomerSaveRe
     tags,
     profile: profile.ok ? profile.value : {},
   };
-  let customerId = id;
-  if (id) {
-    const exists = await db.orm.public.Customer.where({ tenantId: ctx.tenantId, id }).select("id").first();
-    if (!exists) return { ok: false, message: "No se encontró." };
-    await db.orm.public.Customer.where({ tenantId: ctx.tenantId, id }).update(data);
-  } else {
-    customerId = (await db.orm.public.Customer.create({ tenantId: ctx.tenantId, ...data, active: true })).id;
-  }
+  const customerId = await saveCustomer(ctx.tenantId, id, data);
+  if (!customerId) return { ok: false, message: "No se encontró." };
   if (photo instanceof File && photo.size > 0) {
-    const photoId = await addAttachment(ctx.tenantId, "CUSTOMER_PHOTO", customerId!, photo, ctx.memberId);
-    await db.orm.public.Customer.where({ tenantId: ctx.tenantId, id: customerId! }).update({ photoId });
+    const photoId = await addAttachment(ctx.tenantId, "CUSTOMER_PHOTO", customerId, photo, ctx.memberId);
+    await setCustomerPhoto(ctx.tenantId, customerId, photoId);
   }
 
   // Gimnasio: el plan con el que entra crea la membresía y, si se cobra, el pago con recibo.
@@ -106,43 +99,15 @@ export async function saveCustomerAction(form: FormData): Promise<CustomerSaveRe
   if (!id && planId && profileFor(ctx.vertical).planOnCreate) {
     const plan = await getProduct(ctx.tenantId, planId);
     if (plan && plan.kind === "PLAN" && plan.durationDays) {
-      const start = bogotaToday();
-      const startInstant = bogotaStartOfDay(start);
-      const endDate = new Date(Date.UTC(start.year, start.month - 1, start.day + plan.durationDays - 1));
-      const endInstant = bogotaEndOfDay({ year: endDate.getUTCFullYear(), month: endDate.getUTCMonth() + 1, day: endDate.getUTCDate() });
-      const now = Temporal.Instant.fromEpochMilliseconds(Date.now());
       const method = String(form.get("paymentMethod") ?? "");
       // Cobrar exige manejar dinero (SEC-05): sin ese permiso se inscribe sin cobro.
       const pay = PAYMENT_METHODS.some((m) => m.value === method) && can(ctx.role, "money.handle");
       // Membresía y cobro (recibo y caja) juntos o nada: lib/business/money-service.ts.
-      await moneyTransaction(async (tx) => {
-        const membership = await tx.orm.public.Membership.create({
-          tenantId: ctx.tenantId,
-          customerId: customerId!,
-          type: membershipTypeFor(plan.durationDays!),
-          startDate: startInstant,
-          endDate: endInstant,
-          status: computeMembershipStatus(endInstant, now),
-          price: plan.price.toFixed(2),
-        });
-        if (pay) {
-          await recordIncome(
-            tx,
-            ctx.tenantId,
-            {
-              amount: plan.price,
-              method,
-              customerId: customerId!,
-              membershipId: membership.id,
-              description: `${plan.name} — inscripción`,
-              cashDescription: `${plan.name} — ${name}`,
-              sourceType: "MEMBERSHIP",
-              sourceId: membership.id,
-            },
-            ctx.memberId,
-          );
-        }
-      });
+      await enrollInPlan(
+        ctx.tenantId,
+        { customerId: customerId, customerName: name, plan: { id: plan.id, name: plan.name, price: plan.price, durationDays: plan.durationDays }, method: pay ? method : null },
+        ctx.memberId,
+      );
       extra = ` con ${plan.name}`;
       if (pay) extra += " y su pago";
     }
@@ -150,7 +115,7 @@ export async function saveCustomerAction(form: FormData): Promise<CustomerSaveRe
   revalidatePath(`/${slug}/crm`);
   revalidatePath(`/${slug}/memberships`);
   revalidatePath(`/${slug}/finance`);
-  return { ok: true, id: customerId!, message: id ? "Cambios guardados" : `Registrado${extra}` };
+  return { ok: true, id: customerId, message: id ? "Cambios guardados" : `Registrado${extra}` };
 }
 
 /** Lo que el formulario necesita: rubro y (gym) los planes para inscribir. */
@@ -158,7 +123,7 @@ export async function customerFormDataAction(slug: string) {
   const ctx = await requireTenantContext(slug, "/crm");
   if (!ctx) return null;
   const plans = profileFor(ctx.vertical).planOnCreate
-    ? (await db.orm.public.Product.where({ tenantId: ctx.tenantId, kind: "PLAN", active: true }).select("id", "name", "price", "durationDays").orderBy((p) => p.price.asc()).all()).map((p) => ({ id: p.id, name: p.name, price: Number(p.price), days: p.durationDays ?? 30 }))
+    ? await planOptions(ctx.tenantId)
     : [];
   return { vertical: ctx.vertical, plans };
 }

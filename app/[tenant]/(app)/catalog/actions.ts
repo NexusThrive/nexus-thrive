@@ -3,7 +3,7 @@
 import { readImageUpload } from "@/lib/image-upload";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
-import { db } from "@/prisma/db";
+import { importApuItems } from "@/lib/construction/catalog-import";
 import { createTenantDb } from "@/lib/tenant/db";
 import { createAuth, type NexusRole } from "@/lib/auth/authorization";
 import { getQuoteTerms, type QuoteTerms } from "@/lib/vertical-terms";
@@ -608,48 +608,7 @@ export async function importApuItemsAction(
   // falla, nada se aplica. Con código: buscar y actualizar o crear;
   // sin código: siempre crear (NULL no colisiona en la única parcial).
   try {
-    const stats = await db.transaction(async (tx) => {
-      let created = 0;
-      let updated = 0;
-      for (const row of parsed.rows) {
-        if (row.code) {
-          const found = await tx.orm.public.ApuItem.where({
-            tenantId: context.tenantId,
-            code: row.code,
-          }).first();
-          if (found) {
-            await tx.orm.public.ApuItem.where({ id: found.id }).update({
-              name: row.name,
-              unit: row.unit,
-              category: row.category as ApuItemCategoryValue,
-              unitPrice: row.unitPrice,
-            });
-            updated += 1;
-          } else {
-            await tx.orm.public.ApuItem.create({
-              tenantId: context.tenantId,
-              code: row.code,
-              name: row.name,
-              unit: row.unit,
-              category: row.category as ApuItemCategoryValue,
-              unitPrice: row.unitPrice,
-            });
-            created += 1;
-          }
-        } else {
-          await tx.orm.public.ApuItem.create({
-            tenantId: context.tenantId,
-            code: null,
-            name: row.name,
-            unit: row.unit,
-            category: row.category as ApuItemCategoryValue,
-            unitPrice: row.unitPrice,
-          });
-          created += 1;
-        }
-      }
-      return { created, updated };
-    });
+    const stats = await importApuItems(context.tenantId, parsed.rows);
 
     revalidatePath(`/${tenantSlug}/catalog`);
     return {

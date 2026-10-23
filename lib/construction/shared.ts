@@ -748,7 +748,7 @@ export async function bumpRevision(
 ): Promise<number> {
   const next = budget.revision + 1;
   const updated = await tx.orm.public.ProjectBudget
-    .where({ id: budget.id, revision: budget.revision })
+    .where({ tenantId: budget.tenantId, id: budget.id, revision: budget.revision })
     .updateAndCount({ ...patch, revision: next });
   if (updated !== 1) {
     throw new Error("STALE_REVISION");
@@ -765,7 +765,7 @@ export async function bumpRevision(
  */
 export async function lockRevision(tx: TenantTx, budget: BudgetRow): Promise<void> {
   const locked = await tx.orm.public.ProjectBudget
-    .where({ id: budget.id, revision: budget.revision })
+    .where({ tenantId: budget.tenantId, id: budget.id, revision: budget.revision })
     .updateAndCount({ revision: budget.revision });
   if (locked !== 1) {
     throw new Error("STALE_REVISION");
@@ -789,7 +789,7 @@ export type TenantTx = Parameters<Parameters<typeof db.transaction>[0]>[0];
  */
 export async function loadBudgetTree(budget: BudgetRow): Promise<ProjectBudgetData> {
   const chapters = await db.orm.public.BudgetChapter
-    .where({ budgetId: budget.id })
+    .where({ tenantId: budget.tenantId, budgetId: budget.id })
     .orderBy((chapter) => chapter.order.asc())
     .all();
   const chapterIds = chapters.map((chapter) => chapter.id);
@@ -1117,7 +1117,7 @@ export async function insertBaseline(
     budget.ivaUtilidadPct,
   );
   const chapters = await tx.orm.public.BudgetChapter
-    .where({ budgetId: budget.id })
+    .where({ tenantId, budgetId: budget.id })
     .orderBy((chapter) => chapter.order.asc())
     .select("id", "order", "name")
     .all();
@@ -1144,7 +1144,7 @@ export async function insertBaseline(
     ).toString(),
   }));
   const last = await tx.orm.public.BudgetBaseline
-    .where({ budgetId: budget.id })
+    .where({ tenantId, budgetId: budget.id })
     .orderBy((baseline) => baseline.version.desc())
     .first();
   const version = last ? last.version + 1 : 1;

@@ -118,3 +118,12 @@ export async function lowStock(tenantId: string) {
   const rows = await db.orm.public.Product.where({ tenantId, trackStock: true, active: true }).select("id", "name", "stock", "minStock").all();
   return rows.filter((r) => r.stock <= r.minStock);
 }
+
+/** Planes activos para inscribir a un cliente, del más barato al más caro. */
+export async function planOptions(tenantId: string): Promise<{ id: string; name: string; price: number; days: number }[]> {
+  const rows = await db.orm.public.Product.where({ tenantId, kind: "PLAN", active: true })
+    .select("id", "name", "price", "durationDays")
+    .orderBy((p) => p.price.asc())
+    .all();
+  return rows.map((p) => ({ id: p.id, name: p.name, price: Number(p.price), days: p.durationDays ?? 30 }));
+}

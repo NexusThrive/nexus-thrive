@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Wordmark } from "@/components/atoms/wordmark";
 import { getAppBaseUrl } from "@/lib/app-url";
-import { verifyReceiptToken } from "@/lib/business/finance-db";
+import { publicReceipt, verifyReceiptToken } from "@/lib/business/finance-db";
 import { receiptQrDataUrl, receiptQrPayload } from "@/lib/business/receipt-qr";
 import { receiptCode } from "@/lib/business/invoice";
 import { paymentMethodLabel, type PaymentMethodValue } from "@/lib/finance";
 import { formatCurrency, toNumber } from "@/lib/format";
-import { db } from "@/prisma/db";
 
 export const metadata: Metadata = { title: "Recibo de pago", robots: { index: false } };
 
@@ -20,12 +19,9 @@ export default async function ReceiptPage({ params }: { params: Promise<{ token:
   const { token } = await params;
   const id = verifyReceiptToken(token);
   if (!id) notFound();
-  const p = await db.orm.public.Payment.where({ id }).first();
-  if (!p) notFound();
-  const [tenant, customer] = await Promise.all([
-    db.orm.public.Tenant.where({ id: p.tenantId }).select("name", "city", "taxId", "legalName").first(),
-    p.customerId ? db.orm.public.Customer.where({ id: p.customerId }).select("name").first() : null,
-  ]);
+  const receipt = await publicReceipt(id);
+  if (!receipt) notFound();
+  const { payment: p, tenant, customer } = receipt;
   const voided = p.status === "VOIDED";
   const date = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", dateStyle: "long", timeStyle: "short" }).format(new Date(String(p.createdAt)));
   const reference = p.receiptNumber ? receiptCode(p.receiptNumber) : "—";

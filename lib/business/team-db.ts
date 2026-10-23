@@ -62,9 +62,9 @@ export async function acceptInvitesFor(clerkUserId: string, email: string, name:
   const slugs: string[] = [];
   for (const inv of invites) {
     const existing = await db.orm.public.User.where({ tenantId: inv.tenantId, clerkUserId }).first();
-    if (existing) await db.orm.public.User.where({ id: existing.id }).update({ active: true, removedAt: null, role: inv.role });
+    if (existing) await db.orm.public.User.where({ tenantId: inv.tenantId, id: existing.id }).update({ active: true, removedAt: null, role: inv.role });
     else await db.orm.public.User.create({ tenantId: inv.tenantId, clerkUserId, email: mail, name: inv.name ?? name, role: inv.role });
-    await db.orm.public.TenantInvite.where({ id: inv.id }).update({ acceptedAt: now() });
+    await db.orm.public.TenantInvite.where({ tenantId: inv.tenantId, id: inv.id }).update({ acceptedAt: now() });
     const t = await db.orm.public.Tenant.where({ id: inv.tenantId }).select("slug").first();
     if (t) slugs.push(t.slug);
   }
@@ -85,4 +85,19 @@ export async function setMemberActive(tenantId: string, userId: string, active: 
 
 export async function updateMemberProfile(tenantId: string, userId: string, v: { name?: string; title?: string | null; phone?: string | null }) {
   await db.orm.public.User.where({ tenantId, id: userId }).update(v);
+}
+
+/** ¿Ya hay un integrante activo con ese correo en el negocio? */
+export async function activeMemberWithEmail(tenantId: string, email: string): Promise<boolean> {
+  return (await db.orm.public.User.where({ tenantId, email, active: true }).select("id").first()) !== null;
+}
+
+/** Rol y estado de un integrante del negocio (`null` si no es de este negocio). */
+export async function memberRoleOf(tenantId: string, userId: string) {
+  return db.orm.public.User.where({ tenantId, id: userId }).select("role", "active").first();
+}
+
+/** ¿`userId` es integrante (activo o no) de este negocio? */
+export async function isTeamMember(tenantId: string, userId: string): Promise<boolean> {
+  return (await db.orm.public.User.where({ tenantId, id: userId }).select("id").first()) !== null;
 }

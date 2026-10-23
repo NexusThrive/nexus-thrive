@@ -3,7 +3,8 @@ import { QrCode } from "@/components/atoms/qr-code";
 import { PrintButton } from "@/components/molecules/print-button";
 import { ensureAccessCode } from "@/lib/business/gym-db";
 import { requireTenantContext } from "@/lib/tenant/context";
-import { db } from "@/prisma/db";
+import { customerCard } from "@/lib/business/customers-db";
+import { tenantLetterhead } from "@/lib/tenant/membership";
 
 /** Carné del socio para imprimir (tamaño tarjeta): foto, nombre y QR de acceso. */
 export default async function CarnetPage({ params }: { params: Promise<{ tenant: string; id: string }> }) {
@@ -11,8 +12,8 @@ export default async function CarnetPage({ params }: { params: Promise<{ tenant:
   const ctx = await requireTenantContext(slug, "/crm");
   if (!ctx) notFound();
   const [tenant, customer] = await Promise.all([
-    db.orm.public.Tenant.where({ id: ctx.tenantId }).select("name").first(),
-    db.orm.public.Customer.where({ tenantId: ctx.tenantId, id }).select("id", "name", "documentId", "photoId").first(),
+    tenantLetterhead(ctx.tenantId),
+    customerCard(ctx.tenantId, id),
   ]);
   if (!tenant || !customer) notFound();
   const code = await ensureAccessCode(ctx.tenantId, customer.id);

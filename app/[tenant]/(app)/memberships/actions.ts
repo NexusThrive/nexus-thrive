@@ -4,8 +4,7 @@ import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
 import { createTenantDb } from "@/lib/tenant/db";
 import { formatDateShort } from "@/lib/format";
-import { recordCharge } from "@/lib/business/charge";
-import { moneyTransaction } from "@/lib/business/money-service";
+import { createMembershipWithCharge, renewMembershipWithCharge } from "@/lib/business/memberships-db";
 import { can } from "@/lib/business/permissions";
 import {
   addMonths,
@@ -138,32 +137,14 @@ export async function createMembershipAction(
   const priceAmount = String(Number(price.replace(",", ".")));
   // La membresía y su cobro inicial (recibo consecutivo; en efectivo entra a
   // la caja abierta) pasan juntos o no pasan: lib/business/money-service.ts.
-  await moneyTransaction(async (tx) => {
-    const membership = await tx.orm.public.Membership.create({
-      tenantId: tenantDb.tenantId,
-      customerId,
-      type,
-      startDate: startInstant,
-      endDate: endInstant,
-      status,
-      price: priceAmount,
-    });
-    if (registerInitialPayment) {
-      await recordCharge(
-        tenantDb.tenantId,
-        {
-          customerId,
-          membershipId: membership.id,
-          method: provider,
-          amount: Number(priceAmount),
-          description: `Membresía ${typeLabel(type)} — cobro inicial`,
-          sourceType: "MEMBERSHIP",
-          sourceId: membership.id,
-        },
-        tenantDb.memberId,
-        tx,
-      );
-    }
+  await createMembershipWithCharge(tenantDb.tenantId, tenantDb.memberId, {
+    customerId,
+    type,
+    startDate: startInstant,
+    endDate: endInstant,
+    status,
+    price: priceAmount,
+    charge: registerInitialPayment ? { method: provider, description: `Membresía ${typeLabel(type)} — cobro inicial` } : null,
   });
 
   revalidateMembershipViews(tenantSlug);
@@ -223,27 +204,13 @@ export async function renewMembershipAction(
   const priceAmount = String(membership.price);
 
   // Renovación y cobro, juntos o nada.
-  await moneyTransaction(async (tx) => {
-    await tx.orm.public.Membership.where({ id: membershipId, tenantId: tenantDb.tenantId }).update({
-      endDate: newEndInstant,
-      status: newStatus,
-    });
-    if (registerPayment) {
-      await recordCharge(
-        tenantDb.tenantId,
-        {
-          customerId: membership.customerId,
-          membershipId,
-          method: provider,
-          amount: Number(priceAmount),
-          description: `Membresía ${typeLabel(membership.type)} — renovación`,
-          sourceType: "MEMBERSHIP",
-          sourceId: membershipId,
-        },
-        tenantDb.memberId,
-        tx,
-      );
-    }
+  await renewMembershipWithCharge(tenantDb.tenantId, tenantDb.memberId, {
+    membershipId,
+    customerId: membership.customerId,
+    endDate: newEndInstant,
+    status: newStatus,
+    price: priceAmount,
+    charge: registerPayment ? { method: provider, description: `Membresía ${typeLabel(membership.type)} — renovación` } : null,
   });
 
   revalidateMembershipViews(tenantSlug);

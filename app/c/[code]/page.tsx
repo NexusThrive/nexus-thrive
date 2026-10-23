@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { Wordmark } from "@/components/atoms/wordmark";
-import { db } from "@/prisma/db";
+import { homeTenantFor } from "@/lib/tenant/membership";
 import { normalizeBenefitCode } from "@/lib/benefits/benefits";
 import { getBenefitByCode } from "@/lib/benefits/benefits-db";
 import { claimBenefitAction, redeemBenefitAction } from "./actions";
@@ -116,13 +116,7 @@ async function ActiveBenefit({
   const { userId } = await auth();
   let hasTenant = false;
   if (userId) {
-    const user = await db.orm.public.User.where({
-      clerkUserId: userId,
-      active: true,
-    })
-      .select("tenantId")
-      .first();
-    hasTenant = Boolean(user?.tenantId);
+    hasTenant = (await homeTenantFor(userId)) !== null;
   }
   const planLabel = PLAN_LABELS[plan] ?? plan;
 

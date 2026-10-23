@@ -2,7 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { db } from "@/prisma/db";
+import { homeTenantFor } from "@/lib/tenant/membership";
 import { normalizeBenefitCode } from "@/lib/benefits/benefits";
 import { getBenefitByCode, redeemBenefit } from "@/lib/benefits/benefits-db";
 import { setBenefitCookie } from "@/lib/benefits/benefit-cookie";
@@ -39,14 +39,8 @@ export async function redeemBenefitAction(formData: FormData): Promise<void> {
     redirect("/sign-up");
   }
 
-  const user = await db.orm.public.User.where({
-    clerkUserId: userId,
-    active: true,
-  })
-    .include("tenant", (tenant) => tenant.select("name"))
-    .first();
-
-  const tenantId = user?.tenantId;
+  const home = await homeTenantFor(userId);
+  const tenantId = home?.tenantId;
   if (!tenantId) {
     await setBenefitCookie(code);
     redirect("/onboarding");
@@ -55,7 +49,7 @@ export async function redeemBenefitAction(formData: FormData): Promise<void> {
   const result = await redeemBenefit({
     code,
     tenantId,
-    tenantName: user?.tenant?.name ?? "Tu negocio",
+    tenantName: home?.name ?? "Tu negocio",
     clerkUserId: userId,
   });
 

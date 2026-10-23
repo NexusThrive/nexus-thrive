@@ -56,7 +56,7 @@ export function createProgressDb(tenantId: string) {
   const budgetItems = async (projectId: string) => {
     const budget = await db.orm.public.ProjectBudget.where({ projectId, tenantId }).select("id").first();
     if (!budget) return [];
-    const chapters = await db.orm.public.BudgetChapter.where({ budgetId: budget.id })
+    const chapters = await db.orm.public.BudgetChapter.where({ tenantId, budgetId: budget.id })
       .orderBy((chapter) => chapter.order.asc())
       .select("id", "name", "order")
       .all();

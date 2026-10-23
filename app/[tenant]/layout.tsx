@@ -1,6 +1,6 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
-import { db } from "@/prisma/db";
+import { loadActiveTenant } from "@/lib/tenant/context";
 import { expireBenefitTrial } from "@/lib/benefits/benefits-db";
 import { verifiedEmailOf } from "@/lib/auth/session-email";
 import { resolveTenantMembership } from "@/lib/tenant/membership";
@@ -38,10 +38,7 @@ export default async function TenantLayout({
   }
 
   // 1) El tenant debe existir y estar activo.
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
+  const tenantRecord = await loadActiveTenant(tenantSlug);
 
   if (!tenantRecord) {
     notFound();
