@@ -27,8 +27,11 @@
 | 09 | [onboarding-and-ux.md](onboarding-and-ux.md) | Onboarding y experiencia objetivo (propuesta) |
 | 10 | [roadmap.md](roadmap.md) | Plan por etapas con criterios de finalización |
 | 11 | [decisions/](decisions/README.md) | Decisiones arquitectónicas **propuestas** (ADR) |
+| 12 | [product-vision.md](product-vision.md) | Visión: sistema operativo del negocio en Colombia, DIAN y orden de construcción |
+| 13 | [scaling-path.md](scaling-path.md) | Ruta de escalabilidad: del monolito modular a servicios |
 | — | [validation-log.md](validation-log.md) | Comandos ejecutados y resultados |
 | — | [remediation-log.md](remediation-log.md) | Correcciones aplicadas y su prueba |
+| — | [../guias/](../guias/README.md) | Guías de trabajo: pruebas, nueva funcionalidad, DevOps |
 
 Leyenda de estados usada en todos los documentos:
 

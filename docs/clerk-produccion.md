@@ -123,3 +123,31 @@ el SDK deriva la URL del proxy desde la petición.
 formulario. Si tras 6 s no aparece, el usuario ve un aviso con "Reintentar"
 y "Escríbenos" en lugar de una columna en blanco. Se puede quitar cuando el
 dominio esté estable.
+
+---
+
+## 6. Correo verificado (SEC-10)
+
+NEXUS vincula personas por correo: invitaciones al negocio, la ficha del
+equipo NEXUS y el traspaso de cuenta en `/auth/callback`. Desde la PR #45 el
+código **solo** usa el correo principal si Clerk lo marca como verificado
+(`verifiedEmailOf` en `lib/auth/session-email.ts`); un correo sin verificar se
+trata como si no hubiera correo. La configuración de Clerk es la segunda capa:
+
+| Dónde (Dashboard de Clerk, instancia de **producción**) | Qué dejar |
+|---|---|
+| *User & authentication* → *Email* | **Email address** requerido para registrarse |
+| *User & authentication* → *Email* → *Verification methods* | **Verify at sign-up** activado (código o enlace) |
+| *User & authentication* → *Email* | No permitir correos adicionales sin verificar como principales |
+
+Comprobación después de cambiarlo:
+
+1. Crear una cuenta de prueba con un correo propio: Clerk debe pedir el código
+   antes de entrar.
+2. Entrar a `/auth/callback` con esa cuenta: lleva a `/onboarding` (no a un
+   negocio ajeno).
+3. Anotar aquí la fecha y quién lo revisó:
+
+| Fecha | Revisó | Resultado |
+|---|---|---|
+| _pendiente_ | | |
