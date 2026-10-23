@@ -8,6 +8,7 @@ import { canHandleCash, canManage } from "@/lib/business/roles";
 import { receiptCode } from "@/lib/business/invoice";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import { requireTenantContext } from "@/lib/tenant/context";
+import { logTenantAction } from "@/lib/tenant/audit";
 
 export type BillingResult = { ok: true; message?: string; id?: string } | { ok: false; message: string };
 const DENIED: BillingResult = { ok: false, message: "Tu rol no permite esta acción." };
@@ -59,6 +60,7 @@ export async function voidInvoiceAction(slug: string, id: string, reason: string
   const inv = await db.orm.public.Invoice.where({ tenantId: ctx.tenantId, id }).select("status").first();
   if (!inv || inv.status !== "ISSUED") return { ok: false, message: "Solo se anulan documentos emitidos y sin pagar." };
   await voidInvoice(ctx.tenantId, id, reason.trim().slice(0, 300));
+  await logTenantAction(ctx, "BIZ_INVOICE_VOID", { invoiceId: id, reason: reason.trim().slice(0, 300) });
   refresh(slug);
   return { ok: true, message: "Anulada" };
 }

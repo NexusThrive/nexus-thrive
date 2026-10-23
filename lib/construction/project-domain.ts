@@ -6,6 +6,9 @@
  * los valores; este módulo solo agrega la capa de presentación/validación.
  */
 
+import type { BusinessRole } from "@/lib/business/roles";
+import { can } from "@/lib/business/permissions";
+
 export type ProjectStatusValue =
   | "DRAFT"
   | "BIDDING"
@@ -92,8 +95,8 @@ export function projectStatusNeedsBaselineWarning(
   return status === "APPROVED" || status === "IN_EXECUTION";
 }
 
-/** Roles de la organización (espejo de `TenantRole` de tenant-context). */
-export type NexusRole = "SUPERADMIN" | "OWNER" | "STAFF" | "ADMIN" | "RECEPTION" | "ADVISOR";
+/** Rol del negocio (alias del único tipo, `BusinessRole`). */
+export type NexusRole = BusinessRole;
 
 /**
  * D7 — El cambio de estado de un proyecto lo gobierna solo el OWNER
@@ -101,12 +104,12 @@ export type NexusRole = "SUPERADMIN" | "OWNER" | "STAFF" | "ADMIN" | "RECEPTION"
  * miembro con sesión válida (OWNER y STAFF).
  */
 export function canChangeProjectStatus(role: NexusRole): boolean {
-  return role === "OWNER" || role === "SUPERADMIN" || role === "ADMIN";
+  return can(role, "projects.changeStatus");
 }
 
 /** Recepción no edita obras; administración y asesores sí. */
 export function canEditProjectContent(role: NexusRole): boolean {
-  return role === "SUPERADMIN" || role === "OWNER" || role === "STAFF" || role === "ADMIN" || role === "ADVISOR";
+  return can(role, "projects.editContent");
 }
 
 /** Tipos de obra (ficha del proyecto, sección B). */

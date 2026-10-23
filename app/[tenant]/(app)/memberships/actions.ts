@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createTenantDb } from "@/lib/tenant/db";
 import { formatDateShort } from "@/lib/format";
 import { recordCharge } from "@/lib/business/charge";
+import { can } from "@/lib/business/permissions";
 import {
   addMonths,
   bogotaEndOfDay,
@@ -47,18 +48,27 @@ const ACCESS_DENIED_RENEWAL: RenewalFormState = {
   message: "No tienes acceso a este negocio.",
 };
 
+/** Vender o renovar una membresía es cobrar: el Asesor no maneja dinero (SEC-05). */
+const NO_MONEY_ROLE = "Tu rol no puede vender ni renovar membresías. Pídeselo a recepción o administración.";
+
 type TenantDb = ReturnType<typeof createTenantDb>;
 
 /**
  * Verifica sesión de Clerk + tenant activo + membresía del usuario.
  * Devuelve `null` cuando algo falla (el caller responde con mensaje genérico).
  */
-async function requireTenantDb(tenantSlug: string): Promise<(TenantDb & { tenantId: string; memberId: string }) | null> {
+async function requireTenantDb(
+  tenantSlug: string,
+): Promise<(TenantDb & { tenantId: string; memberId: string; role: string }) | null> {
   const context = await requireSharedTenantContext(tenantSlug);
   if (!context) {
     return null;
   }
-  return Object.assign(context.tenantDb, { tenantId: context.tenantId, memberId: context.memberId });
+  return Object.assign(context.tenantDb, {
+    tenantId: context.tenantId,
+    memberId: context.memberId,
+    role: context.role,
+  });
 }
 
 /** Revalida el módulo de membresías, Finanzas y el dashboard juntos. */
@@ -82,6 +92,9 @@ export async function createMembershipAction(
   const tenantDb = await requireTenantDb(tenantSlug);
   if (!tenantDb) {
     return ACCESS_DENIED_MEMBERSHIP;
+  }
+  if (!can(tenantDb.role, "money.handle")) {
+    return { status: "error", message: NO_MONEY_ROLE };
   }
 
   const validation = validateMembership(formData);
@@ -179,6 +192,9 @@ export async function renewMembershipAction(
   const tenantDb = await requireTenantDb(tenantSlug);
   if (!tenantDb) {
     return ACCESS_DENIED_RENEWAL;
+  }
+  if (!can(tenantDb.role, "money.handle")) {
+    return { status: "error", message: NO_MONEY_ROLE };
   }
 
   const validation = validateRenewal(formData);

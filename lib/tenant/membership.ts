@@ -32,3 +32,12 @@ export async function resolveTenantMembership(input: {
   }
   return user && user.active ? user : null;
 }
+
+/**
+ * ¿La cuenta es miembro **activo** del negocio? Para servir archivos y fotos:
+ * quien fue retirado del equipo deja de verlos (SEC-08).
+ */
+export async function isActiveMember(tenantId: string, clerkUserId: string): Promise<boolean> {
+  const member = await db.orm.public.User.where({ tenantId, clerkUserId, active: true }).select("id").first();
+  return member !== null;
+}

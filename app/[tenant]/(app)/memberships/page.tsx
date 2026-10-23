@@ -1,5 +1,3 @@
-import { notFound } from "next/navigation";
-import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant/db";
 import {
   MEMBERSHIP_STATUSES,
@@ -17,6 +15,7 @@ import {
   type MembershipCustomerOption,
 } from "./_components/membership-form";
 import { PageHeader } from "@/components/molecules/page-header";
+import { requirePageContext } from "@/lib/tenant/context";
 
 const PAGE_SIZE = 10;
 
@@ -61,13 +60,9 @@ export default async function MembershipsPage({
     : undefined;
   const page = firstNumber(sp.page);
 
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    notFound();
-  }
+  // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
+  const pageCtx = await requirePageContext(tenantSlug);
+  const tenantRecord = pageCtx.tenant;
 
   const tenantDb = createTenantDb(tenantRecord.id);
 

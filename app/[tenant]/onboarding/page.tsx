@@ -1,7 +1,7 @@
-import { notFound, redirect } from "next/navigation";
-import { db } from "@/prisma/db";
+import { redirect } from "next/navigation";
 import { isPaymentMethod } from "@/lib/admin/catalogs";
 import OnboardingShell from "./_components/onboarding-shell";
+import { requirePageContext } from "@/lib/tenant/context";
 
 /**
  * Wizard de onboarding del negocio (a pantalla completa, sin el shell del
@@ -20,14 +20,9 @@ export default async function OnboardingPage({
 }) {
   const { tenant: tenantSlug } = await params;
 
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-
-  if (!tenantRecord) {
-    notFound();
-  }
+  // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
+  const pageCtx = await requirePageContext(tenantSlug);
+  const tenantRecord = pageCtx.tenant;
 
   if (tenantRecord.onboardingCompleted) {
     redirect(`/${tenantSlug}`);

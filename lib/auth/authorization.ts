@@ -1,17 +1,16 @@
 /**
- * Guardia de autorización unificado (Etapa 1, D7).
+ * Guardia de autorización de construcción (Etapa 1, D7).
  *
- * Recibe el contexto del tenant (rol, canGovernBudget, etc.) y devuelve
- * funciones de verificación por acción. Los helpers puros viven en
- * `lib/construction/project-domain.ts` y `lib/tenant/context.ts`; esto los combina
- * para que las actions solo importen un módulo.
+ * Recibe el contexto del tenant y devuelve una verificación por acción. Las
+ * reglas viven en la matriz única `lib/business/permissions.ts`; esto solo
+ * les da nombres de acción para que las actions importen un módulo.
  */
 
-import { canGovernBudget } from "@/lib/tenant/context";
-import * as Projects from "@/lib/construction/project-domain";
+import type { BusinessRole } from "@/lib/business/roles";
+import { can, type BusinessPermission } from "@/lib/business/permissions";
 
-/** Rol D7 del usuario en el tenant. */
-export type NexusRole = "SUPERADMIN" | "OWNER" | "STAFF" | "ADMIN" | "RECEPTION" | "ADVISOR";
+/** Rol del usuario en el negocio (alias del único tipo, `BusinessRole`). */
+export type NexusRole = BusinessRole;
 
 /** Contexto mínimo que la action ya resolvió (via requireTenantContext). */
 export type AuthContext = {
@@ -26,129 +25,51 @@ export type AuthResult =
   | { ok: false; reason: "FORBIDDEN" | "NOT_OWNER" | "NOT_SUPERADMIN" };
 
 /**
- * Crea las funciones de autorización a partir del contexto.
+ * Crea las funciones de autorización a partir del contexto. Cada una consulta
+ * la matriz única (`lib/business/permissions.ts`).
  * Uso típico en una action:
  *   const { canApproveBaseline, canEditBudget, canChangeProjectStatus } = createAuth(context);
  *   if (!canApproveBaseline().ok) return { ok: false, message: "Solo OWNER" };
  */
 export function createAuth(context: AuthContext) {
   const { role } = context;
-
-  // --- Presupuesto (D7) ---
-  const canApproveBaseline = (): AuthResult =>
-    canGovernBudget(role) ? { ok: true } : { ok: false, reason: "FORBIDDEN" };
-
-  const canToggleLock = (): AuthResult =>
-    canGovernBudget(role) ? { ok: true } : { ok: false, reason: "FORBIDDEN" };
-
-  const canEditAiu = (): AuthResult =>
-    canGovernBudget(role) ? { ok: true } : { ok: false, reason: "FORBIDDEN" };
-
-  const canCreateChapter = (): AuthResult =>
-    canGovernBudget(role) || role === "STAFF"
-      ? { ok: true }
-      : { ok: false, reason: "FORBIDDEN" };
-
-  const canCreateItem = (): AuthResult =>
-    canGovernBudget(role) || role === "STAFF"
-      ? { ok: true }
-      : { ok: false, reason: "FORBIDDEN" };
-
-  const canUpdateChapter = (): AuthResult =>
-    canGovernBudget(role) || role === "STAFF"
-      ? { ok: true }
-      : { ok: false, reason: "FORBIDDEN" };
-
-  const canUpdateItem = (): AuthResult =>
-    canGovernBudget(role) || role === "STAFF"
-      ? { ok: true }
-      : { ok: false, reason: "FORBIDDEN" };
-
-  const canDeleteChapter = (): AuthResult =>
-    canGovernBudget(role) || role === "STAFF"
-      ? { ok: true }
-      : { ok: false, reason: "FORBIDDEN" };
-
-  const canDeleteItem = (): AuthResult =>
-    canGovernBudget(role) || role === "STAFF"
-      ? { ok: true }
-      : { ok: false, reason: "FORBIDDEN" };
-
-  const canVerifyTotals = (): AuthResult =>
-    canGovernBudget(role) || role === "STAFF"
-      ? { ok: true }
-      : { ok: false, reason: "FORBIDDEN" };
-
-  // --- Catálogo Construcción & APU ---
-  /** Crear/editar insumos, actividades y sus composiciones: todo el equipo. */
-  const canEditApuCatalog = (): AuthResult =>
-    canGovernBudget(role) || role === "STAFF"
-      ? { ok: true }
-      : { ok: false, reason: "FORBIDDEN" };
-
-  /** Archivar y borrar del catálogo: solo OWNER/SUPERADMIN (acción destructiva). */
-  const canManageApuCatalogDestructive = (): AuthResult =>
-    canGovernBudget(role) ? { ok: true } : { ok: false, reason: "FORBIDDEN" };
-
-  // --- Proyecto ---
-  const canChangeProjectStatus = (): AuthResult =>
-    Projects.canChangeProjectStatus(role) ? { ok: true } : { ok: false, reason: "NOT_OWNER" };
-
-  const canEditProjectContent = (): AuthResult =>
-    Projects.canEditProjectContent(role) ? { ok: true } : { ok: false, reason: "FORBIDDEN" };
-
-  const canCreateProject = (): AuthResult =>
-    role === "OWNER" || role === "SUPERADMIN" ? { ok: true } : { ok: false, reason: "NOT_OWNER" };
-
-  const canUpdateProjectHeader = (): AuthResult =>
-    canGovernBudget(role) || role === "STAFF" ? { ok: true } : { ok: false, reason: "FORBIDDEN" };
-
-  // --- Bitácora ---
-  const canCreateFieldLogEntry = (): AuthResult =>
-    ({ ok: true }); // Cualquier miembro autenticado (validado en requireTenantContext)
-
-  const canDeleteFieldLogEntry = (): AuthResult =>
-    role === "OWNER" || role === "SUPERADMIN" ? { ok: true } : { ok: false, reason: "NOT_OWNER" };
-
-  // --- Lean ---
-  const canCreateLookaheadTask = (): AuthResult =>
-    canGovernBudget(role) || role === "STAFF" ? { ok: true } : { ok: false, reason: "FORBIDDEN" };
-
-  const canCreateWeeklyCommitment = (): AuthResult =>
-    canGovernBudget(role) || role === "STAFF" ? { ok: true } : { ok: false, reason: "FORBIDDEN" };
+  const check =
+    (permission: BusinessPermission, reason: "FORBIDDEN" | "NOT_OWNER" = "FORBIDDEN") =>
+    (): AuthResult =>
+      can(role, permission) ? { ok: true } : { ok: false, reason };
 
   return {
-    // Presupuesto
-    canApproveBaseline,
-    canToggleLock,
-    canEditAiu,
-    canCreateChapter,
-    canCreateItem,
-    canUpdateChapter,
-    canUpdateItem,
-    canDeleteChapter,
-    canDeleteItem,
-    canVerifyTotals,
-    // Catálogo APU
-    canEditApuCatalog,
-    canManageApuCatalogDestructive,
+    // Presupuesto (D7)
+    canApproveBaseline: check("budget.govern"),
+    canToggleLock: check("budget.govern"),
+    canEditAiu: check("budget.govern"),
+    canCreateChapter: check("budget.edit"),
+    canCreateItem: check("budget.edit"),
+    canUpdateChapter: check("budget.edit"),
+    canUpdateItem: check("budget.edit"),
+    canDeleteChapter: check("budget.edit"),
+    canDeleteItem: check("budget.edit"),
+    canVerifyTotals: check("budget.edit"),
+    // Catálogo APU: editar lo hace el equipo; archivar y borrar, quien gobierna.
+    canEditApuCatalog: check("apu.edit"),
+    canManageApuCatalogDestructive: check("apu.destroy"),
     // Proyecto
-    canChangeProjectStatus,
-    canEditProjectContent,
-    canCreateProject,
-    canUpdateProjectHeader,
+    canChangeProjectStatus: check("projects.changeStatus", "NOT_OWNER"),
+    canEditProjectContent: check("projects.editContent"),
+    canCreateProject: check("projects.create", "NOT_OWNER"),
+    canUpdateProjectHeader: check("projects.editHeader"),
     // Bitácora
-    canCreateFieldLogEntry,
-    canDeleteFieldLogEntry,
+    canCreateFieldLogEntry: check("fieldLog.create"),
+    canDeleteFieldLogEntry: check("fieldLog.delete", "NOT_OWNER"),
     // Lean
-    canCreateLookaheadTask,
-    canCreateWeeklyCommitment,
+    canCreateLookaheadTask: check("lean.plan"),
+    canCreateWeeklyCommitment: check("lean.plan"),
   };
 }
 
 /** Helper directo sin crear el objeto completo. */
 export function canGovernBudgetRole(role: NexusRole): boolean {
-  return canGovernBudget(role);
+  return can(role, "budget.govern");
 }
 
 /** Mapa de acción → descripción para logs/debug. */

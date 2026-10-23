@@ -1,10 +1,12 @@
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/prisma/db";
-import { createAdminDb } from "@/lib/admin/db";
+import { getStaffContext } from "@/lib/ops/access";
+import { isActiveMember } from "@/lib/tenant/membership";
 
 /**
  * Sirve la foto de un insumo guardada en la base (`ApuImage`). Solo para
- * miembros del negocio dueño de la imagen (o SUPERADMIN). La imagen es
+ * miembros activos del negocio dueño de la imagen, o el equipo NEXUS con
+ * acceso a cuentas (igual que `/api/files`). La imagen es
  * inmutable (identificada por contenido), así que se cachea en el navegador.
  */
 export async function GET(
@@ -27,10 +29,8 @@ export async function GET(
     return new Response("Imagen no encontrada.", { status: 404 });
   }
 
-  const member = await db.orm.public.User.where({ clerkUserId: userId, tenantId: image.tenantId })
-    .select("id")
-    .first();
-  if (!member && !(await createAdminDb().isSuperAdmin(userId))) {
+  const member = await isActiveMember(image.tenantId, userId);
+  if (!member && !(await getStaffContext())?.permissions.includes("accounts.view")) {
     // Mismo 404 que una imagen inexistente: no se revela que existe.
     return new Response("Imagen no encontrada.", { status: 404 });
   }

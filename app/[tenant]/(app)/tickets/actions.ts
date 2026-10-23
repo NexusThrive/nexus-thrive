@@ -6,6 +6,7 @@ import { createTicketSale, payTicketSale, saveMuseumSettings, seedTicketTypes, v
 import { canHandleCash, canManage } from "@/lib/business/roles";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import { requireTenantContext } from "@/lib/tenant/context";
+import { logTenantAction } from "@/lib/tenant/audit";
 
 export type TicketResult = { ok: true; message?: string } | { ok: false; message: string };
 const DENIED: TicketResult = { ok: false, message: "Tu rol no permite esta acción." };
@@ -44,6 +45,7 @@ export async function voidTicketsAction(slug: string, id: string, reason: string
   if (reason.trim().length < 3) return { ok: false, message: "Escribe el motivo." };
   const r = await voidTicketSale(ctx.tenantId, id, reason.trim(), ctx.memberId);
   if (!r.ok) return r;
+  await logTenantAction(ctx, "BIZ_TICKETS_VOID", { ticketSaleId: id, reason: reason.trim().slice(0, 300) });
   refresh(slug);
   return { ok: true, message: "Venta anulada: el cupo quedó libre." };
 }

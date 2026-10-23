@@ -28,6 +28,7 @@ pnpm exec vitest run \
   lib/ops/access.integration.test.ts \
   lib/ops/team-invite.integration.test.ts \
   lib/tenant/membership.integration.test.ts \
+  lib/tenant/audit.integration.test.ts \
   lib/tenant/deletion.integration.test.ts \
   lib/business/qr-read.integration.test.ts \
   lib/tenant/db.integration.test.ts \

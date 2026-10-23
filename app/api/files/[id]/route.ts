@@ -1,10 +1,11 @@
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/prisma/db";
 import { getStaffContext } from "@/lib/ops/access";
+import { isActiveMember } from "@/lib/tenant/membership";
 
 /**
  * Archivo de un negocio guardado en NEXUS (comprobantes, soportes, fotos).
- * Solo para miembros del negocio o el equipo NEXUS con acceso a cuentas;
+ * Solo para miembros activos del negocio o el equipo NEXUS con acceso a cuentas;
  * para cualquier otro, el mismo 404 que si no existiera.
  */
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -13,7 +14,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   if (!userId || !/^[0-9a-f-]{36}$/i.test(id)) return new Response("No encontrado.", { status: 404 });
   const file = await db.orm.public.Attachment.where({ id }).select("tenantId", "fileName", "mimeType", "sha256", "data").first();
   if (!file) return new Response("No encontrado.", { status: 404 });
-  const member = await db.orm.public.User.where({ clerkUserId: userId, tenantId: file.tenantId }).select("id").first();
+  const member = await isActiveMember(file.tenantId, userId);
   if (!member && !(await getStaffContext())?.permissions.includes("accounts.view")) return new Response("No encontrado.", { status: 404 });
   return new Response(file.data as Uint8Array<ArrayBuffer>, {
     headers: {

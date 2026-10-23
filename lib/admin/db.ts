@@ -291,7 +291,21 @@ export type AuditAction =
   | "BENEFIT_CREATE"
   | "BENEFIT_UPDATE"
   | "BENEFIT_REDEEM"
-  | "TENANT_DELETE";
+  | "TENANT_DELETE"
+  // Dentro de un negocio (lib/tenant/audit.ts)
+  | "BIZ_PAYMENT_VOID"
+  | "BIZ_EXPENSE_VOID"
+  | "BIZ_INVOICE_VOID"
+  | "BIZ_TICKETS_VOID"
+  | "BIZ_CUSTOMER_ARCHIVE"
+  | "BIZ_CUSTOMER_RESTORE"
+  | "BIZ_CUSTOMERS_DELETE"
+  | "BIZ_MEMBER_INVITE"
+  | "BIZ_INVITE_REVOKE"
+  | "BIZ_MEMBER_ROLE"
+  | "BIZ_MEMBER_ACTIVE"
+  | "BIZ_MODULE_TOGGLE"
+  | "BIZ_TENANT_DELETE";
 
 export type AuditLogInput = {
   actorId: string;

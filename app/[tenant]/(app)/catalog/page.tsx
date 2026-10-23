@@ -1,8 +1,6 @@
-import { notFound } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { BookOpen, ImageIcon, Layers, Package, Upload } from "lucide-react";
-import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant/db";
 import { canGovernBudget, type TenantRole } from "@/lib/tenant/context";
 import { getQuoteTerms } from "@/lib/vertical-terms";
@@ -14,6 +12,7 @@ import ActivityCatalog from "./_components/activity-catalog";
 import { PageHeader } from "@/components/molecules/page-header";
 import { KpiCard } from "@/components/molecules/kpi-card";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { requirePageContext } from "@/lib/tenant/context";
 
 const ITEMS_PAGE_SIZE = 10;
 const ACTIVITIES_PAGE_SIZE = 50;
@@ -57,10 +56,9 @@ export default async function CatalogPage({
   const sp = await searchParams;
   const activeTab: CatalogTab = firstString(sp.tab) === "items" ? "items" : "activities";
 
-  const tenantRecord = await db.orm.public.Tenant.where({ slug: tenantSlug, active: true }).first();
-  if (!tenantRecord) {
-    notFound();
-  }
+  // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
+  const pageCtx = await requirePageContext(tenantSlug);
+  const tenantRecord = pageCtx.tenant;
   const tenantDb = createTenantDb(tenantRecord.id);
   const { userId } = await auth();
   const member = userId ? await tenantDb.users.findByClerkUserId(userId) : null;

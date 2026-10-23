@@ -21,6 +21,7 @@ import { parseMoney } from "@/lib/business/money";
 import { canHandleCash, canManage } from "@/lib/business/roles";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { getAppBaseUrl } from "@/lib/app-url";
+import { logTenantAction } from "@/lib/tenant/audit";
 
 export type MoneyResult = { ok: true; message?: string; id?: string } | { ok: false; message: string };
 const DENIED: MoneyResult = { ok: false, message: "Tu rol no permite esta acción." };
@@ -45,6 +46,7 @@ export async function voidPaymentAction(slug: string, paymentId: string, reason:
   if (reason.trim().length < 3) return { ok: false, message: "Escribe el motivo de la anulación." };
   const r = await voidPayment(ctx.tenantId, paymentId, reason.trim().slice(0, 300), ctx.memberId);
   if (!r.ok) return r;
+  await logTenantAction(ctx, "BIZ_PAYMENT_VOID", { paymentId, reason: reason.trim().slice(0, 300) });
   refresh(slug);
   return { ok: true, message: "Pago anulado" };
 }
@@ -94,6 +96,7 @@ export async function voidExpenseAction(slug: string, expenseId: string, reason:
     const s = await db.orm.public.CashSession.where({ tenantId: ctx.tenantId, id: e.cashSessionId }).select("closedAt").first();
     if (s && !s.closedAt) await addCashMovement(ctx.tenantId, { sessionId: e.cashSessionId, kind: "ADJUST", amount: Number(e.amount), description: `Anulación de gasto: ${e.description}`, expenseId }, ctx.memberId);
   }
+  await logTenantAction(ctx, "BIZ_EXPENSE_VOID", { expenseId, amount: String(e.amount), reason: reason.trim().slice(0, 300) });
   refresh(slug);
   return { ok: true, message: "Gasto anulado" };
 }

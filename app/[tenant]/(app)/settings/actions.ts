@@ -8,6 +8,7 @@ import { isModule, isVertical, validateSlug } from "@/lib/admin/catalogs";
 import { checkModuleToggle } from "@/lib/plans/compat";
 import { loadPricingConfig } from "@/lib/plans/settings";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { logTenantAction } from "@/lib/tenant/audit";
 
 type TenantDb = ReturnType<typeof createTenantDb>;
 
@@ -169,7 +170,7 @@ export async function toggleModuleAction(
   const moduleName = String(formData.get("moduleName") ?? "");
   const active = String(formData.get("active") ?? "") === "true";
 
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireSharedTenantContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_MODULES;
   }
@@ -201,6 +202,7 @@ export async function toggleModuleAction(
       update: { active },
       conflictOn: { tenantId, moduleName },
     });
+    await logTenantAction(context, "BIZ_MODULE_TOGGLE", { moduleName, active });
 
     // El layout del tenant renderiza la sidebar a partir de TenantModule:
     // revalidar el segmento de layout mantiene la navegación sincronizada.
@@ -249,5 +251,7 @@ export async function deleteOwnBusinessAction(
 
   const result = await deleteTenantCompletely(context.tenantId);
   if (!result.ok) return { status: "error", message: result.message };
+  // El AuditLog no se borra con el negocio: el rastro queda para el panel.
+  await logTenantAction(context, "BIZ_TENANT_DELETE", { slug: tenantSlug, rowsDeleted: result.total });
   return { status: "ok", total: result.total };
 }

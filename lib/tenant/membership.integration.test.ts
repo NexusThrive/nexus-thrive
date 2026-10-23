@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
 import { deleteTenantCompletely } from "./deletion";
-import { resolveTenantMembership } from "./membership";
+import { isActiveMember, resolveTenantMembership } from "./membership";
 
 /**
  * SEC-02 (docs/nexus-architecture/security-audit.md): un negocio creado desde
@@ -91,9 +91,17 @@ describe.skipIf(!enabled)("membresía al entrar a un negocio (integración)", ()
     expect(owner?.active).toBe(true);
   });
 
-  test("un integrante retirado no vuelve a entrar", async () => {
+  // SEC-08: los archivos y fotos solo los ve un miembro activo.
+  test("solo un miembro activo del negocio pasa la comprobación de archivos", async () => {
+    expect(await isActiveMember(tenantId, `user_dueno_${suffix}`)).toBe(true);
+    expect(await isActiveMember(tenantId, `user_tercero_${suffix}`)).toBe(false);
+    expect(await isActiveMember("00000000-0000-0000-0000-000000000000", `user_dueno_${suffix}`)).toBe(false);
+  });
+
+  test("un integrante retirado no vuelve a entrar ni ve archivos", async () => {
     const owner = await db.orm.public.User.where({ tenantId, clerkUserId: `user_dueno_${suffix}` }).first();
     await db.orm.public.User.where({ id: owner!.id }).update({ active: false });
+    expect(await isActiveMember(tenantId, `user_dueno_${suffix}`)).toBe(false);
     const again = await resolveTenantMembership({
       tenantId,
       clerkUserId: `user_dueno_${suffix}`,
