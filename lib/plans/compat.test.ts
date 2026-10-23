@@ -9,12 +9,13 @@ describe("compatibilidad de módulos", () => {
     expect(checkModuleToggle(c, "gym", "dashboard", false).ok).toBe(false);
   });
   it("no activa módulos ajenos al rubro ni planeados", () => {
-    expect(checkModuleToggle(c, "gym", "quotes", true).ok).toBe(false); // APU en gimnasio
+    expect(checkModuleToggle(c, "gym", "construction", true).ok).toBe(false); // APU en gimnasio
+    expect(checkModuleToggle(c, "construction", "quotes", true).ok).toBe(false); // cotización genérica: planeada
     expect(checkModuleToggle(c, "restaurant", "orders", true).ok).toBe(false); // planeado
-    expect(checkModuleToggle(c, "construction", "quotes", true).ok).toBe(true);
+    expect(checkModuleToggle(c, "construction", "construction", true).ok).toBe(true);
   });
   it("siempre deja desactivar (salvo el Inicio)", () => {
-    expect(checkModuleToggle(c, "gym", "quotes", false).ok).toBe(true);
+    expect(checkModuleToggle(c, "gym", "construction", false).ok).toBe(true);
   });
   // SEC-06: desde los Ajustes del negocio solo se activa lo del plan.
   it("no activa un módulo que el plan no incluye", () => {

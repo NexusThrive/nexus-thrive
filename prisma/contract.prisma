@@ -156,20 +156,6 @@ enum Vertical {
   museum
 }
 
-enum ModuleName {
-  crm
-  dashboard
-  bookings
-  payments
-  billing
-  inventory
-  finance
-  whatsapp
-  memberships
-  orders
-  quotes
-}
-
 enum PaymentStatus {
   PENDING
   APPROVED
@@ -418,7 +404,9 @@ model TenantModule {
   id         String       @id @default(uuid())
   tenantId   String
   tenant     Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  moduleName ModuleName
+  /// Id de la capacidad (lib/capabilities/registry.ts). Texto validado en el
+  /// servidor con `isModule`: agregar un módulo no necesita migración.
+  moduleName String
   active     Boolean      @default(true)
   createdAt  DateTime     @default(now())
   updatedAt  temporal.updatedAt()

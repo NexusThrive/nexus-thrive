@@ -7,7 +7,7 @@ import { quickCreateActions } from "./quick-create";
 
 describe("buildTenantNav", () => {
   it("siempre muestra Inicio aunque el módulo de panel no esté activo", () => {
-    const groups = buildTenantNav("construction", ["quotes"]);
+    const groups = buildTenantNav("construction", ["construction"]);
     expect(groups[0].items.map((i) => i.label)).toEqual(["Inicio"]);
   });
 
@@ -17,11 +17,19 @@ describe("buildTenantNav", () => {
     expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["", "/crm", "/settings"]);
   });
 
-  it("cotizaciones en construcción abre Obras, Cotizaciones y Catálogo APU", () => {
-    const labels = buildTenantNav("construction", ["quotes"])
+  it("la suite de construcción abre Obras, Cotizaciones y Catálogo APU", () => {
+    const labels = buildTenantNav("construction", ["construction"])
       .flatMap((g) => g.items)
       .map((i) => i.label);
     expect(labels).toEqual(["Inicio", "Obras", "Cotizaciones", "Catálogo APU", "Configuración"]);
+  });
+});
+
+describe("ARCH-01: construcción separada de cotizaciones", () => {
+  it("un rubro que no construye no ve pantallas APU aunque tenga cotizaciones", () => {
+    const hrefs = buildTenantNav("mechanic", ["dashboard", "crm", "quotes"]).flatMap((g) => g.items).map((i) => i.href);
+    expect(hrefs).not.toContain("/catalog");
+    expect(hrefs).not.toContain("/projects");
   });
 });
 
@@ -39,7 +47,7 @@ describe("ruta activa", () => {
   });
 
   it("encuentra el ítem activo", () => {
-    const groups = buildTenantNav("construction", ["dashboard", "quotes"]);
+    const groups = buildTenantNav("construction", ["dashboard", "construction"]);
     expect(activeNavItem(groups, "/quotes/4")?.label).toBe("Cotizaciones");
   });
 });
@@ -47,7 +55,7 @@ describe("ruta activa", () => {
 describe("quickCreateActions", () => {
   it("depende de los módulos activos y no pasa de cuatro", () => {
     expect(quickCreateActions("gym", ["dashboard"])).toEqual([]);
-    const all = quickCreateActions("construction", ["quotes", "crm", "finance", "bookings", "billing"]);
+    const all = quickCreateActions("construction", ["construction", "crm", "finance", "bookings", "billing"]);
     expect(all).toHaveLength(4);
     expect(all[0].label).toBe("Nueva obra");
   });
@@ -76,7 +84,9 @@ describe("modulesForRoute", () => {
   it("una ruta de módulo y sus subrutas", () => {
     expect(modulesForRoute("/crm")).toEqual(["crm"]);
     expect(modulesForRoute("/crm/123/carnet")).toEqual(["crm"]);
-    expect(modulesForRoute("/projects/9/budget")).toEqual(["quotes"]);
+    expect(modulesForRoute("/projects/9/budget")).toEqual(["construction"]);
+    // La cotización genérica aún no tiene pantallas: no abre la suite APU.
+    expect(modulesForRoute("/catalog")).toEqual(["construction"]);
   });
 
   it("Finanzas la habilitan Finanzas y Pagos", () => {

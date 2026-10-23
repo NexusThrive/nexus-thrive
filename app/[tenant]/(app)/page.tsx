@@ -9,7 +9,7 @@ import { formatCurrency, formatRelativeTime } from "@/lib/format";
 import type { RecentActivityItem } from "@/lib/dashboard/types";
 import { greetingFor, percentChange } from "@/lib/dashboard";
 import { runningBalance, type FinanceSeries } from "@/lib/finance/series";
-import { sortModules } from "@/lib/admin/catalogs";
+import { sortModules, isModule } from "@/lib/admin/catalogs";
 import { quickCreateActions } from "@/lib/navigation/quick-create";
 import { Delta } from "@/components/atoms/delta";
 import { RevealText } from "@/components/atoms/reveal-text";
@@ -129,7 +129,7 @@ export default async function TenantDashboard({
   const terms = getVerticalTerms(tenantRecord.vertical);
   const base = `/${tenantSlug}`;
   const activeModules = sortModules(
-    tenantRecord.modules.filter((m) => m.active).map((m) => m.moduleName),
+    tenantRecord.modules.filter((m) => m.active).map((m) => m.moduleName).filter(isModule),
   );
   const has = (m: (typeof activeModules)[number]) => activeModules.includes(m);
   const quickActions = quickCreateActions(tenantRecord.vertical, activeModules);

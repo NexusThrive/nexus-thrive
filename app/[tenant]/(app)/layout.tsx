@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { activeTenantWithModules, memberTheme } from "@/lib/tenant/membership";
-import { sortModules } from "@/lib/admin/catalogs";
+import { sortModules, isModule } from "@/lib/admin/catalogs";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import { TenantShell } from "@/components/templates/tenant-shell";
 import { VerticalTermsProvider } from "./vertical-terms-context";
@@ -45,7 +45,8 @@ export default async function AppLayout({
   const activeModules = sortModules(
     tenantRecord.modules
       .filter((module) => module.active)
-      .map((module) => module.moduleName),
+      .map((module) => module.moduleName)
+      .filter(isModule),
   );
 
   const { userId } = await auth();

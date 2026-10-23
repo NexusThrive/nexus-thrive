@@ -19,6 +19,7 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 8 | `2026-10-21-reinicio-de-datos.sql` | Vacía los datos de negocio (no es de esquema; solo si quieres empezar de cero) | opcional |
 | 9 | `2026-10-23-restricciones-negocio-y-rls.sql` | Llaves a `Tenant` en 22 tablas, código de acceso y NFC únicos por negocio, RLS en las 71 tablas, retira `Membership.payments` | **PENDIENTE** |
 | 10 | `2026-10-23-codigos-a-medida.sql` | Códigos a medida: precio, módulos y límites en `BenefitCode`; límites en `Tenant`; precio en `BenefitRedemption` (aditivo) | **PENDIENTE** |
+| 11 | `2026-10-23-registro-de-capacidades.sql` | Módulos como texto validado (sin el CHECK del enum) y suite de construcción de `quotes` a `construction` (datos) | **PENDIENTE** |
 
 ## Estado: producción reconstruida desde las migraciones (camino A, 2026-10-23)
 

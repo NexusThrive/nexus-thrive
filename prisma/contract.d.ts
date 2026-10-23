@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'91ef0b6e6902ebad2385ea9ac22b3d4449ad6a7eae99594fd3c49c8231c83c0e'>;
+  StorageHashBase<'7380d3584abeb2a1be88350b70e14ccfbcb069d723497dfffa8ac51fb86e0279'>;
 export type ExecutionHash =
   ExecutionHashBase<'f90187b8442c7d45d0f4849ce5d90a5e406cddb56d20b72d710f4f618d9a3274'>;
 export type ProfileHash =
@@ -1204,18 +1204,7 @@ export type FieldOutputTypes = {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
-      readonly moduleName:
-        | 'crm'
-        | 'dashboard'
-        | 'bookings'
-        | 'payments'
-        | 'billing'
-        | 'inventory'
-        | 'finance'
-        | 'whatsapp'
-        | 'memberships'
-        | 'orders'
-        | 'quotes';
+      readonly moduleName: CodecTypes['pg/text@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
@@ -2269,18 +2258,7 @@ export type FieldInputTypes = {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
-      readonly moduleName:
-        | 'crm'
-        | 'dashboard'
-        | 'bookings'
-        | 'payments'
-        | 'billing'
-        | 'inventory'
-        | 'finance'
-        | 'whatsapp'
-        | 'memberships'
-        | 'orders'
-        | 'quotes';
+      readonly moduleName: CodecTypes['pg/text@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
@@ -3334,18 +3312,7 @@ export type StorageColumnTypes = {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
-      readonly moduleName:
-        | 'crm'
-        | 'dashboard'
-        | 'bookings'
-        | 'payments'
-        | 'billing'
-        | 'inventory'
-        | 'finance'
-        | 'whatsapp'
-        | 'memberships'
-        | 'orders'
-        | 'quotes';
+      readonly moduleName: CodecTypes['pg/text@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
@@ -4399,18 +4366,7 @@ export type StorageColumnInputTypes = {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
-      readonly moduleName:
-        | 'crm'
-        | 'dashboard'
-        | 'bookings'
-        | 'payments'
-        | 'billing'
-        | 'inventory'
-        | 'finance'
-        | 'whatsapp'
-        | 'memberships'
-        | 'orders'
-        | 'quotes';
+      readonly moduleName: CodecTypes['pg/text@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
@@ -5769,18 +5725,7 @@ export namespace Models {
     active: CodecTypes['pg/bool@1']['output'];
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     id: CodecTypes['pg/text@1']['output'];
-    moduleName:
-      | 'crm'
-      | 'dashboard'
-      | 'bookings'
-      | 'payments'
-      | 'billing'
-      | 'inventory'
-      | 'finance'
-      | 'whatsapp'
-      | 'memberships'
-      | 'orders'
-      | 'quotes';
+    moduleName: CodecTypes['pg/text@1']['output'];
     tenantId: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     tenant: public_Tenant;
@@ -13620,22 +13565,6 @@ type ContractBase = Omit<
             readonly MembershipType: {
               readonly kind: 'valueSet';
               readonly values: readonly ['mensual', 'trimestral', 'anual'];
-            };
-            readonly ModuleName: {
-              readonly kind: 'valueSet';
-              readonly values: readonly [
-                'crm',
-                'dashboard',
-                'bookings',
-                'payments',
-                'billing',
-                'inventory',
-                'finance',
-                'whatsapp',
-                'memberships',
-                'orders',
-                'quotes',
-              ];
             };
             readonly NonComplianceCause: {
               readonly kind: 'valueSet';
@@ -22121,22 +22050,6 @@ type ContractBase = Omit<
               { readonly name: 'mensual'; readonly value: 'mensual' },
               { readonly name: 'trimestral'; readonly value: 'trimestral' },
               { readonly name: 'anual'; readonly value: 'anual' },
-            ];
-          };
-          readonly ModuleName: {
-            readonly codecId: 'pg/text@1';
-            readonly members: readonly [
-              { readonly name: 'crm'; readonly value: 'crm' },
-              { readonly name: 'dashboard'; readonly value: 'dashboard' },
-              { readonly name: 'bookings'; readonly value: 'bookings' },
-              { readonly name: 'payments'; readonly value: 'payments' },
-              { readonly name: 'billing'; readonly value: 'billing' },
-              { readonly name: 'inventory'; readonly value: 'inventory' },
-              { readonly name: 'finance'; readonly value: 'finance' },
-              { readonly name: 'whatsapp'; readonly value: 'whatsapp' },
-              { readonly name: 'memberships'; readonly value: 'memberships' },
-              { readonly name: 'orders'; readonly value: 'orders' },
-              { readonly name: 'quotes'; readonly value: 'quotes' },
             ];
           };
           readonly NonComplianceCause: {

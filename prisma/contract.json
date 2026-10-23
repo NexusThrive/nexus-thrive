@@ -634,55 +634,6 @@
               }
             ]
           },
-          "ModuleName": {
-            "codecId": "pg/text@1",
-            "members": [
-              {
-                "name": "crm",
-                "value": "crm"
-              },
-              {
-                "name": "dashboard",
-                "value": "dashboard"
-              },
-              {
-                "name": "bookings",
-                "value": "bookings"
-              },
-              {
-                "name": "payments",
-                "value": "payments"
-              },
-              {
-                "name": "billing",
-                "value": "billing"
-              },
-              {
-                "name": "inventory",
-                "value": "inventory"
-              },
-              {
-                "name": "finance",
-                "value": "finance"
-              },
-              {
-                "name": "whatsapp",
-                "value": "whatsapp"
-              },
-              {
-                "name": "memberships",
-                "value": "memberships"
-              },
-              {
-                "name": "orders",
-                "value": "orders"
-              },
-              {
-                "name": "quotes",
-                "value": "quotes"
-              }
-            ]
-          },
           "NonComplianceCause": {
             "codecId": "pg/text@1",
             "members": [
@@ -12956,12 +12907,6 @@
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
-                },
-                "valueSet": {
-                  "entityKind": "enum",
-                  "entityName": "ModuleName",
-                  "namespaceId": "public",
-                  "plane": "domain"
                 }
               },
               "tenantId": {
@@ -23043,13 +22988,6 @@
               "uniques": []
             },
             "TenantModule": {
-              "checks": [
-                {
-                  "expression": "\"moduleName\" IN ('crm', 'dashboard', 'bookings', 'payments', 'billing', 'inventory', 'finance', 'whatsapp', 'memberships', 'orders', 'quotes')",
-                  "name": "TenantModule_moduleName_check_e283a8b3",
-                  "prefix": "TenantModule_moduleName_check"
-                }
-              ],
               "columns": {
                 "active": {
                   "codecId": "pg/bool@1",
@@ -23077,13 +23015,7 @@
                 "moduleName": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
-                  "nullable": false,
-                  "valueSet": {
-                    "entityKind": "valueSet",
-                    "entityName": "ModuleName",
-                    "namespaceId": "public",
-                    "plane": "storage"
-                  }
+                  "nullable": false
                 },
                 "tenantId": {
                   "codecId": "pg/text@1",
@@ -24054,22 +23986,6 @@
                 "anual"
               ]
             },
-            "ModuleName": {
-              "kind": "valueSet",
-              "values": [
-                "crm",
-                "dashboard",
-                "bookings",
-                "payments",
-                "billing",
-                "inventory",
-                "finance",
-                "whatsapp",
-                "memberships",
-                "orders",
-                "quotes"
-              ]
-            },
             "NonComplianceCause": {
               "kind": "valueSet",
               "values": [
@@ -24236,7 +24152,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "91ef0b6e6902ebad2385ea9ac22b3d4449ad6a7eae99594fd3c49c8231c83c0e"
+    "storageHash": "7380d3584abeb2a1be88350b70e14ccfbcb069d723497dfffa8ac51fb86e0279"
   },
   "execution": {
     "executionHash": "f90187b8442c7d45d0f4849ce5d90a5e406cddb56d20b72d710f4f618d9a3274",

@@ -142,8 +142,8 @@ eventos, porque hoy una venta vive en cinco formas distintas.
 
 | # | Qué | Subcapas | Notas |
 | --- | --- | --- | --- |
-| 0 | Códigos de activación a medida | X.00 | En paralelo: precio, módulos y límites por cliente |
-| 1 | Registro de capacidades y separar construcción de cotizaciones | X.00, IV.02 | ARCH-01 / ADR-0003 |
+| 0 | ~~Códigos de activación a medida~~ (hecho 2026-10-23) | X.00 | En paralelo: precio, módulos y límites por cliente |
+| 1 | ~~Registro de capacidades y separar construcción de cotizaciones~~ (hecho 2026-10-23) | X.00, IV.02 | ARCH-01 / ADR-0003 |
 | 2 | **Documento comercial unificado** (cotización, pedido, factura o recibo, nota crédito; líneas, impuestos, descuentos, estados, numeración) | I.00, V.06 | La pieza de la que dependen POS, cartera, DIAN, Nequi y el agente |
 | 3 | Cartera: abonos, pagos parciales, cuentas por cobrar por antigüedad | VII.02 | Sobre el servicio de dinero |
 | 4 | POS de varias líneas | V.03 | Sobre el documento |

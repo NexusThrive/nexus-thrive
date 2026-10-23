@@ -10,7 +10,7 @@ const meta = {
     tenantSlug: "constructora",
     tenantName: "Constructora Andina",
     vertical: "construction",
-    activeModules: ["dashboard", "crm", "quotes", "finance"],
+    activeModules: ["dashboard", "crm", "construction", "finance"],
     children: (
       <div className="space-y-6">
         <h1 className="font-display text-2xl font-semibold">Dashboard</h1>

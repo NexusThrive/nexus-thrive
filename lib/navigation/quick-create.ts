@@ -23,7 +23,7 @@ export function quickCreateActions(
   const terms = getVerticalTerms(vertical);
   const has = (m: ModuleValue) => activeModules.includes(m);
   const actions: QuickCreateAction[] = [];
-  if (has("quotes")) {
+  if (has("construction")) {
     actions.push({
       key: "new-project",
       label: vertical === "construction" ? "Nueva obra" : "Nuevo proyecto",
