@@ -59,3 +59,6 @@ next-env.d.ts
 # Scripts destructivos y parches sueltos: se guardan fuera del repo
 docs/prod-sql/*limpieza*.sql
 *.patch
+
+# graphify: grafo de conocimiento generado (graphify update .)
+graphify-out/
