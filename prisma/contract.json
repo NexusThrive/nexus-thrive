@@ -2692,10 +2692,32 @@
                   "kind": "scalar"
                 }
               },
+              "maxCustomers": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "maxUsers": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "maxUses": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "modules": {
+                "many": true,
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -2717,6 +2739,13 @@
                   "entityName": "TenantPlan",
                   "namespaceId": "public",
                   "plane": "domain"
+                }
+              },
+              "priceUsdCents": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
                 }
               },
               "updatedAt": {
@@ -2780,14 +2809,26 @@
                 "label": {
                   "column": "label"
                 },
+                "maxCustomers": {
+                  "column": "maxCustomers"
+                },
+                "maxUsers": {
+                  "column": "maxUsers"
+                },
                 "maxUses": {
                   "column": "maxUses"
+                },
+                "modules": {
+                  "column": "modules"
                 },
                 "notes": {
                   "column": "notes"
                 },
                 "plan": {
                   "column": "plan"
+                },
+                "priceUsdCents": {
+                  "column": "priceUsdCents"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
@@ -2868,6 +2909,13 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "priceUsdCents": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -2955,6 +3003,9 @@
                 },
                 "plan": {
                   "column": "plan"
+                },
+                "priceUsdCents": {
+                  "column": "priceUsdCents"
                 },
                 "startsAt": {
                   "column": "startsAt"
@@ -11582,6 +11633,20 @@
                   "kind": "scalar"
                 }
               },
+              "maxCustomers": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "maxUsers": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "name": {
                 "nullable": false,
                 "type": {
@@ -12515,6 +12580,12 @@
                 },
                 "longitude": {
                   "column": "longitude"
+                },
+                "maxCustomers": {
+                  "column": "maxCustomers"
+                },
+                "maxUsers": {
+                  "column": "maxUsers"
                 },
                 "name": {
                   "column": "name"
@@ -15486,6 +15557,11 @@
                   "prefix": "BenefitCode_kind_check"
                 },
                 {
+                  "expression": "array_position(\"modules\", NULL) IS NULL",
+                  "name": "BenefitCode_modules_elem_not_null_749d77ec",
+                  "prefix": "BenefitCode_modules_elem_not_null"
+                },
+                {
                   "expression": "\"plan\" IN ('ESSENTIAL', 'ELITE', 'SIGNATURE')",
                   "name": "BenefitCode_plan_check_f1a20b28",
                   "prefix": "BenefitCode_plan_check"
@@ -15559,9 +15635,25 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "maxCustomers": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "maxUsers": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
                 "maxUses": {
                   "codecId": "pg/int4@1",
                   "nativeType": "int4",
+                  "nullable": true
+                },
+                "modules": {
+                  "codecId": "pg/text@1",
+                  "many": true,
+                  "nativeType": "text",
                   "nullable": true
                 },
                 "notes": {
@@ -15583,6 +15675,11 @@
                     "namespaceId": "public",
                     "plane": "storage"
                   }
+                },
+                "priceUsdCents": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
                 },
                 "updatedAt": {
                   "codecId": "pg/timestamptz-temporal@1",
@@ -15690,6 +15787,11 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "priceUsdCents": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
                 },
                 "startsAt": {
                   "codecId": "pg/timestamptz-temporal@1",
@@ -22552,6 +22654,16 @@
                   "nativeType": "float8",
                   "nullable": true
                 },
+                "maxCustomers": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "maxUsers": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
                 "name": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -24124,7 +24236,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "691a1768b5ad4741b2ffbf94786cbb232c3d676edbe6345a706dbeb4ab100106"
+    "storageHash": "91ef0b6e6902ebad2385ea9ac22b3d4449ad6a7eae99594fd3c49c8231c83c0e"
   },
   "execution": {
     "executionHash": "f90187b8442c7d45d0f4849ce5d90a5e406cddb56d20b72d710f4f618d9a3274",

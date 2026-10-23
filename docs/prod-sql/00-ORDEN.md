@@ -18,6 +18,7 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 7 | `2026-10-21-invitaciones-equipo.sql` | Invitaciones al equipo del negocio | **sin confirmar** |
 | 8 | `2026-10-21-reinicio-de-datos.sql` | Vacía los datos de negocio (no es de esquema; solo si quieres empezar de cero) | opcional |
 | 9 | `2026-10-23-restricciones-negocio-y-rls.sql` | Llaves a `Tenant` en 22 tablas, código de acceso y NFC únicos por negocio, RLS en las 71 tablas, retira `Membership.payments` | **PENDIENTE** |
+| 10 | `2026-10-23-codigos-a-medida.sql` | Códigos a medida: precio, módulos y límites en `BenefitCode`; límites en `Tenant`; precio en `BenefitRedemption` (aditivo) | **PENDIENTE** |
 
 ## Estado: producción reconstruida desde las migraciones (camino A, 2026-10-23)
 

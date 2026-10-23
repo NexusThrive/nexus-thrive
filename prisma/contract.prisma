@@ -340,6 +340,9 @@ model Tenant {
   /// (ModuleSetting.status).
   customerTierId    String?
   contractedModules String[]?
+  /// Límites acordados en un código a medida (null = los del plan).
+  maxUsers          Int?
+  maxCustomers      Int?
   /// Operations Center: etapa comercial y responsable de cuenta (StaffMember.id).
   accountStage     AccountStage @default(ACTIVE)
   accountManagerId String?
@@ -1728,6 +1731,15 @@ model BenefitCode {
   /// Caducidad del código (opcional).
   expiresAt    DateTime?
   notes        String?
+  /// Contrato a medida (todo opcional; vacío = el plan normal y gratis):
+  /// precio mensual acordado en centavos de USD. Con precio, el canje deja la
+  /// suscripción ACTIVA con ese precio (Facturación) en vez de prueba gratis.
+  priceUsdCents Int?
+  /// Módulos exactos que activa (si está vacío, los del plan).
+  modules       String[]?
+  /// Límites de ese cliente (null = los del plan).
+  maxUsers      Int?
+  maxCustomers  Int?
   /// StaffMember.id que lo creó.
   createdById  String?
   createdAt    DateTime        @default(now())
@@ -1751,6 +1763,8 @@ model BenefitRedemption {
   /// Regalo o acceso pagado (se copia del código al momento del canje).
   kind         BenefitKind @default(PROMO)
   durationDays Int
+  /// Precio mensual acordado al canjear (copia del código; null = gratis).
+  priceUsdCents Int?
   startsAt     DateTime
   endsAt       DateTime
   clerkUserId  String?

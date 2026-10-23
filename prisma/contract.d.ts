@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'691a1768b5ad4741b2ffbf94786cbb232c3d676edbe6345a706dbeb4ab100106'>;
+  StorageHashBase<'91ef0b6e6902ebad2385ea9ac22b3d4449ad6a7eae99594fd3c49c8231c83c0e'>;
 export type ExecutionHash =
   ExecutionHashBase<'f90187b8442c7d45d0f4849ce5d90a5e406cddb56d20b72d710f4f618d9a3274'>;
 export type ProfileHash =
@@ -384,9 +384,13 @@ export type FieldOutputTypes = {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly kind: 'PROMO' | 'PAID';
       readonly label: CodecTypes['pg/text@1']['output'];
+      readonly maxCustomers: CodecTypes['pg/int4@1']['output'] | null;
+      readonly maxUsers: CodecTypes['pg/int4@1']['output'] | null;
       readonly maxUses: CodecTypes['pg/int4@1']['output'] | null;
+      readonly modules: ReadonlyArray<CodecTypes['pg/text@1']['output']> | null;
       readonly notes: CodecTypes['pg/text@1']['output'] | null;
       readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
+      readonly priceUsdCents: CodecTypes['pg/int4@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly usedCount: CodecTypes['pg/int4@1']['output'];
     };
@@ -400,6 +404,7 @@ export type FieldOutputTypes = {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly kind: 'PROMO' | 'PAID';
       readonly plan: CodecTypes['pg/text@1']['output'];
+      readonly priceUsdCents: CodecTypes['pg/int4@1']['output'] | null;
       readonly startsAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly tenantName: CodecTypes['pg/text@1']['output'];
@@ -1131,6 +1136,8 @@ export type FieldOutputTypes = {
       readonly latitude: CodecTypes['pg/float8@1']['output'] | null;
       readonly legalName: CodecTypes['pg/text@1']['output'] | null;
       readonly longitude: CodecTypes['pg/float8@1']['output'] | null;
+      readonly maxCustomers: CodecTypes['pg/int4@1']['output'] | null;
+      readonly maxUsers: CodecTypes['pg/int4@1']['output'] | null;
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['output'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
@@ -1442,9 +1449,13 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly kind: 'PROMO' | 'PAID';
       readonly label: CodecTypes['pg/text@1']['input'];
+      readonly maxCustomers: CodecTypes['pg/int4@1']['input'] | null;
+      readonly maxUsers: CodecTypes['pg/int4@1']['input'] | null;
       readonly maxUses: CodecTypes['pg/int4@1']['input'] | null;
+      readonly modules: ReadonlyArray<CodecTypes['pg/text@1']['input']> | null;
       readonly notes: CodecTypes['pg/text@1']['input'] | null;
       readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
+      readonly priceUsdCents: CodecTypes['pg/int4@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly usedCount: CodecTypes['pg/int4@1']['input'];
     };
@@ -1458,6 +1469,7 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly kind: 'PROMO' | 'PAID';
       readonly plan: CodecTypes['pg/text@1']['input'];
+      readonly priceUsdCents: CodecTypes['pg/int4@1']['input'] | null;
       readonly startsAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly tenantName: CodecTypes['pg/text@1']['input'];
@@ -2189,6 +2201,8 @@ export type FieldInputTypes = {
       readonly latitude: CodecTypes['pg/float8@1']['input'] | null;
       readonly legalName: CodecTypes['pg/text@1']['input'] | null;
       readonly longitude: CodecTypes['pg/float8@1']['input'] | null;
+      readonly maxCustomers: CodecTypes['pg/int4@1']['input'] | null;
+      readonly maxUsers: CodecTypes['pg/int4@1']['input'] | null;
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['input'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
@@ -2500,9 +2514,13 @@ export type StorageColumnTypes = {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly kind: 'PROMO' | 'PAID';
       readonly label: CodecTypes['pg/text@1']['output'];
+      readonly maxCustomers: CodecTypes['pg/int4@1']['output'] | null;
+      readonly maxUsers: CodecTypes['pg/int4@1']['output'] | null;
       readonly maxUses: CodecTypes['pg/int4@1']['output'] | null;
+      readonly modules: ReadonlyArray<CodecTypes['pg/text@1']['output']> | null;
       readonly notes: CodecTypes['pg/text@1']['output'] | null;
       readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
+      readonly priceUsdCents: CodecTypes['pg/int4@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly usedCount: CodecTypes['pg/int4@1']['output'];
     };
@@ -2516,6 +2534,7 @@ export type StorageColumnTypes = {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly kind: 'PROMO' | 'PAID';
       readonly plan: CodecTypes['pg/text@1']['output'];
+      readonly priceUsdCents: CodecTypes['pg/int4@1']['output'] | null;
       readonly startsAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly tenantName: CodecTypes['pg/text@1']['output'];
@@ -3247,6 +3266,8 @@ export type StorageColumnTypes = {
       readonly latitude: CodecTypes['pg/float8@1']['output'] | null;
       readonly legalName: CodecTypes['pg/text@1']['output'] | null;
       readonly longitude: CodecTypes['pg/float8@1']['output'] | null;
+      readonly maxCustomers: CodecTypes['pg/int4@1']['output'] | null;
+      readonly maxUsers: CodecTypes['pg/int4@1']['output'] | null;
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['output'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
@@ -3558,9 +3579,13 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly kind: 'PROMO' | 'PAID';
       readonly label: CodecTypes['pg/text@1']['input'];
+      readonly maxCustomers: CodecTypes['pg/int4@1']['input'] | null;
+      readonly maxUsers: CodecTypes['pg/int4@1']['input'] | null;
       readonly maxUses: CodecTypes['pg/int4@1']['input'] | null;
+      readonly modules: ReadonlyArray<CodecTypes['pg/text@1']['input']> | null;
       readonly notes: CodecTypes['pg/text@1']['input'] | null;
       readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
+      readonly priceUsdCents: CodecTypes['pg/int4@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly usedCount: CodecTypes['pg/int4@1']['input'];
     };
@@ -3574,6 +3599,7 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly kind: 'PROMO' | 'PAID';
       readonly plan: CodecTypes['pg/text@1']['input'];
+      readonly priceUsdCents: CodecTypes['pg/int4@1']['input'] | null;
       readonly startsAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly tenantName: CodecTypes['pg/text@1']['input'];
@@ -4305,6 +4331,8 @@ export type StorageColumnInputTypes = {
       readonly latitude: CodecTypes['pg/float8@1']['input'] | null;
       readonly legalName: CodecTypes['pg/text@1']['input'] | null;
       readonly longitude: CodecTypes['pg/float8@1']['input'] | null;
+      readonly maxCustomers: CodecTypes['pg/int4@1']['input'] | null;
+      readonly maxUsers: CodecTypes['pg/int4@1']['input'] | null;
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly onboardingCompleted: CodecTypes['pg/bool@1']['input'];
       readonly paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
@@ -4650,9 +4678,13 @@ export namespace Models {
     id: CodecTypes['pg/text@1']['output'];
     kind: 'PROMO' | 'PAID';
     label: CodecTypes['pg/text@1']['output'];
+    maxCustomers: CodecTypes['pg/int4@1']['output'] | null;
+    maxUsers: CodecTypes['pg/int4@1']['output'] | null;
     maxUses: CodecTypes['pg/int4@1']['output'] | null;
+    modules: ReadonlyArray<CodecTypes['pg/text@1']['output']> | null;
     notes: CodecTypes['pg/text@1']['output'] | null;
     plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
+    priceUsdCents: CodecTypes['pg/int4@1']['output'] | null;
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     usedCount: CodecTypes['pg/int4@1']['output'];
     redemptions: public_BenefitRedemption[];
@@ -4668,6 +4700,7 @@ export namespace Models {
     id: CodecTypes['pg/text@1']['output'];
     kind: 'PROMO' | 'PAID';
     plan: CodecTypes['pg/text@1']['output'];
+    priceUsdCents: CodecTypes['pg/int4@1']['output'] | null;
     startsAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     tenantId: CodecTypes['pg/text@1']['output'];
     tenantName: CodecTypes['pg/text@1']['output'];
@@ -5565,6 +5598,8 @@ export namespace Models {
     latitude: CodecTypes['pg/float8@1']['output'] | null;
     legalName: CodecTypes['pg/text@1']['output'] | null;
     longitude: CodecTypes['pg/float8@1']['output'] | null;
+    maxCustomers: CodecTypes['pg/int4@1']['output'] | null;
+    maxUsers: CodecTypes['pg/int4@1']['output'] | null;
     name: CodecTypes['pg/text@1']['output'];
     onboardingCompleted: CodecTypes['pg/bool@1']['output'];
     paymentMethods: ReadonlyArray<'WOMPI' | 'NEQUI' | 'CASH' | 'TRANSFER'> | null;
@@ -6983,9 +7018,24 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
+                readonly maxCustomers: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
+                readonly maxUsers: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
                 readonly maxUses: {
                   readonly nativeType: 'int4';
                   readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
+                readonly modules: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
                 readonly notes: {
@@ -7001,6 +7051,11 @@ type ContractBase = Omit<
                     readonly kind: 'literal';
                     readonly value: DefaultLiteralValue<'pg/text@1', 'ELITE'>;
                   };
+                };
+                readonly priceUsdCents: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
                 };
                 readonly updatedAt: {
                   readonly nativeType: 'timestamptz';
@@ -7080,6 +7135,11 @@ type ContractBase = Omit<
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                };
+                readonly priceUsdCents: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
                 };
                 readonly startsAt: {
                   readonly nativeType: 'timestamptz';
@@ -12504,6 +12564,16 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/float8@1';
                   readonly nullable: true;
                 };
+                readonly maxCustomers: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
+                readonly maxUsers: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
                 readonly name: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -14910,9 +14980,22 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly maxCustomers: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly maxUsers: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
               readonly maxUses: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly modules: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+                readonly many: true;
               };
               readonly notes: {
                 readonly nullable: true;
@@ -14921,6 +15004,10 @@ type ContractBase = Omit<
               readonly plan: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly priceUsdCents: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
               };
               readonly updatedAt: {
                 readonly nullable: false;
@@ -14960,9 +15047,13 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly kind: { readonly column: 'kind' };
                 readonly label: { readonly column: 'label' };
+                readonly maxCustomers: { readonly column: 'maxCustomers' };
+                readonly maxUsers: { readonly column: 'maxUsers' };
                 readonly maxUses: { readonly column: 'maxUses' };
+                readonly modules: { readonly column: 'modules' };
                 readonly notes: { readonly column: 'notes' };
                 readonly plan: { readonly column: 'plan' };
+                readonly priceUsdCents: { readonly column: 'priceUsdCents' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
                 readonly usedCount: { readonly column: 'usedCount' };
               };
@@ -15011,6 +15102,10 @@ type ContractBase = Omit<
               readonly plan: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly priceUsdCents: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
               };
               readonly startsAt: {
                 readonly nullable: false;
@@ -15067,6 +15162,7 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly kind: { readonly column: 'kind' };
                 readonly plan: { readonly column: 'plan' };
+                readonly priceUsdCents: { readonly column: 'priceUsdCents' };
                 readonly startsAt: { readonly column: 'startsAt' };
                 readonly tenantId: { readonly column: 'tenantId' };
                 readonly tenantName: { readonly column: 'tenantName' };
@@ -20409,6 +20505,14 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/float8@1' };
               };
+              readonly maxCustomers: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly maxUsers: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
               readonly name: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -21048,6 +21152,8 @@ type ContractBase = Omit<
                 readonly latitude: { readonly column: 'latitude' };
                 readonly legalName: { readonly column: 'legalName' };
                 readonly longitude: { readonly column: 'longitude' };
+                readonly maxCustomers: { readonly column: 'maxCustomers' };
+                readonly maxUsers: { readonly column: 'maxUsers' };
                 readonly name: { readonly column: 'name' };
                 readonly onboardingCompleted: { readonly column: 'onboardingCompleted' };
                 readonly paymentMethods: { readonly column: 'paymentMethods' };

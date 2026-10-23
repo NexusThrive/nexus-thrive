@@ -6,6 +6,8 @@ import { createTenantDb } from "@/lib/tenant/db";
 import { getVerticalTerms, type VerticalTerms } from "@/lib/vertical-terms";
 import { can } from "@/lib/business/permissions";
 import { logTenantAction } from "@/lib/tenant/audit";
+import { withinLimit } from "@/lib/benefits/benefits";
+import { customerLimit } from "@/lib/business/customers-db";
 
 /** Resultado de las acciones de fila / acciones masivas. */
 export type CustomerActionResult = {
@@ -96,6 +98,11 @@ export async function restoreCustomerAction(
   if (denied) return denied;
   const { tenantDb, terms } = context;
 
+  // Restaurar suma un cliente activo: respeta el límite acordado (código a medida).
+  const { limit, used } = await customerLimit(context.shared.tenantId);
+  if (!withinLimit(limit, used)) {
+    return { ok: false, message: `Tu acuerdo incluye ${limit} ${terms.customers.toLowerCase()} activos. Archiva alguno o escríbenos para ampliarlo.` };
+  }
   const result = await tenantDb.customers.restore(customerId);
   if (!result) {
     return {

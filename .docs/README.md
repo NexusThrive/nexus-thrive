@@ -106,9 +106,9 @@ solo si existe en el producto, con una nota de dónde (_hecho: …_).
 | VII | [CAJA MENOR, FINANZAS OPERATIVAS Y CONTABILIDAD](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/README.md) | 9/31 · 29 % | 13/195 · 7 % | `█░░░░░░░░░` |
 | VIII | [TALENTO HUMANO Y ADMINISTRACIÓN DEL EQUIPO](capas/VIII-Talento-Humano-y-Administracion-del-Equipo/README.md) | 0/23 · 0 % | 0/173 · 0 % | `░░░░░░░░░░` |
 | IX | [INTELIGENCIA DE NEGOCIO, ANALÍTICA E IA](capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/README.md) | 8/26 · 31 % | 8/127 · 6 % | `█░░░░░░░░░` |
-| X | [PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/README.md) | 7/18 · 39 % | 12/127 · 9 % | `█░░░░░░░░░` |
+| X | [PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/README.md) | 7/18 · 39 % | 13/127 · 10 % | `█░░░░░░░░░` |
 | XI | [ESPECIALIZACIÓN POR VERTICAL](capas/XI-Especializacion-por-Vertical/README.md) | 0/0 · — | 0/0 · — | `` |
-| | **Total** | **60/241 · 25 %** | **76/1508 · 5 %** | |
+| | **Total** | **60/241 · 25 %** | **77/1508 · 5 %** | |
 
 _Generado con `node scripts/capas-progreso.mjs --write`. La capa XI (construcción) usa pestañas en lugar de casillas: su estado está en su README._
 <!-- progreso:fin -->
