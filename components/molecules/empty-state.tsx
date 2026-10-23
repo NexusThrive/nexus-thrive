@@ -11,13 +11,21 @@ export function EmptyState({
   title,
   description,
   action,
+  icon,
+  headingLevel = 3,
   className,
 }: {
   title: string;
   description?: string;
+  /** Acción principal (crear el primero, limpiar filtros). Una sola. */
   action?: ReactNode;
+  /** Icono propio en lugar de la N (p. ej. sin resultados de búsqueda). */
+  icon?: ReactNode;
+  /** Nivel del título para respetar la jerarquía de la página. */
+  headingLevel?: 2 | 3 | 4;
   className?: string;
 }) {
+  const Heading = `h${headingLevel}` as const;
   return (
     <div
       className={cn(
@@ -25,6 +33,11 @@ export function EmptyState({
         className,
       )}
     >
+      {icon ? (
+        <span aria-hidden="true" className="text-muted-foreground [&_svg]:size-10">
+          {icon}
+        </span>
+      ) : (
       <svg
         viewBox="362 157 800 800"
         width={56}
@@ -40,9 +53,10 @@ export function EmptyState({
           strokeLinejoin="round"
         />
       </svg>
-      <h3 className="mt-4 font-display text-base font-semibold text-foreground">
+      )}
+      <Heading className="mt-4 font-display text-base font-semibold text-foreground">
         {title}
-      </h3>
+      </Heading>
       {description && (
         <p className="mt-1 max-w-sm text-[13px] text-muted-foreground">
           {description}

@@ -37,7 +37,7 @@ export function NetworkBanner() {
       role="status"
       aria-hidden={online}
       className={cn(
-        "fixed left-1/2 top-[calc(8px+env(safe-area-inset-top,0px))] z-[85] flex items-center gap-2.5 rounded-md bg-foreground px-3.5 py-2 text-[13px] text-background shadow-[var(--nx-shadow-overlay)] transition-transform duration-[420ms] ease-[cubic-bezier(.34,1.3,.64,1)]",
+        "fixed left-1/2 top-[calc(8px+env(safe-area-inset-top,0px))] z-(--z-banner) flex items-center gap-2.5 rounded-md bg-foreground px-3.5 py-2 text-[13px] text-background shadow-[var(--nx-shadow-overlay)] transition-transform duration-[420ms] ease-[cubic-bezier(.34,1.3,.64,1)]",
         online ? "-translate-x-1/2 -translate-y-[160%]" : "-translate-x-1/2 translate-y-0",
       )}
     >

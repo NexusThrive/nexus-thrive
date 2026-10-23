@@ -151,7 +151,7 @@ export function NotificationCenter({
         <div
           role="dialog"
           aria-label="Notificaciones"
-          className="absolute right-0 top-[calc(100%+6px)] z-[75] w-[min(360px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto origin-top-right overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--nx-shadow-overlay)] motion-safe:animate-[nx-pop_.22s_var(--nx-ease-out)]"
+          className="absolute right-0 top-[calc(100%+6px)] z-(--z-popover) w-[min(360px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto origin-top-right overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--nx-shadow-overlay)] motion-safe:animate-[nx-pop_.22s_var(--nx-ease-out)]"
         >
           <div className="flex items-center justify-between border-b border-border py-1.5 pl-3.5 pr-1.5">
             <b className="text-sm font-semibold">Notificaciones</b>

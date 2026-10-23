@@ -77,7 +77,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       <div
         role="status"
         aria-live="polite"
-        className="pointer-events-none fixed left-1/2 top-[calc(68px+env(safe-area-inset-top,0px))] z-[90] flex w-[min(380px,calc(100vw-24px))] -translate-x-1/2 flex-col gap-2 md:bottom-[calc(20px+env(safe-area-inset-bottom,0px))] md:left-auto md:right-5 md:top-auto md:translate-x-0"
+        className="pointer-events-none fixed left-1/2 top-[calc(68px+env(safe-area-inset-top,0px))] z-(--z-toast) flex w-[min(380px,calc(100vw-24px))] -translate-x-1/2 flex-col gap-2 md:bottom-[calc(20px+env(safe-area-inset-bottom,0px))] md:left-auto md:right-5 md:top-auto md:translate-x-0"
       >
         {items.map((item) => (
           <Toast key={item.id} item={item} onGone={remove} />

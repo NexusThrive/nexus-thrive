@@ -3,7 +3,7 @@
 .scrim {
   position: fixed;
   inset: 0;
-  z-index: 70;
+  z-index: var(--z-overlay);
   background: var(--overlay);
 }
 .scrim[data-state="open"] {
@@ -15,7 +15,7 @@
 
 .sheet {
   position: fixed;
-  z-index: 71;
+  z-index: var(--z-modal);
   left: 0;
   right: 0;
   bottom: 0;
@@ -35,6 +35,12 @@
 }
 .sheet[data-state="closed"] {
   animation: sheet-down 260ms var(--nx-ease-in) forwards;
+}
+
+.drawer {
+  /* Móvil: el panel lateral se vuelve hoja casi a pantalla completa (más
+     contenido que un formulario corto). */
+  max-height: calc(100dvh - 24px);
 }
 
 .grab {
@@ -82,7 +88,7 @@
     right: auto;
     bottom: auto;
     top: 50%;
-    width: min(520px, calc(100vw - 48px));
+    width: min(var(--dialog-w-md), calc(100vw - 48px));
     max-height: min(84vh, 720px);
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -90,33 +96,39 @@
     transform: translate(-50%, -50%);
   }
   .sheet[data-state="open"] {
-    animation: modal-in 360ms var(--nx-ease-out);
+    animation: modal-in var(--motion-overlay-in) var(--nx-ease-out);
   }
   .sheet[data-state="closed"] {
-    animation: modal-out 200ms var(--nx-ease-in) forwards;
+    animation: modal-out var(--motion-overlay-out) var(--nx-ease-in) forwards;
+  }
+  .narrow {
+    width: min(var(--dialog-w-sm), calc(100vw - 48px));
   }
   .wide {
-    width: min(640px, calc(100vw - 48px));
+    width: min(var(--dialog-w-lg), calc(100vw - 48px));
   }
   .extraWide {
-    width: min(768px, calc(100vw - 48px));
+    width: min(var(--dialog-w-xl), calc(100vw - 48px));
   }
   .drawer {
     left: auto;
     right: 0;
     top: 0;
     bottom: 0;
-    width: min(440px, 100vw);
+    width: min(var(--drawer-w), 100vw);
     max-height: none;
     border-width: 0 0 0 1px;
     border-radius: 0;
     transform: none;
   }
+  .drawerWide {
+    width: min(var(--drawer-w-lg), 100vw);
+  }
   .drawer[data-state="open"] {
-    animation: drawer-in 440ms var(--nx-ease-out);
+    animation: drawer-in var(--motion-overlay-in) var(--nx-ease-out);
   }
   .drawer[data-state="closed"] {
-    animation: drawer-out 200ms var(--nx-ease-in) forwards;
+    animation: drawer-out var(--motion-overlay-out) var(--nx-ease-in) forwards;
   }
   .drawer .head {
     padding-top: calc(20px + env(safe-area-inset-top, 0px));
