@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { defaultPricingConfig, modulePriceCents, offeredModules, quote, resolveModules, tierFor } from "./pricing";
+import { describe, expect, it, test } from "vitest";
+import { defaultPricingConfig, modulePriceCents, offeredModules, quote, resolveModules, tierFor, formatUsdCents } from "./pricing";
 
 const config = defaultPricingConfig();
 
@@ -39,5 +39,12 @@ describe("motor de precios configurable", () => {
     expect(tierFor(config, 80)?.id).toBe("tier-100");
     expect(tierFor(config, 450)?.id).toBe("tier-500");
     expect(tierFor(config, 9000)?.id).toBe("tier-unlimited");
+  });
+});
+
+describe("formatUsdCents", () => {
+  test("sin decimales si son dólares enteros", () => {
+    expect(formatUsdCents(2900)).toBe("$29");
+    expect(formatUsdCents(8440)).toBe("$84.40");
   });
 });

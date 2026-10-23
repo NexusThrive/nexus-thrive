@@ -11,7 +11,7 @@ import { useToast } from "@/components/molecules/toast";
 import { followUpState, isActiveStage, LEAD_ACTIVITY_KINDS, LEAD_STAGES, stageMeta } from "@/lib/ops/crm-rules";
 import type { LeadActivityRow, LeadRow } from "@/lib/ops/leads";
 import { formatDateTime } from "@/lib/format";
-import { formatUsdCents } from "@/lib/plans/quote";
+import { formatUsdCents } from "@/lib/plans/pricing";
 import { cn } from "@/lib/utils";
 import Panel from "../../../_components/panel";
 import { addLeadActivityAction, deleteLeadAction } from "../../actions";

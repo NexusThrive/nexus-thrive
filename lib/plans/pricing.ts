@@ -266,3 +266,9 @@ export function quote(
 export function tierFor(config: PricingConfig, customers: number): CustomerTier | undefined {
   return byOrder(config.tiers).find((t) => t.maxCustomers == null || customers <= t.maxCustomers);
 }
+
+/** "$29" o "$84.40". */
+export function formatUsdCents(value: number): string {
+  const usd = value / 100;
+  return `$${usd.toLocaleString("en-US", { minimumFractionDigits: value % 100 ? 2 : 0, maximumFractionDigits: 2 })}`;
+}

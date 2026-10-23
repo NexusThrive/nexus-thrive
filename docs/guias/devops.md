@@ -39,13 +39,14 @@ flowchart LR
 - Commits en español, imperativo, con alcance: `fix(caja): no cobra dos veces
   una factura`.
 
-**Pendiente de configurar en GitHub** (Settings → Branches → `main`):
+**Protección de `main`** (configurada el 2026-10-23, en los dos repos):
 
-- [ ] Exigir PR para mergear (sin push directo).
-- [ ] Exigir que pase el check `verify` del CI.
-- [ ] Prohibir force push y borrado de `main`.
-
-Sin esto, las reglas de este documento son solo acuerdos.
+- Solo entra por PR (sin aprobaciones obligatorias: el equipo es de una persona).
+- En `nexus-thrive`, el check `verify` del CI tiene que estar en verde y la
+  rama al día con `main`.
+- Sin force push ni borrado de `main`.
+- Los administradores pueden saltarse la regla para un hotfix urgente; si lo
+  haces, déjalo anotado en el commit.
 
 ---
 
@@ -103,9 +104,8 @@ Variables que usa el servidor (nombres en `.env.example`): base
 (`DATABASE_URL`, `DIRECT_URL`), Clerk, `RECEIPT_LINK_SECRET`, Vercel Blob,
 WhatsApp Cloud API, Resend y correo entrante.
 
-Recomendado: activar en GitHub *Secret scanning* y *Push protection*
-(Settings → Code security). En repos públicos es gratis y frena el push de un
-secreto antes de que entre.
+*Secret scanning* y *Push protection* están activos en los dos repos: GitHub
+rechaza el push que traiga una clave reconocible y avisa de las que ya estén.
 
 ---
 
@@ -150,8 +150,6 @@ Siguiente paso, en este orden:
 
 | Falta | Esfuerzo | Efecto |
 |---|---|---|
-| Protección de `main` en GitHub | 5 min | Las reglas se cumplen solas |
-| Secret scanning + push protection | 2 min | No vuelve a entrar un secreto |
 | Esquema único (DATA-03) y migración automática | Días; necesita el `pg_dump --schema-only` | Se acaba el SQL manual |
 | Errores con contexto + health check | Horas | Te enteras antes que el cliente |
 | Base de pruebas para previews de Vercel | Horas | Probar un PR con datos sin tocar producción |

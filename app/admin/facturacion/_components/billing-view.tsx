@@ -12,7 +12,7 @@ import { KpiCard } from "@/components/molecules/kpi-card";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { CHARGE_STATUSES, daysBetween, dunningLabel, SUBSCRIPTION_STATUSES, type BillingPolicyValues } from "@/lib/ops/billing-rules";
 import type { ChargeRow, SubscriptionRow } from "@/lib/ops/billing";
-import { formatUsdCents } from "@/lib/plans/quote";
+import { formatUsdCents } from "@/lib/plans/pricing";
 import { cn } from "@/lib/utils";
 import Panel from "../../_components/panel";
 import { generateRenewalAction, savePolicyAction } from "../actions";

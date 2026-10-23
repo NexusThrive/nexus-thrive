@@ -82,7 +82,7 @@ Cada fase se apoya en la anterior y deja el producto vendible.
 | Fase | Contenido | Por qué en este orden |
 |---|---|---|
 | **1 · Base estable** | Seguridad P0/P1, permisos, servicio de dinero, módulos en el servidor (PR #45) | Sin esto, cada funcionalidad nueva hereda los huecos |
-| **2 · Esquema único y capacidades** | DATA-03/04, FK y RLS (SEC-07), registro de capacidades (ADR-0003), separar construcción, precios unificados | Es el cimiento de todo lo demás; hoy un módulo vive en cinco sitios |
+| **2 · Esquema único y capacidades** | DATA-03/04, FK y RLS (SEC-07), registro de capacidades (ADR-0003), separar construcción, motor de precios único (hecho) | Es el cimiento de todo lo demás; hoy un módulo vive en cinco sitios |
 | **3 · Vender y facturar** | POS multi-línea, inventario completo (fotos, variantes, proveedores, compras), factura electrónica y documento POS | Es lo que más pide una pyme y lo que la ata a diario al producto |
 | **4 · Cobrar y avisar solos** | Pagos en línea, WhatsApp Cloud API, tareas programadas (vencimientos, recordatorios, cobro recurrente) | Convierte a NEXUS en el que trabaja mientras el dueño no está |
 | **5 · Que lo encuentren** | Mini-sitio con catálogo, SEO local, Google Business Profile, redes | Usa el catálogo y la agenda de las fases 3–4 como contenido |
@@ -105,7 +105,7 @@ Cada fase se apoya en la anterior y deja el producto vendible.
 
 | Pregunta | Afecta |
 |---|---|
-| ¿El modelo de precios real es el de la base (`lib/plans`) o el de niveles Essential/Elite/Signature (`lib/pricing`)? | Fase 2: precios unificados |
+| ¿Cuánto cuesta NEXUS por rubro? Falta presupuestar el sistema (costo por negocio, uso por rubro). Mientras tanto el precio se personaliza por código de activación | Fase 2; el motor ya es uno solo (catálogo de la base, decidido 2026-10-23) |
 | ¿Qué proveedor tecnológico DIAN? (costo por documento, API, soporte de documento POS) | Fase 3 |
 | ¿Wompi u otra pasarela? | Fase 4 |
 | ¿Una persona puede pertenecer a varios negocios? | Fase 6; hoy el modelo lo permite pero no hay selector |
