@@ -27,6 +27,13 @@ Para no repetir trabajo: la base está estable desde las PR #45 y #46.
 
 ---
 
+## Lo siguiente
+
+Según el [mapa de capacidades](../.docs/mapa-de-capacidades.md#qué-es-lo-siguiente-en-realidad):
+códigos de activación a medida (§3) en paralelo, y en el producto el
+**documento comercial unificado**, la cartera y el POS de varias líneas, antes
+de la factura electrónica, Nequi y los agentes (§5).
+
 ## 1. Tareas cortas que dependen de ti
 
 | # | Tarea | Dónde |

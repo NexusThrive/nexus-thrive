@@ -17,6 +17,7 @@ Esta carpeta es **la guía de qué construimos y en qué orden**. Las capas
 | --- | --- |
 | Este README | Visión, objetivos, progreso y ruta por fases |
 | [capas/](capas/README.md) | Las 11 capas, 70 subcapas y su escalera de madurez N0–N6, con casillas de hecho/pendiente |
+| [mapa-de-capacidades.md](mapa-de-capacidades.md) | Las 447 capacidades que usa una empresa contra las capas y el código: qué hay, qué falta y **qué sigue** |
 | [fuentes/](fuentes/) | Material de origen de las capas (no se edita; se consulta) |
 | [`docs/PENDIENTES.md`](../docs/PENDIENTES.md) | Lista viva de tareas, decisiones abiertas y la ruta de automatizaciones y agentes de IA |
 | [`docs/nexus-architecture/`](../docs/nexus-architecture/README.md) | Arquitectura actual y objetivo, auditoría y decisiones técnicas |
@@ -135,20 +136,26 @@ esquema único, CI. Subcapas: I.02 N1, I.03 N1, I.04 N1, I.06 N1, IX.01 N1.
 
 ### Fase 2 · Cimientos del sistema — en curso
 
-| Qué | Subcapas | Notas |
-| --- | --- | --- |
-| Registro de capacidades y separar construcción de cotizaciones | X.00, IV.02 | ARCH-01 / ADR-0003 |
-| Códigos de activación a medida | X.00 | Precio, módulos y límites por cliente |
-| Tercero único (cliente, proveedor, empleado) | I.00, I.01 | Base para compras, DIAN y nómina |
-| Importar y exportar (clientes, catálogo) | I.01, IV.00 | Lo primero que pide quien viene de Excel o de otro sistema |
+El orden sale del [mapa de capacidades](mapa-de-capacidades.md#qué-es-lo-siguiente-en-realidad):
+la cadena de una venta se rompe en el documento comercial, la cartera y los
+eventos, porque hoy una venta vive en cinco formas distintas.
+
+| # | Qué | Subcapas | Notas |
+| --- | --- | --- | --- |
+| 0 | Códigos de activación a medida | X.00 | En paralelo: precio, módulos y límites por cliente |
+| 1 | Registro de capacidades y separar construcción de cotizaciones | X.00, IV.02 | ARCH-01 / ADR-0003 |
+| 2 | **Documento comercial unificado** (cotización, pedido, factura o recibo, nota crédito; líneas, impuestos, descuentos, estados, numeración) | I.00, V.06 | La pieza de la que dependen POS, cartera, DIAN, Nequi y el agente |
+| 3 | Cartera: abonos, pagos parciales, cuentas por cobrar por antigüedad | VII.02 | Sobre el servicio de dinero |
+| 4 | POS de varias líneas | V.03 | Sobre el documento |
+| 5 | Tercero único mínimo e importar/exportar clientes y catálogo | I.00, I.01, IV.00 | Requisito DIAN y migración desde Excel o Alegra |
 
 ### Fase 3 · Vender, cobrar y facturar
 
 | Qué | Subcapas |
 | --- | --- |
-| POS completo: carrito multi-línea, descuentos, pago mixto, impresora térmica | V.03 |
+| POS: impresora térmica, lector de código de barras, turnos por cajero | V.03 |
 | Inventario completo: fotos, variantes, listas de precios, mínimos y reorden, kardex | I.01, VI.04 |
-| Documentos: cotización genérica, pedido, remisión, nota crédito, cartera | V.06, VII.02, VII.03 |
+| Documentos: remisión, devoluciones, cartera por cliente con recordatorios | V.06, VII.02, VII.03 |
 | Pagos en línea: Nequi y pasarela (link, QR, webhook verificado, conciliación) | V.00, V.01 |
 | Factura electrónica y documento POS por proveedor tecnológico | VII.04 |
 | Compras y proveedores | VI.05 |
