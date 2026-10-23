@@ -144,7 +144,7 @@ eventos, porque hoy una venta vive en cinco formas distintas.
 | --- | --- | --- | --- |
 | 0 | ~~Códigos de activación a medida~~ (hecho 2026-10-23) | X.00 | En paralelo: precio, módulos y límites por cliente |
 | 1 | ~~Registro de capacidades y separar construcción de cotizaciones~~ (hecho 2026-10-23) | X.00, IV.02 | ARCH-01 / ADR-0003 |
-| 2 | **Documento comercial unificado** (cotización, pedido, factura o recibo, nota crédito; líneas, impuestos, descuentos, estados, numeración) | I.00, V.06 | La pieza de la que dependen POS, cartera, DIAN, Nequi y el agente |
+| 2 | **Documento comercial unificado** (cotización, pedido, factura o recibo, nota crédito; líneas, impuestos, descuentos, estados, numeración) | I.00, V.06 | En curso (2026-10-23): servidor hecho — venta al cobrar, nota crédito al anular, conversión, informe del día; falta la pantalla. Siguiente: [propuesta](../docs/nexus-architecture/propuesta-bloque-b-3-a-7.md) |
 | 3 | Cartera: abonos, pagos parciales, cuentas por cobrar por antigüedad | VII.02 | Sobre el servicio de dinero |
 | 4 | POS de varias líneas | V.03 | Sobre el documento |
 | 5 | Tercero único mínimo e importar/exportar clientes y catálogo | I.00, I.01, IV.00 | Requisito DIAN y migración desde Excel o Alegra |

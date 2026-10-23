@@ -6697,6 +6697,13 @@
                   "kind": "scalar"
                 }
               },
+              "discountTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
               "dueDate": {
                 "nullable": true,
                 "type": {
@@ -6739,7 +6746,35 @@
                   "kind": "scalar"
                 }
               },
+              "originId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "originType": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "paymentId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "projectId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sourceDocumentId": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
@@ -6757,6 +6792,20 @@
                   "entityName": "InvoiceStatus",
                   "namespaceId": "public",
                   "plane": "domain"
+                }
+              },
+              "subtotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "taxTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
                 }
               },
               "tenantId": {
@@ -6838,6 +6887,9 @@
                 "customerName": {
                   "column": "customerName"
                 },
+                "discountTotal": {
+                  "column": "discountTotal"
+                },
                 "dueDate": {
                   "column": "dueDate"
                 },
@@ -6856,11 +6908,29 @@
                 "number": {
                   "column": "number"
                 },
+                "originId": {
+                  "column": "originId"
+                },
+                "originType": {
+                  "column": "originType"
+                },
+                "paymentId": {
+                  "column": "paymentId"
+                },
                 "projectId": {
                   "column": "projectId"
                 },
+                "sourceDocumentId": {
+                  "column": "sourceDocumentId"
+                },
                 "status": {
                   "column": "status"
+                },
+                "subtotal": {
+                  "column": "subtotal"
+                },
+                "taxTotal": {
+                  "column": "taxTotal"
                 },
                 "tenantId": {
                   "column": "tenantId"
@@ -6888,6 +6958,13 @@
                   "kind": "scalar"
                 }
               },
+              "discountPct": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -6910,6 +6987,13 @@
                 }
               },
               "quantity": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "taxRatePct": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/numeric@1",
@@ -6954,6 +7038,9 @@
                 "description": {
                   "column": "description"
                 },
+                "discountPct": {
+                  "column": "discountPct"
+                },
                 "id": {
                   "column": "id"
                 },
@@ -6965,6 +7052,9 @@
                 },
                 "quantity": {
                   "column": "quantity"
+                },
+                "taxRatePct": {
+                  "column": "taxRatePct"
                 },
                 "total": {
                   "column": "total"
@@ -18778,6 +18868,15 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "discountTotal": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
                 "dueDate": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "nativeType": "timestamptz",
@@ -18808,7 +18907,27 @@
                   "nativeType": "int4",
                   "nullable": false
                 },
+                "originId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "originType": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "paymentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "projectId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "sourceDocumentId": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
@@ -18827,6 +18946,24 @@
                     "namespaceId": "public",
                     "plane": "storage"
                   }
+                },
+                "subtotal": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "taxTotal": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
                 },
                 "tenantId": {
                   "codecId": "pg/text@1",
@@ -18871,10 +19008,27 @@
               "indexes": [
                 {
                   "columns": [
+                    "sourceDocumentId"
+                  ],
+                  "name": "Invoice_sourceDocumentId_idx_bd8eb82f",
+                  "prefix": "Invoice_sourceDocumentId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
                     "tenantId"
                   ],
                   "name": "Invoice_tenantId_idx_c93ed4f1",
                   "prefix": "Invoice_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "issueDate"
+                  ],
+                  "name": "Invoice_tenantId_issueDate_idx_33d250ce",
+                  "prefix": "Invoice_tenantId_issueDate_idx",
                   "unique": false
                 }
               ],
@@ -18900,6 +19054,15 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "discountPct": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
                 "id": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -18917,6 +19080,15 @@
                 },
                 "quantity": {
                   "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "taxRatePct": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
                   "nativeType": "numeric",
                   "nullable": false
                 },
@@ -24152,7 +24324,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "7380d3584abeb2a1be88350b70e14ccfbcb069d723497dfffa8ac51fb86e0279"
+    "storageHash": "f2f656b7d59b51bb494e9ff10a2877f6d9edd97e616e457645f43f171ee40ea3"
   },
   "execution": {
     "executionHash": "f90187b8442c7d45d0f4849ce5d90a5e406cddb56d20b72d710f4f618d9a3274",

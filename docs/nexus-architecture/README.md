@@ -29,6 +29,7 @@
 | 11 | [decisions/](decisions/README.md) | Decisiones arquitectónicas **propuestas** (ADR) |
 | 12 | [product-vision.md](product-vision.md) | Visión: sistema operativo del negocio en Colombia, DIAN y orden de construcción |
 | 13 | [scaling-path.md](scaling-path.md) | Ruta de escalabilidad: del monolito modular a servicios |
+| 14 | [propuesta-bloque-b-3-a-7.md](propuesta-bloque-b-3-a-7.md) | Diseño propuesto: cartera, POS, datos fiscales, DIAN/Nequi, eventos, API `/api/v1` (A.3) |
 | — | [validation-log.md](validation-log.md) | Comandos ejecutados y resultados |
 | — | [remediation-log.md](remediation-log.md) | Correcciones aplicadas y su prueba |
 | — | [../guias/](../guias/README.md) | Guías de trabajo: pruebas, nueva funcionalidad, DevOps |

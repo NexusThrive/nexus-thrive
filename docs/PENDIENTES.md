@@ -29,10 +29,15 @@ Para no repetir trabajo: la base está estable desde las PR #45 y #46.
 
 ## Lo siguiente
 
-Según el [mapa de capacidades](../.docs/mapa-de-capacidades.md#qué-es-lo-siguiente-en-realidad):
-códigos de activación a medida (§3) en paralelo, y en el producto el
-**documento comercial unificado**, la cartera y el POS de varias líneas, antes
-de la factura electrónica, Nequi y los agentes (§5).
+Según el [mapa de capacidades](../.docs/mapa-de-capacidades.md#qué-es-lo-siguiente-en-realidad).
+Estado al 2026-10-23 (PR #48–#52 y el del documento comercial):
+
+| Paso | Estado |
+|---|---|
+| 0 · Códigos de activación a medida | Hecho (§3), falta visto bueno |
+| 1 · Registro de capacidades y construcción separada | Hecho |
+| 2 · Documento comercial unificado | Servidor hecho (venta al cobrar, nota crédito, conversión, informe del día); **falta la pantalla** |
+| 3–7 · Cartera, POS, datos fiscales, DIAN/Nequi, eventos/API/agente | Diseño propuesto en [propuesta-bloque-b-3-a-7.md](nexus-architecture/propuesta-bloque-b-3-a-7.md) |
 
 ## 1. Tareas cortas que dependen de ti
 
