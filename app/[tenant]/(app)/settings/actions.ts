@@ -1,6 +1,6 @@
 "use server";
 
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant/db";
@@ -62,10 +62,10 @@ const FORBIDDEN_MODULES: ModulesFormState = {
  * El tenant SIEMPRE se resuelve en el servidor a partir del slug de la ruta:
  * nunca se confía en un `tenantId` enviado por el cliente.
  */
-async function requireTenantContext(
+async function actionContext(
   tenantSlug: string,
 ): Promise<{ tenantDb: TenantDb; tenantId: string; role: RoleValue } | null> {
-  const context = await requireSharedTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug);
   if (!context) {
     return null;
   }
@@ -86,7 +86,7 @@ export async function updateTenantProfileAction(
   formData: FormData,
 ): Promise<ProfileFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_PROFILE;
   }
@@ -170,7 +170,7 @@ export async function toggleModuleAction(
   const moduleName = String(formData.get("moduleName") ?? "");
   const active = String(formData.get("active") ?? "") === "true";
 
-  const context = await requireSharedTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_MODULES;
   }
@@ -242,7 +242,7 @@ export async function deleteOwnBusinessAction(
     return { status: "error", message: "Para confirmar, escribe «eliminar»." };
   }
 
-  const context = await requireSharedTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug);
   if (!context) {
     return { status: "error", message: "Tu sesión expiró. Vuelve a entrar." };
   }

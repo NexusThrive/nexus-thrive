@@ -1,6 +1,6 @@
 "use server";
 
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { createTenantDb } from "@/lib/tenant/db";
@@ -64,7 +64,7 @@ const ACCESS_DENIED_FORM = {
 
 type TenantDb = ReturnType<typeof createTenantDb>;
 
-async function requireTenantContext(tenantSlug: string): Promise<
+async function actionContext(tenantSlug: string): Promise<
   | {
       tenantId: string;
       tenantDb: TenantDb;
@@ -74,7 +74,7 @@ async function requireTenantContext(tenantSlug: string): Promise<
     }
   | null
 > {
-  const context = await requireSharedTenantContext(tenantSlug, "/catalog");
+  const context = await requireTenantContext(tenantSlug, "/catalog");
   if (!context) {
     return null;
   }
@@ -110,7 +110,7 @@ export async function analyzeImportAction(
   tenantSlug: string,
   formData: FormData,
 ): Promise<AnalyzeImportState> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) return { status: "error", message: "No tienes acceso a este negocio." };
 
   let source;
@@ -163,7 +163,7 @@ export async function importMasterPackAction(
   tenantSlug: string,
   formData: FormData,
 ): Promise<MasterPackImportState> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) return { status: "error", message: "No tienes acceso a este negocio." };
   if (!context.canImport) {
     return { status: "error", message: "Solo el dueño del negocio puede importar el catálogo APU." };
@@ -228,7 +228,7 @@ export async function executeSmartImportAction(input: {
   fileName?: string;
   updatePrices?: boolean;
 }): Promise<ExecuteImportState> {
-  const context = await requireTenantContext(input.tenantSlug);
+  const context = await actionContext(input.tenantSlug);
   if (!context) return ACCESS_DENIED_FORM;
 
   const { tenantId } = context;

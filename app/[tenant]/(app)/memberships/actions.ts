@@ -1,6 +1,6 @@
 "use server";
 
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
 import { createTenantDb } from "@/lib/tenant/db";
 import { formatDateShort } from "@/lib/format";
@@ -58,10 +58,10 @@ type TenantDb = ReturnType<typeof createTenantDb>;
  * Verifica sesión de Clerk + tenant activo + membresía del usuario.
  * Devuelve `null` cuando algo falla (el caller responde con mensaje genérico).
  */
-async function requireTenantDb(
+async function actionContext(
   tenantSlug: string,
 ): Promise<(TenantDb & { tenantId: string; memberId: string; role: string }) | null> {
-  const context = await requireSharedTenantContext(tenantSlug, "/memberships");
+  const context = await requireTenantContext(tenantSlug, "/memberships");
   if (!context) {
     return null;
   }
@@ -90,7 +90,7 @@ export async function createMembershipAction(
   formData: FormData,
 ): Promise<MembershipFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const tenantDb = await requireTenantDb(tenantSlug);
+  const tenantDb = await actionContext(tenantSlug);
   if (!tenantDb) {
     return ACCESS_DENIED_MEMBERSHIP;
   }
@@ -182,7 +182,7 @@ export async function renewMembershipAction(
   formData: FormData,
 ): Promise<RenewalFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const tenantDb = await requireTenantDb(tenantSlug);
+  const tenantDb = await actionContext(tenantSlug);
   if (!tenantDb) {
     return ACCESS_DENIED_RENEWAL;
   }

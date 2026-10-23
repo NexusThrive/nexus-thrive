@@ -1,6 +1,6 @@
 "use server";
 
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { auth } from "@clerk/nextjs/server";
 import { createTenantDb } from "@/lib/tenant/db";
 
@@ -35,10 +35,10 @@ type TenantContext = {
   tenantDb: ReturnType<typeof createTenantDb>;
 };
 
-async function requireTenantContext(
+async function actionContext(
   tenantSlug: string,
 ): Promise<TenantContext | null> {
-  const context = await requireSharedTenantContext(tenantSlug, "/projects");
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) {
     return null;
   }
@@ -56,7 +56,7 @@ export async function getInformeCeroDataAction(
     if (!userId) {
       return { status: "error", message: "Debes iniciar sesión para continuar." };
     }
-    const context = await requireTenantContext(tenantSlug);
+    const context = await actionContext(tenantSlug);
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
@@ -87,7 +87,7 @@ export async function getWeeklyReportDataAction(
     if (!userId) {
       return { status: "error", message: "Debes iniciar sesión para continuar." };
     }
-    const context = await requireTenantContext(tenantSlug);
+    const context = await actionContext(tenantSlug);
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
@@ -120,7 +120,7 @@ export async function exportBomCsvAction(
     if (!userId) {
       return { status: "error", message: "Debes iniciar sesión para continuar." };
     }
-    const context = await requireTenantContext(tenantSlug);
+    const context = await actionContext(tenantSlug);
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }

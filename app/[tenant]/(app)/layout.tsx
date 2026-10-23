@@ -43,7 +43,7 @@ export default async function AppLayout({
   if (!tenantRecord.onboardingCompleted) {
     // Reanuda el tenant pendiente en el wizard adaptativo (top-level
     // `/onboarding`; el proxy lo deja pasar en subdominios de tenant).
-    // El wizard clásico `/{tenant}/onboarding` queda como acceso directo.
+    // `/{tenant}/onboarding` redirige aquí mismo (hay un solo wizard).
     redirect(`/onboarding?tenant=${tenantRecord.slug}`);
   }
 

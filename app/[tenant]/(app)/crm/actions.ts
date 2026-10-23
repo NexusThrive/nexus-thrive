@@ -1,6 +1,6 @@
 "use server";
 
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
 import { createTenantDb } from "@/lib/tenant/db";
 import { getVerticalTerms, type VerticalTerms } from "@/lib/vertical-terms";
@@ -23,17 +23,17 @@ type TenantContext = {
   terms: VerticalTerms;
   role: string;
   /** Contexto completo, para la bitácora del negocio. */
-  shared: NonNullable<Awaited<ReturnType<typeof requireSharedTenantContext>>>;
+  shared: NonNullable<Awaited<ReturnType<typeof requireTenantContext>>>;
 };
 
 /**
  * Verifica sesión de Clerk + tenant activo + membresía del usuario.
  * Devuelve `null` cuando algo falla (el caller responde con mensaje genérico).
  */
-async function requireTenantContext(
+async function actionContext(
   tenantSlug: string,
 ): Promise<TenantContext | null> {
-  const context = await requireSharedTenantContext(tenantSlug, "/crm");
+  const context = await requireTenantContext(tenantSlug, "/crm");
   if (!context) {
     return null;
   }
@@ -63,7 +63,7 @@ export async function archiveCustomerAction(
   tenantSlug: string,
   customerId: string,
 ): Promise<CustomerActionResult> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return { ok: false, message: "No tienes acceso a este negocio." };
   }
@@ -88,7 +88,7 @@ export async function restoreCustomerAction(
   tenantSlug: string,
   customerId: string,
 ): Promise<CustomerActionResult> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return { ok: false, message: "No tienes acceso a este negocio." };
   }
@@ -117,7 +117,7 @@ export async function deleteCustomersAction(
   tenantSlug: string,
   customerIds: string[],
 ): Promise<CustomerActionResult> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return { ok: false, message: "No tienes acceso a este negocio." };
   }

@@ -37,16 +37,9 @@ function routeOf(rel: string): string {
 
 /** Rutas pasadas como segundo argumento a requirePageContext / requireTenantContext. */
 function routesPassed(source: string): (string | null)[] {
-  const alias = source.match(/requireTenantContext as (\w+)/)?.[1];
-  const names = ["requirePageContext", alias ?? "requireTenantContext"];
-  const local = /^(export )?async function requireTenantContext\(/m.test(source) && !alias;
   const out: (string | null)[] = [];
-  for (const name of names) {
-    if (name === "requireTenantContext" && local) continue;
-    for (const m of source.matchAll(new RegExp(`\\b${name}\\(([^()\\n]*)\\)`, "g"))) {
-      if (m.index && source.slice(Math.max(0, m.index - 16), m.index).includes("function ")) continue;
-      out.push(m[1].match(/,\s*"([^"]*)"\s*$/)?.[1] ?? null);
-    }
+  for (const m of source.matchAll(/\brequire(?:Page|Tenant)Context\(([^()\n]*)\)/g)) {
+    out.push(m[1].match(/,\s*"([^"]*)"\s*$/)?.[1] ?? null);
   }
   return out;
 }
@@ -104,5 +97,16 @@ describe("cada acción de un módulo exige su módulo (SEC-06)", () => {
       expect(route, `${rel}: cada requireTenantContext debe pasar la ruta del módulo`).not.toBeNull();
       expect(modulesForRoute(route!), `${rel}: "${route}" no es la ruta de un módulo`).not.toBeNull();
     }
+  });
+});
+
+// ARCH-03: una sola implementación del contexto. Los archivos adaptan su
+// resultado (`actionContext`), pero nadie redefine ni renombra el helper.
+describe("nadie redefine el contexto del negocio", () => {
+  const all = files(join(process.cwd(), "app"), (name) => /\.tsx?$/.test(name));
+  test.each(all.map((path) => [relative(process.cwd(), path), path]))("%s", (_rel, path) => {
+    const source = readFileSync(path, "utf8");
+    expect(source).not.toMatch(/function require(Tenant|Page)Context\b|function requireTenantDb\b/);
+    expect(source).not.toMatch(/require(Tenant|Page)Context as /);
   });
 });

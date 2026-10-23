@@ -1,6 +1,6 @@
 "use server";
 
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
 import { createTenantDb } from "@/lib/tenant/db";
 import { NOTE_MAX_LENGTH } from "@/lib/business/customer-notes";
@@ -19,10 +19,10 @@ type NoteContext = {
   memberId: string;
 };
 
-async function requireTenantContext(
+async function actionContext(
   tenantSlug: string,
 ): Promise<NoteContext | null> {
-  const context = await requireSharedTenantContext(tenantSlug, "/crm");
+  const context = await requireTenantContext(tenantSlug, "/crm");
   if (!context) {
     return null;
   }
@@ -43,7 +43,7 @@ export async function createCustomerNoteAction(
   const customerId = String(formData.get("customerId") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
 
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return { status: "error", message: "No tienes acceso a este negocio.", content };
   }

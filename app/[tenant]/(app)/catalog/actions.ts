@@ -1,7 +1,7 @@
 "use server";
 
 import { readImageUpload } from "@/lib/image-upload";
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant/db";
@@ -72,10 +72,10 @@ type TenantContext = {
  * Verifica sesión de Clerk + tenant activo + membresía del usuario.
  * Devuelve `null` cuando algo falla (el caller responde con mensaje genérico).
  */
-async function requireTenantContext(
+async function actionContext(
   tenantSlug: string,
 ): Promise<TenantContext | null> {
-  const context = await requireSharedTenantContext(tenantSlug, "/catalog");
+  const context = await requireTenantContext(tenantSlug, "/catalog");
   if (!context) {
     return null;
   }
@@ -142,7 +142,7 @@ export async function createApuItemAction(
   formData: FormData,
 ): Promise<ApuItemFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -188,7 +188,7 @@ export async function updateApuItemAction(
 ): Promise<ApuItemFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
   const itemId = String(formData.get("itemId") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -242,7 +242,7 @@ export async function createApuActivityAction(
   formData: FormData,
 ): Promise<ApuActivityFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -285,7 +285,7 @@ export async function updateApuActivityAction(
 ): Promise<ApuActivityFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
   const activityId = String(formData.get("activityId") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -336,7 +336,7 @@ export async function archiveApuItemAction(
 ): Promise<ApuMutationState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
   const itemId = String(formData.get("itemId") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -361,7 +361,7 @@ export async function restoreApuItemAction(
 ): Promise<ApuMutationState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
   const itemId = String(formData.get("itemId") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -386,7 +386,7 @@ export async function deleteApuItemAction(
 ): Promise<ApuMutationState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
   const itemId = String(formData.get("itemId") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -411,7 +411,7 @@ export async function archiveApuActivityAction(
 ): Promise<ApuMutationState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
   const activityId = String(formData.get("activityId") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -436,7 +436,7 @@ export async function restoreApuActivityAction(
 ): Promise<ApuMutationState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
   const activityId = String(formData.get("activityId") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -461,7 +461,7 @@ export async function deleteApuActivityAction(
 ): Promise<ApuMutationState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
   const activityId = String(formData.get("activityId") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -485,7 +485,7 @@ export async function addCompositionAction(
   formData: FormData,
 ): Promise<ApuMutationState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -518,7 +518,7 @@ export async function removeCompositionAction(
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
   const activityId = String(formData.get("activityId") ?? "");
   const itemId = String(formData.get("itemId") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -542,7 +542,7 @@ export async function getActivityDetailAction(
   tenantSlug: string,
   activityId: string,
 ) {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return null;
   }
@@ -561,7 +561,7 @@ export async function getP99ThresholdsAction(
   activityUnitCostP99?: Record<string, string>;
   itemConsumptionP99?: Record<string, string>;
 } | null> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return null;
   }
@@ -579,7 +579,7 @@ export async function getCatalogHealthReportAction(
   apuImporterStatus: { recentFiles: number; lastImport: string | null };
   apuUnitsConfigured: string[];
 } | null> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return null;
   }
@@ -595,7 +595,7 @@ export async function importApuItemsAction(
   formData: FormData,
 ): Promise<ImportResultState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
