@@ -14,13 +14,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/organisms/sheet";
+import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { Button } from "@/components/atoms/button";
 import { Skeleton } from "@/components/atoms/skeleton";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
@@ -109,13 +103,22 @@ export default function TenantDrawer({
   const VerticalIcon = visual?.icon;
 
   return (
-    <Sheet open={tenantId !== null} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent
-        side="right"
-        className="w-full gap-0 overflow-y-auto p-0 sm:max-w-xl"
-      >
+    <ResponsiveSheet
+      open={tenantId !== null}
+      onOpenChange={(open) => !open && onClose()}
+      drawer
+      size="lg"
+      title={detail ? detail.name : "Cargando negocio…"}
+      description={
+        detail ? (
+          <>
+            {VERTICAL_LABELS[detail.vertical]} · <span className="font-mono">{detail.slug}</span>
+          </>
+        ) : undefined
+      }
+    >
         {!detail ? (
-          <div className="space-y-4 p-6">
+          <div className="space-y-4" role="status" aria-label="Cargando negocio">
             <Skeleton className="h-6 w-40" />
             <Skeleton className="h-4 w-64" />
             <Skeleton className="h-24 w-full" />
@@ -123,7 +126,7 @@ export default function TenantDrawer({
           </div>
         ) : (
           <>
-            <SheetHeader className="border-b p-6">
+            <div className="border-b pb-5">
               <div className="flex items-start gap-3">
                 {visual && VerticalIcon ? (
                   <span
@@ -136,12 +139,7 @@ export default function TenantDrawer({
                   </span>
                 ) : null}
                 <div className="min-w-0 flex-1">
-                  <SheetTitle className="truncate">{detail.name}</SheetTitle>
-                  <SheetDescription className="truncate">
-                    {VERTICAL_LABELS[detail.vertical]} ·{" "}
-                    <span className="font-mono">{detail.slug}</span>
-                  </SheetDescription>
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <TenantStatusBadge active={detail.active} />
                     {detail.suspendedReason && !detail.active ? (
                       <span className="text-xs text-destructive">
@@ -201,9 +199,9 @@ export default function TenantDrawer({
                   {impersonationError}
                 </p>
               ) : null}
-            </SheetHeader>
+            </div>
 
-            <nav className="flex gap-1 border-b px-4" aria-label="Secciones">
+            <nav className="-mx-1 flex gap-1 border-b" aria-label="Secciones">
               {TABS.map((tab) => (
                 <button
                   key={tab.id}
@@ -222,7 +220,7 @@ export default function TenantDrawer({
               ))}
             </nav>
 
-            <div className="space-y-6 p-6">
+            <div className="space-y-6 pt-5">
               {activeTab === "resumen" ? (
                 <ResumenTab detail={detail} />
               ) : null}
@@ -242,8 +240,7 @@ export default function TenantDrawer({
             </div>
           </>
         )}
-      </SheetContent>
-    </Sheet>
+    </ResponsiveSheet>
   );
 }
 

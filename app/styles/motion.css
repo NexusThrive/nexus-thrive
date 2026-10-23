@@ -14,6 +14,20 @@ html[data-motion="off"] *::after {
   transition-duration: 1ms !important;
 }
 
+/* La preferencia del sistema vale lo mismo que el ajuste de la app: antes
+   solo la respetaban algunos componentes y los menús, tooltips y avisos
+   (tw-animate) seguían animando. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* El cambio de tema lo anima lib/motion/theme-transition (barrido a 24°). */
 ::view-transition-old(root),
 ::view-transition-new(root) {

@@ -4,7 +4,8 @@ import { MoneyInput } from "@/components/molecules/money-input";
 import { parseMoney } from "@/lib/business/money";
 import { apuImageUrl } from "@/lib/construction/apu-images";
 import { useEffect, useState, useTransition } from "react";
-import { useActionState } from "react";
+import { useActionState, useRef } from "react";
+import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, FileUp, Pencil, Plus } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
@@ -377,6 +378,10 @@ function RowActions({
     restoreApuItemAction,
     INITIAL_MUTATION_STATE,
   );
+  const [confirm, confirmDialog] = useConfirm();
+  const deleteFormRef = useRef<HTMLFormElement>(null);
+  // El envío confirmado vuelve a pasar por onSubmit: esta marca lo deja seguir.
+  const deleteConfirmed = useRef(false);
   const [deleteState, deleteAction, deleting] = useActionState(
     deleteApuItemAction,
     INITIAL_MUTATION_STATE,
@@ -411,15 +416,23 @@ function RowActions({
           </button>
         </form>
         <form
+          ref={deleteFormRef}
           action={deleteAction}
           onSubmit={(event) => {
-            if (
-              !window.confirm(
-                "¿Borrar este insumo definitivamente? Solo es posible si no está en uso en ninguna actividad.",
-              )
-            ) {
-              event.preventDefault();
+            if (deleteConfirmed.current) {
+              deleteConfirmed.current = false;
+              return;
             }
+            event.preventDefault();
+            void confirm({
+              title: "¿Borrar este insumo?",
+              description: "Se borra definitivamente. Solo es posible si no está en uso en ninguna actividad.",
+              confirmLabel: "Borrar insumo",
+            }).then((ok) => {
+              if (!ok) return;
+              deleteConfirmed.current = true;
+              deleteFormRef.current?.requestSubmit();
+            });
           }}
         >
           <input type="hidden" name="tenantSlug" value={tenantSlug} />
@@ -438,6 +451,7 @@ function RowActions({
           {errorMessage}
         </span>
       ) : null}
+      {confirmDialog}
     </div>
   );
 }

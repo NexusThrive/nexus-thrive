@@ -45,9 +45,10 @@ export default function InvoiceSheet({ slug, customers, products, today, onClose
 
   return (
     <ResponsiveSheet
+      drawer
+      size="lg"
       open
       onOpenChange={(o) => !o && onClose()}
-      wide
       title={kind === "BILL" ? "Nueva cuenta de cobro" : "Nuevo recibo"}
       description="Numeración automática. Se imprime o guarda como PDF."
       footer={

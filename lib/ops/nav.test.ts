@@ -16,6 +16,16 @@ describe("navegación del Operations Center", () => {
   });
 });
 
+describe("grupos por responsabilidad", () => {
+  it("con todos los permisos: Hoy, Cuentas, Comercial, Producto, Plataforma", () => {
+    const all = ["accounts.view", "tickets.view", "leads.view", "presence.view", "billing.view", "catalog.edit", "team.invite", "audit.view"];
+    expect(opsNavFor(all).map((g) => g.label)).toEqual(["Hoy", "Cuentas", "Comercial", "Producto", "Plataforma"]);
+  });
+  it("no deja grupos vacíos", () => {
+    expect(opsNavFor([]).map((g) => g.label)).toEqual(["Hoy"]);
+  });
+});
+
 describe("permisos alternativos", () => {
   it("Planes y módulos se ve con catálogo o con precios", () => {
     expect(opsNavFor(["pricing.edit"]).flatMap((g) => g.items.map((i) => i.key))).toContain("planes");

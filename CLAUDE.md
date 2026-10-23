@@ -19,8 +19,8 @@ Reglas que no se negocian:
    `ConfirmDialog`/`useConfirm`, `Popover`, `ContextHelp`, `Field`, `Alert`,
    `EmptyState`, `LoadingState`, `useToast`.
 2. Prohibido: `window.confirm`/`alert`, modales hechos a mano
-   (`fixed inset-0`), `organisms/dialog.tsx` y `organisms/sheet.tsx`
-   (deprecados), `z-index` numérico, colores/sombras/duraciones sueltos, y
+   (`fixed inset-0`), Radix Dialog directo (se compone
+   `ResponsiveSheet`), `z-index` numérico, colores/sombras/duraciones sueltos, y
    `title` como única ayuda.
 3. Cada control con etiqueta; errores con texto e icono; foco visible, que
    vuelve al disparador al cerrar; todo operable con teclado y táctil.

@@ -47,6 +47,7 @@ export default function ProductSheet({ slug, kinds, product, defaultKind, onClos
 
   return (
     <ResponsiveSheet
+      drawer
       open
       onOpenChange={(o) => !o && onClose()}
       title={product ? `Editar · ${product.name}` : `Nuevo ${KIND_LABELS[d.kind].one.toLowerCase()}`}

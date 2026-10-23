@@ -109,7 +109,7 @@ export default async function MembershipsPage({
     <div className="space-y-8">
       {/* Encabezado */}
       <PageHeader
-        eyebrow="Gestión"
+        eyebrow="Clientes y operación"
         title="Membresías"
         description={<>Planes y renovaciones de{" "}
             <span className="font-medium text-foreground/80">

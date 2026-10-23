@@ -15,7 +15,7 @@ export default async function CrmPage() {
   const [leads, owners, tenants] = await Promise.all([listLeads(), listManagers(), tenantOptions()]);
   return (
     <div className="grid gap-5">
-      <PageHeader eyebrow="Operaciones" title="CRM comercial" description="Prospectos de NEXUS por etapa. Cada lead activo tiene responsable y próximo paso con fecha." />
+      <PageHeader eyebrow="Comercial" title="CRM comercial" description="Prospectos de NEXUS por etapa. Cada lead activo tiene responsable y próximo paso con fecha." />
       <CrmView
         leads={leads}
         owners={owners}
