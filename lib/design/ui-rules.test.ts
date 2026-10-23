@@ -43,7 +43,6 @@ const FULLSCREEN_ALLOWED = [
   "components/molecules/qr-scanner.tsx", // cámara a pantalla completa
   "components/organisms/command-palette.tsx", // paleta (cmdk sobre Radix Dialog)
   "components/organisms/command.tsx", // paleta del panel CEO (cmdk sobre Radix Dialog)
-  "components/organisms/onboarding/creation-cinematic.tsx", // cinemática del alta
 ];
 
 const WINDOW_CONFIRM = /window\.(confirm|alert)\(/;

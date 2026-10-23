@@ -1,24 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { ArrowRight } from "lucide-react";
 import { NMark } from "@/components/atoms/n-mark";
 import { RevealText } from "@/components/atoms/reveal-text";
-import { buttonVariants } from "@/components/atoms/button-variants";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/atoms/button";
+import styles from "./creation-cinematic.module.css";
 
-const MESSAGES = ["Creando negocio…", "Activando tus módulos…", "Preparando tu panel…", "Últimos detalles…"];
+const MESSAGES = ["Creando tu negocio…", "Activando tus módulos…", "Preparando tu panel…", "Últimos detalles…"];
 
 export type CinematicStatus = "creating" | "ready" | "error";
 
+type Stage = "creating" | "ready" | "welcome" | "error";
+
+const delay = (ms: number) => ({ ["--delay" as string]: `${ms}ms` }) as CSSProperties;
+
 /**
- * Cinemática al terminar el onboarding, a pantalla completa sobre tinta:
+ * Cinemática al terminar el onboarding, a pantalla completa y con el tema
+ * activo (claro u oscuro):
  *
- * 1. `creating`: la N se traza en bucle con "Creando negocio…".
- * 2. `ready`: la N se llena y sube; aparece "Continuar".
- * 3. Al continuar: "Bienvenido a Thrive {plan}" letra por letra y el botón
- *    para entrar (la recarga completa dispara la intro de la N de la app).
+ * 1. `creating`: la N se traza en bucle en el centro exacto de la pantalla,
+ *    con el mensaje de lo que se está haciendo y una barra fina.
+ * 2. `ready`: la N se llena y la cámara retrocede (la N se aleja en
+ *    profundidad y sube); entra "Tu negocio está listo" y "Continuar".
+ * 3. Al continuar: un paso más atrás y "Bienvenido a Thrive {plan}" con el
+ *    botón para entrar (la recarga completa dispara la intro de la app).
  * 4. `error`: mensaje y volver a la confirmación.
+ *
+ * Composición fija: cada paso ocupa el mismo sitio, nada salta. Sin
+ * movimiento (`prefers-reduced-motion` o Ajustes), todo aparece en su lugar.
  */
 export function CreationCinematic({
   status,
@@ -40,97 +50,89 @@ export function CreationCinematic({
 
   useEffect(() => {
     if (status !== "creating") return;
-    const id = window.setInterval(() => setMessage((m) => (m + 1) % MESSAGES.length), 1100);
+    const id = window.setInterval(() => setMessage((m) => (m + 1) % MESSAGES.length), 1400);
     return () => window.clearInterval(id);
   }, [status]);
 
-  const ready = status === "ready";
+  const stage: Stage = status === "ready" ? (welcome ? "welcome" : "ready") : status;
+  const label = {
+    creating: "Creando tu negocio",
+    ready: "Tu negocio está listo",
+    welcome: `Bienvenido a Thrive ${planName}`,
+    error: "No pudimos crear tu negocio",
+  }[stage];
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label={welcome ? `Bienvenido a Thrive ${planName}` : "Creando tu negocio"}
-      className="fixed inset-0 z-(--z-takeover) grid place-items-center overflow-hidden bg-ink text-white motion-safe:animate-[nx-view-in_.5s_var(--nx-ease-out)]"
-    >
-      <div
-        aria-hidden="true"
-        className={cn(
-          "pointer-events-none absolute left-1/2 top-1/2 size-[70vmin] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/15 blur-[90px] transition-opacity duration-1000",
-          ready ? "opacity-100" : "opacity-40",
-        )}
-      />
-      <div className="relative flex flex-col items-center px-6 text-center">
-        <div
-          className={cn(
-            "transition-transform duration-[1100ms] ease-[var(--nx-ease-out)] motion-reduce:transition-none",
-            ready && (welcome ? "-translate-y-6 scale-[.55]" : "-translate-y-10 scale-75"),
-          )}
-        >
-          <NMark size={132} state={status === "creating" ? "loop" : "done"} className="text-white" />
-        </div>
-
-        <div className="mt-8 min-h-[150px]">
-          {status === "creating" ? (
-            <p key={message} aria-live="polite" className="nx-rise text-[15px] font-medium text-white/75">
-              {MESSAGES[message]}
-            </p>
-          ) : null}
-
-          {status === "error" ? (
-            <div className="nx-rise grid justify-items-center gap-4">
-              <p role="alert" className="max-w-[40ch] text-[15px] text-white/80">
-                {error ?? "No pudimos crear tu negocio. Inténtalo de nuevo."}
-              </p>
-              <button type="button" onClick={onBack} className={buttonVariants({ variant: "outline", className: "border-white/25 text-white hover:bg-white/10" })}>
-                Volver a revisar
-              </button>
-            </div>
-          ) : null}
-
-          {ready && !welcome ? (
-            <div className="grid justify-items-center gap-5">
-              <RevealText as="p" parts={["Tu negocio está listo"]} className="font-display text-[clamp(24px,4vw,32px)] font-bold" />
-              <button
-                type="button"
-                onClick={() => setWelcome(true)}
-                data-mag=""
-                autoFocus
-                className={cn(buttonVariants({ variant: "accent", size: "lg" }), "nx-rise min-w-48")}
-                style={{ ["--i" as string]: 6 }}
-              >
-                Continuar
-                <ArrowRight aria-hidden="true" className="size-4" />
-              </button>
-            </div>
-          ) : null}
-
-          {ready && welcome ? (
-            <div className="grid justify-items-center gap-3">
-              <p className="nx-rise font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-white/50">Bienvenido a</p>
-              <RevealText
-                as="h1"
-                parts={["Thrive ", { text: planName, gold: true }]}
-                className="font-display text-[clamp(34px,7vw,64px)] font-bold leading-none tracking-[-0.02em]"
-              />
-              <p className="nx-rise mt-1 text-[15px] text-white/70" style={{ ["--i" as string]: 8 }}>
-                {businessName} ya está en NEXUS.
-              </p>
-              <button
-                type="button"
-                onClick={onEnter}
-                data-mag=""
-                autoFocus
-                className={cn(buttonVariants({ variant: "accent", size: "lg" }), "nx-rise mt-5 min-w-56")}
-                style={{ ["--i" as string]: 12 }}
-              >
-                Entrar a mi negocio
-                <ArrowRight aria-hidden="true" className="size-4" />
-              </button>
-            </div>
-          ) : null}
+    <div role="dialog" aria-modal="true" aria-label={label} data-stage={stage} className={styles.root}>
+      <div className={styles.scene} aria-hidden="true">
+        <div className={styles.mark}>
+          <NMark size={144} state={status === "creating" ? "loop" : "done"} />
         </div>
       </div>
+
+      {stage === "creating" ? (
+        <div className={styles.copy} data-slot="creating">
+          <h1 className="sr-only">Creando tu negocio</h1>
+          <p key={message} aria-live="polite" className={`${styles.status} ${styles.enter}`}>
+            {MESSAGES[message]}
+          </p>
+          <span aria-hidden="true" className={styles.track} />
+        </div>
+      ) : null}
+
+      {stage === "ready" ? (
+        <div className={styles.copy} data-slot="ready">
+          <RevealText
+            as="h1"
+            parts={["Tu negocio está listo"]}
+            className="font-display text-[clamp(26px,4.2vw,36px)] font-bold leading-tight tracking-[-0.01em]"
+          />
+          <div className={styles.enter} style={delay(500)}>
+            <Button variant="accent" size="lg" autoFocus onClick={() => setWelcome(true)} className="mt-7 min-w-48">
+              Continuar
+              <ArrowRight aria-hidden="true" className="size-4" />
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      {stage === "welcome" ? (
+        <div className={styles.copy} data-slot="welcome">
+          <p className={`${styles.eyebrow} ${styles.enter}`} style={delay(250)}>
+            Bienvenido a
+          </p>
+          <RevealText
+            as="h1"
+            parts={["Thrive ", { text: planName, gold: true }]}
+            className="mt-2 font-display text-[clamp(36px,7vw,64px)] font-bold leading-none tracking-[-0.02em]"
+          />
+          <p className={`${styles.detail} ${styles.enter} mt-3`} style={delay(650)}>
+            {businessName} ya está en NEXUS.
+          </p>
+          <div className={styles.enter} style={delay(850)}>
+            <Button variant="accent" size="lg" autoFocus onClick={onEnter} className="mt-7 min-w-56">
+              Entrar a mi negocio
+              <ArrowRight aria-hidden="true" className="size-4" />
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      {stage === "error" ? (
+        <div className={styles.copy} data-slot="error">
+          <h1 className={`font-display text-xl font-semibold ${styles.enter}`}>
+            No pudimos crear tu negocio
+          </h1>
+          <p role="alert" className={`${styles.detail} ${styles.enter} mt-2 max-w-[42ch]`} style={delay(120)}>
+            {error ?? "Inténtalo de nuevo en un momento."}
+          </p>
+          <div className={styles.enter} style={delay(240)}>
+            <Button variant="outline" autoFocus onClick={onBack} className="mt-6">
+              Volver a revisar
+            </Button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
