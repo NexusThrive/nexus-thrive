@@ -32,7 +32,8 @@ export type TenantContext = {
 
 type TenantRecord = NonNullable<Awaited<ReturnType<typeof loadActiveTenant>>>;
 
-function loadActiveTenant(slug: string) {
+/** El negocio con ese slug, solo si está activo (suspendido = `null`). */
+export function loadActiveTenant(slug: string) {
   return db.orm.public.Tenant.where({ slug, active: true }).first();
 }
 

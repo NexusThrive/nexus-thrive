@@ -431,7 +431,7 @@ export async function redeemBenefit(params: {
       }).all();
       for (const moduleRow of existing) {
         if (!selected.has(moduleRow.moduleName)) {
-          await tx.orm.public.TenantModule.where({ id: moduleRow.id }).update({ active: false });
+          await tx.orm.public.TenantModule.where({ tenantId: params.tenantId, id: moduleRow.id }).update({ active: false });
         }
       }
       for (const moduleName of modules) {
@@ -536,7 +536,7 @@ export async function expireBenefitTrial(tenantId: string): Promise<void> {
       const existing = await tx.orm.public.TenantModule.where({ tenantId }).all();
       for (const row of existing) {
         if (!selected.has(row.moduleName)) {
-          await tx.orm.public.TenantModule.where({ id: row.id }).update({ active: false });
+          await tx.orm.public.TenantModule.where({ tenantId, id: row.id }).update({ active: false });
         }
       }
       for (const moduleName of modules) {

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { db } from "@/prisma/db";
+import { loadActiveTenant } from "@/lib/tenant/context";
+import { memberDirectory } from "@/lib/tenant/membership";
 import { createTenantDb } from "@/lib/tenant/db";
 import FinanceActions from "./_components/finance-actions";
 import SearchInput from "@/components/molecules/search-input";
@@ -70,10 +71,7 @@ export default async function FinancePage({
   const initialSheet = nuevo === "pago" || nuevo === "gasto" ? nuevo : firstString(sp.scan) === "1" ? "escaneo" : null;
   const initialCustomerId = firstString(sp.cliente);
 
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
+  const tenantRecord = await loadActiveTenant(tenantSlug);
   if (!tenantRecord) {
     notFound();
   }
@@ -131,7 +129,7 @@ export default async function FinancePage({
   const [cashBoxes, cashHist, members, ctx] = await Promise.all([
     listCashBoxes(tenantRecord.id),
     tab === "caja" ? cashHistory(tenantRecord.id, 10) : Promise.resolve([]),
-    db.orm.public.User.where({ tenantId: tenantRecord.id }).select("id", "name", "email").all(),
+    memberDirectory(tenantRecord.id),
     requireTenantContext(tenantSlug, "/finance"),
   ]);
   const openBox = cashBoxes.find((b) => b.openSession) ?? null;

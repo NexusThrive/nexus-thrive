@@ -12,7 +12,7 @@ import { canHandleCash, canManage } from "@/lib/business/roles";
 import { bogotaDayKey } from "@/lib/finance/series";
 import { formatCurrency } from "@/lib/format";
 import { requireTenantContext } from "@/lib/tenant/context";
-import { db } from "@/prisma/db";
+import { customerOptions } from "@/lib/business/customers-db";
 import TicketDesk from "./_components/ticket-desk";
 import VisitorReportView from "./_components/visitor-report";
 import MuseumSettingsForm from "./_components/museum-settings-form";
@@ -78,7 +78,7 @@ export default async function TicketsPage({ params, searchParams }: { params: Pr
   const [sales, types, customers] = await Promise.all([
     salesOn(ctx.tenantId, day),
     ticketTypes(ctx.tenantId),
-    db.orm.public.Customer.where({ tenantId: ctx.tenantId, active: true }).orderBy((c) => c.name.asc()).select("id", "name").limit(500).all(),
+    customerOptions(ctx.tenantId, 500),
   ]);
   const loads = slotLoads(settings, sales);
   const valid = sales.filter((s) => s.status !== "VOID");

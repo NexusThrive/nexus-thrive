@@ -399,7 +399,7 @@ export function createProjectQuotesDb(tenantId: string) {
       const project = await db.orm.public.Project.where({ id: projectId, tenantId }).first();
       const budget = await db.orm.public.ProjectBudget.where({ projectId, tenantId }).first();
       if (!project || !budget) throw new Error("NOT_FOUND");
-      const existingChapters = await db.orm.public.BudgetChapter.where({ budgetId: budget.id }).select("id").all();
+      const existingChapters = await db.orm.public.BudgetChapter.where({ tenantId, budgetId: budget.id }).select("id").all();
       if (existingChapters.length > 0) throw new Error("PROJECT_NOT_EMPTY");
       const lines = await db.orm.public.QuoteItem.where({ quoteId }).all();
 
@@ -464,7 +464,7 @@ export function createProjectQuotesDb(tenantId: string) {
         });
       });
 
-      const fresh = (await db.orm.public.ProjectBudget.where({ id: budget.id }).first())!;
+      const fresh = (await db.orm.public.ProjectBudget.where({ tenantId, id: budget.id }).first())!;
       const tree = await loadBudgetTree(fresh);
       const [customer, header, tenant] = await Promise.all([
         db.orm.public.Customer.where({ id: project.customerId, tenantId }).select("name").first(),

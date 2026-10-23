@@ -31,7 +31,7 @@ lib/<dominio>/
 | Leer o escribir datos del negocio | Un repositorio de `lib/` que recibe `tenantId` | `lib/business/*-db.ts`, `createTenantDb` en `lib/tenant/db.ts` |
 | Que la pantalla aparezca en el menú | Entrada en `MODULE_NAV` | `lib/navigation/tenant-nav.ts` |
 
-Prohibido en `app/`: importar `@/prisma/db` (ESLint lo bloquea), redefinir o
+Prohibido en `app/`: importar `@/prisma/db` o abrir `moneyTransaction` (ESLint lo bloquea, sin excepciones), redefinir o
 renombrar `requireTenantContext`/`requirePageContext` (lo bloquea
 `page-authorization.test.ts`), y decidir permisos con `role === "OWNER"` sueltos.
 
@@ -171,7 +171,7 @@ durante el despliegue.
 - [ ] La página llama a `requirePageContext(tenant, "/<ruta>")`.
 - [ ] Cada acción llama a `requireTenantContext(slug, "/<ruta>")` y a `can(...)`.
 - [ ] Ningún archivo nuevo de `app/` importa `@/prisma/db`.
-- [ ] Todo `where` del repositorio lleva `tenantId`.
+- [ ] Todo `where` del repositorio lleva `tenantId` (lo exige `lib/tenant/tenant-scope.test.ts`).
 - [ ] El dinero pasa por `money-service.ts`.
 - [ ] Lo destructivo o sensible deja `logTenantAction`.
 - [ ] Hay prueba: unitaria para la regla; integración si toca datos (y está en

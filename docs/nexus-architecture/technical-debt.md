@@ -29,7 +29,7 @@ usar o mantener bien · **P2** necesario para escalar · **P3** optimización.
 | [SEC-09](security-audit.md#sec-09) | SSRF en Presence | P2 | Media | Comprobado |
 | [SEC-11](security-audit.md#sec-11) | Sin auditoría dentro del negocio | P2 | Media | Comprobado |
 | [ARCH-03](#arch-03) | Duplicados: dos onboardings, dos motores de precios | P2 | Baja | Comprobado |
-| [ARCH-04](#arch-04) | Acceso a datos sin capa: `tenant-db.ts` gigante y consultas en páginas | P2 | Media | Comprobado |
+| [ARCH-04](#arch-04) | Acceso a datos sin capa: `tenant-db.ts` gigante y consultas en páginas | P2 | Media | Resuelto en `app/` (2026-10-23) |
 | [ARCH-05](#arch-05) | Modelo de identidad: sin persona, sin selector de negocio, `SUPERADMIN` ambiguo | P2 | Media | Comprobado |
 | [ARCH-06](#arch-06) | Sin trabajos programados; escrituras en el render | P2 | Baja | Comprobado |
 | [UX-01](#ux-01) | Sin `error.tsx`; "Sin acceso" sin salida | P2 | Baja | Comprobado |
@@ -133,6 +133,7 @@ Prioridad P2.
 | Evidencia | `lib/tenant-db.ts` (1.563 líneas) y `lib/admin-db.ts` (1.235); páginas y acciones con `db.orm.public.*` directo; tres estilos (`tenantDb.x`, `lib/business/*-db.ts(tenantId, …)`, consultas inline) |
 | Impacto | Es fácil olvidar el `tenantId`; difícil saber qué módulo es dueño de qué tabla |
 | Recomendación | Repositorios por módulo que reciben un `TenantContext` (no un `tenantId` suelto); regla de lint que prohíba `db.orm` en `app/` |
+| Estado (2026-10-23) | Hecho en `app/`: los 42 archivos de la lista (y las transacciones de membresías) pasan por repositorios de `lib/`; ESLint bloquea `@/prisma/db` y `moneyTransaction` en todo `app/` sin excepciones. `lib/tenant/tenant-scope.test.ts` exige `tenantId` en cada consulta a una tabla de negocio fuera del panel CEO. Pendiente: repositorios que reciban `TenantContext` en vez de `tenantId` suelto, y partir `lib/tenant/db.ts` |
 | Aceptación | `grep "db.orm" app/` vacío salvo excepciones documentadas |
 | Prioridad | P2 |
 

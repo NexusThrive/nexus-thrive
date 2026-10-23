@@ -9,6 +9,8 @@ import {
   createSubscription,
   generateRenewal,
   getCharge,
+  getSubscription,
+  hasSubscription,
   markNotice,
   recordPaymentDetails,
   refundCharge,
@@ -18,7 +20,7 @@ import {
   voidCharge,
 } from "@/lib/ops/billing";
 import { checkConfirm, checkEvidence, PAYMENT_METHODS, validatePolicy, type BillingPolicyValues, type Cycle, type SubscriptionStatusValue } from "@/lib/ops/billing-rules";
-import { db } from "@/prisma/db";
+import { tenantName } from "@/lib/ops/accounts";
 
 export type BillingResult = { ok: true; message?: string } | { ok: false; message: string };
 const DENIED = { ok: false as const, message: "No tienes permiso para esta acción." };
@@ -33,16 +35,16 @@ function refresh(tenantId?: string) {
 export async function createSubscriptionAction(input: { tenantId: string; plan: string; cycle: string; monthlyCents: number; startDate: string; trial: boolean }): Promise<BillingResult> {
   const ctx = await requireStaff("billing.record");
   if (!ctx) return DENIED;
-  const t = await db.orm.public.Tenant.where({ id: input.tenantId }).select("name").first();
-  if (!t) return { ok: false, message: "El negocio no existe." };
-  if (await db.orm.public.Subscription.where({ tenantId: input.tenantId }).select("id").first()) return { ok: false, message: "Este negocio ya tiene suscripción." };
+  const name = await tenantName(input.tenantId);
+  if (name === null) return { ok: false, message: "El negocio no existe." };
+  if (await hasSubscription(input.tenantId)) return { ok: false, message: "Este negocio ya tiene suscripción." };
   if (!["ESSENTIAL", "ELITE", "SIGNATURE"].includes(input.plan)) return { ok: false, message: "Plan no válido." };
   const cycle: Cycle = input.cycle === "ANNUAL" ? "ANNUAL" : "MONTHLY";
   const cents = Math.round(input.monthlyCents);
   if (!Number.isFinite(cents) || cents < 0 || cents > 10_000_00) return { ok: false, message: "Precio no válido." };
   if (!DATE.test(input.startDate)) return { ok: false, message: "Fecha de inicio no válida." };
   await createSubscription({ tenantId: input.tenantId, plan: input.plan, cycle, monthlyCents: cents, startDate: input.startDate, trial: !!input.trial, staffId: ctx.staffId });
-  await logOps(ctx, "SUBSCRIPTION_SAVE", { targetTenantId: input.tenantId, targetTenantName: t.name, metadata: { created: true, plan: input.plan, cycle, monthlyCents: cents, startDate: input.startDate, trial: input.trial } });
+  await logOps(ctx, "SUBSCRIPTION_SAVE", { targetTenantId: input.tenantId, targetTenantName: name, metadata: { created: true, plan: input.plan, cycle, monthlyCents: cents, startDate: input.startDate, trial: input.trial } });
   refresh(input.tenantId);
   return { ok: true, message: "Suscripción creada" };
 }
@@ -50,7 +52,7 @@ export async function createSubscriptionAction(input: { tenantId: string; plan: 
 export async function updateSubscriptionAction(id: string, input: { priceUsdCents: number; billingCycle: string; status: string; notes: string; cancelReason?: string }): Promise<BillingResult> {
   const ctx = await requireStaff("billing.record");
   if (!ctx) return DENIED;
-  const s = await db.orm.public.Subscription.where({ id }).first();
+  const s = await getSubscription(id);
   if (!s) return { ok: false, message: "La suscripción no existe." };
   const status = (["TRIAL", "ACTIVE", "CANCELLED"] as SubscriptionStatusValue[]).includes(input.status as SubscriptionStatusValue) ? (input.status as SubscriptionStatusValue) : (s.status as SubscriptionStatusValue);
   if (status === "CANCELLED" && !input.cancelReason?.trim()) return { ok: false, message: "Indica el motivo de la cancelación." };

@@ -2,7 +2,7 @@
 
 import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
-import { db } from "@/prisma/db";
+import { moduleRulesOf, setTenantModule, slugTakenByOther, updateTenantProfile } from "@/lib/tenant/settings-db";
 import { createTenantDb } from "@/lib/tenant/db";
 import { isModule, isVertical, validateSlug } from "@/lib/admin/catalogs";
 import { checkModuleToggle } from "@/lib/plans/compat";
@@ -119,8 +119,7 @@ export async function updateTenantProfileAction(
   } else {
     slug = slugValidation.slug;
     // Unicidad: el slug es @unique en el esquema; se comprueba antes de escribir.
-    const existing = await db.orm.public.Tenant.where({ slug }).first();
-    if (existing && existing.id !== tenantId) {
+    if (await slugTakenByOther(slug, tenantId)) {
       errors.slug = "Ese slug ya está en uso por otro negocio.";
     }
   }
@@ -130,14 +129,7 @@ export async function updateTenantProfileAction(
   }
 
   try {
-    await db.orm.public.Tenant.where({ id: tenantId }).update({
-      name,
-      slug,
-      city,
-      address,
-      taxId,
-      whatsappNumber,
-    });
+    await updateTenantProfile(tenantId, { name, slug, city, address, taxId, whatsappNumber });
 
     // La ruta de settings y el layout del tenant (para el nombre en la
     // cabecera). Si el slug cambió, se revalidan también la ruta nueva.
@@ -189,7 +181,7 @@ export async function toggleModuleAction(
   const { tenantId } = context;
 
   // Solo módulos compatibles con el rubro y operativos; el Inicio no se apaga.
-  const tenant = await db.orm.public.Tenant.select("vertical", "contractedModules").where({ id: tenantId }).first();
+  const tenant = await moduleRulesOf(tenantId);
   if (tenant && isVertical(tenant.vertical)) {
     const contracted = tenant.contractedModules ? [...tenant.contractedModules] : null;
     const check = checkModuleToggle(await loadPricingConfig(), tenant.vertical, moduleName, active, contracted);
@@ -198,11 +190,7 @@ export async function toggleModuleAction(
 
   try {
     // Idempotente en ambas direcciones: crear si no existía, actualizar si sí.
-    await db.orm.public.TenantModule.upsert({
-      create: { tenantId, moduleName, active },
-      update: { active },
-      conflictOn: { tenantId, moduleName },
-    });
+    await setTenantModule(tenantId, moduleName, active);
     await logTenantAction(context, "BIZ_MODULE_TOGGLE", { moduleName, active });
 
     // El layout del tenant renderiza la sidebar a partir de TenantModule:

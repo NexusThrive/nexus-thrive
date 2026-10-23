@@ -151,7 +151,7 @@ export function createBudgetsDb(tenantId: string) {
         assertRevision(budget, expectedRevision);
         const chapter = await db.transaction(async (tx) => {
           const last = await tx.orm.public.BudgetChapter
-            .where({ budgetId: budget.id })
+            .where({ tenantId, budgetId: budget.id })
             .orderBy((chapter) => chapter.order.desc())
             .first();
           const order = last ? last.order + 1 : 1;
@@ -189,7 +189,7 @@ export function createBudgetsDb(tenantId: string) {
         }
         assertRevision(budget, expectedRevision);
         const chapter = await db.orm.public.BudgetChapter
-          .where({ id: input.chapterId, budgetId: budget.id })
+          .where({ tenantId, id: input.chapterId, budgetId: budget.id })
           .select("id")
           .first();
         if (!chapter) {
@@ -203,7 +203,7 @@ export function createBudgetsDb(tenantId: string) {
 
         const created = await db.transaction(async (tx) => {
           const last = await tx.orm.public.BudgetItem
-            .where({ chapterId: input.chapterId })
+            .where({ tenantId, chapterId: input.chapterId })
             .orderBy((item) => item.order.desc())
             .first();
           const order = last ? last.order + 1 : 1;
@@ -267,7 +267,7 @@ export function createBudgetsDb(tenantId: string) {
         assertRevision(budget, expectedRevision);
 
         const chapter = await db.orm.public.BudgetChapter
-          .where({ id: chapterId, budgetId: budget.id })
+          .where({ tenantId, id: chapterId, budgetId: budget.id })
           .select("id")
           .first();
         if (!chapter) {
@@ -373,7 +373,7 @@ export function createBudgetsDb(tenantId: string) {
 
         const created = await db.transaction(async (tx) => {
           const last = await tx.orm.public.BudgetItem
-            .where({ chapterId })
+            .where({ tenantId, chapterId })
             .orderBy((item) => item.order.desc())
             .first();
           const order = last ? last.order + 1 : 1;
@@ -509,7 +509,7 @@ export function createBudgetsDb(tenantId: string) {
         }
         assertRevision(budget, expectedRevision);
         const chapter = await db.orm.public.BudgetChapter
-          .where({ id: chapterId, budgetId: budget.id })
+          .where({ tenantId, id: chapterId, budgetId: budget.id })
           .select("id")
           .first();
         if (!chapter) {
@@ -517,7 +517,7 @@ export function createBudgetsDb(tenantId: string) {
         }
         await db.transaction(async (tx) => {
           await tx.orm.public.BudgetChapter
-            .where({ id: chapterId, budgetId: budget.id })
+            .where({ tenantId, id: chapterId, budgetId: budget.id })
             .delete();
           await recalcBudgetTotals(tx, budget.id, {
             admin: budget.aiuAdminPct,
@@ -555,7 +555,7 @@ export function createBudgetsDb(tenantId: string) {
           throw new Error("Partida no encontrada en este presupuesto.");
         }
         const chapter = await db.orm.public.BudgetChapter
-          .where({ id: item.chapterId, budgetId: budget.id })
+          .where({ tenantId, id: item.chapterId, budgetId: budget.id })
           .select("id")
           .first();
         if (!chapter) {
@@ -596,7 +596,7 @@ export function createBudgetsDb(tenantId: string) {
         }
         assertRevision(budget, expectedRevision);
         const chapter = await db.orm.public.BudgetChapter
-          .where({ id: chapterId, budgetId: budget.id })
+          .where({ tenantId, id: chapterId, budgetId: budget.id })
           .select("id", "name", "description")
           .first();
         if (!chapter) {
@@ -608,7 +608,7 @@ export function createBudgetsDb(tenantId: string) {
         }
         await db.transaction(async (tx) => {
           await tx.orm.public.BudgetChapter
-            .where({ id: chapterId, budgetId: budget.id })
+            .where({ tenantId, id: chapterId, budgetId: budget.id })
             .update({
               name: input.name,
               description: input.description ?? null,
@@ -645,7 +645,7 @@ export function createBudgetsDb(tenantId: string) {
           throw new Error("Partida no encontrada en este presupuesto.");
         }
         const chapter = await db.orm.public.BudgetChapter
-          .where({ id: item.chapterId, budgetId: budget.id })
+          .where({ tenantId, id: item.chapterId, budgetId: budget.id })
           .select("id")
           .first();
         if (!chapter) {
@@ -848,7 +848,7 @@ export function createBudgetsDb(tenantId: string) {
         }
         if (item.chapterId) {
           const chapter = await db.orm.public.BudgetChapter
-            .where({ id: item.chapterId, budgetId: budget.id })
+            .where({ tenantId, id: item.chapterId, budgetId: budget.id })
             .select("id")
             .first();
           if (!chapter) {

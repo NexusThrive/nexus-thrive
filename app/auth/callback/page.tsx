@@ -1,7 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { db } from "@/prisma/db";
 import { acceptInvitesFor } from "@/lib/business/team-db";
+import { homeTenantFor } from "@/lib/tenant/membership";
 import { findStaffByEmail, getStaffContext } from "@/lib/ops/access";
 import { StaffAccessNotice } from "@/components/molecules/staff-access-notice";
 import { verifiedEmailOf } from "@/lib/auth/session-email";
@@ -55,20 +55,9 @@ export default async function AuthCallback() {
   const invitedTo = await acceptInvitesFor(userId, email, me?.fullName ?? null);
   if (invitedTo.length) redirect(`/${invitedTo[0]}`);
 
-  // Buscar tenant del usuario (solo membresías activas)
-  const user = await db.orm.public.User
-    .where({ clerkUserId: userId, active: true })
-    .include("tenant", (t) => t.select("slug", "onboardingCompleted"))
-    .first();
-
-  if (user?.tenant) {
-    const { slug, onboardingCompleted } = user.tenant;
-    if (onboardingCompleted) {
-      redirect(`/${slug}`);
-    } else {
-      redirect("/onboarding");
-    }
-  }
+  // Negocio del usuario (solo membresías activas)
+  const home = await homeTenantFor(userId);
+  if (home) redirect(home.onboardingCompleted ? `/${home.slug}` : "/onboarding");
 
   // Usuario nuevo (aún no tiene tenant) → onboarding
   redirect("/onboarding");

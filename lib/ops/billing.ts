@@ -159,6 +159,16 @@ export async function listSubscriptions(): Promise<SubscriptionRow[]> {
   });
 }
 
+/** Suscripción por id (fila completa). */
+export async function getSubscription(id: string) {
+  return db.orm.public.Subscription.where({ id }).first();
+}
+
+/** ¿El negocio ya tiene suscripción? (una por negocio) */
+export async function hasSubscription(tenantId: string): Promise<boolean> {
+  return (await db.orm.public.Subscription.where({ tenantId }).select("id").first()) !== null;
+}
+
 export async function getSubscriptionByTenant(tenantId: string) {
   return (await listSubscriptions()).find((s) => s.tenantId === tenantId) ?? null;
 }

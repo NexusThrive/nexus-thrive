@@ -316,3 +316,43 @@ export async function voidPayment(tenantId: string, paymentId: string, reason: s
     throw e;
   }
 }
+
+/**
+ * Anula un gasto una sola vez (con motivo). Si el efectivo salió de una caja
+ * que sigue abierta, el mismo movimiento lo devuelve a la caja. La guarda
+ * `voidedAt IS NULL` en la actualización hace que dos anulaciones a la vez
+ * dejen un solo reintegro.
+ */
+export async function voidExpense(tenantId: string, expenseId: string, reason: string, userId: string) {
+  try {
+    return await moneyTransaction(async (tx) => {
+      const e = await tx.orm.public.Expense.where({ tenantId, id: expenseId }).first();
+      if (!e) throw new MoneyError("El gasto no existe.");
+      if (e.voidedAt) throw new MoneyError("El gasto ya está anulado.");
+      const updated = await tx.orm.public.Expense.where({ tenantId, id: expenseId })
+        .where((f) => f.voidedAt.isNull())
+        .updateAndCount({ voidedAt: Temporal.Instant.fromEpochMilliseconds(Date.now()), voidReason: reason });
+      if (updated === 0) throw new MoneyError("El gasto ya está anulado.");
+      if (e.cashSessionId) {
+        const session = await tx.orm.public.CashSession.where({ tenantId, id: e.cashSessionId }).select("closedAt").first();
+        if (session && !session.closedAt) {
+          await tx.orm.public.CashMovement.create({
+            tenantId,
+            sessionId: e.cashSessionId,
+            kind: "ADJUST",
+            amount: toNumber(e.amount).toFixed(2),
+            description: `Anulación de gasto: ${e.description}`,
+            beneficiary: null,
+            paymentId: null,
+            expenseId,
+            createdById: userId,
+          });
+        }
+      }
+      return { ok: true as const, amount: String(e.amount) };
+    });
+  } catch (err) {
+    if (err instanceof MoneyError) return { ok: false as const, message: err.message };
+    throw err;
+  }
+}

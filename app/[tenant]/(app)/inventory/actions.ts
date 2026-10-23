@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { db } from "@/prisma/db";
+import { customerBelongs } from "@/lib/business/customers-db";
 import { kindsForVertical, validateProduct, type ProductDraft } from "@/lib/business/catalog-kinds";
 import { sellProduct } from "@/lib/business/money-service";
 import { validateStockMove, type StockKind } from "@/lib/business/inventory";
@@ -80,7 +80,7 @@ export async function sellProductAction(slug: string, productId: string, input: 
     const err = validateStockMove(p.stock, "SALE", qty);
     if (err) return { ok: false, message: err };
   }
-  if (input.customerId && !(await db.orm.public.Customer.where({ tenantId: ctx.tenantId, id: input.customerId }).select("id").first())) return { ok: false, message: "El cliente no es de este negocio." };
+  if (input.customerId && !(await customerBelongs(ctx.tenantId, input.customerId))) return { ok: false, message: "El cliente no es de este negocio." };
   // Cobro, recibo, caja y stock en una sola transacción; el stock se vuelve a
   // validar dentro, así dos ventas a la vez no venden lo que no hay.
   const sale = await sellProduct(

@@ -1,9 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { db } from "@/prisma/db";
 import { BUSINESS_ROLES, canManageTeam, type BusinessRole } from "@/lib/business/roles";
-import { activeOwners, createInvite, revokeInvite, seatLimit, setMemberActive, setMemberRole, updateMemberProfile } from "@/lib/business/team-db";
+import { activeOwners, createInvite, revokeInvite, seatLimit, setMemberActive, setMemberRole, updateMemberProfile, activeMemberWithEmail, memberRoleOf } from "@/lib/business/team-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { logTenantAction } from "@/lib/tenant/audit";
 
@@ -28,8 +27,7 @@ export async function inviteMemberAction(slug: string, input: { email: string; n
   if (!EMAIL.test(email)) return { ok: false, message: "Escribe un correo válido." };
   if (!ROLES.includes(input.role as BusinessRole)) return { ok: false, message: "Elige un rol." };
   if (input.role === "OWNER" && ctx.role !== "OWNER" && ctx.role !== "SUPERADMIN") return { ok: false, message: "Solo un dueño puede nombrar a otro dueño." };
-  const existing = await db.orm.public.User.where({ tenantId: ctx.tenantId, email, active: true }).select("id").first();
-  if (existing) return { ok: false, message: "Esa persona ya es parte del equipo." };
+  if (await activeMemberWithEmail(ctx.tenantId, email)) return { ok: false, message: "Esa persona ya es parte del equipo." };
   const seats = await seatLimit(ctx.tenantId);
   if (seats.limit != null && seats.used >= seats.limit) return { ok: false, message: `Tu plan ${seats.planName} incluye ${seats.limit} ${seats.limit === 1 ? "usuario" : "usuarios"}. Mejora tu plan para sumar más personas.` };
   await createInvite(ctx.tenantId, { email, name: input.name.trim().slice(0, 80) || null, role: input.role as BusinessRole }, ctx.memberId);
@@ -52,7 +50,7 @@ export async function changeMemberRoleAction(slug: string, userId: string, role:
   if (!ctx) return DENIED;
   if (userId === ctx.memberId) return { ok: false, message: "No puedes cambiar tu propio rol." };
   if (!ROLES.includes(role as BusinessRole)) return { ok: false, message: "Rol no válido." };
-  const u = await db.orm.public.User.where({ tenantId: ctx.tenantId, id: userId }).select("role", "active").first();
+  const u = await memberRoleOf(ctx.tenantId, userId);
   if (!u) return { ok: false, message: "No es parte del equipo." };
   if (u.role === "SUPERADMIN") return { ok: false, message: "El soporte de NEXUS no se modifica." };
   if ((role === "OWNER" || u.role === "OWNER") && ctx.role !== "OWNER" && ctx.role !== "SUPERADMIN") return { ok: false, message: "Solo un dueño cambia a otro dueño." };
@@ -67,7 +65,7 @@ export async function setMemberActiveAction(slug: string, userId: string, active
   const ctx = await ctxFor(slug);
   if (!ctx) return DENIED;
   if (userId === ctx.memberId) return { ok: false, message: "No puedes retirarte a ti mismo." };
-  const u = await db.orm.public.User.where({ tenantId: ctx.tenantId, id: userId }).select("role", "active").first();
+  const u = await memberRoleOf(ctx.tenantId, userId);
   if (!u) return { ok: false, message: "No es parte del equipo." };
   if (u.role === "SUPERADMIN") return { ok: false, message: "El soporte de NEXUS no se modifica." };
   if (!active && u.role === "OWNER") {

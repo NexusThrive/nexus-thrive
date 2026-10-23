@@ -5,7 +5,7 @@ import { requireStaff } from "@/lib/ops/access";
 import { ACCOUNT_STAGES, deleteContact, saveContact, tenantName, updateAccount, type AccountStageValue } from "@/lib/ops/accounts";
 import { logOps } from "@/lib/ops/audit";
 import { validateContact } from "@/lib/ops/validators";
-import { db } from "@/prisma/db";
+import { isActiveStaff } from "@/lib/ops/team";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 
 export type ActionResult = { ok: true } | { ok: false; message: string; errors?: Record<string, string> };
@@ -20,8 +20,7 @@ export async function updateAccountAction(tenantId: string, input: { stage: stri
   if (!ACCOUNT_STAGES.some((s) => s.value === input.stage)) return { ok: false, message: "Etapa no válida." };
   let managerId: string | null = input.managerId || null;
   if (managerId) {
-    const m = await db.orm.public.StaffMember.where({ id: managerId, active: true }).first();
-    if (!m) managerId = null;
+    if (!(await isActiveStaff(managerId))) managerId = null;
   }
   await updateAccount(tenantId, { accountStage: input.stage as AccountStageValue, accountManagerId: managerId });
   await logOps(ctx, "ACCOUNT_UPDATE", { targetTenantId: tenantId, targetTenantName: name, metadata: { stage: input.stage, managerId } });

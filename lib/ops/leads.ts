@@ -103,6 +103,11 @@ export async function addLeadActivity(leadId: string, kind: LeadActivityKind, bo
   await db.orm.public.LeadActivity.create({ leadId, kind, body, staffId: staff.staffId, staffName: staff.name ?? staff.email });
 }
 
+/** Marca el lead como tocado (sube en la lista tras una actividad). */
+export async function touchLead(id: string) {
+  await db.orm.public.Lead.where({ id }).update({ updatedAt: Temporal.Instant.fromEpochMilliseconds(Date.now()) });
+}
+
 export async function deleteLead(id: string) {
   await db.orm.public.Lead.where({ id }).delete();
 }

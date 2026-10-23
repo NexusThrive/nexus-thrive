@@ -5,7 +5,7 @@ import { listProducts } from "@/lib/business/products-db";
 import { todayBogota } from "@/lib/ops/leads";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { getVerticalTerms } from "@/lib/vertical-terms";
-import { db } from "@/prisma/db";
+import { activeTeam, bookingsBetween, customerPhoneOptions, customersByIds } from "@/lib/business/bookings-db";
 import AgendaCalendar from "./_agenda/agenda-calendar";
 import type { AgendaBooking } from "./_agenda/types";
 
@@ -29,21 +29,17 @@ export default async function BookingsPage({ params, searchParams }: { params: P
   const from = view === "month" ? grid[0].day : view === "week" ? weekStart(cursor) : cursor;
   const to = view === "month" ? addDaysKey(grid[grid.length - 1].day, 1) : view === "week" ? addDaysKey(weekStart(cursor), 7) : addDaysKey(cursor, 1);
 
-  const [rows, customers, services, team, tenantRow] = await Promise.all([
-    db.orm.public.Booking.where({ tenantId: ctx.tenantId })
-      .where((b) => b.startDate.gte(Temporal.Instant.fromEpochMilliseconds(bogotaToMs(from, "00:00"))))
-      .where((b) => b.startDate.lt(Temporal.Instant.fromEpochMilliseconds(bogotaToMs(to, "00:00"))))
-      .orderBy((b) => b.startDate.asc())
-      .all(),
-    db.orm.public.Customer.where({ tenantId: ctx.tenantId, active: true }).select("id", "name", "phone").orderBy((c) => c.name.asc()).limit(500).all(),
+  const [rows, customers, services, team] = await Promise.all([
+    bookingsBetween(ctx.tenantId, bogotaToMs(from, "00:00"), bogotaToMs(to, "00:00")),
+    customerPhoneOptions(ctx.tenantId),
     listProducts(ctx.tenantId, { kind: ["SERVICE", "TOUR", "TICKET"], activeOnly: true }),
-    db.orm.public.User.where({ tenantId: ctx.tenantId, active: true }).select("id", "name", "email").all(),
-    db.orm.public.Tenant.where({ id: ctx.tenantId }).select("name", "vertical").first(),
+    activeTeam(ctx.tenantId),
   ]);
+  const tenantRow = ctx.tenant;
   const custById = new Map(customers.map((c) => [c.id, c]));
   const missing = rows.map((r) => r.customerId).filter((id) => !custById.has(id));
   if (missing.length) {
-    const extra = await db.orm.public.Customer.where({ tenantId: ctx.tenantId }).where((c) => c.id.in([...new Set(missing)])).select("id", "name", "phone").all();
+    const extra = await customersByIds(ctx.tenantId, missing);
     for (const c of extra) custById.set(c.id, c);
   }
   const staffName = new Map(team.map((u) => [u.id, u.name ?? u.email]));

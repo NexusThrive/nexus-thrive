@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
-import { db } from "@/prisma/db";
+import { tenantWithModules } from "@/lib/tenant/membership";
 import { createTenantDb } from "@/lib/tenant/db";
 import { listTeam, seatLimit } from "@/lib/business/team-db";
 import { canManageTeam } from "@/lib/business/roles";
@@ -37,9 +37,7 @@ export default async function SettingsPage({
 
   // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
   const pageCtx = await requirePageContext(tenantSlug);
-  const tenantRecord = await db.orm.public.Tenant.where({ id: pageCtx.tenantId })
-    .include("modules", (module) => module.select("moduleName", "active"))
-    .first();
+  const tenantRecord = await tenantWithModules(pageCtx.tenantId);
   if (!tenantRecord) {
     notFound();
   }

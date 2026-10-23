@@ -8,7 +8,7 @@ import {
   User,
   Wallet,
 } from "lucide-react";
-import { db } from "@/prisma/db";
+import { customerContact } from "@/lib/business/customers-db";
 import { createTenantDb } from "@/lib/tenant/db";
 import { getQuoteTerms, getVerticalTerms } from "@/lib/vertical-terms";
 import { formatCurrency, formatDateShort } from "@/lib/format";
@@ -39,26 +39,18 @@ export default async function QuoteDetailPage({
   const pageCtx = await requirePageContext(tenantSlug, "/quotes");
   const tenantRecord = pageCtx.tenant;
 
-  const owner = await db.orm.public.Quote.where({ id: quoteId, tenantId: tenantRecord.id })
-    .select("projectId")
-    .first();
-  if (owner?.projectId) {
-    redirect(`/${tenantSlug}/projects/${owner.projectId}?tab=cotizaciones`);
-  }
-
   const tenantDb = createTenantDb(tenantRecord.id);
+  const ownerProjectId = await tenantDb.quotes.projectOf(quoteId);
+  if (ownerProjectId) {
+    redirect(`/${tenantSlug}/projects/${ownerProjectId}?tab=cotizaciones`);
+  }
   const quote = await tenantDb.quotes.get(quoteId);
   if (!quote) {
     notFound();
   }
 
   const customer = quote.customerId
-    ? await db.orm.public.Customer.where({
-        id: quote.customerId,
-        tenantId: tenantRecord.id,
-      })
-        .select("name", "email", "phone")
-        .first()
+    ? await customerContact(tenantRecord.id, quote.customerId)
     : null;
 
   const terms = getQuoteTerms(tenantRecord.vertical);

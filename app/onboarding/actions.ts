@@ -1,7 +1,7 @@
 "use server";
 
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { db } from "@/prisma/db";
+import { completeExistingTenant, completedTenantOf, createTenantWithOwner, onboardingMembership, onboardingTenant, slugInUse } from "@/lib/onboarding/onboarding-db";
 import { validateAdaptiveOnboarding } from "@/lib/onboarding/validation";
 import { suggestSlug } from "@/lib/onboarding/slug";
 import { quote as quotePlan } from "@/lib/plans/pricing";
@@ -20,7 +20,6 @@ import { resolveModules } from "@/lib/plans/pricing";
 import { can } from "@/lib/business/permissions";
 import type {
   AdaptiveOnboardingInput,
-  ModuleValue,
   OnboardingActionResult,
 } from "@/lib/onboarding/types";
 
@@ -41,37 +40,6 @@ import type {
  *   cinemática. El cliente entra con una recarga completa (las rutas del
  *   negocio son dinámicas, no hay caché que invalidar).
  */
-
-type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
-
-/** Reemplaza el set de módulos activos del tenant (selección exacta). */
-async function syncModules(
-  tx: DbTransaction,
-  tenantId: string,
-  selected: ModuleValue[],
-): Promise<void> {
-  const selectedSet = new Set<string>(selected);
-  const existing = await tx.orm.public.TenantModule.where({ tenantId }).all();
-
-  // Los que ya no están en la selección se desactivan (nunca se borran:
-  // el historial de activación queda en la fila).
-  for (const row of existing) {
-    if (!selectedSet.has(row.moduleName)) {
-      await tx.orm.public.TenantModule.where({ id: row.id }).update({
-        active: false,
-      });
-    }
-  }
-
-  // Los seleccionados se aseguran activos (idempotente por unique).
-  for (const moduleName of selected) {
-    await tx.orm.public.TenantModule.upsert({
-      create: { tenantId, moduleName },
-      update: { active: true },
-      conflictOn: { tenantId, moduleName },
-    });
-  }
-}
 
 /**
  * Si hay un código pendiente en la cookie (tarjeta NFC/QR o tecleado en el
@@ -199,21 +167,31 @@ export async function completeAdaptiveOnboardingAction(
     planMonthlyUsdCents: pilot ? 0 : quote.monthlyCents,
     planSelectedAt: Temporal.Instant.fromEpochMilliseconds(Date.now()),
   };
+  const profile = {
+    name: values.name,
+    slug: values.slug,
+    vertical: values.vertical,
+    city: values.city,
+    tenantType: values.tenantType,
+    legalName: values.legalName,
+    taxId: values.taxId,
+    teamSize: values.teamSize,
+    address: values.address,
+    latitude: values.latitude,
+    longitude: values.longitude,
+    placeId: values.placeId,
+    onboardingCompleted: true,
+  };
 
   // 3) Modo resume: el tenant debe pertenecer al usuario ---------------
   if (values.tenantId) {
     const tenantId = values.tenantId;
-    const tenant = await db.orm.public.Tenant.where({
-      id: tenantId,
-    }).first();
+    const tenant = await onboardingTenant(tenantId);
     if (!tenant) {
       return { status: "error", message: "El negocio ya no existe." };
     }
 
-    const membership = await db.orm.public.User.where({
-      clerkUserId: userId,
-      tenantId,
-    }).first();
+    const membership = await onboardingMembership(userId, tenantId);
     // Configurar plan, módulos y enlace es del dueño activo (SEC-05).
     if (!membership || !membership.active || !can(membership.role, "business.setup")) {
       return {
@@ -238,10 +216,7 @@ export async function completeAdaptiveOnboardingAction(
 
     // Disponibilidad del slug si va a cambiar (sin contar el propio tenant).
     if (values.slug !== tenant.slug) {
-      const taken = await db.orm.public.Tenant.where({
-        slug: values.slug,
-      }).first();
-      if (taken) {
+      if (await slugInUse(values.slug)) {
         return {
           status: "error",
           message: "Revisa los campos marcados e inténtalo de nuevo.",
@@ -251,25 +226,7 @@ export async function completeAdaptiveOnboardingAction(
     }
 
     try {
-      await db.transaction(async (tx) => {
-        await tx.orm.public.Tenant.where({ id: tenantId }).update({
-          name: values.name,
-          slug: values.slug,
-          vertical: values.vertical,
-          city: values.city,
-          tenantType: values.tenantType,
-          legalName: values.legalName,
-          taxId: values.taxId,
-          teamSize: values.teamSize,
-          address: values.address,
-          latitude: values.latitude,
-          longitude: values.longitude,
-          placeId: values.placeId,
-          onboardingCompleted: true,
-          ...planFields,
-        });
-        await syncModules(tx, tenantId, selectedModules);
-      });
+      await completeExistingTenant(tenantId, { ...profile, ...planFields }, selectedModules);
     } catch {
       return {
         status: "error",
@@ -295,15 +252,12 @@ export async function completeAdaptiveOnboardingAction(
   // 4) Modo create: dispersión de identidad desde Clerk -----------------
   // En el piloto, una cuenta de Clerk es un negocio: si ya tiene uno, no
   // puede crear otro (ni canjear el mismo código dos veces).
-  const existingMembership = await db.orm.public.User.where({ clerkUserId: userId }).first();
-  if (existingMembership?.tenantId) {
-    const owned = await db.orm.public.Tenant.where({ id: existingMembership.tenantId }).first();
-    if (owned?.onboardingCompleted) {
-      return {
-        status: "error",
-        message: `Ya tienes un negocio en NEXUS (${owned.name}). Escríbenos si necesitas otro.`,
-      };
-    }
+  const owned = await completedTenantOf(userId);
+  if (owned) {
+    return {
+      status: "error",
+      message: `Ya tienes un negocio en NEXUS (${owned.name}). Escríbenos si necesitas otro.`,
+    };
   }
 
   const clerkUser = await currentUser();
@@ -317,10 +271,7 @@ export async function completeAdaptiveOnboardingAction(
 
   // Disponibilidad del slug (carrera posible: el @unique del contract
   // es la última barrera; el catch convierte la colisión en mensaje).
-  const taken = await db.orm.public.Tenant.where({
-    slug: values.slug,
-  }).first();
-  if (taken) {
+  if (await slugInUse(values.slug)) {
     const suggestion = suggestSlug(values.name);
     return {
       status: "error",
@@ -335,36 +286,11 @@ export async function completeAdaptiveOnboardingAction(
 
   let createdTenantId = "";
   try {
-    await db.transaction(async (tx) => {
-      const tenant = await tx.orm.public.Tenant.create({
-        name: values.name,
-        slug: values.slug,
-        vertical: values.vertical,
-        city: values.city,
-        tenantType: values.tenantType,
-        legalName: values.legalName,
-        taxId: values.taxId,
-        teamSize: values.teamSize,
-        address: values.address,
-        latitude: values.latitude,
-        longitude: values.longitude,
-        placeId: values.placeId,
-        onboardingCompleted: true,
-        ...planFields,
-      });
-
-      await tx.orm.public.User.create({
-        clerkUserId: userId,
-        email: primaryEmail,
-        name: displayName,
-        role: "OWNER",
-        tenantId: tenant.id,
-      });
-
-      await syncModules(tx, tenant.id, selectedModules);
-
-      createdTenantId = tenant.id;
-    });
+    createdTenantId = await createTenantWithOwner(
+      { ...profile, ...planFields },
+      { clerkUserId: userId, email: primaryEmail, name: displayName },
+      selectedModules,
+    );
   } catch {
     return {
       status: "error",

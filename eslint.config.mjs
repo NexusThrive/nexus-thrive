@@ -1,7 +1,6 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
-import { LEGACY_DB_ACCESS } from "./eslint/legacy-db-access.mjs";
 
 const eslintConfig = defineConfig([
   ...nextVitals,
@@ -17,10 +16,10 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    // ARCH-04: app/ no importa la base; usa los repositorios de lib/.
+    // ARCH-04: app/ no importa la base ni abre transacciones; usa los
+    // repositorios de lib/ (con tenantId, permisos, servicio de dinero y
+    // bitácora). Sin excepciones desde 2026-10-23.
     files: ["app/**/*.{ts,tsx}"],
-    // Rutas literales: `[tenant]` y `(app)` no son comodines del glob.
-    ignores: LEGACY_DB_ACCESS.map((path) => path.replace(/[[\]()]/g, "\\$&")),
     rules: {
       "no-restricted-imports": [
         "error",
@@ -30,6 +29,12 @@ const eslintConfig = defineConfig([
               name: "@/prisma/db",
               message:
                 "Las pantallas y acciones no consultan la base directo: usa (o crea) un repositorio en lib/ que reciba el contexto del negocio (ARCH-04).",
+            },
+            {
+              name: "@/lib/business/money-service",
+              importNames: ["moneyTransaction"],
+              message:
+                "Las transacciones de dinero viven en lib/ (un repositorio que llama a moneyTransaction); app/ llama a esa función.",
             },
           ],
         },

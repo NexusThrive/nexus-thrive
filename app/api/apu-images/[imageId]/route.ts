@@ -1,7 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
-import { db } from "@/prisma/db";
-import { getStaffContext } from "@/lib/ops/access";
-import { isActiveMember } from "@/lib/tenant/membership";
+import { readApuImageFor } from "@/lib/files/stored-files";
 
 /**
  * Sirve la foto de un insumo guardada en la base (`ApuImage`). Solo para
@@ -18,20 +16,9 @@ export async function GET(
   if (!userId) {
     return new Response("No autenticado.", { status: 401 });
   }
-  if (!/^[0-9a-f-]{36}$/i.test(imageId)) {
-    return new Response("Imagen no encontrada.", { status: 404 });
-  }
-
-  const image = await db.orm.public.ApuImage.where({ id: imageId })
-    .select("tenantId", "sha256", "mimeType", "data")
-    .first();
+  // Inexistente o de un negocio ajeno: el mismo 404 (no se revela que existe).
+  const image = await readApuImageFor(userId, imageId);
   if (!image) {
-    return new Response("Imagen no encontrada.", { status: 404 });
-  }
-
-  const member = await isActiveMember(image.tenantId, userId);
-  if (!member && !(await getStaffContext())?.permissions.includes("accounts.view")) {
-    // Mismo 404 que una imagen inexistente: no se revela que existe.
     return new Response("Imagen no encontrada.", { status: 404 });
   }
 

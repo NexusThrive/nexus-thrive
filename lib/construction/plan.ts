@@ -180,7 +180,7 @@ export function createPlanDb(tenantId: string) {
           throw new Error("Plan no encontrado en este negocio.");
         }
         const commitment = await db.orm.public.WeeklyCommitment
-          .where({ id: commitmentId, planId: plan.id })
+          .where({ tenantId, id: commitmentId, planId: plan.id })
           .first();
         if (!commitment) {
           throw new Error("Compromiso no encontrado en este plan.");
@@ -188,7 +188,7 @@ export function createPlanDb(tenantId: string) {
 
         const isFailed = input.status === "FAILED";
         await db.orm.public.WeeklyCommitment
-          .where({ id: commitment.id })
+          .where({ tenantId, id: commitment.id })
           .update({
             status: input.status,
             failureCause: input.status === "FAILED" ? (input.failureCause ?? null) : null,
@@ -220,16 +220,16 @@ export function createPlanDb(tenantId: string) {
         const newStart = addDays(currentStart, deltaWeeks * 7);
 
         await db.transaction(async (tx) => {
-          await tx.orm.public.ProjectPlan.where({ id: plan.id }).update({
+          await tx.orm.public.ProjectPlan.where({ tenantId, id: plan.id }).update({
             windowStartDate: bogotaInstantFromIsoDate(formatPlainDate(newStart)),
           });
           const tasks = await tx.orm.public.LookaheadTask
-            .where({ planId: plan.id })
+            .where({ tenantId, planId: plan.id })
             .all();
           for (const task of tasks) {
             const taskStart = bogotaToday(String(task.startDate));
             await tx.orm.public.LookaheadTask
-              .where({ id: task.id })
+              .where({ tenantId, id: task.id })
               .update({ weekNumber: relativeWeekNumber(newStart, taskStart) });
           }
         });

@@ -114,7 +114,7 @@ export function createFieldLogDb(tenantId: string) {
         }
 
         await db.orm.public.FieldLogEntry
-          .where({ id: entry.id })
+          .where({ tenantId, id: entry.id })
           .delete();
       },
   };

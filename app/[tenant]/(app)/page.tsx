@@ -2,7 +2,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MinusCircle, TrendingUp, Users, Wallet } from "lucide-react";
-import { db } from "@/prisma/db";
+import { tenantWithModules } from "@/lib/tenant/membership";
 import { createTenantDb } from "@/lib/tenant/db";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import { formatCurrency, formatRelativeTime } from "@/lib/format";
@@ -76,9 +76,7 @@ export default async function TenantDashboard({
 
   // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
   const pageCtx = await requirePageContext(tenantSlug);
-  const tenantRecord = await db.orm.public.Tenant.where({ id: pageCtx.tenantId })
-    .include("modules", (module) => module.select("moduleName", "active"))
-    .first();
+  const tenantRecord = await tenantWithModules(pageCtx.tenantId);
   if (!tenantRecord) {
     notFound();
   }

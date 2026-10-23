@@ -1,18 +1,32 @@
-import { existsSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 import { LEGACY_DB_ACCESS } from "../../eslint/legacy-db-access.mjs";
 
 /**
- * ARCH-04: la lista de archivos de `app/` que todavía consultan la base solo
- * se achica. Si arreglas uno, sácalo de `eslint/legacy-db-access.mjs`.
+ * ARCH-04 (bloque A.1–A.2): `app/` no consulta la base. La deuda llegó a cero
+ * el 2026-10-23; esta prueba evita que vuelva, además de la regla de ESLint.
  */
-describe("deuda de acceso directo a la base", () => {
-  test.each(LEGACY_DB_ACCESS.map((path: string) => [path]))("%s sigue en la lista con motivo", (path) => {
-    const full = join(process.cwd(), path);
-    expect(existsSync(full), `${path} ya no existe: quítalo de la lista`).toBe(true);
-    expect(readFileSync(full, "utf8"), `${path} ya no importa la base: quítalo de la lista`).toMatch(
-      /from "@\/prisma\/db"/,
+
+const ROOT = process.cwd();
+
+function sources(dir: string): string[] {
+  return readdirSync(join(ROOT, dir)).flatMap((name) => {
+    const path = `${dir}/${name}`;
+    if (statSync(join(ROOT, path)).isDirectory()) return sources(path);
+    return /\.tsx?$/.test(name) ? [path] : [];
+  });
+}
+
+describe("acceso a la base desde app/", () => {
+  test("la lista de deuda está vacía", () => {
+    expect(LEGACY_DB_ACCESS).toEqual([]);
+  });
+
+  test("ningún archivo de app/ importa la base, abre transacciones ni usa el ORM", () => {
+    const offenders = sources("app").filter((file) =>
+      /from "@\/prisma\/db"|\bmoneyTransaction\b|\.orm\.public\.|\.sql\.public\./.test(readFileSync(join(ROOT, file), "utf8")),
     );
+    expect(offenders, "mueve la consulta a un repositorio de lib/ (con tenantId)").toEqual([]);
   });
 });

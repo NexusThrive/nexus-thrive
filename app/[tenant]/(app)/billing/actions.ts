@@ -1,9 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { db } from "@/prisma/db";
+import { customerNameIn } from "@/lib/business/customers-db";
 import { validateLines, type InvoiceKind, type LineInput } from "@/lib/business/invoice";
-import { createInvoice, payInvoice, voidInvoice } from "@/lib/business/invoices-db";
+import { createInvoice, payInvoice, voidInvoice, invoiceStatus } from "@/lib/business/invoices-db";
 import { canHandleCash, canManage } from "@/lib/business/roles";
 import { receiptCode } from "@/lib/business/invoice";
 import { PAYMENT_METHODS } from "@/lib/finance";
@@ -30,9 +30,9 @@ export async function createInvoiceAction(slug: string, input: { kind: string; c
   let customerDoc = input.customerDoc.trim() || null;
   const customerId = input.customerId || null;
   if (customerId) {
-    const c = await db.orm.public.Customer.where({ tenantId: ctx.tenantId, id: customerId }).select("name").first();
-    if (!c) return { ok: false, message: "El cliente no es de este negocio." };
-    customerName ||= c.name;
+    const name = await customerNameIn(ctx.tenantId, customerId);
+    if (name === null) return { ok: false, message: "El cliente no es de este negocio." };
+    customerName ||= name;
   }
   if (customerName.length < 2) return { ok: false, message: "Indica a quién va dirigido." };
   if (!DATE.test(input.issueDate)) return { ok: false, message: "Fecha de emisión no válida." };
@@ -57,8 +57,7 @@ export async function voidInvoiceAction(slug: string, id: string, reason: string
   const ctx = await requireTenantContext(slug, "/billing");
   if (!ctx || !canManage(ctx.role)) return DENIED;
   if (reason.trim().length < 3) return { ok: false, message: "Escribe el motivo." };
-  const inv = await db.orm.public.Invoice.where({ tenantId: ctx.tenantId, id }).select("status").first();
-  if (!inv || inv.status !== "ISSUED") return { ok: false, message: "Solo se anulan documentos emitidos y sin pagar." };
+  if ((await invoiceStatus(ctx.tenantId, id)) !== "ISSUED") return { ok: false, message: "Solo se anulan documentos emitidos y sin pagar." };
   await voidInvoice(ctx.tenantId, id, reason.trim().slice(0, 300));
   await logTenantAction(ctx, "BIZ_INVOICE_VOID", { invoiceId: id, reason: reason.trim().slice(0, 300) });
   refresh(slug);

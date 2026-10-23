@@ -2,9 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/ops/access";
+import { tenantName } from "@/lib/ops/accounts";
 import { logOps } from "@/lib/ops/audit";
 import { addInboxNote, conversationToTicket, markRead, reply, updateConversation } from "@/lib/ops/inbox";
-import { db } from "@/prisma/db";
 
 export type InboxResult = { ok: true; message?: string; delivery?: string; id?: string } | { ok: false; message: string };
 const DENIED = { ok: false as const, message: "No tienes permiso para esta acción." };
@@ -43,7 +43,7 @@ export async function updateConversationAction(id: string, fields: { status?: st
   if (!ctx) return DENIED;
   const status = fields.status === "OPEN" || fields.status === "PENDING" || fields.status === "CLOSED" ? fields.status : undefined;
   if (fields.tenantId) {
-    if (!(await db.orm.public.Tenant.where({ id: fields.tenantId }).select("id").first())) return { ok: false, message: "El negocio no existe." };
+    if ((await tenantName(fields.tenantId)) === null) return { ok: false, message: "El negocio no existe." };
   }
   await updateConversation(id, { ...(status ? { status } : {}), ...(fields.assigneeId !== undefined ? { assigneeId: fields.assigneeId } : {}), ...(fields.tenantId !== undefined ? { tenantId: fields.tenantId } : {}) });
   refresh();

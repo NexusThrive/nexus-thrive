@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { ArrowLeft, Building2 } from "lucide-react";
-import { db } from "@/prisma/db";
+import { allCustomerOptions } from "@/lib/business/customers-db";
 import { createTenantDb } from "@/lib/tenant/db";
 import { canGovernBudget, type TenantRole } from "@/lib/tenant/context";
 import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/construction/project-domain";
@@ -51,10 +51,7 @@ export default async function QuotesPage({
   const showLegacy = firstString(sp.folder) === "anteriores";
 
   if (showLegacy) {
-    const customers = await db.orm.public.Customer.where({ tenantId: tenantRecord.id })
-      .orderBy((customer) => customer.name.asc())
-      .select("id", "name")
-      .all();
+    const customers = await allCustomerOptions(tenantRecord.id);
     return (
       <div className="space-y-6">
         <PageHeader

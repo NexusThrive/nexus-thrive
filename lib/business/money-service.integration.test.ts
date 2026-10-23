@@ -6,7 +6,7 @@ import { createCashBox, openCashSession } from "./finance-db";
 import { createInvoice } from "./invoices-db";
 import { createTenantDb } from "@/lib/tenant/db";
 import { recordCharge } from "./charge";
-import { moneyTransaction, payInvoice, recordIncome, recordIncomeNow, sellProduct, voidPayment } from "./money-service";
+import { moneyTransaction, payInvoice, recordIncome, recordIncomeNow, sellProduct, voidExpense, voidPayment } from "./money-service";
 
 /**
  * DATA-01 (docs/nexus-architecture/technical-debt.md): el dinero pasa todo o
@@ -194,5 +194,31 @@ describe.skipIf(!enabled)("servicio de dinero (integración)", () => {
     const adjusts = await db.orm.public.CashMovement.where({ tenantId, paymentId: income.paymentId, kind: "ADJUST" }).all();
     expect(adjusts).toHaveLength(1);
     expect((await db.orm.public.Payment.where({ tenantId, id: income.paymentId }).first())?.status).toBe("VOIDED");
+  });
+
+  test("anular un gasto dos veces a la vez lo devuelve a la caja una sola vez", async () => {
+    const expense = await db.orm.public.Expense.create({
+      tenantId,
+      amount: "12000.00",
+      category: "Insumos",
+      description: "Gasto para anular",
+      paidFrom: "CASH",
+      cashSessionId: sessionId,
+    });
+    const results = await Promise.all([
+      voidExpense(tenantId, expense.id, "Se registró dos veces", user),
+      voidExpense(tenantId, expense.id, "Se registró dos veces", user),
+    ]);
+    expect(results.filter((r) => r.ok)).toHaveLength(1);
+    const adjusts = await db.orm.public.CashMovement.where({ tenantId, expenseId: expense.id, kind: "ADJUST" }).all();
+    expect(adjusts).toHaveLength(1);
+    expect((await db.orm.public.Expense.where({ tenantId, id: expense.id }).first())?.voidedAt).not.toBeNull();
+  });
+
+  test("un gasto de otro negocio no se anula", async () => {
+    const expense = await db.orm.public.Expense.create({ tenantId, amount: "5000.00", category: "Otros", description: "Ajeno" });
+    const r = await voidExpense("00000000-0000-0000-0000-000000000000", expense.id, "Intento", user);
+    expect(r.ok).toBe(false);
+    expect((await db.orm.public.Expense.where({ tenantId, id: expense.id }).first())?.voidedAt).toBeNull();
   });
 });

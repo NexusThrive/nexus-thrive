@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { db } from "@/prisma/db";
 import { canGovernBudget, requireTenantContext } from "@/lib/tenant/context";
 import { ensureProjectContainers } from "@/lib/construction/containers";
 
@@ -25,8 +24,8 @@ export async function migrateLegacyQuoteAction(
   if (!canGovernBudget(context.role)) {
     return { ok: false, message: "Solo el dueño del negocio puede migrar cotizaciones." };
   }
-  const { tenantDb, tenantId } = context;
-  const quote = await db.orm.public.Quote.where({ id: quoteId, tenantId }).first();
+  const { tenantDb } = context;
+  const quote = await tenantDb.quotes.record(quoteId);
   if (!quote) return { ok: false, message: "No se encontró la cotización." };
   if (quote.projectId) return { ok: false, message: "Esta cotización ya pertenece a una obra." };
 
@@ -57,7 +56,7 @@ export async function migrateLegacyQuoteAction(
     };
   } catch (error) {
     if (projectId) {
-      await db.orm.public.Project.where({ id: projectId, tenantId }).delete();
+      await tenantDb.projects.delete(projectId);
     }
     console.error("[quotes] migrateLegacyQuoteAction", error);
     return {

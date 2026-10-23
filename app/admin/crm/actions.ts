@@ -4,8 +4,9 @@ import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/ops/access";
 import { logOps } from "@/lib/ops/audit";
 import { isLeadStage, LEAD_ACTIVITY_KINDS, stageMeta, validateLead, type LeadInput } from "@/lib/ops/crm-rules";
-import { addLeadActivity, createLead, deleteLead, getLead, updateLead } from "@/lib/ops/leads";
-import { db } from "@/prisma/db";
+import { assignManagerIfMissing } from "@/lib/ops/accounts";
+import { addLeadActivity, createLead, deleteLead, getLead, touchLead, updateLead } from "@/lib/ops/leads";
+import { isActiveStaff } from "@/lib/ops/team";
 
 export type LeadResult = { ok: true; id: string } | { ok: false; message: string; errors?: Partial<Record<keyof LeadInput, string>> };
 const DENIED = { ok: false as const, message: "No tienes permiso para esta acción." };
@@ -29,8 +30,7 @@ export async function saveLeadAction(id: string | null, input: LeadInput): Promi
     return { ok: false, message: "Solo puedes asignarte leads a ti; reasignar requiere el permiso de asignar." };
   }
   if (v.value.ownerId) {
-    const owner = await db.orm.public.StaffMember.where({ id: v.value.ownerId, active: true }).select("id").first();
-    if (!owner) return { ok: false, message: "El responsable no existe o está inactivo.", errors: { ownerId: "Elige un responsable activo." } };
+    if (!(await isActiveStaff(v.value.ownerId))) return { ok: false, message: "El responsable no existe o está inactivo.", errors: { ownerId: "Elige un responsable activo." } };
   }
   const stageChanged = !!before && before.stage !== v.value.stage;
   let leadId = id;
@@ -44,8 +44,7 @@ export async function saveLeadAction(id: string | null, input: LeadInput): Promi
   await logOps(ctx, stageChanged ? "LEAD_STAGE" : "LEAD_SAVE", { targetTenantId: v.value.tenantId ?? undefined, targetTenantName: v.value.company, metadata: { leadId, stage: v.value.stage } });
   // Ganado con negocio vinculado: el responsable del lead queda como responsable de la cuenta si no tenía.
   if (v.value.stage === "WON" && v.value.tenantId && v.value.ownerId) {
-    const t = await db.orm.public.Tenant.where({ id: v.value.tenantId }).select("accountManagerId").first();
-    if (t && !t.accountManagerId) await db.orm.public.Tenant.where({ id: v.value.tenantId }).update({ accountManagerId: v.value.ownerId });
+    await assignManagerIfMissing(v.value.tenantId, v.value.ownerId);
     if (stageChanged) await logOps(ctx, "LEAD_CONVERT", { targetTenantId: v.value.tenantId, targetTenantName: v.value.company, metadata: { leadId } });
   }
   refresh(leadId!);
@@ -69,7 +68,7 @@ export async function addLeadActivityAction(id: string, kind: string, body: stri
   if (!k || text.length < 2) return { ok: false, message: "Escribe qué pasó." };
   if (!(await getLead(id))) return { ok: false, message: "El lead no existe." };
   await addLeadActivity(id, k, text, ctx);
-  await db.orm.public.Lead.where({ id }).update({ updatedAt: Temporal.Instant.fromEpochMilliseconds(Date.now()) });
+  await touchLead(id);
   refresh(id);
   return { ok: true, id };
 }

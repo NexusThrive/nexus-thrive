@@ -2,7 +2,7 @@
 
 import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
-import { db } from "@/prisma/db";
+import { paymentRefTaken } from "@/lib/business/finance-db";
 import { getAppBaseUrl } from "@/lib/app-url";
 import { formatCurrency } from "@/lib/format";
 import { receiptCode } from "@/lib/business/invoice";
@@ -93,10 +93,7 @@ export async function createPaymentAction(
   // La referencia del proveedor es única en todo el sistema: evita el
   // choque con una referencia ajena devolviendo un error claro.
   if (providerRefId) {
-    const existing = await db.orm.public.Payment.where({
-      providerRefId,
-    }).first();
-    if (existing) {
+    if (await paymentRefTaken(providerRefId)) {
       return {
         status: "error",
         message:
@@ -182,8 +179,7 @@ export async function registerScannedPaymentAction(
   // que createPaymentAction).
   const providerRefId = String(formData.get("providerRefId") ?? "").trim();
   if (providerRefId) {
-    const existing = await db.orm.public.Payment.where({ providerRefId }).first();
-    if (existing) {
+    if (await paymentRefTaken(providerRefId)) {
       return { status: "error", message: "Ya existe un pago con esa referencia. Revisa el dato e inténtalo de nuevo.", values: validation.values };
     }
   }

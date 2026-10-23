@@ -124,6 +124,15 @@ export function createQuotesDb(tenantId: string) {
        * desde los porcentajes guardados — nunca se confía en los totales
        * que haya enviado el navegador.
        */
+      /** Obra a la que pertenece la cotización (`null` si es antigua, sin obra). */
+      projectOf: async (id: string): Promise<string | null> => {
+        const row = await db.orm.public.Quote.where({ id, tenantId }).select("projectId").first();
+        return row?.projectId ?? null;
+      },
+
+      /** Fila tal cual de la cotización (para migrarla a una obra). */
+      record: (id: string) => db.orm.public.Quote.where({ id, tenantId }).first(),
+
       get: async (id: string): Promise<QuoteDetail | null> => {
         const quote = await db.orm.public.Quote
           .where({ id, tenantId })

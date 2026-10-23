@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { db } from "@/prisma/db";
+import { bookingsOverlapping, isActiveTeamMember, markBookingReminder, saveBooking, setBookingStatus } from "@/lib/business/bookings-db";
+import { customerBelongs } from "@/lib/business/customers-db";
 import { bogotaToMs, capacityLeft, staffConflict } from "@/lib/business/calendar";
 import { getProduct } from "@/lib/business/products-db";
 import { requireTenantContext } from "@/lib/tenant/context";
@@ -37,21 +38,16 @@ export async function saveBookingAction(slug: string, v: BookingInput): Promise<
   if (!(minutes >= 5 && minutes <= 24 * 60)) return { ok: false, message: "La duración va de 5 minutos a 24 horas.", field: "durationMinutes" };
   const party = Math.round(v.partySize || 1);
   if (!(party >= 1 && party <= 500)) return { ok: false, message: "Cantidad de personas no válida.", field: "partySize" };
-  const customer = await db.orm.public.Customer.where({ tenantId: ctx.tenantId, id: v.customerId }).select("id").first();
-  if (!customer) return { ok: false, message: "El cliente no es de este negocio.", field: "customerId" };
+  if (!(await customerBelongs(ctx.tenantId, v.customerId))) return { ok: false, message: "El cliente no es de este negocio.", field: "customerId" };
   const product = v.productId ? await getProduct(ctx.tenantId, v.productId) : null;
   if (v.productId && !product) return { ok: false, message: "El servicio no existe.", field: "productId" };
   const serviceName = (product?.name ?? v.serviceName).trim();
   if (serviceName.length < 2) return { ok: false, message: "Escribe el servicio.", field: "serviceName" };
-  if (v.staffUserId && !(await db.orm.public.User.where({ tenantId: ctx.tenantId, id: v.staffUserId, active: true }).select("id").first())) return { ok: false, message: "Esa persona no está en el equipo.", field: "staffUserId" };
+  if (v.staffUserId && !(await isActiveTeamMember(ctx.tenantId, v.staffUserId))) return { ok: false, message: "Esa persona no está en el equipo.", field: "staffUserId" };
 
   const start = bogotaToMs(v.day, v.time);
   const end = start + minutes * 60_000;
-  const nearby = await db.orm.public.Booking.where({ tenantId: ctx.tenantId })
-    .where((b) => b.startDate.lt(instant(end)))
-    .where((b) => b.endDate.gt(instant(start)))
-    .select("id", "startDate", "endDate", "staffUserId", "productId", "partySize", "status")
-    .all();
+  const nearby = await bookingsOverlapping(ctx.tenantId, start, end);
   const slots = nearby.map((b) => ({ id: b.id, start: Date.parse(String(b.startDate)), end: Date.parse(String(b.endDate)), staffUserId: b.staffUserId, productId: b.productId, partySize: b.partySize, status: b.status }));
   const candidate = { id: v.id ?? undefined, start, end, staffUserId: v.staffUserId, productId: v.productId, partySize: party };
   const clash = staffConflict(candidate, slots);
@@ -71,16 +67,9 @@ export async function saveBookingAction(slug: string, v: BookingInput): Promise<
     kind: KINDS.includes(v.kind ?? "") ? v.kind! : "APPOINTMENT",
     totalAmount: BigInt(Math.round(Math.max(0, amount))),
     notes: v.notes.trim().slice(0, 500) || null,
-    updatedAt: instant(Date.now()),
   };
-  let id = v.id ?? null;
-  if (id) {
-    const exists = await db.orm.public.Booking.where({ tenantId: ctx.tenantId, id }).select("id").first();
-    if (!exists) return { ok: false, message: "La cita no existe." };
-    await db.orm.public.Booking.where({ tenantId: ctx.tenantId, id }).update({ ...data, reminderSentAt: null });
-  } else {
-    id = (await db.orm.public.Booking.create({ tenantId: ctx.tenantId, ...data, status: "CONFIRMED", createdAt: instant(Date.now()) })).id;
-  }
+  const id = await saveBooking(ctx.tenantId, v.id ?? null, data);
+  if (!id) return { ok: false, message: "La cita no existe." };
   revalidatePath(`/${slug}/bookings`);
   revalidatePath(`/${slug}`);
   return { ok: true, id, message: v.id ? "Cita actualizada" : "Cita agendada" };
@@ -90,9 +79,7 @@ export async function setBookingStatusAction(slug: string, id: string, status: s
   const ctx = await requireTenantContext(slug, "/bookings");
   if (!ctx) return { ok: false, message: "No tienes acceso." };
   if (!["PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"].includes(status)) return { ok: false, message: "Estado no válido." };
-  const b = await db.orm.public.Booking.where({ tenantId: ctx.tenantId, id }).select("id").first();
-  if (!b) return { ok: false, message: "La cita no existe." };
-  await db.orm.public.Booking.where({ tenantId: ctx.tenantId, id }).update({ status: status as "CONFIRMED", updatedAt: instant(Date.now()) });
+  if (!(await setBookingStatus(ctx.tenantId, id, status as "CONFIRMED"))) return { ok: false, message: "La cita no existe." };
   revalidatePath(`/${slug}/bookings`);
   revalidatePath(`/${slug}`);
   return { ok: true, message: status === "CANCELLED" ? "Cita cancelada" : status === "COMPLETED" ? "Cita completada" : "Cita confirmada" };
@@ -102,7 +89,7 @@ export async function setBookingStatusAction(slug: string, id: string, status: s
 export async function markReminderAction(slug: string, id: string): Promise<AgendaResult> {
   const ctx = await requireTenantContext(slug, "/bookings");
   if (!ctx) return { ok: false, message: "No tienes acceso." };
-  await db.orm.public.Booking.where({ tenantId: ctx.tenantId, id }).update({ reminderSentAt: instant(Date.now()) });
+  await markBookingReminder(ctx.tenantId, id);
   revalidatePath(`/${slug}/bookings`);
   return { ok: true };
 }

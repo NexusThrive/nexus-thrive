@@ -96,9 +96,10 @@ falla, el mensaje dice qué falta.
 | Prueba | Regla |
 |---|---|
 | `lib/tenant/page-authorization.test.ts` | Toda `page.tsx` de `app/[tenant]` llama a `requirePageContext`/`requireTenantContext`, y pasa la ruta de su módulo. Toda `actions.ts` de un módulo pasa su ruta. Nadie redefine ni renombra el helper |
-| `lib/tenant/data-access.test.ts` | La lista de deuda `eslint/legacy-db-access.mjs` solo se achica |
+| `lib/tenant/data-access.test.ts` | Ningún archivo de `app/` importa la base, usa el ORM ni abre `moneyTransaction`; la lista de deuda sigue vacía |
+| `lib/tenant/tenant-scope.test.ts` | Toda consulta de `lib/` a una tabla de negocio filtra por `tenantId` (salvo el panel CEO y excepciones con motivo) |
 | `lib/business/permissions.test.ts` | La matriz rol × permiso escrita a mano coincide con `permissions.ts` |
-| ESLint `no-restricted-imports` | `app/` no importa `@/prisma/db` (salvo la lista de deuda) |
+| ESLint `no-restricted-imports` | `app/` no importa `@/prisma/db` ni `moneyTransaction` |
 
 ---
 

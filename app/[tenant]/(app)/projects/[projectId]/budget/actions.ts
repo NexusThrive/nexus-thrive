@@ -1,7 +1,7 @@
 "use server";
 
 import { buildBudgetWorkbook } from "@/lib/construction/budget-export";
-import { db } from "@/prisma/db";
+import { tenantLetterhead } from "@/lib/tenant/membership";
 import { revalidatePath } from "next/cache";
 import { decimalToMicro } from "@/lib/construction/apu-engine";
 import type {
@@ -634,7 +634,7 @@ export async function exportBudgetXlsxAction(
     context.tenantDb.budgets.get(projectId),
   ]);
   if (!project || !budget) return { ok: false, message: "No se encontró el presupuesto de esta obra." };
-  const tenant = await db.orm.public.Tenant.where({ id: context.tenantId }).select("name", "legalName").first();
+  const tenant = await tenantLetterhead(context.tenantId);
   const generatedOn = new Date(Date.now() - 5 * 3600 * 1000).toISOString().slice(0, 10);
   const bytes = buildBudgetWorkbook({
     budget,

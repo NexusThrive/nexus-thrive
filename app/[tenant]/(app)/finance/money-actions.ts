@@ -1,22 +1,26 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { db } from "@/prisma/db";
 import { validateCashMovement, type CashKind } from "@/lib/business/cash";
 import {
   addAttachment,
   addCashMovement,
+  cashBoxExists,
   checkAttachment,
   closeCashSession,
   createCashBox,
   currentCashSession,
   listAttachments,
   listCashBoxes,
+  moneyRecordExists,
   receiptToken,
   openCashSession,
   updateCashBox,
+  updatePaymentNotes,
   voidPayment,
 } from "@/lib/business/finance-db";
+import { voidExpense } from "@/lib/business/money-service";
+import { isTeamMember } from "@/lib/business/team-db";
 import { parseMoney } from "@/lib/business/money";
 import { canHandleCash, canManage } from "@/lib/business/roles";
 import { requireTenantContext } from "@/lib/tenant/context";
@@ -25,7 +29,6 @@ import { logTenantAction } from "@/lib/tenant/audit";
 
 export type MoneyResult = { ok: true; message?: string; id?: string } | { ok: false; message: string };
 const DENIED: MoneyResult = { ok: false, message: "Tu rol no permite esta acción." };
-const now = () => Temporal.Instant.fromEpochMilliseconds(Date.now());
 
 function refresh(slug: string) {
   revalidatePath(`/${slug}/finance`);
@@ -54,10 +57,8 @@ export async function voidPaymentAction(slug: string, paymentId: string, reason:
 export async function updatePaymentNotesAction(slug: string, paymentId: string, input: { description: string; notes: string }): Promise<MoneyResult> {
   const ctx = await ctxFor(slug, "cash");
   if (!ctx) return DENIED;
-  const p = await db.orm.public.Payment.where({ tenantId: ctx.tenantId, id: paymentId }).select("status").first();
-  if (!p) return { ok: false, message: "El pago no existe." };
-  if (p.status === "VOIDED") return { ok: false, message: "Un pago anulado no se edita." };
-  await db.orm.public.Payment.where({ tenantId: ctx.tenantId, id: paymentId }).update({ description: input.description.trim().slice(0, 200) || null, notes: input.notes.trim().slice(0, 1000) || null });
+  const r = await updatePaymentNotes(ctx.tenantId, paymentId, { description: input.description.trim().slice(0, 200) || null, notes: input.notes.trim().slice(0, 1000) || null });
+  if (!r.ok) return r;
   refresh(slug);
   return { ok: true, message: "Pago actualizado" };
 }
@@ -70,8 +71,7 @@ export async function uploadAttachmentAction(form: FormData): Promise<MoneyResul
   const kind = String(form.get("kind"));
   const ownerId = String(form.get("ownerId") ?? "");
   if (kind !== "PAYMENT" && kind !== "EXPENSE") return { ok: false, message: "Tipo de archivo no válido." };
-  const owner = kind === "PAYMENT" ? await db.orm.public.Payment.where({ tenantId: ctx.tenantId, id: ownerId }).select("id").first() : await db.orm.public.Expense.where({ tenantId: ctx.tenantId, id: ownerId }).select("id").first();
-  if (!owner) return { ok: false, message: "No se encontró el registro." };
+  if (!(await moneyRecordExists(ctx.tenantId, kind, ownerId))) return { ok: false, message: "No se encontró el registro." };
   const file = form.get("file");
   if (!(file instanceof File) || !file.size) return { ok: false, message: "Elige un archivo." };
   const err = checkAttachment(file);
@@ -87,16 +87,10 @@ export async function voidExpenseAction(slug: string, expenseId: string, reason:
   const ctx = await ctxFor(slug, "manage");
   if (!ctx) return DENIED;
   if (reason.trim().length < 3) return { ok: false, message: "Escribe el motivo de la anulación." };
-  const e = await db.orm.public.Expense.where({ tenantId: ctx.tenantId, id: expenseId }).first();
-  if (!e) return { ok: false, message: "El gasto no existe." };
-  if (e.voidedAt) return { ok: false, message: "El gasto ya está anulado." };
-  await db.orm.public.Expense.where({ tenantId: ctx.tenantId, id: expenseId }).update({ voidedAt: now(), voidReason: reason.trim().slice(0, 300) });
-  // Si salió de una caja todavía abierta, el efectivo vuelve a la caja.
-  if (e.cashSessionId) {
-    const s = await db.orm.public.CashSession.where({ tenantId: ctx.tenantId, id: e.cashSessionId }).select("closedAt").first();
-    if (s && !s.closedAt) await addCashMovement(ctx.tenantId, { sessionId: e.cashSessionId, kind: "ADJUST", amount: Number(e.amount), description: `Anulación de gasto: ${e.description}`, expenseId }, ctx.memberId);
-  }
-  await logTenantAction(ctx, "BIZ_EXPENSE_VOID", { expenseId, amount: String(e.amount), reason: reason.trim().slice(0, 300) });
+  // Si salió de una caja todavía abierta, el efectivo vuelve a la caja (misma transacción).
+  const r = await voidExpense(ctx.tenantId, expenseId, reason.trim().slice(0, 300), ctx.memberId);
+  if (!r.ok) return r;
+  await logTenantAction(ctx, "BIZ_EXPENSE_VOID", { expenseId, amount: r.amount, reason: reason.trim().slice(0, 300) });
   refresh(slug);
   return { ok: true, message: "Gasto anulado" };
 }
@@ -109,7 +103,7 @@ export async function saveCashBoxAction(slug: string, input: { id?: string; name
   const fund = parseMoney(input.fund);
   if (input.name.trim().length < 2) return { ok: false, message: "Ponle un nombre a la caja." };
   if (fund == null || fund < 0) return { ok: false, message: "Escribe el monto del fondo." };
-  if (input.responsibleUserId && !(await db.orm.public.User.where({ tenantId: ctx.tenantId, id: input.responsibleUserId }).select("id").first())) return { ok: false, message: "El responsable no es del equipo." };
+  if (input.responsibleUserId && !(await isTeamMember(ctx.tenantId, input.responsibleUserId))) return { ok: false, message: "El responsable no es del equipo." };
   if (input.id) await updateCashBox(ctx.tenantId, input.id, { name: input.name.trim(), fundAmount: fund, responsibleUserId: input.responsibleUserId });
   else await createCashBox(ctx.tenantId, input.name.trim(), fund, input.responsibleUserId);
   refresh(slug);
@@ -121,7 +115,7 @@ export async function openCashAction(slug: string, boxId: string, opening: strin
   if (!ctx) return DENIED;
   const amount = parseMoney(opening);
   if (amount == null || amount < 0) return { ok: false, message: "Escribe con cuánto efectivo abres la caja." };
-  if (!(await db.orm.public.CashBox.where({ tenantId: ctx.tenantId, id: boxId }).select("id").first())) return { ok: false, message: "La caja no existe." };
+  if (!(await cashBoxExists(ctx.tenantId, boxId))) return { ok: false, message: "La caja no existe." };
   const r = await openCashSession(ctx.tenantId, boxId, amount, ctx.memberId);
   if (!r.ok) return r;
   refresh(slug);
