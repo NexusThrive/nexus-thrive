@@ -74,7 +74,7 @@ async function requireTenantContext(tenantSlug: string): Promise<
     }
   | null
 > {
-  const context = await requireSharedTenantContext(tenantSlug);
+  const context = await requireSharedTenantContext(tenantSlug, "/catalog");
   if (!context) {
     return null;
   }

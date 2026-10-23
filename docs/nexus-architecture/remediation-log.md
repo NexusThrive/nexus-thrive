@@ -53,6 +53,15 @@ no puede usar (hoy el servidor los rechaza con un mensaje claro).
 | [DATA-02](technical-debt.md#data-02) | Corregido en código | El historial de cobros de una membresía sale de `Payment` (con su estado: refleja anulaciones). El Json `Membership.payments` ya no se escribe ni se lee; la columna se retira con la migración de DATA-03 | `money-service.integration.test.ts` (historial desde `Payment`, anulación visible, Json sin escribir) |
 | [DATA-03](technical-debt.md#data-03), [DATA-04](technical-debt.md#data-04), [SEC-07](security-audit.md#sec-07) | Pendiente | Requieren comparar con el esquema real de producción (`pg_dump --schema-only`) antes de migrar | — |
 
+## Etapa 3 · Modularidad (parte sin cambios de esquema)
+
+| Hallazgo | Estado | Corrección | Prueba |
+|---|---|---|---|
+| [ARCH-02](technical-debt.md#arch-02) | Corregido (enlaces) | "Salidas" (`/departures`) salía en el menú de turismo sin tener página: se retira hasta que exista su pantalla | `lib/navigation/tenant-nav.test.ts` recorre el menú de cada rubro con todos los módulos y exige `page.tsx` por `href` |
+| [SEC-06](security-audit.md#sec-06) | Corregido | `modulesForRoute` (derivada del menú, una sola fuente) dice qué módulos habilitan cada ruta; `/finance` la abren Finanzas y Pagos. `requireTenantContext(slug, ruta)` y `requirePageContext(slug, ruta)` rechazan si el negocio no tiene activo un módulo que la habilite: 92 comprobaciones en 41 archivos, incluido el marcador de Pedidos. Congelar, reanudar y cancelar membresías se exigen por `/memberships` aunque vivan en la carpeta del CRM. Desde los Ajustes solo se activa un módulo incluido en el plan (`contractedModules`; `null` no limita, el panel de NEXUS sí puede) | `page-authorization.test.ts` (cada página y acción de un módulo declara su ruta), `tenant-nav.test.ts`, `compat.test.ts`, `membership.integration.test.ts` (`isRouteEnabled` contra la base) |
+| [ARCH-01](technical-debt.md#arch-01), registro de capacidades ([ADR-0003](decisions/0003-registro-de-capacidades.md)) | Pendiente | Separar `construction` de `quotes` y pasar `ModuleName` a texto validado cambia el esquema: va con DATA-03 | — |
+| [ARCH-03](technical-debt.md#arch-03), [ARCH-04](technical-debt.md#arch-04) | Pendiente | Wizard clásico, `lib/pricing`, copias locales de `requireTenantContext`, `db.orm` en `app/` | — |
+
 ### Configuración de Clerk a confirmar (SEC-10)
 
 El código ya exige correo verificado. Conviene además que la instancia de

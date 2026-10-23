@@ -33,7 +33,7 @@ function refresh(slug: string) {
 }
 
 async function ctxFor(slug: string, need: "cash" | "manage") {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/finance");
   if (!ctx) return null;
   return (need === "cash" ? canHandleCash(ctx.role) : canManage(ctx.role)) ? ctx : null;
 }
@@ -157,13 +157,13 @@ export async function closeCashAction(slug: string, counted: string, notes: stri
 }
 
 export async function cashBoxesAction(slug: string) {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/finance");
   return ctx ? listCashBoxes(ctx.tenantId) : [];
 }
 
 /** Detalle para la ficha de un pago o un gasto: archivos y enlace del recibo. */
 export async function moneyDetailAction(slug: string, kind: "PAYMENT" | "EXPENSE", id: string) {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/finance");
   if (!ctx) return null;
   const files = await listAttachments(ctx.tenantId, kind, [id]);
   return {

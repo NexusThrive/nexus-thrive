@@ -27,7 +27,7 @@ export async function recordProgressAction(
   projectId: string,
   formData: FormData,
 ): Promise<ProgressActionResult> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) return { ok: false, message: "No tienes acceso a este negocio." };
   const quantityRaw = String(formData.get("executedQuantity") ?? "").trim().replace(",", ".");
   const executed = decimalToMicro(quantityRaw);
@@ -59,7 +59,7 @@ export async function deleteProgressAction(
   projectId: string,
   entryId: string,
 ): Promise<ProgressActionResult> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) return { ok: false, message: "No tienes acceso a este negocio." };
   await context.tenantDb.progress.remove(entryId);
   revalidatePath(`/${tenantSlug}/projects/${projectId}`);

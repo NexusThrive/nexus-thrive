@@ -36,7 +36,7 @@ export default async function QuoteDetailPage({
   const { tenant: tenantSlug, id: quoteId } = await params;
 
   // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
-  const pageCtx = await requirePageContext(tenantSlug);
+  const pageCtx = await requirePageContext(tenantSlug, "/quotes");
   const tenantRecord = pageCtx.tenant;
 
   const owner = await db.orm.public.Quote.where({ id: quoteId, tenantId: tenantRecord.id })

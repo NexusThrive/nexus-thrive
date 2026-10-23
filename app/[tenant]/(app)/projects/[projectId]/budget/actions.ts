@@ -94,7 +94,7 @@ export async function getOrCreateProjectBudgetAction(
   tenantSlug: string,
   projectId: string,
 ): Promise<ProjectBudgetData | null> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context || !projectId) {
     return null;
   }
@@ -115,7 +115,7 @@ export async function createChapterAction(
 ): Promise<ChapterFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
   const projectId = String(formData.get("projectId") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -157,7 +157,7 @@ export async function updateChapterAction(
   const projectId = String(formData.get("projectId") ?? "");
   const chapterId = String(formData.get("chapterId") ?? "");
   const expectedRevision = readExpectedRevision(formData);
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -206,7 +206,7 @@ export async function createBudgetItemAction(
 ): Promise<BudgetItemFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
   const projectId = String(formData.get("projectId") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -248,7 +248,7 @@ export async function updateBudgetItemAction(
   const projectId = String(formData.get("projectId") ?? "");
   const itemId = String(formData.get("itemId") ?? "");
   const expectedRevision = readExpectedRevision(formData);
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -300,7 +300,7 @@ export async function updateAiuConfigAction(
 ): Promise<AiuFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
   const projectId = String(formData.get("projectId") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -347,7 +347,7 @@ export async function toggleBudgetLockAction(
   isLocked: boolean,
   reason?: string,
 ): Promise<{ ok: boolean; message?: string }> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context || !projectId) {
     return { ok: false, message: "No tienes acceso a este negocio." };
   }
@@ -385,7 +385,7 @@ export async function deleteChapterAction(
   projectId: string,
   chapterId: string,
 ): Promise<{ ok: boolean; message?: string }> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context || !projectId || !chapterId) {
     return { ok: false, message: "No tienes acceso a este negocio." };
   }
@@ -413,7 +413,7 @@ export async function deleteBudgetItemAction(
   projectId: string,
   itemId: string,
 ): Promise<{ ok: boolean; message?: string }> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context || !projectId || !itemId) {
     return { ok: false, message: "No tienes acceso a este negocio." };
   }
@@ -445,7 +445,7 @@ export async function approveBudgetBaselineAction(
   projectId: string,
   note?: string,
 ): Promise<{ ok: boolean; message?: string }> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context || !projectId) {
     return { ok: false, message: "No tienes acceso a este negocio." };
   }
@@ -494,7 +494,7 @@ export async function searchCatalogActivitiesAction(
   query: string,
   unit?: string,
 ): Promise<ApuActivityRow[] | null> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) {
     return null;
   }
@@ -512,7 +512,7 @@ export async function getCatalogActivityDetailAction(
   tenantSlug: string,
   activityId: string,
 ): Promise<ApuActivityDetail | null> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context || !activityId) {
     return null;
   }
@@ -535,7 +535,7 @@ export async function importActivityFromCatalogAction(
   quantity: string,
   expectedRevision?: number,
 ): Promise<{ ok: boolean; message?: string; itemId?: string }> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) {
     return { ok: false, message: "No tienes acceso a este negocio." };
   }
@@ -586,7 +586,7 @@ export async function updateResourceAction(
   wastePct: string,
   expectedRevision?: number,
 ): Promise<{ ok: boolean; message?: string; revision?: number }> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) {
     return { ok: false, message: "No tienes acceso a este negocio." };
   }
@@ -627,7 +627,7 @@ export async function exportBudgetXlsxAction(
   tenantSlug: string,
   projectId: string,
 ): Promise<{ ok: true; filename: string; base64: string } | { ok: false; message: string }> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) return { ok: false, message: "No tienes acceso a este negocio." };
   const [project, budget] = await Promise.all([
     context.tenantDb.projects.get(projectId),

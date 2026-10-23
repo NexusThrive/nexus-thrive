@@ -20,7 +20,7 @@ export async function migrateLegacyQuoteAction(
   quoteId: string,
   formData: FormData,
 ): Promise<MigrateLegacyResult> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/quotes");
   if (!context) return { ok: false, message: "No tienes acceso a este negocio." };
   if (!canGovernBudget(context.role)) {
     return { ok: false, message: "Solo el dueño del negocio puede migrar cotizaciones." };

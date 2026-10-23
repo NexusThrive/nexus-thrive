@@ -11,7 +11,7 @@ import { requirePageContext } from "@/lib/tenant/context";
 export default async function WhatsAppPage({ params }: { params: Promise<{ tenant: string }> }) {
   const { tenant: tenantSlug } = await params;
   // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
-  const pageCtx = await requirePageContext(tenantSlug);
+  const pageCtx = await requirePageContext(tenantSlug, "/whatsapp");
   const tenantRecord = pageCtx.tenant;const customers = await createTenantDb(tenantRecord.id).customers.search({ status: "active", pageSize: 200 });
   const contacts = customers.rows
     .filter((c) => (c.phone ?? "").replace(/\D/g, "").length >= 7)

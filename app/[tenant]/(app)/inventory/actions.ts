@@ -20,7 +20,7 @@ function refresh(slug: string) {
 }
 
 export async function saveProductAction(slug: string, id: string | null, d: ProductDraft): Promise<CatalogResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/inventory");
   if (!ctx || !canManage(ctx.role)) return DENIED;
   if (!kindsForVertical(ctx.vertical).includes(d.kind)) return { ok: false, message: "Ese tipo no aplica a tu rubro." };
   const v = validateProduct(d);
@@ -54,7 +54,7 @@ export async function saveProductAction(slug: string, id: string | null, d: Prod
 }
 
 export async function moveStockAction(slug: string, productId: string, kind: string, quantity: number, note: string): Promise<CatalogResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/inventory");
   if (!ctx || !canManage(ctx.role)) return DENIED;
   if (!["IN", "OUT", "ADJUST"].includes(kind)) return { ok: false, message: "Movimiento no válido." };
   const p = await getProduct(ctx.tenantId, productId);
@@ -69,7 +69,7 @@ export async function moveStockAction(slug: string, productId: string, kind: str
 
 /** Venta directa: crea el cobro con recibo, descuenta stock y, si es efectivo con caja abierta, entra a la caja. */
 export async function sellProductAction(slug: string, productId: string, input: { quantity: number; method: string; customerId: string | null }): Promise<CatalogResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/inventory");
   if (!ctx || !canHandleCash(ctx.role)) return DENIED;
   const p = await getProduct(ctx.tenantId, productId);
   if (!p || !p.active) return { ok: false, message: "No se encontró." };
@@ -94,6 +94,6 @@ export async function sellProductAction(slug: string, productId: string, input: 
 }
 
 export async function stockHistoryAction(slug: string, productId: string) {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/inventory");
   return ctx ? stockHistory(ctx.tenantId, productId) : [];
 }

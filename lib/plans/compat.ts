@@ -12,9 +12,19 @@ export function checkModuleToggle(
   vertical: VerticalValue,
   module: ModuleValue,
   active: boolean,
+  /**
+   * Módulos del plan del negocio (`Tenant.contractedModules`). Desde los
+   * Ajustes del negocio solo se activa lo contratado (SEC-06); el panel de
+   * NEXUS no lo pasa porque es quien administra los planes. `null` (negocios
+   * sin plan registrado) no limita.
+   */
+  contracted?: readonly string[] | null,
 ): { ok: true } | { ok: false; message: string } {
   if (module === CORE_MODULE && !active) return { ok: false, message: "El Inicio siempre está activo." };
   if (!active) return { ok: true };
+  if (contracted && module !== CORE_MODULE && !contracted.includes(module)) {
+    return { ok: false, message: `${moduleOf(config, module)?.label ?? module} no está incluido en tu plan.` };
+  }
   const v = verticalOf(config, vertical);
   if (v && !v.modules.includes(module)) {
     return { ok: false, message: `${moduleOf(config, module)?.label ?? module} no es compatible con el rubro ${v.label}.` };

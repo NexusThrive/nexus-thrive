@@ -20,7 +20,7 @@ function refresh(slug: string) {
 }
 
 export async function createInvoiceAction(slug: string, input: { kind: string; customerId: string; customerName: string; customerDoc: string; issueDate: string; dueDate: string; notes: string; lines: LineInput[] }): Promise<BillingResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/billing");
   if (!ctx || !canHandleCash(ctx.role)) return DENIED;
   const kind: InvoiceKind = input.kind === "BILL" ? "BILL" : "RECEIPT";
   const lines = input.lines.map((l) => ({ description: l.description.trim().slice(0, 200), quantity: Number(l.quantity), unitPrice: Number(l.unitPrice), productId: l.productId || null }));
@@ -44,7 +44,7 @@ export async function createInvoiceAction(slug: string, input: { kind: string; c
 }
 
 export async function payInvoiceAction(slug: string, id: string, method: string): Promise<BillingResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/billing");
   if (!ctx || !canHandleCash(ctx.role)) return DENIED;
   if (!PAYMENT_METHODS.some((m) => m.value === method)) return { ok: false, message: "Elige el medio de pago." };
   const r = await payInvoice(ctx.tenantId, id, method, ctx.memberId);
@@ -54,7 +54,7 @@ export async function payInvoiceAction(slug: string, id: string, method: string)
 }
 
 export async function voidInvoiceAction(slug: string, id: string, reason: string): Promise<BillingResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/billing");
   if (!ctx || !canManage(ctx.role)) return DENIED;
   if (reason.trim().length < 3) return { ok: false, message: "Escribe el motivo." };
   const inv = await db.orm.public.Invoice.where({ tenantId: ctx.tenantId, id }).select("status").first();

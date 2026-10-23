@@ -27,7 +27,7 @@ export async function getOrCreateProjectPlanAction(
     if (!userId) {
       return { status: "error", message: "Debes iniciar sesión para continuar." };
     }
-    const context = await requireTenantContext(tenantSlug);
+    const context = await requireTenantContext(tenantSlug, "/projects");
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
@@ -66,7 +66,7 @@ export async function createLookaheadTaskAction(
     if (!userId) {
       return { status: "error", message: "Debes iniciar sesión para continuar." };
     }
-    const context = await requireTenantContext(tenantSlug);
+    const context = await requireTenantContext(tenantSlug, "/projects");
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
@@ -115,7 +115,7 @@ export async function createWeeklyCommitmentAction(
     if (!userId) {
       return { status: "error", message: "Debes iniciar sesión para continuar." };
     }
-    const context = await requireTenantContext(tenantSlug);
+    const context = await requireTenantContext(tenantSlug, "/projects");
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
@@ -160,7 +160,7 @@ export async function updateCommitmentStatusAction(
     if (!userId) {
       return { status: "error", message: "Debes iniciar sesión para continuar." };
     }
-    const context = await requireTenantContext(tenantSlug);
+    const context = await requireTenantContext(tenantSlug, "/projects");
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }

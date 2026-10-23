@@ -29,7 +29,7 @@ export type BookingInput = {
 
 /** Crea o mueve una cita: valida horario, responsable libre y cupo del servicio. */
 export async function saveBookingAction(slug: string, v: BookingInput): Promise<AgendaResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/bookings");
   if (!ctx) return { ok: false, message: "No tienes acceso a este negocio." };
   if (!v.customerId) return { ok: false, message: "Elige el cliente.", field: "customerId" };
   if (!DATE.test(v.day) || !TIME.test(v.time)) return { ok: false, message: "Fecha u hora no válida.", field: "time" };
@@ -87,7 +87,7 @@ export async function saveBookingAction(slug: string, v: BookingInput): Promise<
 }
 
 export async function setBookingStatusAction(slug: string, id: string, status: string): Promise<AgendaResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/bookings");
   if (!ctx) return { ok: false, message: "No tienes acceso." };
   if (!["PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"].includes(status)) return { ok: false, message: "Estado no válido." };
   const b = await db.orm.public.Booking.where({ tenantId: ctx.tenantId, id }).select("id").first();
@@ -100,7 +100,7 @@ export async function setBookingStatusAction(slug: string, id: string, status: s
 
 /** Marca el recordatorio como enviado (el envío lo hace WhatsApp). */
 export async function markReminderAction(slug: string, id: string): Promise<AgendaResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/bookings");
   if (!ctx) return { ok: false, message: "No tienes acceso." };
   await db.orm.public.Booking.where({ tenantId: ctx.tenantId, id }).update({ reminderSentAt: instant(Date.now()) });
   revalidatePath(`/${slug}/bookings`);

@@ -16,7 +16,7 @@ function refresh(slug: string, customerId?: string) {
 
 /** Crea el código de acceso (QR) del socio o lo cambia si se perdió. */
 export async function accessCodeAction(slug: string, customerId: string, regenerate: boolean): Promise<AccessActionResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/crm");
   if (!ctx || !canHandleCash(ctx.role)) return DENIED;
   const code = await ensureAccessCode(ctx.tenantId, customerId, regenerate);
   if (!code) return { ok: false, message: "El cliente no es de este negocio." };
@@ -25,7 +25,7 @@ export async function accessCodeAction(slug: string, customerId: string, regener
 }
 
 export async function linkNfcAction(slug: string, customerId: string, uid: string | null): Promise<AccessActionResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/crm");
   if (!ctx || !canHandleCash(ctx.role)) return DENIED;
   const r = await linkNfc(ctx.tenantId, customerId, uid);
   if (!r.ok) return r;
@@ -33,8 +33,9 @@ export async function linkNfcAction(slug: string, customerId: string, uid: strin
   return { ok: true, message: uid ? "Tarjeta vinculada" : "Tarjeta desvinculada" };
 }
 
+// Congelar, reanudar y cancelar son del módulo de membresías (las usa su pantalla).
 export async function freezeMembershipAction(slug: string, membershipId: string, fromDay: string, days: number): Promise<AccessActionResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/memberships");
   if (!ctx || !canHandleCash(ctx.role)) return DENIED;
   const from = /^\d{4}-\d{2}-\d{2}$/.test(fromDay) ? Date.parse(`${fromDay}T00:00:00-05:00`) : NaN;
   if (!Number.isFinite(from)) return { ok: false, message: "Elige la fecha de inicio." };
@@ -45,7 +46,7 @@ export async function freezeMembershipAction(slug: string, membershipId: string,
 }
 
 export async function unfreezeMembershipAction(slug: string, membershipId: string): Promise<AccessActionResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/memberships");
   if (!ctx || !canHandleCash(ctx.role)) return DENIED;
   const r = await unfreezeMembership(ctx.tenantId, membershipId);
   if (!r.ok) return r;
@@ -54,7 +55,7 @@ export async function unfreezeMembershipAction(slug: string, membershipId: strin
 }
 
 export async function cancelMembershipAction(slug: string, membershipId: string, reason: string): Promise<AccessActionResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/memberships");
   if (!ctx || !canManage(ctx.role)) return { ok: false, message: "Solo el dueño o administración cancelan membresías." };
   if (reason.trim().length < 3) return { ok: false, message: "Escribe el motivo de la cancelación." };
   const r = await cancelMembership(ctx.tenantId, membershipId, reason.trim());

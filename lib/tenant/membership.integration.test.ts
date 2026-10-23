@@ -3,6 +3,7 @@ import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
 import { deleteTenantCompletely } from "./deletion";
 import { isActiveMember, resolveTenantMembership } from "./membership";
+import { isRouteEnabled } from "./context";
 
 /**
  * SEC-02 (docs/nexus-architecture/security-audit.md): un negocio creado desde
@@ -34,7 +35,7 @@ describe.skipIf(!enabled)("membresía al entrar a un negocio (integración)", ()
       name: "Negocio Sin Dueño",
       slug: `sin-dueno-${suffix}`,
       vertical: "gym",
-      modules: [],
+      modules: ["crm", "payments"],
       tenantType: "COMPANY",
       ownerEmail,
     });
@@ -89,6 +90,19 @@ describe.skipIf(!enabled)("membresía al entrar a un negocio (integración)", ()
     });
     expect(owner?.role).toBe("OWNER");
     expect(owner?.active).toBe(true);
+  });
+
+  // SEC-06: una ruta solo se sirve con un módulo activo que la habilite.
+  test("las rutas de módulos apagados no se sirven", async () => {
+    expect(await isRouteEnabled(tenantId, "/crm/123")).toBe(true);
+    expect(await isRouteEnabled(tenantId, "/finance")).toBe(true); // la abre Pagos
+    expect(await isRouteEnabled(tenantId, "/projects")).toBe(false);
+    expect(await isRouteEnabled(tenantId, "/memberships")).toBe(false);
+    expect(await isRouteEnabled(tenantId, "/settings")).toBe(true);
+
+    await db.orm.public.TenantModule.where({ tenantId, moduleName: "crm" }).update({ active: false });
+    expect(await isRouteEnabled(tenantId, "/crm")).toBe(false);
+    await db.orm.public.TenantModule.where({ tenantId, moduleName: "crm" }).update({ active: true });
   });
 
   // SEC-08: los archivos y fotos solo los ve un miembro activo.

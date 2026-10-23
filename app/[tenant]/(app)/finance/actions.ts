@@ -60,7 +60,7 @@ export async function createPaymentAction(
   formData: FormData,
 ): Promise<PaymentFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const context = await requireSharedTenantContext(tenantSlug);
+  const context = await requireSharedTenantContext(tenantSlug, "/finance");
   if (!context || !canHandleCash(context.role)) {
     return ACCESS_DENIED_PAYMENT;
   }
@@ -148,7 +148,7 @@ export async function registerScannedPaymentAction(
   formData: FormData,
 ): Promise<ScannedPaymentFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const context = await requireSharedTenantContext(tenantSlug);
+  const context = await requireSharedTenantContext(tenantSlug, "/finance");
   if (!context || !canHandleCash(context.role)) {
     return ACCESS_DENIED_PAYMENT;
   }
@@ -217,7 +217,7 @@ export async function createExpenseAction(
   formData: FormData,
 ): Promise<ExpenseFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const context = await requireSharedTenantContext(tenantSlug);
+  const context = await requireSharedTenantContext(tenantSlug, "/finance");
   if (!context || !canHandleCash(context.role)) {
     return ACCESS_DENIED_EXPENSE;
   }

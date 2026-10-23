@@ -67,7 +67,7 @@ export async function createProjectAction(
   formData: FormData,
 ): Promise<CreateProjectFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -130,7 +130,7 @@ export async function prepareProjectAction(
   tenantSlug: string,
   projectId: string,
 ): Promise<void> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context || !projectId) {
     return;
   }
@@ -148,7 +148,7 @@ export async function updateProjectHeaderAction(
 ): Promise<ProjectHeaderFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
   const projectId = String(formData.get("projectId") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -231,7 +231,7 @@ export async function updateProjectAction(
 ): Promise<UpdateProjectFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
   const projectId = String(formData.get("projectId") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
@@ -283,7 +283,7 @@ export async function updateProjectStatusAction(
   expectedStatus: string,
   status: string,
 ): Promise<ProjectStatusActionResult> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) {
     return { ok: false, message: "No tienes acceso a este negocio." };
   }

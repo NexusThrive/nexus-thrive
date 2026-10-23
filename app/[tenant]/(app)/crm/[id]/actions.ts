@@ -22,7 +22,7 @@ type NoteContext = {
 async function requireTenantContext(
   tenantSlug: string,
 ): Promise<NoteContext | null> {
-  const context = await requireSharedTenantContext(tenantSlug);
+  const context = await requireSharedTenantContext(tenantSlug, "/crm");
   if (!context) {
     return null;
   }

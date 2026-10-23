@@ -30,7 +30,7 @@ export type CustomerEdit = {
 };
 
 export async function getCustomerForEditAction(slug: string, id: string): Promise<CustomerEdit | null> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/crm");
   if (!ctx) return null;
   const c = await db.orm.public.Customer.where({ tenantId: ctx.tenantId, id }).first();
   if (!c) return null;
@@ -51,7 +51,7 @@ export async function getCustomerForEditAction(slug: string, id: string): Promis
 /** Crea o actualiza un cliente con su ficha del rubro, foto y (gym) el plan con el que entra. */
 export async function saveCustomerAction(form: FormData): Promise<CustomerSaveResult> {
   const slug = String(form.get("slug") ?? "");
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/crm");
   if (!ctx) return { ok: false, message: "No tienes acceso a este negocio." };
   const id = String(form.get("id") ?? "") || null;
   const errors: Record<string, string> = {};
@@ -155,7 +155,7 @@ export async function saveCustomerAction(form: FormData): Promise<CustomerSaveRe
 
 /** Lo que el formulario necesita: rubro y (gym) los planes para inscribir. */
 export async function customerFormDataAction(slug: string) {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/crm");
   if (!ctx) return null;
   const plans = profileFor(ctx.vertical).planOnCreate
     ? (await db.orm.public.Product.where({ tenantId: ctx.tenantId, kind: "PLAN", active: true }).select("id", "name", "price", "durationDays").orderBy((p) => p.price.asc()).all()).map((p) => ({ id: p.id, name: p.name, price: Number(p.price), days: p.durationDays ?? 30 }))

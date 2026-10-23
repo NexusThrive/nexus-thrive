@@ -16,6 +16,17 @@ describe("compatibilidad de módulos", () => {
   it("siempre deja desactivar (salvo el Inicio)", () => {
     expect(checkModuleToggle(c, "gym", "quotes", false).ok).toBe(true);
   });
+  // SEC-06: desde los Ajustes del negocio solo se activa lo del plan.
+  it("no activa un módulo que el plan no incluye", () => {
+    const plan = ["dashboard", "crm"];
+    expect(checkModuleToggle(c, "gym", "memberships", true, plan)).toMatchObject({ ok: false });
+    expect(checkModuleToggle(c, "gym", "crm", true, plan).ok).toBe(true);
+    expect(checkModuleToggle(c, "gym", "memberships", false, plan).ok).toBe(true); // apagar siempre se puede
+  });
+  it("sin plan registrado (null) no limita", () => {
+    expect(checkModuleToggle(c, "gym", "memberships", true, null).ok).toBe(true);
+    expect(checkModuleToggle(c, "gym", "memberships", true).ok).toBe(true);
+  });
   it("estado contratado / habilitado / operativo", () => {
     const r = moduleStatusRow(c, "gym", "whatsapp", ["dashboard", "crm"], true);
     expect(r).toMatchObject({ contracted: false, enabled: true, state: "operational", compatible: true });

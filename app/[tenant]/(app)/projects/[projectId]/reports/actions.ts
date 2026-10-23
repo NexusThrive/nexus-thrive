@@ -38,7 +38,7 @@ type TenantContext = {
 async function requireTenantContext(
   tenantSlug: string,
 ): Promise<TenantContext | null> {
-  const context = await requireSharedTenantContext(tenantSlug);
+  const context = await requireSharedTenantContext(tenantSlug, "/projects");
   if (!context) {
     return null;
   }

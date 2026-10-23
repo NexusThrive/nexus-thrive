@@ -17,7 +17,7 @@ import ExpiringList from "./_components/expiring-list";
  */
 export default async function CheckinPage({ params }: { params: Promise<{ tenant: string }> }) {
   const { tenant: slug } = await params;
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/checkin");
   if (!ctx) notFound();
   const terms = getVerticalTerms(ctx.vertical);
 

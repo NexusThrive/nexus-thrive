@@ -1,5 +1,8 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { activeNavItem, buildTenantNav, isNavActive, tenantRelativePath } from "./tenant-nav";
+import { MODULES, VERTICALS } from "@/lib/admin/catalogs";
+import { activeNavItem, buildTenantNav, isNavActive, modulesForRoute, tenantRelativePath } from "./tenant-nav";
 import { quickCreateActions } from "./quick-create";
 
 describe("buildTenantNav", () => {
@@ -47,5 +50,46 @@ describe("quickCreateActions", () => {
     const all = quickCreateActions("construction", ["quotes", "crm", "finance", "bookings", "billing"]);
     expect(all).toHaveLength(4);
     expect(all[0].label).toBe("Nueva obra");
+  });
+});
+
+// ARCH-02 (docs/nexus-architecture/technical-debt.md): ningún ítem del menú
+// lleva a un 404. Para cada rubro con todos los módulos activos, cada `href`
+// tiene su `page.tsx` bajo `app/[tenant]/(app)`.
+describe("cada ítem del menú tiene su página", () => {
+  const pageFor = (href: string) => {
+    const path = href.split("?")[0];
+    return join(process.cwd(), "app", "[tenant]", "(app)", ...path.split("/").filter(Boolean), "page.tsx");
+  };
+
+  it.each(VERTICALS.map((v) => [v]))("%s", (vertical) => {
+    const hrefs = buildTenantNav(vertical, MODULES)
+      .flatMap((g) => g.items)
+      .map((i) => i.href);
+    const missing = hrefs.filter((href) => !existsSync(pageFor(href)));
+    expect(missing, `rutas del menú sin página en ${vertical}`).toEqual([]);
+  });
+});
+
+// SEC-06: el servidor sabe qué módulo habilita cada ruta, con el menú como fuente.
+describe("modulesForRoute", () => {
+  it("una ruta de módulo y sus subrutas", () => {
+    expect(modulesForRoute("/crm")).toEqual(["crm"]);
+    expect(modulesForRoute("/crm/123/carnet")).toEqual(["crm"]);
+    expect(modulesForRoute("/projects/9/budget")).toEqual(["quotes"]);
+  });
+
+  it("Finanzas la habilitan Finanzas y Pagos", () => {
+    expect([...(modulesForRoute("/finance") ?? [])].sort()).toEqual(["finance", "payments"]);
+  });
+
+  it("no confunde prefijos parecidos", () => {
+    expect(modulesForRoute("/crmx")).toBeNull();
+  });
+
+  it("inicio, configuración y presencia no dependen de un módulo", () => {
+    expect(modulesForRoute("")).toBeNull();
+    expect(modulesForRoute("/settings")).toBeNull();
+    expect(modulesForRoute("/presence")).toBeNull();
   });
 });

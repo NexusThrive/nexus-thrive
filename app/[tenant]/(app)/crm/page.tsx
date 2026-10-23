@@ -65,7 +65,7 @@ export default async function CrmPage({
   const requestedPage = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
 
   // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
-  const pageCtx = await requirePageContext(tenantSlug);
+  const pageCtx = await requirePageContext(tenantSlug, "/crm");
   const tenantRecord = pageCtx.tenant;
 
   const tenantDb = createTenantDb(tenantRecord.id);

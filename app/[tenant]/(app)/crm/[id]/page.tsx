@@ -47,7 +47,7 @@ export default async function CustomerPage({
   const tabRaw = Array.isArray(sp.tab) ? sp.tab[0] : sp.tab;
 
   // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
-  const pageCtx = await requirePageContext(tenantSlug);
+  const pageCtx = await requirePageContext(tenantSlug, "/crm");
   const tenantRecord = await db.orm.public.Tenant.where({ id: pageCtx.tenantId })
     .include("modules", (module) => module.select("moduleName", "active"))
     .first();

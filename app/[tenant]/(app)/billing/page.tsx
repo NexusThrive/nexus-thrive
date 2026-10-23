@@ -12,7 +12,7 @@ import BillingList from "./_components/billing-list";
 export default async function BillingPage({ params, searchParams }: { params: Promise<{ tenant: string }>; searchParams: Promise<{ nuevo?: string }> }) {
   const { tenant } = await params;
   const { nuevo } = await searchParams;
-  const ctx = await requireTenantContext(tenant);
+  const ctx = await requireTenantContext(tenant, "/billing");
   if (!ctx) notFound();
   const [rows, customers, products] = await Promise.all([
     listInvoices(ctx.tenantId),

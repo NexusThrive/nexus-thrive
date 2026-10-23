@@ -8,7 +8,7 @@ import { db } from "@/prisma/db";
 /** Carné del socio para imprimir (tamaño tarjeta): foto, nombre y QR de acceso. */
 export default async function CarnetPage({ params }: { params: Promise<{ tenant: string; id: string }> }) {
   const { tenant: slug, id } = await params;
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/crm");
   if (!ctx) notFound();
   const [tenant, customer] = await Promise.all([
     db.orm.public.Tenant.where({ id: ctx.tenantId }).select("name").first(),

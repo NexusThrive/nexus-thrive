@@ -13,7 +13,7 @@ import InvoiceActions from "./invoice-actions";
 /** Cuenta de cobro o recibo listo para imprimir o guardar como PDF. */
 export default async function InvoicePage({ params }: { params: Promise<{ tenant: string; id: string }> }) {
   const { tenant, id } = await params;
-  const ctx = await requireTenantContext(tenant);
+  const ctx = await requireTenantContext(tenant, "/billing");
   if (!ctx) notFound();
   const [inv, biz] = await Promise.all([getInvoice(ctx.tenantId, id), db.orm.public.Tenant.where({ id: ctx.tenantId }).select("name", "legalName", "taxId", "address", "city", "whatsappNumber").first()]);
   if (!inv || !biz) notFound();

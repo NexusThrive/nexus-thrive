@@ -61,7 +61,7 @@ type TenantDb = ReturnType<typeof createTenantDb>;
 async function requireTenantDb(
   tenantSlug: string,
 ): Promise<(TenantDb & { tenantId: string; memberId: string; role: string }) | null> {
-  const context = await requireSharedTenantContext(tenantSlug);
+  const context = await requireSharedTenantContext(tenantSlug, "/memberships");
   if (!context) {
     return null;
   }

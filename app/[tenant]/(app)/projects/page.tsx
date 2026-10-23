@@ -38,7 +38,7 @@ export default async function ProjectsPage({
   const sp = await searchParams;
 
   // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
-  const pageCtx = await requirePageContext(tenantSlug);
+  const pageCtx = await requirePageContext(tenantSlug, "/projects");
   const tenantRecord = pageCtx.tenant;
 
   const tenantDb = createTenantDb(tenantRecord.id);

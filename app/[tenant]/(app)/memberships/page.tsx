@@ -61,7 +61,7 @@ export default async function MembershipsPage({
   const page = firstNumber(sp.page);
 
   // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
-  const pageCtx = await requirePageContext(tenantSlug);
+  const pageCtx = await requirePageContext(tenantSlug, "/memberships");
   const tenantRecord = pageCtx.tenant;
 
   const tenantDb = createTenantDb(tenantRecord.id);

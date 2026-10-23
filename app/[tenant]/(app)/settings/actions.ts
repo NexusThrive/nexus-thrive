@@ -189,9 +189,10 @@ export async function toggleModuleAction(
   const { tenantId } = context;
 
   // Solo módulos compatibles con el rubro y operativos; el Inicio no se apaga.
-  const tenant = await db.orm.public.Tenant.select("vertical").where({ id: tenantId }).first();
+  const tenant = await db.orm.public.Tenant.select("vertical", "contractedModules").where({ id: tenantId }).first();
   if (tenant && isVertical(tenant.vertical)) {
-    const check = checkModuleToggle(await loadPricingConfig(), tenant.vertical, moduleName, active);
+    const contracted = tenant.contractedModules ? [...tenant.contractedModules] : null;
+    const check = checkModuleToggle(await loadPricingConfig(), tenant.vertical, moduleName, active, contracted);
     if (!check.ok) return { status: "error", errors: { moduleName: check.message } };
   }
 

@@ -20,7 +20,7 @@ export default async function ImportPage({
   const { tenant: tenantSlug } = await params;
 
   // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
-  await requirePageContext(tenantSlug);
+  await requirePageContext(tenantSlug, "/catalog");
 
   return (
     <div className="space-y-6">

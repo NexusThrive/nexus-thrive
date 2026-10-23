@@ -5,6 +5,7 @@ import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant/db";
 import type { BusinessRole } from "@/lib/business/roles";
 import { can } from "@/lib/business/permissions";
+import { modulesForRoute } from "@/lib/navigation/tenant-nav";
 
 /**
  * Contexto de tenant resuelto para una server action: usuario autenticado,
@@ -44,6 +45,12 @@ function loadActiveTenant(slug: string) {
  */
 export async function requireTenantContext(
   tenantSlug: string,
+  /**
+   * Ruta del módulo al que pertenece la acción o página ("/crm",
+   * "/projects"…). Si se pasa, el negocio debe tener activo un módulo que la
+   * habilite (SEC-06): un módulo apagado no se usa ni por petición directa.
+   */
+  route?: string,
 ): Promise<TenantContext | null> {
   if (!tenantSlug || tenantSlug.trim() === "") {
     return null;
@@ -60,6 +67,9 @@ export async function requireTenantContext(
   const member = await tenantDb.users.findByClerkUserId(userId);
   // Retirado del equipo: conserva su historial pero ya no opera.
   if (!member || !member.active) {
+    return null;
+  }
+  if (route && !(await isRouteEnabled(tenantRecord.id, route))) {
     return null;
   }
   return {
@@ -82,11 +92,22 @@ export async function requireTenantContext(
  * Memoizada por petición con `cache()`: layout, página y componentes que la
  * llamen comparten una sola resolución.
  */
-export const requirePageContext = cache(async (tenantSlug: string): Promise<TenantContext> => {
-  const ctx = await requireTenantContext(tenantSlug);
+export const requirePageContext = cache(async (tenantSlug: string, route?: string): Promise<TenantContext> => {
+  const ctx = await requireTenantContext(tenantSlug, route);
   if (!ctx) notFound();
   return ctx;
 });
+
+/** ¿El negocio tiene activo algún módulo que habilite la ruta? */
+export async function isRouteEnabled(tenantId: string, route: string): Promise<boolean> {
+  const modules = modulesForRoute(route);
+  if (!modules) return true;
+  const row = await db.orm.public.TenantModule.where({ tenantId, active: true })
+    .where((m) => m.moduleName.in([...modules]))
+    .select("id")
+    .first();
+  return row !== null;
+}
 
 /**
  * D7 — Gobernanza del presupuesto: solo OWNER y SUPERADMIN pueden bloquear/

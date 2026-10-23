@@ -132,7 +132,7 @@ export default async function FinancePage({
     listCashBoxes(tenantRecord.id),
     tab === "caja" ? cashHistory(tenantRecord.id, 10) : Promise.resolve([]),
     db.orm.public.User.where({ tenantId: tenantRecord.id }).select("id", "name", "email").all(),
-    requireTenantContext(tenantSlug),
+    requireTenantContext(tenantSlug, "/finance"),
   ]);
   const openBox = cashBoxes.find((b) => b.openSession) ?? null;
   const cashMoves = tab === "caja" && openBox?.openSession ? await sessionMovements(tenantRecord.id, openBox.openSession.id) : [];
