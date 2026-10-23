@@ -1,13 +1,202 @@
-# Nexus
+<p align="center">
+  <img src="app/icon.svg" alt="Logo de NEXUS THRIVE" width="104" height="104">
+</p>
 
-Plataforma multi-negocio (SaaS) para pymes en Colombia: CRM, finanzas, membresías, reservas y verticales especializadas. La vertical de construcción cubre el ciclo completo de una obra: catálogo APU, presupuesto, cotización al cliente, planificación Lean, bitácora, avance e informes.
+<h1 align="center">NEXUS THRIVE</h1>
 
-## Stack
+<p align="center">
+  <strong>El sistema operativo digital de los negocios colombianos.</strong><br>
+  Clientes, dinero, agenda, inventario, membresías y operación en una sola plataforma que se adapta al rubro.
+</p>
 
-- Next.js 16 (App Router, Turbopack) y React 19
-- Prisma 8 (`@prisma/orm-postgres`) sobre PostgreSQL
-- Clerk (autenticación) y Vercel Blob (subida de archivos grandes)
-- Vitest (tests unitarios y de integración)
+<p align="center">
+  <a href="https://app.nexusthrive.com.co"><strong>Abrir la aplicación</strong></a> ·
+  <a href="https://nexusthrive.com.co">Sitio público</a> ·
+  <a href="https://nexusthrive.com.co/help">Centro de ayuda</a> ·
+  <a href="docs/nexus-architecture/product-vision.md">Visión de producto</a> ·
+  <a href="PRODUCT.md">Producto</a> ·
+  <a href="DESIGN.md">Diseño</a>
+</p>
+
+<p align="center">
+  <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white">
+  <img alt="React 19" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black">
+  <img alt="TypeScript 5" src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white">
+  <img alt="Tailwind CSS 4" src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white">
+  <img alt="Prisma 8" src="https://img.shields.io/badge/Prisma-8-2D3748?logo=prisma&logoColor=white">
+  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-Supabase-4169E1?logo=postgresql&logoColor=white">
+  <img alt="Clerk" src="https://img.shields.io/badge/Clerk-Auth-6C47FF?logo=clerk&logoColor=white">
+  <img alt="Vercel" src="https://img.shields.io/badge/Vercel-Deploy-000000?logo=vercel&logoColor=white">
+</p>
+
+<p align="center">
+  <img
+    src="https://raw.githubusercontent.com/NexusThrive/nexus-thrive-web/main/src/assets/product/inicio-light.webp"
+    alt="Inicio de un negocio en NEXUS: ingresos, socios activos, gastos, balance y gráfico de ingresos y gastos de la semana."
+    width="100%"
+  >
+</p>
+
+<p align="center"><sub>Captura real del Inicio de NEXUS en modo claro, con datos de demostración.</sub></p>
+
+## ¿Qué es NEXUS?
+
+NEXUS es una plataforma **multi-negocio (SaaS)** para pymes en Colombia. Reúne
+en un solo lugar lo que hoy suele estar repartido entre un cuaderno o Excel para
+los clientes, WhatsApp para atenderlos, una caja o app para cobrar, un software
+contable para facturar y nada para que el negocio aparezca en internet.
+
+La idea es que **el negocio opere el día entero desde NEXUS**: vender, cobrar,
+facturar, controlar inventario y caja, atender clientes, agendar, gestionar
+membresías y accesos, y hacerse visible. Cada rubro ve su propia versión del
+producto —un gimnasio ve socios, membresías y control de acceso; un museo ve
+taquilla y aforo; una constructora ve obras, APU y actas— pero por debajo son
+las mismas capacidades combinadas.
+
+NEXUS se organiza en superficies complementarias:
+
+| Superficie | Quién la usa | Para qué |
+| --- | --- | --- |
+| **Espacio del negocio** (`/{negocio}/…`) | Dueño, administrador, cajero y equipo | Operar el día: clientes, ventas, cobros, caja, agenda, inventario y acceso |
+| **Operations Center** (`/admin/…`) | Equipo NEXUS | Operar la plataforma: negocios, soporte, planes, facturación y auditoría |
+| **Sitio público y ayuda** ([nexusthrive.com.co](https://nexusthrive.com.co)) | Visitantes y usuarios | Entender el producto y aprender a usarlo |
+
+## ¿Qué queremos lograr?
+
+Queremos que NEXUS sea **el sistema operativo del negocio de una pyme
+colombiana**, no otro ERP aislado ni un software contable más. La visión se
+apoya en estas decisiones:
+
+- **Adaptarse al rubro, no al revés.** El vocabulario, los campos y los módulos
+  cambian según el negocio; el motor de datos es el mismo.
+- **La operación diaria primero, la contabilidad después.** Cada venta y cada
+  gasto se registran bien desde el inicio, con su documento, para entregárselos
+  al contador o a su software.
+- **Cada capacidad sirve sola y mejor acompañada.** El inventario funciona sin
+  POS; con POS descuenta solo. La agenda funciona sin mensajería; con mensajería
+  avisa sola.
+- **El dinero no se equivoca.** Todo cobro es transaccional, con recibo
+  consecutivo, trazabilidad y anulación auditada.
+- **El servidor decide.** Los roles, permisos y módulos se validan en el
+  servidor; la pantalla solo oculta lo que el usuario no puede usar.
+- **Integrar antes que construir** lo que ya es commodity regulado: factura
+  electrónica DIAN, pasarela de pagos, WhatsApp Business y correo.
+- **Colombia de fábrica.** Pesos, NIT, cédula, DIAN, WhatsApp como canal
+  principal y medios de pago locales.
+
+La ruta de construcción está ordenada en seis fases:
+
+| Fase | Objetivo |
+| --- | --- |
+| **1 · Base estable** | Seguridad, permisos, servicio de dinero y módulos validados en el servidor |
+| **2 · Esquema único y capacidades** | Un solo modelo de datos, integridad referencial y registro de capacidades |
+| **3 · Vender y facturar** | POS multi-línea, inventario completo, factura electrónica DIAN y documento POS |
+| **4 · Cobrar y avisar solos** | Pagos en línea, WhatsApp Business API y tareas programadas |
+| **5 · Que lo encuentren** | Mini-sitio del negocio, catálogo público, SEO local y redes |
+| **6 · Ecosistema** | Exportación contable, contador externo, varios negocios por persona y nómina si hay demanda |
+
+El detalle completo está en
+[`docs/nexus-architecture/product-vision.md`](docs/nexus-architecture/product-vision.md),
+y el plan técnico por etapas en
+[`docs/nexus-architecture/roadmap.md`](docs/nexus-architecture/roadmap.md).
+
+## Estado actual
+
+La V1 está en **piloto interno**: se entra con un código de acceso, sin cobro
+automático, y el equipo NEXUS administra a mano los planes y la vigencia de cada
+negocio.
+
+**Funciona hoy de punta a punta:** CRM con ficha 360°, finanzas y caja menor,
+cobros con recibo y anulación auditada, gastos con soporte, inventario con
+movimientos y venta directa, facturación interna (recibos y cuentas de cobro),
+agenda, membresías con control de acceso QR/NFC, taquilla de museo, equipo con
+roles e invitaciones, la vertical de construcción completa y el Operations
+Center.
+
+**En desarrollo o pendiente:** POS con carrito multi-línea, compras y
+proveedores, factura electrónica DIAN, pagos en línea, WhatsApp Business API por
+negocio, automatizaciones programadas y selector de varios negocios por persona.
+
+El inventario funcional, con lo que existe y lo que falta, está en
+[`docs/nexus-architecture/product-inventory.md`](docs/nexus-architecture/product-inventory.md);
+el avance del piloto, en [`docs/V1-PROGRESO.md`](docs/V1-PROGRESO.md).
+
+## Módulos
+
+| Módulo | Qué resuelve | Estado |
+| --- | --- | --- |
+| **Clientes (CRM)** | Ficha 360° con datos por rubro, pagos, membresías, notas, actividad, QR y NFC | Disponible |
+| **Finanzas** | Cobros con recibo consecutivo, caja menor, gastos con soporte y anulación auditada | Disponible |
+| **Inventario y ventas** | Productos y servicios, stock con movimientos y venta directa | Disponible |
+| **Facturación interna** | Recibos y cuentas de cobro numeradas, pago y anulación | Disponible |
+| **Agenda** | Calendario, citas, cupos y recordatorios por WhatsApp | Disponible |
+| **Membresías y acceso** | Planes, renovación, congelamiento, vencimientos y check-in QR/NFC | Disponible |
+| **Taquilla** | Franjas, aforo, grupos y venta de entradas para museos | Disponible |
+| **Construcción** | Catálogo APU, presupuesto, cotización, Lean, bitácora, avance e informes | Disponible |
+| **Equipo y permisos** | Invitaciones, roles y acceso por negocio | Disponible |
+| **Pagos en línea y DIAN** | Cobro automático y factura electrónica | Planificado |
+| **POS multi-línea** | Carrito, descuentos y cierre de turno | Planificado |
+| **Presencia digital** | Mini-sitio, catálogo público y SEO local | En desarrollo |
+
+## Vertical de construcción
+
+Una obra es el contenedor de todo; fuera de ella solo existe el catálogo APU.
+
+| Menú | Ruta | Contenido |
+| --- | --- | --- |
+| Obras | `/{negocio}/projects` | Ficha · Presupuestador · Cotizaciones · Planificador Lean · Bitácora y campo · Informes |
+| Cotizaciones | `/{negocio}/quotes` | Una carpeta por obra con sus versiones y seguimientos |
+| Catálogo APU | `/{negocio}/catalog` | Actividades APU (con auxiliares y capítulos) e insumos con foto; importador en `/catalog/import` |
+
+El flujo completo es: **catálogo → presupuesto → cotización → ejecución →
+informes**. La cotización congela una revisión del presupuesto; cuando el cliente
+aprueba, se crea la línea base (Informe Cero) y el presupuesto se bloquea. La
+planificación Lean, la bitácora con fotos y las actas de avance alimentan el
+informe semanal con valor ganado.
+
+El código vive en `lib/construction/*` (datos por dominio),
+`lib/construction/apu-importer/*` (importador) y
+`app/[tenant]/(app)/{projects,quotes,catalog}`.
+
+## Tecnologías
+
+| Capa | Tecnología | Uso |
+| --- | --- | --- |
+| **Frontend** | Next.js 16.3 (App Router, Turbopack) · React 19.2 · TypeScript 5 | Aplicación, rutas y server components |
+| **Estilos y UI** | Tailwind CSS 4 · `@nexus/brand` · Radix UI · Lucide | Tokens de marca, componentes accesibles e iconos |
+| **Datos** | Prisma 8 (`@prisma/orm-postgres`) · PostgreSQL en Supabase | Contrato de datos, migraciones y consultas |
+| **Identidad** | Clerk | Sesión, registro, organización y actor tokens del equipo NEXUS |
+| **Archivos** | PostgreSQL (`bytea`) · Vercel Blob | Adjuntos, fotos y tránsito de importaciones grandes |
+| **Integraciones** | WhatsApp Cloud API (Meta) · Resend · Photon/Leaflet · Google Places · `tesseract.js` | Bandeja, mapas y OCR de comprobantes |
+| **Calidad** | Vitest · Playwright · axe · Storybook 10 | Pruebas unitarias, integración, E2E, accesibilidad y catálogo de componentes |
+| **Infraestructura** | Vercel · GitHub Actions · pnpm 12 | Despliegue desde `main`, CI y gestión de dependencias |
+
+La Supabase del proyecto se usa **solo como PostgreSQL**: no hay cliente de
+Supabase ni Supabase Auth en el código.
+
+## Arquitectura
+
+NEXUS es hoy un **monolito modular** Next.js con un solo despliegue y una sola
+base de datos. La separación principal está en las rutas:
+
+```
+app/[tenant]/(app)   Espacio del negocio: shell, menú y módulos
+app/admin            Operations Center del equipo NEXUS
+app/onboarding       Alta de un negocio y aplicación de códigos de acceso
+app/api              Route handlers (archivos, Blob, webhooks)
+lib/                 Dominio, datos, reglas de negocio y capacidades
+packages/brand       Sistema de diseño y logo oficial
+prisma/              Contrato de datos y migraciones
+docs/                Arquitectura, guías y SQL de producción
+```
+
+Las páginas y server actions pasan por `requireTenantContext`/`requireStaff`;
+cada negocio se aísla con `tenantId` resuelto en el servidor. Los flujos de
+dinero usan el servicio transaccional de dinero y las reglas puras viven junto a
+sus pruebas. La auditoría completa, con hallazgos y deuda técnica, está en
+[`docs/nexus-architecture/README.md`](docs/nexus-architecture/README.md) y la
+arquitectura objetivo en
+[`docs/nexus-architecture/target-architecture.md`](docs/nexus-architecture/target-architecture.md).
 
 ## Puesta en marcha
 
@@ -31,34 +220,13 @@ Variables de entorno:
 
 Para **producción** hay una lista completa con valores sugeridos en
 `.env.produccion` y el orden de ejecución del SQL en
-`docs/prod-sql/00-ORDEN.md`.
+[`docs/prod-sql/00-ORDEN.md`](docs/prod-sql/00-ORDEN.md).
 
-## La V1 (piloto interno)
+### Autenticación en producción
 
-La V1 se entrega como **piloto interno**: NEXUS entra por un código de
-acceso, sin cobro automático. El equipo NEXUS administra a mano los planes y
-la vigencia de cada negocio.
-
-| Pieza | Dónde |
-| --- | --- |
-| Códigos de acceso (promo gratis / pago) | `/c/{código}` y el panel *Accesos* (`/admin/beneficios`) |
-| Onboarding sin precios: código, pago por WhatsApp o plan gratis | `/onboarding` |
-| Operations Center (panel de NEXUS) | `/admin` |
-| Tarjeta fija de las tarjetas impresas | QR a `https://app.nexusthrive.com.co/c/ELITE30` |
-
-Los dos tipos de código se distinguen solo en el texto que ve la persona: un
-**promo** anuncia "N días gratis" y un **acceso pagado** (emitido tras
-confirmar el pago por WhatsApp) anuncia "Cuenta NEXUS activada".
-
-El servidor decide el plan y los módulos: nunca los acepta del navegador, y
-el canje de un código de un solo uso es atómico. Al vencer el acceso, el
-negocio vuelve al plan Essential. Ver `docs/V1-PROGRESO.md`.
-
-## Autenticación en producción
-
-El login lo monta Clerk en el navegador, desde un host que viene codificado en
-la Publishable Key. Al cambiar de dominio hay que actualizar la key, el
-CNAME del Frontend API y los orígenes permitidos: todo está en
+El login lo monta Clerk en el navegador, desde un host codificado en la
+Publishable Key. Al cambiar de dominio hay que actualizar la key, el CNAME del
+Frontend API y los orígenes permitidos. Todo está en
 [`docs/clerk-produccion.md`](docs/clerk-produccion.md).
 
 ## Verificación
@@ -71,45 +239,42 @@ DATABASE_URL=$TEST_DATABASE_URL pnpm test:integration
 pnpm build
 ```
 
-El CI (`.github/workflows/ci.yml`) ejecuta todo esto sobre un Postgres efímero. El test `lib/construction/apu-importer/master-pack*.file*.test.ts` verifica un pack APU real si se le pasa `MASTER_PACK_FILE=/ruta/al/archivo.xlsx`.
+El CI (`.github/workflows/ci.yml`) ejecuta todo esto sobre un Postgres efímero.
+El test `lib/construction/apu-importer/master-pack*.file*.test.ts` verifica un
+pack APU real si se le pasa `MASTER_PACK_FILE=/ruta/al/archivo.xlsx`.
 
-Cómo preparar la base de pruebas y qué prueba escribir: [`docs/guias/pruebas.md`](docs/guias/pruebas.md). Cómo agregar una funcionalidad: [`docs/guias/nueva-funcionalidad.md`](docs/guias/nueva-funcionalidad.md). Ramas, CI, secretos y despliegue: [`docs/guias/devops.md`](docs/guias/devops.md).
+- Cómo preparar la base de pruebas: [`docs/guias/pruebas.md`](docs/guias/pruebas.md).
+- Cómo agregar una funcionalidad: [`docs/guias/nueva-funcionalidad.md`](docs/guias/nueva-funcionalidad.md).
+- Ramas, CI, secretos y despliegue: [`docs/guias/devops.md`](docs/guias/devops.md).
 
 ## Versiones
 
 `main` es la única rama que se despliega (Vercel la toma sola) y cada versión
 publicada lleva un tag: `v1.0.0` (V1), `v1.0.1` (parche), `v1.1.0`
-(funcionalidad nueva), `v2.0.0` (rompe algo de lo existente).
+(funcionalidad nueva) y `v2.0.0` (rompe algo de lo existente).
 
 ```bash
 pnpm release v1.0.1 "fix(ventas): no deja registrar una venta sin fecha"
 ```
 
 El script verifica que el árbol esté limpio y en `main`, corre las puertas
-(tipos, lint, pruebas, build) y crea y sube el tag. **No** sube `main` ni
-aplica el SQL de producción: eso es del PR y del SQL Editor de Supabase.
+(tipos, lint, pruebas y build) y crea y sube el tag. **No** sube `main` ni aplica
+el SQL de producción: eso es del PR y del SQL Editor de Supabase.
 
-El proceso completo —ramas, cuándo es PATCH o MINOR, qué hacer si producción
-está rota, checklist de verificación— está en
-[`docs/VERSIONADO.md`](docs/VERSIONADO.md), y el historial de versiones en
-[`CHANGELOG.md`](CHANGELOG.md).
+El proceso completo está en [`docs/VERSIONADO.md`](docs/VERSIONADO.md) y el
+historial en [`CHANGELOG.md`](CHANGELOG.md).
 
-## Vertical de construcción
+## Documentación
 
-Una obra es el contenedor de todo; fuera de ella solo existe el catálogo APU.
+| Documento | Para qué |
+| --- | --- |
+| [`PRODUCT.md`](PRODUCT.md) | Qué es NEXUS, para quién y principios de producto |
+| [`DESIGN.md`](DESIGN.md) | Marca, tokens, componentes, movimiento y layout |
+| [`docs/nexus-architecture/`](docs/nexus-architecture/README.md) | Auditoría, arquitectura actual y objetivo, seguridad, deuda y roadmap |
+| [`docs/design/`](docs/design/interaction-patterns.md) | Patrones de interacción, accesibilidad y calidad |
+| [`docs/guias/`](docs/guias/README.md) | Pruebas, nueva funcionalidad y DevOps |
+| [`docs/prod-sql/`](docs/prod-sql/00-ORDEN.md) | Orden del SQL manual de producción |
 
-| Menú | Ruta | Contenido |
-| --- | --- | --- |
-| Obras | `/{negocio}/projects` | Listado y contenedor de la obra: Ficha · Presupuestador · Cotizaciones · Planificador Lean · Bitácora y campo · Informes |
-| Cotizaciones | `/{negocio}/quotes` | Una carpeta por obra con sus versiones y seguimientos |
-| Catálogo APU | `/{negocio}/catalog` | Actividades APU (con auxiliares y capítulos) e insumos con foto; importador en `/catalog/import` |
+---
 
-Flujo:
-
-1. **Catálogo.** Se importa el libro APU completo (ACTIVIDADES, APU, APU AUXILIARES, MATERIALES, CAPITULOS) con las fotos de los insumos. Cada línea se guarda tal como viene en el archivo y cada APU se verifica contra su costo directo. Reimportar actualiza sin borrar nada: las líneas manuales y las fotos se conservan, y los cambios de precio quedan en el historial.
-2. **Presupuesto.** La obra importa actividades del catálogo; su composición se copia (los precios quedan congelados en la obra).
-3. **Cotización.** Emitir una versión congela una revisión del presupuesto. Una versión nueva reemplaza la anterior. Cuando el cliente aprueba, la obra queda contratada: se crea la línea base (Informe Cero) y el presupuesto se bloquea.
-4. **Ejecución.** Planificación Lean (lookahead, compromisos, PPC, CNC), bitácora con fotos y actas de avance por partida. La primera acta pasa la obra a En ejecución.
-5. **Informes.** Informe Cero, informe semanal con valor ganado y avance físico, BOM en CSV y presupuesto en Excel.
-
-El código vive en `lib/construction/*` (capa de datos por dominio), `lib/construction/apu-importer/*` (importador) y `app/[tenant]/(app)/{projects,quotes,catalog}`.
+<p align="center"><sub>NEXUS THRIVE · Hecho en Colombia para que operar un negocio sea más simple.</sub></p>
