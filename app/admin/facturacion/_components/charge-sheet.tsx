@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { AlertTriangle, BellRing, Check, FileText, Paperclip, Undo2, XCircle } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
@@ -36,6 +37,7 @@ export const DUNNING_TONE: Record<ChargeRow["dunning"]["stage"], "success" | "wa
  */
 export default function ChargeSheet({ charge, onClose, perms, today }: { charge: ChargeRow; onClose: () => void; perms: BillingPerms; today: string }) {
   const { run, pending } = useBilling();
+  const [confirm, confirmDialog] = useConfirm();
   const [method, setMethod] = useState(charge.method ?? "");
   const [reference, setReference] = useState(charge.reference ?? "");
   const [paidDate, setPaidDate] = useState(charge.paidDate ?? today);
@@ -59,9 +61,9 @@ export default function ChargeSheet({ charge, onClose, perms, today }: { charge:
 
   return (
     <ResponsiveSheet
+      drawer
       open
       onOpenChange={(o) => !o && onClose()}
-      wide
       title={`${charge.tenantName} · ${formatUsdCents(charge.amountUsdCents)}`}
       description={`Período ${charge.periodStart} → ${charge.periodEnd} · vence ${charge.dueDate}`}
     >
@@ -94,7 +96,10 @@ export default function ChargeSheet({ charge, onClose, perms, today }: { charge:
                 <button
                   type="button"
                   disabled={pending}
-                  onClick={() => window.confirm(`¿Suspender el servicio de ${charge.tenantName} por falta de pago? Se reactiva solo al confirmar el pago.`) && run(() => suspendForNonPaymentAction(charge.id))}
+                  onClick={async () => {
+                    const ok = await confirm({ title: `¿Suspender a ${charge.tenantName} por falta de pago?`, description: "El servicio se reactiva solo al confirmar el pago.", confirmLabel: "Suspender servicio" });
+                    if (ok) run(() => suspendForNonPaymentAction(charge.id));
+                  }}
                   className={buttonVariants({ size: "sm", variant: "danger" })}
                 >
                   Suspender por falta de pago
@@ -208,6 +213,7 @@ export default function ChargeSheet({ charge, onClose, perms, today }: { charge:
           )
         ) : null}
       </div>
+      {confirmDialog}
     </ResponsiveSheet>
   );
 }

@@ -62,7 +62,7 @@ export default async function BeneficiosPage({
   return (
     <div className="grid gap-5">
       <PageHeader
-        eyebrow="Administración"
+        eyebrow="Producto"
         title="Accesos"
         description="Códigos de acceso a NEXUS. Los promocionales se regalan (tarjetas, eventos) y los de pago se emiten después de confirmar el pago. Quien usa un código pagado ve &quot;cuenta activada&quot;, no &quot;gratis&quot;."
       />

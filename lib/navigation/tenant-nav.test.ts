@@ -13,8 +13,15 @@ describe("buildTenantNav", () => {
 
   it("solo muestra módulos activos y siempre Configuración", () => {
     const groups = buildTenantNav("gym", ["dashboard", "crm"]);
-    expect(groups.map((g) => g.label)).toEqual(["General", "Gestión", "Sistema"]);
+    expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y operación", "Sistema"]);
     expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["", "/crm", "/settings"]);
+  });
+
+  it("agrupa por trabajo y omite los grupos vacíos", () => {
+    const groups = buildTenantNav("gym", ["dashboard", "crm", "memberships", "finance", "payments", "whatsapp"]);
+    expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y operación", "Dinero", "Canales", "Sistema"]);
+    // Pagos vive dentro de Finanzas: no se repite.
+    expect(groups.find((g) => g.label === "Dinero")?.items.map((i) => i.label)).toEqual(["Finanzas"]);
   });
 
   it("cotizaciones en construcción abre Obras, Cotizaciones y Catálogo APU", () => {

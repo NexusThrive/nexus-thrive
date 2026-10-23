@@ -25,6 +25,8 @@ import CatalogImportModal from "./catalog-import-modal";
 import ApuEditorModal from "./apu-editor-modal";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { EmptyState } from "@/components/molecules/empty-state";
+import { useConfirm } from "@/components/organisms/confirm-dialog";
+import { useToast } from "@/components/molecules/toast";
 
 /** Tarjeta KPI del resumen financiero del presupuesto. */
 function KpiCard({
@@ -130,6 +132,8 @@ export default function BudgetWorkspace({
       URL.revokeObjectURL(url);
     });
   const [isDeleting, startDelete] = useTransition();
+  const [confirm, confirmDialog] = useConfirm();
+  const { toast } = useToast();
   const [isApproving, startApprove] = useTransition();
 
   const totals = useMemo(() => {
@@ -162,23 +166,29 @@ export default function BudgetWorkspace({
     });
   };
 
-  const onDeleteChapter = (chapterId: string) => {
-    if (!window.confirm("¿Eliminar este capítulo y todas sus partidas?")) return;
+  const onDeleteChapter = async (chapterId: string) => {
+    const ok = await confirm({
+      title: "¿Eliminar este capítulo?",
+      description: "Se eliminan también todas sus partidas y sus APU. No se puede deshacer.",
+      confirmLabel: "Eliminar capítulo",
+    });
+    if (!ok) return;
     startDelete(async () => {
       const res = await deleteChapterAction(tenantSlug, projectId, chapterId);
       if (!res.ok) {
-        window.alert(res.message ?? "No se pudo eliminar el capítulo.");
+        toast({ title: "No se pudo eliminar el capítulo.", description: res.message, variant: "error" });
       }
       router.refresh();
     });
   };
 
-  const onDeleteItem = (itemId: string) => {
-    if (!window.confirm("¿Eliminar esta partida?")) return;
+  const onDeleteItem = async (itemId: string) => {
+    const ok = await confirm({ title: "¿Eliminar esta partida?", description: "Se elimina con su APU. No se puede deshacer.", confirmLabel: "Eliminar partida" });
+    if (!ok) return;
     startDelete(async () => {
       const res = await deleteBudgetItemAction(tenantSlug, projectId, itemId);
       if (!res.ok) {
-        window.alert(res.message ?? "No se pudo eliminar la partida.");
+        toast({ title: "No se pudo eliminar la partida.", description: res.message, variant: "error" });
       }
       router.refresh();
     });
@@ -194,7 +204,7 @@ export default function BudgetWorkspace({
         note.trim() ? note.trim() : undefined,
       );
       if (!res.ok) {
-        window.alert(res.message ?? "No se pudo aprobar la línea base.");
+        toast({ title: "No se pudo aprobar la línea base.", description: res.message, variant: "error" });
       }
       router.refresh();
     });
@@ -644,6 +654,7 @@ export default function BudgetWorkspace({
             onClose={() => setApuItem(null)}
           />
         ) : null}
+        {confirmDialog}
     </div>
   );
 }

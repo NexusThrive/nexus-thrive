@@ -165,3 +165,34 @@ test.describe("Movimiento reducido", () => {
     expect(parseFloat(duration)).toBeLessThanOrEqual(0.001);
   });
 });
+
+test.describe("Movimiento reducido del sistema", () => {
+  test.use({ reducedMotion: "reduce" });
+
+  test("la ayuda flotante y los menús tampoco animan", async ({ page }) => {
+    await openStory(page, "moléculas-contexthelp--default");
+    await page.getByRole("button", { name: /Ayuda sobre/ }).click();
+    const content = page.getByRole("dialog");
+    await expect(content).toBeVisible();
+    const duration = await content.evaluate((el) => getComputedStyle(el).animationDuration);
+    expect(parseFloat(duration)).toBeLessThanOrEqual(0.001);
+  });
+});
+
+test.describe("Confirmación sobre un panel", () => {
+  test("Escape cierra solo la confirmación y el foco vuelve al panel", async ({ page }, info) => {
+    test.skip(info.project.name === "movil", "Teclado: solo escritorio.");
+    await openStory(page, "organismos-confirmdialog--inside-sheet");
+    await page.getByRole("button", { name: "Ver venta" }).click();
+    const sheet = page.getByRole("dialog", { name: "Venta #1042" });
+    const anular = sheet.getByRole("button", { name: "Anular", exact: true });
+    await anular.click();
+    const confirmDialog = page.getByRole("dialog", { name: "¿Anular la venta?" });
+    await expect(confirmDialog).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(confirmDialog).toBeHidden();
+    await expect(sheet).toBeVisible();
+    await expect(anular).toBeFocused();
+    await expect(page.getByTestId("result")).toHaveText("Sin cambios");
+  });
+});

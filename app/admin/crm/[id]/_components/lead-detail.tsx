@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { textareaClasses } from "@/components/atoms/input";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
+import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { followUpState, isActiveStage, LEAD_ACTIVITY_KINDS, LEAD_STAGES, stageMeta } from "@/lib/ops/crm-rules";
 import type { LeadActivityRow, LeadRow } from "@/lib/ops/leads";
 import { formatDateTime } from "@/lib/format";
@@ -47,6 +48,7 @@ export default function LeadDetail({
   const [kind, setKind] = useState<Kind>("call");
   const [body, setBody] = useState("");
   const [pending, start] = useTransition();
+  const [confirm, confirmDialog] = useConfirm();
   const router = useRouter();
   const { toast } = useToast();
   const follow = followUpState(lead.stage, lead.nextStepDate, today);
@@ -139,8 +141,9 @@ export default function LeadDetail({
             {canAssign ? (
               <button
                 type="button"
-                onClick={() => {
-                  if (!window.confirm(`¿Eliminar el lead ${lead.company}? Se borra su actividad.`)) return;
+                onClick={async () => {
+                  const ok = await confirm({ title: `¿Eliminar el lead ${lead.company}?`, description: "Se borra también su actividad. No se puede deshacer.", confirmLabel: "Eliminar lead" });
+                  if (!ok) return;
                   start(async () => {
                     const r = await deleteLeadAction(lead.id);
                     if (r.ok) router.push("/admin/crm");
@@ -183,6 +186,7 @@ export default function LeadDetail({
       </div>
 
       {editing ? <LeadSheet lead={lead} open onOpenChange={setEditing} owners={owners} tenants={tenants} me={me} today={today} canAssign={canAssign} /> : null}
+      {confirmDialog}
     </div>
   );
 }

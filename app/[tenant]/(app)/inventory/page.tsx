@@ -20,7 +20,7 @@ export default async function InventoryPage({ params, searchParams }: { params: 
   ]);
   return (
     <div className="grid gap-5">
-      <PageHeader eyebrow="Gestión" title="Catálogo" description={`${kinds.map((k) => KIND_LABELS[k].many).join(", ")}: precios, inventario y ventas.`} />
+      <PageHeader eyebrow="Clientes y operación" title="Catálogo" description={`${kinds.map((k) => KIND_LABELS[k].many).join(", ")}: precios, inventario y ventas.`} />
       <CatalogView slug={tenant} products={products} kinds={kinds} customers={customers} canManage={canManage(ctx.role)} initialNew={nuevo === "1"} />
     </div>
   );

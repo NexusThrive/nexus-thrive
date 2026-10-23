@@ -1,25 +1,18 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { ShieldAlert } from "lucide-react";
-import { NLoader } from "@/components/atoms/n-loader";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/organisms/dialog";
 import { Button } from "@/components/atoms/button";
+import { textareaClasses } from "@/components/atoms/input";
+import { Field } from "@/components/molecules/field";
+import { FormDialog } from "@/components/organisms/form-sheet";
 import { suspendTenantAction, type AdminFormState } from "../actions";
 
 const IDLE: AdminFormState = { status: "idle" };
 
 /**
  * Diálogo de suspensión: el motivo es obligatorio (queda en el historial del
- * negocio y en la bitácora de auditoría). Al confirmar, el panel y el drawer
+ * negocio y en la bitácora de auditoría). Al confirmar, el panel y la ficha
  * se refrescan.
  */
 export default function SuspendDialog({
@@ -32,92 +25,45 @@ export default function SuspendDialog({
   onSuspended?: () => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
-
-  const handleSubmit = (formData: FormData) => {
-    setError(null);
-    startTransition(async () => {
-      const result = await suspendTenantAction(IDLE, formData);
-      if (result.status === "ok") {
-        setOpen(false);
-        onSuspended?.();
-      } else {
-        setError(result.message ?? "No se pudo suspender el negocio.");
-      }
-    });
-  };
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(next) => {
-        setOpen(next);
-        if (!next) setError(null);
-      }}
-    >
-      <Button
-        type="button"
-        variant="destructive"
-        size="sm"
-        onClick={() => setOpen(true)}
-      >
+    <>
+      <Button type="button" variant="danger" size="sm" onClick={() => setOpen(true)}>
         <ShieldAlert aria-hidden="true" />
         Suspender
       </Button>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>¿Suspender “{tenantName}”?</DialogTitle>
-          <DialogDescription>
-            El subdominio dejará de responder y la app quedará oculta en el
-            host base. El motivo se registra en la auditoría.
-          </DialogDescription>
-        </DialogHeader>
-
-        <form action={handleSubmit} className="space-y-3">
-          <input type="hidden" name="tenantId" value={tenantId} />
-          <div className="space-y-1.5">
-            <label
-              htmlFor={`suspend-reason-${tenantId}`}
-              className="text-sm font-medium"
-            >
-              Motivo
-            </label>
+      <FormDialog
+        open={open}
+        onOpenChange={setOpen}
+        title={`¿Suspender “${tenantName}”?`}
+        description="El negocio deja de poder entrar a su espacio hasta que se reactive. El motivo queda en la auditoría."
+        submitLabel="Suspender negocio"
+        pendingLabel="Suspendiendo…"
+        destructive
+        onSubmit={async (formData) => {
+          formData.set("tenantId", tenantId);
+          const result = await suspendTenantAction(IDLE, formData);
+          return result.status === "ok"
+            ? { ok: true }
+            : { ok: false, message: result.message ?? "No se pudo suspender el negocio." };
+        }}
+        onSuccess={() => onSuspended?.()}
+      >
+        <Field label="Motivo" required hint="Entre 5 y 300 caracteres. Lo verá el equipo en el historial.">
+          {(control) => (
             <textarea
-              id={`suspend-reason-${tenantId}`}
+              {...control}
               name="reason"
               required
               minLength={5}
               maxLength={300}
               rows={3}
               placeholder="Ej. incumplimiento de pago, solicitud del cliente…"
-              className="w-full rounded-md border border-border bg-transparent px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+              className={textareaClasses}
             />
-          </div>
-
-          {error ? (
-            <p role="alert" className="text-xs text-destructive">
-              {error}
-            </p>
-          ) : null}
-
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="outline" disabled={pending}>
-                Cancelar
-              </Button>
-            </DialogClose>
-            <Button type="submit" variant="destructive" disabled={pending}>
-              {pending ? (
-                <NLoader size={16} className="text-current" />
-              ) : (
-                <ShieldAlert aria-hidden="true" />
-              )}
-              Suspender negocio
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+          )}
+        </Field>
+      </FormDialog>
+    </>
   );
 }

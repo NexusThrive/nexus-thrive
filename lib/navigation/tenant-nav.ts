@@ -113,9 +113,28 @@ export const SETTINGS_ITEM: NavItem = {
 };
 
 /**
+ * Grupo de la barra lateral de cada módulo, por el trabajo que resuelve (no
+ * por el orden en que se activó): atender y operar, mover dinero, hablar con
+ * los clientes. Un grupo sin módulos activos no aparece.
+ */
+const MODULE_GROUP: Record<Exclude<ModuleValue, "dashboard">, "Clientes y operación" | "Dinero" | "Canales"> = {
+  crm: "Clientes y operación",
+  bookings: "Clientes y operación",
+  memberships: "Clientes y operación",
+  orders: "Clientes y operación",
+  quotes: "Clientes y operación",
+  inventory: "Clientes y operación",
+  finance: "Dinero",
+  payments: "Dinero",
+  billing: "Dinero",
+  whatsapp: "Canales",
+};
+const GROUP_ORDER = ["Clientes y operación", "Dinero", "Canales"] as const;
+
+/**
  * Navegación del negocio: solo los módulos activos, en el orden del catálogo,
  * con el vocabulario de la vertical (Socios, Pacientes, Obras…). Grupos:
- * General (inicio, siempre), Gestión (módulos) y Sistema (configuración).
+ * General (inicio, siempre), los de `MODULE_GROUP` y Sistema (configuración).
  */
 export function buildTenantNav(vertical: VerticalValue, activeModules: readonly ModuleValue[]): NavGroup[] {
   const terms = getVerticalTerms(vertical);
@@ -135,7 +154,10 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
   return [
     // El inicio existe siempre (es la raíz del negocio), con o sin el módulo.
     { label: "General", items: items("dashboard") },
-    { label: "Gestión", items: enabled.filter((m) => m !== "dashboard").flatMap(items) },
+    ...GROUP_ORDER.map((label) => ({
+      label,
+      items: enabled.filter((m) => m !== "dashboard" && MODULE_GROUP[m] === label).flatMap(items),
+    })),
     { label: "Sistema", items: [SETTINGS_ITEM] },
   ].filter((group) => group.items.length > 0);
 }

@@ -17,7 +17,7 @@ export default async function FacturacionPage() {
   const p = staff.permissions;
   return (
     <div className="grid gap-5">
-      <PageHeader eyebrow="Administración" title="Facturación" description="Suscripciones de los negocios a NEXUS THRIVE. Ningún pago se confirma sin comprobante." />
+      <PageHeader eyebrow="Cuentas" title="Facturación" description="Suscripciones de los negocios a NEXUS THRIVE. Ningún pago se confirma sin comprobante." />
       <BillingView
         subs={subs}
         charges={charges}

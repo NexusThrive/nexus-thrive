@@ -109,7 +109,7 @@ export function ConfirmDialog({
       }
     >
       <div className="grid gap-3">
-        {tone === "danger" || children ? (
+        {children ? (
           <div className="flex items-start gap-3">
             {tone === "danger" ? (
               <IconTile tone="danger">

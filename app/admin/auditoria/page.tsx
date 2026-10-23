@@ -45,7 +45,7 @@ export default async function AuditoriaPage({ searchParams }: { searchParams: Pr
 
   return (
     <div className="grid gap-5">
-      <PageHeader eyebrow="Sistema" title="Auditoría" description="Cada acción del equipo NEXUS sobre la plataforma y los negocios. No se edita ni se borra." />
+      <PageHeader eyebrow="Plataforma" title="Auditoría" description="Cada acción del equipo NEXUS sobre la plataforma y los negocios. No se edita ni se borra." />
       <AuditFilters
         action={action}
         actor={actor}

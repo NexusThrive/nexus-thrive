@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { withShell } from "../../.storybook/decorators";
+import { AppShellProvider } from "@/components/providers/shell-context";
+import { opsNavFor } from "@/lib/ops/nav";
 import { AppSidebar } from "./app-sidebar";
 
 const meta = {
@@ -24,3 +26,28 @@ type Story = StoryObj<typeof meta>;
 
 export const Desktop: Story = { render: () => <div className="h-[640px]"><AppSidebar /></div> };
 export const Tablet: Story = { ...Desktop, globals: { viewport: { value: "tablet" } } };
+
+/** Panel CEO (Operations Center) con todos los permisos: grupos por responsabilidad. */
+export const OperationsCenter: Story = {
+  render: () => {
+    const groups = opsNavFor(["accounts.view", "tickets.view", "leads.view", "presence.view", "billing.view", "catalog.edit", "team.invite", "audit.view"]);
+    return (
+      <AppShellProvider
+        value={{
+          brandName: "Operations Center",
+          brandSub: "dirección",
+          groups,
+          activeKey: "inicio",
+          title: "Inicio",
+          hrefFor: (href) => href,
+          quickActions: [],
+          openSearch: () => {},
+        }}
+      >
+        <div className="h-[720px]">
+          <AppSidebar />
+        </div>
+      </AppShellProvider>
+    );
+  },
+};

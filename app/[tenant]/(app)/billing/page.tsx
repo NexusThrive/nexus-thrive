@@ -21,7 +21,7 @@ export default async function BillingPage({ params, searchParams }: { params: Pr
   ]);
   return (
     <div className="grid gap-5">
-      <PageHeader eyebrow="Gestión" title="Facturación" description="Cuentas de cobro y recibos numerados. Al marcarlos como pagados se registra el cobro con su recibo." />
+      <PageHeader eyebrow="Dinero" title="Facturación" description="Cuentas de cobro y recibos numerados. Al marcarlos como pagados se registra el cobro con su recibo." />
       <BillingList
         slug={tenant}
         rows={rows}

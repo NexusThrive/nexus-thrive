@@ -39,8 +39,10 @@ una pantalla, un formulario o una acción, se elige el patrón con esta guía.
 1. **Un patrón por tipo de operación.** "Nuevo cliente", "Nuevo producto",
    "Nueva cita" abren todos un diálogo o todos un panel según su tamaño, no
    según quién los programó.
-2. **Sin diálogos dentro de diálogos.** Si desde un panel hay que confirmar,
-   el `ConfirmDialog` reemplaza el flujo o la acción se hace en el panel.
+2. **Sin diálogos dentro de diálogos**, con una sola excepción: confirmar
+   una acción destructiva desde un panel abierto (anular una venta desde su
+   ficha) abre un `ConfirmDialog` encima. Escape cierra solo la confirmación
+   y el foco vuelve al botón del panel (probado en `e2e/overlays.spec.ts`).
 3. **Sin `window.confirm` ni `alert`.** Usar `ConfirmDialog` / `useConfirm()`.
 4. **Un modal bloquea el fondo.** Todos los diálogos y paneles de NEXUS son
    modales (Radix Dialog). Un panel no modal tendría otro contrato
@@ -58,20 +60,20 @@ una pantalla, un formulario o una acción, se elige el patrón con esta guía.
 
 | Operación | Patrón | Dónde |
 |---|---|---|
-| Nuevo cliente / editar cliente (varias secciones) | Panel lateral¹ | `crm/_components/customer-sheet.tsx` |
-| Ficha de producto | Panel lateral¹ | `inventory/_components/product-detail.tsx` |
-| Detalle de una cita | Panel lateral¹ | `bookings/_agenda/booking-detail.tsx` |
+| Nuevo cliente / editar cliente (varias secciones) | Panel lateral | `crm/_components/customer-sheet.tsx` |
+| Ficha de producto | Panel lateral | `inventory/_components/product-detail.tsx` |
+| Detalle de una cita | Panel lateral | `bookings/_agenda/booking-detail.tsx` |
 | Renovar membresía | Diálogo | `memberships/_components/membership-modal.tsx` |
 | Cobrar / registrar gasto | Diálogo | `components/organisms/payment-sheet.tsx`, `expense-sheet.tsx` |
 | Eliminar clientes archivados | Confirmación | `crm/_components/customer-table.tsx` |
 | Eliminar el negocio | Confirmación escribiendo "eliminar" | `components/organisms/delete-business-dialog.tsx` |
+| Anular una venta desde su ficha | Panel + confirmación encima | `tickets/_components/ticket-desk.tsx` |
+| Ficha de un negocio (panel CEO) | Panel lateral `lg` | `app/admin/_components/tenant-drawer.tsx` |
+| Suspender un negocio | `FormDialog` destructivo | `app/admin/_components/suspend-dialog.tsx` |
 | Ayuda de un campo | Ayuda "?" | `components/molecules/context-help.tsx` |
 | Presupuesto APU | Página | `projects/[projectId]` |
 | Onboarding | Página | `app/[tenant]/onboarding` |
 | Activar un módulo | En línea (interruptor) | `settings/_components/modules-tab.tsx` |
-
-¹ Hoy abren como diálogo centrado; pasan a panel lateral en la migración de
-formularios (auditoría §4).
 
 La lista de cada formulario existente y su patrón está en
 [auditoria-2026-10.md §4](auditoria-2026-10.md#4-formularios).

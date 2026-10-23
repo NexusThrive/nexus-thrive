@@ -40,11 +40,11 @@ visible o riesgo; **Baja** = pulido.
 | C2 | Alta | Capas `z-index` sin sistema: tooltip y menús en `z-50`, por **debajo** de los paneles (`z-71`) que los contienen; barra lateral también en 50 que el diálogo de shadcn. 19 valores distintos. | **Corregido**: escala `--z-*` (PR 1) |
 | C3 | Alta | `DeleteBusinessDialog` hecho a mano: sin foco atrapado, sin Escape, sin devolución del foco; colores `rose-*` fuera de la marca. | **Corregido**: sobre `ConfirmDialog` (PR 1) |
 | C4 | Media | `Field` apuntaba `aria-describedby` a la descripción aunque no se mostrara (con error se ocultaba): referencia rota y la descripción desaparecía al equivocarse. Sin `aria-required`, sin "(opcional)". | **Corregido** (PR 1) |
-| C5 | Media | No había ayuda "?" accesible: la explicación vivía en atributos `title` (62 archivos de `app/` los usan; no llegan por teclado ni táctil). | `ContextHelp` creado (PR 1); migrar los `title` que explican algo (PR 2) |
-| C6 | Media | Tres diálogos distintos: `ResponsiveSheet`, `organisms/dialog.tsx` y `organisms/sheet.tsx` (shadcn sin adaptar: `bg-black/50`, `z-50`, sin hoja móvil). | Alineados a tokens y marcados `@deprecated` (PR 1); migrar sus 3 usos (PR 2) |
+| C5 | Media | No había ayuda "?" accesible: la explicación vivía en atributos `title` (62 archivos de `app/` los usan; no llegan por teclado ni táctil). | `ContextHelp` creado (PR 1). PR 2: los `title` que explicaban en botones y enlaces (invitación, salud de la cuenta, desvincular) pasan a `ContextHelp` o a la confirmación; quedan `title` de texto truncado (no son ayuda) |
+| C6 | Media | Tres diálogos distintos: `ResponsiveSheet`, `organisms/dialog.tsx` y `organisms/sheet.tsx` (shadcn sin adaptar: `bg-black/50`, `z-50`, sin hoja móvil). | PR 2: sus 3 usos migrados (ficha del negocio, suspender, paleta del panel CEO) y **eliminados**; la prueba de UI impide usar Radix Dialog fuera de la base |
 | C7 | Media | No había formulario en superficie: cada panel repetía pie, botón de carga, bloqueo y manejo de errores, con resultados distintos. | `FormDialog`/`FormDrawer` (PR 1) |
-| C8 | Media | Confirmaciones con `window.confirm`: 10 usos en 9 archivos (texto del navegador, sin marca, no muestra el error). La única confirmación propia vivía dentro de CRM. | `ConfirmDialog` + `useConfirm()` compartidos (PR 1); migrarlos (PR 2). La prueba `lib/design/ui-rules.test.ts` impide sumar nuevos |
-| C9 | Media | La opción `drawer` del panel no la usa nadie: fichas y registros largos (cliente: 24 campos; lead: 27) abren como modal centrado. | Ver §4 (PR 2) |
+| C8 | Media | Confirmaciones con `window.confirm`: 10 usos en 9 archivos (texto del navegador, sin marca, no muestra el error). La única confirmación propia vivía dentro de CRM. | `ConfirmDialog` + `useConfirm()` compartidos (PR 1); **PR 2: todos migrados**, y los 5 `window.alert` pasaron a avisos. La prueba `lib/design/ui-rules.test.ts` impide sumar nuevos |
+| C9 | Media | La opción `drawer` del panel no la usa nadie: fichas y registros largos (cliente: 24 campos; lead: 27) abren como modal centrado. | **PR 2**: 10 fichas y registros pasan a panel lateral (§4) |
 | C10 | Baja | Faltaban tokens de capas, elevación, foco, anchos de superficies y movimiento de superposiciones; duraciones repetidas a mano. | **Corregido** (PR 1) |
 | C11 | Baja | No había `LoadingState` para secciones (solo `PageSkeleton` de página o spinners sueltos). | Creado (PR 1) |
 | C12 | Baja | Public Stunt está cargada pero ningún componente la usa; su archivo es de uso personal. | Documentado; sin cambios |
@@ -53,12 +53,12 @@ visible o riesgo; **Baja** = pulido.
 
 | # | Sev. | Hallazgo | Propuesta |
 |---|---|---|---|
-| P1 | Media | Navegación agrupada como "Operaciones · Clientes · Administración · Sistema", que no sigue el trabajo del equipo: "Onboarding" y "Negocios" en Operaciones pero "Salud de cuentas" en Clientes; "Presence Thrive" junto a Soporte; "Accesos" (códigos de activación) con un nombre que no dice qué es. | Reagrupar por responsabilidad: **Hoy** (Inicio, Bandeja, Soporte) · **Cuentas** (Negocios, Onboarding, Salud, Facturación) · **Comercial** (CRM, Presence, Satisfacción) · **Producto** (Planes y módulos, Códigos de activación) · **Plataforma** (Equipo y permisos, Auditoría) (PR 2) |
-| P2 | Media | El inicio muestra hasta 9 grupos de prioridad seguidos antes de las métricas; los vacíos ocupan sitio. | Mostrar primero los grupos con pendientes y plegar los vacíos (PR 2) |
-| P3 | Media | Mezcla de idiomas: "Operations Center", "lead", "Presence Thrive", "Onboarding". | Mantener los nombres de producto (Presence Thrive, NEXUS Operations Center) y pasar a español lo genérico donde no rompa rutas (PR 2) |
+| P1 | Media | Navegación agrupada como "Operaciones · Clientes · Administración · Sistema", que no sigue el trabajo del equipo: "Onboarding" y "Negocios" en Operaciones pero "Salud de cuentas" en Clientes; "Presence Thrive" junto a Soporte; "Accesos" (códigos de activación) con un nombre que no dice qué es. | **PR 2**: reagrupado por responsabilidad: **Hoy** (Inicio, Bandeja, Soporte) · **Cuentas** (Negocios, Onboarding, Salud, Facturación) · **Comercial** (CRM, Presence, Satisfacción) · **Producto** (Planes y módulos, Accesos) · **Plataforma** (Equipo y permisos, Auditoría). El nombre "Accesos" se conserva (lo fija una prueba existente) |
+| P2 | Media | El inicio muestra hasta 9 grupos de prioridad seguidos antes de las métricas; los vacíos ocupan sitio. | **PR 2**: solo los grupos con pendientes van como tarjeta; los que están al día se resumen en una línea |
+| P3 | Media | Mezcla de idiomas: "Operations Center", "lead", "Presence Thrive", "Onboarding". | Sin cambios en PR 2 (decisión de producto, no de diseño); se dejan los nombres actuales |
 | P4 | Media | `beneficios`: dos formularios de creación incrustados en la página; la lista queda debajo. | Pasar a "Nuevo código" en panel lateral (PR 5, junto con los códigos a medida) |
-| P5 | Baja | `tenant-drawer` y `suspend-dialog` usan el `Sheet`/`Dialog` de shadcn (C6). | Migrar (PR 2) |
-| P6 | Baja | Tres `window.confirm` (quitar integrante, eliminar lead, suspender por falta de pago). | `ConfirmDialog` (PR 2) |
+| P5 | Baja | `tenant-drawer` y `suspend-dialog` usan el `Sheet`/`Dialog` de shadcn (C6). | **PR 2**: migrados |
+| P6 | Baja | Tres `window.confirm` (quitar integrante, eliminar lead, suspender por falta de pago). | **PR 2**: migrados |
 
 Lo que está bien y se conserva: el inicio pone primero lo que pide acción, las
 métricas son reales (`getExecutiveMetrics`) y lo que aún no existe
@@ -68,10 +68,10 @@ métricas son reales (`getExecutiveMetrics`) y lo que aún no existe
 
 | # | Sev. | Hallazgo | Propuesta |
 |---|---|---|---|
-| W1 | Media | La barra lateral pone todos los módulos en un solo grupo "Gestión", en el orden en que se activaron. Con 8 módulos se vuelve una lista larga sin forma. | Agrupar por trabajo: **Clientes y ventas** · **Dinero** · **Catálogo** · **Canales**, sin grupos vacíos (PR 2) |
+| W1 | Media | La barra lateral pone todos los módulos en un solo grupo "Gestión", en el orden en que se activaron. Con 8 módulos se vuelve una lista larga sin forma. | **PR 2**: agrupado en **Clientes y operación** · **Dinero** · **Canales**, sin grupos vacíos; los encabezados de página usan el mismo nombre |
 | W2 | Media | Un taller o una guía turística con `quotes` ve "Catálogo APU" (es de construcción). | Separar construcción de cotizaciones (PR 6, ARCH-01) |
-| W3 | Media | 7 `window.confirm` (6 archivos) en anular venta, cancelar membresía, regenerar QR, eliminar partida/capítulo, cerrar obra, borrar ítem. | `useConfirm` (PR 2) |
-| W4 | Media | Formularios del proyecto de obra incrustados en pestañas (Lean: 5, cotizaciones de la obra: 3) junto a listas. | Decidir por formulario (§4) (PR 2) |
+| W3 | Media | 7 `window.confirm` (6 archivos) en anular venta, cancelar membresía, regenerar QR, eliminar partida/capítulo, cerrar obra, borrar ítem. | **PR 2**: migrados |
+| W4 | Media | Formularios del proyecto de obra incrustados en pestañas (Lean: 5, cotizaciones de la obra: 3) junto a listas. | Pendiente: requiere probar cada flujo de obra con datos reales (ver PR 2) |
 | W5 | Baja | `orders` es una pantalla vacía en el menú. | Fuera del alcance del rediseño (producto, Bloque B) |
 
 ## 3. Herramientas
@@ -90,7 +90,14 @@ métricas son reales (`getExecutiveMetrics`) y lo que aún no existe
 
 ## 4. Formularios
 
-Patrón objetivo de cada formulario existente. "Hoy" es como abre en `main`.
+Patrón objetivo de cada formulario existente. "Hoy" es como abría en `main`
+antes del rediseño.
+
+**Aplicado en el PR 2:** todo lo marcado **Panel lateral**, la ficha del
+negocio, suspender, y todas las confirmaciones. **Pendiente:** los tamaños
+`lg`/`xl` puntuales y los formularios en línea del proyecto de obra (Lean,
+bitácora, avance, cotizaciones de la obra), que necesitan probarse con datos
+reales de una obra antes de moverlos.
 
 ### Espacio del negocio
 

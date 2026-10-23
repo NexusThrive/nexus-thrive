@@ -89,7 +89,7 @@ export default function MoneyDetailSheet({ slug, item, business, onClose }: { sl
     });
 
   return (
-    <ResponsiveSheet open onOpenChange={(o) => !o && onClose()} title={`${item.kind === "PAYMENT" ? "Pago" : "Gasto"} · ${formatCurrency(item.amount)}`} description={item.title}>
+    <ResponsiveSheet drawer open onOpenChange={(o) => !o && onClose()} title={`${item.kind === "PAYMENT" ? "Pago" : "Gasto"} · ${formatCurrency(item.amount)}`} description={item.title}>
       <div className="grid gap-5">
         <div className="flex flex-wrap gap-1.5">
           {voided ? <Badge tone="muted">Anulado</Badge> : <Badge tone="success">{item.kind === "PAYMENT" ? "Pagado" : "Registrado"}</Badge>}

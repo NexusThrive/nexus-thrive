@@ -17,6 +17,8 @@ import {
   type UpdateProjectFormState,
 } from "../../actions";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { useConfirm } from "@/components/organisms/confirm-dialog";
+import { useToast } from "@/components/molecules/toast";
 import { fieldClasses, labelClasses } from "@/components/atoms/input";
 import { cn } from "@/lib/utils";
 
@@ -51,6 +53,8 @@ export default function ProjectLifecycle({
     IDLE_STATE,
   );
   const [isTransitioning, startTransition] = useTransition();
+  const [confirm, confirmDialog] = useConfirm();
+  const { toast } = useToast();
 
   // Cerrar el editor al guardar con éxito se ajusta durante el render (no en
   // un efecto) para no encadenar renders; el refresh sí es un efecto externo.
@@ -70,13 +74,16 @@ export default function ProjectLifecycle({
 
   const nextStates = nextProjectStatuses(status);
 
-  const onTransition = (target: ProjectStatusValue) => {
+  const onTransition = async (target: ProjectStatusValue) => {
     if (
       projectStatusNeedsBaselineWarning(target) &&
       !hasApprovedBaseline &&
-      !window.confirm(
-        `Este proyecto no tiene una línea base de presupuesto aprobada.\n\n¿Pasar igualmente a “${projectStatusLabel(target)}”?`,
-      )
+      !(await confirm({
+        title: `¿Pasar a “${projectStatusLabel(target)}” sin línea base?`,
+        description: "Este proyecto no tiene una línea base de presupuesto aprobada: quedará sin cifras congeladas.",
+        confirmLabel: `Pasar a ${projectStatusLabel(target)}`,
+        tone: "default",
+      }))
     ) {
       return;
     }
@@ -88,11 +95,11 @@ export default function ProjectLifecycle({
         target,
       );
       if (!result.ok) {
-        window.alert(result.message ?? "No se pudo cambiar el estado.");
+        toast({ title: "No se pudo cambiar el estado.", description: result.message, variant: "error" });
         return;
       }
       if (result.warning) {
-        window.alert(result.warning);
+        toast({ title: "Estado cambiado con un aviso", description: result.warning, variant: "warning" });
       }
       router.refresh();
     });
@@ -231,6 +238,7 @@ export default function ProjectLifecycle({
           ejecución” se puede, pero quedará sin cifras congeladas.
         </p>
       ) : null}
+      {confirmDialog}
     </div>
   );
 }

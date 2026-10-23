@@ -169,7 +169,7 @@ export default async function FinancePage({
   return (
     <div className="grid gap-6">
       <PageHeader
-        eyebrow="Gestión"
+        eyebrow="Dinero"
         title="Finanzas"
         description={<>Cobros, gastos y caja menor de{" "}
           <span className="font-medium text-foreground/80">{tenantRecord.name}</span>.</>}
