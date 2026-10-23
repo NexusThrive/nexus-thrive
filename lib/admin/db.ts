@@ -18,6 +18,9 @@ import {
 } from "@/lib/admin/catalogs";
 import type { OnboardingTenantType } from "@/lib/onboarding/types";
 
+/** Vigencia de la invitación al dueño de un negocio creado desde el panel. */
+const OWNER_INVITE_DAYS = 14;
+
 /**
  * Capa de datos GLOBAL de la plataforma (capa /admin).
  *
@@ -766,6 +769,8 @@ export function createAdminDb() {
       taxId?: string | null;
       teamSize?: string | null;
       address?: string | null;
+      /** Dueño invitado: el negocio nace sin miembros y con esta invitación OWNER. */
+      ownerEmail: string;
     }) =>
       db.transaction(async (tx) => {
         const tenant = await tx.orm.public.Tenant.create({
@@ -785,6 +790,17 @@ export function createAdminDb() {
             moduleName,
           });
         }
+
+        // El dueño entra aceptando esta invitación con su correo verificado
+        // (acceptInvitesFor). Sin ella, nadie puede reclamar el negocio.
+        await tx.orm.public.TenantInvite.create({
+          tenantId: tenant.id,
+          email: data.ownerEmail,
+          name: null,
+          role: "OWNER",
+          invitedById: null,
+          expiresAt: instantFromMs(Date.now() + OWNER_INVITE_DAYS * 86_400_000),
+        });
 
         return tenant;
       }),

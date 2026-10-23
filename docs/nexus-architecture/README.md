@@ -28,6 +28,7 @@
 | 10 | [roadmap.md](roadmap.md) | Plan por etapas con criterios de finalización |
 | 11 | [decisions/](decisions/README.md) | Decisiones arquitectónicas **propuestas** (ADR) |
 | — | [validation-log.md](validation-log.md) | Comandos ejecutados y resultados |
+| — | [remediation-log.md](remediation-log.md) | Correcciones aplicadas y su prueba |
 
 Leyenda de estados usada en todos los documentos:
 

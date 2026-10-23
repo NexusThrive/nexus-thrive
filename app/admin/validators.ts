@@ -13,6 +13,9 @@ import {
   type TeamSizeValue,
 } from "@/lib/onboarding/types";
 import { TAX_ID_PATTERN } from "@/lib/onboarding/validation";
+import { normalizeEmail } from "@/lib/auth/session-email";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export type TenantFormValues = {
   name: string;
@@ -25,6 +28,11 @@ export type TenantFormValues = {
   taxId: string;
   teamSize: TeamSizeValue | "";
   address: string;
+  /**
+   * Correo de quien será el dueño. El negocio nace sin miembros: se crea una
+   * invitación OWNER a este correo (nunca un dueño automático, SEC-02).
+   */
+  ownerEmail: string;
 };
 
 export type TenantFieldErrors = Partial<
@@ -70,6 +78,7 @@ export function validateTenantForm(formData: FormData): TenantValidation {
   const legalName = String(formData.get("legalName") ?? "").trim();
   const taxId = String(formData.get("taxId") ?? "").trim();
   const address = String(formData.get("address") ?? "").trim();
+  const ownerEmail = normalizeEmail(String(formData.get("ownerEmail") ?? ""));
 
   const values: TenantFormValues = {
     name,
@@ -86,6 +95,7 @@ export function validateTenantForm(formData: FormData): TenantValidation {
       ? (rawTeamSize as TeamSizeValue)
       : "",
     address,
+    ownerEmail,
   };
 
   const errors: TenantFieldErrors = {};
@@ -96,6 +106,12 @@ export function validateTenantForm(formData: FormData): TenantValidation {
     errors.name = "Mínimo 2 caracteres.";
   } else if (name.length > 80) {
     errors.name = "Máximo 80 caracteres.";
+  }
+
+  if (!ownerEmail) {
+    errors.ownerEmail = "El correo del dueño es obligatorio.";
+  } else if (!EMAIL_RE.test(ownerEmail) || ownerEmail.length > 254) {
+    errors.ownerEmail = "Correo no válido.";
   }
 
   const slugValidation = validateSlug(rawSlug);
@@ -148,6 +164,7 @@ export function validateTenantForm(formData: FormData): TenantValidation {
       taxId,
       teamSize: values.teamSize,
       address,
+      ownerEmail,
     },
   };
 }

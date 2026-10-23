@@ -1,4 +1,5 @@
 import { db } from "@/prisma/db";
+import { exactIlikePattern } from "@/lib/auth/session-email";
 import { OWNER_ROLE_KEY, normalizePermissions, type PermissionKey } from "./permissions";
 
 /** Datos del equipo NEXUS para el panel (solo valores serializables). */
@@ -229,7 +230,7 @@ export async function redeemStaffInvite(
   }
 
   const member = await db.orm.public.StaffMember
-    .where((s) => s.email.ilike(invite.email))
+    .where((s) => s.email.ilike(exactIlikePattern(invite.email)))
     .include("role", (r) => r.select("name"))
     .first();
   if (!member) return { ok: false, reason: "not_found", email: invite.email, roleName: invite.roleName };

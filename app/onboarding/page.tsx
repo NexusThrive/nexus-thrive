@@ -6,6 +6,7 @@ import { loadPricingConfig } from "@/lib/plans/settings";
 import { getPendingBenefit } from "@/lib/benefits/benefit-cookie";
 import { findStaffByEmail } from "@/lib/ops/access";
 import { StaffAccessNotice } from "@/components/molecules/staff-access-notice";
+import { verifiedEmailOf } from "@/lib/auth/session-email";
 
 /**
  * Onboarding adaptativo (auto-servicio).
@@ -46,7 +47,7 @@ export default async function OnboardingPage({
 
   // El equipo de NEXUS trabaja en el panel, no creando negocios: si su correo
   // está en el equipo, el onboarding no es lo suyo.
-  const staffEmail = user?.primaryEmailAddress?.emailAddress ?? user?.emailAddresses?.[0]?.emailAddress;
+  const staffEmail = verifiedEmailOf(user);
   if (staffEmail) {
     const staff = await findStaffByEmail(staffEmail);
     if (staff) {

@@ -806,30 +806,10 @@ export function createTenantDb(tenantId: string) {
       findByClerkUserId: (clerkUserId: string) =>
         db.orm.public.User.where({ clerkUserId, tenantId }).first(),
 
-      /** Primer usuario registrado en este tenant, o null si el tenant aún no tiene miembros. */
-      findFirst: () => db.orm.public.User.where({ tenantId }).first(),
-
       create: (data: Omit<Parameters<typeof db.orm.public.User.create>[0], "tenantId">) =>
         db.orm.public.User.create({
           ...data,
           tenantId,
-        }),
-
-      /**
-       * Crea la membresía del usuario en este tenant de forma idempotente.
-       * Si (clerkUserId, tenantId) ya existe, devuelve la fila existente sin
-       * modificarla — así dos requests concurrentes no estrellan la clave única.
-       */
-      upsertByClerkUserId: (
-        data: Omit<
-          Parameters<typeof db.orm.public.User.upsert>[0]["create"],
-          "tenantId"
-        >
-      ) =>
-        db.orm.public.User.upsert({
-          create: { ...data, tenantId },
-          update: {},
-          conflictOn: { clerkUserId: data.clerkUserId, tenantId },
         }),
 
       update: (id: string, data: Record<string, unknown>) =>

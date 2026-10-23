@@ -122,7 +122,7 @@ export async function createTenantAction(
     };
   }
 
-  const { name, slug, vertical, modules, tenantType, legalName, taxId, teamSize, address } =
+  const { name, slug, vertical, modules, tenantType, legalName, taxId, teamSize, address, ownerEmail } =
     validation.values;
   const adminDb = createAdminDb();
 
@@ -145,6 +145,7 @@ export async function createTenantAction(
       taxId,
       teamSize,
       address,
+      ownerEmail,
     });
   } catch (error) {
     // Colisión de slug por carrera (constraint único en DB) u otro fallo
@@ -161,7 +162,7 @@ export async function createTenantAction(
   await audit(actor, {
     action: "CREATE_TENANT",
     targetTenantName: name,
-    metadata: { slug, vertical, modules, tenantType, taxId, teamSize },
+    metadata: { slug, vertical, modules, tenantType, taxId, teamSize, ownerEmail },
   });
 
   revalidateAdmin();
