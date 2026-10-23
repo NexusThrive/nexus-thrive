@@ -179,8 +179,8 @@ export function plusDays(instant: Temporal.Instant, days: number): Temporal.Inst
 
 /**
  * Un cobro del historial de una membresía. Sale de `Payment` (la única fuente
- * del dinero, DATA-02): refleja anulaciones. El Json `Membership.payments` ya
- * no se escribe ni se lee; se retira con una migración.
+ * del dinero, DATA-02): refleja anulaciones. La columna Json
+ * `Membership.payments` se retiró (migración `restricciones_negocio_y_rls`).
  */
 export type MembershipPaymentEntry = {
   paymentId: string;

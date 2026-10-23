@@ -1,6 +1,7 @@
 import { and, not, or } from "@prisma/orm-postgres/orm-client";
 import { db } from "@/prisma/db";
 import { escapeLike } from "@/lib/construction/shared";
+import { isUniqueViolation } from "@/lib/db-errors";
 import { toNumber } from "@/lib/format";
 import { accessCode, checkAccess, currentMembership, freezePlan, membershipState, type AccessResult, type MembershipLike } from "./gym";
 
@@ -167,7 +168,13 @@ export async function ensureAccessCode(tenantId: string, customerId: string, reg
     const code = accessCode();
     const clash = await db.orm.public.Customer.where({ tenantId, accessCode: code }).select("id").first();
     if (clash) continue;
-    await db.orm.public.Customer.where({ tenantId, id: customerId }).update({ accessCode: code });
+    try {
+      await db.orm.public.Customer.where({ tenantId, id: customerId }).update({ accessCode: code });
+    } catch (error) {
+      // Otro socio lo tomó entre la lectura y la escritura: se prueba otro.
+      if (isUniqueViolation(error)) continue;
+      throw error;
+    }
     return code;
   }
   throw new Error("No se pudo generar el código.");
@@ -181,7 +188,13 @@ export async function linkNfc(tenantId: string, customerId: string, uid: string 
     const other = await db.orm.public.Customer.where({ tenantId, nfcUid: clean }).select("id", "name").first();
     if (other && other.id !== customerId) return { ok: false, message: `Esa tarjeta ya es de ${other.name}.` };
   }
-  await db.orm.public.Customer.where({ tenantId, id: customerId }).update({ nfcUid: clean });
+  try {
+    await db.orm.public.Customer.where({ tenantId, id: customerId }).update({ nfcUid: clean });
+  } catch (error) {
+    // Dos vínculos a la vez de la misma tarjeta: la base deja pasar uno (DATA-04).
+    if (isUniqueViolation(error)) return { ok: false, message: "Esa tarjeta ya es de otro socio." };
+    throw error;
+  }
   return { ok: true };
 }
 

@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { db } from "@/prisma/db";
 import { isModule, isVertical, type ModuleValue } from "@/lib/admin/catalogs";
+import { isUniqueViolation } from "@/lib/db-errors";
 import type { PlanKey } from "./catalog";
 import {
   defaultPricingConfig,
@@ -21,19 +22,6 @@ import {
 const STATUSES: ModuleStatus[] = ["READY", "BETA", "PLANNED"];
 const PLAN_KEYS: PlanKey[] = ["ESSENTIAL", "ELITE", "SIGNATURE"];
 const mods = (list: readonly string[] | null | undefined) => (list ?? []).filter(isModule) as ModuleValue[];
-
-/** ¿El error es una violación de clave única (23505)? */
-function isUniqueViolation(error: unknown): boolean {
-  const e = error as {
-    code?: string;
-    sqlState?: string;
-    message?: string;
-    cause?: { code?: string };
-  };
-  const code = e?.code ?? e?.sqlState ?? e?.cause?.code;
-  if (code === "23505") return true;
-  return typeof e?.message === "string" && e.message.includes("duplicate key value");
-}
 
 /**
  * Inserta tolerando la carrera: si otra petición insertó la misma fila entre

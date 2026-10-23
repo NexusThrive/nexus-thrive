@@ -178,7 +178,6 @@ describe.skipIf(!enabled)("servicio de dinero (integración)", () => {
     const tenantDb = createTenantDb(tenantId);
     const detail = await tenantDb.memberships.get(membershipId);
     expect(detail?.payments.map((p) => p.kind)).toEqual(["inicial", "renovacion"]);
-    expect((await db.orm.public.Membership.where({ tenantId, id: membershipId }).first())?.payments ?? null).toBeNull();
 
     await voidPayment(tenantId, renewal.paymentId, "Cobro repetido", user);
     const after = await tenantDb.memberships.get(membershipId);

@@ -8,6 +8,7 @@ import { createTenantDb } from "@/lib/tenant/db";
 import { createAuth, type NexusRole } from "@/lib/auth/authorization";
 import { getQuoteTerms, type QuoteTerms } from "@/lib/vertical-terms";
 import type { ApuItemCategoryValue } from "@/lib/construction/apu-engine";
+import { isUniqueViolation } from "@/lib/db-errors";
 import {
   validateApuActivity,
   validateApuItem,
@@ -86,14 +87,6 @@ async function actionContext(
     tenantDb: context.tenantDb,
     terms: getQuoteTerms(context.vertical),
   };
-}
-
-/** Detecta violación de clave única (código duplicado en el tenant). */
-function isUniqueViolation(error: unknown): boolean {
-  return (
-    error instanceof Error &&
-    /duplicate key value violates unique constraint/i.test(error.message)
-  );
 }
 
 const DUPLICATE_CODE_MESSAGE =

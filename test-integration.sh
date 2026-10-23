@@ -31,6 +31,7 @@ pnpm exec vitest run --testTimeout=20000 \
   lib/ops/team-invite.integration.test.ts \
   lib/tenant/membership.integration.test.ts \
   lib/tenant/audit.integration.test.ts \
+  lib/tenant/constraints.integration.test.ts \
   lib/tenant/deletion.integration.test.ts \
   lib/business/qr-read.integration.test.ts \
   lib/business/money-service.integration.test.ts \

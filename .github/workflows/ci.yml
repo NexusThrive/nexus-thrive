@@ -79,6 +79,9 @@ jobs:
         run: |
           psql "$DATABASE_URL" -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
           pnpm exec prisma db migrate --db "$DATABASE_URL"
+          # SEC-07: toda tabla con RLS (sin políticas cierra la API REST de Supabase).
+          sin_rls=$(psql "$DATABASE_URL" -tAc "select string_agg(tablename, ', ') from pg_tables where schemaname = 'public' and not rowsecurity")
+          if [ -n "$sin_rls" ]; then echo "Tablas sin RLS (agrega @@rls en el contrato): $sin_rls"; exit 1; fi
 
       - name: Integration tests
         run: pnpm test:integration

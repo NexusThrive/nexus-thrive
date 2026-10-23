@@ -9,7 +9,7 @@ import { db } from "@/prisma/db";
  * equipo.
  *
  * El orden importa: las tablas se borran de hija a padre para no chocar con
- * las claves foráneas, y al final se borra el negocio (las 29 tablas que lo
+ * las claves foráneas, y al final se borra el negocio (las 51 tablas que lo
  * tienen como clave foránea caen en cascada).
  *
  * NO se borra lo que es de la plataforma: los roles del panel, el equipo de

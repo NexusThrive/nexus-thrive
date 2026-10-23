@@ -2324,7 +2324,24 @@
                 }
               }
             },
-            "relations": {},
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
             "storage": {
               "fields": {
                 "byteSize": {
@@ -2438,7 +2455,24 @@
                 }
               }
             },
-            "relations": {},
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
             "storage": {
               "fields": {
                 "allowed": {
@@ -2875,6 +2909,22 @@
                   "model": "BenefitCode",
                   "namespace": "public"
                 }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
@@ -3103,7 +3153,24 @@
                 }
               }
             },
-            "relations": {},
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
             "storage": {
               "fields": {
                 "createdAt": {
@@ -4303,6 +4370,22 @@
                   "model": "CashSession",
                   "namespace": "public"
                 }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
@@ -4436,6 +4519,22 @@
                 },
                 "to": {
                   "model": "CashSession",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
                   "namespace": "public"
                 }
               }
@@ -4596,6 +4695,22 @@
                 },
                 "to": {
                   "model": "CashMovement",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
                   "namespace": "public"
                 }
               }
@@ -4828,6 +4943,22 @@
                 },
                 "to": {
                   "model": "Subscription",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
                   "namespace": "public"
                 }
               }
@@ -5572,7 +5703,24 @@
                 }
               }
             },
-            "relations": {},
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
             "storage": {
               "fields": {
                 "capacity": {
@@ -6315,6 +6463,22 @@
                   "model": "InboxMessage",
                   "namespace": "public"
                 }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
@@ -6637,6 +6801,22 @@
                   "model": "InvoiceLine",
                   "namespace": "public"
                 }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
@@ -6957,6 +7137,22 @@
                 },
                 "to": {
                   "model": "LeadActivity",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
                   "namespace": "public"
                 }
               }
@@ -7384,13 +7580,6 @@
                   "kind": "scalar"
                 }
               },
-              "payments": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/json@1",
-                  "kind": "scalar"
-                }
-              },
               "price": {
                 "nullable": false,
                 "type": {
@@ -7527,9 +7716,6 @@
                 },
                 "id": {
                   "column": "id"
-                },
-                "payments": {
-                  "column": "payments"
                 },
                 "price": {
                   "column": "price"
@@ -8213,7 +8399,24 @@
                 }
               }
             },
-            "relations": {},
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
             "storage": {
               "fields": {
                 "businessName": {
@@ -8547,6 +8750,22 @@
                 },
                 "to": {
                   "model": "StockMovement",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
                   "namespace": "public"
                 }
               }
@@ -10231,7 +10450,24 @@
                 }
               }
             },
-            "relations": {},
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
             "storage": {
               "fields": {
                 "answeredAt": {
@@ -10743,6 +10979,22 @@
                   "model": "Product",
                   "namespace": "public"
                 }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
@@ -10892,6 +11144,22 @@
                 },
                 "to": {
                   "model": "Charge",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
                   "namespace": "public"
                 }
               }
@@ -11103,6 +11371,22 @@
                 },
                 "to": {
                   "model": "TicketMessage",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
                   "namespace": "public"
                 }
               }
@@ -11535,6 +11819,66 @@
                   "namespace": "public"
                 }
               },
+              "attachments": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "Attachment",
+                  "namespace": "public"
+                }
+              },
+              "attendances": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "Attendance",
+                  "namespace": "public"
+                }
+              },
+              "benefitRedemptions": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "BenefitRedemption",
+                  "namespace": "public"
+                }
+              },
+              "bookings": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "Booking",
+                  "namespace": "public"
+                }
+              },
               "budgetBaselines": {
                 "cardinality": "1:N",
                 "on": {
@@ -11610,6 +11954,81 @@
                   "namespace": "public"
                 }
               },
+              "cashBoxes": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "CashBox",
+                  "namespace": "public"
+                }
+              },
+              "cashMovements": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "CashMovement",
+                  "namespace": "public"
+                }
+              },
+              "cashSessions": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "CashSession",
+                  "namespace": "public"
+                }
+              },
+              "charges": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "Charge",
+                  "namespace": "public"
+                }
+              },
+              "contacts": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "TenantContact",
+                  "namespace": "public"
+                }
+              },
               "customerNotes": {
                 "cardinality": "1:N",
                 "on": {
@@ -11640,6 +12059,21 @@
                   "namespace": "public"
                 }
               },
+              "departures": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "Departure",
+                  "namespace": "public"
+                }
+              },
               "expenses": {
                 "cardinality": "1:N",
                 "on": {
@@ -11667,6 +12101,66 @@
                 },
                 "to": {
                   "model": "FieldLog",
+                  "namespace": "public"
+                }
+              },
+              "inboxConversations": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "InboxConversation",
+                  "namespace": "public"
+                }
+              },
+              "invites": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "TenantInvite",
+                  "namespace": "public"
+                }
+              },
+              "invoices": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "Invoice",
+                  "namespace": "public"
+                }
+              },
+              "leads": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "Lead",
                   "namespace": "public"
                 }
               },
@@ -11730,6 +12224,21 @@
                   "namespace": "public"
                 }
               },
+              "presenceRequests": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "PresenceRequest",
+                  "namespace": "public"
+                }
+              },
               "presenceScans": {
                 "cardinality": "1:N",
                 "on": {
@@ -11742,6 +12251,21 @@
                 },
                 "to": {
                   "model": "PresenceScan",
+                  "namespace": "public"
+                }
+              },
+              "products": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "Product",
                   "namespace": "public"
                 }
               },
@@ -11817,6 +12341,97 @@
                 },
                 "to": {
                   "model": "Quote",
+                  "namespace": "public"
+                }
+              },
+              "satisfactionSurveys": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "SatisfactionSurvey",
+                  "namespace": "public"
+                }
+              },
+              "stockMovements": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "StockMovement",
+                  "namespace": "public"
+                }
+              },
+              "subscription": {
+                "cardinality": "1:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "Subscription",
+                  "namespace": "public"
+                }
+              },
+              "supportTickets": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "SupportTicket",
+                  "namespace": "public"
+                }
+              },
+              "ticketSales": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "TicketSale",
+                  "namespace": "public"
+                }
+              },
+              "tourBookings": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "TourBooking",
                   "namespace": "public"
                 }
               },
@@ -12047,7 +12662,24 @@
                 }
               }
             },
-            "relations": {},
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
             "storage": {
               "fields": {
                 "createdAt": {
@@ -12170,7 +12802,24 @@
                 }
               }
             },
-            "relations": {},
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
             "storage": {
               "fields": {
                 "acceptedAt": {
@@ -12515,7 +13164,24 @@
                 }
               }
             },
-            "relations": {},
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
             "storage": {
               "fields": {
                 "bookingId": {
@@ -12672,7 +13338,24 @@
                 }
               }
             },
-            "relations": {},
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
             "storage": {
               "fields": {
                 "code": {
@@ -13214,6 +13897,363 @@
     "namespaces": {
       "public": {
         "entries": {
+          "rls": {
+            "ApuActivity": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ApuActivity"
+            },
+            "ApuActivityComposition": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ApuActivityComposition"
+            },
+            "ApuChapter": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ApuChapter"
+            },
+            "ApuImage": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ApuImage"
+            },
+            "ApuImportRun": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ApuImportRun"
+            },
+            "ApuItem": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ApuItem"
+            },
+            "ApuItemPriceHistory": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ApuItemPriceHistory"
+            },
+            "Attachment": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Attachment"
+            },
+            "Attendance": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Attendance"
+            },
+            "AuditLog": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "AuditLog"
+            },
+            "BenefitCode": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "BenefitCode"
+            },
+            "BenefitRedemption": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "BenefitRedemption"
+            },
+            "BillingPolicy": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "BillingPolicy"
+            },
+            "Booking": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Booking"
+            },
+            "BudgetBaseline": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "BudgetBaseline"
+            },
+            "BudgetChapter": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "BudgetChapter"
+            },
+            "BudgetItem": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "BudgetItem"
+            },
+            "BudgetItemProgress": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "BudgetItemProgress"
+            },
+            "BudgetItemResource": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "BudgetItemResource"
+            },
+            "BudgetLockEvent": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "BudgetLockEvent"
+            },
+            "CashBox": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "CashBox"
+            },
+            "CashMovement": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "CashMovement"
+            },
+            "CashSession": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "CashSession"
+            },
+            "Charge": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Charge"
+            },
+            "ChargeEvidence": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ChargeEvidence"
+            },
+            "Customer": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Customer"
+            },
+            "CustomerNote": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "CustomerNote"
+            },
+            "CustomerTierSetting": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "CustomerTierSetting"
+            },
+            "Departure": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Departure"
+            },
+            "DismissedNotification": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "DismissedNotification"
+            },
+            "Expense": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Expense"
+            },
+            "FieldLog": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "FieldLog"
+            },
+            "FieldLogEntry": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "FieldLogEntry"
+            },
+            "InboxConversation": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "InboxConversation"
+            },
+            "InboxMessage": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "InboxMessage"
+            },
+            "Invoice": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Invoice"
+            },
+            "InvoiceLine": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "InvoiceLine"
+            },
+            "Lead": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Lead"
+            },
+            "LeadActivity": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "LeadActivity"
+            },
+            "LookaheadTask": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "LookaheadTask"
+            },
+            "Membership": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Membership"
+            },
+            "ModuleSetting": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ModuleSetting"
+            },
+            "Payment": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Payment"
+            },
+            "PlanSetting": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "PlanSetting"
+            },
+            "PresenceRequest": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "PresenceRequest"
+            },
+            "PresenceScan": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "PresenceScan"
+            },
+            "Product": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Product"
+            },
+            "Project": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Project"
+            },
+            "ProjectBudget": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ProjectBudget"
+            },
+            "ProjectFollowUp": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ProjectFollowUp"
+            },
+            "ProjectHeader": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ProjectHeader"
+            },
+            "ProjectPlan": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ProjectPlan"
+            },
+            "Quote": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Quote"
+            },
+            "QuoteItem": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "QuoteItem"
+            },
+            "SatisfactionSurvey": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "SatisfactionSurvey"
+            },
+            "StaffInvite": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "StaffInvite"
+            },
+            "StaffMember": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "StaffMember"
+            },
+            "StaffRole": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "StaffRole"
+            },
+            "StockMovement": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "StockMovement"
+            },
+            "Subscription": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Subscription"
+            },
+            "SupportTicket": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "SupportTicket"
+            },
+            "Tenant": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Tenant"
+            },
+            "TenantContact": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "TenantContact"
+            },
+            "TenantInvite": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "TenantInvite"
+            },
+            "TenantModule": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "TenantModule"
+            },
+            "TicketMessage": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "TicketMessage"
+            },
+            "TicketSale": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "TicketSale"
+            },
+            "TourBooking": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "TourBooking"
+            },
+            "User": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "User"
+            },
+            "VerticalSetting": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "VerticalSetting"
+            },
+            "WeeklyCommitment": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "WeeklyCommitment"
+            }
+          },
           "table": {
             "ApuActivity": {
               "columns": {
@@ -14191,8 +15231,34 @@
                   "nullable": true
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Attachment"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "Attachment_tenantId_idx_c93ed4f1",
+                  "prefix": "Attachment_tenantId_idx",
+                  "unique": false
+                },
                 {
                   "columns": [
                     "tenantId",
@@ -14268,7 +15334,25 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Attendance"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [
                 {
                   "columns": [
@@ -14285,6 +15369,14 @@
                   ],
                   "name": "Attendance_tenantId_at_idx_21a9eddd",
                   "prefix": "Attendance_tenantId_at_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "Attendance_tenantId_idx_c93ed4f1",
+                  "prefix": "Attendance_tenantId_idx",
                   "unique": false
                 }
               ],
@@ -14632,6 +15724,23 @@
                     "namespaceId": "public",
                     "tableName": "BenefitCode"
                   }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "BenefitRedemption"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
                 }
               ],
               "indexes": [
@@ -14831,7 +15940,25 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Booking"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [
                 {
                   "columns": [
@@ -15759,7 +16886,25 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "CashBox"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [
                 {
                   "columns": [
@@ -15857,6 +17002,23 @@
                   "onDelete": "cascade",
                   "source": {
                     "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "CashMovement"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
                       "sessionId"
                     ],
                     "namespaceId": "public",
@@ -15878,6 +17040,14 @@
                   ],
                   "name": "CashMovement_sessionId_idx_29f415d4",
                   "prefix": "CashMovement_sessionId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "CashMovement_tenantId_idx_c93ed4f1",
+                  "prefix": "CashMovement_tenantId_idx",
                   "unique": false
                 }
               ],
@@ -15960,6 +17130,23 @@
                   "onDelete": "cascade",
                   "source": {
                     "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "CashSession"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
                       "boxId"
                     ],
                     "namespaceId": "public",
@@ -15990,6 +17177,14 @@
                   ],
                   "name": "CashSession_tenantId_boxId_idx_9abd5c49",
                   "prefix": "CashSession_tenantId_boxId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "CashSession_tenantId_idx_c93ed4f1",
+                  "prefix": "CashSession_tenantId_idx",
                   "unique": false
                 }
               ],
@@ -16130,6 +17325,23 @@
                 }
               },
               "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Charge"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
                 {
                   "onDelete": "cascade",
                   "source": {
@@ -16397,11 +17609,31 @@
               "indexes": [
                 {
                   "columns": [
+                    "tenantId",
+                    "accessCode"
+                  ],
+                  "name": "Customer_tenantId_accessCode_key_ef9862d0",
+                  "prefix": "Customer_tenantId_accessCode_key",
+                  "unique": true,
+                  "where": "\"accessCode\" IS NOT NULL"
+                },
+                {
+                  "columns": [
                     "tenantId"
                   ],
                   "name": "Customer_tenantId_idx_c93ed4f1",
                   "prefix": "Customer_tenantId_idx",
                   "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "nfcUid"
+                  ],
+                  "name": "Customer_tenantId_nfcUid_key_4a0896f1",
+                  "prefix": "Customer_tenantId_nfcUid_key",
+                  "unique": true,
+                  "where": "\"nfcUid\" IS NOT NULL"
                 }
               ],
               "primaryKey": {
@@ -16652,7 +17884,25 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Departure"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [
                 {
                   "columns": [
@@ -16661,6 +17911,14 @@
                   ],
                   "name": "Departure_tenantId_date_idx_3ef944c7",
                   "prefix": "Departure_tenantId_date_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "Departure_tenantId_idx_c93ed4f1",
+                  "prefix": "Departure_tenantId_idx",
                   "unique": false
                 }
               ],
@@ -17285,7 +18543,25 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "InboxConversation"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [
                 {
                   "columns": [
@@ -17526,7 +18802,25 @@
                   "nullable": true
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Invoice"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [
                 {
                   "columns": [
@@ -17758,7 +19052,25 @@
                   "nullable": true
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Lead"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [
                 {
                   "columns": [
@@ -17774,6 +19086,14 @@
                   ],
                   "name": "Lead_stage_idx_51755035",
                   "prefix": "Lead_stage_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "Lead_tenantId_idx_c93ed4f1",
+                  "prefix": "Lead_tenantId_idx",
                   "unique": false
                 }
               ],
@@ -18095,11 +19415,6 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
-                },
-                "payments": {
-                  "codecId": "pg/json@1",
-                  "nativeType": "json",
-                  "nullable": true
                 },
                 "price": {
                   "codecId": "pg/numeric@1",
@@ -18737,7 +20052,25 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PresenceRequest"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [
                 {
                   "columns": [
@@ -18994,8 +20327,34 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Product"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "Product_tenantId_idx_c93ed4f1",
+                  "prefix": "Product_tenantId_idx",
+                  "unique": false
+                },
                 {
                   "columns": [
                     "tenantId",
@@ -20281,7 +21640,25 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "SatisfactionSurvey"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [
                 {
                   "columns": [
@@ -20659,6 +22036,23 @@
                   "onDelete": "cascade",
                   "source": {
                     "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockMovement"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
                       "productId"
                     ],
                     "namespaceId": "public",
@@ -20680,6 +22074,14 @@
                   ],
                   "name": "StockMovement_productId_idx_5858600a",
                   "prefix": "StockMovement_productId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "StockMovement_tenantId_idx_c93ed4f1",
+                  "prefix": "StockMovement_tenantId_idx",
                   "unique": false
                 }
               ],
@@ -20779,7 +22181,25 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Subscription"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [],
               "primaryKey": {
                 "columns": [
@@ -20928,7 +22348,25 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "SupportTicket"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [
                 {
                   "columns": [
@@ -21342,7 +22780,25 @@
                   "nullable": true
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "TenantContact"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [
                 {
                   "columns": [
@@ -21430,7 +22886,25 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "TenantInvite"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [
                 {
                   "columns": [
@@ -21730,8 +23204,34 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "TicketSale"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "TicketSale_tenantId_idx_c93ed4f1",
+                  "prefix": "TicketSale_tenantId_idx",
+                  "unique": false
+                },
                 {
                   "columns": [
                     "tenantId",
@@ -21837,7 +23337,25 @@
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "TourBooking"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
               "indexes": [
                 {
                   "columns": [
@@ -21845,6 +23363,14 @@
                   ],
                   "name": "TourBooking_departureId_idx_24d39b35",
                   "prefix": "TourBooking_departureId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "TourBooking_tenantId_idx_c93ed4f1",
+                  "prefix": "TourBooking_tenantId_idx",
                   "unique": false
                 }
               ],
@@ -22598,7 +24124,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "4aa52ec341dac041485eced2368f79ec15ba7bc410829df62c08324734d0d739"
+    "storageHash": "691a1768b5ad4741b2ffbf94786cbb232c3d676edbe6345a706dbeb4ab100106"
   },
   "execution": {
     "executionHash": "f90187b8442c7d45d0f4849ce5d90a5e406cddb56d20b72d710f4f618d9a3274",

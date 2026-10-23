@@ -152,8 +152,9 @@ sirve la página ni las acciones si el negocio tiene el módulo apagado.
 5. Escribe el SQL de producción en `docs/prod-sql/AAAA-MM-DD-<nombre>.sql`,
    aditivo e idempotente (`IF NOT EXISTS`), y anótalo en `00-ORDEN.md`.
 
-Toda tabla de negocio lleva `tenantId` con FK a `Tenant` e índice que empiece
-por `tenantId`. Las columnas nuevas en tablas con datos son opcionales o
+Toda tabla de negocio lleva `tenantId` con FK a `Tenant` (`onDelete: Cascade`)
+e índice que empiece por `tenantId`. Toda tabla lleva `@@rls` (el CI falla
+si falta). Las columnas nuevas en tablas con datos son opcionales o
 tienen valor por defecto: la app nueva y la base vieja conviven unos minutos
 durante el despliegue.
 
@@ -169,5 +170,6 @@ durante el despliegue.
 - [ ] Lo destructivo o sensible deja `logTenantAction`.
 - [ ] Hay prueba: unitaria para la regla; integración si toca datos (y está en
       la lista de `test-integration.sh`).
-- [ ] Si cambió el contrato: migración + SQL de producción + `00-ORDEN.md`.
+- [ ] Si cambió el contrato: migración + SQL de producción + `00-ORDEN.md`;
+      tabla nueva con FK a `Tenant` y `@@rls`.
 - [ ] Probado en `pnpm dev` con un rol que puede y uno que no.

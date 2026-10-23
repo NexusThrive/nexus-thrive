@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'4aa52ec341dac041485eced2368f79ec15ba7bc410829df62c08324734d0d739'>;
+  StorageHashBase<'691a1768b5ad4741b2ffbf94786cbb232c3d676edbe6345a706dbeb4ab100106'>;
 export type ExecutionHash =
   ExecutionHashBase<'f90187b8442c7d45d0f4849ce5d90a5e406cddb56d20b72d710f4f618d9a3274'>;
 export type ProfileHash =
@@ -793,7 +793,6 @@ export type FieldOutputTypes = {
       readonly frozenFrom: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly frozenUntil: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
-      readonly payments: CodecTypes['pg/json@1']['output'] | null;
       readonly price: CodecTypes['pg/numeric@1']['output'];
       readonly productId: CodecTypes['pg/text@1']['output'] | null;
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -1852,7 +1851,6 @@ export type FieldInputTypes = {
       readonly frozenFrom: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly frozenUntil: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
-      readonly payments: CodecTypes['pg/json@1']['input'] | null;
       readonly price: CodecTypes['pg/numeric@1']['input'];
       readonly productId: CodecTypes['pg/text@1']['input'] | null;
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -2911,7 +2909,6 @@ export type StorageColumnTypes = {
       readonly frozenFrom: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly frozenUntil: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
-      readonly payments: CodecTypes['pg/json@1']['output'] | null;
       readonly price: CodecTypes['pg/numeric@1']['output'];
       readonly productId: CodecTypes['pg/text@1']['output'] | null;
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -3970,7 +3967,6 @@ export type StorageColumnInputTypes = {
       readonly frozenFrom: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly frozenUntil: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
-      readonly payments: CodecTypes['pg/json@1']['input'] | null;
       readonly price: CodecTypes['pg/numeric@1']['input'];
       readonly productId: CodecTypes['pg/text@1']['input'] | null;
       readonly startDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -4614,7 +4610,8 @@ export namespace Models {
     sha256: CodecTypes['pg/text@1']['output'];
     tenantId: CodecTypes['pg/text@1']['output'];
     uploadedById: CodecTypes['pg/text@1']['output'] | null;
-    readonly [RelationKeys]?: never;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
   };
   export type public_Attendance = {
     allowed: CodecTypes['pg/bool@1']['output'];
@@ -4627,7 +4624,8 @@ export namespace Models {
     reason: CodecTypes['pg/text@1']['output'] | null;
     scanned: CodecTypes['pg/text@1']['output'] | null;
     tenantId: CodecTypes['pg/text@1']['output'];
-    readonly [RelationKeys]?: never;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
   };
   export type public_AuditLog = {
     action: CodecTypes['pg/text@1']['output'];
@@ -4674,7 +4672,8 @@ export namespace Models {
     tenantId: CodecTypes['pg/text@1']['output'];
     tenantName: CodecTypes['pg/text@1']['output'];
     code: public_BenefitCode;
-    readonly [RelationKeys]?: 'code';
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'code' | 'tenant';
   };
   export type public_BillingPolicy = {
     graceDays: CodecTypes['pg/int4@1']['output'];
@@ -4701,7 +4700,8 @@ export namespace Models {
     tenantId: CodecTypes['pg/text@1']['output'];
     totalAmount: CodecTypes['pg/int8@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-    readonly [RelationKeys]?: never;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
   };
   export type public_BudgetBaseline = {
     adminTotal: CodecTypes['pg/int8@1']['output'];
@@ -4827,7 +4827,8 @@ export namespace Models {
     tenantId: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     sessions: public_CashSession[];
-    readonly [RelationKeys]?: 'sessions';
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'sessions' | 'tenant';
   };
   export type public_CashMovement = {
     amount: CodecTypes['pg/numeric@1']['output'];
@@ -4842,7 +4843,8 @@ export namespace Models {
     sessionId: CodecTypes['pg/text@1']['output'];
     tenantId: CodecTypes['pg/text@1']['output'];
     session: public_CashSession;
-    readonly [RelationKeys]?: 'session';
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'session' | 'tenant';
   };
   export type public_CashSession = {
     boxId: CodecTypes['pg/text@1']['output'];
@@ -4859,7 +4861,8 @@ export namespace Models {
     tenantId: CodecTypes['pg/text@1']['output'];
     box: public_CashBox;
     movements: public_CashMovement[];
-    readonly [RelationKeys]?: 'box' | 'movements';
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'box' | 'movements' | 'tenant';
   };
   export type public_Charge = {
     amountUsdCents: CodecTypes['pg/int4@1']['output'];
@@ -4885,7 +4888,8 @@ export namespace Models {
     voidReason: CodecTypes['pg/text@1']['output'] | null;
     evidence: public_ChargeEvidence[];
     subscription: public_Subscription;
-    readonly [RelationKeys]?: 'evidence' | 'subscription';
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'evidence' | 'subscription' | 'tenant';
   };
   export type public_ChargeEvidence = {
     byteSize: CodecTypes['pg/int4@1']['output'];
@@ -4961,7 +4965,8 @@ export namespace Models {
     tenantId: CodecTypes['pg/text@1']['output'];
     time: CodecTypes['pg/text@1']['output'] | null;
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-    readonly [RelationKeys]?: never;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
   };
   export type public_DismissedNotification = {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -5038,7 +5043,8 @@ export namespace Models {
     unread: CodecTypes['pg/int4@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     messages: public_InboxMessage[];
-    readonly [RelationKeys]?: 'messages';
+    tenant: public_Tenant | null;
+    readonly [RelationKeys]?: 'messages' | 'tenant';
   };
   export type public_InboxMessage = {
     authorName: CodecTypes['pg/text@1']['output'] | null;
@@ -5073,7 +5079,8 @@ export namespace Models {
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     voidReason: CodecTypes['pg/text@1']['output'] | null;
     lines: public_InvoiceLine[];
-    readonly [RelationKeys]?: 'lines';
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'lines' | 'tenant';
   };
   export type public_InvoiceLine = {
     description: CodecTypes['pg/text@1']['output'];
@@ -5108,7 +5115,8 @@ export namespace Models {
     valueUsdCents: CodecTypes['pg/int4@1']['output'];
     vertical: CodecTypes['pg/text@1']['output'] | null;
     activities: public_LeadActivity[];
-    readonly [RelationKeys]?: 'activities';
+    tenant: public_Tenant | null;
+    readonly [RelationKeys]?: 'activities' | 'tenant';
   };
   export type public_LeadActivity = {
     body: CodecTypes['pg/text@1']['output'];
@@ -5150,7 +5158,6 @@ export namespace Models {
     frozenFrom: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     frozenUntil: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     id: CodecTypes['pg/text@1']['output'];
-    payments: CodecTypes['pg/json@1']['output'] | null;
     price: CodecTypes['pg/numeric@1']['output'];
     productId: CodecTypes['pg/text@1']['output'] | null;
     startDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -5238,7 +5245,8 @@ export namespace Models {
     status: CodecTypes['pg/text@1']['output'];
     tenantId: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-    readonly [RelationKeys]?: never;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
   };
   export type public_PresenceScan = {
     breakdown: CodecTypes['pg/json@1']['output'];
@@ -5273,7 +5281,8 @@ export namespace Models {
     unit: CodecTypes['pg/text@1']['output'] | null;
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     movements: public_StockMovement[];
-    readonly [RelationKeys]?: 'movements';
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'movements' | 'tenant';
   };
   export type public_Project = {
     code: CodecTypes['pg/text@1']['output'];
@@ -5437,7 +5446,8 @@ export namespace Models {
     tenantId: CodecTypes['pg/text@1']['output'] | null;
     ticketId: CodecTypes['pg/text@1']['output'];
     token: CodecTypes['pg/text@1']['output'];
-    readonly [RelationKeys]?: never;
+    tenant: public_Tenant | null;
+    readonly [RelationKeys]?: 'tenant';
   };
   export type public_StaffInvite = {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -5492,7 +5502,8 @@ export namespace Models {
     quantity: CodecTypes['pg/int4@1']['output'];
     tenantId: CodecTypes['pg/text@1']['output'];
     product: public_Product;
-    readonly [RelationKeys]?: 'product';
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'product' | 'tenant';
   };
   export type public_Subscription = {
     billingCycle: CodecTypes['pg/text@1']['output'];
@@ -5509,7 +5520,8 @@ export namespace Models {
     tenantId: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     charges: public_Charge[];
-    readonly [RelationKeys]?: 'charges';
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'charges' | 'tenant';
   };
   export type public_SupportTicket = {
     assigneeId: CodecTypes['pg/text@1']['output'] | null;
@@ -5533,7 +5545,8 @@ export namespace Models {
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     year: CodecTypes['pg/int4@1']['output'];
     messages: public_TicketMessage[];
-    readonly [RelationKeys]?: 'messages';
+    tenant: public_Tenant | null;
+    readonly [RelationKeys]?: 'messages' | 'tenant';
   };
   export type public_Tenant = {
     accountManagerId: CodecTypes['pg/text@1']['output'] | null;
@@ -5593,25 +5606,47 @@ export namespace Models {
     apuImportRuns: public_ApuImportRun[];
     apuItems: public_ApuItem[];
     apuPriceHistory: public_ApuItemPriceHistory[];
+    attachments: public_Attachment[];
+    attendances: public_Attendance[];
+    benefitRedemptions: public_BenefitRedemption[];
+    bookings: public_Booking[];
     budgetBaselines: public_BudgetBaseline[];
     budgetChapters: public_BudgetChapter[];
     budgetItemProgress: public_BudgetItemProgress[];
     budgetItemResources: public_BudgetItemResource[];
     budgetItems: public_BudgetItem[];
+    cashBoxes: public_CashBox[];
+    cashMovements: public_CashMovement[];
+    cashSessions: public_CashSession[];
+    charges: public_Charge[];
+    contacts: public_TenantContact[];
     customerNotes: public_CustomerNote[];
     customers: public_Customer[];
+    departures: public_Departure[];
     expenses: public_Expense[];
     fieldLogs: public_FieldLog[];
+    inboxConversations: public_InboxConversation[];
+    invites: public_TenantInvite[];
+    invoices: public_Invoice[];
+    leads: public_Lead[];
     lookaheadTasks: public_LookaheadTask[];
     memberships: public_Membership[];
     modules: public_TenantModule[];
     payments: public_Payment[];
+    presenceRequests: public_PresenceRequest[];
     presenceScans: public_PresenceScan[];
+    products: public_Product[];
     projectBudgets: public_ProjectBudget[];
     projectFollowUps: public_ProjectFollowUp[];
     projectPlans: public_ProjectPlan[];
     projects: public_Project[];
     quotes: public_Quote[];
+    satisfactionSurveys: public_SatisfactionSurvey[];
+    stockMovements: public_StockMovement[];
+    subscription: public_Subscription | null;
+    supportTickets: public_SupportTicket[];
+    ticketSales: public_TicketSale[];
+    tourBookings: public_TourBooking[];
     users: public_User[];
     weeklyCommitments: public_WeeklyCommitment[];
     readonly [RelationKeys]?:
@@ -5621,25 +5656,47 @@ export namespace Models {
       | 'apuImportRuns'
       | 'apuItems'
       | 'apuPriceHistory'
+      | 'attachments'
+      | 'attendances'
+      | 'benefitRedemptions'
+      | 'bookings'
       | 'budgetBaselines'
       | 'budgetChapters'
       | 'budgetItemProgress'
       | 'budgetItemResources'
       | 'budgetItems'
+      | 'cashBoxes'
+      | 'cashMovements'
+      | 'cashSessions'
+      | 'charges'
+      | 'contacts'
       | 'customerNotes'
       | 'customers'
+      | 'departures'
       | 'expenses'
       | 'fieldLogs'
+      | 'inboxConversations'
+      | 'invites'
+      | 'invoices'
+      | 'leads'
       | 'lookaheadTasks'
       | 'memberships'
       | 'modules'
       | 'payments'
+      | 'presenceRequests'
       | 'presenceScans'
+      | 'products'
       | 'projectBudgets'
       | 'projectFollowUps'
       | 'projectPlans'
       | 'projects'
       | 'quotes'
+      | 'satisfactionSurveys'
+      | 'stockMovements'
+      | 'subscription'
+      | 'supportTickets'
+      | 'ticketSales'
+      | 'tourBookings'
       | 'users'
       | 'weeklyCommitments';
   };
@@ -5656,7 +5713,8 @@ export namespace Models {
     tenantId: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     whatsapp: CodecTypes['pg/text@1']['output'] | null;
-    readonly [RelationKeys]?: never;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
   };
   export type public_TenantInvite = {
     acceptedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
@@ -5669,7 +5727,8 @@ export namespace Models {
     revokedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     role: 'SUPERADMIN' | 'OWNER' | 'STAFF' | 'ADMIN' | 'RECEPTION' | 'ADVISOR';
     tenantId: CodecTypes['pg/text@1']['output'];
-    readonly [RelationKeys]?: never;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
   };
   export type public_TenantModule = {
     active: CodecTypes['pg/bool@1']['output'];
@@ -5720,7 +5779,8 @@ export namespace Models {
     total: CodecTypes['pg/numeric@1']['output'];
     visitDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
     visitors: CodecTypes['pg/int4@1']['output'];
-    readonly [RelationKeys]?: never;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
   };
   export type public_TourBooking = {
     code: CodecTypes['pg/text@1']['output'];
@@ -5737,7 +5797,8 @@ export namespace Models {
     tenantId: CodecTypes['pg/text@1']['output'];
     total: CodecTypes['pg/numeric@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
-    readonly [RelationKeys]?: never;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
   };
   export type public_User = {
     active: CodecTypes['pg/bool@1']['output'];
@@ -6666,13 +6727,32 @@ type ContractBase = Omit<
               uniques: readonly [];
               indexes: readonly [
                 {
+                  readonly name: 'Attachment_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'Attachment_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
                   readonly name: 'Attachment_tenantId_kind_ownerId_idx_b6da39dc';
                   readonly prefix: 'Attachment_tenantId_kind_ownerId_idx';
                   readonly columns: readonly ['tenantId', 'kind', 'ownerId'];
                   readonly unique: false;
                 },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Attachment';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly Attendance: {
               columns: {
@@ -6743,8 +6823,27 @@ type ContractBase = Omit<
                   readonly columns: readonly ['tenantId', 'at'];
                   readonly unique: false;
                 },
+                {
+                  readonly name: 'Attendance_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'Attendance_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Attendance';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly AuditLog: {
               columns: {
@@ -7027,6 +7126,18 @@ type ContractBase = Omit<
                     readonly columns: readonly ['id'];
                   };
                 },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'BenefitRedemption';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
               ];
             };
             readonly BillingPolicy: {
@@ -7179,7 +7290,20 @@ type ContractBase = Omit<
                   readonly unique: false;
                 },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Booking';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly BudgetBaseline: {
               columns: {
@@ -7924,7 +8048,20 @@ type ContractBase = Omit<
                   readonly unique: false;
                 },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'CashBox';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly CashMovement: {
               columns: {
@@ -7994,8 +8131,26 @@ type ContractBase = Omit<
                   readonly columns: readonly ['sessionId'];
                   readonly unique: false;
                 },
+                {
+                  readonly name: 'CashMovement_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'CashMovement_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
               ];
               foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'CashMovement';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
                 {
                   readonly source: {
                     readonly namespaceId: 'public' & NamespaceId;
@@ -8089,8 +8244,26 @@ type ContractBase = Omit<
                   readonly columns: readonly ['tenantId', 'boxId'];
                   readonly unique: false;
                 },
+                {
+                  readonly name: 'CashSession_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'CashSession_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
               ];
               foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'CashSession';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
                 {
                   readonly source: {
                     readonly namespaceId: 'public' & NamespaceId;
@@ -8241,6 +8414,18 @@ type ContractBase = Omit<
                 },
               ];
               foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Charge';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
                 {
                   readonly source: {
                     readonly namespaceId: 'public' & NamespaceId;
@@ -8421,10 +8606,24 @@ type ContractBase = Omit<
               uniques: readonly [];
               indexes: readonly [
                 {
+                  readonly name: 'Customer_tenantId_accessCode_key_ef9862d0';
+                  readonly prefix: 'Customer_tenantId_accessCode_key';
+                  readonly columns: readonly ['tenantId', 'accessCode'];
+                  readonly where: '"accessCode" IS NOT NULL';
+                  readonly unique: true;
+                },
+                {
                   readonly name: 'Customer_tenantId_idx_c93ed4f1';
                   readonly prefix: 'Customer_tenantId_idx';
                   readonly columns: readonly ['tenantId'];
                   readonly unique: false;
+                },
+                {
+                  readonly name: 'Customer_tenantId_nfcUid_key_4a0896f1';
+                  readonly prefix: 'Customer_tenantId_nfcUid_key';
+                  readonly columns: readonly ['tenantId', 'nfcUid'];
+                  readonly where: '"nfcUid" IS NOT NULL';
+                  readonly unique: true;
                 },
               ];
               foreignKeys: readonly [
@@ -8657,8 +8856,27 @@ type ContractBase = Omit<
                   readonly columns: readonly ['tenantId', 'date'];
                   readonly unique: false;
                 },
+                {
+                  readonly name: 'Departure_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'Departure_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Departure';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly DismissedNotification: {
               columns: {
@@ -9140,7 +9358,20 @@ type ContractBase = Omit<
                   readonly unique: false;
                 },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'InboxConversation';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly InboxMessage: {
               columns: {
@@ -9324,7 +9555,20 @@ type ContractBase = Omit<
                   readonly unique: false;
                 },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Invoice';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly InvoiceLine: {
               columns: {
@@ -9517,8 +9761,27 @@ type ContractBase = Omit<
                   readonly columns: readonly ['stage'];
                   readonly unique: false;
                 },
+                {
+                  readonly name: 'Lead_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'Lead_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Lead';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly LeadActivity: {
               columns: {
@@ -9771,11 +10034,6 @@ type ContractBase = Omit<
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
-                };
-                readonly payments: {
-                  readonly nativeType: 'json';
-                  readonly codecId: 'pg/json@1';
-                  readonly nullable: true;
                 };
                 readonly price: {
                   readonly nativeType: 'numeric';
@@ -10306,7 +10564,20 @@ type ContractBase = Omit<
                   readonly unique: false;
                 },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'PresenceRequest';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly PresenceScan: {
               columns: {
@@ -10510,13 +10781,32 @@ type ContractBase = Omit<
               uniques: readonly [];
               indexes: readonly [
                 {
+                  readonly name: 'Product_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'Product_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
                   readonly name: 'Product_tenantId_kind_idx_1e76dd5c';
                   readonly prefix: 'Product_tenantId_kind_idx';
                   readonly columns: readonly ['tenantId', 'kind'];
                   readonly unique: false;
                 },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Product';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly Project: {
               columns: {
@@ -11554,7 +11844,20 @@ type ContractBase = Omit<
                   readonly unique: false;
                 },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'SatisfactionSurvey';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly StaffInvite: {
               columns: {
@@ -11843,8 +12146,26 @@ type ContractBase = Omit<
                   readonly columns: readonly ['productId'];
                   readonly unique: false;
                 },
+                {
+                  readonly name: 'StockMovement_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'StockMovement_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
               ];
               foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'StockMovement';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
                 {
                   readonly source: {
                     readonly namespaceId: 'public' & NamespaceId;
@@ -11935,7 +12256,20 @@ type ContractBase = Omit<
               primaryKey: { readonly columns: readonly ['id'] };
               uniques: readonly [{ readonly columns: readonly ['tenantId'] }];
               indexes: readonly [];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Subscription';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly SupportTicket: {
               columns: {
@@ -12060,7 +12394,20 @@ type ContractBase = Omit<
                   readonly unique: false;
                 },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'SupportTicket';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly Tenant: {
               columns: {
@@ -12353,7 +12700,20 @@ type ContractBase = Omit<
                   readonly unique: false;
                 },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'TenantContact';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly TenantInvite: {
               columns: {
@@ -12425,7 +12785,20 @@ type ContractBase = Omit<
                   readonly unique: false;
                 },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'TenantInvite';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly TenantModule: {
               columns: {
@@ -12654,13 +13027,32 @@ type ContractBase = Omit<
               uniques: readonly [{ readonly columns: readonly ['tenantId', 'number'] }];
               indexes: readonly [
                 {
+                  readonly name: 'TicketSale_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'TicketSale_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
                   readonly name: 'TicketSale_tenantId_visitDate_idx_d723b863';
                   readonly prefix: 'TicketSale_tenantId_visitDate_idx';
                   readonly columns: readonly ['tenantId', 'visitDate'];
                   readonly unique: false;
                 },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'TicketSale';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly TourBooking: {
               columns: {
@@ -12749,8 +13141,27 @@ type ContractBase = Omit<
                   readonly columns: readonly ['departureId'];
                   readonly unique: false;
                 },
+                {
+                  readonly name: 'TourBooking_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'TourBooking_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'TourBooking';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly User: {
               columns: {
@@ -14282,7 +14693,20 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
             };
-            readonly relations: Record<string, never>;
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
             readonly storage: {
               readonly table: 'Attachment';
               readonly namespaceId: 'public';
@@ -14347,7 +14771,20 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
             };
-            readonly relations: Record<string, never>;
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
             readonly storage: {
               readonly table: 'Attendance';
               readonly namespaceId: 'public';
@@ -14604,6 +15041,18 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['id'];
                 };
               };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
             };
             readonly storage: {
               readonly table: 'BenefitRedemption';
@@ -14746,7 +15195,20 @@ type ContractBase = Omit<
                 };
               };
             };
-            readonly relations: Record<string, never>;
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
             readonly storage: {
               readonly table: 'Booking';
               readonly namespaceId: 'public';
@@ -15490,6 +15952,18 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['boxId'];
                 };
               };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
             };
             readonly storage: {
               readonly table: 'CashBox';
@@ -15566,6 +16040,18 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['sessionId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
                   readonly targetFields: readonly ['id'];
                 };
               };
@@ -15667,6 +16153,18 @@ type ContractBase = Omit<
                 readonly on: {
                   readonly localFields: readonly ['id'];
                   readonly targetFields: readonly ['sessionId'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
                 };
               };
             };
@@ -15824,6 +16322,18 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['subscriptionId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
                   readonly targetFields: readonly ['id'];
                 };
               };
@@ -16287,7 +16797,20 @@ type ContractBase = Omit<
                 };
               };
             };
-            readonly relations: Record<string, never>;
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
             readonly storage: {
               readonly table: 'Departure';
               readonly namespaceId: 'public';
@@ -16751,6 +17274,18 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['conversationId'];
                 };
               };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
             };
             readonly storage: {
               readonly table: 'InboxConversation';
@@ -16945,6 +17480,18 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['invoiceId'];
                 };
               };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
             };
             readonly storage: {
               readonly table: 'Invoice';
@@ -17134,6 +17681,18 @@ type ContractBase = Omit<
                 readonly on: {
                   readonly localFields: readonly ['id'];
                   readonly targetFields: readonly ['leadId'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
                 };
               };
             };
@@ -17402,10 +17961,6 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly payments: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/json@1' };
-              };
               readonly price: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
@@ -17490,7 +18045,6 @@ type ContractBase = Omit<
                 readonly frozenFrom: { readonly column: 'frozenFrom' };
                 readonly frozenUntil: { readonly column: 'frozenUntil' };
                 readonly id: { readonly column: 'id' };
-                readonly payments: { readonly column: 'payments' };
                 readonly price: { readonly column: 'price' };
                 readonly productId: { readonly column: 'productId' };
                 readonly startDate: { readonly column: 'startDate' };
@@ -17889,7 +18443,20 @@ type ContractBase = Omit<
                 };
               };
             };
-            readonly relations: Record<string, never>;
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
             readonly storage: {
               readonly table: 'PresenceRequest';
               readonly namespaceId: 'public';
@@ -18080,6 +18647,18 @@ type ContractBase = Omit<
                 readonly on: {
                   readonly localFields: readonly ['id'];
                   readonly targetFields: readonly ['productId'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
                 };
               };
             };
@@ -19126,7 +19705,20 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
             };
-            readonly relations: Record<string, never>;
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
             readonly storage: {
               readonly table: 'SatisfactionSurvey';
               readonly namespaceId: 'public';
@@ -19458,6 +20050,18 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['id'];
                 };
               };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
             };
             readonly storage: {
               readonly table: 'StockMovement';
@@ -19555,6 +20159,18 @@ type ContractBase = Omit<
                 readonly on: {
                   readonly localFields: readonly ['id'];
                   readonly targetFields: readonly ['subscriptionId'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
                 };
               };
             };
@@ -19682,6 +20298,18 @@ type ContractBase = Omit<
                 readonly on: {
                   readonly localFields: readonly ['id'];
                   readonly targetFields: readonly ['ticketId'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
                 };
               };
             };
@@ -19931,6 +20559,50 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly attachments: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Attachment';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly attendances: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Attendance';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly benefitRedemptions: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'BenefitRedemption';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly bookings: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Booking';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly budgetBaselines: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -19986,6 +20658,61 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly cashBoxes: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'CashBox';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly cashMovements: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'CashMovement';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly cashSessions: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'CashSession';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly charges: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Charge';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly contacts: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'TenantContact';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly customerNotes: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -20001,6 +20728,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'Customer';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly departures: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Departure';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -20024,6 +20762,47 @@ type ContractBase = Omit<
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'FieldLog';
                 };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly inboxConversations: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'InboxConversation';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly invites: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'TenantInvite';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly invoices: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Invoice';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly leads: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'Lead' };
                 readonly cardinality: '1:N';
                 readonly on: {
                   readonly localFields: readonly ['id'];
@@ -20074,10 +20853,32 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly presenceRequests: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'PresenceRequest';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly presenceScans: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'PresenceScan';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly products: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Product';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -20133,6 +20934,73 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'Quote';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly satisfactionSurveys: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'SatisfactionSurvey';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly stockMovements: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'StockMovement';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly subscription: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Subscription';
+                };
+                readonly cardinality: '1:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly supportTickets: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'SupportTicket';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly ticketSales: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'TicketSale';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly tourBookings: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'TourBooking';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -20258,7 +21126,20 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
             };
-            readonly relations: Record<string, never>;
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
             readonly storage: {
               readonly table: 'TenantContact';
               readonly namespaceId: 'public';
@@ -20333,7 +21214,20 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
             };
-            readonly relations: Record<string, never>;
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
             readonly storage: {
               readonly table: 'TenantInvite';
               readonly namespaceId: 'public';
@@ -20546,7 +21440,20 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
               };
             };
-            readonly relations: Record<string, never>;
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
             readonly storage: {
               readonly table: 'TicketSale';
               readonly namespaceId: 'public';
@@ -20635,7 +21542,20 @@ type ContractBase = Omit<
                 };
               };
             };
-            readonly relations: Record<string, never>;
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
             readonly storage: {
               readonly table: 'TourBooking';
               readonly namespaceId: 'public';
