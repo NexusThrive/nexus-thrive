@@ -1,6 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, test } from "vitest";
 import {
   CODE_ALPHABET,
+  NO_CONTRACT,
+  redemptionTerms,
+  validateContractTerms,
+  withinLimit,
   benefitCopy,
   benefitEndMs,
   benefitStatus,
@@ -134,5 +138,44 @@ describe("benefitCopy", () => {
 
   it("redondea los días a un mínimo de uno", () => {
     expect(benefitCopy("PROMO", { planName: "Elite", durationDays: 0 }).title).toMatch(/^1 días/);
+  });
+});
+
+describe("contrato a medida", () => {
+  const isModule = (m: string) => ["dashboard", "crm", "finance", "memberships"].includes(m);
+
+  test("vacío = sin contrato", () => {
+    expect(validateContractTerms({}, isModule)).toEqual({ ok: true, value: NO_CONTRACT });
+  });
+
+  test("precio en dólares a centavos, módulos sin repetir, límites enteros", () => {
+    expect(validateContractTerms({ price: "$39,90", modules: ["crm", "crm", " finance "], maxUsers: "3", maxCustomers: "500" }, isModule)).toEqual({
+      ok: true,
+      value: { priceUsdCents: 3990, modules: ["crm", "finance"], maxUsers: 3, maxCustomers: 500 },
+    });
+  });
+
+  test("rechaza precio, módulo y límites inválidos con el campo", () => {
+    expect(validateContractTerms({ price: "-1" }, isModule)).toMatchObject({ ok: false, field: "priceUsdCents" });
+    expect(validateContractTerms({ price: "20000" }, isModule)).toMatchObject({ ok: false, field: "priceUsdCents" });
+    expect(validateContractTerms({ modules: ["nomina"] }, isModule)).toMatchObject({ ok: false, field: "modules" });
+    expect(validateContractTerms({ maxUsers: "0" }, isModule)).toMatchObject({ ok: false, field: "maxUsers" });
+    expect(validateContractTerms({ maxCustomers: "2.5" }, isModule)).toMatchObject({ ok: false, field: "maxCustomers" });
+  });
+
+  test("con precio: suscripción activa con ese precio y módulos exactos con Inicio", () => {
+    const r = redemptionTerms({ priceUsdCents: 2500, modules: ["crm"], maxUsers: 2, maxCustomers: null }, ["dashboard", "finance"]);
+    expect(r).toEqual({ modules: ["dashboard", "crm"], subscriptionStatus: "ACTIVE", priceUsdCents: 2500, maxUsers: 2, maxCustomers: null });
+  });
+
+  test("sin precio: prueba gratis con los módulos del plan", () => {
+    const r = redemptionTerms(NO_CONTRACT, ["dashboard", "finance"]);
+    expect(r).toMatchObject({ modules: ["dashboard", "finance"], subscriptionStatus: "TRIAL", priceUsdCents: 0 });
+  });
+
+  test("límites", () => {
+    expect(withinLimit(null, 10_000)).toBe(true);
+    expect(withinLimit(3, 2)).toBe(true);
+    expect(withinLimit(3, 3)).toBe(false);
   });
 });

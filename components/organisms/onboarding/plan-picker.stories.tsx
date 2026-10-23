@@ -18,7 +18,7 @@ export default meta;
 
 export const Gratis: StoryObj<typeof meta> = {};
 export const EliteConstruccion: StoryObj<typeof meta> = {
-  args: { initial: { plan: "ELITE", billing: "MONTHLY", selected: ["quotes", "whatsapp"], tierId: "tier-500" } },
+  args: { initial: { plan: "ELITE", billing: "MONTHLY", selected: ["construction", "whatsapp"], tierId: "tier-500" } },
 };
 export const SignatureAnualGimnasio: StoryObj<typeof meta> = {
   args: { vertical: "gym", initial: { plan: "SIGNATURE", billing: "ANNUAL", selected: [], tierId: null } },

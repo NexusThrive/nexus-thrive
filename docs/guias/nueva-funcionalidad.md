@@ -126,19 +126,21 @@ Y pruébalo en `pnpm dev` con dos roles: uno que puede y uno que no.
 
 ## 3. Receta B · Un módulo nuevo
 
-Hoy un módulo se declara en varios sitios (es deuda conocida: ARCH-01, se
-resuelve con el registro de capacidades de
-[ADR-0003](../nexus-architecture/decisions/0003-registro-de-capacidades.md)).
-TypeScript te avisa de casi todos porque son `Record<ModuleValue, …>`.
+Cada módulo se declara **una sola vez** en el registro de capacidades
+([ADR-0003](../nexus-architecture/decisions/0003-registro-de-capacidades.md)).
+De ahí salen la lista de módulos, el menú, las rutas que exige el servidor,
+el onboarding y el catálogo inicial de precios. La base guarda el id como
+texto validado (`isModule`): **no hace falta migración**.
 
 | # | Dónde | Qué |
 |---|---|---|
-| 1 | `prisma/contract.prisma` → `enum ModuleName` | El valor nuevo. Necesita migración **y** SQL de producción (ver [devops.md](devops.md#sql-de-producción)) |
-| 2 | `lib/admin/catalogs.ts` | `BASE_MODULES` o `SPECIALIZED_MODULES`, y `MODULE_LABELS` |
-| 3 | `lib/navigation/tenant-nav.ts` → `MODULE_NAV` | Ruta, icono y etiqueta. De aquí sale también qué rutas exige el servidor (`modulesForRoute`) |
-| 4 | `lib/onboarding/module-meta.ts` y `presets.ts` | Icono, descripción y en qué rubros viene activado |
-| 5 | `lib/plans/catalog.ts` y `lib/plans/pricing.ts` | Precio y descripción comercial; `READY_MODULES` solo cuando ya funcione |
-| 6 | `app/[tenant]/(app)/<ruta>/` | `page.tsx` + `actions.ts` siguiendo la receta A |
+| 1 | `lib/capabilities/registry.ts` | Una entrada: id, nombres, descripción, icono, estado (`PLANNED` hasta que funcione), precio y menú (rutas, con rubros si son propias de un rubro) |
+| 2 | `app/[tenant]/(app)/<ruta>/` | `page.tsx` + `actions.ts` siguiendo la receta A |
+| 3 | (opcional) `lib/admin/catalogs.ts` → `VERTICAL_RECIPES` | Si viene activado por defecto en algún rubro |
+
+`lib/capabilities/registry.test.ts` comprueba que cada ruta del menú tenga su
+página y que los catálogos derivados no se desalineen. En una base que ya
+existe, la fila de precio (`ModuleSetting`) se crea sola al cargar el catálogo.
 
 No la agregues al menú hasta que tenga página: la prueba de arquitectura y el
 usuario se encuentran un 404 (así pasó con `/departures`).

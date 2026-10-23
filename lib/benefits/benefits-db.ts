@@ -21,6 +21,8 @@ import {
   generateBenefitCode,
   normalizeBenefitCode,
   normalizeBenefitKind,
+  redemptionTerms,
+  type ContractTerms,
 } from "@/lib/benefits/benefits";
 
 export const BENEFIT_COOKIE = "nx_benefit";
@@ -45,6 +47,8 @@ export type BenefitRow = {
   expiresAt: string | null;
   notes: string | null;
   createdAt: string;
+  /** Contrato a medida (vacío = plan normal). */
+  terms: ContractTerms;
 };
 
 export type BenefitPublic = {
@@ -97,6 +101,23 @@ function normalizeRow(raw: RawBenefit): BenefitRow {
     expiresAt: raw.expiresAt == null ? null : String(raw.expiresAt),
     notes: raw.notes == null ? null : String(raw.notes),
     createdAt: String(raw.createdAt),
+    terms: {
+      priceUsdCents: raw.priceUsdCents == null ? null : Number(raw.priceUsdCents),
+      modules: Array.isArray(raw.modules) ? raw.modules.map(String) : [],
+      maxUsers: raw.maxUsers == null ? null : Number(raw.maxUsers),
+      maxCustomers: raw.maxCustomers == null ? null : Number(raw.maxCustomers),
+    },
+  };
+}
+
+/** Columnas del contrato tal como se guardan. */
+function termsColumns(terms: ContractTerms | undefined) {
+  const t = terms ?? { priceUsdCents: null, modules: [], maxUsers: null, maxCustomers: null };
+  return {
+    priceUsdCents: t.priceUsdCents,
+    modules: t.modules.length > 0 ? t.modules : null,
+    maxUsers: t.maxUsers,
+    maxCustomers: t.maxCustomers,
   };
 }
 
@@ -188,6 +209,8 @@ export type CreateBenefitInput = {
   maxUses?: number | null;
   expiresAt?: string | null;
   notes?: string | null;
+  /** Contrato a medida (ya validado con `validateContractTerms`). */
+  terms?: ContractTerms;
 };
 
 /** Crea un código. Si no se pasa `code`, se genera uno legible. */
@@ -228,6 +251,7 @@ export async function createBenefitCode(
           ? Temporal.Instant.fromEpochMilliseconds(Date.parse(input.expiresAt))
           : null,
         notes: input.notes?.trim() || null,
+        ...termsColumns(input.terms),
         createdById: staffId,
       });
       return { ok: true, code };
@@ -253,6 +277,7 @@ export type UpdateBenefitInput = {
   maxUses: number | null;
   expiresAt: string | null;
   notes: string | null;
+  terms?: ContractTerms;
 };
 
 /**
@@ -285,6 +310,7 @@ export async function updateBenefitCode(
         ? Temporal.Instant.fromEpochMilliseconds(Date.parse(input.expiresAt))
         : null,
       notes: input.notes?.trim() || null,
+      ...(input.terms ? termsColumns(input.terms) : {}),
     });
     return { ok: true };
   } catch {
@@ -293,9 +319,11 @@ export async function updateBenefitCode(
 }
 
 /**
- * Canjea un código para un negocio: lo deja 30 días (o los configurados) en el
- * plan del beneficio, sin costo. Idempotente por negocio (no se puede canjear
- * el mismo código dos veces).
+ * Canjea un código para un negocio: lo deja en el plan del beneficio por los
+ * días configurados. Sin precio es una prueba gratis que vence sola; con
+ * precio acordado (código a medida) la suscripción queda ACTIVA con ese
+ * precio, con los módulos y límites del código. Idempotente por negocio (no
+ * se puede canjear el mismo código dos veces).
  */
 export async function redeemBenefit(params: {
   code: string;
@@ -342,7 +370,10 @@ export async function redeemBenefit(params: {
 
   const config = await loadPricingConfig();
   const plan = row.plan as PlanKey;
-  const modules = resolveModules(config, plan, tenant.vertical, []);
+  // Un código a medida trae sus módulos, su precio y sus límites; si no, los del plan.
+  const contract = redemptionTerms(row.terms, resolveModules(config, plan, tenant.vertical, []));
+  // Los módulos del código ya se validaron al crearlo (`validateContractTerms`).
+  const modules = contract.modules as ModuleValue[];
   const startMs = Date.now();
   const endMs = benefitEndMs(startMs, row.durationDays);
   const start = Temporal.Instant.fromEpochMilliseconds(startMs);
@@ -411,6 +442,7 @@ export async function redeemBenefit(params: {
         plan: row.plan,
         kind: row.kind,
         durationDays: row.durationDays,
+        priceUsdCents: contract.priceUsdCents || null,
         startsAt: start,
         endsAt: end,
         clerkUserId: params.clerkUserId ?? null,
@@ -420,9 +452,11 @@ export async function redeemBenefit(params: {
       await tx.orm.public.Tenant.where({ id: params.tenantId }).update({
         plan,
         billingCycle: "MONTHLY",
-        planMonthlyUsdCents: 0,
+        planMonthlyUsdCents: contract.priceUsdCents,
         planSelectedAt: start,
         contractedModules: modules as ModuleValue[],
+        maxUsers: contract.maxUsers,
+        maxCustomers: contract.maxCustomers,
       });
 
       const selected = new Set<string>(modules);
@@ -447,8 +481,8 @@ export async function redeemBenefit(params: {
           tenantId: params.tenantId,
           plan,
           billingCycle: "MONTHLY",
-          priceUsdCents: 0,
-          status: "TRIAL",
+          priceUsdCents: contract.priceUsdCents,
+          status: contract.subscriptionStatus,
           currentPeriodStart: start,
           currentPeriodEnd: end,
           notes: note,
@@ -456,8 +490,8 @@ export async function redeemBenefit(params: {
         update: {
           plan,
           billingCycle: "MONTHLY",
-          priceUsdCents: 0,
-          status: "TRIAL",
+          priceUsdCents: contract.priceUsdCents,
+          status: contract.subscriptionStatus,
           currentPeriodStart: start,
           currentPeriodEnd: end,
           notes: note,
@@ -485,7 +519,7 @@ export async function redeemBenefit(params: {
       action: "BENEFIT_REDEEM",
       targetTenantId: params.tenantId,
       targetTenantName: params.tenantName,
-      metadata: { code, plan: row.plan, kind: row.kind, durationDays: row.durationDays },
+      metadata: { code, plan: row.plan, kind: row.kind, durationDays: row.durationDays, ...(row.terms.priceUsdCents != null || row.terms.modules.length || row.terms.maxUsers != null || row.terms.maxCustomers != null ? { terms: row.terms } : {}) },
     });
   } catch {
     // La auditoría nunca rompe el canje.
@@ -530,6 +564,8 @@ export async function expireBenefitTrial(tenantId: string): Promise<void> {
         billingCycle: "MONTHLY",
         planMonthlyUsdCents: 0,
         contractedModules: modules as ModuleValue[],
+        maxUsers: null,
+        maxCustomers: null,
       });
 
       const selected = new Set<string>(modules);

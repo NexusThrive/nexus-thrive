@@ -28,13 +28,15 @@ export async function listTeam(tenantId: string, meId: string) {
 /** Usuarios que permite el plan del negocio (null = sin límite). */
 export async function seatLimit(tenantId: string): Promise<{ limit: number | null; used: number; planName: string }> {
   const [t, config, active, pending] = await Promise.all([
-    db.orm.public.Tenant.where({ id: tenantId }).select("plan").first(),
+    db.orm.public.Tenant.where({ id: tenantId }).select("plan", "maxUsers").first(),
     loadPricingConfig(),
     db.orm.public.User.where({ tenantId, active: true }).where((u) => u.role.neq("SUPERADMIN")).aggregate((a) => ({ n: a.count() })),
     db.orm.public.TenantInvite.where({ tenantId }).where((i) => i.acceptedAt.isNull()).where((i) => i.revokedAt.isNull()).where((i) => i.expiresAt.gt(now())).aggregate((a) => ({ n: a.count() })),
   ]);
   const plan = await db.orm.public.PlanSetting.where({ key: t?.plan ?? "ESSENTIAL" }).select("maxUsers", "name").first();
   void config;
+  // Un código a medida puede acordar su propio límite; si no, el del plan.
+  if (t?.maxUsers != null) return { limit: t.maxUsers, used: active.n + pending.n, planName: `${plan?.name ?? t.plan} (acordado)` };
   return { limit: plan?.maxUsers ?? null, used: active.n + pending.n, planName: plan?.name ?? t?.plan ?? "" };
 }
 

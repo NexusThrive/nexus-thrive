@@ -27,7 +27,7 @@ export const VistaPreviaCompleta: StoryObj<typeof meta> = {
       modules: [
         { module: "dashboard", price: "Incluido" },
         { module: "crm", price: "Incluido" },
-        { module: "quotes", price: "$19" },
+        { module: "construction", price: "$19" },
       ],
     },
   },

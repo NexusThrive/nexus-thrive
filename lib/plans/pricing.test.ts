@@ -15,12 +15,12 @@ describe("motor de precios configurable", () => {
     expect(resolveModules(config, "ESSENTIAL", "gym", ["whatsapp"])).not.toContain("whatsapp");
   });
   it("Elite suma lo elegido del rubro y descarta lo ajeno", () => {
-    const mods = resolveModules(config, "ELITE", "construction", ["quotes", "memberships"]);
-    expect(mods).toContain("quotes");
+    const mods = resolveModules(config, "ELITE", "construction", ["construction", "memberships"]);
+    expect(mods).toContain("construction");
     expect(mods).not.toContain("memberships");
   });
   it("precio por módulo con factor del rubro y descuento del plan", () => {
-    expect(modulePriceCents(config, "quotes", "construction", "ELITE")).toBe(1900); // round(14×1,35)=19
+    expect(modulePriceCents(config, "construction", "construction", "ELITE")).toBe(1900); // round(14×1,35)=19
     expect(modulePriceCents(config, "whatsapp", "gym", "SIGNATURE")).toBe(540); // 9 × 0,6
     expect(modulePriceCents(config, "crm", "gym", "ELITE")).toBe(0); // incluido
   });

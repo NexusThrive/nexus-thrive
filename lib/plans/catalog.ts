@@ -1,4 +1,5 @@
 import type { ModuleValue, VerticalValue } from "@/lib/admin/catalogs";
+import { CAPABILITIES } from "@/lib/capabilities/registry";
 
 /**
  * Planes de NEXUS THRIVE sobre los MÓDULOS REALES de la app (USD/mes).
@@ -37,23 +38,16 @@ export const PLANS: Record<
   },
 };
 
-/** Incluidos en todos los planes, sin costo. */
-export const INCLUDED_MODULES: readonly ModuleValue[] = ["dashboard", "crm", "finance"];
+/** Incluidos en todos los planes, sin costo (del registro de capacidades). */
+export const INCLUDED_MODULES: readonly ModuleValue[] = CAPABILITIES.filter((c) => "included" in c && c.included && c.id !== "dashboard").map((c) => c.id);
 
 /** Útiles para cualquier rubro aunque no estén en su receta. */
-export const GENERAL_MODULES: readonly ModuleValue[] = ["whatsapp", "payments", "billing", "inventory"];
+export const GENERAL_MODULES: readonly ModuleValue[] = CAPABILITIES.filter((c) => "general" in c && c.general).map((c) => c.id);
 
 /** Precio mensual base de cada módulo de pago (antes del factor del rubro). */
-export const MODULE_PRICES: Partial<Record<ModuleValue, number>> = {
-  bookings: 6,
-  payments: 6,
-  billing: 8,
-  inventory: 6,
-  whatsapp: 9,
-  memberships: 8,
-  orders: 7,
-  quotes: 14,
-};
+export const MODULE_PRICES: Partial<Record<ModuleValue, number>> = Object.fromEntries(
+  CAPABILITIES.filter((c) => c.priceUsd > 0).map((c) => [c.id, c.priceUsd]),
+);
 
 /** Factor de precio por rubro (más operación = más valor). */
 export const VERTICAL_FACTORS: Record<VerticalValue, number> = {

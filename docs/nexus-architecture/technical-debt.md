@@ -19,7 +19,7 @@ usar o mantener bien · **P2** necesario para escalar · **P3** optimización.
 | [SEC-05](security-audit.md#sec-05) | Permisos por rol incompletos | P1 | Media | Comprobado |
 | [SEC-06](security-audit.md#sec-06) | Módulos/plan no aplicados en servidor | P1 | Media | Comprobado |
 | [SEC-10](security-audit.md#sec-10) | Vinculación por correo sin verificación | P1 | Alta si aplica | Indeterminado |
-| [ARCH-01](#arch-01) | `quotes` = suite de construcción | P1 | Media | Comprobado |
+| [ARCH-01](#arch-01) | `quotes` = suite de construcción | P1 | Media | Resuelto (2026-10-23) |
 | [ARCH-02](#arch-02) | Catálogo de módulos disperso; ruta `/departures` rota | P1 | Media | Comprobado |
 | [QA-01](#qa-01) | `tsc` necesita >2 GB; build no reproducible sin Clerk | P1 | Baja | Comprobado |
 | [DATA-02](#data-02) | Cobros de membresía duplicados (JSON + `Payment`) | P2 | Media | Comprobado |
@@ -99,6 +99,7 @@ con el formato completo.
 | Impacto | Un guía turístico ve "Catálogo APU" y presupuestos de obra; no existe una cotización genérica para otros rubros |
 | Recomendación | Separar capacidad `construction` (vertical) de `quotes` (cotización comercial genérica sobre `Product`) |
 | Aceptación | Ningún rubro no constructor ve pantallas APU; recetas actualizadas |
+| Estado (2026-10-23) | Hecho: capacidad `construction` (Obras, Cotizaciones de obra, Catálogo APU) en constructoras y carpinterías; `quotes` queda `PLANNED` sin pantallas hasta la cotización genérica (documento comercial). La migración conserva el acceso de cualquier negocio que ya tenga obras |
 | Prioridad | P1 |
 
 <a id="arch-02"></a>

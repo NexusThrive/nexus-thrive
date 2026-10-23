@@ -4,9 +4,11 @@
  * datos usen SIEMPRE los mismos valores — nunca listas enviadas por el
  * navegador ni literales duplicados.
  *
- * Catálogo unificado: 16 verticales, 8 módulos base + 3 especializados,
+ * Catálogo unificado: 16 verticales, módulos del registro de capacidades,
  * recetas por vertical (módulos por defecto + vocabulario adaptativo).
  */
+
+import { CAPABILITIES, type CapabilityId } from "@/lib/capabilities/registry";
 
 /* ------------------------------------------------------------------ */
 /* Verticales (16 rubros)                                              */
@@ -108,47 +110,21 @@ export function normalizeVertical(value: string): VerticalValue {
 }
 
 /* ------------------------------------------------------------------ */
-/* Módulos: 8 base + 3 especializados                                 */
+/* Módulos: salen del registro de capacidades (lib/capabilities)      */
 /* ------------------------------------------------------------------ */
 
-export const BASE_MODULES = [
-  "crm",
-  "bookings",
-  "payments",
-  "billing",
-  "inventory",
-  "finance",
-  "dashboard",
-  "whatsapp",
-] as const;
-export type BaseModuleValue = (typeof BASE_MODULES)[number];
+type CapabilityOf<K extends "base" | "specialized"> = Extract<(typeof CAPABILITIES)[number], { kind: K }>["id"];
 
-export const SPECIALIZED_MODULES = [
-  "memberships",
-  "orders",
-  "quotes",
-] as const;
-export type SpecializedModuleValue = (typeof SPECIALIZED_MODULES)[number];
+export const BASE_MODULES = CAPABILITIES.filter((c) => c.kind === "base").map((c) => c.id) as readonly CapabilityOf<"base">[];
+export type BaseModuleValue = CapabilityOf<"base">;
 
-export const MODULES = [
-  ...BASE_MODULES,
-  ...SPECIALIZED_MODULES,
-] as const;
-export type ModuleValue = (typeof MODULES)[number];
+export const SPECIALIZED_MODULES = CAPABILITIES.filter((c) => c.kind === "specialized").map((c) => c.id) as readonly CapabilityOf<"specialized">[];
+export type SpecializedModuleValue = CapabilityOf<"specialized">;
 
-export const MODULE_LABELS: Record<ModuleValue, string> = {
-  dashboard: "Dashboard",
-  crm: "CRM",
-  bookings: "Reservas",
-  payments: "Pagos",
-  billing: "Facturación",
-  inventory: "Inventario",
-  finance: "Finanzas",
-  whatsapp: "WhatsApp",
-  memberships: "Membresías",
-  orders: "Pedidos",
-  quotes: "Cotizaciones",
-};
+export const MODULES: readonly CapabilityId[] = [...BASE_MODULES, ...SPECIALIZED_MODULES];
+export type ModuleValue = CapabilityId;
+
+export const MODULE_LABELS = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.label])) as Record<ModuleValue, string>;
 
 /* ------------------------------------------------------------------ */
 /* Vocabulario adaptativo                                             */
@@ -260,7 +236,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   construction: {
-    modules: ["dashboard", "crm", "quotes", "billing", "finance"],
+    modules: ["dashboard", "crm", "construction", "billing", "finance"],
     terms: {
       customer: "Cliente",
       customers: "Clientes",
@@ -272,7 +248,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   carpentry: {
-    modules: ["dashboard", "crm", "quotes", "inventory", "finance"],
+    modules: ["dashboard", "crm", "construction", "inventory", "finance"],
     terms: {
       customer: "Cliente",
       customers: "Clientes",
@@ -328,7 +304,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   mechanic: {
-    modules: ["dashboard", "crm", "bookings", "quotes", "inventory", "finance"],
+    modules: ["dashboard", "crm", "bookings", "inventory", "finance"],
     terms: {
       customer: "Cliente",
       customers: "Clientes",
@@ -383,7 +359,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   tour_guides: {
-    modules: ["dashboard", "crm", "bookings", "quotes", "finance", "whatsapp"],
+    modules: ["dashboard", "crm", "bookings", "finance", "whatsapp"],
     terms: {
       customer: "Turista",
       customers: "Turistas",
@@ -394,7 +370,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   events: {
-    modules: ["dashboard", "crm", "bookings", "quotes", "billing", "finance"],
+    modules: ["dashboard", "crm", "bookings", "billing", "finance"],
     terms: {
       customer: "Cliente",
       customers: "Clientes",

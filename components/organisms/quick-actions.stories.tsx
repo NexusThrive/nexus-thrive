@@ -15,6 +15,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Gym: Story = {};
 export const Construction: Story = {
-  args: { tenantSlug: "constructora", actions: quickCreateActions("construction", ["quotes", "crm", "finance"]) },
+  args: { tenantSlug: "constructora", actions: quickCreateActions("construction", ["construction", "crm", "finance"]) },
 };
 export const NoModules: Story = { args: { actions: [] } };

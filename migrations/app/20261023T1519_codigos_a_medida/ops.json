@@ -1,0 +1,338 @@
+[
+  {
+    "id": "column.public.BenefitCode.maxCustomers",
+    "label": "Add column \"maxCustomers\" to \"BenefitCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "maxCustomers",
+        "table": "BenefitCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"maxCustomers\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BenefitCode",
+          "maxCustomers"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"maxCustomers\"",
+        "sql": "ALTER TABLE \"public\".\"BenefitCode\" ADD COLUMN \"maxCustomers\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"maxCustomers\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BenefitCode",
+          "maxCustomers"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.BenefitCode.maxUsers",
+    "label": "Add column \"maxUsers\" to \"BenefitCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "maxUsers",
+        "table": "BenefitCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"maxUsers\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BenefitCode",
+          "maxUsers"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"maxUsers\"",
+        "sql": "ALTER TABLE \"public\".\"BenefitCode\" ADD COLUMN \"maxUsers\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"maxUsers\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BenefitCode",
+          "maxUsers"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.BenefitCode.modules",
+    "label": "Add column \"modules\" to \"BenefitCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "modules",
+        "table": "BenefitCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"modules\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BenefitCode",
+          "modules"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"modules\"",
+        "sql": "ALTER TABLE \"public\".\"BenefitCode\" ADD COLUMN \"modules\" text[]"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"modules\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BenefitCode",
+          "modules"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.BenefitCode.priceUsdCents",
+    "label": "Add column \"priceUsdCents\" to \"BenefitCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "priceUsdCents",
+        "table": "BenefitCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"priceUsdCents\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BenefitCode",
+          "priceUsdCents"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"priceUsdCents\"",
+        "sql": "ALTER TABLE \"public\".\"BenefitCode\" ADD COLUMN \"priceUsdCents\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"priceUsdCents\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BenefitCode",
+          "priceUsdCents"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.BenefitRedemption.priceUsdCents",
+    "label": "Add column \"priceUsdCents\" to \"BenefitRedemption\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "priceUsdCents",
+        "table": "BenefitRedemption"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"priceUsdCents\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BenefitRedemption",
+          "priceUsdCents"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"priceUsdCents\"",
+        "sql": "ALTER TABLE \"public\".\"BenefitRedemption\" ADD COLUMN \"priceUsdCents\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"priceUsdCents\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "BenefitRedemption",
+          "priceUsdCents"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.maxCustomers",
+    "label": "Add column \"maxCustomers\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "maxCustomers",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"maxCustomers\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "maxCustomers"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"maxCustomers\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"maxCustomers\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"maxCustomers\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "maxCustomers"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.maxUsers",
+    "label": "Add column \"maxUsers\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "maxUsers",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"maxUsers\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "maxUsers"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"maxUsers\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"maxUsers\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"maxUsers\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "maxUsers"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.BenefitCode.BenefitCode_modules_elem_not_null_749d77ec",
+    "label": "Add check constraint \"BenefitCode_modules_elem_not_null_749d77ec\" on \"BenefitCode\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "BenefitCode_modules_elem_not_null_749d77ec",
+        "table": "BenefitCode"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"BenefitCode_modules_elem_not_null_749d77ec\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BenefitCode_modules_elem_not_null_749d77ec",
+          "public",
+          "\"public\".\"BenefitCode\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"BenefitCode_modules_elem_not_null_749d77ec\"",
+        "sql": "ALTER TABLE \"public\".\"BenefitCode\" ADD CONSTRAINT \"BenefitCode_modules_elem_not_null_749d77ec\" CHECK (array_position(\"modules\", NULL) IS NULL)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"BenefitCode_modules_elem_not_null_749d77ec\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BenefitCode_modules_elem_not_null_749d77ec",
+          "public",
+          "\"public\".\"BenefitCode\""
+        ]
+      }
+    ]
+  }
+]

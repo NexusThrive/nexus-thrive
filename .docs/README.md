@@ -106,9 +106,9 @@ solo si existe en el producto, con una nota de dónde (_hecho: …_).
 | VII | [CAJA MENOR, FINANZAS OPERATIVAS Y CONTABILIDAD](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/README.md) | 9/31 · 29 % | 13/195 · 7 % | `█░░░░░░░░░` |
 | VIII | [TALENTO HUMANO Y ADMINISTRACIÓN DEL EQUIPO](capas/VIII-Talento-Humano-y-Administracion-del-Equipo/README.md) | 0/23 · 0 % | 0/173 · 0 % | `░░░░░░░░░░` |
 | IX | [INTELIGENCIA DE NEGOCIO, ANALÍTICA E IA](capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/README.md) | 8/26 · 31 % | 8/127 · 6 % | `█░░░░░░░░░` |
-| X | [PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/README.md) | 7/18 · 39 % | 12/127 · 9 % | `█░░░░░░░░░` |
+| X | [PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/README.md) | 7/18 · 39 % | 13/127 · 10 % | `█░░░░░░░░░` |
 | XI | [ESPECIALIZACIÓN POR VERTICAL](capas/XI-Especializacion-por-Vertical/README.md) | 0/0 · — | 0/0 · — | `` |
-| | **Total** | **60/241 · 25 %** | **76/1508 · 5 %** | |
+| | **Total** | **60/241 · 25 %** | **77/1508 · 5 %** | |
 
 _Generado con `node scripts/capas-progreso.mjs --write`. La capa XI (construcción) usa pestañas en lugar de casillas: su estado está en su README._
 <!-- progreso:fin -->
@@ -142,9 +142,9 @@ eventos, porque hoy una venta vive en cinco formas distintas.
 
 | # | Qué | Subcapas | Notas |
 | --- | --- | --- | --- |
-| 0 | Códigos de activación a medida | X.00 | En paralelo: precio, módulos y límites por cliente |
-| 1 | Registro de capacidades y separar construcción de cotizaciones | X.00, IV.02 | ARCH-01 / ADR-0003 |
-| 2 | **Documento comercial unificado** (cotización, pedido, factura o recibo, nota crédito; líneas, impuestos, descuentos, estados, numeración) | I.00, V.06 | La pieza de la que dependen POS, cartera, DIAN, Nequi y el agente |
+| 0 | ~~Códigos de activación a medida~~ (hecho 2026-10-23) | X.00 | En paralelo: precio, módulos y límites por cliente |
+| 1 | ~~Registro de capacidades y separar construcción de cotizaciones~~ (hecho 2026-10-23) | X.00, IV.02 | ARCH-01 / ADR-0003 |
+| 2 | **Documento comercial unificado** (cotización, pedido, factura o recibo, nota crédito; líneas, impuestos, descuentos, estados, numeración) | I.00, V.06 | En curso (2026-10-23): servidor hecho — venta al cobrar, nota crédito al anular, conversión, informe del día; falta la pantalla. Siguiente: [propuesta](../docs/nexus-architecture/propuesta-bloque-b-3-a-7.md) |
 | 3 | Cartera: abonos, pagos parciales, cuentas por cobrar por antigüedad | VII.02 | Sobre el servicio de dinero |
 | 4 | POS de varias líneas | V.03 | Sobre el documento |
 | 5 | Tercero único mínimo e importar/exportar clientes y catálogo | I.00, I.01, IV.00 | Requisito DIAN y migración desde Excel o Alegra |

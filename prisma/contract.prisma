@@ -156,20 +156,6 @@ enum Vertical {
   museum
 }
 
-enum ModuleName {
-  crm
-  dashboard
-  bookings
-  payments
-  billing
-  inventory
-  finance
-  whatsapp
-  memberships
-  orders
-  quotes
-}
-
 enum PaymentStatus {
   PENDING
   APPROVED
@@ -340,6 +326,9 @@ model Tenant {
   /// (ModuleSetting.status).
   customerTierId    String?
   contractedModules String[]?
+  /// Límites acordados en un código a medida (null = los del plan).
+  maxUsers          Int?
+  maxCustomers      Int?
   /// Operations Center: etapa comercial y responsable de cuenta (StaffMember.id).
   accountStage     AccountStage @default(ACTIVE)
   accountManagerId String?
@@ -415,7 +404,9 @@ model TenantModule {
   id         String       @id @default(uuid())
   tenantId   String
   tenant     Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  moduleName ModuleName
+  /// Id de la capacidad (lib/capabilities/registry.ts). Texto validado en el
+  /// servidor con `isModule`: agregar un módulo no necesita migración.
+  moduleName String
   active     Boolean      @default(true)
   createdAt  DateTime     @default(now())
   updatedAt  temporal.updatedAt()
@@ -1728,6 +1719,15 @@ model BenefitCode {
   /// Caducidad del código (opcional).
   expiresAt    DateTime?
   notes        String?
+  /// Contrato a medida (todo opcional; vacío = el plan normal y gratis):
+  /// precio mensual acordado en centavos de USD. Con precio, el canje deja la
+  /// suscripción ACTIVA con ese precio (Facturación) en vez de prueba gratis.
+  priceUsdCents Int?
+  /// Módulos exactos que activa (si está vacío, los del plan).
+  modules       String[]?
+  /// Límites de ese cliente (null = los del plan).
+  maxUsers      Int?
+  maxCustomers  Int?
   /// StaffMember.id que lo creó.
   createdById  String?
   createdAt    DateTime        @default(now())
@@ -1751,6 +1751,8 @@ model BenefitRedemption {
   /// Regalo o acceso pagado (se copia del código al momento del canje).
   kind         BenefitKind @default(PROMO)
   durationDays Int
+  /// Precio mensual acordado al canjear (copia del código; null = gratis).
+  priceUsdCents Int?
   startsAt     DateTime
   endsAt       DateTime
   clerkUserId  String?
@@ -1972,7 +1974,9 @@ model Invoice {
   id           String        @id @default(uuid())
   tenantId     String
   tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  /// RECEIPT (recibo) | BILL (cuenta de cobro)
+  /// Documento comercial unificado (lib/business/commercial-document.ts):
+  /// QUOTE | ORDER | BILL (cuenta de cobro) | RECEIPT | SALE (venta registrada
+  /// al cobrar) | CREDIT_NOTE. Cada tipo lleva su consecutivo.
   kind         String
   number       Int
   customerId   String?
@@ -1982,17 +1986,30 @@ model Invoice {
   dueDate      DateTime?
   status       InvoiceStatus @default(ISSUED)
   notes        String?
+  /// Base antes de descuentos, descuentos e impuestos (la suma de las líneas).
+  subtotal      Decimal       @default(0)
+  discountTotal Decimal       @default(0)
+  taxTotal      Decimal       @default(0)
   total        Decimal
   voidReason   String?
   createdById  String?
   /// Obra a la que pertenece la cuenta de cobro (constructoras).
   projectId    String?
+  /// Documento del que sale (cotización → pedido → cuenta; venta → nota crédito).
+  sourceDocumentId String?
+  /// Qué lo originó al cobrar: SALE (mostrador), TICKET_SALE, MEMBERSHIP… y su id.
+  originType   String?
+  originId     String?
+  /// Cobro que lo generó (ventas registradas al cobrar).
+  paymentId    String?
   createdAt    DateTime      @default(now())
   updatedAt    temporal.updatedAt()
   lines        InvoiceLine[]
 
   @@unique([tenantId, kind, number])
   @@index([tenantId])
+  @@index([tenantId, issueDate])
+  @@index([sourceDocumentId])
   @@rls
 }
 
@@ -2004,6 +2021,9 @@ model InvoiceLine {
   description String
   quantity    Decimal
   unitPrice   Decimal
+  /// Descuento e impuesto de la línea en % (0 = sin descuento / exenta).
+  discountPct Decimal @default(0)
+  taxRatePct  Decimal @default(0)
   total       Decimal
 
   @@index([invoiceId])

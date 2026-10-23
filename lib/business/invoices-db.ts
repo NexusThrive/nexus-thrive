@@ -1,10 +1,10 @@
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
-import { invoiceTotal, lineTotal, type InvoiceKind, type LineInput } from "./invoice";
+import { type InvoiceKind, type LineInput } from "./invoice";
+import { createDocument } from "./documents-db";
 
 /** Recibos y cuentas de cobro del negocio (servidor). */
 
-const dec = (n: number) => n.toFixed(2);
 const at = (d: string) => Temporal.Instant.from(`${d}T12:00:00Z`);
 const day = (v: unknown) => (v ? String(v).slice(0, 10) : null);
 
@@ -25,7 +25,11 @@ export type InvoiceRow = {
 };
 
 export async function listInvoices(tenantId: string): Promise<InvoiceRow[]> {
-  const rows = await db.orm.public.Invoice.where({ tenantId }).include("lines").orderBy((i) => i.createdAt.desc()).limit(200).all();
+  // Facturación muestra cuentas de cobro y recibos; las ventas al cobrar y
+  // las notas crédito salen en el informe de ventas (documents-db).
+  const rows = await db.orm.public.Invoice.where({ tenantId })
+    .where((i) => i.kind.in(["BILL", "RECEIPT"]))
+    .include("lines").orderBy((i) => i.createdAt.desc()).limit(200).all();
   return rows.map((i) => ({
     id: i.id,
     kind: i.kind as InvoiceKind,
@@ -53,36 +57,23 @@ export async function getInvoice(tenantId: string, id: string) {
   return (await listInvoices(tenantId)).find((i) => i.id === id) ?? null;
 }
 
+/** Cuenta de cobro o recibo emitido a mano (Facturación). Mismo documento comercial que todo lo demás. */
 export async function createInvoice(tenantId: string, v: { kind: InvoiceKind; customerId: string | null; customerName: string; customerDoc: string | null; issueDate: string; dueDate: string | null; notes: string | null; lines: LineInput[] }, userId: string) {
-  const total = invoiceTotal(v.lines);
-  for (let attempt = 0; attempt < 6; attempt++) {
-    const { top } = await db.orm.public.Invoice.where({ tenantId, kind: v.kind }).aggregate((a) => ({ top: a.max("number") }));
-    const number = (top ?? 0) + 1;
-    try {
-      return await db.transaction(async (tx) => {
-        const inv = await tx.orm.public.Invoice.create({
-          tenantId,
-          kind: v.kind,
-          number,
-          customerId: v.customerId,
-          customerName: v.customerName,
-          customerDoc: v.customerDoc,
-          issueDate: at(v.issueDate),
-          dueDate: v.dueDate ? at(v.dueDate) : null,
-          notes: v.notes,
-          total: dec(total),
-          createdById: userId,
-        });
-        for (const l of v.lines) {
-          await tx.orm.public.InvoiceLine.create({ invoiceId: inv.id, productId: l.productId ?? null, description: l.description, quantity: dec(l.quantity), unitPrice: dec(l.unitPrice), total: dec(lineTotal(l)) });
-        }
-        return { id: inv.id, number };
-      });
-    } catch (e) {
-      if (attempt === 5 || !/unique|duplicate/i.test(String((e as Error)?.message ?? e))) throw e;
-    }
-  }
-  throw new Error("No se pudo numerar.");
+  const { id, number } = await createDocument(
+    tenantId,
+    {
+      kind: v.kind,
+      customerId: v.customerId,
+      customerName: v.customerName,
+      customerDoc: v.customerDoc,
+      issueDate: at(v.issueDate),
+      dueDate: v.dueDate ? at(v.dueDate) : null,
+      notes: v.notes,
+      lines: v.lines,
+    },
+    userId,
+  );
+  return { id, number };
 }
 
 /**

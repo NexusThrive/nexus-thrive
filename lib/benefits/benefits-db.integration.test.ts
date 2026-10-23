@@ -1,6 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createBenefitCode, expireBenefitTrial, redeemBenefit } from "@/lib/benefits/benefits-db";
+import { saveCustomer } from "@/lib/business/customers-db";
+import { seatLimit } from "@/lib/business/team-db";
 
 /**
  * Integración del canje de accesos:
@@ -169,5 +171,53 @@ describe.skipIf(!enabled)("canje de accesos (integración)", () => {
     const sub = await db.orm.public.Subscription.where({ tenantId: tenant }).first();
     expect(sub?.status).toBe("ACTIVE");
     expect(sub?.plan).toBe("ESSENTIAL");
+  });
+
+  test("código a medida: suscripción activa con su precio, módulos exactos y límites", async () => {
+    const suffix = Date.now().toString(36);
+    const created = await createBenefitCode(
+      {
+        label: "Contrato Taller",
+        code: `MEDIDA${suffix}`.toUpperCase(),
+        plan: "ELITE",
+        kind: "PAID",
+        durationDays: 30,
+        maxUses: 1,
+        terms: { priceUsdCents: 2990, modules: ["crm", "finance"], maxUsers: 2, maxCustomers: 1 },
+      },
+      null,
+    );
+    expect(created.ok).toBe(true);
+    if (!created.ok) return;
+    createdCodes.push(created.code);
+    const tenant = await makeTenant(`medida-${suffix}`);
+
+    const r = await redeemBenefit({ code: created.code, tenantId: tenant, tenantName: "Taller" });
+    expect(r.ok).toBe(true);
+
+    const sub = await db.orm.public.Subscription.where({ tenantId: tenant }).first();
+    expect(sub?.status).toBe("ACTIVE");
+    expect(sub?.priceUsdCents).toBe(2990);
+
+    const t = await db.orm.public.Tenant.where({ id: tenant }).first();
+    expect(t?.planMonthlyUsdCents).toBe(2990);
+    expect(t?.maxUsers).toBe(2);
+    expect(t?.maxCustomers).toBe(1);
+    const active = (await db.orm.public.TenantModule.where({ tenantId: tenant, active: true }).all()).map((m) => m.moduleName).sort();
+    expect(active).toEqual(["crm", "dashboard", "finance"]);
+
+    const redemption = await db.orm.public.BenefitRedemption.where({ tenantId: tenant }).first();
+    expect(redemption?.priceUsdCents).toBe(2990);
+
+    // Un contrato con precio no es una prueba: no vence solo.
+    await expireBenefitTrial(tenant);
+    expect((await db.orm.public.Tenant.where({ id: tenant }).first())?.plan).toBe("ELITE");
+
+    // Límites: usuarios y clientes acordados.
+    expect((await seatLimit(tenant)).limit).toBe(2);
+    const fields = { email: null, phone: null, documentId: null, birthDate: null, city: null, tags: [], profile: {} };
+    expect((await saveCustomer(tenant, null, { name: "Primero", ...fields })).ok).toBe(true);
+    const second = await saveCustomer(tenant, null, { name: "Segundo", ...fields });
+    expect(second.ok).toBe(false);
   });
 });
