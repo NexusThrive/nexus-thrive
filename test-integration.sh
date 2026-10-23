@@ -24,7 +24,10 @@ fi
 
 # Las pruebas de concurrencia lanzan escrituras en paralelo contra una sola
 # base: en una máquina cargada el tope por defecto (5 s) da falsos fallos.
-pnpm exec vitest run --testTimeout=20000 \
+# Los archivos corren uno tras otro: varios tocan tablas de la plataforma
+# (roles del panel, catálogo de planes) y en paralelo se pisaban entre sí
+# (p. ej. uno borraba el rol "ops" que el otro estaba usando).
+pnpm exec vitest run --testTimeout=20000 --no-file-parallelism \
   lib/benefits/benefits-db.integration.test.ts \
   lib/plans/settings.integration.test.ts \
   lib/ops/access.integration.test.ts \
