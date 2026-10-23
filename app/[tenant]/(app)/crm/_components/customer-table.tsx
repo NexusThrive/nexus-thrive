@@ -64,6 +64,7 @@ export default function CustomerTable({
   totalPages,
   total,
   query,
+  canRemove = true,
 }: {
   tenantSlug: string;
   rows: CustomerRow[];
@@ -72,6 +73,8 @@ export default function CustomerTable({
   totalPages: number;
   total: number;
   query: string;
+  /** El rol puede archivar, restaurar y eliminar (el servidor lo vuelve a exigir). */
+  canRemove?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -185,6 +188,8 @@ export default function CustomerTable({
   };
 
   const isArchivedView = status === "archived";
+  // Seleccionar es para eliminar: sin ese permiso no hay casillas ni barra.
+  const selectable = isArchivedView && canRemove;
 
   return (
     <div className="space-y-4">
@@ -212,7 +217,7 @@ export default function CustomerTable({
       ) : null}
 
       {/* Barra de selección múltiple (solo archivados) */}
-      {isArchivedView && selected.size > 0 ? (
+      {selectable && selected.size > 0 ? (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-destructive/20 bg-destructive/10 px-4 py-3">
           <p className="text-sm font-medium text-destructive">
             {selected.size} {selected.size === 1 ? "seleccionado" : "seleccionados"}
@@ -260,7 +265,7 @@ export default function CustomerTable({
               </caption>
               <thead className="border-b border-border bg-muted text-xs font-semibold text-muted-foreground">
                 <tr>
-                  {isArchivedView ? (
+                  {selectable ? (
                     <th scope="col" className="w-10 px-4 py-3">
                       <input
                         type="checkbox"
@@ -293,7 +298,7 @@ export default function CustomerTable({
               <tbody className="divide-y divide-border">
                 {rows.map((row) => (
                   <tr key={row.id} className="transition hover:bg-muted/60">
-                    {isArchivedView ? (
+                    {selectable ? (
                       <td className="px-4 py-3">
                         <input
                           type="checkbox"
@@ -345,32 +350,36 @@ export default function CustomerTable({
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1.5">
                         {isArchivedView ? (
-                          <button
-                            type="button"
-                            title="Restaurar"
-                            aria-label={`Restaurar a ${row.name}`}
-                            disabled={isPending}
-                            onClick={() =>
-                              runAction(() => restoreCustomerAction(tenantSlug, row.id))
-                            }
-                            className={`${ICON_BUTTON} border-success/20 text-success hover:border-success/40 hover:bg-success/10 hover:text-success`}
-                          >
-                            <RotateCcw aria-hidden="true" className="h-4 w-4" />
-                          </button>
-                        ) : (
-                          <>
+                          canRemove ? (
                             <button
                               type="button"
-                              title="Archivar"
-                              aria-label={`Archivar a ${row.name}`}
+                              title="Restaurar"
+                              aria-label={`Restaurar a ${row.name}`}
                               disabled={isPending}
                               onClick={() =>
-                                runAction(() => archiveCustomerAction(tenantSlug, row.id))
+                                runAction(() => restoreCustomerAction(tenantSlug, row.id))
                               }
-                              className={ICON_BUTTON}
+                              className={`${ICON_BUTTON} border-success/20 text-success hover:border-success/40 hover:bg-success/10 hover:text-success`}
                             >
-                              <Archive aria-hidden="true" className="h-4 w-4" />
+                              <RotateCcw aria-hidden="true" className="h-4 w-4" />
                             </button>
+                          ) : null
+                        ) : (
+                          <>
+                            {canRemove ? (
+                              <button
+                                type="button"
+                                title="Archivar"
+                                aria-label={`Archivar a ${row.name}`}
+                                disabled={isPending}
+                                onClick={() =>
+                                  runAction(() => archiveCustomerAction(tenantSlug, row.id))
+                                }
+                                className={ICON_BUTTON}
+                              >
+                                <Archive aria-hidden="true" className="h-4 w-4" />
+                              </button>
+                            ) : null}
                             <button
                               type="button"
                               title="Editar"
@@ -397,13 +406,15 @@ export default function CustomerTable({
               {rows.map((row) => (
                 <li key={row.id} className="rounded-lg border border-border bg-card p-4">
                   <div className="flex items-start gap-3">
-                    <input
-                      type="checkbox"
-                      aria-label={`Seleccionar a ${row.name}`}
-                      checked={selected.has(row.id)}
-                      onChange={() => toggleRow(row.id)}
-                      className="mt-2 h-4 w-4 cursor-pointer rounded accent-gold-600"
-                    />
+                    {selectable ? (
+                      <input
+                        type="checkbox"
+                        aria-label={`Seleccionar a ${row.name}`}
+                        checked={selected.has(row.id)}
+                        onChange={() => toggleRow(row.id)}
+                        className="mt-2 h-4 w-4 cursor-pointer rounded accent-gold-600"
+                      />
+                    ) : null}
                     <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-accent-subtle text-xs font-semibold text-accent-text">
                       {initialsOf(row.name)}
                     </span>
@@ -416,15 +427,17 @@ export default function CustomerTable({
                         {row.phone || "Sin teléfono"} · {row.createdAt}
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      disabled={isPending}
-                      onClick={() => runAction(() => restoreCustomerAction(tenantSlug, row.id))}
-                      className={`${ICON_BUTTON} w-auto border-success/20 px-3 text-success`}
-                    >
-                      <RotateCcw aria-hidden="true" className="h-4 w-4" />
-                      <span className="ml-1.5 text-xs font-medium">Restaurar</span>
-                    </button>
+                    {canRemove ? (
+                      <button
+                        type="button"
+                        disabled={isPending}
+                        onClick={() => runAction(() => restoreCustomerAction(tenantSlug, row.id))}
+                        className={`${ICON_BUTTON} w-auto border-success/20 px-3 text-success`}
+                      >
+                        <RotateCcw aria-hidden="true" className="h-4 w-4" />
+                        <span className="ml-1.5 text-xs font-medium">Restaurar</span>
+                      </button>
+                    ) : null}
                   </div>
                 </li>
               ))}
@@ -442,7 +455,9 @@ export default function CustomerTable({
                         { label: "Cobrar", icon: Banknote, tone: "gold", href: `/${tenantSlug}/finance?nuevo=pago&cliente=${row.id}` },
                         { label: "Recordar", icon: MessageCircle, tone: "ink", href: wa, external: true, disabled: !wa },
                         { label: "Editar", icon: Pencil, tone: "muted", onClick: () => setEditTarget(row) },
-                        { label: "Archivar", icon: Archive, tone: "danger", onClick: () => runAction(() => archiveCustomerAction(tenantSlug, row.id)), disabled: isPending },
+                        ...(canRemove
+                          ? [{ label: "Archivar", icon: Archive, tone: "danger" as const, onClick: () => runAction(() => archiveCustomerAction(tenantSlug, row.id)), disabled: isPending }]
+                          : []),
                       ]}
                     >
                       <Link href={`/${tenantSlug}/crm/${row.id}`} draggable={false} className="flex items-center gap-3 px-3.5 py-3">

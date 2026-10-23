@@ -5,6 +5,7 @@ import CustomerTable, { type CustomerRow } from "./_components/customer-table";
 import type { CustomerSort, CustomerStatus } from "./_components/customer-filters";
 import { PageHeader } from "@/components/molecules/page-header";
 import { requirePageContext } from "@/lib/tenant/context";
+import { can } from "@/lib/business/permissions";
 
 const PAGE_SIZE = 20;
 
@@ -136,6 +137,7 @@ export default async function CrmPage({
         totalPages={totalPages}
         total={result.total}
         query={q}
+        canRemove={can(pageCtx.role, "customers.delete")}
       />
     </div>
   );

@@ -42,8 +42,10 @@ reorganización de `lib/`: `lib/tenant-db.ts` → `lib/tenant/db.ts`,
 | [SEC-09](security-audit.md#sec-09) | Corregido | `lib/presence/url-guard.ts`: solo http/https en puertos por defecto, sin credenciales, y hosts que resuelven a IP públicas; redirecciones seguidas a mano y comprobadas una por una. Límite: DNS rebinding entre la comprobación y la conexión | `lib/presence/url-guard.test.ts` (`127.0.0.1`, `169.254.169.254`, IPv6, redirección interna) |
 | [SEC-11](security-audit.md#sec-11) | Corregido | `logTenantAction` escribe en `AuditLog` (acciones `BIZ_*`) al anular pagos, gastos, facturas y entradas; archivar, restaurar y borrar clientes; invitar, cancelar invitación, cambiar rol, retirar o reactivar personas; activar módulos y borrar el negocio. No rompe la acción si falla | `lib/tenant/audit.integration.test.ts` |
 
-Pendiente de Etapa 1, menor: ocultar en la interfaz los botones que el rol ya
-no puede usar (hoy el servidor los rechaza con un mensaje claro).
+La interfaz ya no ofrece lo que el rol no puede hacer: sin `customers.delete`
+no hay archivar, restaurar ni eliminar en la tabla de clientes; sin
+`money.handle` no hay "Nueva membresía" ni "Renovar". El servidor lo sigue
+exigiendo igual.
 
 ## Etapa 2 · Integridad del dinero
 
@@ -60,7 +62,8 @@ no puede usar (hoy el servidor los rechaza con un mensaje claro).
 | [ARCH-02](technical-debt.md#arch-02) | Corregido (enlaces) | "Salidas" (`/departures`) salía en el menú de turismo sin tener página: se retira hasta que exista su pantalla | `lib/navigation/tenant-nav.test.ts` recorre el menú de cada rubro con todos los módulos y exige `page.tsx` por `href` |
 | [SEC-06](security-audit.md#sec-06) | Corregido | `modulesForRoute` (derivada del menú, una sola fuente) dice qué módulos habilitan cada ruta; `/finance` la abren Finanzas y Pagos. `requireTenantContext(slug, ruta)` y `requirePageContext(slug, ruta)` rechazan si el negocio no tiene activo un módulo que la habilite: 92 comprobaciones en 41 archivos, incluido el marcador de Pedidos. Congelar, reanudar y cancelar membresías se exigen por `/memberships` aunque vivan en la carpeta del CRM. Desde los Ajustes solo se activa un módulo incluido en el plan (`contractedModules`; `null` no limita, el panel de NEXUS sí puede) | `page-authorization.test.ts` (cada página y acción de un módulo declara su ruta), `tenant-nav.test.ts`, `compat.test.ts`, `membership.integration.test.ts` (`isRouteEnabled` contra la base) |
 | [ARCH-01](technical-debt.md#arch-01), registro de capacidades ([ADR-0003](decisions/0003-registro-de-capacidades.md)) | Pendiente | Separar `construction` de `quotes` y pasar `ModuleName` a texto validado cambia el esquema: va con DATA-03 | — |
-| [ARCH-03](technical-debt.md#arch-03), [ARCH-04](technical-debt.md#arch-04) | Pendiente | Wizard clásico, `lib/pricing`, copias locales de `requireTenantContext`, `db.orm` en `app/` | — |
+| [ARCH-03](technical-debt.md#arch-03) | Corregido en parte | Un solo wizard: `/{tenant}/onboarding` redirige al adaptativo y se retiran el clásico y `tenantDb.onboarding`. Los adaptadores locales del contexto se llaman `actionContext` y delegan en el compartido. **Pendiente de decisión:** `/pricing` (apagada en el piloto) usa otro modelo de precios (`lib/pricing`) que `lib/plans` | `page-authorization.test.ts` prohíbe redefinir el contexto |
+| [ARCH-04](technical-debt.md#arch-04) | Regla activa | ESLint prohíbe importar `@/prisma/db` en `app/`; los 42 archivos que ya lo hacían quedan en `eslint/legacy-db-access.mjs` como deuda | `lib/tenant/data-access.test.ts` (la lista solo se achica) |
 
 ### Configuración de Clerk a confirmar (SEC-10)
 

@@ -16,6 +16,7 @@ import {
 } from "./_components/membership-form";
 import { PageHeader } from "@/components/molecules/page-header";
 import { requirePageContext } from "@/lib/tenant/context";
+import { can } from "@/lib/business/permissions";
 
 const PAGE_SIZE = 10;
 
@@ -115,10 +116,12 @@ export default async function MembershipsPage({
               {tenantRecord.name}
             </span>
             .</>}
-        actions={<NewMembershipButton
-          tenantSlug={tenantSlug}
-          customers={customerOptions}
-        />}
+        actions={
+          // Vender es cobrar: sin permiso de dinero no se ofrece (SEC-05).
+          can(pageCtx.role, "money.handle") ? (
+            <NewMembershipButton tenantSlug={tenantSlug} customers={customerOptions} />
+          ) : undefined
+        }
       />
 
       {/* Resumen */}
@@ -146,6 +149,7 @@ export default async function MembershipsPage({
         <MembershipFilters q={q} status={status} type={type} />
 
         <MembershipTable
+          canSell={can(pageCtx.role, "money.handle")}
           tenantSlug={tenantSlug}
           rows={rows}
           query={q}

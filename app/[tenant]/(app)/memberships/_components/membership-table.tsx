@@ -38,12 +38,15 @@ export default function MembershipTable({
   query,
   page,
   totalPages,
+  canSell = true,
 }: {
   tenantSlug: string;
   rows: MembershipViewRow[];
   query: string;
   page: number;
   totalPages: number;
+  /** El rol maneja dinero: renovar es cobrar (el servidor lo vuelve a exigir). */
+  canSell?: boolean;
 }) {
   const [renewTarget, setRenewTarget] = useState<MembershipViewRow | null>(null);
   const [reminderTarget, setReminderTarget] = useState<MembershipViewRow | null>(
@@ -120,12 +123,14 @@ export default function MembershipTable({
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-1">
-                    <RowAction
-                      label={`Renovar membresía de ${row.customerName}`}
-                      onClick={() => setRenewTarget(row)}
-                    >
-                      <RefreshCw aria-hidden="true" className="h-4 w-4" />
-                    </RowAction>
+                    {canSell ? (
+                      <RowAction
+                        label={`Renovar membresía de ${row.customerName}`}
+                        onClick={() => setRenewTarget(row)}
+                      >
+                        <RefreshCw aria-hidden="true" className="h-4 w-4" />
+                      </RowAction>
+                    ) : null}
                     <RowAction
                       label={`Recordatorio de vencimiento para ${row.customerName}`}
                       onClick={() => setReminderTarget(row)}
@@ -175,14 +180,16 @@ export default function MembershipTable({
               {formatDateShort(row.startDate)} → {formatDateShort(row.endDate)}
             </p>
             <div className="mt-3 flex items-center gap-2 border-t border-border pt-3">
-              <button
-                type="button"
-                onClick={() => setRenewTarget(row)}
-                className={buttonVariants({ size: "sm" })}
-              >
-                <RefreshCw aria-hidden="true" className="h-3.5 w-3.5" />
-                Renovar
-              </button>
+              {canSell ? (
+                <button
+                  type="button"
+                  onClick={() => setRenewTarget(row)}
+                  className={buttonVariants({ size: "sm" })}
+                >
+                  <RefreshCw aria-hidden="true" className="h-3.5 w-3.5" />
+                  Renovar
+                </button>
+              ) : null}
               <button
                 type="button"
                 onClick={() => setReminderTarget(row)}
