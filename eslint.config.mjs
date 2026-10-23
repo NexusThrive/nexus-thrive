@@ -26,13 +26,9 @@ const eslintConfig = defineConfig([
     "generated/**",
     "migrations/**",
     "prisma/contract.d.ts",
-    // Skills de agentes y material de marca, fuera de la app.
+    // Skills de agentes, fuera de la app.
     ".agents/**",
     ".claude/**",
-    ".cursor/**",
-    ".devin/**",
-    "nexus-thrive-brand/**",
-    "nexus-ui-kit/**",
     // Build estático de Storybook.
     "storybook-static/**",
   ]),

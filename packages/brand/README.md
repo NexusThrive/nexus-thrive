@@ -4,19 +4,31 @@ Todo sale del logo: un bloque negro sólido, esquinas rectas y cortes diagonales
 De ahí se derivan las reglas: negro dominante, oro como único acento, radios casi nulos,
 bordes en lugar de sombras y un solo motivo gráfico (el corte diagonal).
 
-## Estructura sugerida en el monorepo
+## Estructura
+
+Este paquete es la **única fuente de la marca**. La app lo consume desde
+`app/globals.css` (CSS) y con el alias `@nexus/brand/*` (logo, en `tsconfig.json`).
 
 ```
-packages/
-└── brand/                  ← este paquete (@nexus/brand)
-    ├── tokens/tokens.json  ← fuente única (Figma, Canva, otras apps)
-    ├── css/tokens.css      ← variables CSS, modo claro y oscuro
-    ├── css/base.css        ← tipografía, botones, tarjetas, tablas, foco
-    ├── css/theme-v4.css    ← solo si usan Tailwind v4
-    ├── tailwind/preset.ts  ← preset para Tailwind v3
-    └── fonts/fonts.ts      ← Montserrat, Inter, JetBrains Mono (next/font)
-apps/
-└── nexus-core/portal/      ← consume @nexus/brand
+packages/brand/                       ← @nexus/brand
+├── tokens/tokens.json                ← fuente única (Figma, Canva, otras apps)
+├── css/tokens.css                    ← variables CSS, modo claro y oscuro
+├── css/base.css                      ← tipografía, botones, tarjetas, tablas, foco
+├── css/theme-v4.css                  ← tema de Tailwind v4 (el que usa la app)
+├── tailwind/preset.ts                ← preset para Tailwind v3
+├── fonts/fonts.ts                    ← Montserrat, Inter, JetBrains Mono (next/font)
+├── fonts/public_stunt/               ← Public Stunt (leer su licencia antes de usarla)
+├── src/BrandLogo.tsx                 ← logo oficial (N + THRIVE) y sus rutas
+├── src/NEXUS_THRIVE.svg              ← logo en SVG
+├── reference/                        ← referencias que la app implementa
+│   ├── nexus-loaders.html            ←   cargas de interfaz (components/atoms/n-mark.tsx)
+│   └── nexus-splash-intro.html       ←   intro de la app (components/organisms/splash-intro.tsx)
+├── designs/                          ← diseños HTML de exploración
+│   ├── design-system-bos.html        ←   Design System del BOS
+│   ├── cargas-de-interfaz.html       ←   Cargas de interfaz
+│   ├── intro-de-la-app.html          ←   Intro de la app
+│   └── receipt-printer.html          ←   Impresora de recibos
+└── PROMPT.md                         ← guía para generar UI con la marca
 ```
 
 ## Instalación en apps/nexus-core/portal
