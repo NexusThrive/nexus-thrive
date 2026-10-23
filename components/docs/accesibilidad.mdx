@@ -1,0 +1,34 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Introducción/Accesibilidad" />
+
+# Accesibilidad
+
+Base: **WCAG 2.2 nivel AA**. Es un requisito de cada componente, no un repaso final. Las
+pruebas automáticas encuentran una parte de los problemas; el resto se revisa a mano. Detalle
+y procedimiento en `docs/design/accessibility.md`.
+
+## Lo que cumple cada componente
+
+| Tema | Regla |
+| --- | --- |
+| Estructura | Un `h1` por página; botón para acciones, enlace para navegar; HTML nativo antes que ARIA |
+| Teclado | Todo se alcanza y se opera con teclado, en orden lógico |
+| Foco | Siempre visible: 2 px en `--ring`, separado 2 px. Diálogos y paneles lo atrapan y lo devuelven al cerrar |
+| Formularios | Etiqueta asociada (`Field`), obligatorio con "*" y "obligatorio" para lectores, error con texto e icono, foco al primer campo inválido |
+| Ayuda | `ContextHelp`: nombre "Ayuda sobre …", se abre con ratón, toque, Enter o Espacio; Escape la cierra; se anuncia. Lo imprescindible va en la descripción visible |
+| Color | Texto ≥ 4,5:1; bordes, foco e iconos ≥ 3:1; los estados no dependen solo del color |
+| Tamaño | Objetivos de al menos 24 × 24 px; controles principales de 40 px |
+| Anuncios | Toasts y cargas con `role="status"`; errores de envío con `role="alert"` |
+| Movimiento | *Reducir movimiento* (sistema o Ajustes) apaga toda animación |
+
+## Cómo se verifica
+
+| Qué | Dónde |
+| --- | --- |
+| axe en vivo | Pestaña **Accessibility** de cada historia |
+| axe WCAG 2.2 AA, claro y oscuro | `e2e/a11y.spec.ts` |
+| Foco, teclado, Escape, táctil, movimiento reducido | `e2e/overlays.spec.ts`, `e2e/context-help.spec.ts` |
+| A mano, en cada pantalla cambiada | Solo teclado · zoom 200 % y 320 px · lector de pantalla · *Reducir movimiento* |
+
+No se declara "cumple WCAG" sin una revisión con alcance definido.

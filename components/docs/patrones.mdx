@@ -1,0 +1,40 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Introducción/Elegir el patrón" />
+
+# Elegir el patrón de interacción
+
+La misma operación se comporta igual en toda la app. Antes de abrir un formulario o una
+acción, elige con esta guía. El detalle completo está en `docs/design/interaction-patterns.md`.
+
+## Decisión rápida
+
+| Si la acción es… | Usa | Historia |
+| --- | --- | --- |
+| Confirmar algo (anular, eliminar, desactivar) | `ConfirmDialog` o `useConfirm()` | Organismos/ConfirmDialog |
+| Uno o dos campos junto al control que lo abre | `Popover` | Moléculas/Popover |
+| Un cambio mínimo y reversible en su sitio | En línea (interruptor, edición directa) | — |
+| Ficha o registro con varias secciones, o hay que ver la página de atrás | `FormDrawer` (panel lateral) | Organismos/FormSheet → Drawer |
+| Crear o editar hasta ~6 campos | `FormDialog` (diálogo) | Organismos/FormSheet → Dialog |
+| Varios pasos, editor grande o necesita enlace propio | Página | — |
+| Explicar un campo | `Field hint` (siempre visible) + `ContextHelp` si aporta | Moléculas/Field, Moléculas/ContextHelp |
+
+## Cómo se comportan
+
+| | Diálogo | Panel lateral | Ventana flotante |
+| --- | --- | --- | --- |
+| **PC** | Centrado: 440 / 520 / 640 / 768 px | Derecha, alto completo: 440 / 560 px | Junto al control |
+| **Móvil** | Hoja inferior, se cierra arrastrando | Hoja casi a pantalla completa | Igual, dentro de la ventana |
+| **Foco** | Al primer campo; al cerrar vuelve al botón | Igual | Ayuda sin enlaces: se queda en el botón |
+| **Teclado** | Tab atrapado, Escape cierra | Igual | Escape cierra |
+| **Guardando** | No se cierra (`busy`) | Igual | — |
+| **Error** | Aviso arriba + campo marcado + foco al primero inválido; lo escrito no se pierde | Igual | Bajo el campo |
+
+## Reglas
+
+1. **Sin diálogos dentro de diálogos**, salvo confirmar algo destructivo desde un panel
+   abierto: la confirmación va encima y Escape cierra solo esa.
+2. **El pie siempre igual**: "Cancelar" a la izquierda, la acción a la derecha; la destructiva
+   en rojo y nunca recibe el foco.
+3. **El título repite la intención** del botón que lo abrió ("Nuevo cliente", "Anular venta").
+4. **Cerrar nunca pierde un guardado a medias.**

@@ -9,6 +9,21 @@ import { Meta, Typeset } from "@storybook/addon-docs/blocks";
 | **Montserrat** 600–700 | Títulos, cifras grandes, la marca | `font-display` |
 | **Inter** 400–600 | Interfaz, formularios, tablas | `font-sans` (por defecto) |
 | **JetBrains Mono** 400–500 | Códigos, IDs, atajos, contadores | `font-mono` |
+| **Public Stunt** | Portadas y piezas de marca, no la interfaz (revisar su licencia antes de usarla en público) | `font-stunt` |
+
+## Escala
+
+| Uso | Tamaño | Peso |
+| --- | --- | --- |
+| Título de página | 22–28 px Montserrat | 600 |
+| Título de panel o diálogo | 18 px Montserrat | 600 |
+| Cuerpo | 13–14 px Inter | 400 |
+| Etiqueta de campo | 13 px Inter | 500 |
+| Descripción y ayuda | 12 px Inter, `text-muted-foreground` | 400 |
+| Antetítulo (`eyebrow`) | 11 px mayúsculas, tracking amplio | 600 |
+
+Tokens: `--text-xs` 12 · `sm` 14 · `base` 16 · `lg` 18 · `xl` 20 · `2xl` 24 · `3xl` 30 · `4xl` 40 · `5xl` 52 px.
+Texto corrido hasta `--content-prose` (72 caracteres).
 
 Las cifras siempre con `tabular-nums` para que no bailen al cambiar. Las mayúsculas con
 tracking amplio son solo para la marca y los antetítulos (`Eyebrow`).

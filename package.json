@@ -67,6 +67,7 @@
     "eslint-config-next": "16.3.8",
     "leaflet": "^1.9.4",
     "prisma": "8.0.0-rc.20",
+    "remark-gfm": "^4.0.1",
     "storybook": "10.6.2",
     "tailwindcss": "^4",
     "typescript": "^5",
