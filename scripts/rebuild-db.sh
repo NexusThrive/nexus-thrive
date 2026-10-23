@@ -3,7 +3,10 @@
 # Reconstruye una base desde cero con las migraciones de Prisma (la fuente
 # única del esquema, DATA-03) y deja el equipo del panel listo.
 #
-#   TARGET_DATABASE_URL=... OWNER_EMAIL=dueno@ejemplo.com bash scripts/rebuild-db.sh
+#   OWNER_EMAIL=dueno@ejemplo.com bash scripts/rebuild-db.sh
+#
+# Pide la cadena de conexión sin mostrarla (o la toma de TARGET_DATABASE_URL
+# si ya está exportada).
 #
 # BORRA todas las tablas del esquema public y el marcador de Prisma. Sirve
 # para una base sin datos que conservar (desarrollo, pruebas o una producción
@@ -18,10 +21,17 @@
 # ============================================================================
 set -euo pipefail
 
-: "${TARGET_DATABASE_URL:?Falta TARGET_DATABASE_URL (la cadena de conexión de la base a reconstruir).}"
 : "${OWNER_EMAIL:?Falta OWNER_EMAIL (el correo del Propietario del panel).}"
 
-URL="$TARGET_DATABASE_URL"
+URL="${TARGET_DATABASE_URL:-}"
+if [ -z "$URL" ]; then
+  read -rsp "Pega la cadena de conexión de la base (no se ve) y pulsa Enter: " URL
+  echo
+fi
+case "$URL" in
+  postgres://*|postgresql://*) ;;
+  *) echo "Eso no parece una cadena de conexión (debe empezar por postgresql://). No se tocó nada."; exit 1 ;;
+esac
 # psql no entiende parámetros de Prisma como ?schema=public.
 PSQL_URL="${URL%%\?*}"
 

@@ -32,10 +32,11 @@ Borra todas las tablas de `public`.
 En tu terminal, desde `nexus-thrive/` (pide datos, así que no va con `!`):
 
 ```bash
-read -rs TARGET_DATABASE_URL && export TARGET_DATABASE_URL   # pega la cadena; no se ve
 OWNER_EMAIL=<tu-correo> bash scripts/rebuild-db.sh
-unset TARGET_DATABASE_URL
 ```
+
+Te pide la cadena de conexión (no se ve al pegarla) y después el nombre de
+la base para confirmar.
 
 - `TARGET_DATABASE_URL`: Supabase → *Project Settings* → *Database* →
   *Connection string* (la directa o el *session pooler*, puerto 5432).
