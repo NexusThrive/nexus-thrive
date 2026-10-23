@@ -19,7 +19,7 @@ export default async function WhatsAppPage({ params }: { params: Promise<{ tenan
 
   return (
     <div>
-      <PageHeader eyebrow="Gestión" title="WhatsApp" description="Escríbele a tus clientes con plantillas listas: el mensaje se abre en WhatsApp." />
+      <PageHeader eyebrow="Canales" title="WhatsApp" description="Escríbele a tus clientes con plantillas listas: el mensaje se abre en WhatsApp." />
       <WhatsAppComposer contacts={contacts} businessName={tenantRecord.name} storageKey={`nx:wa-sent:${tenantRecord.slug}`} />
     </div>
   );

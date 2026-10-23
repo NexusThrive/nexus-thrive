@@ -52,7 +52,7 @@ export default function ProductDetail({ slug, product, customers, canManage, onE
     });
 
   return (
-    <ResponsiveSheet open onOpenChange={(o) => !o && onClose()} title={product.name} description={`${KIND_LABELS[product.kind].one} · ${formatCurrency(product.price)}`}>
+    <ResponsiveSheet drawer open onOpenChange={(o) => !o && onClose()} title={product.name} description={`${KIND_LABELS[product.kind].one} · ${formatCurrency(product.price)}`}>
       <div className="grid gap-5">
         <div className="flex flex-wrap gap-1.5">
           {!product.active ? <Badge tone="muted">No disponible</Badge> : null}

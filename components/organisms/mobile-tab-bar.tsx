@@ -99,7 +99,7 @@ export function MobileTabBar() {
         ref={barRef}
         aria-label="Navegación"
         className={cn(
-          "fixed inset-x-0 bottom-0 z-45 grid grid-cols-5 items-end border-t border-border bg-glass px-[max(8px,env(safe-area-inset-right,0px))] pb-[calc(6px+env(safe-area-inset-bottom,0px))] pt-1.5 backdrop-blur-[16px] backdrop-saturate-[1.4] transition-transform duration-[320ms] ease-[var(--nx-ease-out)] md:hidden",
+          "fixed inset-x-0 bottom-0 z-(--z-tabbar) grid grid-cols-5 items-end border-t border-border bg-glass px-[max(8px,env(safe-area-inset-right,0px))] pb-[calc(6px+env(safe-area-inset-bottom,0px))] pt-1.5 backdrop-blur-[16px] backdrop-saturate-[1.4] transition-transform duration-[320ms] ease-[var(--nx-ease-out)] md:hidden",
           hidden && "translate-y-[calc(100%+8px)]",
         )}
       >

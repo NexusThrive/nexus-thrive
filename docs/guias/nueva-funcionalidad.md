@@ -97,6 +97,12 @@ existen.
 
 ### Paso 5 · La pantalla
 
+Antes de dibujarla: [DESIGN.md](../../DESIGN.md) y
+[interaction-patterns.md](../design/interaction-patterns.md) para elegir
+diálogo, panel lateral, ventana flotante, página o en línea, y los
+componentes compartidos (`FormDialog`/`FormDrawer`, `ConfirmDialog`, `Field`,
+`ContextHelp`, `EmptyState`, `LoadingState`).
+
 ```tsx
 // app/[tenant]/(app)/inventory/page.tsx
 const ctx = await requirePageContext(tenant, "/inventory");
@@ -175,3 +181,5 @@ durante el despliegue.
 - [ ] Si cambió el contrato: migración + SQL de producción + `00-ORDEN.md`;
       tabla nueva con FK a `Tenant` y `@@rls`.
 - [ ] Probado en `pnpm dev` con un rol que puede y uno que no.
+- [ ] Si hay interfaz: la [lista de calidad](../design/quality-checklist.md)
+      está copiada y marcada en el PR.

@@ -23,7 +23,7 @@ export default async function BandejaPage({ searchParams }: { searchParams: Prom
   return (
     <div className="grid gap-5">
       <PageHeader
-        eyebrow="Clientes"
+        eyebrow="Hoy"
         title="Bandeja"
         description="Los canales de NEXUS con los negocios (no los canales de cada negocio con sus clientes)."
         actions={

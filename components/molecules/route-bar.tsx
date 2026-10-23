@@ -58,7 +58,7 @@ export function RouteBar({ className }: { className?: string }) {
 
   return (
     <div
-      className={cn("nx-strip fixed inset-x-0 top-14 z-[70]", className)}
+      className={cn("nx-strip fixed inset-x-0 top-14 z-(--z-banner)", className)}
       role="progressbar"
       aria-label="Cargando página"
     >

@@ -41,7 +41,7 @@ export default function BookingDetail({ slug, booking, business, onEdit, onClose
   const dayLabel = new Intl.DateTimeFormat("es-CO", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${p.day}T12:00:00Z`));
 
   return (
-    <ResponsiveSheet open onOpenChange={(o) => !o && onClose()} title={booking.serviceName} description={`${dayLabel} · ${hhmm(booking.start)}–${hhmm(booking.end)}`}>
+    <ResponsiveSheet drawer open onOpenChange={(o) => !o && onClose()} title={booking.serviceName} description={`${dayLabel} · ${hhmm(booking.start)}–${hhmm(booking.end)}`}>
       <div className="grid gap-4">
         <div className="flex flex-wrap gap-1.5">
           <Badge tone={STATUS[booking.status].tone}>{STATUS[booking.status].label}</Badge>

@@ -26,7 +26,7 @@ export default async function OnboardingPage() {
   return (
     <div className="grid gap-5">
       <PageHeader
-        eyebrow="Operaciones"
+        eyebrow="Cuentas"
         title="Onboarding"
         description={`${rows.length} cuentas en puesta en marcha${stuck ? ` · ${stuck} por debajo del 50 %` : ""}. Cada paso se marca solo cuando el negocio lo hace.`}
       />

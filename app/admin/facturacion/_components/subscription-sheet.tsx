@@ -35,6 +35,7 @@ export default function SubscriptionSheet({ create, edit, onClose, today, canPri
 
   return (
     <ResponsiveSheet
+      drawer
       open
       onOpenChange={(o) => !o && onClose()}
       title={create ? `Suscripción · ${name}` : `Editar suscripción · ${name}`}

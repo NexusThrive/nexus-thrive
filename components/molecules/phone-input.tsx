@@ -64,7 +64,7 @@ export function PhoneInput({ id, value, onChange, name, placeholder = "300 123 4
       />
       {name ? <input type="hidden" name={name} value={joinPhone(country, number)} /> : null}
       {open ? (
-        <div className="absolute left-0 top-full z-50 mt-1 w-72 overflow-hidden rounded-md border border-border bg-surface shadow-lg">
+        <div className="absolute left-0 top-full z-(--z-popover) mt-1 w-72 overflow-hidden rounded-md border border-border bg-surface shadow-lg">
           <label className="flex items-center gap-2 border-b border-border px-2.5">
             <Search aria-hidden="true" className="size-4 text-muted-foreground" />
             <input autoFocus aria-label="Buscar país" value={q} onChange={(e) => setQ(e.target.value)} placeholder="País o indicativo" className="h-9 min-w-0 flex-1 bg-transparent text-[13px] outline-none" />

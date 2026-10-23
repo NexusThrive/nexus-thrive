@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AlertTriangle, ArrowLeft, ExternalLink, UserX, Wrench } from "lucide-react";
+import { ContextHelp } from "@/components/molecules/context-help";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
@@ -98,11 +99,22 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
             <Badge tone={detail.active ? "success" : "danger"}>{detail.active ? "Servicio activo" : "Suspendido"}</Badge>
             <Badge tone="neutral">Cuenta: {stageLabel.toLowerCase()}</Badge>
             {health ? (
-              <Link href="/admin/salud" title={health.factors.map((f) => `${f.label} ${f.points}/${f.max}: ${f.reason}`).join("\n")}>
-                <Badge tone={HEALTH_LEVELS[health.level].tone}>
-                  Salud {health.score} · {HEALTH_LEVELS[health.level].label}
-                </Badge>
-              </Link>
+              <span className="inline-flex items-center gap-0.5">
+                <Link href="/admin/salud">
+                  <Badge tone={HEALTH_LEVELS[health.level].tone}>
+                    Salud {health.score} · {HEALTH_LEVELS[health.level].label}
+                  </Badge>
+                </Link>
+                <ContextHelp topic="el puntaje de salud">
+                  <ul className="grid gap-1">
+                    {health.factors.map((f) => (
+                      <li key={f.label}>
+                        <b className="font-medium">{f.label} {f.points}/{f.max}:</b> {f.reason}
+                      </li>
+                    ))}
+                  </ul>
+                </ContextHelp>
+              </span>
             ) : null}
             <Badge variant="gold">Thrive {plan?.name ?? extras.plan} · {formatUsdCents(subscription?.priceUsdCents ?? extras.planMonthlyUsdCents)}/mes</Badge>
             <Badge tone={extras.managerName ? "success" : "warning"}>{extras.managerName ? `Responsable: ${extras.managerName}` : "Sin responsable"}</Badge>

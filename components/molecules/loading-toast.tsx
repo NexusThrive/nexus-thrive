@@ -23,7 +23,7 @@ export function LoadingToast({
   return (
     <div
       className={cn(
-        "nx-toast fixed bottom-6 right-6 z-[80] flex min-w-[250px] items-center gap-3 overflow-hidden rounded-lg border border-border bg-surface px-4 py-3",
+        "nx-toast fixed bottom-6 right-6 z-(--z-toast) flex min-w-[250px] items-center gap-3 overflow-hidden rounded-lg border border-border bg-surface px-4 py-3",
         className,
       )}
       role="status"

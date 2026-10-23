@@ -16,7 +16,7 @@ export default async function SoportePage() {
   const [tickets, tenants, team] = await Promise.all([listTickets(), tenantOptions(), listManagers()]);
   return (
     <div className="grid gap-5">
-      <PageHeader eyebrow="Clientes" title="Soporte" description="Casos de los negocios con prioridad y SLA. Las notas internas solo las ve el equipo." />
+      <PageHeader eyebrow="Hoy" title="Soporte" description="Casos de los negocios con prioridad y SLA. Las notas internas solo las ve el equipo." />
       <SupportView tickets={tickets} tenants={tenants} staff={team} me={staff.staffId} canReply={staff.permissions.includes("tickets.reply")} />
     </div>
   );

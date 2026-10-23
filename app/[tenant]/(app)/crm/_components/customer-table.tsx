@@ -12,7 +12,7 @@ import {
   restoreCustomerAction,
   type CustomerActionResult,
 } from "../actions";
-import ConfirmDialog from "./confirm-dialog";
+import { ConfirmDialog } from "@/components/organisms/confirm-dialog";
 import CustomerSheet from "./customer-sheet";
 import { useVerticalTerms } from "../../vertical-terms-context";
 import { buttonVariants } from "@/components/atoms/button-variants";
@@ -520,21 +520,21 @@ export default function CustomerTable({
         <CustomerSheet tenantSlug={tenantSlug} customerId={editTarget.id} onClose={() => setEditTarget(null)} />
       ) : null}
 
-      {confirmOpen ? (
-        <ConfirmDialog
-          title="Eliminar definitivamente"
-          description={`Esta acción no se puede deshacer. Los ${customersLabel} seleccionados se eliminarán del sistema.`}
-          detail={`${selected.size} ${
-            selected.size === 1
-              ? `${customerLabel} archivado seleccionado`
-              : `${customersLabel} archivados seleccionados`
-          } · sus pagos se conserván sin ${customerLabel} vinculado.`}
-          confirmLabel="Eliminar definitivamente"
-          pending={isPending}
-          onConfirm={confirmBulkDelete}
-          onCancel={() => setConfirmOpen(false)}
-        />
-      ) : null}
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="Eliminar definitivamente"
+        description={`Esta acción no se puede deshacer. Los ${customersLabel} seleccionados se eliminarán del sistema.`}
+        confirmLabel="Eliminar definitivamente"
+        pendingLabel="Eliminando…"
+        onConfirm={confirmBulkDelete}
+      >
+        {`${selected.size} ${
+          selected.size === 1
+            ? `${customerLabel} archivado seleccionado`
+            : `${customersLabel} archivados seleccionados`
+        } · sus pagos se conservan sin ${customerLabel} vinculado.`}
+      </ConfirmDialog>
     </div>
   );
 }

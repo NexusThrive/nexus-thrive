@@ -9,6 +9,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
 import { QrCode } from "@/components/atoms/qr-code";
 import { useToast } from "@/components/molecules/toast";
+import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { countdown, STATE_LABELS } from "@/lib/business/gym";
 import type { MemberStatus } from "@/lib/business/gym-db";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,7 @@ export default function AccessCard({ slug, customerId, code, nfcUid, status }: {
   const [canReadNfc, setCanReadNfc] = useState(false);
   const [now, setNow] = useState(0);
   const [pending, start] = useTransition();
+  const [confirm, confirmDialog] = useConfirm();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -95,7 +97,15 @@ export default function AccessCard({ slug, customerId, code, nfcUid, status }: {
                 <button
                   type="button"
                   disabled={pending}
-                  onClick={() => window.confirm("El QR actual dejará de funcionar. ¿Generar uno nuevo?") && run(accessCodeAction(slug, customerId, true))}
+                  onClick={async () => {
+                    const ok = await confirm({
+                      title: "¿Generar un QR nuevo?",
+                      description: "El QR actual dejará de funcionar en el control de acceso.",
+                      confirmLabel: "Generar QR nuevo",
+                      tone: "default",
+                    });
+                    if (ok) run(accessCodeAction(slug, customerId, true));
+                  }}
                   className={buttonVariants({ size: "sm", variant: "ghost" })}
                 >
                   <RefreshCw aria-hidden="true" className="size-3.5" /> Nuevo
@@ -149,6 +159,7 @@ export default function AccessCard({ slug, customerId, code, nfcUid, status }: {
           ) : null}
         </div>
       </div>
+      {confirmDialog}
     </section>
   );
 }

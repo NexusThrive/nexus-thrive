@@ -85,6 +85,44 @@
   --sidebar-width-collapsed: 76px;
   --topbar-height: 60px;
   --content-max: 1280px;
+  /* Ancho de lectura (texto corrido, ayuda, formularios de una columna). */
+  --content-prose: 72ch;
+
+  /* --- Superficies flotantes (docs/design/interaction-patterns.md) --- */
+  --dialog-w-sm: 440px;   /* confirmaciones */
+  --dialog-w-md: 520px;   /* formulario corto (por defecto) */
+  --dialog-w-lg: 640px;   /* formulario de dos columnas */
+  --dialog-w-xl: 768px;   /* editores y tablas (APU, presupuesto) */
+  --drawer-w: 440px;      /* ficha o registro con contexto */
+  --drawer-w-lg: 560px;   /* registro con muchas secciones */
+  --popover-w: 320px;     /* ayuda contextual y acciones rápidas */
+
+  /* --- Capas (z-index). Nunca un número suelto en un componente. --- */
+  --z-raised: 10;     /* elementos sobre su tarjeta (badges, adornos) */
+  --z-sticky: 40;     /* barra superior y encabezados fijos */
+  --z-tabbar: 45;     /* barra inferior móvil */
+  --z-sidebar: 50;    /* barra lateral (cajón en móvil) */
+  --z-overlay: 70;    /* fondo de diálogos y paneles */
+  --z-modal: 71;      /* diálogo, panel lateral, hoja inferior */
+  --z-popover: 80;    /* tooltip, menú, ayuda: SIEMPRE sobre el modal que los contiene */
+  --z-banner: 85;     /* aviso de conexión */
+  --z-toast: 90;      /* notificaciones */
+  --z-takeover: 120;  /* paleta de comandos, escáner, cinemáticas a pantalla completa */
+
+  /* --- Foco visible (WCAG 2.4.7 / 2.4.11): 2 px, separado 2 px del control --- */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* --- Movimiento por intención (alias de la escala d1–d4) --- */
+  --motion-feedback: var(--d1);        /* presionar, marcar */
+  --motion-hover: var(--d2);           /* hover, color, borde */
+  --motion-overlay-in: 360ms;          /* diálogo y panel entran */
+  --motion-overlay-out: 200ms;         /* y salen sin hacer esperar */
+  --motion-popover: 160ms;             /* tooltip, menú, ayuda */
+  --motion-view: 360ms;                /* entrada de una vista */
+
+  /* --- Puntos de quiebre (referencia; Tailwind usa sm/md/lg/xl) --- */
+  /* sm 640 · md 768 (modal centrado, cajón lateral) · lg 1024 (barra lateral fija) · xl 1280 */
 
   /* --- Semánticos: MODO CLARO (por defecto) --- */
   --background: var(--nx-paper);

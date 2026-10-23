@@ -4,7 +4,7 @@
 @media (min-width: 768px) {
   .side {
     position: fixed;
-    z-index: 50;
+    z-index: var(--z-sidebar);
     inset: 0 auto 0 0;
     width: var(--sw);
     display: flex;
@@ -157,7 +157,7 @@
 
 .tip {
   position: fixed;
-  z-index: 80;
+  z-index: var(--z-popover);
   padding: 6px 10px;
   border-radius: 4px;
   background: var(--foreground);

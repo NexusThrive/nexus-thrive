@@ -10,7 +10,7 @@ export default function NegociosHeader({ total, canCreate }: { total: number; ca
   const { openCreate } = useOps();
   return (
     <PageHeader
-      eyebrow="Operaciones"
+      eyebrow="Cuentas"
       title="Negocios"
       description={`${total} ${total === 1 ? "cuenta" : "cuentas"} en la plataforma. Busca, filtra y abre la ficha 360° de cada una.`}
       actions={

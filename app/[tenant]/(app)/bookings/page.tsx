@@ -63,7 +63,7 @@ export default async function BookingsPage({ params, searchParams }: { params: P
   const terms = getVerticalTerms(tenantRow?.vertical ?? ctx.vertical);
   return (
     <div className="grid gap-5">
-      <PageHeader eyebrow="Gestión" title={terms.bookings} description="Toca un día o una hora para agendar. Los colores muestran qué días están llenos." />
+      <PageHeader eyebrow="Clientes y operación" title={terms.bookings} description="Toca un día o una hora para agendar. Los colores muestran qué días están llenos." />
       <AgendaCalendar
         slug={tenant}
         business={tenantRow?.name ?? ""}

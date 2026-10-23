@@ -47,8 +47,8 @@ code, kbd, pre { font-family: var(--font-mono); font-size: 0.9em; }
 
 /* --- Foco visible siempre --- */
 :focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width, 2px) solid var(--ring);
+  outline-offset: var(--focus-ring-offset, 2px);
   border-radius: var(--radius-sm);
 }
 
