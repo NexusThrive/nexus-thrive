@@ -10,8 +10,8 @@ import {
   VERTICAL_LABELS,
   VERTICALS,
   type VerticalValue,
-} from "@/lib/admin-catalogs";
-import type { TenantSortKey } from "@/lib/admin-db";
+} from "@/lib/admin/catalogs";
+import type { TenantSortKey } from "@/lib/admin/db";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { cn } from "@/lib/utils";
 

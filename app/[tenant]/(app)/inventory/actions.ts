@@ -9,7 +9,7 @@ import { validateStockMove, type StockKind } from "@/lib/business/inventory";
 import { getProduct, moveStock, saveProduct, stockHistory } from "@/lib/business/products-db";
 import { canHandleCash, canManage } from "@/lib/business/roles";
 import { PAYMENT_METHODS } from "@/lib/finance";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 
 export type CatalogResult = { ok: true; message?: string; id?: string; receipt?: string } | { ok: false; message: string; errors?: Partial<Record<keyof ProductDraft, string>> };
 const DENIED: CatalogResult = { ok: false, message: "Tu rol no permite esta acción." };

@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { createAdminDb, type AuditAction } from "@/lib/admin-db";
+import { createAdminDb, type AuditAction } from "@/lib/admin/db";
 import type { StaffContext } from "./access";
 
 /**

@@ -6,7 +6,7 @@
  * obra contratada la pasa a En ejecución.
  */
 import { db } from "@/prisma/db";
-import { calculateItemTotal } from "@/lib/apu-engine";
+import { calculateItemTotal } from "@/lib/construction/apu-engine";
 
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 

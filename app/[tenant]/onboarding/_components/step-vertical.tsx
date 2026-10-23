@@ -7,7 +7,7 @@ import {
   VERTICAL_LABELS,
   VERTICALS,
   type VerticalValue,
-} from "@/lib/admin-catalogs";
+} from "@/lib/admin/catalogs";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import type { OnboardingFormState } from "../actions";
 

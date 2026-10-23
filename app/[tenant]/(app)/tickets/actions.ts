@@ -5,7 +5,7 @@ import { parseMuseumSettings } from "@/lib/business/museum";
 import { createTicketSale, payTicketSale, saveMuseumSettings, seedTicketTypes, voidTicketSale, type NewSale } from "@/lib/business/museum-db";
 import { canHandleCash, canManage } from "@/lib/business/roles";
 import { PAYMENT_METHODS } from "@/lib/finance";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 
 export type TicketResult = { ok: true; message?: string } | { ok: false; message: string };
 const DENIED: TicketResult = { ok: false, message: "Tu rol no permite esta acción." };

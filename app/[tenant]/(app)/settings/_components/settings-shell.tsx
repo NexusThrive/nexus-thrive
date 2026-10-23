@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 
-import type { ModuleValue } from "@/lib/admin-catalogs";
+import type { ModuleValue } from "@/lib/admin/catalogs";
 import ProfileTab from "./profile-tab";
 import ModulesTab from "./modules-tab";
 import TeamTab, { type Seats } from "./team-tab";

@@ -8,7 +8,7 @@ import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { MAX_FREEZE_DAYS } from "@/lib/business/gym";
-import { bogotaDayKey } from "@/lib/finance-series";
+import { bogotaDayKey } from "@/lib/finance/series";
 import { formatDateShort } from "@/lib/format";
 import { cancelMembershipAction, freezeMembershipAction, unfreezeMembershipAction, type AccessActionResult } from "../../crm/[id]/access-actions";
 import type { MembershipViewRow } from "./membership-table";

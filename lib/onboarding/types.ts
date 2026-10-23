@@ -5,10 +5,10 @@ import type { Billing, PlanKey } from "@/lib/plans/catalog";
  *
  * Seguros para importar desde el cliente y el servidor: no importan
  * `db` ni funciones server-only. Los catálogos (verticals, módulos,
- * recetas) viven en lib/admin-catalogs.ts y se reutilizan tal cual.
+ * recetas) viven en lib/admin/catalogs.ts y se reutilizan tal cual.
  */
 
-import type { ModuleValue, VerticalValue } from "@/lib/admin-catalogs";
+import type { ModuleValue, VerticalValue } from "@/lib/admin/catalogs";
 
 export type { ModuleValue, VerticalValue };
 

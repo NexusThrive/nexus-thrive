@@ -1,6 +1,6 @@
 import { describe, test, beforeAll, afterAll, expect } from "vitest";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const enabled = Boolean(TEST_URL);

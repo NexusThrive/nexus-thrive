@@ -14,7 +14,7 @@
  * - Se verifica que el costo calculado de cada APU coincida con el
  *   "VR COSTO DIRECTO" del archivo.
  */
-import type { ApuItemCategoryValue } from "@/lib/apu-engine";
+import type { ApuItemCategoryValue } from "@/lib/construction/apu-engine";
 import type { MasterPackApu, MasterPackParse } from "./master-pack";
 
 export type PlannedPackItem = {

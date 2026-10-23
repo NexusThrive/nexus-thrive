@@ -2,7 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import {
   validateCreateCommitment,
   validateCreateLookaheadTask,

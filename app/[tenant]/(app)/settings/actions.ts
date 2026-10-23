@@ -1,13 +1,13 @@
 "use server";
 
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
-import { isModule, isVertical, validateSlug } from "@/lib/admin-catalogs";
+import { createTenantDb } from "@/lib/tenant/db";
+import { isModule, isVertical, validateSlug } from "@/lib/admin/catalogs";
 import { checkModuleToggle } from "@/lib/plans/compat";
 import { loadPricingConfig } from "@/lib/plans/settings";
-import { deleteTenantCompletely } from "@/lib/tenant-deletion";
+import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 
 type TenantDb = ReturnType<typeof createTenantDb>;
 

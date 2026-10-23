@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { deleteTenantCompletely, TENANT_DELETION_TABLES } from "./tenant-deletion";
+import { deleteTenantCompletely, TENANT_DELETION_TABLES } from "./deletion";
 
 /**
  * Borrado de raíz de un negocio.

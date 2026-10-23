@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { decimalToMicro } from "@/lib/apu-engine";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { decimalToMicro } from "@/lib/construction/apu-engine";
+import { requireTenantContext } from "@/lib/tenant/context";
 
 export type ProgressActionResult = { ok: true; message: string } | { ok: false; message: string };
 

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import { bmi, profileFor } from "@/lib/business/customer-fields";
 import CustomerHeader from "./_components/customer-header";

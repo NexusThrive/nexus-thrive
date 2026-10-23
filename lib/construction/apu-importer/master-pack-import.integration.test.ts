@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { buildMasterPackPlan } from "./master-pack-plan";
 import { executeMasterPackImport } from "./master-pack-import";
 import { samplePack } from "./__fixtures__/sample-pack";

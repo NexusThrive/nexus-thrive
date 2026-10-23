@@ -11,7 +11,7 @@
  * No importa de aquí nada en un Client Component (depende de @/prisma/db).
  */
 import { db } from "@/prisma/db";
-import type { ApuItemCategoryValue } from "@/lib/apu-engine";
+import type { ApuItemCategoryValue } from "@/lib/construction/apu-engine";
 import { inferCategory } from "./category-classifier";
 import type { ExecutionPlan } from "./index";
 import type { ImportResult, PriceChange } from "./types";

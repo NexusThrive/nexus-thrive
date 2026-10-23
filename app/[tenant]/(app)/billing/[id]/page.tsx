@@ -6,7 +6,7 @@ import { amountInWords, INVOICE_KIND_LABELS, invoiceCode } from "@/lib/business/
 import { getInvoice } from "@/lib/business/invoices-db";
 import { canManage } from "@/lib/business/roles";
 import { formatCurrency } from "@/lib/format";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { db } from "@/prisma/db";
 import InvoiceActions from "./invoice-actions";
 

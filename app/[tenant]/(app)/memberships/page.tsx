@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import {
   MEMBERSHIP_STATUSES,
   MEMBERSHIP_TYPES,
   type MembershipStatusValue,
   type MembershipTypeValue,
-} from "@/lib/memberships";
+} from "@/lib/business/memberships";
 import MembershipSummary from "./_components/membership-summary";
 import MembershipFilters from "./_components/membership-filters";
 import MembershipTable, {

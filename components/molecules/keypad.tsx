@@ -3,9 +3,9 @@
 import { Delete } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-import type { KeypadKey } from "@/lib/keypad";
+import type { KeypadKey } from "@/lib/finance/keypad";
 
-export { applyKey, type KeypadKey } from "@/lib/keypad";
+export { applyKey, type KeypadKey } from "@/lib/finance/keypad";
 
 const KEYS: KeypadKey[] = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "000", "0", "back"];
 

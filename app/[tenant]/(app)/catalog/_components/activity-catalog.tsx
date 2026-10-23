@@ -6,18 +6,18 @@ import { useRouter } from "next/navigation";
 import { Eye, Layers, Pencil, Plus, X, AlertTriangle } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
 import { formatCurrency } from "@/lib/format";
-import { APU_UNITS, formatApuUnit } from "@/lib/apu-engine";
+import { APU_UNITS, formatApuUnit } from "@/lib/construction/apu-engine";
 import SearchInput from "@/components/molecules/search-input";
 import FilterSelect from "@/components/molecules/filter-select";
 import PaginationLinks from "@/components/molecules/pagination-links";
-import { apuImageUrl } from "@/lib/apu-images";
+import { apuImageUrl } from "@/lib/construction/apu-images";
 import type {
   ApuActivityDetail,
   ApuActivityRow,
   ApuChapterRow,
   ApuCompositionRow,
   ApuItemRow,
-} from "@/lib/tenant-db";
+} from "@/lib/tenant/db";
 import {
   addCompositionAction,
   createApuActivityAction,

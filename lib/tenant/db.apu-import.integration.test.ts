@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "./tenant-db";
+import { createTenantDb } from "./db";
 
 /**
  * Integración de la Etapa 3: importar una actividad del catálogo APU al

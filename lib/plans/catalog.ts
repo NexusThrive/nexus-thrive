@@ -1,4 +1,4 @@
-import type { ModuleValue, VerticalValue } from "@/lib/admin-catalogs";
+import type { ModuleValue, VerticalValue } from "@/lib/admin/catalogs";
 
 /**
  * Planes de NEXUS THRIVE sobre los MÓDULOS REALES de la app (USD/mes).

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
-import { canGovernBudget, requireTenantContext } from "@/lib/tenant-context";
+import { canGovernBudget, requireTenantContext } from "@/lib/tenant/context";
 import { ensureProjectContainers } from "@/lib/construction/containers";
 
 export type MigrateLegacyResult =

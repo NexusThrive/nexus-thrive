@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { db } from "@/prisma/db";
-import { isPaymentMethod } from "@/lib/admin-catalogs";
+import { isPaymentMethod } from "@/lib/admin/catalogs";
 import OnboardingShell from "./_components/onboarding-shell";
 
 /**

@@ -1,8 +1,8 @@
 "use server";
 
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { getVerticalTerms, type VerticalTerms } from "@/lib/vertical-terms";
 
 /** Resultado de las acciones de fila / acciones masivas. */

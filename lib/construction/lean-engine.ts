@@ -8,7 +8,7 @@
  *
  * Este módulo NO depende de la base de datos ni de `Temporal`: puede importarse
  * desde componentes cliente sin arrastrar el driver de Prisma. Las conversiones
- * a/desde `Temporal.Instant` viven en `lib/tenant-db.ts`.
+ * a/desde `Temporal.Instant` viven en `lib/tenant/db.ts`.
  *
  * Convención de dominio (importante):
  *  - `LookaheadTask.weekNumber` es una semana RELATIVA (1..6) dentro de la

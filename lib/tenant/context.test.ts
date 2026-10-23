@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { canGovernBudget } from "./tenant-context";
+import { canGovernBudget } from "./context";
 
 /**
  * Rol D7 del presupuesto: solo OWNER y SUPERADMIN gobiernan (bloquear,

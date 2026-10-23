@@ -13,7 +13,7 @@ import {
   SegmentedControl,
   type SegmentedOption,
 } from "@/components/molecules/segmented-control";
-import type { ActivityType, RecentActivityItem } from "@/lib/dashboard-types";
+import type { ActivityType, RecentActivityItem } from "@/lib/dashboard/types";
 
 type RecentActivityProps = {
   items: RecentActivityItem[];

@@ -6,7 +6,7 @@ import { Badge } from "@/components/atoms/badge";
 import { ProgressBar } from "@/components/atoms/progress-bar";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { PageHeader } from "@/components/molecules/page-header";
-import { isVertical, VERTICAL_LABELS } from "@/lib/admin-catalogs";
+import { isVertical, VERTICAL_LABELS } from "@/lib/admin/catalogs";
 import { getStaffContext } from "@/lib/ops/access";
 import { onboardingBoard } from "@/lib/ops/onboarding-board";
 import { CHECKLIST_STEPS } from "@/lib/ops/onboarding-checklist";

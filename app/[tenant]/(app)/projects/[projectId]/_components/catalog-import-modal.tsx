@@ -1,6 +1,6 @@
 "use client";
 
-import { apuImageUrl } from "@/lib/apu-images";
+import { apuImageUrl } from "@/lib/construction/apu-images";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Lock, Search, Snowflake, X } from "lucide-react";
@@ -10,12 +10,12 @@ import {
   APU_ITEM_CATEGORIES,
   APU_UNITS,
   formatApuUnit,
-} from "@/lib/apu-engine";
+} from "@/lib/construction/apu-engine";
 import { formatCurrency, toNumber } from "@/lib/format";
 import type {
   ApuActivityDetail,
   ApuActivityRow,
-} from "@/lib/tenant-db";
+} from "@/lib/tenant/db";
 import Modal from "@/components/organisms/modal";
 import {
   getCatalogActivityDetailAction,

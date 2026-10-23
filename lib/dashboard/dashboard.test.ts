@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { greetingFor, percentChange, previousBogotaMonth } from "./dashboard";
+import { greetingFor, percentChange, previousBogotaMonth } from ".";
 
 describe("previousBogotaMonth", () => {
   it("enero vuelve a diciembre del año anterior", () => {

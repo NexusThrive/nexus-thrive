@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/prisma/db";
-import { createAdminDb } from "@/lib/admin-db";
+import { createAdminDb } from "@/lib/admin/db";
 
 /**
  * Sirve la foto de un insumo guardada en la base (`ApuImage`). Solo para

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { bogotaDayKey, buildFinanceSeries, cumulativeByDay, lastBogotaDays, runningBalance } from "./finance-series";
+import { bogotaDayKey, buildFinanceSeries, cumulativeByDay, lastBogotaDays, runningBalance } from "./series";
 
 // 16 oct 2026, 22:00 en Bogotá (03:00 UTC del 17).
 const NOW = new Date("2026-10-17T03:00:00Z");

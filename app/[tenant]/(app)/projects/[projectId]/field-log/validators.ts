@@ -1,4 +1,4 @@
-import { isValidPhotoUrl } from "@/lib/field-log-engine";
+import { isValidPhotoUrl } from "@/lib/construction/field-log-engine";
 export type CreateFieldLogEntryValues = {
   type: "ADVANCE" | "OBSERVATION" | "AUTHORIZATION" | "INCIDENT";
   entryDate: string; // YYYY-MM-DD

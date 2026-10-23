@@ -7,7 +7,7 @@
  *    la fila queda marcada WARNING "Categoría inferida automáticamente".
  * 3. Fallback → MATERIAL (nunca se descarta información por esto).
  */
-import type { ApuItemCategoryValue } from "@/lib/apu-engine";
+import type { ApuItemCategoryValue } from "@/lib/construction/apu-engine";
 import { matchesKeyword, normalizeCategoryCell } from "./fuzzy-matcher";
 
 export interface CategoryResult {

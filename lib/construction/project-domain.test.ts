@@ -13,7 +13,7 @@ import {
   projectStatusLabel,
   projectStatusNeedsBaselineWarning,
   type ProjectStatusValue,
-} from "./projects";
+} from "./project-domain";
 
 const CHAIN: ReadonlyArray<ProjectStatusValue> = [
   "DRAFT",

@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/atoms/badge";
-import { useMinute } from "@/lib/use-minute";
+import { useMinute } from "@/lib/hooks/use-minute";
 import { slaState, type TicketPriorityValue, type TicketStatusValue } from "@/lib/ops/support-rules";
 
 function left(ms: number) {

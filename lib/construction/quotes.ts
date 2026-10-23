@@ -1,6 +1,6 @@
 /**
  * Cotizaciones.
- * Extraído de `lib/tenant-db.ts`; `createTenantDb` lo compone. Todo
+ * Extraído de `lib/tenant/db.ts`; `createTenantDb` lo compone. Todo
  * acceso va acotado al `tenantId` recibido.
  */
 import {
@@ -15,7 +15,7 @@ import {
 import {
   calculateQuoteTotals,
   type ApuSnapshot,
-} from "@/lib/apu-engine";
+} from "@/lib/construction/apu-engine";
 import {
   type QuoteDetail,
   type QuoteListInput,

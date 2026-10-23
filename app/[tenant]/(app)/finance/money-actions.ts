@@ -19,7 +19,7 @@ import {
 } from "@/lib/business/finance-db";
 import { parseMoney } from "@/lib/business/money";
 import { canHandleCash, canManage } from "@/lib/business/roles";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { getAppBaseUrl } from "@/lib/app-url";
 
 export type MoneyResult = { ok: true; message?: string; id?: string } | { ok: false; message: string };

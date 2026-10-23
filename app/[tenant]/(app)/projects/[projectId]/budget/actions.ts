@@ -3,16 +3,16 @@
 import { buildBudgetWorkbook } from "@/lib/construction/budget-export";
 import { db } from "@/prisma/db";
 import { revalidatePath } from "next/cache";
-import { decimalToMicro } from "@/lib/apu-engine";
+import { decimalToMicro } from "@/lib/construction/apu-engine";
 import type {
   ApuActivityDetail,
   ApuActivityRow,
   ProjectBudgetData,
-} from "@/lib/tenant-db";
+} from "@/lib/tenant/db";
 import {
   canGovernBudget,
   requireTenantContext,
-} from "@/lib/tenant-context";
+} from "@/lib/tenant/context";
 import {
   validateAiuConfig,
   validateCreateBudgetItem,

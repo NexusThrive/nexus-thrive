@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/cn";
-import type { ConfidenceScore, ImportMetrics } from "@/lib/apu-importer/types";
+import type { ConfidenceScore, ImportMetrics } from "@/lib/construction/apu-importer/types";
 
 const LEVEL_TONE: Record<ConfidenceScore["level"], string> = {
   high: "bg-success/10 text-success border-success/30",

@@ -7,7 +7,7 @@ import { Badge } from "@/components/atoms/badge";
 import MembershipHoldSheet from "./membership-hold-sheet";
 import PaginationLinks from "@/components/molecules/pagination-links";
 import { formatCurrency, formatDateShort } from "@/lib/format";
-import { typeLabel, type MembershipStatusValue, type MembershipTypeValue } from "@/lib/memberships";
+import { typeLabel, type MembershipStatusValue, type MembershipTypeValue } from "@/lib/business/memberships";
 import MembershipStatusBadge from "./membership-status-badge";
 import MembershipModal from "./membership-modal";
 import WhatsAppReminder from "./whatsapp-reminder";

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import CustomerToolbar from "./_components/customer-toolbar";
 import CustomerTable, { type CustomerRow } from "./_components/customer-table";

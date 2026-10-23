@@ -12,7 +12,7 @@ import {
   sortModules,
   type ModuleValue,
   type VerticalValue,
-} from "@/lib/admin-catalogs";
+} from "@/lib/admin/catalogs";
 import type { OnboardingTenantType } from "./types";
 
 /** Módulos que implican equipo/operación: se omiten en el perfil INDIVIDUAL. */

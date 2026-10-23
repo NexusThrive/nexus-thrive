@@ -1,4 +1,4 @@
-import type { ModuleValue, VerticalValue } from "@/lib/admin-catalogs";
+import type { ModuleValue, VerticalValue } from "@/lib/admin/catalogs";
 import { CORE_MODULE, moduleOf, verticalOf, type PricingConfig } from "./pricing";
 
 /**

@@ -1,10 +1,10 @@
 "use server";
 
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import {
   validateCustomers,
   validateStep1,

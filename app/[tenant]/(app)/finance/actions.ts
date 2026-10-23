@@ -1,6 +1,6 @@
 "use server";
 
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
 import { getAppBaseUrl } from "@/lib/app-url";

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { PageHeader } from "@/components/molecules/page-header";
 import { WhatsAppComposer } from "@/components/organisms/whatsapp-composer";
 

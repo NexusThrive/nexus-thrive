@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
 import { BUSINESS_ROLES, canManageTeam, type BusinessRole } from "@/lib/business/roles";
 import { activeOwners, createInvite, revokeInvite, seatLimit, setMemberActive, setMemberRole, updateMemberProfile } from "@/lib/business/team-db";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 
 export type TeamResult = { ok: true; message?: string } | { ok: false; message: string };
 const DENIED: TeamResult = { ok: false, message: "Solo el dueño o administración maneja el equipo." };

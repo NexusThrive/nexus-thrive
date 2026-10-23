@@ -4,7 +4,7 @@ import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import type { ExpiringRow } from "@/lib/business/gym-db";
 import { formatDateShort } from "@/lib/format";
-import { whatsappReminderLink } from "@/lib/memberships";
+import { whatsappReminderLink } from "@/lib/business/memberships";
 
 /** Membresías que vencen pronto o vencieron hace poco: aviso por WhatsApp y renovación. */
 export default function ExpiringList({ slug, rows }: { slug: string; rows: ExpiringRow[] }) {

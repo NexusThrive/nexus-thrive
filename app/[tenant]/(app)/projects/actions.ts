@@ -9,9 +9,9 @@ import {
   projectStatusLabel,
   projectStatusNeedsBaselineWarning,
   type ProjectStatusValue,
-} from "@/lib/projects";
-import { type ProjectDetail } from "@/lib/tenant-db";
-import { requireTenantContext } from "@/lib/tenant-context";
+} from "@/lib/construction/project-domain";
+import { type ProjectDetail } from "@/lib/tenant/db";
+import { requireTenantContext } from "@/lib/tenant/context";
 import {
   projectHeaderToInput,
   validateCreateProject,

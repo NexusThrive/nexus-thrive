@@ -10,7 +10,7 @@
  *   Prisma se serializan como texto antes de cruzar a un Client Component).
  * - `values` usa campos internos (`targetField`); `raw` conserva el original.
  */
-import type { ApuItemCategoryValue } from "@/lib/apu-engine";
+import type { ApuItemCategoryValue } from "@/lib/construction/apu-engine";
 
 /** Formato de archivo aceptado por el pipeline. */
 export type ImportFileKind = "xlsx" | "csv" | "txt";

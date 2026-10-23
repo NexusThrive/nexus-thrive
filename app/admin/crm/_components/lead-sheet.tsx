@@ -8,7 +8,7 @@ import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { UsdInput } from "@/components/molecules/usd-input";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { VERTICALS, VERTICAL_LABELS } from "@/lib/admin-catalogs";
+import { VERTICALS, VERTICAL_LABELS } from "@/lib/admin/catalogs";
 import { isActiveStage, LEAD_SOURCES, LEAD_STAGES, LOST_REASONS, type LeadInput, type LeadStageValue } from "@/lib/ops/crm-rules";
 import type { LeadRow } from "@/lib/ops/leads";
 import { saveLeadAction } from "../actions";

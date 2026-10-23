@@ -5,9 +5,9 @@ import { AlertTriangle, ArrowLeft, ExternalLink, UserX, Wrench } from "lucide-re
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
-import { VERTICAL_LABELS } from "@/lib/admin-catalogs";
+import { VERTICAL_LABELS } from "@/lib/admin/catalogs";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
-import { createAdminDb } from "@/lib/admin-db";
+import { createAdminDb } from "@/lib/admin/db";
 import { getAccountExtras, listManagers, ACCOUNT_STAGES } from "@/lib/ops/accounts";
 import { getStaffContext } from "@/lib/ops/access";
 import { moduleStatusRow } from "@/lib/plans/compat";

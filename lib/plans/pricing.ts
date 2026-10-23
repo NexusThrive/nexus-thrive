@@ -1,4 +1,4 @@
-import { MODULES, SIGNUP_VERTICALS, VERTICALS, VERTICAL_LABELS, VERTICAL_RECIPES, type ModuleValue, type VerticalValue } from "@/lib/admin-catalogs";
+import { MODULES, SIGNUP_VERTICALS, VERTICALS, VERTICAL_LABELS, VERTICAL_RECIPES, type ModuleValue, type VerticalValue } from "@/lib/admin/catalogs";
 import {
   ANNUAL_DISCOUNT,
   GENERAL_MODULES,

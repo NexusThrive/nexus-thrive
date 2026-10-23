@@ -14,7 +14,7 @@ import {
   type OnboardingPrefill,
 } from "@/lib/onboarding/types";
 import { SHOW_PRICING } from "@/lib/onboarding/flags";
-import { MODULE_LABELS } from "@/lib/admin-catalogs";
+import { MODULE_LABELS } from "@/lib/admin/catalogs";
 import { modulePriceCents, planOf, quote as quotePlan, signupVerticals, type PricingConfig } from "@/lib/plans/pricing";
 import type { PlanKey } from "@/lib/plans/catalog";
 import { formatUsdCents } from "@/lib/plans/quote";

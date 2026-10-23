@@ -1,6 +1,6 @@
 "use client";
 
-import { apuImageUrl } from "@/lib/apu-images";
+import { apuImageUrl } from "@/lib/construction/apu-images";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Boxes, Check } from "lucide-react";
@@ -16,9 +16,9 @@ import {
   resourceLineCostMicro,
   type ApuItemCategoryValue,
   type ResourceTypeValue,
-} from "@/lib/apu-engine";
+} from "@/lib/construction/apu-engine";
 import { formatMoneyMicro, formatQuantityMicro } from "@/lib/format";
-import type { BudgetItemData, BudgetResourceData } from "@/lib/tenant-db";
+import type { BudgetItemData, BudgetResourceData } from "@/lib/tenant/db";
 import Modal from "@/components/organisms/modal";
 import { ApuCategoryBadge } from "@/components/molecules/quote-badges";
 import { updateResourceAction } from "../budget/actions";

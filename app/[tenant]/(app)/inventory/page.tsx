@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/molecules/page-header";
 import { kindsForVertical, KIND_LABELS } from "@/lib/business/catalog-kinds";
 import { listProducts } from "@/lib/business/products-db";
 import { canManage } from "@/lib/business/roles";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { db } from "@/prisma/db";
 import CatalogView from "./_components/catalog-view";
 

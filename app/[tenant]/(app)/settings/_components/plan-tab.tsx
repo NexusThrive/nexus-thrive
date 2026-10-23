@@ -1,5 +1,5 @@
 import { Check, Sparkles } from "lucide-react";
-import { MODULE_LABELS, type ModuleValue } from "@/lib/admin-catalogs";
+import { MODULE_LABELS, type ModuleValue } from "@/lib/admin/catalogs";
 import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
 import { PLANS, type Billing, type PlanKey } from "@/lib/plans/catalog";
 import type { TenantAccess } from "@/lib/benefits/benefits-db";

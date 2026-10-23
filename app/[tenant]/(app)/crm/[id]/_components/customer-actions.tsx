@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { MessageCircle, Pencil, Plus } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { whatsappReminderLink } from "@/lib/memberships";
+import { whatsappReminderLink } from "@/lib/business/memberships";
 import CustomerSheet from "../../_components/customer-sheet";
 
 /**

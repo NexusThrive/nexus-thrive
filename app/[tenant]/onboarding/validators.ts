@@ -4,7 +4,7 @@ import {
   PAYMENT_METHODS,
   type PaymentMethodValue,
   type VerticalValue,
-} from "@/lib/admin-catalogs";
+} from "@/lib/admin/catalogs";
 
 /**
  * Validación del wizard de onboarding. Se ejecuta en el cliente (feedback

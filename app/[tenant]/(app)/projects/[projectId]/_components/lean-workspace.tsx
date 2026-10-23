@@ -23,8 +23,8 @@ import {
   WINDOW_WEEKS,
   type CommitmentStatusValue,
   type NonComplianceCauseValue,
-} from "@/lib/lean-engine";
-import type { ProjectPlanData } from "@/lib/tenant-db";
+} from "@/lib/construction/lean-engine";
+import type { ProjectPlanData } from "@/lib/tenant/db";
 import {
   createLookaheadTaskAction,
   createWeeklyCommitmentAction,

@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { QrCode } from "@/components/atoms/qr-code";
 import { PrintButton } from "@/components/molecules/print-button";
 import { ensureAccessCode } from "@/lib/business/gym-db";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { db } from "@/prisma/db";
 
 /** Carné del socio para imprimir (tamaño tarjeta): foto, nombre y QR de acceso. */

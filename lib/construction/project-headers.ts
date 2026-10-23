@@ -1,6 +1,6 @@
 /**
  * Encabezado contractual de la obra (Tab 1).
- * Extraído de `lib/tenant-db.ts`; `createTenantDb` lo compone. Todo
+ * Extraído de `lib/tenant/db.ts`; `createTenantDb` lo compone. Todo
  * acceso va acotado al `tenantId` recibido.
  */
 import {

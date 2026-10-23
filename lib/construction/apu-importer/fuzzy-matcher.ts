@@ -11,7 +11,7 @@
  *   100 igualdad exacta · 90 igualdad normalizada · 75 difusa fuerte ·
  *   50 difusa débil · 0 sin coincidencia.
  */
-import { APU_UNITS, isValidCategory, type ApuItemCategoryValue } from "@/lib/apu-engine";
+import { APU_UNITS, isValidCategory, type ApuItemCategoryValue } from "@/lib/construction/apu-engine";
 import type { ColumnMapping, ImportTargetField } from "./types";
 
 /* ------------------------------------------------------------------ */

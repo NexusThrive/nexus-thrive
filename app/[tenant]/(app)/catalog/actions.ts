@@ -1,13 +1,13 @@
 "use server";
 
 import { readImageUpload } from "@/lib/image-upload";
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
-import { createAuth, type NexusRole } from "@/lib/authorization";
+import { createTenantDb } from "@/lib/tenant/db";
+import { createAuth, type NexusRole } from "@/lib/auth/authorization";
 import { getQuoteTerms, type QuoteTerms } from "@/lib/vertical-terms";
-import type { ApuItemCategoryValue } from "@/lib/apu-engine";
+import type { ApuItemCategoryValue } from "@/lib/construction/apu-engine";
 import {
   validateApuActivity,
   validateApuItem,

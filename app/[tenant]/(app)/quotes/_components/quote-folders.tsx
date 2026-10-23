@@ -4,7 +4,7 @@ import { QuoteStatusBadge } from "@/components/molecules/quote-badges";
 import { ProjectStatusBadge } from "../../projects/_components/project-status-badge";
 import { formatDateShort, formatMoneyMicro } from "@/lib/format";
 import type { QuoteFolderRow } from "@/lib/construction/project-quotes";
-import type { ProjectStatusValue } from "@/lib/projects";
+import type { ProjectStatusValue } from "@/lib/construction/project-domain";
 import { buttonVariants } from "@/components/atoms/button-variants";
 
 /**

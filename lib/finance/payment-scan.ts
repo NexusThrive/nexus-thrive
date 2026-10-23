@@ -1,4 +1,4 @@
-import { parseCopAmount } from "@/lib/cop-amount";
+import { parseCopAmount } from "@/lib/finance/cop-amount";
 import type { PaymentMethodValue } from "@/lib/finance";
 
 /**

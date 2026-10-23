@@ -5,7 +5,7 @@ import {
   PAYMENT_METHOD_LABELS,
   PAYMENT_METHODS,
   type PaymentMethodValue,
-} from "@/lib/admin-catalogs";
+} from "@/lib/admin/catalogs";
 import type { OnboardingFormState } from "../actions";
 
 /**

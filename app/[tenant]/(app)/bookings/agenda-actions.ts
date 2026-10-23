@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
 import { bogotaToMs, capacityLeft, staffConflict } from "@/lib/business/calendar";
 import { getProduct } from "@/lib/business/products-db";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 
 export type AgendaResult = { ok: true; message?: string; id?: string } | { ok: false; message: string; field?: string };
 const DATE = /^\d{4}-\d{2}-\d{2}$/;

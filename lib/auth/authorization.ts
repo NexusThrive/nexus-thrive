@@ -3,12 +3,12 @@
  *
  * Recibe el contexto del tenant (rol, canGovernBudget, etc.) y devuelve
  * funciones de verificación por acción. Los helpers puros viven en
- * `lib/projects.ts` y `lib/tenant-context.ts`; esto los combina
+ * `lib/construction/project-domain.ts` y `lib/tenant/context.ts`; esto los combina
  * para que las actions solo importen un módulo.
  */
 
-import { canGovernBudget } from "@/lib/tenant-context";
-import * as Projects from "@/lib/projects";
+import { canGovernBudget } from "@/lib/tenant/context";
+import * as Projects from "@/lib/construction/project-domain";
 
 /** Rol D7 del usuario en el tenant. */
 export type NexusRole = "SUPERADMIN" | "OWNER" | "STAFF" | "ADMIN" | "RECEPTION" | "ADVISOR";

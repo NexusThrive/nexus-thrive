@@ -4,7 +4,7 @@ import { listInvoices } from "@/lib/business/invoices-db";
 import { listProducts } from "@/lib/business/products-db";
 import { canHandleCash } from "@/lib/business/roles";
 import { todayBogota } from "@/lib/ops/leads";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { db } from "@/prisma/db";
 import BillingList from "./_components/billing-list";
 

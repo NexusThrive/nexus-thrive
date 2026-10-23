@@ -1,12 +1,12 @@
 import { ShieldCheck } from "lucide-react";
-import type { AuditLogRow } from "@/lib/admin-db";
-import { AUDIT_ACTION_LABELS as ACTION_LABELS } from "@/lib/audit-labels";
+import type { AuditLogRow } from "@/lib/admin/db";
+import { AUDIT_ACTION_LABELS as ACTION_LABELS } from "@/lib/admin/audit-labels";
 import { formatDateTime } from "@/lib/format";
 
 
 /**
  * Bitácora de auditoría: quién hizo qué y sobre qué negocio. Solo lectura;
- * los datos ya vienen resueltos de `lib/admin-db.ts`.
+ * los datos ya vienen resueltos de `lib/admin/db.ts`.
  */
 export default function AuditLog({ rows }: { rows: AuditLogRow[] }) {
   if (rows.length === 0) {

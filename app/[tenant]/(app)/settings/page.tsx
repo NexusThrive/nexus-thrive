@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { listTeam, seatLimit } from "@/lib/business/team-db";
 import { canManageTeam } from "@/lib/business/roles";
 import { paymentMethodLabel } from "@/lib/finance";
@@ -10,7 +10,7 @@ import {
   MODULES,
   VERTICAL_LABELS,
   sortModules,
-} from "@/lib/admin-catalogs";
+} from "@/lib/admin/catalogs";
 import SettingsShell, {
   type CardOwner,
   type PlanInfo,

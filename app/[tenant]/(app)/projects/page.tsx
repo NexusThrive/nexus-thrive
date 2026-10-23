@@ -6,8 +6,8 @@ import {
   ListChecks,
 } from "lucide-react";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
-import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/projects";
+import { createTenantDb } from "@/lib/tenant/db";
+import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/construction/project-domain";
 import { KpiCard } from "@/components/molecules/kpi-card";
 import { PageHeader } from "@/components/molecules/page-header";
 import SearchInput from "@/components/molecules/search-input";

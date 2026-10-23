@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "./tenant-db";
+import { createTenantDb } from "./db";
 
 /**
  * Pruebas de integración del ciclo de vida del proyecto
@@ -702,7 +702,7 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
   test("updateProject: rol - helper puro canChangeProjectStatus (OWNER/SUPERADMIN sí, STAFF no)", async () => {
     // El helper puro ya probado en projects.test.ts;
     // aquí verificamos que la capa de datos no valida rol (es responsabilidad de la action)
-    const { canChangeProjectStatus } = await import("@/lib/projects");
+    const { canChangeProjectStatus } = await import("@/lib/construction/project-domain");
     expect(canChangeProjectStatus("OWNER")).toBe(true);
     expect(canChangeProjectStatus("SUPERADMIN")).toBe(true);
     expect(canChangeProjectStatus("STAFF")).toBe(false);

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { canGovernBudget, requireTenantContext } from "@/lib/tenant-context";
+import { canGovernBudget, requireTenantContext } from "@/lib/tenant/context";
 import type { FollowUpTypeValue } from "@/lib/construction/project-quotes";
 
 export type QuoteActionResult = { ok: true; message: string } | { ok: false; message: string };

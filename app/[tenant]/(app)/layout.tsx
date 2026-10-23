@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { db } from "@/prisma/db";
-import { sortModules } from "@/lib/admin-catalogs";
+import { sortModules } from "@/lib/admin/catalogs";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import { TenantShell } from "@/components/templates/tenant-shell";
 import { VerticalTermsProvider } from "./vertical-terms-context";

@@ -3,7 +3,7 @@ import {
   MEMBERSHIP_TYPES,
   parsePlainDate,
   type MembershipTypeValue,
-} from "@/lib/memberships";
+} from "@/lib/business/memberships";
 
 export type MembershipFormValues = {
   customerId: string;

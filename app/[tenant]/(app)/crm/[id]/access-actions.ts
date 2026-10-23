@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { cancelMembership, ensureAccessCode, freezeMembership, linkNfc, unfreezeMembership } from "@/lib/business/gym-db";
 import { canHandleCash, canManage } from "@/lib/business/roles";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 
 export type AccessActionResult = { ok: true; message?: string; code?: string } | { ok: false; message: string };
 const DENIED: AccessActionResult = { ok: false, message: "Tu rol no permite esta acción." };

@@ -18,7 +18,7 @@ import {
   plainToInputDate,
   typeMonths,
   type MembershipTypeValue,
-} from "@/lib/memberships";
+} from "@/lib/business/memberships";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { labelClasses } from "@/components/atoms/input";

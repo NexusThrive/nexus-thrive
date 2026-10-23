@@ -9,7 +9,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { getQuoteTerms, getVerticalTerms } from "@/lib/vertical-terms";
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import { QuoteStatusBadge } from "@/components/molecules/quote-badges";

@@ -1,4 +1,4 @@
-import { bogotaDayKey, buildFinanceSeries, cumulativeByDay, lastBogotaDays, type FinanceSeries } from "@/lib/finance-series";
+import { bogotaDayKey, buildFinanceSeries, cumulativeByDay, lastBogotaDays, type FinanceSeries } from "@/lib/finance/series";
 import {
   and,
   or,
@@ -13,7 +13,7 @@ import {
 import {
   DEFAULT_MODULES_BY_VERTICAL,
   type VerticalValue,
-} from "@/lib/admin-catalogs";
+} from "@/lib/admin/catalogs";
 import {
   paymentMethodLabel,
   paymentStatusLabel,
@@ -29,7 +29,7 @@ import {
   type MembershipPaymentEntry,
   type MembershipStatusValue,
   type MembershipTypeValue,
-} from "@/lib/memberships";
+} from "@/lib/business/memberships";
 import { createCatalogDb } from "@/lib/construction/catalog";
 import { createQuotesDb } from "@/lib/construction/quotes";
 import { createProjectQuotesDb } from "@/lib/construction/project-quotes";

@@ -1,8 +1,8 @@
 "use server";
 
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { formatDateShort } from "@/lib/format";
 import { recordCharge } from "@/lib/business/charge";
 import {
@@ -15,7 +15,7 @@ import {
   plainFromInstant,
   typeMonths,
   typeLabel,
-} from "@/lib/memberships";
+} from "@/lib/business/memberships";
 import {
   validateMembership,
   validateRenewal,

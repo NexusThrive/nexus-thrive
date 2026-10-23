@@ -11,7 +11,7 @@ import { EmptyState } from "@/components/molecules/empty-state";
 import { KpiCard } from "@/components/molecules/kpi-card";
 import { SearchField } from "@/components/molecules/search-field";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
-import { useMinute } from "@/lib/use-minute";
+import { useMinute } from "@/lib/hooks/use-minute";
 import { isOpenStatus, priorityMeta, slaState, statusMeta } from "@/lib/ops/support-rules";
 import type { TicketRow } from "@/lib/ops/tickets";
 import { cn } from "@/lib/utils";

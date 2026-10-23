@@ -24,11 +24,11 @@ import {
 import { Button } from "@/components/atoms/button";
 import { Skeleton } from "@/components/atoms/skeleton";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
-import { MODULE_LABELS, VERTICAL_LABELS } from "@/lib/admin-catalogs";
+import { MODULE_LABELS, VERTICAL_LABELS } from "@/lib/admin/catalogs";
 import { TEAM_SIZE_LABELS, type TeamSizeValue } from "@/lib/onboarding/types";
 import { paymentMethodLabel } from "@/lib/finance";
 import { formatCurrency, formatDateTime } from "@/lib/format";
-import type { TenantDetail } from "@/lib/admin-db";
+import type { TenantDetail } from "@/lib/admin/db";
 import { cn } from "@/lib/utils";
 import {
   activateTenantAction,

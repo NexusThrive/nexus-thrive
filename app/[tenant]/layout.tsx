@@ -1,7 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { expireBenefitTrial } from "@/lib/benefits/benefits-db";
 import { acceptInvitesFor } from "@/lib/business/team-db";
 

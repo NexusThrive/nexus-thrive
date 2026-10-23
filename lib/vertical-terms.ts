@@ -5,7 +5,7 @@ import {
   normalizeVertical,
   type QuoteTerms,
   type VerticalTerms,
-} from "@/lib/admin-catalogs";
+} from "@/lib/admin/catalogs";
 
 /**
  * Helper de vocabulario adaptativo por vertical.

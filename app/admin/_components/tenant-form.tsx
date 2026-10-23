@@ -15,7 +15,7 @@ import {
   VERTICAL_LABELS,
   VERTICALS,
   type VerticalValue,
-} from "@/lib/admin-catalogs";
+} from "@/lib/admin/catalogs";
 import {
   TEAM_SIZE_LABELS,
   type OnboardingTenantType,

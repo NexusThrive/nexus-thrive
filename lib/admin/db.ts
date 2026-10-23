@@ -15,13 +15,13 @@ import {
   sortModules,
   type ModuleValue,
   type VerticalValue,
-} from "@/lib/admin-catalogs";
+} from "@/lib/admin/catalogs";
 import type { OnboardingTenantType } from "@/lib/onboarding/types";
 
 /**
  * Capa de datos GLOBAL de la plataforma (capa /admin).
  *
- * A diferencia de `lib/tenant-db.ts`, estas consultas NO están scoped a un
+ * A diferencia de `lib/tenant/db.ts`, estas consultas NO están scoped a un
  * tenant: operan sobre todos los negocios. Se mantiene deliberadamente
  * separado para no romper el aislamiento conceptual Platform ↔ Tenant.
  *

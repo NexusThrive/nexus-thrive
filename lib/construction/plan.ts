@@ -1,6 +1,6 @@
 /**
  * Planificador Lean (Last Planner System).
- * Extraído de `lib/tenant-db.ts`; `createTenantDb` lo compone. Todo
+ * Extraído de `lib/tenant/db.ts`; `createTenantDb` lo compone. Todo
  * acceso va acotado al `tenantId` recibido.
  */
 import {
@@ -15,7 +15,7 @@ import {
   isoWeekOf,
   relativeWeekNumber,
   WINDOW_WEEKS,
-} from "@/lib/lean-engine";
+} from "@/lib/construction/lean-engine";
 import {
   type CreateCommitmentInput,
   type CreateLookaheadTaskInput,

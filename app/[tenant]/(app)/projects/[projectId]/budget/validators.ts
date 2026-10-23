@@ -3,15 +3,15 @@
  * construcción — Tab 2). Mirror de `projects/validators.ts`: sin dependencias
  * de servidor, devuelve siempre los valores leídos (para repintar formularios)
  * y los errores por campo. Las conversiones a micro-unidades reutilizan el
- * motor `@/lib/apu-engine` (nunca se parsea dinero a `number`).
+ * motor `@/lib/construction/apu-engine` (nunca se parsea dinero a `number`).
  */
-import { isValidPercent, parseMoney, percentToMicro } from "@/lib/apu-engine";
+import { isValidPercent, parseMoney, percentToMicro } from "@/lib/construction/apu-engine";
 import type {
   AiuConfigInput,
   CreateBudgetItemInput,
   CreateChapterInput,
   UpdateResourceInput,
-} from "@/lib/tenant-db";
+} from "@/lib/tenant/db";
 
 export const CHAPTER_NAME_MAX = 120;
 export const CHAPTER_DESCRIPTION_MAX = 300;

@@ -6,7 +6,7 @@ import {
   validateSlug,
   type ModuleValue,
   type VerticalValue,
-} from "@/lib/admin-catalogs";
+} from "@/lib/admin/catalogs";
 import {
   TEAM_SIZES,
   type OnboardingTenantType,

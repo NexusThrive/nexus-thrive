@@ -6,8 +6,8 @@ import { cleanProfile, membershipTypeFor, profileFor } from "@/lib/business/cust
 import { addAttachment, addCashMovement, assignReceiptNumber, checkAttachment, currentCashSession } from "@/lib/business/finance-db";
 import { getProduct } from "@/lib/business/products-db";
 import { PAYMENT_METHODS } from "@/lib/finance";
-import { bogotaEndOfDay, bogotaStartOfDay, bogotaToday, computeMembershipStatus } from "@/lib/memberships";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { bogotaEndOfDay, bogotaStartOfDay, bogotaToday, computeMembershipStatus } from "@/lib/business/memberships";
+import { requireTenantContext } from "@/lib/tenant/context";
 
 export type CustomerSaveResult = { ok: true; id: string; message: string } | { ok: false; message: string; errors?: Record<string, string> };
 

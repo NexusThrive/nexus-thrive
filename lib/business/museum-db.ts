@@ -1,7 +1,7 @@
 import { and } from "@prisma/orm-postgres/orm-client";
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
-import { bogotaDayKey } from "@/lib/finance-series";
+import { bogotaDayKey } from "@/lib/finance/series";
 import { addDaysKey, bogotaToMs } from "./calendar";
 import { recordCharge } from "./charge";
 import { voidPayment, withNextNumber } from "./finance-db";

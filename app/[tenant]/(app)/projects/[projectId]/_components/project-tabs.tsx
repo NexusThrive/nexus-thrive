@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/cn";
-import { PROJECT_TABS, type ProjectTab } from "@/lib/projects";
+import { PROJECT_TABS, type ProjectTab } from "@/lib/construction/project-domain";
 
 /**
  * Navegación por pestañas del contenedor de proyecto (XI.00). La URL es la

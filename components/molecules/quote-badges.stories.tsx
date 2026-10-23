@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { APU_ITEM_CATEGORIES, QUOTE_STATUSES } from "@/lib/apu-engine";
+import { APU_ITEM_CATEGORIES, QUOTE_STATUSES } from "@/lib/construction/apu-engine";
 import { ApuCategoryBadge, QuoteStatusBadge } from "./quote-badges";
 
 const meta = {

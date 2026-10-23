@@ -15,7 +15,7 @@ import {
   sortModules,
   type ModuleValue,
   type VerticalValue,
-} from "@/lib/admin-catalogs";
+} from "@/lib/admin/catalogs";
 import {
   isOnboardingTenantType,
   isTeamSize,

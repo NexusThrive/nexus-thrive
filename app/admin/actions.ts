@@ -1,6 +1,6 @@
 "use server";
 
-import { isVertical } from "@/lib/admin-catalogs";
+import { isVertical } from "@/lib/admin/catalogs";
 import { checkModuleToggle } from "@/lib/plans/compat";
 import { loadPricingConfig } from "@/lib/plans/settings";
 
@@ -9,8 +9,8 @@ import { headers } from "next/headers";
 import { requireStaff } from "@/lib/ops/access";
 import type { PermissionKey } from "@/lib/ops/permissions";
 import { revalidatePath } from "next/cache";
-import { createAdminDb, type AuditLogInput } from "@/lib/admin-db";
-import { validateSlug, type SlugValidation } from "@/lib/admin-catalogs";
+import { createAdminDb, type AuditLogInput } from "@/lib/admin/db";
+import { validateSlug, type SlugValidation } from "@/lib/admin/catalogs";
 import {
   validateSuspendTenant,
   validateTenantForm,

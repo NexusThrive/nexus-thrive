@@ -1,4 +1,4 @@
-import { MODULES, VERTICAL_RECIPES, sortModules, type ModuleValue, type VerticalValue } from "@/lib/admin-catalogs";
+import { MODULES, VERTICAL_RECIPES, sortModules, type ModuleValue, type VerticalValue } from "@/lib/admin/catalogs";
 import {
   ANNUAL_DISCOUNT,
   GENERAL_MODULES,

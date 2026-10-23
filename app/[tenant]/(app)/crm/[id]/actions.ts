@@ -1,9 +1,9 @@
 "use server";
 
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
-import { createTenantDb } from "@/lib/tenant-db";
-import { NOTE_MAX_LENGTH } from "@/lib/customer-notes";
+import { createTenantDb } from "@/lib/tenant/db";
+import { NOTE_MAX_LENGTH } from "@/lib/business/customer-notes";
 
 export type NoteFormState = {
   status: "idle" | "error" | "ok";

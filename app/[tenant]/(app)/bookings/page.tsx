@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/molecules/page-header";
 import { addDaysKey, bogotaToMs, monthGrid, weekStart } from "@/lib/business/calendar";
 import { listProducts } from "@/lib/business/products-db";
 import { todayBogota } from "@/lib/ops/leads";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import { db } from "@/prisma/db";
 import AgendaCalendar from "./_agenda/agenda-calendar";

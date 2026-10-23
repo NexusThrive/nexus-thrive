@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sortModules } from "@/lib/admin-catalogs";
+import { sortModules } from "@/lib/admin/catalogs";
 import { formatUsdCents, modulesForVertical, quotePlan, resolvePlanModules } from "./quote";
 
 describe("modulesForVertical", () => {

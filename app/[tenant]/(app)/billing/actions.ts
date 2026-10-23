@@ -7,7 +7,7 @@ import { createInvoice, payInvoice, voidInvoice } from "@/lib/business/invoices-
 import { canHandleCash, canManage } from "@/lib/business/roles";
 import { receiptCode } from "@/lib/business/invoice";
 import { PAYMENT_METHODS } from "@/lib/finance";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 
 export type BillingResult = { ok: true; message?: string; id?: string } | { ok: false; message: string };
 const DENIED: BillingResult = { ok: false, message: "Tu rol no permite esta acción." };

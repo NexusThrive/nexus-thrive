@@ -1,31 +1,31 @@
 "use server";
 
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant/context";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { getQuoteTerms } from "@/lib/vertical-terms";
-import { analyzeFile, buildExecutionPlan } from "@/lib/apu-importer";
-import { executeImport } from "@/lib/apu-importer/execute";
-import { isMasterPackWorkbook, parseMasterPack } from "@/lib/apu-importer/master-pack";
-import { buildMasterPackPlan } from "@/lib/apu-importer/master-pack-plan";
+import { analyzeFile, buildExecutionPlan } from "@/lib/construction/apu-importer";
+import { executeImport } from "@/lib/construction/apu-importer/execute";
+import { isMasterPackWorkbook, parseMasterPack } from "@/lib/construction/apu-importer/master-pack";
+import { buildMasterPackPlan } from "@/lib/construction/apu-importer/master-pack-plan";
 import {
   executeMasterPackImport,
   type MasterPackImportResult,
-} from "@/lib/apu-importer/master-pack-import";
+} from "@/lib/construction/apu-importer/master-pack-import";
 import {
   summarizeMasterPack,
   type MasterPackSummary,
-} from "@/lib/apu-importer/master-pack-summary";
-import { discardImportBlob, readImportSource } from "@/lib/apu-importer/upload-source";
-import { canGovernBudget } from "@/lib/tenant-context";
+} from "@/lib/construction/apu-importer/master-pack-summary";
+import { discardImportBlob, readImportSource } from "@/lib/construction/apu-importer/upload-source";
+import { canGovernBudget } from "@/lib/tenant/context";
 import * as XLSX from "xlsx";
 import type {
   ColumnMapping,
   ImportPreview,
   ImportResult,
   ParsedRow,
-} from "@/lib/apu-importer/types";
+} from "@/lib/construction/apu-importer/types";
 
 /* ------------------------------------------------------------------ */
 /* Límites de seguridad                                                */

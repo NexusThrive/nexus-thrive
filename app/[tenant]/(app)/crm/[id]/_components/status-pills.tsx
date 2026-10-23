@@ -6,8 +6,8 @@ import {
 import {
   MEMBERSHIP_STATUSES,
   type MembershipStatusValue,
-} from "@/lib/memberships";
-import type { CustomerAccountStatus } from "@/lib/tenant-db";
+} from "@/lib/business/memberships";
+import type { CustomerAccountStatus } from "@/lib/tenant/db";
 
 type DotTone = "success" | "danger" | "warning" | "muted";
 

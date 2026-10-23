@@ -5,7 +5,7 @@
  * nunca del payload del formulario (anti-suplantación).
  */
 
-import type { TenantContext } from "@/lib/tenant-context";
+import type { TenantContext } from "@/lib/tenant/context";
 
 /** Datos del autor derivados del contexto. */
 export type FieldLogAuthor = {

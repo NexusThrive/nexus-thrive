@@ -8,7 +8,7 @@ import {
   PROJECT_TYPE_OPTIONS,
   isValidProjectStatus,
   type ProjectStatusValue,
-} from "@/lib/projects";
+} from "@/lib/construction/project-domain";
 
 export const PROJECT_NAME_MAX = 120;
 export const PROJECT_DESCRIPTION_MAX = 500;

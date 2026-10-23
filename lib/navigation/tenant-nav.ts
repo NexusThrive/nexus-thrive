@@ -18,7 +18,7 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
-import { MODULES, type ModuleValue, type VerticalValue } from "@/lib/admin-catalogs";
+import { MODULES, type ModuleValue, type VerticalValue } from "@/lib/admin/catalogs";
 import { getVerticalTerms, type VerticalTerms } from "@/lib/vertical-terms";
 
 export type NavItem = {

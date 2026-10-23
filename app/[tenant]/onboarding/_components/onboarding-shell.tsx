@@ -6,7 +6,7 @@ import { NLoader } from "@/components/atoms/n-loader";
 import type {
   PaymentMethodValue,
   VerticalValue,
-} from "@/lib/admin-catalogs";
+} from "@/lib/admin/catalogs";
 import {
   completeOnboardingStepAction,
   type OnboardingFormState,
