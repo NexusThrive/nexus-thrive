@@ -12,11 +12,17 @@ import styles from "./responsive-sheet.module.css";
  * - Móvil: hoja inferior que sube con un rebote y se cierra arrastrándola
  *   hacia abajo desde la barra o el encabezado (umbral 110 px o un gesto
  *   rápido); hacia arriba ofrece resistencia.
- * - PC: modal centrado de 520 px (`wide` = 640 px) o cajón lateral de 440 px
- *   (`drawer`) para fichas y detalle.
+ * - PC: modal centrado (`size`: sm 440 · md 520 · lg 640 · xl 768 px) o
+ *   panel lateral derecho (`drawer`, 440 px; `size="lg"` 560 px) para fichas,
+ *   registros con varias secciones y detalle que conserva el contexto.
  *
- * Radix Dialog aporta el foco atrapado, Escape, el fondo que cierra y los
- * roles ARIA; las animaciones viven en el CSS Module (sin JS por cuadro).
+ * Radix Dialog aporta el foco atrapado, Escape, el fondo que cierra, la
+ * devolución del foco al control que lo abrió y los roles ARIA; las
+ * animaciones viven en el CSS Module (sin JS por cuadro).
+ *
+ * Cuándo usar cada forma: docs/design/interaction-patterns.md. Para
+ * formularios, preferir `FormDialog` / `FormDrawer` (form-sheet.tsx), que ya
+ * traen pie, errores y bloqueo mientras se guarda.
  */
 export function ResponsiveSheet({
   open,
@@ -26,8 +32,10 @@ export function ResponsiveSheet({
   footer,
   trigger,
   drawer = false,
+  size,
   wide = false,
   extraWide = false,
+  busy = false,
   className,
   children,
 }: {
@@ -39,18 +47,37 @@ export function ResponsiveSheet({
   footer?: ReactNode;
   /** Elemento que abre el panel (modo no controlado). */
   trigger?: ReactNode;
+  /** Panel lateral derecho en PC (en móvil, hoja inferior casi a pantalla completa). */
   drawer?: boolean;
+  /** Ancho en PC. Modal: sm 440 · md 520 (por defecto) · lg 640 · xl 768. Panel: md 440 · lg 560. */
+  size?: "sm" | "md" | "lg" | "xl";
+  /** @deprecated usar `size="lg"`. */
   wide?: boolean;
-  /** 768 px en PC: tablas y editores (APU, presupuesto). */
+  /** @deprecated usar `size="xl"` (tablas y editores: APU, presupuesto). */
   extraWide?: boolean;
+  /**
+   * Hay una operación en curso: no se cierra con Escape, el fondo, la X ni
+   * arrastrando, y el contenido queda `aria-busy`. Evita perder un guardado a
+   * medias.
+   */
+  busy?: boolean;
   className?: string;
   children?: ReactNode;
 }) {
   const contentRef = useRef<HTMLDivElement>(null);
+  // Control que tenía el foco al abrir. Radix solo devuelve el foco a su
+  // propio `Trigger`; los paneles controlados (abiertos con `open`) lo
+  // perdían al cerrar y el teclado volvía al inicio de la página.
+  const returnFocus = useRef<HTMLElement | null>(null);
+  const resolvedSize = size ?? (extraWide ? "xl" : wide ? "lg" : "md");
+  const handleOpenChange = (next: boolean) => {
+    if (!next && busy) return;
+    onOpenChange?.(next);
+  };
   const drag = useRef<{ y0: number; dy: number; lastY: number; lastT: number } | null>(null);
 
   function onPointerDown(event: React.PointerEvent) {
-    if (event.button > 0 || window.innerWidth >= 768) return;
+    if (event.button > 0 || busy || window.innerWidth >= 768) return;
     if ((event.target as Element).closest("button")) return;
     const el = contentRef.current;
     if (!el) return;
@@ -79,7 +106,7 @@ export function ResponsiveSheet({
     const velocity = (event.clientY - state.lastY) / Math.max(1, performance.now() - state.lastT);
     if (state.dy > 110 || (state.dy > 30 && velocity > 0.45)) {
       el.style.animation = "";
-      onOpenChange?.(false);
+      handleOpenChange(false);
       return;
     }
     el.style.transition = "transform 480ms cubic-bezier(.32,1.35,.5,1)";
@@ -99,18 +126,23 @@ export function ResponsiveSheet({
   };
 
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
+    <DialogPrimitive.Root open={open} onOpenChange={handleOpenChange}>
       {trigger ? <DialogPrimitive.Trigger asChild>{trigger}</DialogPrimitive.Trigger> : null}
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className={styles.scrim} />
         <DialogPrimitive.Content
           ref={contentRef}
           {...(description ? {} : { "aria-describedby": undefined })}
+          aria-busy={busy || undefined}
+          data-size={resolvedSize}
+          data-variant={drawer ? "drawer" : "dialog"}
           onOpenAutoFocus={(event) => {
             // PC: al primer campo (o al marcado con data-autofocus). Móvil: al
             // panel, para no abrir el teclado sin que el usuario lo pida.
             const content = contentRef.current;
             if (!content) return;
+            const previous = document.activeElement;
+            returnFocus.current = previous instanceof HTMLElement && !content.contains(previous) ? previous : null;
             event.preventDefault();
             const field =
               window.innerWidth >= 768
@@ -118,11 +150,20 @@ export function ResponsiveSheet({
                 : null;
             (field ?? content).focus({ preventScroll: true });
           }}
+          onCloseAutoFocus={(event) => {
+            if (trigger) return; // Radix ya enfoca su Trigger.
+            event.preventDefault();
+            const target = returnFocus.current;
+            returnFocus.current = null;
+            if (target?.isConnected) target.focus({ preventScroll: true });
+          }}
           className={cn(
             styles.sheet,
             drawer && styles.drawer,
-            wide && styles.wide,
-            extraWide && styles.extraWide,
+            !drawer && resolvedSize === "sm" && styles.narrow,
+            !drawer && resolvedSize === "lg" && styles.wide,
+            !drawer && resolvedSize === "xl" && styles.extraWide,
+            drawer && resolvedSize !== "md" && styles.drawerWide,
             className,
           )}
         >
@@ -142,7 +183,8 @@ export function ResponsiveSheet({
             </div>
             <DialogPrimitive.Close
               aria-label="Cerrar"
-              className="grid size-10 shrink-0 place-items-center rounded-md text-foreground transition-colors hover:bg-surface-muted"
+              disabled={busy}
+              className="grid size-10 shrink-0 place-items-center rounded-md text-foreground transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-40"
             >
               <X aria-hidden="true" className="size-[18px]" />
             </DialogPrimitive.Close>

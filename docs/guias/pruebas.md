@@ -2,7 +2,7 @@
 
 [← Guías](README.md)
 
-NEXUS tiene tres capas de verificación. Las tres corren en el CI
+NEXUS tiene cuatro capas de verificación. Las tres primeras corren en el CI
 (`.github/workflows/ci.yml`) en cada PR y en cada push a `main`.
 
 | Capa | Qué comprueba | Comando | Necesita base |
@@ -10,6 +10,7 @@ NEXUS tiene tres capas de verificación. Las tres corren en el CI
 | Estática | Tipos y reglas de lint (incluidas las de arquitectura) | `pnpm exec tsc --noEmit` · `pnpm lint` | No |
 | Unitaria | Reglas puras: permisos, cálculos, validaciones, y pruebas que leen el código (arquitectura) | `pnpm test` | No |
 | Integración | Lo que pasa contra Postgres de verdad: dinero, aislamiento, invitaciones, construcción | `pnpm test:integration` | Sí, una aparte |
+| Navegador | Componentes compartidos en Storybook: diálogos, paneles, foco, teclado, táctil, movimiento reducido y axe (WCAG 2.2 AA). Aún no en el CI | `pnpm test:e2e` | No |
 
 `pnpm verify` corre todo seguido, más el build.
 
@@ -27,6 +28,17 @@ pnpm install
 ```bash
 export NODE_OPTIONS=--max-old-space-size=4096
 ```
+
+### Navegador de pruebas (Playwright)
+
+```bash
+pnpm exec playwright install chromium   # una vez
+pnpm test:e2e                            # construye Storybook y corre e2e/
+```
+
+Las pruebas viven en `e2e/` y abren historias de Storybook
+(`/iframe.html?id=…`). Corren en dos perfiles: escritorio (1280 × 800) y
+móvil (Pixel 7, táctil).
 
 ### Base de pruebas
 

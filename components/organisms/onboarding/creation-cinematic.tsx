@@ -51,7 +51,7 @@ export function CreationCinematic({
       role="dialog"
       aria-modal="true"
       aria-label={welcome ? `Bienvenido a Thrive ${planName}` : "Creando tu negocio"}
-      className="fixed inset-0 z-[120] grid place-items-center overflow-hidden bg-ink text-white motion-safe:animate-[nx-view-in_.5s_var(--nx-ease-out)]"
+      className="fixed inset-0 z-(--z-takeover) grid place-items-center overflow-hidden bg-ink text-white motion-safe:animate-[nx-view-in_.5s_var(--nx-ease-out)]"
     >
       <div
         aria-hidden="true"

@@ -62,3 +62,8 @@ docs/prod-sql/*limpieza*.sql
 
 # graphify: grafo de conocimiento generado (graphify update .)
 graphify-out/
+
+# Playwright
+/test-results
+/playwright-report
+/blob-report

@@ -123,7 +123,7 @@ export function QrScanner({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[120] grid place-items-center bg-ink/80 p-4" role="dialog" aria-label="Escanear código QR">
+    <div className="fixed inset-0 z-(--z-takeover) grid place-items-center bg-ink/80 p-4" role="dialog" aria-label="Escanear código QR">
       <div className="grid w-full max-w-md gap-3 rounded-xl border border-border bg-surface p-4">
         <div className="flex items-center justify-between">
           <p className="font-display text-[15px] font-semibold">Apunta al código QR</p>

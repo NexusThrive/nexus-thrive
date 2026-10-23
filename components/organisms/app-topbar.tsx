@@ -40,7 +40,7 @@ export function AppTopbar({ actions }: { actions?: ReactNode }) {
     <header
       data-app-topbar=""
       className={cn(
-        "sticky top-[env(safe-area-inset-top,0px)] z-40 flex h-[var(--topbar-height)] items-center gap-2.5 border-b px-[max(16px,env(safe-area-inset-left,0px))] backdrop-blur-[14px] backdrop-saturate-[1.4] transition-[border-color] duration-200 md:px-6 xl:px-8",
+        "sticky top-[env(safe-area-inset-top,0px)] z-(--z-sticky) flex h-[var(--topbar-height)] items-center gap-2.5 border-b px-[max(16px,env(safe-area-inset-left,0px))] backdrop-blur-[14px] backdrop-saturate-[1.4] transition-[border-color] duration-200 md:px-6 xl:px-8",
         "bg-glass",
         scrolled ? "border-border" : "border-transparent",
       )}
