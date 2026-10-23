@@ -3,11 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
 import { cleanProfile, membershipTypeFor, profileFor } from "@/lib/business/customer-fields";
-import { addAttachment, addCashMovement, assignReceiptNumber, checkAttachment, currentCashSession } from "@/lib/business/finance-db";
+import { addAttachment, checkAttachment } from "@/lib/business/finance-db";
 import { getProduct } from "@/lib/business/products-db";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import { bogotaEndOfDay, bogotaStartOfDay, bogotaToday, computeMembershipStatus } from "@/lib/business/memberships";
 import { requireTenantContext } from "@/lib/tenant/context";
+import { moneyTransaction, recordIncome } from "@/lib/business/money-service";
+import { can } from "@/lib/business/permissions";
 
 export type CustomerSaveResult = { ok: true; id: string; message: string } | { ok: false; message: string; errors?: Record<string, string> };
 
@@ -110,30 +112,40 @@ export async function saveCustomerAction(form: FormData): Promise<CustomerSaveRe
       const endInstant = bogotaEndOfDay({ year: endDate.getUTCFullYear(), month: endDate.getUTCMonth() + 1, day: endDate.getUTCDate() });
       const now = Temporal.Instant.fromEpochMilliseconds(Date.now());
       const method = String(form.get("paymentMethod") ?? "");
-      const pay = PAYMENT_METHODS.some((m) => m.value === method);
-      const membership = await db.orm.public.Membership.create({
-        tenantId: ctx.tenantId,
-        customerId: customerId!,
-        type: membershipTypeFor(plan.durationDays),
-        startDate: startInstant,
-        endDate: endInstant,
-        status: computeMembershipStatus(endInstant, now),
-        price: plan.price.toFixed(2),
-        payments: pay ? [{ kind: "inicial", date: new Date().toISOString(), amount: plan.price.toFixed(2), provider: method }] : [],
+      // Cobrar exige manejar dinero (SEC-05): sin ese permiso se inscribe sin cobro.
+      const pay = PAYMENT_METHODS.some((m) => m.value === method) && can(ctx.role, "money.handle");
+      // Membresía y cobro (recibo y caja) juntos o nada: lib/business/money-service.ts.
+      await moneyTransaction(async (tx) => {
+        const membership = await tx.orm.public.Membership.create({
+          tenantId: ctx.tenantId,
+          customerId: customerId!,
+          type: membershipTypeFor(plan.durationDays!),
+          startDate: startInstant,
+          endDate: endInstant,
+          status: computeMembershipStatus(endInstant, now),
+          price: plan.price.toFixed(2),
+          payments: pay ? [{ kind: "inicial", date: new Date().toISOString(), amount: plan.price.toFixed(2), provider: method }] : [],
+        });
+        if (pay) {
+          await recordIncome(
+            tx,
+            ctx.tenantId,
+            {
+              amount: plan.price,
+              method,
+              customerId: customerId!,
+              membershipId: membership.id,
+              description: `${plan.name} — inscripción`,
+              cashDescription: `${plan.name} — ${name}`,
+              sourceType: "MEMBERSHIP",
+              sourceId: membership.id,
+            },
+            ctx.memberId,
+          );
+        }
       });
       extra = ` con ${plan.name}`;
-      if (pay) {
-        const p = await db.orm.public.Payment.create({ tenantId: ctx.tenantId, customerId: customerId!, membershipId: membership.id, provider: method as "CASH", status: "APPROVED", amount: plan.price.toFixed(2), description: `${plan.name} — inscripción`, sourceType: "MEMBERSHIP", sourceId: membership.id });
-        await assignReceiptNumber(ctx.tenantId, p.id);
-        if (method === "CASH") {
-          const cash = await currentCashSession(ctx.tenantId);
-          if (cash) {
-            await db.orm.public.Payment.where({ tenantId: ctx.tenantId, id: p.id }).update({ cashSessionId: cash.sessionId });
-            await addCashMovement(ctx.tenantId, { sessionId: cash.sessionId, kind: "INCOME", amount: plan.price, description: `${plan.name} — ${name}`, paymentId: p.id }, ctx.memberId);
-          }
-        }
-        extra += " y su pago";
-      }
+      if (pay) extra += " y su pago";
     }
   }
   revalidatePath(`/${slug}/crm`);

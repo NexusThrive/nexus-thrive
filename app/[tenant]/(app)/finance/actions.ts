@@ -7,7 +7,7 @@ import { getAppBaseUrl } from "@/lib/app-url";
 import { formatCurrency } from "@/lib/format";
 import { receiptCode } from "@/lib/business/invoice";
 import { canHandleCash } from "@/lib/business/roles";
-import { addAttachment, addCashMovement, assignReceiptNumber, checkAttachment, currentCashSession, receiptToken } from "@/lib/business/finance-db";
+import { addAttachment, addCashMovement, checkAttachment, currentCashSession, receiptToken } from "@/lib/business/finance-db";
 import {
   validateExpense,
   validatePayment,
@@ -16,6 +16,7 @@ import {
   type PaymentFieldErrors,
   type PaymentFormValues,
 } from "./validators";
+import { recordIncomeNow } from "@/lib/business/money-service";
 
 export type PaymentFormState = {
   status: "idle" | "error" | "ok";
@@ -105,24 +106,14 @@ export async function createPaymentAction(
     }
   }
 
-  const created = await tenantDb.payments.create({
-    customerId: customerId || null,
-    provider,
-    status,
-    amount,
-    providerRefId: providerRefId || null,
-    description: description || null,
-  });
-
-  // Recibo consecutivo del negocio y, si fue en efectivo con caja abierta, entra a la caja.
-  const number = await assignReceiptNumber(context.tenantId, created.id);
-  if (provider === "CASH" && status === "APPROVED") {
-    const cash = await currentCashSession(context.tenantId);
-    if (cash) {
-      await db.orm.public.Payment.where({ tenantId: context.tenantId, id: created.id }).update({ cashSessionId: cash.sessionId });
-      await addCashMovement(context.tenantId, { sessionId: cash.sessionId, kind: "INCOME", amount: Number(amount), description: description || `Recibo ${receiptCode(number)}`, paymentId: created.id }, context.memberId);
-    }
-  }
+  // Pago, recibo consecutivo y (en efectivo con caja abierta) la caja, en una
+  // sola transacción: ver lib/business/money-service.ts.
+  const created = await recordIncomeNow(
+    context.tenantId,
+    { amount, method: provider, status, providerRefId: providerRefId || null, description: description || null, customerId: customerId || null },
+    context.memberId,
+  );
+  const number = created.receiptNumber;
 
   revalidatePath(`/${tenantSlug}/finance`);
   revalidatePath(`/${tenantSlug}`);
@@ -131,8 +122,8 @@ export async function createPaymentAction(
     receipt: {
       reference: receiptCode(number),
       createdAt: String(created.createdAt),
-      paymentId: created.id,
-      link: `${await getAppBaseUrl()}/r/${receiptToken(created.id)}`,
+      paymentId: created.paymentId,
+      link: `${await getAppBaseUrl()}/r/${receiptToken(created.paymentId)}`,
     },
   };
 }
@@ -197,26 +188,15 @@ export async function registerScannedPaymentAction(
     }
   }
 
-  const created = await tenantDb.payments.create({
-    customerId: customerId || null,
-    provider,
-    status: "APPROVED",
-    amount,
-    providerRefId: providerRefId || null,
-    description: description || null,
-  });
-
-  const number = await assignReceiptNumber(context.tenantId, created.id);
-  if (provider === "CASH") {
-    const cash = await currentCashSession(context.tenantId);
-    if (cash) {
-      await db.orm.public.Payment.where({ tenantId: context.tenantId, id: created.id }).update({ cashSessionId: cash.sessionId });
-      await addCashMovement(context.tenantId, { sessionId: cash.sessionId, kind: "INCOME", amount: Number(amount), description: description || `Recibo ${receiptCode(number)}`, paymentId: created.id }, context.memberId);
-    }
-  }
+  const created = await recordIncomeNow(
+    context.tenantId,
+    { amount, method: provider, providerRefId: providerRefId || null, description: description || null, customerId: customerId || null },
+    context.memberId,
+  );
+  const number = created.receiptNumber;
 
   // Soporte: la foto del comprobante (Nequi, transferencia, etc.).
-  await addAttachment(context.tenantId, "PAYMENT", created.id, photo, context.memberId);
+  await addAttachment(context.tenantId, "PAYMENT", created.paymentId, photo, context.memberId);
 
   revalidatePath(`/${tenantSlug}/finance`);
   revalidatePath(`/${tenantSlug}`);
@@ -225,8 +205,8 @@ export async function registerScannedPaymentAction(
     receipt: {
       reference: receiptCode(number),
       createdAt: String(created.createdAt),
-      paymentId: created.id,
-      link: `${await getAppBaseUrl()}/r/${receiptToken(created.id)}`,
+      paymentId: created.paymentId,
+      link: `${await getAppBaseUrl()}/r/${receiptToken(created.paymentId)}`,
     },
   };
 }

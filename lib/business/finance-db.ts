@@ -101,20 +101,11 @@ export function verifyReceiptToken(token: string): string | null {
   return receiptToken(id) === token ? id : null;
 }
 
-/** Anula un pago (no se borra). Si entró en efectivo a una caja abierta, la caja lo devuelve. */
-export async function voidPayment(tenantId: string, paymentId: string, reason: string, userId: string) {
-  const p = await db.orm.public.Payment.where({ tenantId, id: paymentId }).first();
-  if (!p) return { ok: false as const, message: "El pago no existe." };
-  if (p.status === "VOIDED") return { ok: false as const, message: "El pago ya está anulado." };
-  await db.orm.public.Payment.where({ tenantId, id: paymentId }).update({ status: "VOIDED", voidedAt: now(), voidReason: reason });
-  if (p.cashSessionId) {
-    const s = await db.orm.public.CashSession.where({ tenantId, id: p.cashSessionId }).select("closedAt").first();
-    if (s && !s.closedAt) {
-      await db.orm.public.CashMovement.create({ tenantId, sessionId: p.cashSessionId, kind: "ADJUST", amount: dec(-toNumber(p.amount)), description: `Anulación de recibo R-${String(p.receiptNumber ?? 0).padStart(6, "0")}`, paymentId, createdById: userId });
-    }
-  }
-  return { ok: true as const };
-}
+/**
+ * Anula un pago (no se borra), una sola vez. Si entró en efectivo a una caja
+ * abierta, la caja lo devuelve. Transaccional: ver `lib/business/money-service.ts`.
+ */
+export { voidPayment } from "./money-service";
 
 // --- Caja menor ---------------------------------------------------------------
 

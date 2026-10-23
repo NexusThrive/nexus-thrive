@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createTenantDb } from "@/lib/tenant/db";
 import { formatDateShort } from "@/lib/format";
 import { recordCharge } from "@/lib/business/charge";
+import { moneyTransaction } from "@/lib/business/money-service";
 import { can } from "@/lib/business/permissions";
 import {
   addMonths,
@@ -146,32 +147,36 @@ export async function createMembershipAction(
       ]
     : [];
 
-  const membership = await tenantDb.memberships.create({
-    customerId,
-    type,
-    startDate: startInstant,
-    endDate: endInstant,
-    status,
-    price: priceAmount,
-    payments: paymentEntry,
+  // La membresía y su cobro inicial (recibo consecutivo; en efectivo entra a
+  // la caja abierta) pasan juntos o no pasan: lib/business/money-service.ts.
+  await moneyTransaction(async (tx) => {
+    const membership = await tx.orm.public.Membership.create({
+      tenantId: tenantDb.tenantId,
+      customerId,
+      type,
+      startDate: startInstant,
+      endDate: endInstant,
+      status,
+      price: priceAmount,
+      payments: paymentEntry,
+    });
+    if (registerInitialPayment) {
+      await recordCharge(
+        tenantDb.tenantId,
+        {
+          customerId,
+          membershipId: membership.id,
+          method: provider,
+          amount: Number(priceAmount),
+          description: `Membresía ${typeLabel(type)} — cobro inicial`,
+          sourceType: "MEMBERSHIP",
+          sourceId: membership.id,
+        },
+        tenantDb.memberId,
+        tx,
+      );
+    }
   });
-
-  if (registerInitialPayment) {
-    // Cobro con recibo consecutivo; en efectivo entra a la caja abierta.
-    await recordCharge(
-      tenantDb.tenantId,
-      {
-        customerId,
-        membershipId: membership.id,
-        method: provider,
-        amount: Number(priceAmount),
-        description: `Membresía ${typeLabel(type)} — cobro inicial`,
-        sourceType: "MEMBERSHIP",
-        sourceId: membership.id,
-      },
-      tenantDb.memberId,
-    );
-  }
 
   revalidateMembershipViews(tenantSlug);
   return { status: "ok" };
@@ -238,27 +243,30 @@ export async function renewMembershipAction(
     },
   ];
 
-  await tenantDb.memberships.update(membershipId, {
-    endDate: newEndInstant,
-    status: newStatus,
-    payments: history,
+  // Renovación y cobro, juntos o nada.
+  await moneyTransaction(async (tx) => {
+    await tx.orm.public.Membership.where({ id: membershipId, tenantId: tenantDb.tenantId }).update({
+      endDate: newEndInstant,
+      status: newStatus,
+      payments: history,
+    });
+    if (registerPayment) {
+      await recordCharge(
+        tenantDb.tenantId,
+        {
+          customerId: membership.customerId,
+          membershipId,
+          method: provider,
+          amount: Number(priceAmount),
+          description: `Membresía ${typeLabel(membership.type)} — renovación`,
+          sourceType: "MEMBERSHIP",
+          sourceId: membershipId,
+        },
+        tenantDb.memberId,
+        tx,
+      );
+    }
   });
-
-  if (registerPayment) {
-    await recordCharge(
-      tenantDb.tenantId,
-      {
-        customerId: membership.customerId,
-        membershipId,
-        method: provider,
-        amount: Number(priceAmount),
-        description: `Membresía ${typeLabel(membership.type)} — renovación`,
-        sourceType: "MEMBERSHIP",
-        sourceId: membershipId,
-      },
-      tenantDb.memberId,
-    );
-  }
 
   revalidateMembershipViews(tenantSlug);
   return {

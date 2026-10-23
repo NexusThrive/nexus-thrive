@@ -4,6 +4,7 @@ import { toNumber } from "@/lib/format";
 import { bogotaDayKey } from "@/lib/finance/series";
 import { addDaysKey, bogotaToMs } from "./calendar";
 import { recordCharge } from "./charge";
+import { payTicketSale as payTicketSaleOnce } from "./money-service";
 import { voidPayment, withNextNumber } from "./finance-db";
 import { listProducts } from "./products-db";
 import { museumSettings, saleKindLabel, slotLoads, ticketCode, validateTicketSale, type MuseumSettings, type SaleLike, type TicketLineInput } from "./museum";
@@ -147,14 +148,8 @@ export async function createTicketSale(tenantId: string, input: NewSale, userId:
 
 /** Cobra una reserva de grupo (pasa a pagada y confirma la visita en la agenda). */
 export async function payTicketSale(tenantId: string, id: string, method: string, userId: string) {
-  const s = await db.orm.public.TicketSale.where({ tenantId, id }).first();
-  if (!s) return { ok: false as const, message: "La venta no existe." };
-  if (s.status !== "RESERVED") return { ok: false as const, message: s.status === "PAID" ? "Ya está pagada." : "La venta está anulada." };
-  const total = toNumber(s.total);
-  const charge = await recordCharge(tenantId, { amount: total, method, customerId: s.customerId, description: `Taquilla ${ticketCode(s.number)} · ${s.visitors} entradas · ${s.slot}`, sourceType: "TICKET_SALE", sourceId: s.id }, userId);
-  await db.orm.public.TicketSale.where({ tenantId, id }).update({ status: "PAID", paymentId: charge.paymentId });
-  if (s.bookingId) await db.orm.public.Booking.where({ tenantId, id: s.bookingId }).update({ status: "CONFIRMED", updatedAt: instant(Date.now()) });
-  return { ok: true as const, receipt: charge.receipt };
+  // Una sola vez y en una transacción (lib/business/money-service.ts): dos clics no cobran dos veces.
+  return payTicketSaleOnce(tenantId, id, method, userId, (s) => `Taquilla ${ticketCode(s.number)} · ${s.visitors} entradas · ${s.slot}`);
 }
 
 /** Anula: libera el aforo, anula el cobro (si entró a caja, la caja lo devuelve) y cancela la visita. */
