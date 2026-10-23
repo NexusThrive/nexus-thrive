@@ -33,11 +33,14 @@ function since(iso: string): string {
 
 /**
  * "Prioridades de hoy": lo que el equipo debe atender al entrar, antes de
- * cualquier gráfico. Cada grupo muestra hasta 5 negocios con su motivo y
- * lleva a la ficha; vacío, confirma que no hay nada pendiente.
+ * cualquier gráfico. Solo se muestran como tarjeta los grupos con pendientes
+ * (hasta 5 filas, con su motivo y enlace); los que están al día se resumen en
+ * una línea para no empujar hacia abajo lo que sí pide acción.
  */
 export function PriorityBoard({ groups }: { groups: PriorityGroup[] }) {
   const total = groups.reduce((n, g) => n + g.items.length, 0);
+  const pending = groups.filter((g) => g.items.length > 0);
+  const clear = groups.filter((g) => g.items.length === 0);
   return (
     <section aria-labelledby="prioridades" className="grid gap-3">
       <div className="flex items-baseline justify-between gap-3">
@@ -46,8 +49,14 @@ export function PriorityBoard({ groups }: { groups: PriorityGroup[] }) {
         </h2>
         <span className="font-mono text-xs text-muted-foreground">{total} pendientes</span>
       </div>
+      {pending.length === 0 ? (
+        <p className="flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-4 text-[13px] text-muted-foreground">
+          <CheckCircle2 aria-hidden="true" className="size-4 text-success" />
+          Todo al día: no hay nada pendiente.
+        </p>
+      ) : null}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        {groups.map((g) => (
+        {pending.map((g) => (
           <div key={g.key} className="flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-surface">
             <div className="flex items-center gap-2.5 border-b border-border px-4 py-3">
               <g.icon aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.7} />
@@ -64,41 +73,40 @@ export function PriorityBoard({ groups }: { groups: PriorityGroup[] }) {
                 {g.items.length}
               </span>
             </div>
-            {g.items.length ? (
-              <ul className="divide-y divide-border">
-                {g.items.slice(0, 5).map((it) => {
-                  const Icon = it.vertical ? getVerticalIcon(it.vertical).icon : (g.itemIcon ?? CircleDot);
-                  return (
-                    <li key={it.id}>
-                      <Link href={it.href ?? `/admin/negocios/${it.id}`} className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-surface-muted">
-                        <i aria-hidden="true" className={cn("block size-1.5 shrink-0", TONE[g.tone])} />
-                        <Icon aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
-                        <span className="min-w-0 flex-1">
-                          <b className="block truncate text-[13.5px] font-medium">{it.name}</b>
-                          <small className="block truncate text-xs text-muted-foreground">{it.detail}</small>
-                        </span>
-                        <small className="shrink-0 text-xs text-muted-foreground">{since(it.at)}</small>
-                      </Link>
-                    </li>
-                  );
-                })}
-                {g.items.length > 5 && g.href ? (
-                  <li>
-                    <Link href={g.href} className="block px-4 py-2 text-xs font-semibold text-accent-text">
-                      Ver los {g.items.length} →
+            <ul className="divide-y divide-border">
+              {g.items.slice(0, 5).map((it) => {
+                const Icon = it.vertical ? getVerticalIcon(it.vertical).icon : (g.itemIcon ?? CircleDot);
+                return (
+                  <li key={it.id}>
+                    <Link href={it.href ?? `/admin/negocios/${it.id}`} className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-surface-muted">
+                      <i aria-hidden="true" className={cn("block size-1.5 shrink-0", TONE[g.tone])} />
+                      <Icon aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+                      <span className="min-w-0 flex-1">
+                        <b className="block truncate text-[13.5px] font-medium">{it.name}</b>
+                        <small className="block truncate text-xs text-muted-foreground">{it.detail}</small>
+                      </span>
+                      <small className="shrink-0 text-xs text-muted-foreground">{since(it.at)}</small>
                     </Link>
                   </li>
-                ) : null}
-              </ul>
-            ) : (
-              <p className="flex items-center gap-2 px-4 py-4 text-[13px] text-muted-foreground">
-                <CheckCircle2 aria-hidden="true" className="size-4 text-success" />
-                Nada pendiente.
-              </p>
-            )}
+                );
+              })}
+              {g.items.length > 5 && g.href ? (
+                <li>
+                  <Link href={g.href} className="block px-4 py-2 text-xs font-semibold text-accent-text">
+                    Ver los {g.items.length} →
+                  </Link>
+                </li>
+              ) : null}
+            </ul>
           </div>
         ))}
       </div>
+      {pending.length > 0 && clear.length > 0 ? (
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+          <CheckCircle2 aria-hidden="true" className="size-3.5 text-success" />
+          Al día: {clear.map((g) => g.title).join(" · ")}
+        </p>
+      ) : null}
     </section>
   );
 }

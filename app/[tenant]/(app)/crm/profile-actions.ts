@@ -86,8 +86,9 @@ export async function saveCustomerAction(form: FormData): Promise<CustomerSaveRe
     tags,
     profile: profile.ok ? profile.value : {},
   };
-  const customerId = await saveCustomer(ctx.tenantId, id, data);
-  if (!customerId) return { ok: false, message: "No se encontró." };
+  const saved = await saveCustomer(ctx.tenantId, id, data);
+  if (!saved.ok) return { ok: false, message: saved.message };
+  const customerId = saved.id;
   if (photo instanceof File && photo.size > 0) {
     const photoId = await addAttachment(ctx.tenantId, "CUSTOMER_PHOTO", customerId, photo, ctx.memberId);
     await setCustomerPhoto(ctx.tenantId, customerId, photoId);

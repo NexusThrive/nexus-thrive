@@ -1,0 +1,97 @@
+[
+  {
+    "id": "dropCheckConstraint.TenantModule.TenantModule_moduleName_check_e283a8b3",
+    "label": "Drop check constraint \"TenantModule_moduleName_check_e283a8b3\" on \"TenantModule\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "TenantModule_moduleName_check_e283a8b3",
+        "table": "TenantModule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"TenantModule_moduleName_check_e283a8b3\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "TenantModule_moduleName_check_e283a8b3",
+          "public",
+          "\"public\".\"TenantModule\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"TenantModule_moduleName_check_e283a8b3\"",
+        "sql": "ALTER TABLE \"public\".\"TenantModule\" DROP CONSTRAINT \"TenantModule_moduleName_check_e283a8b3\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"TenantModule_moduleName_check_e283a8b3\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "TenantModule_moduleName_check_e283a8b3",
+          "public",
+          "\"public\".\"TenantModule\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data.TenantModule.quotesToConstruction",
+    "label": "Move the construction suite from the quotes module to construction",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Negocios que pasan a la suite de construcción: constructoras, carpinterías y cualquier negocio que ya tenga obras (no pierde acceso a sus datos).",
+        "sql": "INSERT INTO \"public\".\"TenantModule\" (\"id\", \"tenantId\", \"moduleName\", \"active\", \"createdAt\", \"updatedAt\") SELECT gen_random_uuid()::text, tm.\"tenantId\", 'construction', tm.\"active\", now(), now() FROM \"public\".\"TenantModule\" tm JOIN \"public\".\"Tenant\" t ON t.\"id\" = tm.\"tenantId\" WHERE tm.\"moduleName\" = 'quotes' AND (t.\"vertical\" IN ('construction', 'carpentry') OR EXISTS (SELECT 1 FROM \"public\".\"Project\" p WHERE p.\"tenantId\" = tm.\"tenantId\")) ON CONFLICT (\"tenantId\", \"moduleName\") DO NOTHING"
+      },
+      {
+        "description": "paso 2 de la separación de construcción",
+        "sql": "UPDATE \"public\".\"TenantModule\" SET \"active\" = false, \"updatedAt\" = now() WHERE \"moduleName\" = 'quotes' AND \"active\""
+      },
+      {
+        "description": "paso 3 de la separación de construcción",
+        "sql": "UPDATE \"public\".\"Tenant\" t SET \"contractedModules\" = array_replace(t.\"contractedModules\", 'quotes', 'construction') WHERE 'quotes' = ANY(t.\"contractedModules\") AND (t.\"vertical\" IN ('construction', 'carpentry') OR EXISTS (SELECT 1 FROM \"public\".\"Project\" p WHERE p.\"tenantId\" = t.\"id\"))"
+      },
+      {
+        "description": "paso 4 de la separación de construcción",
+        "sql": "UPDATE \"public\".\"Tenant\" SET \"contractedModules\" = array_remove(\"contractedModules\", 'quotes') WHERE 'quotes' = ANY(\"contractedModules\")"
+      },
+      {
+        "description": "Catálogo: la suite hereda precio, inclusión y orden de \"quotes\", y \"quotes\" queda planeado (la cotización genérica llega con el documento comercial).",
+        "sql": "INSERT INTO \"public\".\"ModuleSetting\" (\"module\", \"label\", \"description\", \"priceUsdCents\", \"status\", \"included\", \"order\", \"updatedAt\") SELECT 'construction', 'Obras y presupuestos', 'Obras, presupuestos y catálogo APU.', \"priceUsdCents\", 'READY', \"included\", \"order\", now() FROM \"public\".\"ModuleSetting\" WHERE \"module\" = 'quotes' ON CONFLICT (\"module\") DO NOTHING"
+      },
+      {
+        "description": "paso 6 de la separación de construcción",
+        "sql": "UPDATE \"public\".\"ModuleSetting\" SET \"status\" = 'PLANNED', \"label\" = 'Cotizaciones', \"description\" = 'Cotizaciones comerciales con tu catálogo (próximamente).', \"updatedAt\" = now() WHERE \"module\" = 'quotes'"
+      },
+      {
+        "description": "paso 7 de la separación de construcción",
+        "sql": "UPDATE \"public\".\"VerticalSetting\" SET \"modules\" = array_replace(\"modules\", 'quotes', 'construction'), \"recommended\" = array_replace(\"recommended\", 'quotes', 'construction'), \"updatedAt\" = now() WHERE \"vertical\" IN ('construction', 'carpentry')"
+      },
+      {
+        "description": "paso 8 de la separación de construcción",
+        "sql": "UPDATE \"public\".\"VerticalSetting\" SET \"modules\" = array_remove(\"modules\", 'quotes'), \"recommended\" = array_remove(\"recommended\", 'quotes'), \"updatedAt\" = now() WHERE \"vertical\" NOT IN ('construction', 'carpentry') AND ('quotes' = ANY(\"modules\") OR 'quotes' = ANY(\"recommended\"))"
+      },
+      {
+        "description": "paso 9 de la separación de construcción",
+        "sql": "UPDATE \"public\".\"BenefitCode\" SET \"modules\" = array_replace(\"modules\", 'quotes', 'construction') WHERE 'quotes' = ANY(\"modules\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify no tenant keeps the quotes module active",
+        "sql": "SELECT NOT EXISTS (SELECT 1 FROM \"public\".\"TenantModule\" WHERE \"moduleName\" = 'quotes' AND \"active\") AS \"result\""
+      }
+    ]
+  }
+]

@@ -3,6 +3,8 @@ import { toNumber } from "@/lib/format";
 import type { PaymentStatusValue } from "@/lib/finance";
 import { applyStock, validateStockMove } from "./inventory";
 import { receiptCode } from "./invoice";
+import type { DocumentLineInput } from "./commercial-document";
+import { insertDocument, issueCreditNote, saleDocumentOfPayment } from "./documents-db";
 
 /**
  * Servicio de dinero (DATA-01 en docs/nexus-architecture/technical-debt.md y
@@ -24,7 +26,9 @@ export type MoneyTx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 /** Regla de negocio que impide el cobro: aborta la transacción con un mensaje para la persona. */
 export class MoneyError extends Error {}
 
-const isReceiptCollision = (e: unknown) => /receiptNumber/i.test(String((e as Error)?.message ?? e));
+// Dos cobros a la vez pueden tomar el mismo recibo o el mismo número de
+// documento de venta: la restricción única falla y se reintenta todo.
+const isReceiptCollision = (e: unknown) => /receiptNumber|Invoice_tenantId_kind_number/i.test(String((e as Error)?.message ?? e));
 
 /** Corre `fn` en una transacción; la reintenta completa si dos cobros toman el mismo recibo. */
 export async function moneyTransaction<T>(fn: (tx: MoneyTx) => Promise<T>): Promise<T> {
@@ -74,9 +78,15 @@ export type IncomeInput = {
   providerRefId?: string | null;
   sourceType?: string | null;
   sourceId?: string | null;
+  /**
+   * Líneas del documento de venta que deja el cobro (por defecto, una línea
+   * con la descripción y el monto). Un cobro de una cuenta de cobro
+   * (`sourceType: "INVOICE"`) no crea otro documento: la cuenta ya lo es.
+   */
+  documentLines?: DocumentLineInput[];
 };
 
-export type Income = { paymentId: string; receiptNumber: number; receipt: string; createdAt: string };
+export type Income = { paymentId: string; receiptNumber: number; receipt: string; createdAt: string; documentId: string | null };
 
 /**
  * Registra un ingreso dentro de `tx`: el pago con su recibo consecutivo y, si
@@ -121,7 +131,33 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
       createdById: userId,
     });
   }
-  return { paymentId: payment.id, receiptNumber, receipt, createdAt: String(payment.createdAt) };
+  // Documento comercial unificado (paso 2): toda venta cobrada deja el mismo
+  // tipo de documento, en la misma transacción que el dinero.
+  let documentId: string | null = null;
+  if (status === "APPROVED" && input.sourceType !== "INVOICE") {
+    const customer = input.customerId
+      ? await tx.orm.public.Customer.where({ tenantId, id: input.customerId }).select("name").first()
+      : null;
+    const doc = await insertDocument(
+      tx,
+      tenantId,
+      {
+        kind: "SALE",
+        status: "PAID",
+        customerId: input.customerId ?? null,
+        customerName: customer?.name ?? "Cliente de mostrador",
+        originType: input.sourceType ?? null,
+        originId: input.sourceId ?? null,
+        paymentId: payment.id,
+        lines: input.documentLines?.length
+          ? input.documentLines
+          : [{ description: input.description || `Recibo ${receipt}`, quantity: 1, unitPrice: Number(amount) }],
+      },
+      userId,
+    );
+    documentId = doc.id;
+  }
+  return { paymentId: payment.id, receiptNumber, receipt, createdAt: String(payment.createdAt), documentId };
 }
 
 /** Un cobro suelto (taquilla, membresías, inscripciones…) en su propia transacción. */
@@ -255,6 +291,7 @@ export async function sellProduct(
           cashDescription: `Venta: ${input.name}`,
           sourceType: "SALE",
           sourceId: input.productId,
+          documentLines: [{ description: input.name, quantity: input.quantity, unitPrice: input.price, productId: input.productId }],
         },
         userId,
       );
@@ -309,6 +346,9 @@ export async function voidPayment(tenantId: string, paymentId: string, reason: s
           });
         }
       }
+      // Anular no borra la venta: emite su nota crédito (documento comercial).
+      const sale = await saleDocumentOfPayment(tx, tenantId, paymentId);
+      if (sale) await issueCreditNote(tx, tenantId, sale.id, reason, userId);
       return { ok: true as const };
     });
   } catch (e) {

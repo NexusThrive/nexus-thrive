@@ -22,7 +22,7 @@ export default async function PlanesPage() {
   return (
     <div className="grid gap-5">
       <PageHeader
-        eyebrow="Administración"
+        eyebrow="Producto"
         title="Planes y módulos"
         description="Precios, planes, módulos y rubros que ve cada negocio al registrarse. Los cambios aplican de inmediato a los registros nuevos."
       />

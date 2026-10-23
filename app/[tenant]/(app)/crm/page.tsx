@@ -109,7 +109,7 @@ export default async function CrmPage({
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Gestión"
+        eyebrow="Clientes y operación"
         title={
           <span className="inline-flex items-baseline gap-2.5">
             {terms.customers}

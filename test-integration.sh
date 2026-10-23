@@ -38,6 +38,7 @@ pnpm exec vitest run --testTimeout=20000 --no-file-parallelism \
   lib/tenant/deletion.integration.test.ts \
   lib/business/qr-read.integration.test.ts \
   lib/business/money-service.integration.test.ts \
+  lib/business/documents.integration.test.ts \
   lib/tenant/db.integration.test.ts \
   lib/prisma8-query-patterns.integration.test.ts \
   lib/tenant/db.cache-invalidation.test.ts \

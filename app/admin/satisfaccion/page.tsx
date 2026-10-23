@@ -30,7 +30,7 @@ export default async function SatisfaccionPage() {
 
   return (
     <div className="grid gap-5">
-      <PageHeader eyebrow="Clientes" title="Satisfacción" description="Encuestas que se generan al resolver cada ticket. CSAT = % de calificaciones 4 y 5." />
+      <PageHeader eyebrow="Comercial" title="Satisfacción" description="Encuestas que se generan al resolver cada ticket. CSAT = % de calificaciones 4 y 5." />
       <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
         <KpiCard label="CSAT" value={csat(scores) == null ? "—" : `${csat(scores)} %`} hint={`${answered.length} respuestas`} index={0} />
         <KpiCard label="NPS" value={nps(npsScores) == null ? "—" : String(nps(npsScores))} hint="Promotores − detractores" index={1} />

@@ -8,7 +8,7 @@
  */
 
 import { db } from "@/prisma/db";
-import { sortModules, type ModuleValue } from "@/lib/admin/catalogs";
+import { isModule, sortModules } from "@/lib/admin/catalogs";
 import {
   EMPTY_DRAFT,
   type OnboardingDraft,
@@ -57,7 +57,8 @@ function tenantToDraft(tenant: TenantForDraft): OnboardingDraft {
     selectedModules: sortModules(
       tenant.modules
         .filter((module) => module.active)
-        .map((module) => module.moduleName as ModuleValue),
+        .map((module) => module.moduleName)
+        .filter(isModule),
     ),
     plan: tenant.plan ?? "ESSENTIAL",
     billing: tenant.billingCycle ?? "MONTHLY",

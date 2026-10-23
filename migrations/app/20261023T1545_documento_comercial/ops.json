@@ -1,0 +1,479 @@
+[
+  {
+    "id": "column.public.Invoice.discountTotal",
+    "label": "Add column \"discountTotal\" to \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "discountTotal",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"discountTotal\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "discountTotal"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"discountTotal\"",
+        "sql": "ALTER TABLE \"public\".\"Invoice\" ADD COLUMN \"discountTotal\" numeric DEFAULT '0'::numeric NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"discountTotal\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "discountTotal"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Invoice.originId",
+    "label": "Add column \"originId\" to \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "originId",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"originId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "originId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"originId\"",
+        "sql": "ALTER TABLE \"public\".\"Invoice\" ADD COLUMN \"originId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"originId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "originId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Invoice.originType",
+    "label": "Add column \"originType\" to \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "originType",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"originType\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "originType"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"originType\"",
+        "sql": "ALTER TABLE \"public\".\"Invoice\" ADD COLUMN \"originType\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"originType\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "originType"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Invoice.paymentId",
+    "label": "Add column \"paymentId\" to \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "paymentId",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"paymentId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "paymentId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"paymentId\"",
+        "sql": "ALTER TABLE \"public\".\"Invoice\" ADD COLUMN \"paymentId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"paymentId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "paymentId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Invoice.sourceDocumentId",
+    "label": "Add column \"sourceDocumentId\" to \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sourceDocumentId",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sourceDocumentId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "sourceDocumentId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sourceDocumentId\"",
+        "sql": "ALTER TABLE \"public\".\"Invoice\" ADD COLUMN \"sourceDocumentId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sourceDocumentId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "sourceDocumentId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Invoice.subtotal",
+    "label": "Add column \"subtotal\" to \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "subtotal",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"subtotal\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "subtotal"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"subtotal\"",
+        "sql": "ALTER TABLE \"public\".\"Invoice\" ADD COLUMN \"subtotal\" numeric DEFAULT '0'::numeric NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"subtotal\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "subtotal"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Invoice.taxTotal",
+    "label": "Add column \"taxTotal\" to \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "taxTotal",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"taxTotal\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "taxTotal"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"taxTotal\"",
+        "sql": "ALTER TABLE \"public\".\"Invoice\" ADD COLUMN \"taxTotal\" numeric DEFAULT '0'::numeric NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"taxTotal\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "taxTotal"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.InvoiceLine.discountPct",
+    "label": "Add column \"discountPct\" to \"InvoiceLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "discountPct",
+        "table": "InvoiceLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"discountPct\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "InvoiceLine",
+          "discountPct"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"discountPct\"",
+        "sql": "ALTER TABLE \"public\".\"InvoiceLine\" ADD COLUMN \"discountPct\" numeric DEFAULT '0'::numeric NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"discountPct\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "InvoiceLine",
+          "discountPct"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.InvoiceLine.taxRatePct",
+    "label": "Add column \"taxRatePct\" to \"InvoiceLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "taxRatePct",
+        "table": "InvoiceLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"taxRatePct\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "InvoiceLine",
+          "taxRatePct"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"taxRatePct\"",
+        "sql": "ALTER TABLE \"public\".\"InvoiceLine\" ADD COLUMN \"taxRatePct\" numeric DEFAULT '0'::numeric NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"taxRatePct\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "InvoiceLine",
+          "taxRatePct"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Invoice.Invoice_sourceDocumentId_idx_bd8eb82f",
+    "label": "Create index \"Invoice_sourceDocumentId_idx_bd8eb82f\" on \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Invoice_sourceDocumentId_idx_bd8eb82f",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Invoice_sourceDocumentId_idx_bd8eb82f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Invoice_sourceDocumentId_idx_bd8eb82f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Invoice_sourceDocumentId_idx_bd8eb82f\"",
+        "sql": "CREATE INDEX \"Invoice_sourceDocumentId_idx_bd8eb82f\" ON \"public\".\"Invoice\" (\"sourceDocumentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Invoice_sourceDocumentId_idx_bd8eb82f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Invoice_sourceDocumentId_idx_bd8eb82f\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Invoice.Invoice_tenantId_issueDate_idx_33d250ce",
+    "label": "Create index \"Invoice_tenantId_issueDate_idx_33d250ce\" on \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Invoice_tenantId_issueDate_idx_33d250ce",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Invoice_tenantId_issueDate_idx_33d250ce\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Invoice_tenantId_issueDate_idx_33d250ce\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Invoice_tenantId_issueDate_idx_33d250ce\"",
+        "sql": "CREATE INDEX \"Invoice_tenantId_issueDate_idx_33d250ce\" ON \"public\".\"Invoice\" (\"tenantId\", \"issueDate\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Invoice_tenantId_issueDate_idx_33d250ce\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Invoice_tenantId_issueDate_idx_33d250ce\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data.Invoice.subtotal.backfill",
+    "label": "Backfill Invoice.subtotal from total for documents without discounts or taxes",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "subtotal = total where no discount or tax was recorded",
+        "sql": "UPDATE \"public\".\"Invoice\" SET \"subtotal\" = \"total\" WHERE \"subtotal\" = 0 AND \"discountTotal\" = 0 AND \"taxTotal\" = 0 AND \"total\" <> 0"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify every document has subtotal - discount + tax = total",
+        "sql": "SELECT NOT EXISTS (SELECT 1 FROM \"public\".\"Invoice\" WHERE \"subtotal\" - \"discountTotal\" + \"taxTotal\" <> \"total\") AS \"result\""
+      }
+    ]
+  }
+]

@@ -29,10 +29,15 @@ Para no repetir trabajo: la base está estable desde las PR #45 y #46.
 
 ## Lo siguiente
 
-Según el [mapa de capacidades](../.docs/mapa-de-capacidades.md#qué-es-lo-siguiente-en-realidad):
-códigos de activación a medida (§3) en paralelo, y en el producto el
-**documento comercial unificado**, la cartera y el POS de varias líneas, antes
-de la factura electrónica, Nequi y los agentes (§5).
+Según el [mapa de capacidades](../.docs/mapa-de-capacidades.md#qué-es-lo-siguiente-en-realidad).
+Estado al 2026-10-23 (PR #48–#52 y el del documento comercial):
+
+| Paso | Estado |
+|---|---|
+| 0 · Códigos de activación a medida | Hecho (§3), falta visto bueno |
+| 1 · Registro de capacidades y construcción separada | Hecho |
+| 2 · Documento comercial unificado | Servidor hecho (venta al cobrar, nota crédito, conversión, informe del día); **falta la pantalla** |
+| 3–7 · Cartera, POS, datos fiscales, DIAN/Nequi, eventos/API/agente | Diseño propuesto en [propuesta-bloque-b-3-a-7.md](nexus-architecture/propuesta-bloque-b-3-a-7.md) |
 
 ## 1. Tareas cortas que dependen de ti
 
@@ -49,8 +54,8 @@ de la factura electrónica, Nequi y los agentes (§5).
 
 | # | Tarea | Hallazgo | Criterio de terminado |
 |---|---|---|---|
-| 2.1 | Separar la suite de construcción (`construction`) de la cotización genérica (`quotes`). Hoy un mecánico o un guía turístico ve "Catálogo APU" | ARCH-01 | Ningún rubro no constructor ve pantallas APU |
-| 2.2 | Pasar `ModuleName` de enum a texto validado contra un registro de capacidades en código | ADR-0003 | Agregar un módulo toca ≤ 3 archivos |
+| 2.1 | ~~Separar la suite de construcción (`construction`) de la cotización genérica (`quotes`)~~ (hecho: PR «producto: registro de capacidades y separar construcción») | ARCH-01 | Ningún rubro no constructor ve pantallas APU |
+| 2.2 | ~~Pasar `ModuleName` de enum a texto validado contra un registro de capacidades en código~~ (hecho, mismo PR) | ADR-0003 | Agregar un módulo toca ≤ 3 archivos |
 | 2.3 | ~~Sacar las consultas directas a la base de los 42 archivos de `eslint/legacy-db-access.mjs`~~ (hecho: PR «seguridad: sin acceso directo a la base desde app/») | ARCH-04 | La lista vacía |
 | 2.4 | Estados en texto con `CHECK` (`TicketSale.status`, `Invoice.kind`, `StockMovement.kind`…) y FK compuestas `(tenantId, id)` en dinero | DATA-04 | Migración aplicada |
 | 2.5 | Migrar producción desde el despliegue (paso de CI o de Vercel), no a mano | DATA-03 | Nadie corre `prisma db migrate` a mano |
@@ -61,24 +66,19 @@ de la factura electrónica, Nequi y los agentes (§5).
 
 ## 3. Producto inmediato: códigos de activación con precio propio
 
-Hoy un código (`BenefitCode`) solo da **un plan y unos días**. No sirve para
-cobrar a cada cliente lo que se acuerde mientras no haya lista de precios (el
-sistema aún no está presupuestado: costos por negocio y uso por rubro).
+**Hecho (PR «producto: códigos de activación a medida»)**, pendiente de visto
+bueno. Un código (`BenefitCode`) ya no da solo un plan y unos días: en
+*Accesos* (`/admin/beneficios`) se le puede poner un **contrato a medida**.
 
-Propuesta, pendiente de visto bueno:
-
-| Campo nuevo del código | Para qué |
+| Campo del código | Qué hace al canjearse |
 |---|---|
-| `priceUsdCents` (o COP) mensual acordado | El precio de ese cliente |
-| `modules[]` | Módulos exactos que activa (no los del plan) |
-| `maxUsers`, `maxCustomers` | Límites de ese cliente |
-| `automations[]` y cupos de uso | Lo que pueda usar de la §5 (cuando exista) |
+| `priceUsdCents` (precio mensual acordado, USD) | La `Subscription` queda **ACTIVA** con ese precio (aparece en *Facturación* y no vence sola como una prueba); `Tenant.planMonthlyUsdCents` toma ese precio |
+| `modules[]` | Activa exactamente esos módulos (más el Inicio) en vez de los del plan |
+| `maxUsers`, `maxCustomers` | Se copian al negocio; el servidor los exige al invitar (`seatLimit`) y al crear o restaurar clientes (`saveCustomer`, restaurar) |
 
-Al canjearse crea la `Subscription` con ese precio, para que aparezca en
-*Facturación* del panel. Es el mismo mecanismo que después da los niveles de
-automatización: **el código es un contrato a medida**.
-
----
+Sin precio, el código sigue siendo una prueba gratis que vence sola (y al
+vencer se limpian los límites). Falta, cuando exista la §5:
+`automations[]` y cupos de uso en el mismo código.
 
 ## 4. Presupuestar el sistema
 
@@ -282,7 +282,7 @@ construir un motor de flujos propio.
 
 | Pregunta | Afecta |
 |---|---|
-| ¿Se aprueba el código de activación con precio, módulos y límites (§3)? | Facturación inmediata |
+| ¿Se aprueba el código de activación con precio, módulos y límites (§3)? Ya está construido; falta el visto bueno | Facturación inmediata |
 | ¿Cuánto cuesta NEXUS por rubro? (§4) | Planes y cupos |
 | ¿n8n propio (self-hosted) o en la nube de n8n? | Paso 3; costo y datos |
 | ¿Qué modelo de IA y con qué tope de gasto por negocio? | Pasos 4 y 9 |

@@ -21,7 +21,7 @@ const meta = {
       billing: "ANNUAL",
       planName: "Elite",
       tierLabel: "Hasta 500 clientes",
-      quote: quote(defaultPricingConfig(), { plan: "ELITE", vertical: "construction", billing: "ANNUAL", selected: ["quotes", "whatsapp"], tierId: "tier-500" }),
+      quote: quote(defaultPricingConfig(), { plan: "ELITE", vertical: "construction", billing: "ANNUAL", selected: ["construction", "whatsapp"], tierId: "tier-500" }),
     },
   },
 } satisfies Meta<typeof OnboardingReview>;

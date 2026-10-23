@@ -29,7 +29,7 @@ export default async function PresencePage() {
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-5">
       <PageHeader
-        eyebrow="Clientes"
+        eyebrow="Comercial"
         title="Presence Thrive"
         description="Presencia digital de cada negocio: puntaje verificado, canales y solicitudes de sitio."
       />

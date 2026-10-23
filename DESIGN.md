@@ -159,8 +159,8 @@ Storybook con sus estados.
 | Menú de acciones | `DropdownMenu` | `components/molecules/dropdown-menu.tsx` |
 
 **Prohibido en código nuevo:** `window.confirm`/`alert`, un `<div
-className="fixed inset-0">` como modal, `organisms/dialog.tsx` y
-`organisms/sheet.tsx` (shadcn sin adaptar, marcados `@deprecated`), un
+className="fixed inset-0">` como modal, Radix Dialog directo (el Dialog y el
+Sheet de shadcn se eliminaron: todo compone `ResponsiveSheet`), un
 `z-index` numérico y el atributo `title` como único medio para explicar algo.
 
 ### Contratos clave
@@ -250,5 +250,5 @@ Reglas:
    Pendiente: sumarlo al CI (`.github/workflows/ci.yml`; el cambio está
    descrito en el PR del rediseño, requiere permiso `workflow`).
 5. `lib/design/ui-rules.test.ts` (en `pnpm test`) falla si aparece un
-   `window.confirm`, un modal hecho a mano, el Dialog/Sheet deprecado o un
+   `window.confirm`, un modal hecho a mano, Radix Dialog directo o un
    `z-index` numérico fuera de sus listas de deuda, que solo se achican.

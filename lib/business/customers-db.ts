@@ -1,4 +1,5 @@
 import { db } from "@/prisma/db";
+import { withinLimit } from "@/lib/benefits/benefits";
 
 /**
  * Clientes activos del negocio para elegir en un formulario (cobro, cuenta de
@@ -58,17 +59,38 @@ type CustomerFields = {
 };
 
 /**
- * Crea un cliente (activo) o actualiza uno del negocio. Devuelve el id, o
- * `null` si `id` no es un cliente de este negocio.
+ * Límite de clientes acordado para el negocio (código a medida) y cuántos
+ * activos tiene. `limit` null = sin límite propio.
  */
-export async function saveCustomer(tenantId: string, id: string | null, data: CustomerFields): Promise<string | null> {
+export async function customerLimit(tenantId: string): Promise<{ limit: number | null; used: number }> {
+  const [t, used] = await Promise.all([
+    db.orm.public.Tenant.where({ id: tenantId }).select("maxCustomers").first(),
+    db.orm.public.Customer.where({ tenantId, active: true }).aggregate((a) => ({ n: a.count() })),
+  ]);
+  return { limit: t?.maxCustomers ?? null, used: Number(used.n) };
+}
+
+/**
+ * Crea un cliente (activo) o actualiza uno del negocio. Al crear respeta el
+ * límite de clientes acordado. `{ ok: false }` si `id` no es de este negocio o
+ * si ya se llegó al límite.
+ */
+export async function saveCustomer(
+  tenantId: string,
+  id: string | null,
+  data: CustomerFields,
+): Promise<{ ok: true; id: string } | { ok: false; message: string }> {
   if (id) {
     const exists = await db.orm.public.Customer.where({ tenantId, id }).select("id").first();
-    if (!exists) return null;
+    if (!exists) return { ok: false, message: "No se encontró." };
     await db.orm.public.Customer.where({ tenantId, id }).update(data);
-    return id;
+    return { ok: true, id };
   }
-  return (await db.orm.public.Customer.create({ tenantId, ...data, active: true })).id;
+  const { limit, used } = await customerLimit(tenantId);
+  if (!withinLimit(limit, used)) {
+    return { ok: false, message: `Tu acuerdo incluye ${limit} clientes activos. Archiva alguno o escríbenos para ampliarlo.` };
+  }
+  return { ok: true, id: (await db.orm.public.Customer.create({ tenantId, ...data, active: true })).id };
 }
 
 /** Asocia la foto (adjunto ya guardado) a la ficha del cliente. */

@@ -8,7 +8,7 @@ export const withShell: Decorator = (Story) => (
     tenantSlug="constructora"
     tenantName="Constructora Andina"
     vertical="construction"
-    activeModules={["dashboard", "crm", "quotes", "finance"]}
+    activeModules={["dashboard", "crm", "construction", "finance"]}
   >
     <ToastProvider>
       <Story />

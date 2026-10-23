@@ -31,43 +31,51 @@ type OpsItem = {
 };
 
 /**
- * Navegación del NEXUS Operations Center, en el orden del documento:
- * Operaciones · Clientes · Administración · Sistema. Cada integrante ve
- * solo lo que su rol permite; lo que aún no existe no se muestra.
+ * Navegación del NEXUS Operations Center, agrupada por la responsabilidad del
+ * equipo: lo que pide atención hoy, las cuentas de los clientes, el trabajo
+ * comercial, lo que se vende y la plataforma. Cada integrante ve solo lo que
+ * su rol permite; lo que aún no existe no se muestra.
  */
 export const OPS_NAV: { label: string; items: OpsItem[] }[] = [
   {
-    label: "Operaciones",
+    label: "Hoy",
     items: [
       { key: "inicio", label: "Inicio", href: "/admin", icon: LayoutDashboard, ready: true },
-      { key: "crm", label: "CRM comercial", href: "/admin/crm", icon: Target, permission: "leads.view", ready: true },
+      { key: "bandeja", label: "Bandeja", href: "/admin/bandeja", icon: Inbox, permission: "tickets.view", ready: true },
+      { key: "soporte", label: "Soporte", href: "/admin/soporte", icon: Headphones, permission: "tickets.view", ready: true },
+    ],
+  },
+  {
+    label: "Cuentas",
+    items: [
       { key: "negocios", label: "Negocios", href: "/admin/negocios", icon: Building2, permission: "accounts.view", ready: true },
       { key: "onboarding", label: "Onboarding", href: "/admin/onboarding", icon: ClipboardList, permission: "accounts.view", ready: true },
-    ],
-  },
-  {
-    label: "Clientes",
-    items: [
-      { key: "soporte", label: "Soporte", href: "/admin/soporte", icon: Headphones, permission: "tickets.view", ready: true },
-      { key: "bandeja", label: "Bandeja", href: "/admin/bandeja", icon: Inbox, permission: "tickets.view", ready: true },
-      { key: "satisfaccion", label: "Satisfacción", href: "/admin/satisfaccion", icon: Smile, permission: "tickets.view", ready: true },
       { key: "salud", label: "Salud de cuentas", href: "/admin/salud", icon: HeartPulse, permission: "accounts.view", ready: true },
-      { key: "presence", label: "Presence Thrive", href: "/admin/presence", icon: Sparkles, permission: "presence.view", ready: true },
-    ],
-  },
-  {
-    label: "Administración",
-    items: [
-      { key: "planes", label: "Planes y módulos", href: "/admin/planes", icon: LayoutGrid, permission: ["catalog.edit", "pricing.edit"], ready: true },
-      { key: "beneficios", label: "Accesos", href: "/admin/beneficios", icon: QrCode, permission: "catalog.edit", ready: true },
       { key: "facturacion", label: "Facturación", href: "/admin/facturacion", icon: CreditCard, permission: "billing.view", ready: true },
-      { key: "equipo", label: "Equipo y permisos", href: "/admin/equipo", icon: UsersRound, permission: "team.invite", ready: true },
       { key: "informes", label: "Informes", href: "/admin/informes", icon: LineChart, permission: "billing.view", ready: false },
     ],
   },
   {
-    label: "Sistema",
-    items: [{ key: "auditoria", label: "Auditoría", href: "/admin/auditoria", icon: ScrollText, permission: "audit.view", ready: true }],
+    label: "Comercial",
+    items: [
+      { key: "crm", label: "CRM comercial", href: "/admin/crm", icon: Target, permission: "leads.view", ready: true },
+      { key: "presence", label: "Presence Thrive", href: "/admin/presence", icon: Sparkles, permission: "presence.view", ready: true },
+      { key: "satisfaccion", label: "Satisfacción", href: "/admin/satisfaccion", icon: Smile, permission: "tickets.view", ready: true },
+    ],
+  },
+  {
+    label: "Producto",
+    items: [
+      { key: "planes", label: "Planes y módulos", href: "/admin/planes", icon: LayoutGrid, permission: ["catalog.edit", "pricing.edit"], ready: true },
+      { key: "beneficios", label: "Accesos", href: "/admin/beneficios", icon: QrCode, permission: "catalog.edit", ready: true },
+    ],
+  },
+  {
+    label: "Plataforma",
+    items: [
+      { key: "equipo", label: "Equipo y permisos", href: "/admin/equipo", icon: UsersRound, permission: "team.invite", ready: true },
+      { key: "auditoria", label: "Auditoría", href: "/admin/auditoria", icon: ScrollText, permission: "audit.view", ready: true },
+    ],
   },
 ];
 

@@ -11,6 +11,8 @@ import { Field } from "@/components/molecules/field";
 import { PageHeader } from "@/components/molecules/page-header";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
+import { ContextHelp } from "@/components/molecules/context-help";
+import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import type { PermissionKey } from "@/lib/ops/permissions";
 import type { RoleRow, StaffRow } from "@/lib/ops/team";
@@ -56,6 +58,7 @@ export default function TeamView({
   const [inviteMsg, setInviteMsg] = useState<string | null>(null);
   const [roleEditing, setRoleEditing] = useState<RoleRow | "new" | null>(null);
   const [pending, start] = useTransition();
+  const [confirm, confirmDialog] = useConfirm();
 
   const closeInvite = () => {
     setInviteOpen(false);
@@ -88,7 +91,7 @@ export default function TeamView({
   return (
     <div className="grid gap-5">
       <PageHeader
-        eyebrow="Administración"
+        eyebrow="Plataforma"
         title="Equipo y permisos"
         description="Quién está en NEXUS, con qué rol y qué puede hacer cada rol. Cada permiso se verifica en el servidor."
         actions={
@@ -165,27 +168,34 @@ export default function TeamView({
                       <button
                         type="button"
                         disabled={pending}
-                        title="Suelta la cuenta de Clerk vinculada: la persona se volverá a enlazar al entrar con su correo"
-                        onClick={() =>
-                          window.confirm(
-                            `¿Desvincular la cuenta de ${m.email}? La próxima vez que entre con ese correo se enlazará de nuevo.`,
-                          ) && run(() => unlinkStaffAccountAction(m.id), "Cuenta desvinculada")
-                        }
+                        onClick={async () => {
+                          const ok = await confirm({
+                            title: `¿Desvincular la cuenta de ${m.email}?`,
+                            description: "Se suelta la cuenta de Clerk vinculada. La próxima vez que entre con ese correo se enlazará de nuevo.",
+                            confirmLabel: "Desvincular cuenta",
+                            tone: "default",
+                          });
+                          if (ok) run(() => unlinkStaffAccountAction(m.id), "Cuenta desvinculada");
+                        }}
                         className={buttonVariants({ variant: "ghost", size: "sm" })}
                       >
                         Desvincular cuenta
                       </button>
                     ) : null}
                     {can("team.invite") ? (
-                      <button
-                        type="button"
-                        disabled={pending}
-                        title="Genera un enlace de un solo uso: la persona entra con el enlace y queda en el panel, con el correo que sea"
-                        onClick={() => makeInvite(m)}
-                        className={buttonVariants({ variant: "outline", size: "sm" })}
-                      >
-                        <Link2 aria-hidden="true" className="size-3.5" /> Enlace de invitación
-                      </button>
+                      <span className="inline-flex items-center gap-0.5">
+                        <button
+                          type="button"
+                          disabled={pending}
+                          onClick={() => makeInvite(m)}
+                          className={buttonVariants({ variant: "outline", size: "sm" })}
+                        >
+                          <Link2 aria-hidden="true" className="size-3.5" /> Enlace de invitación
+                        </button>
+                        <ContextHelp topic="el enlace de invitación">
+                          Genera un enlace de un solo uso: la persona entra con él y queda en el panel, con el correo que use.
+                        </ContextHelp>
+                      </span>
                     ) : null}
                   </div>
                 ) : null}
@@ -324,6 +334,7 @@ export default function TeamView({
           editorPermissions={permissions}
         />
       ) : null}
+      {confirmDialog}
     </div>
   );
 }

@@ -1,6 +1,10 @@
 # ADR-0003 · Registro de capacidades en código y entitlements en servidor
 
-- **Estado:** Propuesta · 2026-10-22
+- **Estado:** Aceptada en parte · implementada el 2026-10-23 (registro en
+  `lib/capabilities/registry.ts`, `ModuleName` como texto validado, suite
+  `construction` separada de `quotes`). Pendiente: `requireCapability(ctx, id)`
+  (hoy la puerta es `modulesForRoute`, que ya sale del registro), el estado
+  *configurado* y los "primeros pasos" por capacidad.
 
 ## Contexto
 
@@ -9,7 +13,7 @@ El catálogo de módulos vive en cinco lugares y no se aplica en el servidor
 
 ## Decisión
 
-Cada capacidad declara en `lib/capabilities/<id>/definition.ts`: id, nombre,
+Cada capacidad declara en `lib/capabilities/registry.ts` (un archivo; se partirá en `<id>/definition.ts` si crece): id, nombre,
 rutas, ítems de menú (con condición de rubro), permisos que define, capacidades de
 las que depende, estado (READY/BETA/PLANNED) y "primeros pasos". Un registro
 exporta todas. De él se derivan: menú, onboarding, precios por defecto, validación

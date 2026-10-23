@@ -36,9 +36,10 @@ export default function TicketSheet({ open, onOpenChange, tenants, staff, me, de
 
   return (
     <ResponsiveSheet
+      drawer
+      size="lg"
       open={open}
       onOpenChange={onOpenChange}
-      wide
       title="Nuevo ticket"
       description="Registra el caso con su prioridad: el SLA empieza a correr desde ahora."
       footer={

@@ -118,9 +118,10 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
 
   return (
     <ResponsiveSheet
+      drawer
+      size="lg"
       open
       onOpenChange={(o) => !o && !pending && onClose()}
-      wide
       title={customerId ? `Editar ${terms.customer.toLowerCase()}` : `Nuevo ${terms.customer.toLowerCase()}`}
       description={profile.fields.length ? profile.title : "Datos de contacto e identificación."}
       footer={

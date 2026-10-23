@@ -10,7 +10,7 @@ for (const spec of shots) {
   const [idPart, action] = spec.split("#");
   const [id, mode] = idPart.split("@");
   const context = await browser.newContext(
-    mode === "movil" ? { ...devices["Pixel 7"] } : { viewport: { width: 1100, height: 720 }, deviceScaleFactor: 1 },
+    mode === "movil" ? { ...devices["Pixel 7"] } : { viewport: { width: Number(process.env.ANCHO ?? 1100), height: 720 }, deviceScaleFactor: 1 },
   );
   const page = await context.newPage();
   await page.goto(`${base}/iframe.html?id=${encodeURIComponent(id)}&viewMode=story`);

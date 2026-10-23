@@ -1,24 +1,8 @@
 import type { LucideIcon } from "lucide-react";
-import {
-  Banknote,
-  BookOpen,
-  Building2,
-  CalendarDays,
-  CreditCard,
-  FolderOpen,
-  LayoutDashboard,
-  MessageCircle,
-  Package,
-  Receipt,
-  ScanLine,
-  Settings,
-  ShoppingCart,
-  Ticket,
-  Users,
-  Wallet,
-} from "lucide-react";
+import { Settings } from "lucide-react";
 import { MODULES, type ModuleValue, type VerticalValue } from "@/lib/admin/catalogs";
-import { getVerticalTerms, type VerticalTerms } from "@/lib/vertical-terms";
+import { CAPABILITIES, type CapabilityNav } from "@/lib/capabilities/registry";
+import { getVerticalTerms } from "@/lib/vertical-terms";
 
 export type NavItem = {
   /** Clave estable (para React y para la paleta de comandos). */
@@ -33,43 +17,10 @@ export type NavItem = {
 
 export type NavGroup = { label: string; items: NavItem[] };
 
-type ModuleNav = {
-  href: string;
-  icon: LucideIcon;
-  label: (terms: VerticalTerms, vertical: VerticalValue) => string;
-  /** Solo para estos rubros (pantallas propias del rubro). */
-  verticals?: readonly VerticalValue[];
-};
+type ModuleNav = CapabilityNav;
 
-/** Un módulo puede ocupar varias entradas (cotizaciones = obras + carpetas + catálogo). */
-const MODULE_NAV: Record<ModuleValue, ModuleNav | ModuleNav[]> = {
-  dashboard: { href: "", icon: LayoutDashboard, label: () => "Inicio" },
-  crm: { href: "/crm", icon: Users, label: (terms) => terms.customers },
-  bookings: [
-    { href: "/bookings", icon: CalendarDays, label: (terms) => terms.bookings },
-    { href: "/tickets", icon: Ticket, label: () => "Taquilla", verticals: ["museum"] },
-    // "Salidas" (turismo) vuelve cuando exista su pantalla: hoy solo hay tablas (ARCH-02).
-  ],
-  memberships: [
-    { href: "/memberships", icon: CreditCard, label: () => "Membresías" },
-    { href: "/checkin", icon: ScanLine, label: () => "Control de acceso", verticals: ["gym"] },
-  ],
-  orders: { href: "/orders", icon: ShoppingCart, label: () => "Pedidos" },
-  quotes: [
-    {
-      href: "/projects",
-      icon: Building2,
-      label: (_terms, vertical) => (vertical === "construction" ? "Obras" : "Proyectos"),
-    },
-    { href: "/quotes", icon: FolderOpen, label: () => "Cotizaciones" },
-    { href: "/catalog", icon: BookOpen, label: () => "Catálogo APU" },
-  ],
-  inventory: { href: "/inventory", icon: Package, label: () => "Catálogo" },
-  finance: { href: "/finance", icon: Wallet, label: () => "Finanzas" },
-  payments: { href: "/finance?tab=cobros", icon: Banknote, label: () => "Pagos" },
-  billing: { href: "/billing", icon: Receipt, label: () => "Facturación" },
-  whatsapp: { href: "/whatsapp", icon: MessageCircle, label: () => "WhatsApp" },
-};
+/** Menú de cada módulo: sale del registro de capacidades (ADR-0003). */
+const MODULE_NAV = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.nav as readonly ModuleNav[]])) as Record<ModuleValue, readonly ModuleNav[]>;
 
 /**
  * Módulos que dan acceso a cada ruta del negocio, derivados del menú (una sola
@@ -79,8 +30,8 @@ const MODULE_NAV: Record<ModuleValue, ModuleNav | ModuleNav[]> = {
  */
 const ROUTE_MODULES: ReadonlyMap<string, readonly ModuleValue[]> = (() => {
   const map = new Map<string, ModuleValue[]>();
-  for (const [moduleName, entry] of Object.entries(MODULE_NAV) as [ModuleValue, ModuleNav | ModuleNav[]][]) {
-    for (const nav of Array.isArray(entry) ? entry : [entry]) {
+  for (const [moduleName, entry] of Object.entries(MODULE_NAV) as [ModuleValue, readonly ModuleNav[]][]) {
+    for (const nav of entry) {
       const route = nav.href.split("?")[0];
       if (!route) continue; // El inicio existe siempre.
       map.set(route, [...(map.get(route) ?? []), moduleName]);
@@ -113,16 +64,35 @@ export const SETTINGS_ITEM: NavItem = {
 };
 
 /**
+ * Grupo de la barra lateral de cada módulo, por el trabajo que resuelve (no
+ * por el orden en que se activó): atender y operar, mover dinero, hablar con
+ * los clientes. Un grupo sin módulos activos no aparece.
+ */
+const MODULE_GROUP: Record<Exclude<ModuleValue, "dashboard">, "Clientes y operación" | "Dinero" | "Canales"> = {
+  crm: "Clientes y operación",
+  bookings: "Clientes y operación",
+  memberships: "Clientes y operación",
+  orders: "Clientes y operación",
+  quotes: "Clientes y operación",
+  construction: "Clientes y operación",
+  inventory: "Clientes y operación",
+  finance: "Dinero",
+  payments: "Dinero",
+  billing: "Dinero",
+  whatsapp: "Canales",
+};
+const GROUP_ORDER = ["Clientes y operación", "Dinero", "Canales"] as const;
+
+/**
  * Navegación del negocio: solo los módulos activos, en el orden del catálogo,
  * con el vocabulario de la vertical (Socios, Pacientes, Obras…). Grupos:
- * General (inicio, siempre), Gestión (módulos) y Sistema (configuración).
+ * General (inicio, siempre), los de `MODULE_GROUP` y Sistema (configuración).
  */
 export function buildTenantNav(vertical: VerticalValue, activeModules: readonly ModuleValue[]): NavGroup[] {
   const terms = getVerticalTerms(vertical);
   const active = new Set(activeModules);
   const items = (moduleName: ModuleValue): NavItem[] => {
-    const entry = MODULE_NAV[moduleName];
-    return (Array.isArray(entry) ? entry : [entry]).filter((nav) => !nav.verticals || nav.verticals.includes(vertical)).map((nav) => ({
+    return MODULE_NAV[moduleName].filter((nav) => !nav.verticals || nav.verticals.includes(vertical)).map((nav) => ({
       key: nav.href || "home",
       module: moduleName,
       href: nav.href,
@@ -135,7 +105,10 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
   return [
     // El inicio existe siempre (es la raíz del negocio), con o sin el módulo.
     { label: "General", items: items("dashboard") },
-    { label: "Gestión", items: enabled.filter((m) => m !== "dashboard").flatMap(items) },
+    ...GROUP_ORDER.map((label) => ({
+      label,
+      items: enabled.filter((m) => m !== "dashboard" && MODULE_GROUP[m] === label).flatMap(items),
+    })),
     { label: "Sistema", items: [SETTINGS_ITEM] },
   ].filter((group) => group.items.length > 0);
 }

@@ -81,9 +81,10 @@ export default function LeadSheet({
 
   return (
     <ResponsiveSheet
+      drawer
+      size="lg"
       open={open}
       onOpenChange={onOpenChange}
-      wide
       title={lead ? `Editar · ${lead.company}` : "Nuevo lead"}
       description="Ningún lead activo queda sin responsable ni próximo paso."
       footer={

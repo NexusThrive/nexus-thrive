@@ -6,6 +6,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
+import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { MAX_FREEZE_DAYS } from "@/lib/business/gym";
 import { bogotaDayKey } from "@/lib/finance/series";
@@ -19,6 +20,7 @@ export default function MembershipHoldSheet({ tenantSlug, membership, onClose }:
   const [days, setDays] = useState("15");
   const [reason, setReason] = useState("");
   const [pending, start] = useTransition();
+  const [confirm, confirmDialog] = useConfirm();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -69,7 +71,10 @@ export default function MembershipHoldSheet({ tenantSlug, membership, onClose }:
             <button
               type="button"
               disabled={pending || reason.trim().length < 3}
-              onClick={() => window.confirm("¿Cancelar la membresía? No podrá entrar con ella.") && run(() => cancelMembershipAction(tenantSlug, membership.id, reason))}
+              onClick={async () => {
+                const ok = await confirm({ title: "¿Cancelar la membresía?", description: "No podrá entrar con ella. Queda en la bitácora con el motivo.", confirmLabel: "Cancelar membresía" });
+                if (ok) run(() => cancelMembershipAction(tenantSlug, membership.id, reason));
+              }}
               className={buttonVariants({ size: "sm", variant: "danger" })}
             >
               Cancelar membresía
@@ -77,6 +82,7 @@ export default function MembershipHoldSheet({ tenantSlug, membership, onClose }:
           </section>
         ) : null}
       </div>
+      {confirmDialog}
     </ResponsiveSheet>
   );
 }

@@ -10,6 +10,7 @@ import { inputClasses, selectClasses } from "@/components/atoms/input";
 import { ProgressBar } from "@/components/atoms/progress-bar";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
+import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { SALE_KINDS, saleKindLabel, type SlotLoad } from "@/lib/business/museum";
 import type { TicketSaleRow } from "@/lib/business/museum-db";
@@ -254,6 +255,7 @@ function SaleSheet({ slug, sale, canSell, canManage, onClose }: { slug: string; 
   const [method, setMethod] = useState("CASH");
   const [reason, setReason] = useState("");
   const { pending, run } = useRun(onClose);
+  const [confirm, confirmDialog] = useConfirm();
   return (
     <ResponsiveSheet open onOpenChange={(o) => !o && onClose()} title={`${sale.code} · ${sale.slot}`} description={`${saleKindLabel(sale.kind)}${sale.groupName ? ` · ${sale.groupName}` : ""}`}>
       <div className="grid gap-5">
@@ -301,12 +303,13 @@ function SaleSheet({ slug, sale, canSell, canManage, onClose }: { slug: string; 
           <section className="grid gap-3 border-t border-border pt-4">
             <h3 className="text-[13px] font-semibold">Anular</h3>
             <input aria-label="Motivo de la anulación" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Motivo: error en la venta, el grupo canceló…" className={inputClasses} />
-            <button type="button" disabled={pending || reason.trim().length < 3} onClick={() => window.confirm("¿Anular la venta? El cupo queda libre y el cobro se anula.") && run(() => voidTicketsAction(slug, sale.id, reason))} className={buttonVariants({ size: "sm", variant: "danger" })}>
+            <button type="button" disabled={pending || reason.trim().length < 3} onClick={async () => { const ok = await confirm({ title: "¿Anular la venta?", description: "El cupo queda libre y el cobro se anula. Queda en la bitácora con el motivo.", confirmLabel: "Anular venta" }); if (ok) run(() => voidTicketsAction(slug, sale.id, reason)); }} className={buttonVariants({ size: "sm", variant: "danger" })}>
               Anular venta
             </button>
           </section>
         ) : null}
       </div>
+      {confirmDialog}
     </ResponsiveSheet>
   );
 }

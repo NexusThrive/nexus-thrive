@@ -6,6 +6,7 @@ import { getAppBaseUrl } from "@/lib/app-url";
 import { listBenefitCodes, FIXED_BENEFIT_CODE } from "@/lib/benefits/benefits-db";
 import { receiptQrDataUrl } from "@/lib/business/receipt-qr";
 import { createBenefitAction, toggleBenefitAction, updateBenefitAction } from "./actions";
+import { ContractFields, contractSummary } from "./_components/contract-fields";
 
 export const metadata: Metadata = { title: "Accesos · NEXUS Operations Center" };
 
@@ -62,7 +63,7 @@ export default async function BeneficiosPage({
   return (
     <div className="grid gap-5">
       <PageHeader
-        eyebrow="Administración"
+        eyebrow="Producto"
         title="Accesos"
         description="Códigos de acceso a NEXUS. Los promocionales se regalan (tarjetas, eventos) y los de pago se emiten después de confirmar el pago. Quien usa un código pagado ve &quot;cuenta activada&quot;, no &quot;gratis&quot;."
       />
@@ -107,6 +108,7 @@ export default async function BeneficiosPage({
             Referencia del pago (opcional)
             <input name="notes" placeholder="Nequi · ref 12345 · 12 oct" className={inputClass} />
           </label>
+          <ContractFields idPrefix="nuevo" />
           <div className="flex items-end">
             <button
               type="submit"
@@ -226,6 +228,9 @@ export default async function BeneficiosPage({
                       <a href={link} className="break-all font-mono text-[11px] text-muted-foreground underline">
                         {link}
                       </a>
+                      {contractSummary(row.terms) ? (
+                        <p className="text-xs font-medium text-foreground">Contrato: {contractSummary(row.terms)}</p>
+                      ) : null}
                       {row.notes ? <p className="text-xs text-muted-foreground">{row.notes}</p> : null}
                     </div>
 
@@ -255,7 +260,7 @@ export default async function BeneficiosPage({
 
                   <details className="border-t border-border pt-3">
                     <summary className="cursor-pointer select-none text-xs font-semibold text-muted-foreground">
-                      Editar beneficio (membresía, días, usos, vencimiento)
+                      Editar beneficio (plan, días, usos, vencimiento, contrato)
                     </summary>
                     <form
                       action={updateBenefitAction}
@@ -315,6 +320,7 @@ export default async function BeneficiosPage({
                         Notas
                         <input name="notes" defaultValue={row.notes ?? ""} className={inputClass} />
                       </label>
+                      <ContractFields terms={row.terms} idPrefix={row.id} />
                       <div className="flex items-end sm:col-span-2 lg:col-span-3">
                         <button
                           type="submit"

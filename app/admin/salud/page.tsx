@@ -26,7 +26,7 @@ export default async function SaludPage() {
   const count = (l: keyof typeof HEALTH_LEVELS) => rows.filter((r) => r.level === l).length;
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-5">
-      <PageHeader eyebrow="Clientes" title="Salud de cuentas" description="Actividad, adopción, pagos, soporte y satisfacción suman 100. Las cuentas más débiles van primero." />
+      <PageHeader eyebrow="Cuentas" title="Salud de cuentas" description="Actividad, adopción, pagos, soporte y satisfacción suman 100. Las cuentas más débiles van primero." />
       <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
         <KpiCard label="Saludables" value={count("healthy")} index={0} />
         <KpiCard label="En observación" value={count("watch")} index={1} />

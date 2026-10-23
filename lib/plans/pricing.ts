@@ -1,3 +1,4 @@
+import { CAPABILITIES } from "@/lib/capabilities/registry";
 import { MODULES, SIGNUP_VERTICALS, VERTICALS, VERTICAL_LABELS, VERTICAL_RECIPES, type ModuleValue, type VerticalValue } from "@/lib/admin/catalogs";
 import {
   ANNUAL_DISCOUNT,
@@ -89,36 +90,10 @@ export type PricingConfig = {
 /** El Inicio no es un módulo que se elige: siempre está activo. */
 export const CORE_MODULE: ModuleValue = "dashboard";
 
-const DESCRIPTIONS: Record<ModuleValue, string> = {
-  dashboard: "Tu tablero con lo esencial del día a día.",
-  crm: "Clientes, fichas 360° y seguimiento.",
-  bookings: "Reservas, citas y agenda.",
-  payments: "Cobros y control de pagos.",
-  billing: "Cuentas de cobro y recibos numerados.",
-  inventory: "Productos, servicios, planes y stock.",
-  finance: "Cobros, gastos y caja menor.",
-  whatsapp: "Plantillas y envío por WhatsApp.",
-  memberships: "Planes y membresías recurrentes.",
-  orders: "Pedidos y ventas.",
-  quotes: "Obras, presupuestos y catálogo APU.",
-};
-
-const LABELS: Record<ModuleValue, string> = {
-  dashboard: "Inicio",
-  crm: "Clientes",
-  bookings: "Reservas",
-  payments: "Pagos",
-  billing: "Facturación",
-  inventory: "Catálogo e inventario",
-  finance: "Finanzas",
-  whatsapp: "WhatsApp",
-  memberships: "Membresías",
-  orders: "Pedidos",
-  quotes: "Obras y presupuestos",
-};
-
-/** Módulos que ya funcionan de verdad; el resto empieza como PLANNED. */
-const READY_MODULES: ModuleValue[] = ["dashboard", "crm", "bookings", "finance", "payments", "billing", "inventory", "whatsapp", "memberships", "quotes"];
+// Nombres, descripciones y estado inicial salen del registro de capacidades.
+const DESCRIPTIONS = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.description])) as Record<ModuleValue, string>;
+const LABELS = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.name])) as Record<ModuleValue, string>;
+const STATUS = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.status])) as Record<ModuleValue, ModuleStatus>;
 
 /** Configuración inicial (la que había en el código). */
 export function defaultPricingConfig(): PricingConfig {
@@ -144,7 +119,7 @@ export function defaultPricingConfig(): PricingConfig {
       label: LABELS[m],
       description: DESCRIPTIONS[m],
       priceUsdCents: (MODULE_PRICES[m] ?? 0) * 100,
-      status: READY_MODULES.includes(m) ? "READY" : "PLANNED",
+      status: STATUS[m],
       included: m === "dashboard" || INCLUDED_MODULES.includes(m),
       order: i,
     })),
