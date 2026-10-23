@@ -77,19 +77,9 @@ SQL se corre a mano en el SQL Editor de Supabase. Por eso:
    nuevas.
 3. `scripts/check-prod-sql.sh` falla si cambió el contrato y no hay SQL nuevo.
 
-**Hueco actual:** el CI hace `actions/checkout` sin historial
-(`fetch-depth: 1`), así que `check-prod-sql.sh` no encuentra `origin/main` y se
-omite en silencio. Para que bloquee el PR, en `ci.yml`:
-
-```yaml
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: SQL de producción si cambió el modelo
-        if: github.event_name == 'pull_request'
-        run: bash ./scripts/check-prod-sql.sh "origin/${{ github.base_ref }}"
-```
+El CI descarga el historial completo (`fetch-depth: 0`) y, en cada PR, corre
+`check-prod-sql.sh` contra la rama base antes de los tipos: un PR que cambie el
+contrato sin su SQL falla en el primer minuto.
 
 **Meta (DATA-03):** que producción se migre con las mismas migraciones que el CI
 (`prisma db migrate` en un paso de despliegue) y retirar el SQL manual. Antes
@@ -161,7 +151,6 @@ Siguiente paso, en este orden:
 | Falta | Esfuerzo | Efecto |
 |---|---|---|
 | Protección de `main` en GitHub | 5 min | Las reglas se cumplen solas |
-| `fetch-depth: 0` + paso de SQL en el CI | 5 min (necesita token con permiso `workflow`) | Ningún PR rompe producción por falta de SQL |
 | Secret scanning + push protection | 2 min | No vuelve a entrar un secreto |
 | Esquema único (DATA-03) y migración automática | Días; necesita el `pg_dump --schema-only` | Se acaba el SQL manual |
 | Errores con contexto + health check | Horas | Te enteras antes que el cliente |

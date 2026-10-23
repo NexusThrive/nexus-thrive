@@ -36,7 +36,11 @@ jobs:
       NEXT_TELEMETRY_DISABLED: "1"
 
     steps:
+      # Historial completo: el chequeo de SQL de producción compara contra la
+      # rama base, que un checkout superficial no trae (y se omitía en silencio).
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # La versión de pnpm sale de `packageManager` en package.json.
       - uses: pnpm/action-setup@v4
@@ -47,6 +51,11 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+
+      # Si cambió prisma/contract.prisma, el PR trae su SQL en docs/prod-sql/.
+      - name: SQL de producción si cambió el modelo
+        if: github.event_name == 'pull_request'
+        run: bash ./scripts/check-prod-sql.sh "origin/${{ github.base_ref }}"
 
       - name: Typecheck
         run: pnpm exec tsc --noEmit
