@@ -4,7 +4,7 @@ capa: "V — VENTAS DIGITALES, COMERCIO Y PAGOS"
 titulo: "Punto de venta físico y móvil (POS)"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -23,9 +23,9 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Venta rápida
-- [ ] Recibo
-- [ ] Cierre de caja diario
+- [x] Venta rápida — _hecho: venta directa desde el Catálogo_
+- [x] Recibo — _hecho: recibo consecutivo y enlace público firmado con QR_
+- [x] Cierre de caja diario — _hecho: turno de caja con arqueo_
 
 #### Técnico
 
@@ -39,10 +39,10 @@ tags: [capas, estructura, subcapa]
 - [ ] Catálogo con búsqueda, categorías y código de barras.
 - [ ] Descuentos, propinas y pago mixto
 - [ ] Turnos por cajero
-- [ ] Descuento automático de inventario
+- [x] Descuento automático de inventario — _hecho: `sellProduct` en `money-service`_
 - [ ] Funciona en celular y tablet.
 - [ ] Impresoras térmicas
-- [ ] Clientes asociados a la venta
+- [x] Clientes asociados a la venta — _hecho: cliente opcional en la venta_
 
 #### Técnico
 

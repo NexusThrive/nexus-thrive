@@ -4,7 +4,7 @@ capa: "II — VISIBILIDAD, CAPTACIÓN Y PRESENCIA DIGITAL"
 titulo: "Formularios, enlaces cortos y códigos QR"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -23,7 +23,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] QR
+- [x] QR — _hecho: recibos con QR, carné de socio, códigos de acceso_
 - [ ] Enlaces cortos
 - [ ] Formulario simple
 

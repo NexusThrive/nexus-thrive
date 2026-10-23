@@ -4,7 +4,7 @@ titulo: "ESPECIALIZACIÓN POR VERTICAL"
 type: capa
 subcapas: 1
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, capa]
 ---
 
@@ -20,4 +20,4 @@ tags: [capas, estructura, capa]
 
 ---
 
-_Fuente: `DesordenadoCapas.md` (capa `Construccion`) + `EstructuraCapasImplementacion.md`._
+_Fuente: `../../fuentes/DesordenadoCapas.md` (capa `Construccion`) + `../../fuentes/EstructuraCapasImplementacion.md`._

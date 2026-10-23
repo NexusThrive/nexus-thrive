@@ -4,7 +4,7 @@ titulo: "PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD"
 type: capa
 subcapas: 5
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, capa]
 ---
 
@@ -85,4 +85,4 @@ tags: [capas, estructura, capa]
 
 ---
 
-_Fuente: `DesordenadoCapas.md` (capa `Seguridad`) + `EstructuraCapasImplementacion.md`._
+_Fuente: `../../fuentes/DesordenadoCapas.md` (capa `Seguridad`) + `../../fuentes/EstructuraCapasImplementacion.md`._

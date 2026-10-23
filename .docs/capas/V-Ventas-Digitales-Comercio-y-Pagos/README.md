@@ -4,7 +4,7 @@ titulo: "VENTAS DIGITALES, COMERCIO Y PAGOS"
 type: capa
 subcapas: 8
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, capa]
 ---
 
@@ -82,4 +82,4 @@ tags: [capas, estructura, capa]
 
 ---
 
-_Fuente: `DesordenadoCapas.md` (capa `Ventas`) + `EstructuraCapasImplementacion.md`._
+_Fuente: `../../fuentes/DesordenadoCapas.md` (capa `Ventas`) + `../../fuentes/EstructuraCapasImplementacion.md`._

@@ -4,7 +4,7 @@ capa: "I — FUNDACIÓN, NÚCLEO E INFRAESTRUCTURA"
 titulo: "Catálogo maestro de productos y servicios"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -23,10 +23,10 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Productos y servicios
+- [x] Productos y servicios — _hecho: Catálogo: productos, servicios, planes, entradas y tours_
 - [ ] Clientes y proveedores
 - [ ] Importación desde Excel con validación.
-- [ ] Activar y desactivar ítems sin borrarlos.
+- [x] Activar y desactivar ítems sin borrarlos. — _hecho: `Product.active`_
 
 #### Técnico
 

@@ -6,7 +6,7 @@ titulo: "Tab 4 · Bitácora & Campo"
 type: tab
 capas: "VII · VIII"
 created: 2026-10-10
-updated: 2026-10-10
+updated: 2026-10-23
 tags: [capas, construccion, tab, bitacora, fotos]
 ---
 
@@ -18,8 +18,8 @@ tags: [capas, construccion, tab, bitacora, fotos]
 
 | Capa | Nombre | Estado |
 | --- | --- | --- |
-| **VII** | Bitácora / Diario de campo | pendiente (brief por redactar) |
-| **VIII** | Evidencia fotográfica de campo | pendiente (brief por redactar) |
+| **VII** | Bitácora / Diario de campo | ✅ N1 implementado (ver README de XI.00) |
+| **VIII** | Evidencia fotográfica de campo | ✅ N1 implementado (ver README de XI.00) |
 
 ## Baseline N1 (a detallar en los briefs)
 

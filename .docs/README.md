@@ -1,0 +1,217 @@
+---
+id: guia
+titulo: "Guía de construcción de NEXUS"
+type: indice
+created: 2026-10-23
+updated: 2026-10-23
+tags: [guia, vision, capas, ruta]
+---
+
+# Guía de construcción de NEXUS
+
+Esta carpeta es **la guía de qué construimos y en qué orden**. Las capas
+(`capas/`) describen todo lo que NEXUS puede llegar a ser; este documento dice
+**hacia dónde vamos ahora**, qué ya está hecho y qué sigue.
+
+| Documento | Para qué |
+| --- | --- |
+| Este README | Visión, objetivos, progreso y ruta por fases |
+| [capas/](capas/README.md) | Las 11 capas, 70 subcapas y su escalera de madurez N0–N6, con casillas de hecho/pendiente |
+| [fuentes/](fuentes/) | Material de origen de las capas (no se edita; se consulta) |
+| [`docs/PENDIENTES.md`](../docs/PENDIENTES.md) | Lista viva de tareas, decisiones abiertas y la ruta de automatizaciones y agentes de IA |
+| [`docs/nexus-architecture/`](../docs/nexus-architecture/README.md) | Arquitectura actual y objetivo, auditoría y decisiones técnicas |
+
+---
+
+## 1. Qué es NEXUS
+
+> **Simplifica tu vida financiera y empresarial en un solo sitio.**
+
+NEXUS es el **sistema operativo del negocio** para pymes en Colombia: el lugar
+donde el negocio vende, cobra, factura ante la DIAN, controla inventario y
+caja, atiende a sus clientes por WhatsApp y se hace visible en internet, con la
+forma de su rubro (gimnasio, museo, constructora, comercio, servicios…).
+
+Y sobre esa base, un negocio que **trabaja con automatizaciones y agentes de
+IA** sin perder el control: el agente consulta y prepara; la persona aprueba;
+el sistema ejecuta con permisos y deja rastro.
+
+### Como Alegra, pero mejor
+
+[Alegra](https://colombia.alegra.com/colombia/) es la referencia en Colombia
+para pymes: software en la nube centrado en **facturación electrónica y
+contabilidad**, con POS, inventario, nómina electrónica y tienda en línea
+(revisar su sitio para el detalle vigente). Resuelve muy bien el cumplimiento
+fiscal; la operación diaria de cada rubro queda en segundo plano.
+
+NEXUS apunta a **igualar lo fiscal integrándolo** y a **ganar en todo lo
+demás**:
+
+| Dimensión | Enfoque tipo Alegra | NEXUS |
+| --- | --- | --- |
+| Punto de partida | La factura y la contabilidad | La operación diaria del negocio; la factura y la contabilidad salen de ella |
+| Rubros | Genérico para todos | Se adapta al rubro: términos, módulos y pantallas propias (membresías y control de acceso QR/NFC, taquilla con aforo, obra con APU, Lean y bitácora) |
+| Clientes | Directorio para facturar | CRM 360°: historial, pagos, membresías, notas, carné con QR/NFC |
+| Caja | Caja y bancos | Caja menor real: turnos, arqueo, vales, reposición, soporte escaneado con OCR |
+| Dinero | Registro de pagos | Cobro transaccional: sin cobros duplicados, recibo firmado con QR, anulación auditada; Nequi y pasarelas con conciliación (objetivo) |
+| Atención | — | WhatsApp del negocio y asistente con IA que responde con datos reales (objetivo) |
+| Automatización | Reglas propias del producto | n8n + agentes con herramientas y permisos, MCP de NEXUS (objetivo) |
+| Presencia digital | — | Diagnóstico de presencia, mini-sitio con catálogo, SEO local y Google Business (objetivo) |
+| Facturación DIAN y contabilidad | Propias (es su fuerte) | Por **proveedor tecnológico** detrás de un puerto; contabilidad exportable al contador. Alegra misma podría ser ese proveedor |
+| Precio | Planes cerrados | Hoy códigos de activación a medida; después capacidades con cupos por rubro |
+
+**Regla de producto:** no competir con un contable en su terreno ni reescribir
+lo regulado (firma DIAN, nómina electrónica). Integrarlo bien y diferenciarse
+en operación, rubro, atención e IA.
+
+---
+
+## 2. Objetivos nuevos (2026)
+
+Estos objetivos se agregaron dentro de las subcapas con la marca
+_(objetivo 2026)_; el detalle está en [`docs/PENDIENTES.md`](../docs/PENDIENTES.md).
+
+| Objetivo | Subcapas |
+| --- | --- |
+| **API interna y MCP de NEXUS**: una sola puerta para integraciones y agentes, con permisos, módulos y bitácora | [X.02](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/02-API-Webhooks-y-Marketplace-de-Modulos/README.md) |
+| **Automatizaciones con n8n** conectado por la API y eventos de NEXUS | [VI.08](capas/VI-Operacion-Productividad-y-Logistica/08-Automatizaciones-y-Flujos-de-Trabajo/README.md), [I.05](capas/I-Fundacion-Nucleo-e-Infraestructura/05-Motor-de-Eventos-y-Webhooks/README.md) |
+| **Agente de IA del negocio**: consultas de solo lectura primero, luego acciones con aprobación | [IX.04](capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/04-Copiloto-de-Inteligencia-Artificial/README.md) |
+| **Asistente por WhatsApp** vinculado al negocio y al integrante verificado | [III.01](capas/III-Atencion-y-Comunicacion/01-Agentes-Conversacionales-e-Inteligencia-Artificial/README.md), [III.00](capas/III-Atencion-y-Comunicacion/00-Bandeja-de-Entrada-Omnicanal/README.md) |
+| **Pagos con Nequi** (QR dinámico, confirmación verificable, suscripciones) | [V.00](capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md), [V.02](capas/V-Ventas-Digitales-Comercio-y-Pagos/02-Suscripciones-y-Cobros-Recurrentes/README.md) |
+| **Códigos de activación a medida y cupos de uso** (precio, módulos, límites; IA y mensajes medidos) | [X.00](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/00-Planes-Suscripciones-y-Control-de-Consumo/README.md) |
+| **Factura electrónica por proveedor tecnológico** | [VII.04](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md) |
+
+Reglas que no se negocian en todo lo de IA (ver `docs/PENDIENTES.md` §5.2): el
+servidor decide el negocio y el usuario, el agente responde con datos reales,
+lo que escribe pide confirmación, el dinero solo lo mueve el servicio de
+dinero, todo queda en la bitácora y hay cupos.
+
+---
+
+## 3. Progreso
+
+Cuenta las casillas de *Funcionalidad* de cada subcapa. Una casilla se marca
+solo si existe en el producto, con una nota de dónde (_hecho: …_).
+
+<!-- progreso:inicio -->
+| Capa | Nombre | Nivel N1 (lo básico) | Todas las funcionalidades | |
+| --- | --- | --- | --- | --- |
+| I | [FUNDACIÓN, NÚCLEO E INFRAESTRUCTURA](capas/I-Fundacion-Nucleo-e-Infraestructura/README.md) | 16/34 · 47 % | 19/138 · 14 % | `█░░░░░░░░░` |
+| II | [VISIBILIDAD, CAPTACIÓN Y PRESENCIA DIGITAL](capas/II-Visibilidad-Captacion-y-Presencia-Digital/README.md) | 3/26 · 12 % | 4/169 · 2 % | `░░░░░░░░░░` |
+| III | [ATENCIÓN Y COMUNICACIÓN](capas/III-Atencion-y-Comunicacion/README.md) | 1/9 · 11 % | 1/78 · 1 % | `░░░░░░░░░░` |
+| IV | [GESTIÓN COMERCIAL Y RELACIÓN CON CLIENTES](capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/README.md) | 4/14 · 29 % | 4/92 · 4 % | `░░░░░░░░░░` |
+| V | [VENTAS DIGITALES, COMERCIO Y PAGOS](capas/V-Ventas-Digitales-Comercio-y-Pagos/README.md) | 5/24 · 21 % | 8/162 · 5 % | `░░░░░░░░░░` |
+| VI | [OPERACIÓN, PRODUCTIVIDAD Y LOGÍSTICA](capas/VI-Operacion-Productividad-y-Logistica/README.md) | 7/36 · 19 % | 7/247 · 3 % | `░░░░░░░░░░` |
+| VII | [CAJA MENOR, FINANZAS OPERATIVAS Y CONTABILIDAD](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/README.md) | 9/31 · 29 % | 13/195 · 7 % | `█░░░░░░░░░` |
+| VIII | [TALENTO HUMANO Y ADMINISTRACIÓN DEL EQUIPO](capas/VIII-Talento-Humano-y-Administracion-del-Equipo/README.md) | 0/23 · 0 % | 0/173 · 0 % | `░░░░░░░░░░` |
+| IX | [INTELIGENCIA DE NEGOCIO, ANALÍTICA E IA](capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/README.md) | 8/26 · 31 % | 8/127 · 6 % | `█░░░░░░░░░` |
+| X | [PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/README.md) | 7/18 · 39 % | 12/127 · 9 % | `█░░░░░░░░░` |
+| XI | [ESPECIALIZACIÓN POR VERTICAL](capas/XI-Especializacion-por-Vertical/README.md) | 0/0 · — | 0/0 · — | `` |
+| | **Total** | **60/241 · 25 %** | **76/1508 · 5 %** | |
+
+_Generado con `node scripts/capas-progreso.mjs --write`. La capa XI (construcción) usa pestañas en lugar de casillas: su estado está en su README._
+<!-- progreso:fin -->
+
+Además de lo contado arriba, ya está hecha la base que no aparece como
+casilla: seguridad de la auditoría, servicio de dinero transaccional, matriz de
+permisos, módulos exigidos en el servidor, esquema único con RLS, CI con
+pruebas (ver [remediation-log](../docs/nexus-architecture/remediation-log.md)).
+
+**Construcción (capa XI): N1 completo** — obra con presupuesto APU/AIU, línea
+base, Lean, bitácora con fotos, actas de avance, informes y explosión de
+materiales ([estado](capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/README.md#estado-actual-2026-10-23)).
+
+---
+
+## 4. Ruta por fases
+
+Cada fase deja el producto vendible y se apoya en la anterior. Coincide con
+[product-vision.md §4](../docs/nexus-architecture/product-vision.md).
+
+### Fase 1 · Base estable — ✅ hecha (PR #45, #46)
+
+Seguridad P0/P1, permisos, dinero transaccional, aislamiento por negocio,
+esquema único, CI. Subcapas: I.02 N1, I.03 N1, I.04 N1, I.06 N1, IX.01 N1.
+
+### Fase 2 · Cimientos del sistema — en curso
+
+| Qué | Subcapas | Notas |
+| --- | --- | --- |
+| Registro de capacidades y separar construcción de cotizaciones | X.00, IV.02 | ARCH-01 / ADR-0003 |
+| Códigos de activación a medida | X.00 | Precio, módulos y límites por cliente |
+| Tercero único (cliente, proveedor, empleado) | I.00, I.01 | Base para compras, DIAN y nómina |
+| Importar y exportar (clientes, catálogo) | I.01, IV.00 | Lo primero que pide quien viene de Excel o de otro sistema |
+
+### Fase 3 · Vender, cobrar y facturar
+
+| Qué | Subcapas |
+| --- | --- |
+| POS completo: carrito multi-línea, descuentos, pago mixto, impresora térmica | V.03 |
+| Inventario completo: fotos, variantes, listas de precios, mínimos y reorden, kardex | I.01, VI.04 |
+| Documentos: cotización genérica, pedido, remisión, nota crédito, cartera | V.06, VII.02, VII.03 |
+| Pagos en línea: Nequi y pasarela (link, QR, webhook verificado, conciliación) | V.00, V.01 |
+| Factura electrónica y documento POS por proveedor tecnológico | VII.04 |
+| Compras y proveedores | VI.05 |
+
+### Fase 4 · Atender y automatizar
+
+| Qué | Subcapas |
+| --- | --- |
+| API `/api/v1` + llaves por negocio + MCP de NEXUS | X.02 |
+| Eventos (outbox) y n8n | I.05, VI.08 |
+| Agente de consulta → acciones con aprobación | IX.04 |
+| WhatsApp Business por negocio y asistente | III.00, III.01 |
+| Recordatorios y cobros recurrentes automáticos | VI.01, V.02, II.05 |
+| Cupos de uso y medición de costo | X.00 |
+
+### Fase 5 · Que te encuentren
+
+| Qué | Subcapas |
+| --- | --- |
+| Mini-sitio del negocio con catálogo y reservas | II.00, V.04, V.05 |
+| SEO local y Google Business | II.01 |
+| Redes sociales y contenido | II.06 |
+| Fidelización: puntos, cupones, referidos | II.04 |
+
+### Fase 6 · Equipo, contabilidad y ecosistema
+
+| Qué | Subcapas |
+| --- | --- |
+| Exportación contable y contador externo | VII.05 |
+| Personas: expediente, turnos, asistencia del equipo | VIII.00, VIII.02 |
+| Nómina electrónica (si hay demanda, por proveedor) | VIII.03 |
+| Varios negocios por persona | I.04 N2 |
+| Dashboards por rubro y por rol, reportes automáticos | IX.00, IX.03 |
+
+Lo que no está en ninguna fase (por ejemplo producción y BOM industrial,
+marketplace, telefonía) queda en las capas como posibilidad, sin fecha.
+
+---
+
+## 5. Cómo se mantiene esta guía
+
+1. Al terminar algo, se marca su casilla: `- [x] Texto — _hecho: dónde está_`.
+   Solo se marca lo que existe de punta a punta (pantalla → servidor → base).
+2. Un objetivo nuevo se agrega como casilla en la subcapa y nivel que le
+   corresponden, con la marca _(objetivo AAAA)_.
+3. Se regenera el progreso:
+
+   ```bash
+   node scripts/capas-progreso.mjs --write
+   ```
+
+4. Si cambia el orden de las fases, se actualiza la §4 de este README y
+   `docs/nexus-architecture/product-vision.md`.
+
+## Estructura de la carpeta
+
+```
+.docs/
+├── README.md        ← esta guía (visión, objetivos, progreso, ruta)
+├── capas/           ← 11 capas · 70 subcapas · escalera N0–N6
+│   ├── README.md    ← índice de capas con progreso
+│   └── <capa>/<subcapa>/README.md
+└── fuentes/         ← material de origen (no se edita)
+    ├── DesordenadoCapas.md
+    └── EstructuraCapasImplementacion.md
+```

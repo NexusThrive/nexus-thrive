@@ -4,7 +4,7 @@ capa: "X — PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD"
 titulo: "Planes, suscripciones y control de consumo"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -23,10 +23,10 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Planes fijos
-- [ ] Cobro manual o por link de pago
+- [x] Planes fijos — _hecho: catálogo en `/admin/planes`_
+- [x] Cobro manual o por link de pago — _hecho: cobro manual con comprobante en `/admin/facturacion`_
 - [ ] Estados de cuenta
-- [ ] Periodo de prueba
+- [x] Periodo de prueba — _hecho: códigos de acceso con días_
 
 #### Técnico
 
@@ -38,12 +38,13 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [ ] Cobro recurrente automático
-- [ ] Módulos como complementos
-- [ ] Límites por plan
+- [x] Módulos como complementos — _hecho: plan Elite cobra por módulo_
+- [x] Límites por plan — _hecho: usuarios por plan_
 - [ ] Cambio de plan
 - [ ] Facturas y recibos automáticos
 - [ ] Reintentos de cobro y periodo de gracia
-- [ ] Panel de facturación
+- [x] Panel de facturación — _hecho: `/admin/facturacion`_
+- [ ] Códigos de activación con precio, módulos y límites propios (contrato a medida) _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
 
 #### Técnico
 
@@ -62,6 +63,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Métricas de la plataforma
 - [ ] Panel del SuperAdmin
 - [ ] Reglas de suspensión y reactivación
+- [ ] Cupos de uso por negocio: tokens de IA, ejecuciones de automatizaciones y mensajes _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
 
 #### Técnico
 

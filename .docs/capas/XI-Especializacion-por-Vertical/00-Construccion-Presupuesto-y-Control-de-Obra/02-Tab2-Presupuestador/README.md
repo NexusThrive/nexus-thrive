@@ -6,7 +6,7 @@ titulo: "Tab 2 · Presupuestador APU & AIU"
 type: tab
 capas: "III"
 created: 2026-10-10
-updated: 2026-10-10
+updated: 2026-10-23
 tags: [capas, construccion, tab, apu, presupuesto]
 ---
 
@@ -18,7 +18,7 @@ tags: [capas, construccion, tab, apu, presupuesto]
 
 | Capa | Nombre | Estado |
 | --- | --- | --- |
-| **III** | Presupuesto, APU & AIU | pendiente (brief por redactar) |
+| **III** | Presupuesto, APU & AIU | ✅ N1 implementado (ver README de XI.00) |
 
 ## Baseline N1 (a detallar en el brief de capa III)
 

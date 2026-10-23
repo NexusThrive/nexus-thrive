@@ -4,7 +4,7 @@ capa: "IV — GESTIÓN COMERCIAL Y RELACIÓN CON CLIENTES"
 titulo: "Perfil integral del cliente (CRM 360)"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -26,7 +26,7 @@ tags: [capas, estructura, subcapa]
 - [x] Base de contactos
 - [ ] Empresas / clientes
 - [x] Notas e historial
-- [ ] Etiquetas y estados
+- [x] Etiquetas y estados — _hecho: etiquetas, activo/archivado_
 - [x] Búsqueda y filtros.
 - [ ] Importar y exportar
 

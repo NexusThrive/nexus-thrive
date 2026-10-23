@@ -4,7 +4,7 @@ capa: "VII — CAJA MENOR, FINANZAS OPERATIVAS Y CONTABILIDAD"
 titulo: "Presupuestos y centros de costo"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -25,8 +25,8 @@ tags: [capas, estructura, subcapa]
 
 - [ ] Centros de costo y sucursales
 - [ ] Reporte de gasto e ingreso por centro de costo.
-- [ ] Lista de categorías
-- [ ] Filtro y total por categoría.
+- [x] Lista de categorías — _hecho: categorías de gasto_
+- [x] Filtro y total por categoría. — _hecho: filtro por categoría en Finanzas_
 
 #### Técnico
 

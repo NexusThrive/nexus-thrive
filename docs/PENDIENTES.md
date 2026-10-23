@@ -4,6 +4,8 @@ Lista viva de lo que falta, en orden de prioridad. Cuando algo se termina, se
 marca y se anota dónde quedó (PR o archivo). La visión de producto está en
 [product-vision.md](nexus-architecture/product-vision.md) y la ruta técnica de
 crecimiento en [scaling-path.md](nexus-architecture/scaling-path.md).
+La guía por capas (qué está hecho y qué sigue en cada capacidad) está en
+[`.docs/README.md`](../.docs/README.md).
 
 Actualizado: 2026-10-23.
 

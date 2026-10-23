@@ -4,7 +4,7 @@ capa: "I — FUNDACIÓN, NÚCLEO E INFRAESTRUCTURA"
 titulo: "Permisos granulares y control de acceso (RBAC / ABAC)"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -39,7 +39,7 @@ tags: [capas, estructura, subcapa]
 
 - [ ] Roles personalizables
 - [ ] Permisos sobre datos sensibles
-- [ ] Suspensión y reactivación
+- [x] Suspensión y reactivación — _hecho: retirar integrante conserva su historial; se reactiva al volver a invitarlo_
 - [ ] Plantillas de roles por vertical
 
 #### Técnico

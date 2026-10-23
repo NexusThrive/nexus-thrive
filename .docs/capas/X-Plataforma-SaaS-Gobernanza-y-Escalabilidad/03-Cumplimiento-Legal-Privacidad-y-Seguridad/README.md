@@ -4,7 +4,7 @@ capa: "X — PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD"
 titulo: "Cumplimiento legal, privacidad y seguridad"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -23,8 +23,8 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Política de tratamiento de datos personales
-- [ ] Aviso de privacidad
+- [x] Política de tratamiento de datos personales — _hecho: landing `/privacidad`_
+- [x] Aviso de privacidad — _hecho: landing `/privacidad`, `/terminos`, `/cookies`_
 - [ ] Casilla de autorización
 - [ ] Canal para solicitudes
 

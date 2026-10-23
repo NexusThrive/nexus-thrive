@@ -4,7 +4,7 @@ capa: "III — ATENCIÓN Y COMUNICACIÓN"
 titulo: "Agentes conversacionales e inteligencia artificial"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -23,7 +23,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Respuestas rápidas / plantillas
+- [x] Respuestas rápidas / plantillas — _hecho: plantillas del módulo WhatsApp_
 - [ ] Menú de opciones simple (1\. Reservas, 2\. Precios, 3\. Hablar con alguien).
 
 #### Técnico
@@ -38,6 +38,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Flujos configurables
 - [ ] FAQ automáticas
 - [ ] Chatbot con IA básica
+- [ ] Asistente del negocio por WhatsApp: número vinculado al negocio e integrante verificado _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
 
 #### Técnico
 

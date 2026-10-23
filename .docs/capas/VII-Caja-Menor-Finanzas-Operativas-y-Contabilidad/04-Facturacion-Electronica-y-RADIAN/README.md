@@ -4,7 +4,7 @@ capa: "VII — CAJA MENOR, FINANZAS OPERATIVAS Y CONTABILIDAD"
 titulo: "Facturación electrónica y RADIAN"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -27,6 +27,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Datos del emisor y del adquirente
 - [ ] PDF y XML
 - [ ] Documento soporte
+- [ ] Factura electrónica por proveedor tecnológico detrás de un puerto (`EInvoicePort`); no firmar XML propio _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
 
 #### Técnico
 

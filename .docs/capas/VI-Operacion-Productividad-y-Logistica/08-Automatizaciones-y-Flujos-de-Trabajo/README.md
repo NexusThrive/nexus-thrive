@@ -4,7 +4,7 @@ capa: "VI — OPERACIÓN, PRODUCTIVIDAD Y LOGÍSTICA"
 titulo: "Automatizaciones y flujos de trabajo"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -26,6 +26,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Reglas simples “si pasa X, haz Y”
 - [ ] Activar y desactivar cada regla.
 - [ ] Acciones básicas: enviar mensaje, crear tarea, cambiar estado, notificar al…
+- [ ] n8n conectado a NEXUS por la API con llave del negocio (nunca a la base) _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
 
 #### Técnico
 
@@ -42,6 +43,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Esperas y programación
 - [ ] Variables y plantillas
 - [ ] Historial de ejecuciones
+- [ ] Eventos de NEXUS hacia n8n con outbox transaccional y webhooks firmados _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
 
 #### Técnico
 

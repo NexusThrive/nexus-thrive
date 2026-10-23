@@ -4,7 +4,7 @@ titulo: "ATENCIÓN Y COMUNICACIÓN"
 type: capa
 subcapas: 5
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, capa]
 ---
 
@@ -63,4 +63,4 @@ tags: [capas, estructura, capa]
 
 ---
 
-_Fuente: `DesordenadoCapas.md` (capa `Atencion`) + `EstructuraCapasImplementacion.md`._
+_Fuente: `../../fuentes/DesordenadoCapas.md` (capa `Atencion`) + `../../fuentes/EstructuraCapasImplementacion.md`._

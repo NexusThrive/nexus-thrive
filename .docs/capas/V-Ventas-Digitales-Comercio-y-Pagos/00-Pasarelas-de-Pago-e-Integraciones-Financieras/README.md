@@ -4,7 +4,7 @@ capa: "V — VENTAS DIGITALES, COMERCIO Y PAGOS"
 titulo: "Pasarelas de pago e integraciones financieras"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -26,6 +26,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Una pasarela (Wompi o la que elijas) conectada
 - [ ] Pago con tarjeta, PSE y Nequi desde un checkout alojado por la pasarela.
 - [ ] Confirmación de pago por webhook y estado visible en la orden.
+- [ ] Nequi Negocios: QR dinámico e intención de cobro; solo se registra el ingreso con el estado oficial _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
 
 #### Técnico
 

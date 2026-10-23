@@ -6,7 +6,7 @@ titulo: "Tab 3 · Planificador Lean"
 type: tab
 capas: "V"
 created: 2026-10-10
-updated: 2026-10-10
+updated: 2026-10-23
 tags: [capas, construccion, tab, lean, lookahead, wwp, ppc]
 ---
 
@@ -18,7 +18,7 @@ tags: [capas, construccion, tab, lean, lookahead, wwp, ppc]
 
 | Capa | Nombre | Estado |
 | --- | --- | --- |
-| **V** | Planificación Lean | pendiente (brief por redactar) |
+| **V** | Planificación Lean | ✅ N1 implementado (ver README de XI.00) |
 
 ## Baseline N1 (a detallar en el brief de capa V)
 

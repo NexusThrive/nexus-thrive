@@ -4,7 +4,7 @@ capa: "V — VENTAS DIGITALES, COMERCIO Y PAGOS"
 titulo: "Suscripciones y cobros recurrentes"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -30,6 +30,7 @@ tags: [capas, estructura, subcapa]
 
 - [x] Planes de suscripción
 - [ ] Recordatorios antes del cobro
+- [ ] Cobro recurrente con Nequi o la pasarela elegida, con autorización del cliente _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
 
 #### Técnico
 
