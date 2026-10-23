@@ -80,7 +80,7 @@ las pruebas automáticas encuentran una parte de los problemas, no todos.
 
 | Qué | Cómo | Dónde |
 |---|---|---|
-| Reglas automáticas WCAG 2.2 AA | axe-core en Playwright, tema claro y oscuro | `e2e/a11y.spec.ts` (`pnpm test:e2e`, corre en CI) |
+| Reglas automáticas WCAG 2.2 AA | axe-core en Playwright, tema claro y oscuro | `e2e/a11y.spec.ts` (`pnpm test:e2e`) |
 | Foco, teclado, Escape, devolución del foco, foco atrapado | Playwright | `e2e/overlays.spec.ts`, `e2e/context-help.spec.ts` |
 | Táctil y móvil | Playwright con Pixel 7 | proyecto `movil` |
 | Movimiento reducido | Playwright con `reducedMotion: "reduce"` | `e2e/overlays.spec.ts` |

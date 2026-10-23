@@ -246,7 +246,9 @@ Reglas:
    en la §3.
 3. ¿Cambió un patrón de interacción? Se actualiza
    `docs/design/interaction-patterns.md` en el mismo PR.
-4. `pnpm test:e2e` (Playwright + axe sobre Storybook) corre en el CI.
+4. `pnpm test:e2e` (Playwright + axe sobre Storybook) antes de abrir el PR.
+   Pendiente: sumarlo al CI (`.github/workflows/ci.yml`; el cambio está
+   descrito en el PR del rediseño, requiere permiso `workflow`).
 5. `lib/design/ui-rules.test.ts` (en `pnpm test`) falla si aparece un
    `window.confirm`, un modal hecho a mano, el Dialog/Sheet deprecado o un
    `z-index` numérico fuera de sus listas de deuda, que solo se achican.

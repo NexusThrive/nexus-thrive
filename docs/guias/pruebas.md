@@ -2,7 +2,7 @@
 
 [← Guías](README.md)
 
-NEXUS tiene cuatro capas de verificación. Las cuatro corren en el CI
+NEXUS tiene cuatro capas de verificación. Las tres primeras corren en el CI
 (`.github/workflows/ci.yml`) en cada PR y en cada push a `main`.
 
 | Capa | Qué comprueba | Comando | Necesita base |
@@ -10,7 +10,7 @@ NEXUS tiene cuatro capas de verificación. Las cuatro corren en el CI
 | Estática | Tipos y reglas de lint (incluidas las de arquitectura) | `pnpm exec tsc --noEmit` · `pnpm lint` | No |
 | Unitaria | Reglas puras: permisos, cálculos, validaciones, y pruebas que leen el código (arquitectura) | `pnpm test` | No |
 | Integración | Lo que pasa contra Postgres de verdad: dinero, aislamiento, invitaciones, construcción | `pnpm test:integration` | Sí, una aparte |
-| Navegador | Componentes compartidos en Storybook: diálogos, paneles, foco, teclado, táctil, movimiento reducido y axe (WCAG 2.2 AA) | `pnpm test:e2e` | No |
+| Navegador | Componentes compartidos en Storybook: diálogos, paneles, foco, teclado, táctil, movimiento reducido y axe (WCAG 2.2 AA). Aún no en el CI | `pnpm test:e2e` | No |
 
 `pnpm verify` corre todo seguido, más el build.
 
