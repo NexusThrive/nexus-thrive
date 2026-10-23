@@ -136,17 +136,6 @@ export async function createMembershipAction(
   const status = computeMembershipStatus(endInstant, now);
 
   const priceAmount = String(Number(price.replace(",", ".")));
-  const paymentEntry = registerInitialPayment
-    ? [
-        {
-          kind: "inicial" as const,
-          date: new Date().toISOString(),
-          amount: priceAmount,
-          provider,
-        },
-      ]
-    : [];
-
   // La membresía y su cobro inicial (recibo consecutivo; en efectivo entra a
   // la caja abierta) pasan juntos o no pasan: lib/business/money-service.ts.
   await moneyTransaction(async (tx) => {
@@ -158,7 +147,6 @@ export async function createMembershipAction(
       endDate: endInstant,
       status,
       price: priceAmount,
-      payments: paymentEntry,
     });
     if (registerInitialPayment) {
       await recordCharge(
@@ -186,8 +174,8 @@ export async function createMembershipAction(
  * Renueva una membresía por un período completo del mismo plan:
  * - Si está vencida: la nueva vigencia corre desde HOY.
  * - Si sigue vigente: se extiende desde su `endDate` actual (sin gap).
- * Recalcula `status`, agrega el cobro al historial `payments` (Json) y,
- * opcionalmente, registra el pago de renovación como `APPROVED`.
+ * Recalcula `status` y, opcionalmente, registra el pago de renovación como
+ * `APPROVED`. El historial de cobros es el de `Payment` (DATA-02).
  */
 export async function renewMembershipAction(
   _prevState: RenewalFormState,
@@ -233,22 +221,12 @@ export async function renewMembershipAction(
   const newStatus = computeMembershipStatus(newEndInstant, now);
 
   const priceAmount = String(membership.price);
-  const history = [
-    ...membership.payments,
-    {
-      kind: "renovacion" as const,
-      date: new Date().toISOString(),
-      amount: priceAmount,
-      provider,
-    },
-  ];
 
   // Renovación y cobro, juntos o nada.
   await moneyTransaction(async (tx) => {
     await tx.orm.public.Membership.where({ id: membershipId, tenantId: tenantDb.tenantId }).update({
       endDate: newEndInstant,
       status: newStatus,
-      payments: history,
     });
     if (registerPayment) {
       await recordCharge(

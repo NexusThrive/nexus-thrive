@@ -124,7 +124,6 @@ export async function saveCustomerAction(form: FormData): Promise<CustomerSaveRe
           endDate: endInstant,
           status: computeMembershipStatus(endInstant, now),
           price: plan.price.toFixed(2),
-          payments: pay ? [{ kind: "inicial", date: new Date().toISOString(), amount: plan.price.toFixed(2), provider: method }] : [],
         });
         if (pay) {
           await recordIncome(

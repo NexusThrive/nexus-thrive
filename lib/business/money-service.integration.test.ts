@@ -4,6 +4,8 @@ import { createAdminDb } from "@/lib/admin/db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { createCashBox, openCashSession } from "./finance-db";
 import { createInvoice } from "./invoices-db";
+import { createTenantDb } from "@/lib/tenant/db";
+import { recordCharge } from "./charge";
 import { moneyTransaction, payInvoice, recordIncome, recordIncomeNow, sellProduct, voidPayment } from "./money-service";
 
 /**
@@ -145,6 +147,42 @@ describe.skipIf(!enabled)("servicio de dinero (integración)", () => {
     expect((await db.orm.public.Product.where({ tenantId, id: product.id }).first())?.stock).toBe(0);
     expect(await payments({ sourceType: "SALE", sourceId: product.id })).toHaveLength(1);
     expect(await db.orm.public.StockMovement.where({ tenantId, productId: product.id }).all()).toHaveLength(1);
+  });
+
+  // DATA-02: el historial de una membresía sale de Payment y refleja anulaciones.
+  test("el historial de la membresía es el de Payment, con sus anulaciones", async () => {
+    const customer = await db.orm.public.Customer.create({ tenantId, name: "Socia Prueba" });
+    const membershipId = await moneyTransaction(async (tx) => {
+      const m = await tx.orm.public.Membership.create({
+        tenantId,
+        customerId: customer.id,
+        type: "mensual",
+        startDate: Temporal.Instant.fromEpochMilliseconds(Date.now()),
+        endDate: Temporal.Instant.fromEpochMilliseconds(Date.now() + 30 * 86_400_000),
+        price: "90000.00",
+      });
+      await recordCharge(
+        tenantId,
+        { customerId: customer.id, membershipId: m.id, method: "TRANSFER", amount: 90000, description: "Membresía Mensual — cobro inicial", sourceType: "MEMBERSHIP", sourceId: m.id },
+        user,
+        tx,
+      );
+      return m.id;
+    });
+    const renewal = await recordCharge(
+      tenantId,
+      { customerId: customer.id, membershipId, method: "TRANSFER", amount: 90000, description: "Membresía Mensual — renovación", sourceType: "MEMBERSHIP", sourceId: membershipId },
+      user,
+    );
+
+    const tenantDb = createTenantDb(tenantId);
+    const detail = await tenantDb.memberships.get(membershipId);
+    expect(detail?.payments.map((p) => p.kind)).toEqual(["inicial", "renovacion"]);
+    expect((await db.orm.public.Membership.where({ tenantId, id: membershipId }).first())?.payments ?? null).toBeNull();
+
+    await voidPayment(tenantId, renewal.paymentId, "Cobro repetido", user);
+    const after = await tenantDb.memberships.get(membershipId);
+    expect(after?.payments.find((p) => p.paymentId === renewal.paymentId)?.status).toBe("VOIDED");
   });
 
   test("anular dos veces a la vez devuelve el efectivo a la caja una sola vez", async () => {

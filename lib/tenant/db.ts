@@ -165,7 +165,7 @@ function membershipHold(m: { frozenFrom?: unknown; frozenUntil?: unknown; cancel
   return null;
 }
 
-/** Detalle de membresía con historial de cobros (Json). */
+/** Detalle de membresía con su historial de cobros (de `Payment`). */
 export type MembershipDetail = MembershipRow & {
   payments: MembershipPaymentEntry[];
 };
@@ -1332,7 +1332,7 @@ export function createTenantDb(tenantId: string) {
       },
 
       /**
-       * Detalle de una membresía (incluye historial de cobros Json).
+       * Detalle de una membresía con su historial de cobros (de `Payment`).
        * Devuelve `null` si no existe en este tenant.
        */
       get: async (id: string): Promise<MembershipDetail | null> => {
@@ -1347,9 +1347,21 @@ export function createTenantDb(tenantId: string) {
           return null;
         }
 
-        const payments: MembershipPaymentEntry[] = Array.isArray(membership.payments)
-          ? (membership.payments as unknown as MembershipPaymentEntry[])
-          : [];
+        // El historial sale de Payment, no del Json (DATA-02).
+        const charges = await db.orm.public.Payment
+          .where({ tenantId, membershipId: id })
+          .select("id", "description", "createdAt", "amount", "provider", "status", "receiptNumber")
+          .orderBy((p) => p.createdAt.asc())
+          .all();
+        const payments: MembershipPaymentEntry[] = charges.map((p) => ({
+          paymentId: p.id,
+          kind: /renovaci[oó]n/i.test(p.description ?? "") ? "renovacion" : "inicial",
+          date: String(p.createdAt),
+          amount: String(p.amount),
+          provider: p.provider,
+          status: p.status,
+          receiptNumber: p.receiptNumber ?? null,
+        }));
 
         return {
           id: membership.id,

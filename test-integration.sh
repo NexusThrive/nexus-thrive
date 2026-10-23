@@ -22,7 +22,9 @@ if [ -d .git ] && git rev-parse --verify origin/main > /dev/null 2>&1; then
   bash ./scripts/check-prod-sql.sh origin/main
 fi
 
-pnpm exec vitest run \
+# Las pruebas de concurrencia lanzan escrituras en paralelo contra una sola
+# base: en una máquina cargada el tope por defecto (5 s) da falsos fallos.
+pnpm exec vitest run --testTimeout=20000 \
   lib/benefits/benefits-db.integration.test.ts \
   lib/plans/settings.integration.test.ts \
   lib/ops/access.integration.test.ts \

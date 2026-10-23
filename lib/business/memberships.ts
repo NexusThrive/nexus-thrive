@@ -177,12 +177,19 @@ export function plusDays(instant: Temporal.Instant, days: number): Temporal.Inst
   );
 }
 
-/** Un elemento del historial `payments` (Json) de una membresía. */
+/**
+ * Un cobro del historial de una membresía. Sale de `Payment` (la única fuente
+ * del dinero, DATA-02): refleja anulaciones. El Json `Membership.payments` ya
+ * no se escribe ni se lee; se retira con una migración.
+ */
 export type MembershipPaymentEntry = {
+  paymentId: string;
   kind: "inicial" | "renovacion";
   date: string;
   amount: string;
   provider: string;
+  status: string;
+  receiptNumber: number | null;
 };
 
 /**
