@@ -4,7 +4,7 @@ capa: "V — VENTAS DIGITALES, COMERCIO Y PAGOS"
 titulo: "Ventas, pedidos y entregas"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -26,7 +26,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Cotización, pedido y factura o recibo
 - [ ] Estados: borrador, enviada, aceptada, facturada, anulada.
 - [ ] PDF con la marca del negocio y envío por WhatsApp o correo.
-- [ ] Cuenta por cobrar
+- [x] Cuenta por cobrar — _hecho: cuentas de cobro numeradas en Facturación_
 
 #### Técnico
 

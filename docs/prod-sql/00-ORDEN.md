@@ -19,7 +19,15 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 8 | `2026-10-21-reinicio-de-datos.sql` | Vacía los datos de negocio (no es de esquema; solo si quieres empezar de cero) | opcional |
 | 9 | `2026-10-23-restricciones-negocio-y-rls.sql` | Llaves a `Tenant` en 22 tablas, código de acceso y NFC únicos por negocio, RLS en las 71 tablas, retira `Membership.payments` | **PENDIENTE** |
 
-## Lo que falta ahora: elige un camino
+## Estado: producción reconstruida desde las migraciones (camino A, 2026-10-23)
+
+Producción quedó con 71 tablas, RLS en todas, los 5 roles del panel y
+`santiagocastellar201022@gmail.com` como Propietario. **Los archivos de esta
+carpeta ya no se corren**: los cambios de esquema llegan con
+`pnpm exec prisma db migrate --db <producción>` antes de mergear. Se conservan
+como historial.
+
+## Los dos caminos (referencia)
 
 Producción todavía no tiene datos que conservar, así que hay dos caminos. El
 **A** acaba con el problema de raíz (DATA-03: dos fuentes del esquema).

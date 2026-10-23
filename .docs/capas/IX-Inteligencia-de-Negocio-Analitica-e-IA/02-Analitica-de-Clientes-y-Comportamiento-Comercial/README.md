@@ -4,7 +4,7 @@ capa: "IX — INTELIGENCIA DE NEGOCIO, ANALÍTICA E IA"
 titulo: "Analítica de clientes y comportamiento comercial"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -23,7 +23,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Ficha del cliente con totales
+- [x] Ficha del cliente con totales — _hecho: ficha 360° con métricas_
 - [ ] Clientes nuevos vs. recurrentes.
 - [ ] Origen del cliente
 - [ ] Lista de clientes inactivos.

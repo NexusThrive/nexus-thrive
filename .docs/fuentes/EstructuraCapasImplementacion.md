@@ -1,3 +1,15 @@
+---
+title: "Estructura de Capas de Implementación — sistema I–XI"
+type: estructura
+tags: [capas, estructura, sistema]
+---
+# Estructura de Capas de Implementación
+
+> **Mapa oficial del sistema de capas** (11 capas, 70 subcapas, escaleras N0–N6).
+> Cada capa `X.CAPA` es un área de negocio; cada `NN.SUBCAPA` una capacidad;
+> cada `NX.NIVEL` una etapa de madurez (N1–N4 con contenido en `DesordenadoCapas.md`).
+> Coherente con el índice generado en `../capas/README.md`.
+
 I.CAPA — FUNDACIÓN, NÚCLEO E INFRAESTRUCTURA
 ├── 00.SUBCAPA — Núcleo transversal y modelo de tercero único
 │   ├── N0.NIVEL — Fundamento del modelo de terceros

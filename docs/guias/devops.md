@@ -82,9 +82,8 @@ El CI descarga el historial completo (`fetch-depth: 0`) y, en cada PR, corre
 `check-prod-sql.sh` contra la rama base antes de los tipos: un PR que cambie el
 contrato sin su SQL falla en el primer minuto.
 
-**Salida (DATA-03):** que producción se migre con las mismas migraciones que
-el CI. Como producción aún no tiene datos que conservar, `scripts/rebuild-db.sh`
-la reconstruye desde las migraciones (camino A de `docs/prod-sql/00-ORDEN.md`).
+**Esquema único (DATA-03):** producción se reconstruyó desde las migraciones
+el 2026-10-23 con `scripts/rebuild-db.sh` y tiene el mismo esquema que el CI.
 Desde ahí, cada versión con cambios de esquema corre
 `pnpm exec prisma db migrate --db <producción>` antes de mergear, y el SQL
 manual se retira.
@@ -152,7 +151,6 @@ Siguiente paso, en este orden:
 
 | Falta | Esfuerzo | Efecto |
 |---|---|---|
-| Reconstruir producción desde las migraciones (DATA-03) | 10 min con `scripts/rebuild-db.sh` | Se acaba el SQL manual |
 | Migrar producción desde el despliegue (paso en CI o en Vercel) | Horas | Nadie tiene que acordarse de migrar |
 | Errores con contexto + health check | Horas | Te enteras antes que el cliente |
 | Base de pruebas para previews de Vercel | Horas | Probar un PR con datos sin tocar producción |

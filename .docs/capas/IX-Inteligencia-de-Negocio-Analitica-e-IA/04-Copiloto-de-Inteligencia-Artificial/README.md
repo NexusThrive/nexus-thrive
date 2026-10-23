@@ -4,7 +4,7 @@ capa: "IX — INTELIGENCIA DE NEGOCIO, ANALÍTICA E IA"
 titulo: "Copiloto de inteligencia artificial"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -26,6 +26,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Asistente de consultas básicas
 - [ ] Resumen de una conversación
 - [ ] Redacción asistida
+- [ ] Agente de consulta de solo lectura: ventas, caja, clientes e inventario con datos reales _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
 
 #### Técnico
 
@@ -59,6 +60,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Controles y límites
 - [ ] Registro de cada consulta y acción
 - [ ] Retroalimentación
+- [ ] El agente prepara acciones (recordatorios, mensajes, tareas) y una persona las aprueba _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
 
 #### Técnico
 

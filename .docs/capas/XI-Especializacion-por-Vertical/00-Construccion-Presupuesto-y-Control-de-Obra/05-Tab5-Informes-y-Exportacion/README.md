@@ -6,7 +6,7 @@ titulo: "Tab 5 · Informes & Exportación"
 type: tab
 capas: "IX · XI · XII"
 created: 2026-10-10
-updated: 2026-10-10
+updated: 2026-10-23
 tags: [capas, construccion, tab, informes, export, bom]
 ---
 
@@ -18,9 +18,9 @@ tags: [capas, construccion, tab, informes, export, bom]
 
 | Capa | Nombre | Estado |
 | --- | --- | --- |
-| **IX** | Informe Cero (línea base) | pendiente (brief por redactar) |
-| **XI** | Informe Semanal / control | pendiente (brief por redactar) |
-| **XII** | Explosión BOM & exportación | pendiente (brief por redactar) |
+| **IX** | Informe Cero (línea base) | ✅ N1 implementado (ver README de XI.00) |
+| **XI** | Informe Semanal / control | ✅ N1 implementado (ver README de XI.00) |
+| **XII** | Explosión BOM & exportación | ✅ N1 implementado (explosión de materiales con exportación CSV en Informes) |
 
 ## Baseline N1 (a detallar en los briefs)
 

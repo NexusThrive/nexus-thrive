@@ -4,7 +4,7 @@ titulo: "OPERACIÓN, PRODUCTIVIDAD Y LOGÍSTICA"
 type: capa
 subcapas: 9
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, capa]
 ---
 
@@ -84,4 +84,4 @@ tags: [capas, estructura, capa]
 
 ---
 
-_Fuente: `DesordenadoCapas.md` (capa `Operacion`) + `EstructuraCapasImplementacion.md`._
+_Fuente: `../../fuentes/DesordenadoCapas.md` (capa `Operacion`) + `../../fuentes/EstructuraCapasImplementacion.md`._

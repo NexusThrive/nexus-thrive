@@ -9,7 +9,7 @@ capas_dominio: 14
 escalera: "N0 · N1 · N2 · N3 · N4"
 rama: "feature/construction-apu-engine"
 created: 2026-10-08
-updated: 2026-10-10
+updated: 2026-10-23
 tags: [capas, estructura, subcapa, construccion, apu]
 ---
 
@@ -101,14 +101,27 @@ Reglas derivadas:
 └── 05-Tab5-Informes-y-Exportacion/ ← capas IX · XI · XII
 ```
 
-## Estado actual (lo ya construido que se reubica)
+## Estado actual (2026-10-23)
 
-Lo que hoy existe en `app/[tenant]/(app)/quotes` y en Prisma (`Quote`, `QuoteItem`, `ApuItem`, `ApuActivity`, `ApuActivityComposition`) se reubica así:
+**N1 implementado de punta a punta y con pruebas de integración.** La obra vive en
+`app/[tenant]/(app)/projects/[projectId]` (no en `/quotes/projects/` como decía el
+plan original) y el catálogo APU en `/catalog`.
 
-- **Capa III (Tab 2)** — presupuesto por capítulos, APU básico, AIU, importar/exportar, biblioteca de APU, análisis de insumos.
-- **Capa I (Tab 1)** — aún no implementada; el CRM `Customer` es el punto de partida.
+| Tab | Ruta | Estado |
+| --- | --- | --- |
+| 1 · Ficha, cliente y encabezado | `/projects/{id}` | ✅ Implementado (ficha, cliente del CRM, estado de la obra) |
+| 2 · Presupuesto APU & AIU | `/projects/{id}/budget`, `/catalog`, `/catalog/import` | ✅ Implementado (capítulos, partidas, AIU, línea base, bloqueo, importador del libro APU, historial de precios, fotos) |
+| — · Cotizaciones de la obra | `/projects/{id}/quotes`, `/quotes` | ✅ Implementado (carpetas, versiones, seguimientos, impresión) |
+| 3 · Planificador Lean | `/projects/{id}/lean` | ✅ Implementado (lookahead y compromisos semanales) |
+| 4 · Bitácora y campo | `/projects/{id}/field-log` | ✅ Implementado (diario de campo) |
+| 5 · Informes y avance | `/projects/{id}/progress`, `/projects/{id}/reports` | ✅ Implementado (actas de avance, informes) |
 
-Las capacidades pendientes (cronograma, bitácora, informes, imágenes, versiones, EVM) corresponden a las capas V, VII, VIII, IX, XI, XII.
+Permisos de la obra en la matriz única (`budget.*`, `apu.*`, `projects.*`,
+`fieldLog.*`, `lean.plan` en `lib/business/permissions.ts`).
+
+**Pendiente:** separar esta suite del módulo genérico `quotes` (ARCH-01: hoy un
+mecánico o un guía turístico ve "Catálogo APU"), definir las capas II, IV, VI, X
+y XIV, y los niveles N2–N4.
 
 ---
 

@@ -4,7 +4,7 @@ capa: "X — PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD"
 titulo: "API, webhooks y marketplace de módulos"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -26,6 +26,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Llaves de API por negocio
 - [ ] API REST documentada
 - [ ] Límite de peticiones
+- [ ] API interna `/api/v1` de solo lectura sobre los repositorios de `lib/` (contexto, permisos, módulos y bitácora) _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
 
 #### Técnico
 
@@ -41,6 +42,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Versionado de la API
 - [ ] OAuth 2.0
 - [ ] Conectores listos
+- [ ] MCP de NEXUS: capa delgada sobre la misma API, sin reglas propias _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
 
 #### Técnico
 

@@ -4,7 +4,7 @@ capa: "I — FUNDACIÓN, NÚCLEO E INFRAESTRUCTURA"
 titulo: "Auditoría, trazabilidad y bitácora"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -23,9 +23,9 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Registro de acciones críticas
+- [x] Registro de acciones críticas — _hecho: `logTenantAction` (anular, borrar, roles, módulos, borrar negocio) + bitácora del panel_
 - [ ] Inicios de sesión
-- [ ] Consulta simple
+- [x] Consulta simple — _hecho: Auditoría en `/admin/auditoria` (equipo NEXUS)_
 
 #### Técnico
 
@@ -37,11 +37,11 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [ ] Registro en todos los módulos
-- [ ] Búsqueda y filtros
+- [x] Búsqueda y filtros — _hecho: filtros en `/admin/auditoria`_
 - [ ] Línea de tiempo por registro
 - [ ] Dirección IP, dispositivo y ubicación aproximada
 - [ ] Exportar
-- [ ] Registro de acciones del SuperAdmin
+- [x] Registro de acciones del SuperAdmin — _hecho: bitácora del panel, incluida la suplantación_
 
 #### Técnico
 

@@ -4,7 +4,7 @@ capa: "X — PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD"
 titulo: "Centro de ayuda y onboarding"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -23,8 +23,8 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Centro de ayuda
-- [ ] Botón de soporte
+- [x] Centro de ayuda — _hecho: landing `/help`_
+- [x] Botón de soporte — _hecho: WhatsApp de NEXUS_
 - [ ] Videos cortos
 
 #### Técnico
@@ -36,8 +36,8 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Onboarding guiado paso a paso
-- [ ] Plantilla de arranque por vertical
+- [x] Onboarding guiado paso a paso — _hecho: wizard adaptativo `/onboarding`_
+- [x] Plantilla de arranque por vertical — _hecho: presets por rubro_
 - [ ] Ayuda contextual dentro de la app
 - [ ] Buscador del centro de ayuda
 - [ ] Importación asistida

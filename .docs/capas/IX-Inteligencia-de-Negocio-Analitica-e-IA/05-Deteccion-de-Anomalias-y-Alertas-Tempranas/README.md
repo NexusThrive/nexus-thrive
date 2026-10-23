@@ -4,7 +4,7 @@ capa: "IX — INTELIGENCIA DE NEGOCIO, ANALÍTICA E IA"
 titulo: "Detección de anomalías y alertas tempranas"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -23,7 +23,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Alertas por reglas fijas
+- [x] Alertas por reglas fijas — _hecho: avisos de vencimientos, stock bajo y citas (solo en la app)_
 - [ ] Entrega por la app, correo o WhatsApp.
 - [ ] Activar o desactivar
 

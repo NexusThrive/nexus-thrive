@@ -4,7 +4,7 @@ capa: "VI — OPERACIÓN, PRODUCTIVIDAD Y LOGÍSTICA"
 titulo: "Inventarios, bodegas y logística"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -23,9 +23,9 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Entradas, salidas y existencias
-- [ ] Ajustes manuales con motivo.
-- [ ] Stock actual
+- [x] Entradas, salidas y existencias — _hecho: movimientos de stock_
+- [x] Ajustes manuales con motivo. — _hecho: salida o ajuste exige motivo_
+- [x] Stock actual — _hecho: Catálogo_
 - [ ] Descuento automático al facturar y suma al recibir compras.
 
 #### Técnico

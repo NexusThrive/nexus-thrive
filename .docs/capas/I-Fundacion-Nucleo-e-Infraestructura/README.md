@@ -4,7 +4,7 @@ titulo: "FUNDACIÓN, NÚCLEO E INFRAESTRUCTURA"
 type: capa
 subcapas: 8
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, capa]
 ---
 
@@ -90,4 +90,4 @@ tags: [capas, estructura, capa]
 
 ---
 
-_Fuente: `DesordenadoCapas.md` (capa `ERP`) + `EstructuraCapasImplementacion.md`._
+_Fuente: `../../fuentes/DesordenadoCapas.md` (capa `ERP`) + `../../fuentes/EstructuraCapasImplementacion.md`._

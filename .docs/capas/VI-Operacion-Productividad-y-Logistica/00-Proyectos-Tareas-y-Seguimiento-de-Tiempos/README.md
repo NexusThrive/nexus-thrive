@@ -4,7 +4,7 @@ capa: "VI — OPERACIÓN, PRODUCTIVIDAD Y LOGÍSTICA"
 titulo: "Proyectos, tareas y seguimiento de tiempos"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -23,7 +23,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Proyectos con responsable, fechas y estado.
+- [x] Proyectos con responsable, fechas y estado. — _hecho: obras (vertical construcción)_
 - [ ] Tareas con título, responsable, fecha límite y prioridad.
 - [ ] Vista de lista y tablero Kanban (por hacer, en curso, hecho).
 - [ ] Comentarios y adjuntos por tarea.

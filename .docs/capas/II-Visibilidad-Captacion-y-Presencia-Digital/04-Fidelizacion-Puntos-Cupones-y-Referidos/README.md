@@ -4,7 +4,7 @@ capa: "II — VISIBILIDAD, CAPTACIÓN Y PRESENCIA DIGITAL"
 titulo: "Fidelización, puntos, cupones y referidos"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -25,7 +25,7 @@ tags: [capas, estructura, subcapa]
 
 - [ ] Cupones de descuento
 - [ ] Registro de clientes frecuentes
-- [ ] Membresías simples
+- [x] Membresías simples — _hecho: módulo Membresías_
 
 #### Técnico
 
@@ -40,7 +40,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Referidos
 - [ ] Membresías con cobro recurrente
 - [ ] Cupones por segmento
-- [ ] Tarjeta digital o QR de cliente
+- [x] Tarjeta digital o QR de cliente — _hecho: carné `/crm/{id}/carnet` con QR y NFC_
 
 #### Técnico
 

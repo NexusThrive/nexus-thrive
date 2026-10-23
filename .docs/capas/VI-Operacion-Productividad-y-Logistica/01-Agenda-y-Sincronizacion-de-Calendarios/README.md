@@ -4,7 +4,7 @@ capa: "VI — OPERACIÓN, PRODUCTIVIDAD Y LOGÍSTICA"
 titulo: "Agenda y sincronización de calendarios"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -23,9 +23,9 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Calendario con citas manuales (cliente, fecha, hora, servicio).
-- [ ] Recordatorio por WhatsApp o correo
-- [ ] Estados: pendiente, confirmada, cancelada, atendida.
+- [x] Calendario con citas manuales (cliente, fecha, hora, servicio). — _hecho: Agenda_
+- [x] Recordatorio por WhatsApp o correo — _hecho: manual por WhatsApp (wa.me)_
+- [x] Estados: pendiente, confirmada, cancelada, atendida. — _hecho: `BookingStatus`_
 
 #### Técnico
 

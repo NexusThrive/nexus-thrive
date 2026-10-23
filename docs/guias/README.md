@@ -15,5 +15,6 @@ Visión y crecimiento:
 
 | Documento | Para qué |
 |---|---|
+| [../PENDIENTES.md](../PENDIENTES.md) | Lo que falta, en orden: tareas, deuda, códigos de activación, presupuesto y la ruta hacia automatizaciones y agentes de IA |
 | [product-vision.md](../nexus-architecture/product-vision.md) | NEXUS como sistema operativo del negocio en Colombia: capacidades, DIAN y orden de construcción |
 | [scaling-path.md](../nexus-architecture/scaling-path.md) | Cómo pasar del monolito modular a servicios cuando haga falta |

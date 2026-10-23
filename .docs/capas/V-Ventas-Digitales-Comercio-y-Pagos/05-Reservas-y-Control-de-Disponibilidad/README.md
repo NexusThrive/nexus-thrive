@@ -4,7 +4,7 @@ capa: "V — VENTAS DIGITALES, COMERCIO Y PAGOS"
 titulo: "Reservas y control de disponibilidad"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -24,7 +24,7 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [ ] Formulario de solicitud de reserva
-- [ ] Calendario de disponibilidad
+- [x] Calendario de disponibilidad — _hecho: agenda con cupos; taquilla con franjas y aforo_
 - [ ] Confirmación manual por WhatsApp o correo.
 
 #### Técnico

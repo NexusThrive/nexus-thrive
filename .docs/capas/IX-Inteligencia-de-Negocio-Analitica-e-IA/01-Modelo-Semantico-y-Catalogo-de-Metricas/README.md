@@ -4,7 +4,7 @@ capa: "IX — INTELIGENCIA DE NEGOCIO, ANALÍTICA E IA"
 titulo: "Modelo semántico y catálogo de métricas"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -25,11 +25,11 @@ tags: [capas, estructura, subcapa]
 
 - [ ] Capa de datos unificada
 - [ ] Modelo semántico / catálogo de métricas
-- [ ] Eventos y cronología del cliente
-- [ ] Aislamiento multi-tenant
-- [ ] Permisos sobre datos
+- [x] Eventos y cronología del cliente — _hecho: línea de tiempo en la ficha 360°_
+- [x] Aislamiento multi-tenant — _hecho: contexto del negocio en el servidor + FK a `Tenant` + RLS_
+- [x] Permisos sobre datos — _hecho: matriz `lib/business/permissions.ts`_
 - [ ] Calidad de datos
-- [ ] Motor de notificaciones
+- [x] Motor de notificaciones — _hecho: avisos derivados en la barra (vencimientos, stock bajo, citas)_
 - [ ] Registro inmutable de eventos del sistema
 
 #### Técnico

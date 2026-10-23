@@ -4,7 +4,7 @@ capa: "II — VISIBILIDAD, CAPTACIÓN Y PRESENCIA DIGITAL"
 titulo: "Email y WhatsApp marketing"
 type: subcapa
 created: 2026-10-08
-updated: 2026-10-08
+updated: 2026-10-23
 tags: [capas, estructura, subcapa]
 ---
 
@@ -25,7 +25,7 @@ tags: [capas, estructura, subcapa]
 
 - [ ] Listas de contactos, importación y exportación.
 - [ ] Envío de correo
-- [ ] Envío de WhatsApp
+- [x] Envío de WhatsApp — _hecho: manual: abre WhatsApp con la plantilla (wa.me); sin API_
 - [ ] Baja automática (unsubscribe) y registro de opt-in.
 
 #### Técnico

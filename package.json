@@ -13,7 +13,8 @@
     "verify": "pnpm exec tsc --noEmit && pnpm test --run 2>&1 | tail -3 && pnpm test:integration 2>&1 | tail -3 && pnpm build 2>&1 | grep -E '○|ƒ' | tail -2",
     "release": "bash ./scripts/release.sh",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build -o storybook-static"
+    "build-storybook": "storybook build -o storybook-static",
+    "docs:progreso": "node scripts/capas-progreso.mjs --write"
   },
   "dependencies": {
     "@clerk/localizations": "^4.23.0",
