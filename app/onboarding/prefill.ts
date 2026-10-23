@@ -8,7 +8,7 @@
  */
 
 import { db } from "@/prisma/db";
-import { sortModules, type ModuleValue } from "@/lib/admin-catalogs";
+import { sortModules, type ModuleValue } from "@/lib/admin/catalogs";
 import {
   EMPTY_DRAFT,
   type OnboardingDraft,

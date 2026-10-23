@@ -7,7 +7,7 @@ import {
   MEMBERSHIP_TYPES,
   type MembershipStatusValue,
   type MembershipTypeValue,
-} from "@/lib/memberships";
+} from "@/lib/business/memberships";
 
 /**
  * Filtros del módulo: la URL es la única fuente de verdad

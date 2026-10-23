@@ -2,12 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { getQuoteTerms, getVerticalTerms } from "@/lib/vertical-terms";
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import PrintButton from "./_components/print-button";
 import QuoteDocumentSheet from "@/components/organisms/quote-document-sheet";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { requirePageContext } from "@/lib/tenant/context";
 
 /**
  * Documento comercial para el cliente — Fase 3.
@@ -27,13 +28,9 @@ export default async function QuotePrintPage({
 }) {
   const { tenant: tenantSlug, id: quoteId } = await params;
 
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    notFound();
-  }
+  // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
+  const pageCtx = await requirePageContext(tenantSlug, "/quotes");
+  const tenantRecord = pageCtx.tenant;
 
   const tenantDb = createTenantDb(tenantRecord.id);
   const terms = getQuoteTerms(tenantRecord.vertical);

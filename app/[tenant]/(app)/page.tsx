@@ -3,13 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MinusCircle, TrendingUp, Users, Wallet } from "lucide-react";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import { formatCurrency, formatRelativeTime } from "@/lib/format";
-import type { RecentActivityItem } from "@/lib/dashboard-types";
+import type { RecentActivityItem } from "@/lib/dashboard/types";
 import { greetingFor, percentChange } from "@/lib/dashboard";
-import { runningBalance, type FinanceSeries } from "@/lib/finance-series";
-import { sortModules } from "@/lib/admin-catalogs";
+import { runningBalance, type FinanceSeries } from "@/lib/finance/series";
+import { sortModules } from "@/lib/admin/catalogs";
 import { quickCreateActions } from "@/lib/navigation/quick-create";
 import { Delta } from "@/components/atoms/delta";
 import { RevealText } from "@/components/atoms/reveal-text";
@@ -23,6 +23,7 @@ import RecentActivity from "@/components/organisms/recent-activity";
 import { loadPresence } from "@/lib/presence/load";
 import PresenceSummary from "./_components/presence-summary";
 import MembershipSummary from "./memberships/_components/membership-summary";
+import { requirePageContext } from "@/lib/tenant/context";
 
 /**
  * Dashboard del negocio. Server Component: toda la data (tenant, usuario,
@@ -73,13 +74,11 @@ export default async function TenantDashboard({
   const period: Period = p === "hoy" || p === "30d" ? p : "7d";
   const days = PERIODS[period];
 
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  })
+  // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
+  const pageCtx = await requirePageContext(tenantSlug);
+  const tenantRecord = await db.orm.public.Tenant.where({ id: pageCtx.tenantId })
     .include("modules", (module) => module.select("moduleName", "active"))
     .first();
-
   if (!tenantRecord) {
     notFound();
   }

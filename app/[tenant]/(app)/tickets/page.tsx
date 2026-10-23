@@ -9,9 +9,9 @@ import { addDaysKey } from "@/lib/business/calendar";
 import { slotLoads, visitorReport, weekdayOf, WEEKDAYS } from "@/lib/business/museum";
 import { getMuseumSettings, salesBetween, salesOn, ticketTypes } from "@/lib/business/museum-db";
 import { canHandleCash, canManage } from "@/lib/business/roles";
-import { bogotaDayKey } from "@/lib/finance-series";
+import { bogotaDayKey } from "@/lib/finance/series";
 import { formatCurrency } from "@/lib/format";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { db } from "@/prisma/db";
 import TicketDesk from "./_components/ticket-desk";
 import VisitorReportView from "./_components/visitor-report";
@@ -39,7 +39,7 @@ const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v
 export default async function TicketsPage({ params, searchParams }: { params: Promise<{ tenant: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const { tenant: slug } = await params;
   const sp = await searchParams;
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/tickets");
   if (!ctx) notFound();
 
   const today = bogotaDayKey(new Date());

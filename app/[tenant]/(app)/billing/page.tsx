@@ -4,7 +4,7 @@ import { listInvoices } from "@/lib/business/invoices-db";
 import { listProducts } from "@/lib/business/products-db";
 import { canHandleCash } from "@/lib/business/roles";
 import { todayBogota } from "@/lib/ops/leads";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { db } from "@/prisma/db";
 import BillingList from "./_components/billing-list";
 
@@ -12,7 +12,7 @@ import BillingList from "./_components/billing-list";
 export default async function BillingPage({ params, searchParams }: { params: Promise<{ tenant: string }>; searchParams: Promise<{ nuevo?: string }> }) {
   const { tenant } = await params;
   const { nuevo } = await searchParams;
-  const ctx = await requireTenantContext(tenant);
+  const ctx = await requireTenantContext(tenant, "/billing");
   if (!ctx) notFound();
   const [rows, customers, products] = await Promise.all([
     listInvoices(ctx.tenantId),

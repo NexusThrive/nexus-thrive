@@ -9,12 +9,13 @@ import {
   Wallet,
 } from "lucide-react";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { getQuoteTerms, getVerticalTerms } from "@/lib/vertical-terms";
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import { QuoteStatusBadge } from "@/components/molecules/quote-badges";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { PageHeader } from "@/components/molecules/page-header";
+import { requirePageContext } from "@/lib/tenant/context";
 
 /**
  * Detalle de una cotización.
@@ -34,13 +35,9 @@ export default async function QuoteDetailPage({
 }) {
   const { tenant: tenantSlug, id: quoteId } = await params;
 
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    notFound();
-  }
+  // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
+  const pageCtx = await requirePageContext(tenantSlug, "/quotes");
+  const tenantRecord = pageCtx.tenant;
 
   const owner = await db.orm.public.Quote.where({ id: quoteId, tenantId: tenantRecord.id })
     .select("projectId")

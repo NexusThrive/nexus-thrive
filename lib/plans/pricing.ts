@@ -1,4 +1,4 @@
-import { MODULES, SIGNUP_VERTICALS, VERTICALS, VERTICAL_LABELS, VERTICAL_RECIPES, type ModuleValue, type VerticalValue } from "@/lib/admin-catalogs";
+import { MODULES, SIGNUP_VERTICALS, VERTICALS, VERTICAL_LABELS, VERTICAL_RECIPES, type ModuleValue, type VerticalValue } from "@/lib/admin/catalogs";
 import {
   ANNUAL_DISCOUNT,
   GENERAL_MODULES,
@@ -265,4 +265,10 @@ export function quote(
 /** Tramo que corresponde a una cantidad de clientes. */
 export function tierFor(config: PricingConfig, customers: number): CustomerTier | undefined {
   return byOrder(config.tiers).find((t) => t.maxCustomers == null || customers <= t.maxCustomers);
+}
+
+/** "$29" o "$84.40". */
+export function formatUsdCents(value: number): string {
+  const usd = value / 100;
+  return `$${usd.toLocaleString("en-US", { minimumFractionDigits: value % 100 ? 2 : 0, maximumFractionDigits: 2 })}`;
 }

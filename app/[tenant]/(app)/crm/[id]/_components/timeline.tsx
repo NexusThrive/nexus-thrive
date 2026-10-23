@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { StickyNote, Wallet, BadgeCheck } from "lucide-react";
-import type { CustomerTimelineEvent } from "@/lib/tenant-db";
+import type { CustomerTimelineEvent } from "@/lib/tenant/db";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/cn";
 

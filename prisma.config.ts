@@ -9,4 +9,10 @@ export default definePrismaConfig({
       connection: process.env["DATABASE_URL"]!,
     },
   }),
+  // Skills de Prisma solo para Claude Code (.claude/skills) y los agentes que
+  // leen .agents/skills (Codex, OpenCode). Sin esto, `skills sync` también
+  // escribe copias idénticas en .cursor/ y .devin/.
+  skills: {
+    agents: ["claude", "agents"],
+  },
 });

@@ -1,6 +1,5 @@
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
-import { addCashMovement, assignReceiptNumber, currentCashSession } from "./finance-db";
 import { invoiceTotal, lineTotal, type InvoiceKind, type LineInput } from "./invoice";
 
 /** Recibos y cuentas de cobro del negocio (servidor). */
@@ -80,32 +79,11 @@ export async function createInvoice(tenantId: string, v: { kind: InvoiceKind; cu
   throw new Error("No se pudo numerar.");
 }
 
-/** Marca la cuenta como pagada creando el cobro (con recibo y caja si es efectivo). */
-export async function payInvoice(tenantId: string, id: string, method: string, userId: string) {
-  const inv = await getInvoice(tenantId, id);
-  if (!inv || inv.status !== "ISSUED") return null;
-  const p = await db.orm.public.Payment.create({
-    tenantId,
-    customerId: inv.customerId,
-    amount: dec(inv.total),
-    status: "APPROVED",
-    provider: method as "CASH",
-    description: `${inv.kind === "BILL" ? "Cuenta de cobro" : "Recibo"} N.º ${inv.number} · ${inv.customerName}`,
-    sourceType: "INVOICE",
-    sourceId: inv.id,
-    invoiceId: inv.id,
-  });
-  const n = await assignReceiptNumber(tenantId, p.id);
-  if (method === "CASH") {
-    const cash = await currentCashSession(tenantId);
-    if (cash) {
-      await db.orm.public.Payment.where({ tenantId, id: p.id }).update({ cashSessionId: cash.sessionId });
-      await addCashMovement(tenantId, { sessionId: cash.sessionId, kind: "INCOME", amount: inv.total, description: `Pago de cuenta N.º ${inv.number}`, paymentId: p.id }, userId);
-    }
-  }
-  await db.orm.public.Invoice.where({ tenantId, id }).update({ status: "PAID" });
-  return { paymentId: p.id, receiptNumber: n };
-}
+/**
+ * Marca la cuenta como pagada creando el cobro (con recibo y caja si es
+ * efectivo), una sola vez y en una transacción: ver `lib/business/money-service.ts`.
+ */
+export { payInvoice } from "./money-service";
 
 export async function voidInvoice(tenantId: string, id: string, reason: string) {
   await db.orm.public.Invoice.where({ tenantId, id }).update({ status: "VOID", voidReason: reason });

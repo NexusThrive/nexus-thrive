@@ -10,7 +10,7 @@
 import {
   validateSlug,
   type SlugValidation,
-} from "@/lib/admin-catalogs";
+} from "@/lib/admin/catalogs";
 
 const COMBINING_MARKS = /[\u0300-\u036f]/g;
 /** Cualquier carácter que no sea a-z0-9 se convierte en separador. */

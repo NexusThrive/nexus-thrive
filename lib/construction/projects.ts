@@ -1,6 +1,6 @@
 /**
  * Obras (proyectos) y su ciclo de vida.
- * Extraído de `lib/tenant-db.ts`; `createTenantDb` lo compone. Todo
+ * Extraído de `lib/tenant/db.ts`; `createTenantDb` lo compone. Todo
  * acceso va acotado al `tenantId` recibido.
  */
 import {
@@ -11,11 +11,11 @@ import {
 } from "@/prisma/db";
 import {
   currentYearBogota,
-} from "@/lib/apu-engine";
+} from "@/lib/construction/apu-engine";
 import {
   canTransitionProjectStatus,
   type ProjectStatusValue,
-} from "@/lib/projects";
+} from "@/lib/construction/project-domain";
 import {
   type ProjectDetail,
   type ProjectListInput,

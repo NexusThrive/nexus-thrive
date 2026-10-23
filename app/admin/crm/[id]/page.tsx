@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { PageHeader } from "@/components/molecules/page-header";
-import { isVertical, VERTICAL_LABELS } from "@/lib/admin-catalogs";
+import { isVertical, VERTICAL_LABELS } from "@/lib/admin/catalogs";
 import { getStaffContext } from "@/lib/ops/access";
 import { listManagers } from "@/lib/ops/accounts";
 import { getLead, listLeadActivity, tenantOptions, todayBogota } from "@/lib/ops/leads";

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import { bmi, profileFor } from "@/lib/business/customer-fields";
 import CustomerHeader from "./_components/customer-header";
@@ -20,6 +20,7 @@ import MembershipsTable from "./_components/memberships-table";
 import NotesPanel from "./_components/notes-panel";
 import AccessCard from "./_components/access-card";
 import { memberStatus } from "@/lib/business/gym-db";
+import { requirePageContext } from "@/lib/tenant/context";
 
 /**
  * FICHA DEL CLIENTE 360° — expediente centralizado de un cliente.
@@ -45,8 +46,9 @@ export default async function CustomerPage({
   const sp = await searchParams;
   const tabRaw = Array.isArray(sp.tab) ? sp.tab[0] : sp.tab;
 
-  const tenantRecord = await db.orm.public.Tenant
-    .where({ slug: tenantSlug, active: true })
+  // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
+  const pageCtx = await requirePageContext(tenantSlug, "/crm");
+  const tenantRecord = await db.orm.public.Tenant.where({ id: pageCtx.tenantId })
     .include("modules", (module) => module.select("moduleName", "active"))
     .first();
   if (!tenantRecord) {

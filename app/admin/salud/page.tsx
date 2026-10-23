@@ -5,7 +5,7 @@ import { Badge } from "@/components/atoms/badge";
 import { KpiCard } from "@/components/molecules/kpi-card";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
-import { isVertical } from "@/lib/admin-catalogs";
+import { isVertical } from "@/lib/admin/catalogs";
 import { getStaffContext } from "@/lib/ops/access";
 import { accountHealth } from "@/lib/ops/health";
 import { HEALTH_LEVELS } from "@/lib/ops/health-rules";

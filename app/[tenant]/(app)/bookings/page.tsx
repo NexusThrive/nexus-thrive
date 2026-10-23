@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/molecules/page-header";
 import { addDaysKey, bogotaToMs, monthGrid, weekStart } from "@/lib/business/calendar";
 import { listProducts } from "@/lib/business/products-db";
 import { todayBogota } from "@/lib/ops/leads";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import { db } from "@/prisma/db";
 import AgendaCalendar from "./_agenda/agenda-calendar";
@@ -19,7 +19,7 @@ const DATE = /^\d{4}-\d{2}-\d{2}$/;
 export default async function BookingsPage({ params, searchParams }: { params: Promise<{ tenant: string }>; searchParams: Promise<{ v?: string; d?: string }> }) {
   const { tenant } = await params;
   const sp = await searchParams;
-  const ctx = await requireTenantContext(tenant);
+  const ctx = await requireTenantContext(tenant, "/bookings");
   if (!ctx) notFound();
   const today = todayBogota();
   const view = sp.v === "week" || sp.v === "day" ? sp.v : "month";

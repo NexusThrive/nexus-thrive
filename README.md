@@ -71,7 +71,9 @@ DATABASE_URL=$TEST_DATABASE_URL pnpm test:integration
 pnpm build
 ```
 
-El CI (`.github/workflows/ci.yml`) ejecuta todo esto sobre un Postgres efímero. El test `lib/apu-importer/master-pack*.file*.test.ts` verifica un pack APU real si se le pasa `MASTER_PACK_FILE=/ruta/al/archivo.xlsx`.
+El CI (`.github/workflows/ci.yml`) ejecuta todo esto sobre un Postgres efímero. El test `lib/construction/apu-importer/master-pack*.file*.test.ts` verifica un pack APU real si se le pasa `MASTER_PACK_FILE=/ruta/al/archivo.xlsx`.
+
+Cómo preparar la base de pruebas y qué prueba escribir: [`docs/guias/pruebas.md`](docs/guias/pruebas.md). Cómo agregar una funcionalidad: [`docs/guias/nueva-funcionalidad.md`](docs/guias/nueva-funcionalidad.md). Ramas, CI, secretos y despliegue: [`docs/guias/devops.md`](docs/guias/devops.md).
 
 ## Versiones
 
@@ -110,4 +112,4 @@ Flujo:
 4. **Ejecución.** Planificación Lean (lookahead, compromisos, PPC, CNC), bitácora con fotos y actas de avance por partida. La primera acta pasa la obra a En ejecución.
 5. **Informes.** Informe Cero, informe semanal con valor ganado y avance físico, BOM en CSV y presupuesto en Excel.
 
-El código vive en `lib/construction/*` (capa de datos por dominio), `lib/apu-importer/*` (importador) y `app/[tenant]/(app)/{projects,quotes,catalog}`.
+El código vive en `lib/construction/*` (capa de datos por dominio), `lib/construction/apu-importer/*` (importador) y `app/[tenant]/(app)/{projects,quotes,catalog}`.

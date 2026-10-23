@@ -2,9 +2,9 @@
 
 import { and } from "@prisma/orm-postgres/orm-client";
 import { db } from "@/prisma/db";
-import { bogotaDayKey } from "@/lib/finance-series";
-import { buildNotifications, type AppNotification } from "@/lib/notifications";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { bogotaDayKey } from "@/lib/finance/series";
+import { buildNotifications, type AppNotification } from "@/lib/dashboard/notifications";
+import { requireTenantContext } from "@/lib/tenant/context";
 
 /**
  * Notificaciones de la campana: cobros y gastos de hoy, citas de hoy y

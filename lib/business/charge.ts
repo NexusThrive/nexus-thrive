@@ -1,11 +1,13 @@
-import { db } from "@/prisma/db";
-import { addCashMovement, assignReceiptNumber, currentCashSession } from "./finance-db";
-import { receiptCode } from "./invoice";
+import { moneyTransaction, recordIncome, type MoneyTx } from "./money-service";
 
 /**
  * Registra un cobro aprobado con su recibo consecutivo. Si es en efectivo y
  * hay un turno de caja abierto, el dinero entra a esa caja. Es el mismo
  * camino de la venta directa, para taquilla, salidas, renovaciones, etc.
+ *
+ * Todo pasa en una transacción (`lib/business/money-service.ts`). Con `tx`, el cobro
+ * se suma a la transacción de quien llama (por ejemplo, junto con la
+ * membresía que se vende).
  */
 export async function recordCharge(
   tenantId: string,
@@ -19,26 +21,24 @@ export async function recordCharge(
     sourceId: string;
   },
   userId: string,
+  tx?: MoneyTx,
 ): Promise<{ paymentId: string; receipt: string }> {
-  const amount = Math.round(c.amount * 100) / 100;
-  const payment = await db.orm.public.Payment.create({
-    tenantId,
-    customerId: c.customerId ?? null,
-    membershipId: c.membershipId ?? null,
-    amount: amount.toFixed(2),
-    status: "APPROVED",
-    provider: c.method as "CASH",
-    description: c.description.slice(0, 200),
-    sourceType: c.sourceType,
-    sourceId: c.sourceId,
-  });
-  const number = await assignReceiptNumber(tenantId, payment.id);
-  if (c.method === "CASH") {
-    const cash = await currentCashSession(tenantId);
-    if (cash) {
-      await db.orm.public.Payment.where({ tenantId, id: payment.id }).update({ cashSessionId: cash.sessionId });
-      await addCashMovement(tenantId, { sessionId: cash.sessionId, kind: "INCOME", amount, description: c.description.slice(0, 120), paymentId: payment.id }, userId);
-    }
-  }
-  return { paymentId: payment.id, receipt: receiptCode(number) };
+  const run = (t: MoneyTx) =>
+    recordIncome(
+      t,
+      tenantId,
+      {
+        amount: c.amount,
+        method: c.method,
+        description: c.description,
+        cashDescription: c.description,
+        customerId: c.customerId,
+        membershipId: c.membershipId,
+        sourceType: c.sourceType,
+        sourceId: c.sourceId,
+      },
+      userId,
+    );
+  const income = tx ? await run(tx) : await moneyTransaction(run);
+  return { paymentId: income.paymentId, receipt: income.receipt };
 }

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { canHandleCash } from "@/lib/business/roles";
 import { checkIn, findMemberByScan, getMember, recordUnknownScan, searchMembers, type CheckInResult, type MemberCard, type Method } from "@/lib/business/gym-db";
 import { allowAttempt, recordAttempt } from "@/lib/rate-limit";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 
 export type ScanResult = { ok: true; result: CheckInResult } | { ok: false; message: string };
 
@@ -15,7 +15,7 @@ const SCAN_LIMIT = 120;
 
 /** Lectura en la puerta: QR, tarjeta NFC o documento. Registra la entrada aunque se niegue. */
 export async function scanAction(slug: string, raw: string, method: Method): Promise<ScanResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/checkin");
   if (!ctx || !canHandleCash(ctx.role)) return { ok: false, message: "Tu rol no permite registrar entradas." };
   if (!METHODS.includes(method)) return { ok: false, message: "Método no válido." };
 
@@ -40,7 +40,7 @@ export async function scanAction(slug: string, raw: string, method: Method): Pro
 
 /** Entrada manual desde la búsqueda (el socio ya está identificado por su id). */
 export async function manualCheckInAction(slug: string, customerId: string): Promise<ScanResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/checkin");
   if (!ctx || !canHandleCash(ctx.role)) return { ok: false, message: "Tu rol no permite registrar entradas." };
   const member = await getMember(ctx.tenantId, customerId);
   if (!member) return { ok: false, message: "El socio no es de este negocio." };
@@ -51,7 +51,7 @@ export async function manualCheckInAction(slug: string, customerId: string): Pro
 }
 
 export async function searchMembersAction(slug: string, q: string): Promise<MemberCard[]> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/checkin");
   return ctx ? searchMembers(ctx.tenantId, q) : [];
 }
 

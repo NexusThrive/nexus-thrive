@@ -6,7 +6,7 @@ import { ACCOUNT_STAGES, deleteContact, saveContact, tenantName, updateAccount, 
 import { logOps } from "@/lib/ops/audit";
 import { validateContact } from "@/lib/ops/validators";
 import { db } from "@/prisma/db";
-import { deleteTenantCompletely } from "@/lib/tenant-deletion";
+import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 
 export type ActionResult = { ok: true } | { ok: false; message: string; errors?: Record<string, string> };
 const DENIED: ActionResult = { ok: false, message: "No tienes permiso para esta acción." };

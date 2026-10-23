@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { listTeam, seatLimit } from "@/lib/business/team-db";
 import { canManageTeam } from "@/lib/business/roles";
 import { paymentMethodLabel } from "@/lib/finance";
@@ -10,7 +10,7 @@ import {
   MODULES,
   VERTICAL_LABELS,
   sortModules,
-} from "@/lib/admin-catalogs";
+} from "@/lib/admin/catalogs";
 import SettingsShell, {
   type CardOwner,
   type PlanInfo,
@@ -18,6 +18,7 @@ import SettingsShell, {
   type ProfileInitialValues,
   type SystemInfoItem,
 } from "./_components/settings-shell";
+import { requirePageContext } from "@/lib/tenant/context";
 
 /**
  * Módulo de Ajustes del negocio (Server Component).
@@ -34,11 +35,11 @@ export default async function SettingsPage({
 }) {
   const { tenant: tenantSlug } = await params;
 
-  const tenantRecord = await db.orm.public.Tenant
-    .where({ slug: tenantSlug, active: true })
+  // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
+  const pageCtx = await requirePageContext(tenantSlug);
+  const tenantRecord = await db.orm.public.Tenant.where({ id: pageCtx.tenantId })
     .include("modules", (module) => module.select("moduleName", "active"))
     .first();
-
   if (!tenantRecord) {
     notFound();
   }

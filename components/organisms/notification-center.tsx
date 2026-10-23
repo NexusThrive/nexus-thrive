@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import Link from "next/link";
 import { Banknote, Bell, CalendarClock, Clock, MinusCircle, X } from "lucide-react";
 import { flash, spring } from "@/lib/motion";
-import { unreadCount, type AppNotification, type NotificationKind } from "@/lib/notifications";
+import { unreadCount, type AppNotification, type NotificationKind } from "@/lib/dashboard/notifications";
 import { cn } from "@/lib/utils";
 
 const ICONS: Record<NotificationKind, typeof Bell> = {

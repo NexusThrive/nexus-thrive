@@ -2,9 +2,8 @@ import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { ArrowLeft, CalendarDays, User } from "lucide-react";
-import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
-import { PROJECT_TABS, parseProjectTab } from "@/lib/projects";
+import { createTenantDb } from "@/lib/tenant/db";
+import { PROJECT_TABS, parseProjectTab } from "@/lib/construction/project-domain";
 import { ProjectStatusBadge } from "../_components/project-status-badge";
 import ProjectTabs from "./_components/project-tabs";
 import ProjectHeaderForm from "./_components/project-header-form";
@@ -17,6 +16,7 @@ import { prepareProjectAction } from "../actions";
 import PrepareProject from "./_components/prepare-project";
 import ProjectQuotesWorkspace from "./_components/project-quotes-workspace";
 import { EmptyState } from "@/components/molecules/empty-state";
+import { requirePageContext } from "@/lib/tenant/context";
 
 function firstString(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
@@ -61,13 +61,9 @@ export default async function ProjectDetailPage({
   const sp = await searchParams;
   const tab = parseProjectTab(firstString(sp.tab));
 
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    notFound();
-  }
+  // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
+  const pageCtx = await requirePageContext(tenantSlug, "/projects");
+  const tenantRecord = pageCtx.tenant;
 
   const tenantDb = createTenantDb(tenantRecord.id);
   const project = await tenantDb.projects.get(projectId);

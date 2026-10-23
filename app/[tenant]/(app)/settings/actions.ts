@@ -1,13 +1,14 @@
 "use server";
 
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
-import { isModule, isVertical, validateSlug } from "@/lib/admin-catalogs";
+import { createTenantDb } from "@/lib/tenant/db";
+import { isModule, isVertical, validateSlug } from "@/lib/admin/catalogs";
 import { checkModuleToggle } from "@/lib/plans/compat";
 import { loadPricingConfig } from "@/lib/plans/settings";
-import { deleteTenantCompletely } from "@/lib/tenant-deletion";
+import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { logTenantAction } from "@/lib/tenant/audit";
 
 type TenantDb = ReturnType<typeof createTenantDb>;
 
@@ -61,10 +62,10 @@ const FORBIDDEN_MODULES: ModulesFormState = {
  * El tenant SIEMPRE se resuelve en el servidor a partir del slug de la ruta:
  * nunca se confía en un `tenantId` enviado por el cliente.
  */
-async function requireTenantContext(
+async function actionContext(
   tenantSlug: string,
 ): Promise<{ tenantDb: TenantDb; tenantId: string; role: RoleValue } | null> {
-  const context = await requireSharedTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug);
   if (!context) {
     return null;
   }
@@ -85,7 +86,7 @@ export async function updateTenantProfileAction(
   formData: FormData,
 ): Promise<ProfileFormState> {
   const tenantSlug = String(formData.get("tenantSlug") ?? "");
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return ACCESS_DENIED_PROFILE;
   }
@@ -188,9 +189,10 @@ export async function toggleModuleAction(
   const { tenantId } = context;
 
   // Solo módulos compatibles con el rubro y operativos; el Inicio no se apaga.
-  const tenant = await db.orm.public.Tenant.select("vertical").where({ id: tenantId }).first();
+  const tenant = await db.orm.public.Tenant.select("vertical", "contractedModules").where({ id: tenantId }).first();
   if (tenant && isVertical(tenant.vertical)) {
-    const check = checkModuleToggle(await loadPricingConfig(), tenant.vertical, moduleName, active);
+    const contracted = tenant.contractedModules ? [...tenant.contractedModules] : null;
+    const check = checkModuleToggle(await loadPricingConfig(), tenant.vertical, moduleName, active, contracted);
     if (!check.ok) return { status: "error", errors: { moduleName: check.message } };
   }
 
@@ -201,6 +203,7 @@ export async function toggleModuleAction(
       update: { active },
       conflictOn: { tenantId, moduleName },
     });
+    await logTenantAction(context, "BIZ_MODULE_TOGGLE", { moduleName, active });
 
     // El layout del tenant renderiza la sidebar a partir de TenantModule:
     // revalidar el segmento de layout mantiene la navegación sincronizada.
@@ -239,7 +242,7 @@ export async function deleteOwnBusinessAction(
     return { status: "error", message: "Para confirmar, escribe «eliminar»." };
   }
 
-  const context = await requireSharedTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug);
   if (!context) {
     return { status: "error", message: "Tu sesión expiró. Vuelve a entrar." };
   }
@@ -249,5 +252,7 @@ export async function deleteOwnBusinessAction(
 
   const result = await deleteTenantCompletely(context.tenantId);
   if (!result.ok) return { status: "error", message: result.message };
+  // El AuditLog no se borra con el negocio: el rastro queda para el panel.
+  await logTenantAction(context, "BIZ_TENANT_DELETE", { slug: tenantSlug, rowsDeleted: result.total });
   return { status: "ok", total: result.total };
 }

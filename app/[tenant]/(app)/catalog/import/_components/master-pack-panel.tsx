@@ -13,8 +13,8 @@ import {
 import { NLoader } from "@/components/atoms/n-loader";
 import { Badge } from "@/components/atoms/badge";
 import { cn } from "@/lib/cn";
-import type { MasterPackSummary } from "@/lib/apu-importer/master-pack-summary";
-import type { MasterPackImportResult } from "@/lib/apu-importer/master-pack-import";
+import type { MasterPackSummary } from "@/lib/construction/apu-importer/master-pack-summary";
+import type { MasterPackImportResult } from "@/lib/construction/apu-importer/master-pack-import";
 import { buttonVariants } from "@/components/atoms/button-variants";
 
 const number = new Intl.NumberFormat("es-CO");

@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { db } from "@/prisma/db";
 import ImportWorkspace from "./_components/import-workspace";
 import { PageHeader } from "@/components/molecules/page-header";
+import { requirePageContext } from "@/lib/tenant/context";
 
 /**
  * Importador inteligente de APUs e insumos.
@@ -20,13 +19,8 @@ export default async function ImportPage({
 }) {
   const { tenant: tenantSlug } = await params;
 
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    notFound();
-  }
+  // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
+  await requirePageContext(tenantSlug, "/catalog");
 
   return (
     <div className="space-y-6">

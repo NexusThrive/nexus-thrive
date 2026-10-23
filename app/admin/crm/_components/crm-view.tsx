@@ -13,7 +13,7 @@ import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { followUpState, isActiveStage, LEAD_STAGES, pipelineSummary, stageMeta, type LeadStageValue } from "@/lib/ops/crm-rules";
 import type { LeadRow } from "@/lib/ops/leads";
-import { formatUsdCents } from "@/lib/plans/quote";
+import { formatUsdCents } from "@/lib/plans/pricing";
 import { cn } from "@/lib/utils";
 import { moveLeadAction } from "../actions";
 import LeadSheet, { type Option } from "./lead-sheet";

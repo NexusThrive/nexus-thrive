@@ -5,8 +5,8 @@ import type {
   Customer360Membership,
   Customer360Profile,
   CustomerAccountStatus,
-} from "@/lib/tenant-db";
-import { typeLabel } from "@/lib/memberships";
+} from "@/lib/tenant/db";
+import { typeLabel } from "@/lib/business/memberships";
 import { formatDateShort } from "@/lib/format";
 import type { VerticalTerms } from "@/lib/vertical-terms";
 import { AccountStatusPill, MembershipStatusPill } from "./status-pills";

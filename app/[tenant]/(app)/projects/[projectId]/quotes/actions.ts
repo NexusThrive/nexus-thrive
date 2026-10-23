@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { canGovernBudget, requireTenantContext } from "@/lib/tenant-context";
+import { canGovernBudget, requireTenantContext } from "@/lib/tenant/context";
 import type { FollowUpTypeValue } from "@/lib/construction/project-quotes";
 
 export type QuoteActionResult = { ok: true; message: string } | { ok: false; message: string };
@@ -46,7 +46,7 @@ export async function emitQuoteAction(
   expectedRevision: number,
   formData: FormData,
 ): Promise<QuoteActionResult> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) return { ok: false, message: "No tienes acceso a este negocio." };
   if (!canGovernBudget(context.role)) {
     return { ok: false, message: "Solo el dueño del negocio puede emitir cotizaciones." };
@@ -76,7 +76,7 @@ export async function decideQuoteAction(
   decision: "APPROVE" | "REJECT",
   formData: FormData,
 ): Promise<QuoteActionResult> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) return { ok: false, message: "No tienes acceso a este negocio." };
   if (!canGovernBudget(context.role)) {
     return { ok: false, message: "Solo el dueño del negocio puede registrar la respuesta del cliente." };
@@ -108,7 +108,7 @@ export async function createFollowUpAction(
   projectId: string,
   formData: FormData,
 ): Promise<QuoteActionResult> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) return { ok: false, message: "No tienes acceso a este negocio." };
   const type = String(formData.get("type") ?? "NOTE") as FollowUpTypeValue;
   const note = String(formData.get("note") ?? "").trim();
@@ -138,7 +138,7 @@ export async function completeFollowUpAction(
   projectId: string,
   followUpId: string,
 ): Promise<QuoteActionResult> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) return { ok: false, message: "No tienes acceso a este negocio." };
   await context.tenantDb.projectQuotes.completeFollowUp(followUpId);
   revalidateProject(tenantSlug, projectId);
@@ -150,7 +150,7 @@ export async function deleteFollowUpAction(
   projectId: string,
   followUpId: string,
 ): Promise<QuoteActionResult> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) return { ok: false, message: "No tienes acceso a este negocio." };
   await context.tenantDb.projectQuotes.deleteFollowUp(followUpId);
   revalidateProject(tenantSlug, projectId);

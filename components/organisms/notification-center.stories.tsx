@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import type { AppNotification } from "@/lib/notifications";
+import type { AppNotification } from "@/lib/dashboard/notifications";
 import { NotificationCenter } from "./notification-center";
 
 const now = Date.now();

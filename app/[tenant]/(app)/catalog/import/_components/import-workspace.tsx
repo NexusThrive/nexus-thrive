@@ -20,14 +20,14 @@ import MappingEditor from "./mapping-editor";
 import PreviewTable from "./preview-table";
 import { analyzeImportAction, executeSmartImportAction, importMasterPackAction } from "../actions";
 import { MasterPackPreview, MasterPackResult } from "./master-pack-panel";
-import type { MasterPackSummary } from "@/lib/apu-importer/master-pack-summary";
-import type { MasterPackImportResult } from "@/lib/apu-importer/master-pack-import";
-import { recomputePreview } from "@/lib/apu-importer/recompute";
+import type { MasterPackSummary } from "@/lib/construction/apu-importer/master-pack-summary";
+import type { MasterPackImportResult } from "@/lib/construction/apu-importer/master-pack-import";
+import { recomputePreview } from "@/lib/construction/apu-importer/recompute";
 import type {
   ColumnMapping,
   ImportPreview,
   ImportResult,
-} from "@/lib/apu-importer/types";
+} from "@/lib/construction/apu-importer/types";
 import { cn } from "@/lib/cn";
 import { buttonVariants } from "@/components/atoms/button-variants";
 

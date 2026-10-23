@@ -1,4 +1,4 @@
-import { copAmountExceeds, parseCopAmount } from "@/lib/cop-amount";
+import { copAmountExceeds, parseCopAmount } from "@/lib/finance/cop-amount";
 import {
   EXPENSE_CATEGORIES,
   PAYMENT_METHODS,

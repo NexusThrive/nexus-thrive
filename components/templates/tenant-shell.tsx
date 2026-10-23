@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { ModuleValue, VerticalValue } from "@/lib/admin-catalogs";
+import type { ModuleValue, VerticalValue } from "@/lib/admin/catalogs";
 import { ToastProvider } from "@/components/molecules/toast";
 import { AppSidebar } from "@/components/organisms/app-sidebar";
 import { AppTopbar } from "@/components/organisms/app-topbar";

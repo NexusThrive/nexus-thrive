@@ -7,7 +7,6 @@ import {
   CreditCard,
   FolderOpen,
   LayoutDashboard,
-  Map as MapIcon,
   MessageCircle,
   Package,
   Receipt,
@@ -18,7 +17,7 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
-import { MODULES, type ModuleValue, type VerticalValue } from "@/lib/admin-catalogs";
+import { MODULES, type ModuleValue, type VerticalValue } from "@/lib/admin/catalogs";
 import { getVerticalTerms, type VerticalTerms } from "@/lib/vertical-terms";
 
 export type NavItem = {
@@ -49,7 +48,7 @@ const MODULE_NAV: Record<ModuleValue, ModuleNav | ModuleNav[]> = {
   bookings: [
     { href: "/bookings", icon: CalendarDays, label: (terms) => terms.bookings },
     { href: "/tickets", icon: Ticket, label: () => "Taquilla", verticals: ["museum"] },
-    { href: "/departures", icon: MapIcon, label: () => "Salidas", verticals: ["tourism_agency", "tour_guides"] },
+    // "Salidas" (turismo) vuelve cuando exista su pantalla: hoy solo hay tablas (ARCH-02).
   ],
   memberships: [
     { href: "/memberships", icon: CreditCard, label: () => "Membresías" },
@@ -71,6 +70,39 @@ const MODULE_NAV: Record<ModuleValue, ModuleNav | ModuleNav[]> = {
   billing: { href: "/billing", icon: Receipt, label: () => "Facturación" },
   whatsapp: { href: "/whatsapp", icon: MessageCircle, label: () => "WhatsApp" },
 };
+
+/**
+ * Módulos que dan acceso a cada ruta del negocio, derivados del menú (una sola
+ * fuente). Una ruta puede venir de varios módulos: `/finance` la abren Finanzas
+ * y Pagos. El servidor la usa para no servir pantallas ni acciones de módulos
+ * apagados (SEC-06): ocultarlas del menú no basta.
+ */
+const ROUTE_MODULES: ReadonlyMap<string, readonly ModuleValue[]> = (() => {
+  const map = new Map<string, ModuleValue[]>();
+  for (const [moduleName, entry] of Object.entries(MODULE_NAV) as [ModuleValue, ModuleNav | ModuleNav[]][]) {
+    for (const nav of Array.isArray(entry) ? entry : [entry]) {
+      const route = nav.href.split("?")[0];
+      if (!route) continue; // El inicio existe siempre.
+      map.set(route, [...(map.get(route) ?? []), moduleName]);
+    }
+  }
+  return map;
+})();
+
+/**
+ * Módulos que habilitan `route` ("/crm", "/projects/9/budget"…), o `null` si
+ * la ruta no depende de un módulo (inicio, configuración, presencia).
+ */
+export function modulesForRoute(route: string): readonly ModuleValue[] | null {
+  const path = route.split("?")[0];
+  let best: string | null = null;
+  for (const candidate of ROUTE_MODULES.keys()) {
+    if ((path === candidate || path.startsWith(`${candidate}/`)) && (!best || candidate.length > best.length)) {
+      best = candidate;
+    }
+  }
+  return best ? ROUTE_MODULES.get(best)! : null;
+}
 
 export const SETTINGS_ITEM: NavItem = {
   key: "settings",

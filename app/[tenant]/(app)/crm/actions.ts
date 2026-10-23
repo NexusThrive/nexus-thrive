@@ -1,9 +1,11 @@
 "use server";
 
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { getVerticalTerms, type VerticalTerms } from "@/lib/vertical-terms";
+import { can } from "@/lib/business/permissions";
+import { logTenantAction } from "@/lib/tenant/audit";
 
 /** Resultado de las acciones de fila / acciones masivas. */
 export type CustomerActionResult = {
@@ -19,20 +21,32 @@ type TenantDb = ReturnType<typeof createTenantDb>;
 type TenantContext = {
   tenantDb: TenantDb;
   terms: VerticalTerms;
+  role: string;
+  /** Contexto completo, para la bitácora del negocio. */
+  shared: NonNullable<Awaited<ReturnType<typeof requireTenantContext>>>;
 };
 
 /**
  * Verifica sesión de Clerk + tenant activo + membresía del usuario.
  * Devuelve `null` cuando algo falla (el caller responde con mensaje genérico).
  */
-async function requireTenantContext(
+async function actionContext(
   tenantSlug: string,
 ): Promise<TenantContext | null> {
-  const context = await requireSharedTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/crm");
   if (!context) {
     return null;
   }
-  return { tenantDb: context.tenantDb, terms: getVerticalTerms(context.vertical) };
+  return { tenantDb: context.tenantDb, terms: getVerticalTerms(context.vertical), role: context.role, shared: context };
+}
+
+/** Archivar, restaurar y borrar clientes es de administración (SEC-05). */
+function cannotRemoveCustomers(context: TenantContext): CustomerActionResult | null {
+  if (can(context.role, "customers.delete")) return null;
+  return {
+    ok: false,
+    message: `Tu rol no puede archivar ni eliminar ${context.terms.customers.toLowerCase()}. Pídeselo a administración.`,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -49,10 +63,12 @@ export async function archiveCustomerAction(
   tenantSlug: string,
   customerId: string,
 ): Promise<CustomerActionResult> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return { ok: false, message: "No tienes acceso a este negocio." };
   }
+  const denied = cannotRemoveCustomers(context);
+  if (denied) return denied;
   const { tenantDb, terms } = context;
 
   const result = await tenantDb.customers.archive(customerId);
@@ -62,6 +78,7 @@ export async function archiveCustomerAction(
       message: `No se encontró el ${terms.customer.toLowerCase()}.`,
     };
   }
+  await logTenantAction(context.shared, "BIZ_CUSTOMER_ARCHIVE", { customerId });
 
   revalidatePath(`/${tenantSlug}/crm`);
   return { ok: true };
@@ -71,10 +88,12 @@ export async function restoreCustomerAction(
   tenantSlug: string,
   customerId: string,
 ): Promise<CustomerActionResult> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return { ok: false, message: "No tienes acceso a este negocio." };
   }
+  const denied = cannotRemoveCustomers(context);
+  if (denied) return denied;
   const { tenantDb, terms } = context;
 
   const result = await tenantDb.customers.restore(customerId);
@@ -84,6 +103,7 @@ export async function restoreCustomerAction(
       message: `No se encontró el ${terms.customer.toLowerCase()}.`,
     };
   }
+  await logTenantAction(context.shared, "BIZ_CUSTOMER_RESTORE", { customerId });
 
   revalidatePath(`/${tenantSlug}/crm`);
   return { ok: true };
@@ -97,10 +117,12 @@ export async function deleteCustomersAction(
   tenantSlug: string,
   customerIds: string[],
 ): Promise<CustomerActionResult> {
-  const context = await requireTenantContext(tenantSlug);
+  const context = await actionContext(tenantSlug);
   if (!context) {
     return { ok: false, message: "No tienes acceso a este negocio." };
   }
+  const denied = cannotRemoveCustomers(context);
+  if (denied) return denied;
   const { tenantDb, terms } = context;
   const customersLabel = terms.customers.toLowerCase();
 
@@ -119,6 +141,7 @@ export async function deleteCustomersAction(
     };
   }
 
+  await logTenantAction(context.shared, "BIZ_CUSTOMERS_DELETE", { customerIds, deleted });
   revalidatePath(`/${tenantSlug}/crm`);
   return { ok: true, deleted };
 }

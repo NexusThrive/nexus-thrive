@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
-import { db } from "@/prisma/db";
 import { PageHeader } from "@/components/molecules/page-header";
 import { loadPresence } from "@/lib/presence/load";
 import PresencePanel from "../_components/presence-panel";
+import { requirePageContext } from "@/lib/tenant/context";
 
 /**
  * Presence Thrive (página completa). Aquí vive todo el detalle —puntaje por
@@ -20,14 +19,9 @@ export default async function PresencePage({
 }) {
   const { tenant: tenantSlug } = await params;
 
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-
-  if (!tenantRecord) {
-    notFound();
-  }
+  // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
+  const pageCtx = await requirePageContext(tenantSlug);
+  const tenantRecord = pageCtx.tenant;
 
   const presence = await loadPresence(tenantRecord);
 

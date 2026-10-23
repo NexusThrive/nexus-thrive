@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { PageHeader } from "@/components/molecules/page-header";
-import { AUDIT_ACTION_LABELS, createAdminDb } from "@/lib/admin-db";
+import { AUDIT_ACTION_LABELS, createAdminDb } from "@/lib/admin/db";
 import { getStaffContext } from "@/lib/ops/access";
 import { listStaff } from "@/lib/ops/team";
 import AuditLog from "../_components/audit-log";

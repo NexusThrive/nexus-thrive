@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/molecules/page-header";
 import { kindsForVertical, KIND_LABELS } from "@/lib/business/catalog-kinds";
 import { listProducts } from "@/lib/business/products-db";
 import { canManage } from "@/lib/business/roles";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { db } from "@/prisma/db";
 import CatalogView from "./_components/catalog-view";
 
@@ -11,7 +11,7 @@ import CatalogView from "./_components/catalog-view";
 export default async function InventoryPage({ params, searchParams }: { params: Promise<{ tenant: string }>; searchParams: Promise<{ nuevo?: string }> }) {
   const { tenant } = await params;
   const { nuevo } = await searchParams;
-  const ctx = await requireTenantContext(tenant);
+  const ctx = await requireTenantContext(tenant, "/inventory");
   if (!ctx) notFound();
   const kinds = kindsForVertical(ctx.vertical);
   const [products, customers] = await Promise.all([

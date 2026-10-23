@@ -1,9 +1,9 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
 import { expireBenefitTrial } from "@/lib/benefits/benefits-db";
-import { acceptInvitesFor } from "@/lib/business/team-db";
+import { verifiedEmailOf } from "@/lib/auth/session-email";
+import { resolveTenantMembership } from "@/lib/tenant/membership";
 
 /**
  * Shell multi-tenant: acceso.
@@ -12,9 +12,10 @@ import { acceptInvitesFor } from "@/lib/business/team-db";
  * activo) y membresía del usuario. Es el ÚNICO responsable de autorización:
  * - Sin sesión → sign-in.
  * - Tenant inexistente/inactivo → 404.
- * - No miembro (y el tenant tiene miembros) → "Sin acceso" sin renderizar
- *   hijos.
- * - Tenant vacío → bootstrap del primer OWNER.
+ * - No miembro → "Sin acceso" sin renderizar hijos. Se entra solo con una
+ *   membresía activa o aceptando una invitación al correo verificado. Un
+ *   negocio sin miembros NO se le entrega al primero que llega (SEC-02): su
+ *   dueño entra con la invitación OWNER que deja el panel al crearlo.
  *
  * Los hijos (dashboard, módulos u onboarding) solo se renderizan cuando la
  * membresía está confirmada. El layout de la ruta `(app)` decide después si
@@ -50,46 +51,18 @@ export default async function TenantLayout({
   // el negocio revierte a Essential (gratis). Idempotente y silencioso.
   await expireBenefitTrial(tenantRecord.id);
 
-  // 2) Contexto de acceso a la base de datos del tenant.
-  const tenantDb = createTenantDb(tenantRecord.id);
-
-  // 3) Usuario local asociado al tenant (con bootstrap del primer OWNER).
-  let localUser = await tenantDb.users.findByClerkUserId(userId);
-
-  // ¿Lo invitaron a este negocio? Acepta la invitación al entrar.
-  if (!localUser || !localUser.active) {
-    const me = await currentUser();
-    const email = me?.primaryEmailAddress?.emailAddress ?? me?.emailAddresses?.[0]?.emailAddress ?? "";
-    const accepted = await acceptInvitesFor(userId, email, me?.fullName ?? null, tenantRecord.id);
-    if (accepted.length) localUser = await tenantDb.users.findByClerkUserId(userId);
-  }
-
-  if (localUser && !localUser.active) {
-    return <AccessDenied tenantName={tenantRecord.name} />;
-  }
+  // 2) Membresía activa, o la invitación pendiente a su correo verificado.
+  const localUser = await resolveTenantMembership({
+    tenantId: tenantRecord.id,
+    clerkUserId: userId,
+    identity: async () => {
+      const me = await currentUser();
+      return { verifiedEmail: verifiedEmailOf(me), name: me?.fullName ?? null };
+    },
+  });
 
   if (!localUser) {
-    const hasMembers = (await tenantDb.users.findFirst()) !== null;
-
-    if (hasMembers) {
-      return <AccessDenied tenantName={tenantRecord.name} />;
-    }
-
-    const user = await currentUser();
-
-    const primaryEmail =
-      user?.primaryEmailAddress?.emailAddress ??
-      user?.emailAddresses?.[0]?.emailAddress ??
-      "";
-
-    localUser = await tenantDb.users.upsertByClerkUserId({
-      clerkUserId: userId,
-      email: primaryEmail,
-      name:
-        `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() ||
-        "Usuario",
-      role: "OWNER",
-    });
+    return <AccessDenied tenantName={tenantRecord.name} />;
   }
 
   // El shell visual (Header/Sidebar) vive en `(app)/layout.tsx`: el

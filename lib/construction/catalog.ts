@@ -1,6 +1,6 @@
 /**
  * Catálogo APU del tenant: insumos, actividades y composición.
- * Extraído de `lib/tenant-db.ts`; `createTenantDb` lo compone. Todo
+ * Extraído de `lib/tenant/db.ts`; `createTenantDb` lo compone. Todo
  * acceso va acotado al `tenantId` recibido.
  */
 import { createHash } from "node:crypto";
@@ -15,7 +15,7 @@ import {
   activityUnitCost,
   isStrictlyPositive,
   isValidPercent,
-} from "@/lib/apu-engine";
+} from "@/lib/construction/apu-engine";
 import {
   type ApuActivityDetail,
   type ApuActivityListInput,
@@ -813,7 +813,7 @@ export function createCatalogDb(tenantId: string) {
         const apuImporterStatus = { recentFiles: 0, lastImport: null as string | null };
 
         // APU_UNITS configuradas (del motor)
-        const { APU_UNITS } = await import("@/lib/apu-engine");
+        const { APU_UNITS } = await import("@/lib/construction/apu-engine");
 
         return {
           activitiesWithoutComposition,

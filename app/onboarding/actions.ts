@@ -17,6 +17,7 @@ import { SHOW_PRICING } from "@/lib/onboarding/flags";
 import { allowAttempt, recordAttempt } from "@/lib/rate-limit";
 import type { PlanKey, Billing } from "@/lib/plans/catalog";
 import { resolveModules } from "@/lib/plans/pricing";
+import { can } from "@/lib/business/permissions";
 import type {
   AdaptiveOnboardingInput,
   ModuleValue,
@@ -213,7 +214,8 @@ export async function completeAdaptiveOnboardingAction(
       clerkUserId: userId,
       tenantId,
     }).first();
-    if (!membership) {
+    // Configurar plan, módulos y enlace es del dueño activo (SEC-05).
+    if (!membership || !membership.active || !can(membership.role, "business.setup")) {
       return {
         status: "error",
         message: "No tienes acceso a este negocio.",

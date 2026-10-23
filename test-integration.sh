@@ -22,22 +22,28 @@ if [ -d .git ] && git rev-parse --verify origin/main > /dev/null 2>&1; then
   bash ./scripts/check-prod-sql.sh origin/main
 fi
 
-pnpm exec vitest run \
+# Las pruebas de concurrencia lanzan escrituras en paralelo contra una sola
+# base: en una máquina cargada el tope por defecto (5 s) da falsos fallos.
+pnpm exec vitest run --testTimeout=20000 \
   lib/benefits/benefits-db.integration.test.ts \
   lib/plans/settings.integration.test.ts \
   lib/ops/access.integration.test.ts \
   lib/ops/team-invite.integration.test.ts \
-  lib/tenant-deletion.integration.test.ts \
+  lib/tenant/membership.integration.test.ts \
+  lib/tenant/audit.integration.test.ts \
+  lib/tenant/constraints.integration.test.ts \
+  lib/tenant/deletion.integration.test.ts \
   lib/business/qr-read.integration.test.ts \
-  lib/tenant-db.integration.test.ts \
+  lib/business/money-service.integration.test.ts \
+  lib/tenant/db.integration.test.ts \
   lib/prisma8-query-patterns.integration.test.ts \
-  lib/tenant-db.cache-invalidation.test.ts \
-  lib/tenant-db.archived-rejection.test.ts \
-  lib/apu-importer.price-behavior.test.ts \
-  lib/apu-importer.field-changes.test.ts \
-  lib/tenant-db.apu-import.integration.test.ts \
+  lib/tenant/db.cache-invalidation.test.ts \
+  lib/tenant/db.archived-rejection.test.ts \
+  lib/construction/apu-importer/price-behavior.test.ts \
+  lib/construction/apu-importer/field-changes.test.ts \
+  lib/tenant/db.apu-import.integration.test.ts \
   lib/construction/containers.integration.test.ts \
-  lib/apu-importer/master-pack-import.integration.test.ts \
+  lib/construction/apu-importer/master-pack-import.integration.test.ts \
   lib/construction/project-quotes.integration.test.ts \
   lib/construction/progress.integration.test.ts \
   lib/construction/flow.integration.test.ts \

@@ -1,6 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { db } from "@/prisma/db";
-import { createAdminDb } from "@/lib/admin-db";
+import { createAdminDb } from "@/lib/admin/db";
+import { exactIlikePattern, normalizeEmail, verifiedEmailOf } from "@/lib/auth/session-email";
 import { OWNER_ROLE_KEY, SYSTEM_ROLES, normalizePermissions, type PermissionKey } from "./permissions";
 
 /**
@@ -41,10 +42,9 @@ export async function ensureSystemRoles(): Promise<void> {
   }
 }
 
+/** Correo principal y verificado de la sesión: el único que vincula fichas. */
 async function primaryEmail(): Promise<string | null> {
-  const user = await currentUser();
-  const email = user?.primaryEmailAddress?.emailAddress ?? user?.emailAddresses?.[0]?.emailAddress;
-  return email ? email.trim().toLowerCase() : null;
+  return verifiedEmailOf(await currentUser());
 }
 
 async function loadMember(where: { clerkUserId: string } | { email: string }) {
@@ -70,10 +70,12 @@ export type StaffByEmail = {
  * correo está en el equipo pero no puede entrar al panel.
  */
 export async function findStaffByEmail(email: string): Promise<StaffByEmail | null> {
-  const clean = email.trim().toLowerCase();
+  const clean = normalizeEmail(email);
   if (!clean) return null;
+  // Igualdad exacta sin distinguir mayúsculas: sin escapar, `_` y `%` harían
+  // que un correo parecido resolviera la ficha de otra persona (SEC-01).
   const row = await db.orm.public.StaffMember
-    .where((s) => s.email.ilike(clean))
+    .where((s) => s.email.ilike(exactIlikePattern(clean)))
     .include("role", (role) => role.select("name"))
     .first();
   if (!row) return null;

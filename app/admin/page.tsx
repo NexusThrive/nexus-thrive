@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AlertTriangle, Headphones, HeartPulse, Inbox, Receipt, Rocket, Target, UserX, Wrench } from "lucide-react";
 import { RevealText } from "@/components/atoms/reveal-text";
 import { PageHeader } from "@/components/molecules/page-header";
-import { createAdminDb } from "@/lib/admin-db";
+import { createAdminDb } from "@/lib/admin/db";
 import { greetingFor } from "@/lib/dashboard";
 import { getPriorities } from "@/lib/ops/accounts";
 import type { PermissionKey } from "@/lib/ops/permissions";

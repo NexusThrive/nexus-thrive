@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertTriangle, CheckCircle2, Columns3 } from "lucide-react";
-import type { ColumnMapping, ImportTargetField } from "@/lib/apu-importer/types";
+import type { ColumnMapping, ImportTargetField } from "@/lib/construction/apu-importer/types";
 
 const TARGET_LABELS: Record<ImportTargetField, string> = {
   code: "Código",

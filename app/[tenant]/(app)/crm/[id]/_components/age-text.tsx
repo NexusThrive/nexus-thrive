@@ -1,6 +1,6 @@
 "use client";
 
-import { useMinute } from "@/lib/use-minute";
+import { useMinute } from "@/lib/hooks/use-minute";
 
 /**
  * Edad calculada en el cliente (el "ahora" no puede leerse durante el render

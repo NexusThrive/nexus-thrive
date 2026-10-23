@@ -1,11 +1,11 @@
-import { notFound } from "next/navigation";
-import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import CustomerToolbar from "./_components/customer-toolbar";
 import CustomerTable, { type CustomerRow } from "./_components/customer-table";
 import type { CustomerSort, CustomerStatus } from "./_components/customer-filters";
 import { PageHeader } from "@/components/molecules/page-header";
+import { requirePageContext } from "@/lib/tenant/context";
+import { can } from "@/lib/business/permissions";
 
 const PAGE_SIZE = 20;
 
@@ -65,13 +65,9 @@ export default async function CrmPage({
   const pageRaw = Number.parseInt(firstString(sp.page), 10);
   const requestedPage = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
 
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    notFound();
-  }
+  // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
+  const pageCtx = await requirePageContext(tenantSlug, "/crm");
+  const tenantRecord = pageCtx.tenant;
 
   const tenantDb = createTenantDb(tenantRecord.id);
 
@@ -141,6 +137,7 @@ export default async function CrmPage({
         totalPages={totalPages}
         total={result.total}
         query={q}
+        canRemove={can(pageCtx.role, "customers.delete")}
       />
     </div>
   );

@@ -115,6 +115,31 @@ describe.skipIf(!enabled)("acceso del equipo de NEXUS (integración)", () => {
     expect(despues).toEqual({ ok: true });
   });
 
+  // SEC-01 (docs/nexus-architecture/security-audit.md): `_` y `%` son
+  // comodines de ILIKE. Un correo parecido no puede resolver la ficha ajena.
+  test("un `_` en el correo no encuentra la ficha de otra persona", async () => {
+    await makeMember("ana.perez@ejemplo.com");
+    expect(await findStaffByEmail("ana_perez@ejemplo.com")).toBeNull();
+    expect(await linkStaffToSession("ana_perez@ejemplo.com", "user_atacante_1")).toEqual({
+      ok: false,
+      reason: "not_found",
+    });
+    expect((await findStaffByEmail("ana.perez@ejemplo.com"))?.linked).toBe(false);
+  });
+
+  test("un `%` en el correo no encuentra ninguna ficha", async () => {
+    await makeMember("luis.gomez@ejemplo.com");
+    expect(await findStaffByEmail("%@ejemplo.com")).toBeNull();
+    expect(await findStaffByEmail("luis%")).toBeNull();
+    expect(await linkStaffToSession("%", "user_atacante_2")).toEqual({ ok: false, reason: "not_found" });
+  });
+
+  test("una barra invertida en el correo no rompe la búsqueda exacta", async () => {
+    await makeMember("barra@ejemplo.com");
+    expect(await findStaffByEmail("barra\\@ejemplo.com")).toBeNull();
+    expect((await findStaffByEmail("BARRA@ejemplo.com"))?.email).toBe("barra@ejemplo.com");
+  });
+
   test("un correo que no está en el equipo no inventa nada", async () => {
     expect(await findStaffByEmail("nadie@ejemplo.com")).toBeNull();
     expect(await linkStaffToSession("nadie@ejemplo.com", "user_x")).toEqual({

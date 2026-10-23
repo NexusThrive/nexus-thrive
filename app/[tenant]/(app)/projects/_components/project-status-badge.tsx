@@ -1,5 +1,5 @@
 import { Badge, StatusDot } from "@/components/atoms/badge";
-import { projectStatusLabel, type ProjectStatusValue } from "@/lib/projects";
+import { projectStatusLabel, type ProjectStatusValue } from "@/lib/construction/project-domain";
 
 const STATUS_DOTS: Record<
   ProjectStatusValue,

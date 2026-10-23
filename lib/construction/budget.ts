@@ -1,9 +1,9 @@
 /**
  * Presupuesto de obra: capítulos, partidas, recursos, AIU, bloqueo y línea base.
- * Extraído de `lib/tenant-db.ts`; `createTenantDb` lo compone. Todo
+ * Extraído de `lib/tenant/db.ts`; `createTenantDb` lo compone. Todo
  * acceso va acotado al `tenantId` recibido.
  */
-import { categoryForSection } from "@/lib/apu-importer/master-pack-plan";
+import { categoryForSection } from "@/lib/construction/apu-importer/master-pack-plan";
 import {
   db,
 } from "@/prisma/db";
@@ -20,12 +20,12 @@ import {
   decimalToMicro,
   resourceLineCostMicro,
   type ResourceTypeValue,
-} from "@/lib/apu-engine";
+} from "@/lib/construction/apu-engine";
 import {
   isUnchangedAiu,
   isUnchangedChapter,
   isUnchangedItem,
-} from "@/lib/budget-guards";
+} from "@/lib/construction/budget-guards";
 import {
   type AiuConfigInput,
   type BudgetBaselineData,

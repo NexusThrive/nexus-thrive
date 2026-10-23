@@ -9,7 +9,7 @@ import { UsdInput } from "@/components/molecules/usd-input";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { periodAmount, periodEnd, type Cycle } from "@/lib/ops/billing-rules";
 import type { SubscriptionRow } from "@/lib/ops/billing";
-import { formatUsdCents } from "@/lib/plans/quote";
+import { formatUsdCents } from "@/lib/plans/pricing";
 import { createSubscriptionAction, updateSubscriptionAction } from "../actions";
 import { useBilling } from "./use-billing";
 

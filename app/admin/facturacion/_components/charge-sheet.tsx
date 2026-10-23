@@ -9,7 +9,7 @@ import { Field } from "@/components/molecules/field";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { CHARGE_STATUSES, dunningLabel, EVIDENCE_TYPES, PAYMENT_METHODS } from "@/lib/ops/billing-rules";
 import type { ChargeRow } from "@/lib/ops/billing";
-import { formatUsdCents } from "@/lib/plans/quote";
+import { formatUsdCents } from "@/lib/plans/pricing";
 import { cn } from "@/lib/utils";
 import { confirmChargeAction, markNoticeAction, recordPaymentAction, refundChargeAction, suspendForNonPaymentAction, voidChargeAction } from "../actions";
 import { useBilling } from "./use-billing";

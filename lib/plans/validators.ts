@@ -1,4 +1,4 @@
-import { isModule, type ModuleValue } from "@/lib/admin-catalogs";
+import { isModule, type ModuleValue } from "@/lib/admin/catalogs";
 import type { CustomerTier, ModuleConfig, ModuleStatus, PlanConfig, VerticalConfig } from "./pricing";
 
 /** Validación de lo que se edita en Planes y módulos (pura). */

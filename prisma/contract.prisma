@@ -384,8 +384,31 @@ model Tenant {
   weeklyCommitments WeeklyCommitment[]
   fieldLogs         FieldLog[]
   presenceScans     PresenceScan[]
+  bookings           Booking[]
+  contacts           TenantContact[]
+  leads              Lead[]
+  supportTickets     SupportTicket[]
+  charges            Charge[]
+  benefitRedemptions BenefitRedemption[]
+  inboxConversations InboxConversation[]
+  satisfactionSurveys SatisfactionSurvey[]
+  attachments        Attachment[]
+  cashBoxes          CashBox[]
+  cashSessions       CashSession[]
+  cashMovements      CashMovement[]
+  products           Product[]
+  stockMovements     StockMovement[]
+  invoices           Invoice[]
+  invites            TenantInvite[]
+  attendances        Attendance[]
+  ticketSales        TicketSale[]
+  departures         Departure[]
+  tourBookings       TourBooking[]
+  presenceRequests   PresenceRequest[]
+  subscription       Subscription?
 
   @@index([slug])
+  @@rls
 }
 
 model TenantModule {
@@ -399,6 +422,7 @@ model TenantModule {
 
   @@unique([tenantId, moduleName])
   @@index([tenantId])
+  @@rls
 }
 
 model User {
@@ -423,6 +447,7 @@ model User {
 
   @@unique([clerkUserId, tenantId])
   @@index([tenantId])
+  @@rls
 }
 
 model Customer {
@@ -454,6 +479,10 @@ model Customer {
   projects Project[]
 
   @@index([tenantId])
+  /// Un código o una tarjeta identifica a UN socio del negocio (DATA-04).
+  @@index([tenantId, accessCode], unique: true, where: "\"accessCode\" IS NOT NULL", name: "Customer_tenantId_accessCode_key")
+  @@index([tenantId, nfcUid], unique: true, where: "\"nfcUid\" IS NOT NULL", name: "Customer_tenantId_nfcUid_key")
+  @@rls
 }
 
 model Payment {
@@ -488,6 +517,7 @@ model Payment {
   @@index([providerRefId])
   @@index([membershipId])
   @@unique([tenantId, receiptNumber])
+  @@rls
 }
 
 model Expense {
@@ -511,6 +541,7 @@ model Expense {
   updatedAt   temporal.updatedAt()
 
   @@index([tenantId])
+  @@rls
 }
 
 model Membership {
@@ -524,8 +555,6 @@ model Membership {
   endDate    DateTime
   status     MembershipStatus @default(active)
   price      Decimal
-  /// Historial de cobros registrados (JSON serializable: [{ date, amount, provider, kind }]).
-  payments   Json?
   charges    Payment[]
   /// Plan del catálogo con el que se vendió.
   productId    String?
@@ -539,6 +568,7 @@ model Membership {
   @@index([tenantId])
   @@index([tenantId, endDate])
   @@index([customerId])
+  @@rls
 }
 
 /// Observación interna sobre un cliente (Ficha 360°). Sin módulo propio:
@@ -558,6 +588,7 @@ model CustomerNote {
 
   @@index([tenantId])
   @@index([customerId])
+  @@rls
 }
 
 /// Insumo/recurso básico del banco APU (material, mano de obra, equipo o
@@ -595,6 +626,7 @@ model ApuItem {
   @@unique([tenantId, code])
   @@unique([tenantId, sourceKey])
   @@index([tenantId])
+  @@rls
 }
 
 /// Imagen binaria de un insumo, guardada en la base (no es un enlace
@@ -614,6 +646,7 @@ model ApuImage {
 
   @@unique([tenantId, sha256])
   @@index([tenantId])
+  @@rls
 }
 
 /// Capítulo del catálogo APU (ej. "1 PRELIMINARES"). Ordena las actividades.
@@ -633,6 +666,7 @@ model ApuChapter {
 
   @@unique([tenantId, code])
   @@index([tenantId])
+  @@rls
 }
 
 /// Registro de cada importación del catálogo (auditoría: qué archivo, cuándo,
@@ -651,6 +685,7 @@ model ApuImportRun {
   priceChanges ApuItemPriceHistory[]
 
   @@index([tenantId, createdAt])
+  @@rls
 }
 
 /// Historial de precios de un insumo: cada precio distinto que tuvo, con su
@@ -670,6 +705,7 @@ model ApuItemPriceHistory {
 
   @@index([itemId, createdAt])
   @@index([tenantId])
+  @@rls
 }
 
 /// Actividad de obra reutilizable (ej. M2 de muro en ladrillo). Se compone
@@ -709,6 +745,7 @@ model ApuActivity {
 
   @@unique([tenantId, code])
   @@index([tenantId])
+  @@rls
 }
 
 /// Composición de una actividad APU: insumo + rendimiento + desperdicio.
@@ -740,11 +777,13 @@ model ApuActivityComposition {
 
   @@index([activityId, order])
   @@index([itemId])
+  @@rls
 }
 
 model Booking {
   id          String        @id @default(uuid())
   tenantId    String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customerId  String
   serviceName String
   startDate   DateTime
@@ -765,6 +804,7 @@ model Booking {
 
   @@index([tenantId])
   @@index([customerId])
+  @@rls
 }
 
 enum BookingStatus {
@@ -820,6 +860,7 @@ model Quote {
   @@index([tenantId])
   @@index([tenantId, status])
   @@index([customerId])
+  @@rls
 }
 
 /// Seguimiento comercial de una obra: llamada, correo, reunión, visita o nota,
@@ -843,6 +884,7 @@ model ProjectFollowUp {
 
   @@index([tenantId, projectId])
   @@index([projectId, createdAt])
+  @@rls
 }
 
 /// Registro de auditoría de acciones privilegiadas del SuperAdmin
@@ -869,6 +911,7 @@ model AuditLog {
   @@index([createdAt])
   @@index([targetTenantId])
   @@index([actorId])
+  @@rls
 }
 
 /// Actividad dentro de un presupuesto. Congela nombre, unidad, cantidad y
@@ -889,6 +932,7 @@ model QuoteItem {
 
   @@index([quoteId])
   @@index([activityId])
+  @@rls
 }
 
 /// Contenedor de un proyecto de obra (FASE 1 del vertical construcción).
@@ -926,6 +970,7 @@ model Project {
   @@index([tenantId])
   @@index([customerId])
   @@index([tenantId, status])
+  @@rls
 }
 
 /// 1:1 con Proyecto. Snapshot inicial tomado del Customer del CRM al crear
@@ -963,6 +1008,7 @@ model ProjectHeader {
   updatedAt temporal.updatedAt()
 
   @@index([projectId])
+  @@rls
 }
 
 /// Presupuesto de obra de un proyecto (FASE 2 — Tab 2). Un proyecto tiene
@@ -1010,6 +1056,7 @@ model ProjectBudget {
 
   @@unique([tenantId, code])
   @@index([tenantId])
+  @@rls
 }
 
 /// Capítulo (grupo de partidas) dentro de un presupuesto. `order` es el
@@ -1031,6 +1078,7 @@ model BudgetChapter {
   @@unique([budgetId, order])
   @@index([tenantId])
   @@index([budgetId])
+  @@rls
 }
 
 /// Partida / actividad presupuestaria dentro de un capítulo. Cantidad y
@@ -1066,6 +1114,7 @@ model BudgetItem {
   @@unique([chapterId, order])
   @@index([tenantId])
   @@index([chapterId])
+  @@rls
 }
 
 /// Recurso que compone la actividad (APU) de una partida. El editor
@@ -1100,6 +1149,7 @@ model BudgetItemResource {
 
   @@index([tenantId])
   @@index([itemId])
+  @@rls
 }
 
 /// Acta de avance de una partida: cantidad ejecutada en el período que cierra
@@ -1118,6 +1168,7 @@ model BudgetItemProgress {
 
   @@index([tenantId])
   @@index([budgetItemId, cutoffDate])
+  @@rls
 }
 
 /// Línea base aprobada del presupuesto (D1 — revisiones baseline). Congela la
@@ -1162,6 +1213,7 @@ model BudgetBaseline {
   @@unique([budgetId, version])
   @@index([tenantId])
   @@index([budgetId])
+  @@rls
 }
 
 /// Evento de bloqueo/desbloqueo del presupuesto (solo agregar).
@@ -1180,6 +1232,7 @@ model BudgetLockEvent {
   @@index([tenantId])
   @@index([budgetId])
   @@index([budgetId, createdAt])
+  @@rls
 }
 
 /// Plan operativo Lean (Last Planner System) de un proyecto (FASE 3 — Tab 3).
@@ -1214,6 +1267,7 @@ model ProjectPlan {
 
   @@index([tenantId])
   @@index([tenantId, projectId])
+  @@rls
 }
 
 /// Tarea de la ventana Lookahead (6 semanas) de un plan operativo. `weekNumber`
@@ -1247,6 +1301,7 @@ model LookaheadTask {
   @@index([tenantId])
   @@index([planId])
   @@index([tenantId, weekNumber])
+  @@rls
 }
 
 /// Compromiso del Plan de Trabajo Semanal (WWP). `weekNumber` y `year` son la
@@ -1279,6 +1334,7 @@ model WeeklyCommitment {
   @@index([tenantId])
   @@index([planId])
   @@index([tenantId, weekNumber, year])
+  @@rls
 }
 
 /// Bitácora de campo de un proyecto (FASE 4 — Tab 4). Un proyecto tiene
@@ -1297,6 +1353,7 @@ model FieldLog {
 
   @@index([tenantId])
   @@index([tenantId, projectId])
+  @@rls
 }
 
 /// Anotación del Diario Oficial de Obra (FASE 4 — Tab 4).
@@ -1324,6 +1381,7 @@ model FieldLogEntry {
   @@index([tenantId])
   @@index([logId])
   @@index([tenantId, entryDate])
+  @@rls
 }
 
 
@@ -1342,6 +1400,7 @@ model StaffRole {
 
   members StaffMember[]
   invites StaffInvite[]
+  @@rls
 }
 
 /// Invitación al equipo de NEXUS: un enlace de un solo uso que ata una cuenta
@@ -1364,6 +1423,7 @@ model StaffInvite {
 
   @@index([email])
   @@index([roleId])
+  @@rls
 }
 
 /// Integrante del equipo NEXUS. No pertenece a ningún negocio: su acceso al
@@ -1385,6 +1445,7 @@ model StaffMember {
   updatedAt   temporal.updatedAt()
 
   @@index([roleId])
+  @@rls
 }
 
 /// Contactos de un negocio para el equipo NEXUS (no son clientes del
@@ -1392,6 +1453,7 @@ model StaffMember {
 model TenantContact {
   id               String   @id @default(uuid())
   tenantId         String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   name             String
   /// Dueño, administrativo, técnico, comercial…
   purpose          String
@@ -1405,6 +1467,7 @@ model TenantContact {
   updatedAt        temporal.updatedAt()
 
   @@index([tenantId])
+  @@rls
 }
 
 
@@ -1427,6 +1490,7 @@ model PlanSetting {
   /// Usuarios del negocio incluidos (null = sin límite).
   maxUsers           Int?
   updatedAt          temporal.updatedAt()
+  @@rls
 }
 
 model ModuleSetting {
@@ -1439,6 +1503,7 @@ model ModuleSetting {
   included      Boolean
   order         Int
   updatedAt     temporal.updatedAt()
+  @@rls
 }
 
 model VerticalSetting {
@@ -1451,6 +1516,7 @@ model VerticalSetting {
   dashboardTemplate String?
   order             Int
   updatedAt         temporal.updatedAt()
+  @@rls
 }
 
 model CustomerTierSetting {
@@ -1460,6 +1526,7 @@ model CustomerTierSetting {
   priceUsdCents Int
   order         Int
   updatedAt     temporal.updatedAt()
+  @@rls
 }
 
 
@@ -1484,6 +1551,7 @@ model Lead {
   lostReason     String?
   /// Negocio en el que se convirtió (al ganarse).
   tenantId       String?
+  tenant   Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   stageChangedAt DateTime  @default(now())
   createdAt      DateTime  @default(now())
   updatedAt      temporal.updatedAt()
@@ -1491,6 +1559,9 @@ model Lead {
 
   @@index([stage])
   @@index([ownerId])
+
+  @@index([tenantId])
+  @@rls
 }
 
 model LeadActivity {
@@ -1505,6 +1576,7 @@ model LeadActivity {
   createdAt DateTime @default(now())
 
   @@index([leadId])
+  @@rls
 }
 
 /// Ticket de soporte de un negocio (SUP-2026-00124 = año + consecutivo).
@@ -1513,6 +1585,7 @@ model SupportTicket {
   year             Int
   seq              Int
   tenantId         String?
+  tenant   Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   subject          String
   description      String
   category         String
@@ -1533,6 +1606,7 @@ model SupportTicket {
   @@unique([year, seq])
   @@index([status])
   @@index([tenantId])
+  @@rls
 }
 
 model TicketMessage {
@@ -1547,6 +1621,7 @@ model TicketMessage {
   createdAt     DateTime      @default(now())
 
   @@index([ticketId])
+  @@rls
 }
 
 
@@ -1555,6 +1630,7 @@ model TicketMessage {
 model Subscription {
   id                 String             @id @default(uuid())
   tenantId           String             @unique
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   plan               String
   billingCycle       String
   /// Precio mensual equivalente (USD centavos).
@@ -1568,12 +1644,14 @@ model Subscription {
   createdAt          DateTime           @default(now())
   updatedAt          temporal.updatedAt()
   charges            Charge[]
+  @@rls
 }
 
 /// Cobro de un período. Regla: no se confirma sin comprobante.
 model Charge {
   id             String       @id @default(uuid())
   tenantId       String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   subscriptionId String
   subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
   periodStart    DateTime
@@ -1600,6 +1678,7 @@ model Charge {
   @@unique([subscriptionId, periodStart])
   @@index([tenantId])
   @@index([status])
+  @@rls
 }
 
 /// Comprobante de pago guardado en el sistema (no un enlace externo).
@@ -1616,6 +1695,7 @@ model ChargeEvidence {
   createdAt    DateTime @default(now())
 
   @@index([chargeId])
+  @@rls
 }
 
 /// Política de cobro y suspensión (una fila, id "default").
@@ -1625,6 +1705,7 @@ model BillingPolicy {
   graceDays    Int
   noticeDays   Int
   updatedAt    temporal.updatedAt()
+  @@rls
 }
 
 /// Beneficio promocional canjeable. Es el destino de la tarjeta NFC/QR
@@ -1654,6 +1735,7 @@ model BenefitCode {
   redemptions  BenefitRedemption[]
 
   @@index([active])
+  @@rls
 }
 
 /// Canje de un beneficio por un negocio. Un negocio no puede canjear el mismo
@@ -1663,6 +1745,7 @@ model BenefitRedemption {
   codeId       String
   code         BenefitCode @relation(fields: [codeId], references: [id], onDelete: Cascade)
   tenantId     String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   tenantName   String
   plan         String
   /// Regalo o acceso pagado (se copia del código al momento del canje).
@@ -1677,6 +1760,7 @@ model BenefitRedemption {
   @@unique([codeId, tenantId])
   @@index([tenantId])
   @@index([codeId])
+  @@rls
 }
 
 
@@ -1689,6 +1773,7 @@ model InboxConversation {
   contactHandle String
   contactName   String?
   tenantId      String?
+  tenant   Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   subject       String?
   status        ConversationStatus @default(OPEN)
   assigneeId    String?
@@ -1704,6 +1789,7 @@ model InboxConversation {
   @@unique([channel, contactHandle])
   @@index([status])
   @@index([tenantId])
+  @@rls
 }
 
 model InboxMessage {
@@ -1723,6 +1809,7 @@ model InboxMessage {
   createdAt      DateTime          @default(now())
 
   @@index([conversationId])
+  @@rls
 }
 
 /// Encuesta de satisfacción de un ticket resuelto (enlace público con token).
@@ -1730,6 +1817,7 @@ model SatisfactionSurvey {
   id         String    @id @default(uuid())
   ticketId   String    @unique
   tenantId   String?
+  tenant   Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   assigneeId String?
   token      String    @unique
   /// 1 a 5 (CSAT).
@@ -1742,6 +1830,7 @@ model SatisfactionSurvey {
   createdAt  DateTime  @default(now())
 
   @@index([tenantId])
+  @@rls
 }
 
 
@@ -1750,6 +1839,7 @@ model SatisfactionSurvey {
 model Attachment {
   id           String   @id @default(uuid())
   tenantId     String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   kind         String
   ownerId      String
   fileName     String
@@ -1761,12 +1851,14 @@ model Attachment {
   createdAt    DateTime @default(now())
 
   @@index([tenantId, kind, ownerId])
+  @@rls
 }
 
 /// Caja menor: un fondo fijo con responsable.
 model CashBox {
   id                String   @id @default(uuid())
   tenantId          String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   name              String
   fundAmount        Decimal  @default(0)
   responsibleUserId String?
@@ -1776,12 +1868,14 @@ model CashBox {
   sessions          CashSession[]
 
   @@index([tenantId])
+  @@rls
 }
 
 /// Turno de caja: apertura, movimientos y cierre con arqueo.
 model CashSession {
   id             String   @id @default(uuid())
   tenantId       String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   boxId          String
   box            CashBox  @relation(fields: [boxId], references: [id], onDelete: Cascade)
   openedAt       DateTime @default(now())
@@ -1796,11 +1890,13 @@ model CashSession {
   movements      CashMovement[]
 
   @@index([tenantId, boxId])
+  @@rls
 }
 
 model CashMovement {
   id          String           @id @default(uuid())
   tenantId    String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   sessionId   String
   session     CashSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   kind        CashMovementKind
@@ -1814,12 +1910,16 @@ model CashMovement {
   createdAt   DateTime         @default(now())
 
   @@index([sessionId])
+
+  @@index([tenantId])
+  @@rls
 }
 
 /// Catálogo del negocio: productos, servicios, planes, entradas y tours.
 model Product {
   id              String      @id @default(uuid())
   tenantId        String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   kind            ProductKind @default(PRODUCT)
   name            String
   description     String?
@@ -1843,11 +1943,13 @@ model Product {
   movements       StockMovement[]
 
   @@index([tenantId, kind])
+  @@rls
 }
 
 model StockMovement {
   id          String   @id @default(uuid())
   tenantId    String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   productId   String
   product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   /// IN (entrada) | OUT (salida) | SALE (venta) | ADJUST (ajuste de inventario)
@@ -1859,6 +1961,9 @@ model StockMovement {
   createdAt   DateTime @default(now())
 
   @@index([productId])
+
+  @@index([tenantId])
+  @@rls
 }
 
 /// Recibo o cuenta de cobro numerada (la factura electrónica DIAN llega
@@ -1866,6 +1971,7 @@ model StockMovement {
 model Invoice {
   id           String        @id @default(uuid())
   tenantId     String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   /// RECEIPT (recibo) | BILL (cuenta de cobro)
   kind         String
   number       Int
@@ -1887,6 +1993,7 @@ model Invoice {
 
   @@unique([tenantId, kind, number])
   @@index([tenantId])
+  @@rls
 }
 
 model InvoiceLine {
@@ -1900,6 +2007,7 @@ model InvoiceLine {
   total       Decimal
 
   @@index([invoiceId])
+  @@rls
 }
 
 
@@ -1908,6 +2016,7 @@ model InvoiceLine {
 model TenantInvite {
   id          String    @id @default(uuid())
   tenantId    String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   email       String
   name        String?
   role        Role
@@ -1919,6 +2028,7 @@ model TenantInvite {
 
   @@index([tenantId])
   @@index([email])
+  @@rls
 }
 
 /// Notificaciones que la persona descartó (deslizando).
@@ -1929,6 +2039,7 @@ model DismissedNotification {
   createdAt DateTime @default(now())
 
   @@unique([userId, key])
+  @@rls
 }
 
 
@@ -1936,6 +2047,7 @@ model DismissedNotification {
 model Attendance {
   id           String   @id @default(uuid())
   tenantId     String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   /// Socio identificado. Nulo cuando lo escaneado no corresponde a nadie
   /// (código o tarjeta desconocida): el intento queda registrado igual.
   customerId   String?
@@ -1951,12 +2063,14 @@ model Attendance {
 
   @@index([tenantId, at])
   @@index([customerId])
+  @@rls
 }
 
 /// Venta de taquilla (museo): entradas por tipo para una fecha y franja.
 model TicketSale {
   id          String   @id @default(uuid())
   tenantId    String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   number      Int
   visitDate   DateTime
   /// Franja horaria "10:00".
@@ -1979,12 +2093,14 @@ model TicketSale {
 
   @@unique([tenantId, number])
   @@index([tenantId, visitDate])
+  @@rls
 }
 
 /// Salida programada de un tour o paquete (agencias de turismo).
 model Departure {
   id           String   @id @default(uuid())
   tenantId     String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   productId    String
   date         DateTime
   time         String?
@@ -1998,12 +2114,14 @@ model Departure {
   updatedAt    temporal.updatedAt()
 
   @@index([tenantId, date])
+  @@rls
 }
 
 /// Reserva de un cliente en una salida: pasajeros, valor, abonos y voucher.
 model TourBooking {
   id            String   @id @default(uuid())
   tenantId      String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   departureId   String
   customerId    String
   seats         Int
@@ -2022,6 +2140,7 @@ model TourBooking {
 
   @@unique([tenantId, code])
   @@index([departureId])
+  @@rls
 }
 
 /// Solicitud de "Presence Thrive": el negocio pide su presencia digital
@@ -2031,6 +2150,7 @@ model TourBooking {
 model PresenceRequest {
   id            String    @id @default(uuid())
   tenantId      String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   /// PENDING | DESIGN | REVIEW | PUBLISHED | CANCELLED
   status        String    @default("PENDING")
   businessName  String
@@ -2058,6 +2178,7 @@ model PresenceRequest {
 
   @@index([tenantId])
   @@index([status])
+  @@rls
 }
 
 /// Foto del estado de presencia digital de un negocio en un momento dado.
@@ -2081,4 +2202,5 @@ model PresenceScan {
   createdAt DateTime @default(now())
 
   @@index([tenantId, createdAt])
+  @@rls
 }

@@ -1,6 +1,6 @@
-import type { Customer360Membership } from "@/lib/tenant-db";
+import type { Customer360Membership } from "@/lib/tenant/db";
 import { formatCurrency, formatDateShort } from "@/lib/format";
-import { typeLabel } from "@/lib/memberships";
+import { typeLabel } from "@/lib/business/memberships";
 import type { VerticalTerms } from "@/lib/vertical-terms";
 import { MembershipStatusPill } from "./status-pills";
 

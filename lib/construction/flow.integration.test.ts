@@ -1,11 +1,11 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import * as XLSX from "xlsx";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
-import { formatPlainDate, isoWeekOf, bogotaToday } from "@/lib/lean-engine";
-import { buildMasterPackPlan } from "@/lib/apu-importer/master-pack-plan";
-import { executeMasterPackImport } from "@/lib/apu-importer/master-pack-import";
-import { samplePack } from "@/lib/apu-importer/__fixtures__/sample-pack";
+import { createTenantDb } from "@/lib/tenant/db";
+import { formatPlainDate, isoWeekOf, bogotaToday } from "@/lib/construction/lean-engine";
+import { buildMasterPackPlan } from "@/lib/construction/apu-importer/master-pack-plan";
+import { executeMasterPackImport } from "@/lib/construction/apu-importer/master-pack-import";
+import { samplePack } from "@/lib/construction/apu-importer/__fixtures__/sample-pack";
 import { ensureProjectContainers } from "./containers";
 import { buildBudgetWorkbook } from "./budget-export";
 

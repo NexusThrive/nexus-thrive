@@ -4,6 +4,7 @@ import { db } from "@/prisma/db";
 import { acceptInvitesFor } from "@/lib/business/team-db";
 import { findStaffByEmail, getStaffContext } from "@/lib/ops/access";
 import { StaffAccessNotice } from "@/components/molecules/staff-access-notice";
+import { verifiedEmailOf } from "@/lib/auth/session-email";
 
 /**
  * Callback post-login de Clerk: la ÚNICA puerta que decide a dónde va cada
@@ -31,7 +32,8 @@ export default async function AuthCallback() {
   }
 
   const me = await currentUser();
-  const email = me?.primaryEmailAddress?.emailAddress ?? me?.emailAddresses?.[0]?.emailAddress ?? "";
+  // Solo el correo principal verificado vincula fichas o invitaciones (SEC-10).
+  const email = verifiedEmailOf(me) ?? "";
 
   // Su correo está en el equipo pero esta sesión no puede entrar al panel:
   // se lo decimos en vez de mandarlo a crear un negocio.

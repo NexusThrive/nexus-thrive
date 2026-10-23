@@ -15,7 +15,7 @@ import {
   VERTICAL_LABELS,
   VERTICALS,
   type VerticalValue,
-} from "@/lib/admin-catalogs";
+} from "@/lib/admin/catalogs";
 import {
   TEAM_SIZE_LABELS,
   type OnboardingTenantType,
@@ -256,6 +256,38 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                 {errors.name}
               </p>
             ) : null}
+          </div>
+
+          {/* Dueño: el negocio nace con una invitación OWNER a este correo. */}
+          <div>
+            <label htmlFor="tenant-owner-email" className={labelClasses}>
+              Correo del dueño
+            </label>
+            <input
+              id="tenant-owner-email"
+              name="ownerEmail"
+              type="email"
+              autoComplete="off"
+              defaultValue={state.values?.ownerEmail ?? ""}
+              placeholder="dueno@negocio.com"
+              aria-invalid={Boolean(errors.ownerEmail)}
+              aria-describedby="tenant-owner-email-hint"
+              className={[
+                "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
+                errors.ownerEmail
+                  ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
+                  : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
+              ].join(" ")}
+            />
+            {errors.ownerEmail ? (
+              <p role="alert" className="mt-1 text-xs text-destructive">
+                {errors.ownerEmail}
+              </p>
+            ) : (
+              <p id="tenant-owner-email-hint" className="mt-1 text-xs text-muted-foreground">
+                Entra como dueño al iniciar sesión con este correo verificado.
+              </p>
+            )}
           </div>
 
           {/* Razón social (solo Empresa, opcional) */}

@@ -1,8 +1,11 @@
+import { can } from "./permissions";
+
 /**
  * Roles dentro de un negocio (puro). El dueño decide todo; administración
  * maneja dinero y equipo; recepción cobra y agenda; asesor atiende clientes.
  */
 
+/** El único tipo de rol del negocio (`TenantRole` y `NexusRole` son alias). */
 export type BusinessRole = "SUPERADMIN" | "OWNER" | "ADMIN" | "RECEPTION" | "ADVISOR" | "STAFF";
 
 export const BUSINESS_ROLES: { value: Exclude<BusinessRole, "SUPERADMIN" | "STAFF">; label: string; hint: string }[] = [
@@ -16,12 +19,11 @@ export function roleLabel(role: string) {
   return BUSINESS_ROLES.find((r) => r.value === role)?.label ?? (role === "SUPERADMIN" ? "NEXUS" : "Equipo");
 }
 
-const MANAGE = new Set<BusinessRole>(["SUPERADMIN", "OWNER", "ADMIN"]);
-const CASH = new Set<BusinessRole>(["SUPERADMIN", "OWNER", "ADMIN", "RECEPTION", "STAFF"]);
+// Atajos sobre la matriz única de permisos (`./permissions`).
 
 /** Anular, editar montos, inventario, catálogo y reportes. */
-export const canManage = (r: string) => MANAGE.has(r as BusinessRole);
+export const canManage = (r: string) => can(r, "business.manage");
 /** Cobrar, gastos de caja y turnos de caja. */
-export const canHandleCash = (r: string) => CASH.has(r as BusinessRole);
+export const canHandleCash = (r: string) => can(r, "money.handle");
 /** Invitar y retirar personas, plan y facturación de NEXUS. */
-export const canManageTeam = (r: string) => r === "OWNER" || r === "SUPERADMIN" || r === "ADMIN";
+export const canManageTeam = (r: string) => can(r, "team.manage");

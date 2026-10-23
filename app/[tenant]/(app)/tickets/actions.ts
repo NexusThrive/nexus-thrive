@@ -5,7 +5,8 @@ import { parseMuseumSettings } from "@/lib/business/museum";
 import { createTicketSale, payTicketSale, saveMuseumSettings, seedTicketTypes, voidTicketSale, type NewSale } from "@/lib/business/museum-db";
 import { canHandleCash, canManage } from "@/lib/business/roles";
 import { PAYMENT_METHODS } from "@/lib/finance";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
+import { logTenantAction } from "@/lib/tenant/audit";
 
 export type TicketResult = { ok: true; message?: string } | { ok: false; message: string };
 const DENIED: TicketResult = { ok: false, message: "Tu rol no permite esta acción." };
@@ -19,7 +20,7 @@ function refresh(slug: string) {
 }
 
 export async function sellTicketsAction(slug: string, input: NewSale): Promise<TicketResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/tickets");
   if (!ctx || !canHandleCash(ctx.role)) return DENIED;
   if (input.pay && !validMethod(input.pay.method)) return { ok: false, message: "Elige el medio de pago." };
   const r = await createTicketSale(ctx.tenantId, input, ctx.memberId);
@@ -29,7 +30,7 @@ export async function sellTicketsAction(slug: string, input: NewSale): Promise<T
 }
 
 export async function payTicketsAction(slug: string, id: string, method: string): Promise<TicketResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/tickets");
   if (!ctx || !canHandleCash(ctx.role)) return DENIED;
   if (!validMethod(method)) return { ok: false, message: "Elige el medio de pago." };
   const r = await payTicketSale(ctx.tenantId, id, method, ctx.memberId);
@@ -39,17 +40,18 @@ export async function payTicketsAction(slug: string, id: string, method: string)
 }
 
 export async function voidTicketsAction(slug: string, id: string, reason: string): Promise<TicketResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/tickets");
   if (!ctx || !canManage(ctx.role)) return { ok: false, message: "Solo el dueño o administración anulan ventas." };
   if (reason.trim().length < 3) return { ok: false, message: "Escribe el motivo." };
   const r = await voidTicketSale(ctx.tenantId, id, reason.trim(), ctx.memberId);
   if (!r.ok) return r;
+  await logTenantAction(ctx, "BIZ_TICKETS_VOID", { ticketSaleId: id, reason: reason.trim().slice(0, 300) });
   refresh(slug);
   return { ok: true, message: "Venta anulada: el cupo quedó libre." };
 }
 
 export async function saveMuseumSettingsAction(slug: string, input: { capacityPerSlot: number; slots: string; closedWeekdays: number[]; guidedMinutes: number }): Promise<TicketResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/tickets");
   if (!ctx || !canManage(ctx.role)) return DENIED;
   const v = parseMuseumSettings(input);
   if (!v.ok) return v;
@@ -59,7 +61,7 @@ export async function saveMuseumSettingsAction(slug: string, input: { capacityPe
 }
 
 export async function seedTicketTypesAction(slug: string): Promise<TicketResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/tickets");
   if (!ctx || !canManage(ctx.role)) return DENIED;
   const created = await seedTicketTypes(ctx.tenantId);
   revalidatePath(`/${slug}/tickets`);

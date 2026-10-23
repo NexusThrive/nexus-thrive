@@ -9,7 +9,7 @@ import {
   UsersRound,
   Wallet,
 } from "lucide-react";
-import type { ActivityItem, ActivityKind } from "@/lib/admin-db";
+import type { ActivityItem, ActivityKind } from "@/lib/admin/db";
 import { cn } from "@/lib/utils";
 
 const KIND_META: Record<
@@ -72,7 +72,7 @@ const KIND_META: Record<
 
 /**
  * Feed de actividad real de la plataforma (server component). Los datos ya
- * vienen resueltos de `lib/admin-db.ts`.
+ * vienen resueltos de `lib/admin/db.ts`.
  */
 export default function ActivityFeed({ items }: { items: ActivityItem[] }) {
   if (items.length === 0) {

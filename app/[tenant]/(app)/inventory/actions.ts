@@ -3,13 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
 import { kindsForVertical, validateProduct, type ProductDraft } from "@/lib/business/catalog-kinds";
-import { addCashMovement, assignReceiptNumber, currentCashSession } from "@/lib/business/finance-db";
-import { receiptCode } from "@/lib/business/invoice";
+import { sellProduct } from "@/lib/business/money-service";
 import { validateStockMove, type StockKind } from "@/lib/business/inventory";
 import { getProduct, moveStock, saveProduct, stockHistory } from "@/lib/business/products-db";
 import { canHandleCash, canManage } from "@/lib/business/roles";
 import { PAYMENT_METHODS } from "@/lib/finance";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 
 export type CatalogResult = { ok: true; message?: string; id?: string; receipt?: string } | { ok: false; message: string; errors?: Partial<Record<keyof ProductDraft, string>> };
 const DENIED: CatalogResult = { ok: false, message: "Tu rol no permite esta acción." };
@@ -21,7 +20,7 @@ function refresh(slug: string) {
 }
 
 export async function saveProductAction(slug: string, id: string | null, d: ProductDraft): Promise<CatalogResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/inventory");
   if (!ctx || !canManage(ctx.role)) return DENIED;
   if (!kindsForVertical(ctx.vertical).includes(d.kind)) return { ok: false, message: "Ese tipo no aplica a tu rubro." };
   const v = validateProduct(d);
@@ -55,7 +54,7 @@ export async function saveProductAction(slug: string, id: string | null, d: Prod
 }
 
 export async function moveStockAction(slug: string, productId: string, kind: string, quantity: number, note: string): Promise<CatalogResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/inventory");
   if (!ctx || !canManage(ctx.role)) return DENIED;
   if (!["IN", "OUT", "ADJUST"].includes(kind)) return { ok: false, message: "Movimiento no válido." };
   const p = await getProduct(ctx.tenantId, productId);
@@ -70,7 +69,7 @@ export async function moveStockAction(slug: string, productId: string, kind: str
 
 /** Venta directa: crea el cobro con recibo, descuenta stock y, si es efectivo con caja abierta, entra a la caja. */
 export async function sellProductAction(slug: string, productId: string, input: { quantity: number; method: string; customerId: string | null }): Promise<CatalogResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/inventory");
   if (!ctx || !canHandleCash(ctx.role)) return DENIED;
   const p = await getProduct(ctx.tenantId, productId);
   if (!p || !p.active) return { ok: false, message: "No se encontró." };
@@ -82,31 +81,19 @@ export async function sellProductAction(slug: string, productId: string, input: 
     if (err) return { ok: false, message: err };
   }
   if (input.customerId && !(await db.orm.public.Customer.where({ tenantId: ctx.tenantId, id: input.customerId }).select("id").first())) return { ok: false, message: "El cliente no es de este negocio." };
-  const total = Math.round(p.price * qty * 100) / 100;
-  const payment = await db.orm.public.Payment.create({
-    tenantId: ctx.tenantId,
-    customerId: input.customerId,
-    amount: total.toFixed(2),
-    status: "APPROVED",
-    provider: input.method as "CASH",
-    description: `${qty > 1 ? `${qty} × ` : ""}${p.name}`,
-    sourceType: "SALE",
-    sourceId: p.id,
-  });
-  const number = await assignReceiptNumber(ctx.tenantId, payment.id);
-  if (p.trackStock) await moveStock(ctx.tenantId, p.id, "SALE", qty, `Venta ${receiptCode(number)}`, ctx.memberId, payment.id);
-  if (input.method === "CASH") {
-    const cash = await currentCashSession(ctx.tenantId);
-    if (cash) {
-      await db.orm.public.Payment.where({ tenantId: ctx.tenantId, id: payment.id }).update({ cashSessionId: cash.sessionId });
-      await addCashMovement(ctx.tenantId, { sessionId: cash.sessionId, kind: "INCOME", amount: total, description: `Venta: ${p.name}`, paymentId: payment.id }, ctx.memberId);
-    }
-  }
+  // Cobro, recibo, caja y stock en una sola transacción; el stock se vuelve a
+  // validar dentro, así dos ventas a la vez no venden lo que no hay.
+  const sale = await sellProduct(
+    ctx.tenantId,
+    { productId: p.id, name: p.name, price: p.price, trackStock: p.trackStock, quantity: qty, method: input.method, customerId: input.customerId },
+    ctx.memberId,
+  );
+  if (!sale.ok) return sale;
   refresh(slug);
-  return { ok: true, message: `Venta registrada · ${receiptCode(number)}`, receipt: receiptCode(number), id: payment.id };
+  return { ok: true, message: `Venta registrada · ${sale.receipt}`, receipt: sale.receipt, id: sale.paymentId };
 }
 
 export async function stockHistoryAction(slug: string, productId: string) {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/inventory");
   return ctx ? stockHistory(ctx.tenantId, productId) : [];
 }

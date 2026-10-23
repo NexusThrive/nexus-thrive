@@ -1,19 +1,18 @@
-import { notFound } from "next/navigation";
 import {
   CheckCircle2,
   FolderKanban,
   Hammer,
   ListChecks,
 } from "lucide-react";
-import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
-import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/projects";
+import { createTenantDb } from "@/lib/tenant/db";
+import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/construction/project-domain";
 import { KpiCard } from "@/components/molecules/kpi-card";
 import { PageHeader } from "@/components/molecules/page-header";
 import SearchInput from "@/components/molecules/search-input";
 import FilterSelect from "@/components/molecules/filter-select";
 import ProjectsTable from "./_components/projects-table";
 import NewProjectModal from "./_components/new-project-modal";
+import { requirePageContext } from "@/lib/tenant/context";
 
 const PROJECTS_PAGE_SIZE = 12;
 
@@ -38,13 +37,9 @@ export default async function ProjectsPage({
   const { tenant: tenantSlug } = await params;
   const sp = await searchParams;
 
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    notFound();
-  }
+  // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
+  const pageCtx = await requirePageContext(tenantSlug, "/projects");
+  const tenantRecord = pageCtx.tenant;
 
   const tenantDb = createTenantDb(tenantRecord.id);
 

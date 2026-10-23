@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import type { QuoteDocument } from "./quote-document";
-import { buildApuSnapshot, calculateQuoteTotals } from "@/lib/apu-engine";
+import { buildApuSnapshot, calculateQuoteTotals } from "@/lib/construction/apu-engine";
 
 /**
  * Integración: la cotización nace de la obra.

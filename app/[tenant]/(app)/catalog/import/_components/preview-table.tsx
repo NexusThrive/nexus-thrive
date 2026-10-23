@@ -2,7 +2,7 @@
 
 import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@/lib/cn";
-import type { ParsedRow } from "@/lib/apu-importer/types";
+import type { ParsedRow } from "@/lib/construction/apu-importer/types";
 
 const PREVIEW_LIMIT = 50;
 

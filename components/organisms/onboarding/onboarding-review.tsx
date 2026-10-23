@@ -1,11 +1,10 @@
 import { Building2, Link2, MapPin, MapPinned, Pencil, Receipt, Store, User, Users } from "lucide-react";
 import type { ReactNode } from "react";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
-import { MODULE_LABELS, VERTICAL_LABELS, type ModuleValue, type VerticalValue } from "@/lib/admin-catalogs";
+import { MODULE_LABELS, VERTICAL_LABELS, type ModuleValue, type VerticalValue } from "@/lib/admin/catalogs";
 import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
 import type { Billing, PlanKey } from "@/lib/plans/catalog";
-import type { Quote } from "@/lib/plans/pricing";
-import { formatUsdCents } from "@/lib/plans/quote";
+import { formatUsdCents, type Quote } from "@/lib/plans/pricing";
 
 export type ReviewData = {
   tenantType: "INDIVIDUAL" | "COMPANY" | null;

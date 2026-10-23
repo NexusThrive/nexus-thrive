@@ -36,7 +36,11 @@ jobs:
       NEXT_TELEMETRY_DISABLED: "1"
 
     steps:
+      # Historial completo: el chequeo de SQL de producción compara contra la
+      # rama base, que un checkout superficial no trae (y se omitía en silencio).
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # La versión de pnpm sale de `packageManager` en package.json.
       - uses: pnpm/action-setup@v4
@@ -47,6 +51,11 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
+
+      # Si cambió prisma/contract.prisma, el PR trae su SQL en docs/prod-sql/.
+      - name: SQL de producción si cambió el modelo
+        if: github.event_name == 'pull_request'
+        run: bash ./scripts/check-prod-sql.sh "origin/${{ github.base_ref }}"
 
       - name: Typecheck
         run: pnpm exec tsc --noEmit
@@ -70,6 +79,9 @@ jobs:
         run: |
           psql "$DATABASE_URL" -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
           pnpm exec prisma db migrate --db "$DATABASE_URL"
+          # SEC-07: toda tabla con RLS (sin políticas cierra la API REST de Supabase).
+          sin_rls=$(psql "$DATABASE_URL" -tAc "select string_agg(tablename, ', ') from pg_tables where schemaname = 'public' and not rowsecurity")
+          if [ -n "$sin_rls" ]; then echo "Tablas sin RLS (agrega @@rls en el contrato): $sin_rls"; exit 1; fi
 
       - name: Integration tests
         run: pnpm test:integration

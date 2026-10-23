@@ -3,10 +3,10 @@
 import { useActionState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
-import type { Customer360Note } from "@/lib/tenant-db";
+import type { Customer360Note } from "@/lib/tenant/db";
 import { formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/cn";
-import { NOTE_MAX_LENGTH } from "@/lib/customer-notes";
+import { NOTE_MAX_LENGTH } from "@/lib/business/customer-notes";
 import { createCustomerNoteAction } from "../actions";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { labelClasses } from "@/components/atoms/input";

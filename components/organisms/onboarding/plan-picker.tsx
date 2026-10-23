@@ -2,11 +2,10 @@
 
 import { Check, Lock, Sparkles, Users } from "lucide-react";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
-import type { ModuleValue, VerticalValue } from "@/lib/admin-catalogs";
+import type { ModuleValue, VerticalValue } from "@/lib/admin/catalogs";
 import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
 import type { Billing, PlanKey } from "@/lib/plans/catalog";
-import { activePlans, modulePriceCents, offeredModules, quote, verticalOf, type PricingConfig } from "@/lib/plans/pricing";
-import { formatUsdCents } from "@/lib/plans/quote";
+import { activePlans, modulePriceCents, offeredModules, quote, verticalOf, type PricingConfig, formatUsdCents } from "@/lib/plans/pricing";
 import { cn } from "@/lib/utils";
 
 export type PlanSelection = { plan: PlanKey; billing: Billing; selected: ModuleValue[]; tierId: string | null };

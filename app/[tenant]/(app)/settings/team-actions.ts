@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
 import { BUSINESS_ROLES, canManageTeam, type BusinessRole } from "@/lib/business/roles";
 import { activeOwners, createInvite, revokeInvite, seatLimit, setMemberActive, setMemberRole, updateMemberProfile } from "@/lib/business/team-db";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
+import { logTenantAction } from "@/lib/tenant/audit";
 
 export type TeamResult = { ok: true; message?: string } | { ok: false; message: string };
 const DENIED: TeamResult = { ok: false, message: "Solo el dueño o administración maneja el equipo." };
@@ -32,6 +33,7 @@ export async function inviteMemberAction(slug: string, input: { email: string; n
   const seats = await seatLimit(ctx.tenantId);
   if (seats.limit != null && seats.used >= seats.limit) return { ok: false, message: `Tu plan ${seats.planName} incluye ${seats.limit} ${seats.limit === 1 ? "usuario" : "usuarios"}. Mejora tu plan para sumar más personas.` };
   await createInvite(ctx.tenantId, { email, name: input.name.trim().slice(0, 80) || null, role: input.role as BusinessRole }, ctx.memberId);
+  await logTenantAction(ctx, "BIZ_MEMBER_INVITE", { email, role: input.role });
   refresh(slug);
   return { ok: true, message: `Invitación enviada a ${email}. Entra con ese correo en NEXUS y queda en tu equipo.` };
 }
@@ -40,6 +42,7 @@ export async function revokeInviteAction(slug: string, id: string): Promise<Team
   const ctx = await ctxFor(slug);
   if (!ctx) return DENIED;
   await revokeInvite(ctx.tenantId, id);
+  await logTenantAction(ctx, "BIZ_INVITE_REVOKE", { inviteId: id });
   refresh(slug);
   return { ok: true, message: "Invitación cancelada" };
 }
@@ -55,6 +58,7 @@ export async function changeMemberRoleAction(slug: string, userId: string, role:
   if ((role === "OWNER" || u.role === "OWNER") && ctx.role !== "OWNER" && ctx.role !== "SUPERADMIN") return { ok: false, message: "Solo un dueño cambia a otro dueño." };
   if (u.role === "OWNER" && role !== "OWNER" && (await activeOwners(ctx.tenantId)) <= 1) return { ok: false, message: "El negocio no puede quedarse sin dueño." };
   await setMemberRole(ctx.tenantId, userId, role as BusinessRole);
+  await logTenantAction(ctx, "BIZ_MEMBER_ROLE", { userId, from: u.role, to: role });
   refresh(slug);
   return { ok: true, message: "Rol actualizado" };
 }
@@ -75,6 +79,7 @@ export async function setMemberActiveAction(slug: string, userId: string, active
     if (seats.limit != null && seats.used >= seats.limit) return { ok: false, message: `Tu plan ${seats.planName} ya usa sus ${seats.limit} usuarios.` };
   }
   await setMemberActive(ctx.tenantId, userId, active);
+  await logTenantAction(ctx, "BIZ_MEMBER_ACTIVE", { userId, active });
   refresh(slug);
   return { ok: true, message: active ? "Reactivado" : "Retirado del equipo: ya no puede entrar. Su historial se conserva." };
 }

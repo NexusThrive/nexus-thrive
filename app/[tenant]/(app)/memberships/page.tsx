@@ -1,12 +1,10 @@
-import { notFound } from "next/navigation";
-import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import {
   MEMBERSHIP_STATUSES,
   MEMBERSHIP_TYPES,
   type MembershipStatusValue,
   type MembershipTypeValue,
-} from "@/lib/memberships";
+} from "@/lib/business/memberships";
 import MembershipSummary from "./_components/membership-summary";
 import MembershipFilters from "./_components/membership-filters";
 import MembershipTable, {
@@ -17,6 +15,8 @@ import {
   type MembershipCustomerOption,
 } from "./_components/membership-form";
 import { PageHeader } from "@/components/molecules/page-header";
+import { requirePageContext } from "@/lib/tenant/context";
+import { can } from "@/lib/business/permissions";
 
 const PAGE_SIZE = 10;
 
@@ -61,13 +61,9 @@ export default async function MembershipsPage({
     : undefined;
   const page = firstNumber(sp.page);
 
-  const tenantRecord = await db.orm.public.Tenant.where({
-    slug: tenantSlug,
-    active: true,
-  }).first();
-  if (!tenantRecord) {
-    notFound();
-  }
+  // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
+  const pageCtx = await requirePageContext(tenantSlug, "/memberships");
+  const tenantRecord = pageCtx.tenant;
 
   const tenantDb = createTenantDb(tenantRecord.id);
 
@@ -120,10 +116,12 @@ export default async function MembershipsPage({
               {tenantRecord.name}
             </span>
             .</>}
-        actions={<NewMembershipButton
-          tenantSlug={tenantSlug}
-          customers={customerOptions}
-        />}
+        actions={
+          // Vender es cobrar: sin permiso de dinero no se ofrece (SEC-05).
+          can(pageCtx.role, "money.handle") ? (
+            <NewMembershipButton tenantSlug={tenantSlug} customers={customerOptions} />
+          ) : undefined
+        }
       />
 
       {/* Resumen */}
@@ -151,6 +149,7 @@ export default async function MembershipsPage({
         <MembershipFilters q={q} status={status} type={type} />
 
         <MembershipTable
+          canSell={can(pageCtx.role, "money.handle")}
           tenantSlug={tenantSlug}
           rows={rows}
           query={q}

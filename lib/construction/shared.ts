@@ -1,6 +1,6 @@
 /**
  * Tipos y helpers compartidos por los módulos de construcción.
- * Extraído de `lib/tenant-db.ts`.
+ * Extraído de `lib/tenant/db.ts`.
  */
 import {
   db,
@@ -16,21 +16,21 @@ import {
   type ApuSnapshot,
   type QuoteStatusValue,
   type ResourceTypeValue,
-} from "@/lib/apu-engine";
+} from "@/lib/construction/apu-engine";
 import {
   type ProjectStatusValue,
-} from "@/lib/projects";
+} from "@/lib/construction/project-domain";
 import {
   bogotaToday,
   formatPlainDate,
   type CommitmentStatusValue,
   type NonComplianceCauseValue,
-} from "@/lib/lean-engine";
+} from "@/lib/construction/lean-engine";
 import {
   normalizePhotoUrls,
   type FieldNoteTypeValue,
   type WeatherConditionValue,
-} from "@/lib/field-log-engine";
+} from "@/lib/construction/field-log-engine";
 
 /** Escapa los comodines de LIKE para que la búsqueda sea literal. */
 export function escapeLike(input: string): string {
@@ -776,7 +776,7 @@ export async function lockRevision(tx: TenantTx, budget: BudgetRow): Promise<voi
 /* Guardados sin cambios (Etapa 1)                                     */
 /* ------------------------------------------------------------------ */
 
-// Las guardas no-op viven en un módulo puro (lib/budget-guards.ts) para poder
+// Las guardas no-op viven en un módulo puro (lib/construction/budget-guards.ts) para poder
 // probarlas sin abrir conexión a base de datos.
 
 /** Transacción de Prisma 8 (misma forma que el `db` pero ligada a la tx). */

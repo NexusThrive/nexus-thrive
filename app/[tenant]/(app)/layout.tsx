@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { db } from "@/prisma/db";
-import { sortModules } from "@/lib/admin-catalogs";
+import { sortModules } from "@/lib/admin/catalogs";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import { TenantShell } from "@/components/templates/tenant-shell";
 import { VerticalTermsProvider } from "./vertical-terms-context";
@@ -43,7 +43,7 @@ export default async function AppLayout({
   if (!tenantRecord.onboardingCompleted) {
     // Reanuda el tenant pendiente en el wizard adaptativo (top-level
     // `/onboarding`; el proxy lo deja pasar en subdominios de tenant).
-    // El wizard clásico `/{tenant}/onboarding` queda como acceso directo.
+    // `/{tenant}/onboarding` redirige aquí mismo (hay un solo wizard).
     redirect(`/onboarding?tenant=${tenantRecord.slug}`);
   }
 

@@ -31,8 +31,8 @@ import {
   MODULE_LABELS,
   VERTICAL_LABELS,
   type ModuleValue,
-} from "@/lib/admin-catalogs";
-import type { TenantListRow, TenantSortKey } from "@/lib/admin-db";
+} from "@/lib/admin/catalogs";
+import type { TenantListRow, TenantSortKey } from "@/lib/admin/db";
 import { cn } from "@/lib/utils";
 import TenantStatusBadge from "./tenant-status-badge";
 import TenantDrawer from "./tenant-drawer";

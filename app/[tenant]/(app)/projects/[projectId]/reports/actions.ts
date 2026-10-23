@@ -1,8 +1,8 @@
 "use server";
 
-import { requireTenantContext as requireSharedTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { auth } from "@clerk/nextjs/server";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 
 export type ActionState = {
   status: "idle" | "ok" | "error";
@@ -13,13 +13,13 @@ export type ActionState = {
 
 export type InformeCeroResult = {
   status: "ok" | "error";
-  data?: import("@/lib/report-engine").InformeCeroData;
+  data?: import("@/lib/construction/report-engine").InformeCeroData;
   message?: string;
 };
 
 export type WeeklyReportResult = {
   status: "ok" | "error";
-  data?: import("@/lib/report-engine").WeeklyReportData;
+  data?: import("@/lib/construction/report-engine").WeeklyReportData;
   message?: string;
 };
 
@@ -35,10 +35,10 @@ type TenantContext = {
   tenantDb: ReturnType<typeof createTenantDb>;
 };
 
-async function requireTenantContext(
+async function actionContext(
   tenantSlug: string,
 ): Promise<TenantContext | null> {
-  const context = await requireSharedTenantContext(tenantSlug);
+  const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) {
     return null;
   }
@@ -56,7 +56,7 @@ export async function getInformeCeroDataAction(
     if (!userId) {
       return { status: "error", message: "Debes iniciar sesión para continuar." };
     }
-    const context = await requireTenantContext(tenantSlug);
+    const context = await actionContext(tenantSlug);
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
@@ -87,7 +87,7 @@ export async function getWeeklyReportDataAction(
     if (!userId) {
       return { status: "error", message: "Debes iniciar sesión para continuar." };
     }
-    const context = await requireTenantContext(tenantSlug);
+    const context = await actionContext(tenantSlug);
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
@@ -120,12 +120,12 @@ export async function exportBomCsvAction(
     if (!userId) {
       return { status: "error", message: "Debes iniciar sesión para continuar." };
     }
-    const context = await requireTenantContext(tenantSlug);
+    const context = await actionContext(tenantSlug);
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
     const resources = await context.tenantDb.reports.getBomExportData(projectId);
-    const { generateBomCsv } = await import("@/lib/report-engine");
+    const { generateBomCsv } = await import("@/lib/construction/report-engine");
     const csv = generateBomCsv(resources);
 
     const project = await context.tenantDb.projects.get(projectId);

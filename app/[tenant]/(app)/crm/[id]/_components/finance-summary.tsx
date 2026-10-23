@@ -5,7 +5,7 @@ import type {
   Customer360Metrics,
   Customer360Payment,
   CustomerTimelineEvent,
-} from "@/lib/tenant-db";
+} from "@/lib/tenant/db";
 import { cn } from "@/lib/utils";
 
 /**

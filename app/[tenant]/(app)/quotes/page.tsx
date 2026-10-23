@@ -1,17 +1,18 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { ArrowLeft, Building2 } from "lucide-react";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
-import { canGovernBudget, type TenantRole } from "@/lib/tenant-context";
-import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/projects";
+import { createTenantDb } from "@/lib/tenant/db";
+import { canGovernBudget, type TenantRole } from "@/lib/tenant/context";
+import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/construction/project-domain";
 import SearchInput from "@/components/molecules/search-input";
 import FilterSelect from "@/components/molecules/filter-select";
 import QuoteFolders from "./_components/quote-folders";
 import LegacyQuotes from "./_components/legacy-quotes";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { PageHeader } from "@/components/molecules/page-header";
+import { requirePageContext } from "@/lib/tenant/context";
 
 function firstString(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
@@ -38,10 +39,9 @@ export default async function QuotesPage({
     redirect(`/${tenantSlug}/catalog?tab=${legacyTab}`);
   }
 
-  const tenantRecord = await db.orm.public.Tenant.where({ slug: tenantSlug, active: true }).first();
-  if (!tenantRecord) {
-    notFound();
-  }
+  // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
+  const pageCtx = await requirePageContext(tenantSlug, "/quotes");
+  const tenantRecord = pageCtx.tenant;
   const tenantDb = createTenantDb(tenantRecord.id);
   const { userId } = await auth();
   const member = userId ? await tenantDb.users.findByClerkUserId(userId) : null;

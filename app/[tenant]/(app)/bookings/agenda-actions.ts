@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/prisma/db";
 import { bogotaToMs, capacityLeft, staffConflict } from "@/lib/business/calendar";
 import { getProduct } from "@/lib/business/products-db";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 
 export type AgendaResult = { ok: true; message?: string; id?: string } | { ok: false; message: string; field?: string };
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -29,7 +29,7 @@ export type BookingInput = {
 
 /** Crea o mueve una cita: valida horario, responsable libre y cupo del servicio. */
 export async function saveBookingAction(slug: string, v: BookingInput): Promise<AgendaResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/bookings");
   if (!ctx) return { ok: false, message: "No tienes acceso a este negocio." };
   if (!v.customerId) return { ok: false, message: "Elige el cliente.", field: "customerId" };
   if (!DATE.test(v.day) || !TIME.test(v.time)) return { ok: false, message: "Fecha u hora no válida.", field: "time" };
@@ -87,7 +87,7 @@ export async function saveBookingAction(slug: string, v: BookingInput): Promise<
 }
 
 export async function setBookingStatusAction(slug: string, id: string, status: string): Promise<AgendaResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/bookings");
   if (!ctx) return { ok: false, message: "No tienes acceso." };
   if (!["PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"].includes(status)) return { ok: false, message: "Estado no válido." };
   const b = await db.orm.public.Booking.where({ tenantId: ctx.tenantId, id }).select("id").first();
@@ -100,7 +100,7 @@ export async function setBookingStatusAction(slug: string, id: string, status: s
 
 /** Marca el recordatorio como enviado (el envío lo hace WhatsApp). */
 export async function markReminderAction(slug: string, id: string): Promise<AgendaResult> {
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/bookings");
   if (!ctx) return { ok: false, message: "No tienes acceso." };
   await db.orm.public.Booking.where({ tenantId: ctx.tenantId, id }).update({ reminderSentAt: instant(Date.now()) });
   revalidatePath(`/${slug}/bookings`);

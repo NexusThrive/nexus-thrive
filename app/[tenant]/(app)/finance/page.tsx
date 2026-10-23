@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant-db";
+import { createTenantDb } from "@/lib/tenant/db";
 import FinanceActions from "./_components/finance-actions";
 import SearchInput from "@/components/molecules/search-input";
 import FilterSelect from "@/components/molecules/filter-select";
@@ -9,7 +9,7 @@ import type { MoneyItem } from "./_components/money-detail-sheet";
 import CashPanel from "./_components/cash-panel";
 import { cashHistory, listCashBoxes, sessionMovements } from "@/lib/business/finance-db";
 import { canManage } from "@/lib/business/roles";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { EXPENSE_CATEGORIES, PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/finance";
 import { PageHeader } from "@/components/molecules/page-header";
 import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
@@ -132,7 +132,7 @@ export default async function FinancePage({
     listCashBoxes(tenantRecord.id),
     tab === "caja" ? cashHistory(tenantRecord.id, 10) : Promise.resolve([]),
     db.orm.public.User.where({ tenantId: tenantRecord.id }).select("id", "name", "email").all(),
-    requireTenantContext(tenantSlug),
+    requireTenantContext(tenantSlug, "/finance"),
   ]);
   const openBox = cashBoxes.find((b) => b.openSession) ?? null;
   const cashMoves = tab === "caja" && openBox?.openSession ? await sessionMovements(tenantRecord.id, openBox.openSession.id) : [];

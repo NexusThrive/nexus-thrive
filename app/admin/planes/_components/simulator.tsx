@@ -5,10 +5,9 @@ import { selectClasses } from "@/components/atoms/input";
 import { Chip, ChipRow } from "@/components/atoms/chip";
 import { Odometer } from "@/components/atoms/odometer";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
-import type { VerticalValue, ModuleValue } from "@/lib/admin-catalogs";
+import type { VerticalValue, ModuleValue } from "@/lib/admin/catalogs";
 import type { Billing, PlanKey } from "@/lib/plans/catalog";
-import { activePlans, offeredModules, quote, type PricingConfig } from "@/lib/plans/pricing";
-import { formatUsdCents } from "@/lib/plans/quote";
+import { activePlans, offeredModules, quote, type PricingConfig, formatUsdCents } from "@/lib/plans/pricing";
 import { cn } from "@/lib/utils";
 
 /** Simulador: el precio exacto que verá un negocio con la configuración guardada. */

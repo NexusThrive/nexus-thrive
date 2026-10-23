@@ -1,0 +1,7 @@
+# graphify: excluir copias de skills de agentes y respaldos
+.claude/
+.agents/
+.docs/_backup/
+lib/node_modules/
+graphify-out/
+migrations/snapshots/

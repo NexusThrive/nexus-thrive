@@ -4,8 +4,8 @@ import { StatTile } from "@/components/molecules/stat-tile";
 import { addDaysKey, bogotaToMs } from "@/lib/business/calendar";
 import { attendanceBetween, attendanceCount, expiringSoon, unknownScansBetween } from "@/lib/business/gym-db";
 import { canHandleCash } from "@/lib/business/roles";
-import { bogotaDayKey } from "@/lib/finance-series";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { bogotaDayKey } from "@/lib/finance/series";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import CheckinStation from "./_components/checkin-station";
 import ExpiringList from "./_components/expiring-list";
@@ -17,7 +17,7 @@ import ExpiringList from "./_components/expiring-list";
  */
 export default async function CheckinPage({ params }: { params: Promise<{ tenant: string }> }) {
   const { tenant: slug } = await params;
-  const ctx = await requireTenantContext(slug);
+  const ctx = await requireTenantContext(slug, "/checkin");
   if (!ctx) notFound();
   const terms = getVerticalTerms(ctx.vertical);
 

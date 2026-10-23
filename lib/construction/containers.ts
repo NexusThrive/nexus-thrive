@@ -1,4 +1,4 @@
-import type { createTenantDb } from "@/lib/tenant-db";
+import type { createTenantDb } from "@/lib/tenant/db";
 
 type TenantDb = ReturnType<typeof createTenantDb>;
 

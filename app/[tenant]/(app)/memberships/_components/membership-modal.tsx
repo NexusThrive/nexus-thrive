@@ -8,7 +8,7 @@ import {
   type RenewalFormState,
 } from "../actions";
 import { PAYMENT_METHODS } from "@/lib/finance";
-import { typeLabel } from "@/lib/memberships";
+import { typeLabel } from "@/lib/business/memberships";
 import { formatDateShort, formatCurrency } from "@/lib/format";
 import type { MembershipViewRow } from "./membership-table";
 import { buttonVariants } from "@/components/atoms/button-variants";

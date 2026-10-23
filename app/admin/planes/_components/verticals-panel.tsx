@@ -10,7 +10,7 @@ import { Switch } from "@/components/atoms/switch";
 import { Field } from "@/components/molecules/field";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
-import type { ModuleValue } from "@/lib/admin-catalogs";
+import type { ModuleValue } from "@/lib/admin/catalogs";
 import type { ModuleConfig, VerticalConfig } from "@/lib/plans/pricing";
 import { cn } from "@/lib/utils";
 import { saveVerticalAction } from "../actions";

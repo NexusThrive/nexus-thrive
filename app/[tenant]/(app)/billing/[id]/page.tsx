@@ -6,14 +6,14 @@ import { amountInWords, INVOICE_KIND_LABELS, invoiceCode } from "@/lib/business/
 import { getInvoice } from "@/lib/business/invoices-db";
 import { canManage } from "@/lib/business/roles";
 import { formatCurrency } from "@/lib/format";
-import { requireTenantContext } from "@/lib/tenant-context";
+import { requireTenantContext } from "@/lib/tenant/context";
 import { db } from "@/prisma/db";
 import InvoiceActions from "./invoice-actions";
 
 /** Cuenta de cobro o recibo listo para imprimir o guardar como PDF. */
 export default async function InvoicePage({ params }: { params: Promise<{ tenant: string; id: string }> }) {
   const { tenant, id } = await params;
-  const ctx = await requireTenantContext(tenant);
+  const ctx = await requireTenantContext(tenant, "/billing");
   if (!ctx) notFound();
   const [inv, biz] = await Promise.all([getInvoice(ctx.tenantId, id), db.orm.public.Tenant.where({ id: ctx.tenantId }).select("name", "legalName", "taxId", "address", "city", "whatsappNumber").first()]);
   if (!inv || !biz) notFound();

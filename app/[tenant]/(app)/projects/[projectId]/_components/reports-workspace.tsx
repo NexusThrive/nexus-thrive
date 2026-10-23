@@ -17,7 +17,7 @@ import {
   type InformeCeroResult,
   type WeeklyReportResult,
 } from "../reports/actions";
-import { isoWeekOf, bogotaToday, isoWeekLabel } from "@/lib/lean-engine";
+import { isoWeekOf, bogotaToday, isoWeekLabel } from "@/lib/construction/lean-engine";
 
 type ReportTab = "informe-cero" | "informe-semanal" | "bom";
 
