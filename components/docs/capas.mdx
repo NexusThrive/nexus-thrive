@@ -1,0 +1,58 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Fundamentos/Capas y elevación" />
+
+# Capas y elevación
+
+Bordes en lugar de sombras: solo lleva sombra lo que **flota sobre otra cosa** (diálogos,
+paneles, menús, avisos). Cada capa tiene un token; en un componente nunca va un `z-index`
+numérico (una prueba lo vigila).
+
+## Capas (`z-index`)
+
+| Capa | Token | Valor | Qué va |
+| --- | --- | --- | --- |
+| Elevado | `--z-raised` | 10 | Adornos sobre su tarjeta |
+| Fijo | `--z-sticky` | 40 | Barra superior |
+| Barra móvil | `--z-tabbar` | 45 | Barra inferior del celular |
+| Barra lateral | `--z-sidebar` | 50 | Navegación |
+| Fondo | `--z-overlay` | 70 | Velo detrás de diálogos |
+| Modal | `--z-modal` | 71 | Diálogo, panel lateral, hoja inferior |
+| Flotante | `--z-popover` | 80 | Tooltip, menú, ayuda "?": **siempre encima del modal que los contiene** |
+| Aviso | `--z-banner` | 85 | Conexión, barra de ruta |
+| Notificación | `--z-toast` | 90 | Toasts |
+| Pantalla completa | `--z-takeover` | 120 | Paleta de comandos, escáner, cinemáticas |
+
+En Tailwind: `z-(--z-popover)`. En CSS: `z-index: var(--z-modal)`.
+
+## Sombras
+
+<div style={{ display: "flex", gap: 24, margin: "16px 0 32px", flexWrap: "wrap" }}>
+  {[
+    ["Tarjeta (sin sombra)", "none"],
+    ["--shadow-popover", "var(--shadow-popover)"],
+    ["--nx-shadow-overlay", "var(--nx-shadow-overlay)"],
+  ].map(([label, shadow]) => (
+    <div key={label} style={{ width: 180, height: 96, background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 6, boxShadow: shadow, display: "grid", placeItems: "center", fontSize: 12, color: "var(--foreground-muted)", fontFamily: "var(--font-jetbrains), monospace" }}>
+      {label}
+    </div>
+  ))}
+</div>
+
+| Token | Para |
+| --- | --- |
+| `--shadow-popover` | Menús, ventanas flotantes, ayuda "?" |
+| `--nx-shadow-overlay` | Diálogos y paneles |
+| `--overlay` | Velo detrás de un diálogo (más oscuro en tema oscuro) |
+
+## Foco
+
+`:focus-visible` dibuja `--focus-ring-width` (2 px) en `--ring`, separado
+`--focus-ring-offset` (2 px). No se quita el contorno sin reemplazarlo por uno igual de
+visible.
+
+<div style={{ display: "flex", gap: 16, margin: "16px 0" }}>
+  <button type="button" style={{ height: 40, padding: "0 18px", borderRadius: 4, border: "1px solid var(--border-input)", background: "var(--surface)", color: "var(--foreground)", outline: "2px solid var(--ring)", outlineOffset: 2, fontSize: 13, fontWeight: 600 }}>
+    Así se ve el foco
+  </button>
+</div>

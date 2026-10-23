@@ -1,0 +1,62 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Fundamentos/Espacio y forma" />
+
+# Espacio y forma
+
+Esquinas casi rectas, como la N del logo, y una escala de espacio de 4 en 4. Los valores
+viven en `packages/brand/css/tokens.css` (y su espejo `tokens.json`); nunca un número suelto
+en un componente.
+
+## Espacio (base 4 px)
+
+| Token | Valor | Token | Valor |
+| --- | --- | --- | --- |
+| `--space-1` | 4 px | `--space-6` | 24 px |
+| `--space-2` | 8 px | `--space-8` | 32 px |
+| `--space-3` | 12 px | `--space-10` | 40 px |
+| `--space-4` | 16 px | `--space-12` | 48 px |
+| `--space-5` | 20 px | `--space-16` / `--space-20` | 64 / 80 px |
+
+<div style={{ display: "flex", alignItems: "flex-end", gap: 12, margin: "16px 0 32px" }}>
+  {[4, 8, 12, 16, 24, 32, 48, 64].map((n) => (
+    <div key={n} style={{ display: "grid", gap: 6, justifyItems: "center", fontSize: 11, color: "var(--foreground-muted)" }}>
+      <div style={{ width: n, height: n, background: "var(--accent)" }} />
+      {n}
+    </div>
+  ))}
+</div>
+
+## Radios
+
+| Token | Valor | Para |
+| --- | --- | --- |
+| `--radius-sm` | 2 px | Foco, marcas pequeñas |
+| `--radius-md` | 4 px | Botones, campos, chips |
+| `--radius-lg` | 6 px | Tarjetas, ventanas flotantes |
+| `--radius-xl` | 8 px | Diálogos |
+
+<div style={{ display: "flex", gap: 16, margin: "16px 0 32px" }}>
+  {[2, 4, 6, 8].map((r) => (
+    <div key={r} style={{ width: 72, height: 48, border: "1px solid var(--border-strong)", borderRadius: r, display: "grid", placeItems: "center", fontSize: 11, color: "var(--foreground-muted)" }}>
+      {r} px
+    </div>
+  ))}
+</div>
+
+## Tamaños
+
+| Token | Valor | Para |
+| --- | --- | --- |
+| `--control-h` | 40 px (34 en densidad compacta) | Botones y campos |
+| `--row-h` | 56 px (46 en compacta) | Filas de tabla y lista |
+| `--content-max` | 1280 px | Ancho máximo de página |
+| `--content-prose` | 72 caracteres | Texto corrido, ayuda |
+| `--dialog-w-sm` · `md` · `lg` · `xl` | 440 · 520 · 640 · 768 px | Diálogos |
+| `--drawer-w` · `--drawer-w-lg` | 440 · 560 px | Paneles laterales |
+| `--popover-w` | 320 px | Ventanas flotantes y ayuda "?" |
+
+## Puntos de quiebre
+
+`sm` 640 · `md` 768 (diálogo centrado, panel lateral y barra lateral) · `lg` 1024 · `xl` 1280.
+Debajo de 768 px los diálogos y paneles son hojas inferiores.

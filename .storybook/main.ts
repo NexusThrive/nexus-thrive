@@ -1,5 +1,6 @@
 import path from "node:path";
 import type { StorybookConfig } from "@storybook/nextjs-vite";
+import remarkGfm from "remark-gfm";
 
 const config: StorybookConfig = {
   framework: "@storybook/nextjs-vite",
@@ -8,7 +9,12 @@ const config: StorybookConfig = {
     "../components/**/*.stories.tsx",
   ],
   addons: [
-    "@storybook/addon-docs",
+    {
+      // Tablas en los documentos MDX (Introducción y Fundamentos): sin
+      // remark-gfm salían como texto con barras.
+      name: "@storybook/addon-docs",
+      options: { mdxPluginOptions: { mdxCompileOptions: { remarkPlugins: [remarkGfm] } } },
+    },
     "@storybook/addon-a11y",
     "@storybook/addon-themes",
   ],

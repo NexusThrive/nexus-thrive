@@ -8,53 +8,61 @@ El logo manda: **negro dominante, oro como único acento (≤ 10 %), esquinas ca
 bordes en lugar de sombras y un solo ángulo, 24°**, el corte de la N. Todo lo que ves aquí
 es el código real de la app: cada historia importa el mismo componente que usan las páginas.
 
-## Cómo se trabaja
+La especificación completa vive en el repositorio: `DESIGN.md` (marca, tokens, componentes,
+movimiento), `PRODUCT.md` (para quién y con qué principios) y `docs/design/` (patrones de
+interacción, accesibilidad y la lista de calidad que se copia en cada PR).
 
-```bash
-pnpm storybook        # http://localhost:6006
-pnpm build-storybook  # build estático (lo valida el CI)
-```
+## Cómo leer este catálogo
 
-Cada componente vive junto a su historia (`button.tsx` + `button.stories.tsx`). La pestaña
-**Docs** de cada uno se arma sola con su JSDoc, sus props y sus variantes; arriba a la
-derecha puedes cambiar entre tema claro y oscuro y probar el tamaño móvil.
+| Sección | Qué encuentras |
+| --- | --- |
+| **Introducción** | Este documento, cómo elegir el patrón de interacción, accesibilidad e inventario |
+| **Fundamentos** | Colores, tipografía, espacio y forma, capas y elevación, movimiento |
+| **Átomos → Plantillas** | Cada componente con sus estados; arriba cambias tema claro/oscuro y tamaño móvil |
+
+La pestaña **Accessibility** de cada historia corre axe en vivo.
 
 ## Niveles (diseño atómico)
 
 | Nivel | Carpeta | Qué es | Ejemplos |
 | --- | --- | --- | --- |
-| Átomos | `components/atoms` | Una sola pieza visual; no conoce el negocio | Button, Input, Badge, Chip, NMark, Odometer |
-| Moléculas | `components/molecules` | Pocos átomos con un propósito | Field, KpiCard, SegmentedControl, Toast |
-| Organismos | `components/organisms` | Secciones completas, pueden leer contexto | AppSidebar, ResponsiveSheet, PriceSummary |
+| Átomos | `components/atoms` | Una sola pieza visual; no conoce el negocio | Button, Input, Badge, Chip, NMark |
+| Moléculas | `components/molecules` | Pocos átomos con un propósito | Field, ContextHelp, Popover, Toast, EmptyState |
+| Organismos | `components/organisms` | Secciones completas, pueden leer contexto | ResponsiveSheet, FormDialog, ConfirmDialog, AppSidebar |
 | Plantillas | `components/templates` | Esqueleto de página sin datos | TenantShell, AuthLayout, PublicLayout |
-| Páginas | `app/**/page.tsx` | Rutas de Next: cargan datos y llenan plantillas | Inicio, Precios, Acceso |
+| Páginas | `app/**/page.tsx` | Rutas de Next: cargan datos y llenan plantillas | Inicio, Clientes, Finanzas |
 | Proveedores | `components/providers` | Contexto y efectos globales, sin UI | ShellProvider, MotionProvider, Preferences |
 
-Reglas de dependencia: un nivel solo importa de niveles **inferiores** (un átomo nunca importa
-una molécula). Los componentes de un solo módulo viven junto a su ruta
-(`app/[tenant]/(app)/crm/_components`) hasta que un segundo módulo los necesite; entonces
-suben a `components/`. Ver **Introducción/Inventario**.
+Un nivel solo importa de niveles **inferiores**. Los componentes de un solo módulo viven junto
+a su ruta (`app/[tenant]/(app)/crm/_components`) hasta que un segundo módulo los necesita;
+entonces suben a `components/`.
 
-## Convenciones
+## Reglas que no se negocian
 
-- **Lógica fuera de la UI.** Reglas y cálculos van en `lib/` como funciones puras con pruebas
-  (`lib/plans`, `lib/navigation`, `lib/dashboard`, `lib/motion`). Los componentes solo
-  pintan y llaman.
-- **Servidor por defecto.** `"use client"` solo donde hay estado, efectos o eventos.
-- **Estilos.** Tailwind con los tokens de marca (`bg-surface`, `text-muted-foreground`,
-  `border-border-input`…). Cuando la animación o el estado no caben en clases, un CSS Module
-  junto al componente (`responsive-sheet.module.css`, `pricing.module.css`).
-- **Movimiento.** Sin librerías de animación: CSS primero; lo que necesita física (resortes,
-  contadores, partículas) sale de `lib/motion` y se reproduce con la Web Animations API.
-  Todo respeta *Reducir movimiento*. Ver **Fundamentos/Movimiento**.
-- **Accesibilidad.** Foco visible con `--ring`, roles ARIA en controles propios
-  (`radiogroup`, `aria-pressed`), textos alternativos en animaciones (`aria-label` en
-  RevealText y Odometer). El panel **Accessibility** de cada historia corre axe.
-- **Textos** en español de Colombia, con tuteo y sin jerga técnica.
+1. **Reusar antes de crear**: `ResponsiveSheet`, `FormDialog`/`FormDrawer`,
+   `ConfirmDialog`/`useConfirm`, `Popover`, `ContextHelp`, `Field`, `Alert`, `EmptyState`,
+   `LoadingState`, `useToast`. Ver **Introducción/Elegir el patrón**.
+2. **Prohibido**: `window.confirm`/`alert`, modales hechos a mano (`fixed inset-0`), Radix
+   Dialog directo, `z-index` numérico, colores/sombras/duraciones sueltos y `title` como única
+   ayuda. Una prueba (`lib/design/ui-rules.test.ts`) lo vigila.
+3. **Lógica fuera de la UI**: reglas y cálculos en `lib/` como funciones puras con pruebas;
+   los datos por repositorios con `tenantId`. Nada en `app/` importa la base.
+4. **Servidor por defecto**: `"use client"` solo donde hay estado, efectos o eventos.
+5. **Estilos** con los tokens (`bg-surface`, `z-(--z-popover)`…); CSS Module junto al
+   componente cuando la animación o el estado no caben en clases.
+6. **Textos** en español de Colombia, con tuteo, verbos concretos ("Guardar cliente") y sin
+   jerga técnica.
 
-## Añadir un componente
+## Añadir o cambiar un componente
 
-1. Decide el nivel con la tabla de arriba y crea `nombre.tsx` en su carpeta.
+1. Decide el nivel con la tabla de arriba y busca primero si ya existe.
 2. Documenta el diseño en el JSDoc (medidas, estados, por qué).
-3. Crea `nombre.stories.tsx` con `title: "Nivel/Nombre"` y una historia por estado.
-4. `pnpm exec tsc --noEmit && pnpm lint && pnpm build-storybook`.
+3. Crea `nombre.stories.tsx` con `title: "Nivel/Nombre"` y una historia por estado
+   (normal, foco, deshabilitado, cargando, error, vacío).
+4. Si tiene interacción, una prueba en `e2e/` (Playwright + axe).
+5. `pnpm exec tsc --noEmit && pnpm lint && pnpm test && pnpm test:e2e`.
+
+```bash
+pnpm storybook        # http://localhost:6006
+pnpm test:e2e         # construye Storybook y corre Playwright + axe
+```
