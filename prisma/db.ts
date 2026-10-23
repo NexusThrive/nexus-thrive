@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { Pool } from "pg";
+import { attachDatabasePool } from "@vercel/functions";
 import postgres from "@prisma/orm-postgres/runtime";
 import type { Contract } from "./contract.d";
 import contractJson from "./contract.json" with { type: "json" };
@@ -18,10 +19,14 @@ const pool = new Pool({
   max,
   connectionTimeoutMillis: 20_000,
   // Suelta pronto las conexiones quietas: el cupo del pooler es compartido.
-  idleTimeoutMillis: 10_000,
+  idleTimeoutMillis: 5_000,
 });
 // Una conexión inactiva que el servidor corta no debe tumbar el proceso.
 pool.on("error", (error) => console.error("[db] conexión inactiva cerrada por el servidor:", error.message));
+// Vercel congela las instancias sin tráfico y el temporizador de arriba deja
+// de correr: sin esto, las conexiones quedan abiertas ocupando cupo. Mantiene
+// viva la instancia hasta soltarlas. Fuera de Vercel no hace nada.
+attachDatabasePool(pool);
 
 const client = postgres<Contract>({ contractJson, pg: pool });
 const closeClient = client.close.bind(client);
