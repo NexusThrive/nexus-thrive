@@ -4,7 +4,8 @@
 #   bash scripts/psql-supabase.sh "select 1;"
 set -uo pipefail
 
-export PGPASSWORD="${SUPABASE_DB_PASSWORD:-***REMOVED***}"
+# La contraseña nunca va en el repositorio: exporta SUPABASE_DB_PASSWORD antes.
+export PGPASSWORD="${SUPABASE_DB_PASSWORD:?Exporta SUPABASE_DB_PASSWORD con la contraseña de la base}"
 URL="postgresql://postgres.vnwwarudcycqdrthiouk:${PGPASSWORD}@aws-1-ca-central-1.pooler.supabase.com:5432/postgres"
 
 for i in $(seq 1 "${TRIES:-15}"); do
