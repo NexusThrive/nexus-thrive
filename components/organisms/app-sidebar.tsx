@@ -34,6 +34,16 @@ function readClosed(): Record<string, boolean> {
   return cachedValue;
 }
 
+function writeClosed(next: Record<string, boolean>) {
+  try {
+    localStorage.setItem(CLOSED_KEY, JSON.stringify(next));
+  } catch {
+    /* sin almacenamiento: no se recuerda */
+  }
+  cachedRaw = null;
+  closedListeners.forEach((fn) => fn());
+}
+
 /**
  * Barra lateral del negocio (oculta en móvil, donde manda la barra inferior).
  * Arranca debajo de la navbar global, que lleva el logo, la búsqueda, «Crear» y
@@ -56,16 +66,7 @@ export function AppSidebar() {
   const peekTimer = useRef<number | undefined>(undefined);
   // Ingresos y Gastos se despliegan y se ocultan; lo elegido se recuerda en este navegador.
   const closed = useSyncExternalStore(subscribeClosed, readClosed, () => EMPTY);
-  const toggle = (label: string) => {
-    const next = { ...closed, [label]: !closed[label] };
-    try {
-      localStorage.setItem(CLOSED_KEY, JSON.stringify(next));
-    } catch {
-      /* sin almacenamiento: no se recuerda */
-    }
-    cachedRaw = null;
-    closedListeners.forEach((fn) => fn());
-  };
+  const toggle = (label: string) => writeClosed({ ...closed, [label]: !closed[label] });
 
   useLayoutEffect(() => {
     const nav = navRef.current;
