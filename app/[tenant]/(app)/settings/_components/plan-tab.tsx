@@ -63,7 +63,7 @@ export default function PlanTab({ info }: { info: PlanInfo }) {
       {info.usage?.length ? <UsageSection rows={info.usage} /> : null}
 
       <section className="rounded-lg border border-border bg-surface">
-        <h2 className="border-b border-border px-[18px] py-4 font-display text-[15px] font-semibold">Módulos incluidos</h2>
+        <h2 className="border-b border-border px-[18px] py-4 font-display text-[15px] font-semibold">Funciones en uso</h2>
         <ul className="flex flex-wrap gap-1.5 p-[18px]">
           {info.activeModules.map((m) => {
             const Icon = MODULE_ICONS[m];

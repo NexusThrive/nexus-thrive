@@ -5,13 +5,12 @@ import { useParams, useRouter } from "next/navigation";
 
 import type { ModuleValue } from "@/lib/admin/catalogs";
 import ProfileTab from "./profile-tab";
-import ModulesTab from "./modules-tab";
 import TeamTab, { type Seats } from "./team-tab";
 import type { PendingInvite, TeamMember as BusinessMember } from "@/lib/business/team-db";
 import PlanTab, { type PlanInfo } from "./plan-tab";
 import NfcTab, { type CardOwner } from "./nfc-tab";
 import DangerTab from "./danger-tab";
-import { Blocks, CreditCard, Plug, Nfc, Palette, Store, TriangleAlert, Users } from "lucide-react";
+import { CreditCard, Plug, Nfc, Palette, Store, TriangleAlert, Users } from "lucide-react";
 import { SectionNav } from "@/components/molecules/section-nav";
 import { PageHeader } from "@/components/molecules/page-header";
 import { ApiKeysPanel } from "@/components/organisms/api-keys-panel";
@@ -40,12 +39,11 @@ export type ModuleState = {
 export type SystemInfoItem = { label: string; value: string };
 export type { CardOwner, PlanInfo };
 
-type Tab = "profile" | "plan" | "modules" | "team" | "integrations" | "card" | "appearance" | "danger";
+type Tab = "profile" | "plan" | "team" | "integrations" | "card" | "appearance" | "danger";
 
 const TABS = [
   { id: "profile", label: "Perfil del negocio", icon: Store, hint: "Nombre, enlace y contacto" },
   { id: "plan", label: "Plan", icon: CreditCard, hint: "Thrive y lo que incluye" },
-  { id: "modules", label: "Módulos", icon: Blocks, hint: "Activa lo que usas" },
   { id: "team", label: "Equipo", icon: Users, hint: "Quién entra al negocio" },
   { id: "integrations", label: "Integraciones", icon: Plug, hint: "Llaves de API para n8n y agentes" },
   { id: "card", label: "Tarjeta NFC", icon: Nfc, hint: "Tu tarjeta de contacto" },
@@ -61,7 +59,6 @@ export default function SettingsShell({
   tenantSlug: initialTenantSlug,
   canManage,
   profile,
-  modules,
   team,
   apiKeys,
   systemInfo,
@@ -72,7 +69,6 @@ export default function SettingsShell({
   tenantSlug: string;
   canManage: boolean;
   profile: ProfileInitialValues;
-  modules: ModuleState[];
   team: { members: BusinessMember[]; invites: PendingInvite[]; seats: Seats; canManage: boolean; meRole: string };
   apiKeys: ApiKeyRow[];
   systemInfo: SystemInfoItem[];
@@ -106,13 +102,6 @@ export default function SettingsShell({
             initialValues={profile}
             systemInfo={systemInfo}
             context={context}
-          />
-        )}
-        {tab === "modules" && (
-          <ModulesTab
-            tenantSlug={currentSlug}
-            canManage={canManage}
-            modules={modules}
           />
         )}
         {tab === "plan" && <PlanTab info={plan} />}
