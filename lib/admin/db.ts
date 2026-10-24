@@ -269,6 +269,8 @@ export type AuditAction =
   | "EXPORT_TENANTS"
   | "IMPERSONATE"
   // Operations Center (equipo, cuentas, catálogo, comercial, soporte, cobros)
+  | "USER_LIMIT_SET"
+  | "USER_ORG_CREATE"
   | "STAFF_INVITE"
   | "STAFF_ROLE_CHANGE"
   | "STAFF_DEACTIVATE"

@@ -8,6 +8,10 @@
       "model": "Account",
       "namespace": "public"
     },
+    "AccountLimit": {
+      "model": "AccountLimit",
+      "namespace": "public"
+    },
     "AccountingPeriod": {
       "model": "AccountingPeriod",
       "namespace": "public"
@@ -1355,6 +1359,57 @@
               },
               "namespaceId": "public",
               "table": "Account"
+            }
+          },
+          "AccountLimit": {
+            "fields": {
+              "email": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "maxOrganizations": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "note": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "email": {
+                  "column": "email"
+                },
+                "maxOrganizations": {
+                  "column": "maxOrganizations"
+                },
+                "note": {
+                  "column": "note"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "AccountLimit"
             }
           },
           "AccountingPeriod": {
@@ -22323,6 +22378,11 @@
               "namespaceId": "public",
               "tableName": "Account"
             },
+            "AccountLimit": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "AccountLimit"
+            },
             "AccountingPeriod": {
               "kind": "rls",
               "namespaceId": "public",
@@ -23007,6 +23067,38 @@
                   ]
                 }
               ]
+            },
+            "AccountLimit": {
+              "columns": {
+                "email": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "maxOrganizations": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "note": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "email"
+                ]
+              },
+              "uniques": []
             },
             "AccountingPeriod": {
               "columns": {
@@ -39095,10 +39187,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "d1bd026b9421ab69b622ecbbaaf23191d4f3e77933b070407051f19f540595ba"
+    "storageHash": "191a1245f44131a6d6cbd0710b3e6f55e60e6f2e206552beaa3f69290ba03007"
   },
   "execution": {
-    "executionHash": "a2af63e9ab78679879f3845a7081a9e4408936f14e875486721789c3373a7c3d",
+    "executionHash": "780b65cd4291ef2d83f36d9d8692990b1b6223156b9157c28c4a5b6821b37541",
     "mutations": {
       "defaults": [
         {
@@ -39109,6 +39201,21 @@
           "ref": {
             "entry": "Account",
             "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "AccountLimit",
+            "field": "updatedAt",
             "namespace": "public"
           }
         },

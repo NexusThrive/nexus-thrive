@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { Blocks, FileSpreadsheet, Receipt, Settings } from "lucide-react";
 import { MODULES, type ModuleValue, type VerticalValue } from "@/lib/admin/catalogs";
-import { CAPABILITIES, type CapabilityNav } from "@/lib/capabilities/registry";
+import { CAPABILITIES, CAPABILITY_CATEGORIES, type CapabilityCategory, type CapabilityNav } from "@/lib/capabilities/registry";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 
 export type NavItem = {
@@ -89,23 +89,11 @@ export const SETTINGS_ITEM: NavItem = {
  * clientes. Un grupo sin módulos activos no aparece. Ingresos y Gastos se
  * pueden desplegar y ocultar.
  */
-const GROUPS = ["Clientes y operación", "Ingresos", "Gastos", "Dinero", "Canales"] as const;
-type GroupName = (typeof GROUPS)[number];
+const GROUPS = CAPABILITY_CATEGORIES;
+type GroupName = CapabilityCategory;
 const COLLAPSIBLE: readonly GroupName[] = ["Ingresos", "Gastos"];
-const MODULE_GROUP: Partial<Record<string, GroupName>> = {
-  crm: "Clientes y operación",
-  bookings: "Clientes y operación",
-  memberships: "Clientes y operación",
-  orders: "Clientes y operación",
-  quotes: "Clientes y operación",
-  construction: "Clientes y operación",
-  inventory: "Clientes y operación",
-  billing: "Ingresos",
-  payments: "Ingresos",
-  purchases: "Gastos",
-  finance: "Dinero",
-  whatsapp: "Canales",
-};
+/** Grupo de cada función: su categoría en el registro (la misma que ve en «Funciones»). */
+const MODULE_GROUP: Partial<Record<string, GroupName>> = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.category]));
 
 /**
  * Navegación del negocio: solo los módulos activos, en el orden del catálogo,

@@ -1,0 +1,80 @@
+[
+  {
+    "id": "table.AccountLimit",
+    "label": "Create table \"AccountLimit\"",
+    "summary": "Creates table \"AccountLimit\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "AccountLimit"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"AccountLimit\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AccountLimit\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"AccountLimit\"",
+        "sql": "CREATE TABLE \"public\".\"AccountLimit\" (\n  \"email\" text NOT NULL,\n  \"maxOrganizations\" int4 NOT NULL,\n  \"note\" text,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"email\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"AccountLimit\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AccountLimit\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.AccountLimit",
+    "label": "Enable row-level security on \"AccountLimit\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "AccountLimit"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"AccountLimit\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "AccountLimit"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"AccountLimit\"",
+        "sql": "ALTER TABLE \"public\".\"AccountLimit\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"AccountLimit\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "AccountLimit"
+        ]
+      }
+    ]
+  }
+]

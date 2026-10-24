@@ -14,6 +14,7 @@ import {
   Smile,
   Sparkles,
   Target,
+  Users,
   UsersRound,
 } from "lucide-react";
 import type { NavGroup } from "@/lib/navigation/tenant-nav";
@@ -49,6 +50,7 @@ export const OPS_NAV: { label: string; items: OpsItem[] }[] = [
     label: "Cuentas",
     items: [
       { key: "negocios", label: "Negocios", href: "/admin/negocios", icon: Building2, permission: "accounts.view", ready: true },
+      { key: "usuarios", label: "Usuarios", href: "/admin/usuarios", icon: Users, permission: "accounts.view", ready: true },
       { key: "onboarding", label: "Onboarding", href: "/admin/onboarding", icon: ClipboardList, permission: "accounts.view", ready: true },
       { key: "salud", label: "Salud de cuentas", href: "/admin/salud", icon: HeartPulse, permission: "accounts.view", ready: true },
       { key: "facturacion", label: "Facturación", href: "/admin/facturacion", icon: CreditCard, permission: "billing.view", ready: true },

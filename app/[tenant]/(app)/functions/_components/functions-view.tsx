@@ -9,7 +9,17 @@ import { useToast } from "@/components/molecules/toast";
 import { setFunctionAction } from "@/app/[tenant]/(app)/functions/actions";
 import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
 import type { FunctionGroups, FunctionItem } from "@/lib/functions/functions";
+import { CAPABILITY_CATEGORIES, type CapabilityCategory } from "@/lib/capabilities/registry";
 import { cn } from "@/lib/utils";
+
+const CATEGORY_HINT: Record<CapabilityCategory, string> = {
+  "Clientes y operación": "Atender, reservar, vender producto y llevar el inventario.",
+  Ingresos: "Cobrar, facturar y vender en mostrador o en línea.",
+  Gastos: "Comprar a proveedores y recibir mercancía.",
+  Dinero: "Finanzas, cartera, contabilidad e impuestos.",
+  Visibilidad: "Tu sitio, tu tienda, tu ficha de Google, campañas y reseñas.",
+  Canales: "Hablar con tus clientes.",
+};
 
 /** Funciones del sistema: en uso, sugeridas y el resto. Encender una la agrega al menú; apagarla la quita sin borrar datos. */
 export default function FunctionsView({ slug, groups, canManage, profile }: { slug: string; groups: FunctionGroups; canManage: boolean; profile: string | null }) {
@@ -71,12 +81,15 @@ export default function FunctionsView({ slug, groups, canManage, profile }: { sl
       </section>
     ) : null;
 
+  const suggested = all.filter((i) => !on(i.id) && !!i.reason && !i.planned);
+  const shownAbove = new Set(suggested.map((i) => i.id));
   return (
     <div className="grid gap-6">
       {!canManage ? <Alert tone="info">Solo el dueño del negocio enciende o apaga funciones.</Alert> : null}
-      {section("En uso", "Lo que ves hoy en tu menú.", all.filter((i) => on(i.id)))}
-      {section("Te sugerimos", profile ? `Por lo que haces y por tu rubro (${profile}).` : "Por lo que haces.", [...groups.suggested, ...groups.inUse, ...groups.more].filter((i) => !on(i.id) && !!i.reason && !i.planned))}
-      {section("Más funciones", "Todas están incluidas; enciéndelas cuando las necesites.", [...groups.suggested, ...groups.inUse, ...groups.more].filter((i) => !on(i.id) && !i.reason && !i.planned))}
+      {section("Te sugerimos", profile ? `Por lo que haces y por tu rubro (${profile}).` : "Por lo que haces.", suggested)}
+      {CAPABILITY_CATEGORIES.map((category) =>
+        section(category, CATEGORY_HINT[category], all.filter((i) => i.category === category && !shownAbove.has(i.id) && !(i.planned && !on(i.id)))),
+      )}
     </div>
   );
 }

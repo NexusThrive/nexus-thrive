@@ -6,6 +6,7 @@ import { Badge } from "@/components/atoms/badge";
 import { Switch } from "@/components/atoms/switch";
 import { useToast } from "@/components/molecules/toast";
 import type { ModuleValue } from "@/lib/admin/catalogs";
+import { CAPABILITIES, CAPABILITY_CATEGORIES } from "@/lib/capabilities/registry";
 import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
 import type { ModuleState } from "@/lib/plans/compat";
 import { cn } from "@/lib/utils";
@@ -33,8 +34,13 @@ export default function ModuleToggles({ tenantId, modules, canEdit }: { tenantId
 
   return (
     <>
-      <ul className="divide-y divide-border">
-        {visible.map((m) => {
+      {CAPABILITY_CATEGORIES.map((category) => {
+        const rows = visible.filter((m) => CAPABILITIES.find((c) => c.id === m.module)?.category === category);
+        return rows.length ? (
+          <div key={category}>
+            <h3 className="border-y border-border bg-surface-muted/60 px-[18px] py-1.5 text-[12px] font-semibold first:border-t-0">{category}</h3>
+            <ul className="divide-y divide-border">
+        {rows.map((m) => {
           const Icon = MODULE_ICONS[m.module];
           const id = `mod-${m.module}`;
           const locked = m.module === "dashboard" || (!m.enabled && (!m.compatible || m.state === "planned"));
@@ -72,7 +78,10 @@ export default function ModuleToggles({ tenantId, modules, canEdit }: { tenantId
             </li>
           );
         })}
-      </ul>
+            </ul>
+          </div>
+        ) : null;
+      })}
       {hidden > 0 ? <p className="border-t border-border px-[18px] py-2.5 text-xs text-muted-foreground">{hidden} módulos no aplican a este rubro (se configuran en Planes y módulos).</p> : null}
     </>
   );

@@ -69,8 +69,16 @@ export type CapabilityNav = {
   verticals?: readonly VerticalValue[];
 };
 
+/** Categoría de la función: la misma en la barra lateral y en la página Funciones. */
+export type CapabilityCategory = "Clientes y operación" | "Ingresos" | "Gastos" | "Dinero" | "Visibilidad" | "Canales";
+export const CAPABILITY_CATEGORIES: readonly CapabilityCategory[] = ["Clientes y operación", "Ingresos", "Gastos", "Dinero", "Visibilidad", "Canales"];
+
 export type CapabilityDefinition = {
   id: string;
+  /** Dónde vive la función en el menú y en «Funciones». */
+  category: CapabilityCategory;
+  /** Función de la que se desprendió: los negocios que ya la tenían reciben también esta (y los nuevos la traen con ella). */
+  parent?: string;
   /** Base (cualquier negocio) o especializado (operación de algunos rubros). */
   kind: "base" | "specialized";
   /** Nombre corto (panel, chips). */
@@ -97,6 +105,7 @@ export type CapabilityDefinition = {
 export const CAPABILITIES = [
   {
     id: "crm",
+    category: "Clientes y operación",
     kind: "base",
     label: "CRM",
     name: "Clientes",
@@ -110,6 +119,7 @@ export const CAPABILITIES = [
   },
   {
     id: "bookings",
+    category: "Clientes y operación",
     kind: "base",
     label: "Reservas",
     name: "Reservas",
@@ -126,6 +136,7 @@ export const CAPABILITIES = [
   },
   {
     id: "payments",
+    category: "Ingresos",
     kind: "base",
     label: "Pagos",
     name: "Pagos",
@@ -137,12 +148,11 @@ export const CAPABILITIES = [
     general: true,
     nav: [
       { href: "/finance?tab=cobros", icon: Banknote, label: () => "Pagos" },
-      { href: "/pos", icon: ShoppingCart, label: () => "Punto de venta" },
-      { href: "/cobros", icon: Link2, label: () => "Cobros en línea" },
     ],
   },
   {
     id: "billing",
+    category: "Ingresos",
     kind: "base",
     label: "Facturación",
     name: "Facturación",
@@ -154,11 +164,11 @@ export const CAPABILITIES = [
     general: true,
     nav: [
       { href: "/billing", icon: Receipt, label: () => "Facturación" },
-      { href: "/factura-electronica", icon: FileCheck2, label: () => "Factura electrónica" },
     ],
   },
   {
     id: "inventory",
+    category: "Clientes y operación",
     kind: "base",
     label: "Inventario",
     name: "Catálogo e inventario",
@@ -171,14 +181,11 @@ export const CAPABILITIES = [
     nav: [
       { href: "/inventory", icon: Package, label: () => "Catálogo" },
       { href: "/stock", icon: Warehouse, label: () => "Existencias" },
-      { href: "/sitio", icon: Globe, label: () => "Mi sitio web" },
-      { href: "/pedidos-tienda", icon: PackageCheck, label: () => "Pedidos de la tienda" },
-      { href: "/google", icon: MapPin, label: () => "Ficha de Google" },
-      { href: "/crecimiento", icon: Megaphone, label: () => "Campañas y reseñas" },
     ],
   },
   {
     id: "finance",
+    category: "Dinero",
     kind: "base",
     label: "Finanzas",
     name: "Finanzas",
@@ -190,13 +197,11 @@ export const CAPABILITIES = [
     included: true,
     nav: [
       { href: "/finance", icon: Wallet, label: () => "Finanzas" },
-      { href: "/cartera", icon: HandCoins, label: () => "Cartera" },
-      { href: "/contabilidad", icon: BookOpenCheck, label: () => "Contabilidad" },
-      { href: "/taxes", icon: Percent, label: () => "Impuestos y numeración" },
     ],
   },
   {
     id: "dashboard",
+    category: "Clientes y operación",
     kind: "base",
     label: "Dashboard",
     name: "Inicio",
@@ -210,6 +215,7 @@ export const CAPABILITIES = [
   },
   {
     id: "whatsapp",
+    category: "Canales",
     kind: "base",
     label: "WhatsApp",
     name: "WhatsApp",
@@ -223,6 +229,7 @@ export const CAPABILITIES = [
   },
   {
     id: "memberships",
+    category: "Clientes y operación",
     kind: "specialized",
     label: "Membresías",
     name: "Membresías",
@@ -240,6 +247,7 @@ export const CAPABILITIES = [
     // Compras a proveedores con recepción de mercancía al inventario. Depende
     // de «Catálogo e inventario» (la mercancía entra por su servicio de stock).
     id: "purchases",
+    category: "Gastos",
     kind: "base",
     label: "Compras",
     name: "Compras y proveedores",
@@ -254,6 +262,7 @@ export const CAPABILITIES = [
   },
   {
     id: "orders",
+    category: "Clientes y operación",
     kind: "specialized",
     label: "Pedidos",
     name: "Pedidos",
@@ -268,6 +277,7 @@ export const CAPABILITIES = [
     // Cotización comercial genérica: llega con el documento comercial
     // unificado (Bloque B, paso 2). Hasta entonces no tiene pantallas.
     id: "quotes",
+    category: "Clientes y operación",
     kind: "specialized",
     label: "Cotizaciones",
     name: "Cotizaciones",
@@ -282,6 +292,7 @@ export const CAPABILITIES = [
     // Suite de construcción (ARCH-01): obras, presupuestos APU, Lean,
     // bitácora y actas. Solo constructoras y carpinterías.
     id: "construction",
+    category: "Clientes y operación",
     kind: "specialized",
     label: "Construcción",
     name: "Obras y presupuestos",
@@ -300,6 +311,144 @@ export const CAPABILITIES = [
       { href: "/catalog", icon: BookOpen, label: () => "Catálogo APU" },
     ],
   },
+  {
+    id: "pos",
+    category: "Ingresos",
+    parent: "payments",
+    kind: "base",
+    label: "Punto de venta",
+    name: "Punto de venta",
+    description: "Caja, turnos y venta multilínea con devoluciones.",
+    pitch: "Vende en mostrador con turnos de caja, varias líneas y devoluciones.",
+    icon: ShoppingCart,
+    status: "READY",
+    priceUsd: 0,
+    general: true,
+    nav: [{ href: "/pos", icon: ShoppingCart, label: () => "Punto de venta" }],
+  },
+  {
+    id: "online_payments",
+    category: "Ingresos",
+    parent: "payments",
+    kind: "base",
+    label: "Cobros en línea",
+    name: "Cobros en línea",
+    description: "Enlaces de pago, pasarelas y conciliación.",
+    pitch: "Cobra con enlaces de pago y concilia lo que entra.",
+    icon: Link2,
+    status: "READY",
+    priceUsd: 0,
+    general: true,
+    nav: [{ href: "/cobros", icon: Link2, label: () => "Cobros en línea" }],
+  },
+  {
+    id: "einvoicing",
+    category: "Ingresos",
+    parent: "billing",
+    kind: "base",
+    label: "Factura electrónica",
+    name: "Factura electrónica",
+    description: "Envío de facturas electrónicas por un proveedor autorizado.",
+    pitch: "Emite facturas electrónicas con tu proveedor autorizado.",
+    icon: FileCheck2,
+    status: "BETA",
+    priceUsd: 0,
+    general: true,
+    nav: [{ href: "/factura-electronica", icon: FileCheck2, label: () => "Factura electrónica" }],
+  },
+  {
+    id: "receivables",
+    category: "Dinero",
+    parent: "finance",
+    kind: "base",
+    label: "Cartera",
+    name: "Cartera",
+    description: "Cuentas por cobrar y por pagar, con vencimientos.",
+    pitch: "Controla lo que te deben y lo que debes.",
+    icon: HandCoins,
+    status: "READY",
+    priceUsd: 0,
+    general: true,
+    nav: [{ href: "/cartera", icon: HandCoins, label: () => "Cartera" }],
+  },
+  {
+    id: "accounting",
+    category: "Dinero",
+    parent: "finance",
+    kind: "base",
+    label: "Contabilidad",
+    name: "Contabilidad",
+    description: "Plan de cuentas, asientos, períodos y estados financieros.",
+    pitch: "Plan de cuentas, asientos y estados financieros para tu contador.",
+    icon: BookOpenCheck,
+    status: "BETA",
+    priceUsd: 0,
+    general: true,
+    nav: [{ href: "/contabilidad", icon: BookOpenCheck, label: () => "Contabilidad" }],
+  },
+  {
+    id: "taxes",
+    category: "Dinero",
+    parent: "finance",
+    kind: "base",
+    label: "Impuestos y numeración",
+    name: "Impuestos y numeración",
+    description: "Tarifas con vigencia, retenciones y numeración de documentos.",
+    pitch: "Impuestos con vigencia y numeración de tus documentos.",
+    icon: Percent,
+    status: "READY",
+    priceUsd: 0,
+    general: true,
+    nav: [{ href: "/taxes", icon: Percent, label: () => "Impuestos y numeración" }],
+  },
+  {
+    id: "website",
+    category: "Visibilidad",
+    parent: "inventory",
+    kind: "base",
+    label: "Sitio y tienda",
+    name: "Sitio web y tienda en línea",
+    description: "Mini-sitio público y tienda con pedidos.",
+    pitch: "Tu sitio web y tu tienda en línea, con pedidos y cobro.",
+    icon: Globe,
+    status: "READY",
+    priceUsd: 0,
+    general: true,
+    nav: [
+      { href: "/sitio", icon: Globe, label: () => "Mi sitio web" },
+      { href: "/pedidos-tienda", icon: PackageCheck, label: () => "Pedidos de la tienda" },
+    ],
+  },
+  {
+    id: "google",
+    category: "Visibilidad",
+    parent: "inventory",
+    kind: "base",
+    label: "Ficha de Google",
+    name: "Ficha de Google",
+    description: "Compara tu ficha de Google con tus datos y mira tu calificación.",
+    pitch: "Que Google muestre tus datos correctos y tu calificación.",
+    icon: MapPin,
+    status: "BETA",
+    priceUsd: 0,
+    general: true,
+    nav: [{ href: "/google", icon: MapPin, label: () => "Ficha de Google" }],
+  },
+  {
+    id: "growth",
+    category: "Visibilidad",
+    parent: "inventory",
+    kind: "base",
+    label: "Campañas y reseñas",
+    name: "Campañas y reseñas",
+    description: "Enlaces con UTM, origen de tus ventas y reseñas.",
+    pitch: "Sabe de dónde vienen tus clientes y pide reseñas.",
+    icon: Megaphone,
+    status: "READY",
+    priceUsd: 0,
+    general: true,
+    nav: [{ href: "/crecimiento", icon: Megaphone, label: () => "Campañas y reseñas" }],
+  },
 ] as const satisfies readonly CapabilityDefinition[];
 
 export type CapabilityId = (typeof CAPABILITIES)[number]["id"];
@@ -308,3 +457,10 @@ export type CapabilityId = (typeof CAPABILITIES)[number]["id"];
 export function capability(id: CapabilityId): CapabilityDefinition {
   return CAPABILITIES.find((c) => c.id === id)!;
 }
+
+/** Funciones que se desprendieron de otra: `padre → hijas`. */
+export const CHILDREN_OF: Readonly<Record<string, readonly string[]>> = CAPABILITIES.reduce<Record<string, string[]>>((acc, c) => {
+  const parent = (c as CapabilityDefinition).parent;
+  if (parent) (acc[parent] ??= []).push(c.id);
+  return acc;
+}, {});

@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'d1bd026b9421ab69b622ecbbaaf23191d4f3e77933b070407051f19f540595ba'>;
+  StorageHashBase<'191a1245f44131a6d6cbd0710b3e6f55e60e6f2e206552beaa3f69290ba03007'>;
 export type ExecutionHash =
-  ExecutionHashBase<'a2af63e9ab78679879f3845a7081a9e4408936f14e875486721789c3373a7c3d'>;
+  ExecutionHashBase<'780b65cd4291ef2d83f36d9d8692990b1b6223156b9157c28c4a5b6821b37541'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -281,6 +281,12 @@ export type FieldOutputTypes = {
       readonly lines: CodecTypes['pg/json@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly AccountLimit: {
+      readonly email: CodecTypes['pg/text@1']['output'];
+      readonly maxOrganizations: CodecTypes['pg/int4@1']['output'];
+      readonly note: CodecTypes['pg/text@1']['output'] | null;
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly ApiKey: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -1947,6 +1953,12 @@ export type FieldInputTypes = {
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
+    readonly AccountLimit: {
+      readonly email: CodecTypes['pg/text@1']['input'];
+      readonly maxOrganizations: CodecTypes['pg/int4@1']['input'];
+      readonly note: CodecTypes['pg/text@1']['input'] | null;
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly ApiKey: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly createdById: CodecTypes['pg/text@1']['input'] | null;
@@ -3611,6 +3623,12 @@ export type StorageColumnTypes = {
       readonly lines: CodecTypes['pg/json@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly AccountLimit: {
+      readonly email: CodecTypes['pg/text@1']['output'];
+      readonly maxOrganizations: CodecTypes['pg/int4@1']['output'];
+      readonly note: CodecTypes['pg/text@1']['output'] | null;
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly ApiKey: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -5277,6 +5295,12 @@ export type StorageColumnInputTypes = {
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
+    readonly AccountLimit: {
+      readonly email: CodecTypes['pg/text@1']['input'];
+      readonly maxOrganizations: CodecTypes['pg/int4@1']['input'];
+      readonly note: CodecTypes['pg/text@1']['input'] | null;
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly ApiKey: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly createdById: CodecTypes['pg/text@1']['input'] | null;
@@ -6922,6 +6946,13 @@ export namespace Models {
     type: CodecTypes['pg/text@1']['output'];
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'tenant';
+  };
+  export type public_AccountLimit = {
+    email: CodecTypes['pg/text@1']['output'];
+    maxOrganizations: CodecTypes['pg/int4@1']['output'];
+    note: CodecTypes['pg/text@1']['output'] | null;
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    readonly [RelationKeys]?: never;
   };
   export type public_AccountingPeriod = {
     closedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
@@ -9166,6 +9197,7 @@ export namespace Models {
 export declare const models: {
   public: {
     Account: Models.public_Account;
+    AccountLimit: Models.public_AccountLimit;
     AccountingPeriod: Models.public_AccountingPeriod;
     AccountingRule: Models.public_AccountingRule;
     ApiKey: Models.public_ApiKey;
@@ -9535,6 +9567,34 @@ type ContractBase = Omit<
                   };
                 },
               ];
+            };
+            readonly AccountLimit: {
+              columns: {
+                readonly email: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly maxOrganizations: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly note: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['email'] };
+              uniques: readonly [];
+              indexes: readonly [];
+              foreignKeys: readonly [];
             };
             readonly ApiKey: {
               columns: {
@@ -22177,6 +22237,10 @@ type ContractBase = Omit<
   readonly targetFamily: 'sql';
   readonly roots: {
     readonly Account: { readonly namespace: 'public' & NamespaceId; readonly model: 'Account' };
+    readonly AccountLimit: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'AccountLimit';
+    };
     readonly AccountingPeriod: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'AccountingPeriod';
@@ -22779,6 +22843,40 @@ type ContractBase = Omit<
                 readonly lines: { readonly column: 'lines' };
                 readonly name: { readonly column: 'name' };
                 readonly tenantId: { readonly column: 'tenantId' };
+              };
+            };
+          };
+          readonly AccountLimit: {
+            readonly fields: {
+              readonly email: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly maxOrganizations: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly note: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: Record<string, never>;
+            readonly storage: {
+              readonly table: 'AccountLimit';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly email: { readonly column: 'email' };
+                readonly maxOrganizations: { readonly column: 'maxOrganizations' };
+                readonly note: { readonly column: 'note' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
               };
             };
           };
@@ -36105,6 +36203,15 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'Account';
             readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'AccountLimit';
+            readonly field: 'updatedAt';
             readonly namespace: 'public';
           };
         },

@@ -25,7 +25,7 @@ export default async function FunctionsPage({ params }: { params: Promise<{ tena
   const profileSuggested = new Set<string>(vertical ? (VERTICAL_RECIPES[vertical].modules as readonly ModuleValue[]) : []);
   const sources = CAPABILITIES.map((c) => {
     const cfg = config.modules.find((m) => m.module === c.id);
-    return { id: c.id as ModuleValue, label: cfg?.label ?? c.name, pitch: c.pitch, kind: c.kind, status: cfg?.status ?? c.status };
+    return { id: c.id as ModuleValue, label: cfg?.label ?? c.name, pitch: c.pitch, kind: c.kind, status: cfg?.status ?? c.status, category: c.category };
   });
   const groups = groupFunctions(sources, active, profileSuggested, suggestFromUsage(signals, active), vertical ? VERTICAL_LABELS[vertical].toLowerCase() : "tu rubro");
   return (

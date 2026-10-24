@@ -18,18 +18,26 @@ describe("buildTenantNav", () => {
   });
 
   it("agrupa por trabajo, con Ingresos y Gastos desplegables, y omite los grupos vacíos", () => {
-    const groups = buildTenantNav("gym", ["dashboard", "crm", "memberships", "finance", "payments", "billing", "whatsapp"]);
+    const groups = buildTenantNav("gym", ["dashboard", "crm", "memberships", "finance", "payments", "pos", "online_payments", "billing", "einvoicing", "receivables", "accounting", "taxes", "whatsapp"]);
     expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y operación", "Ingresos", "Gastos", "Dinero", "Canales", "Sistema"]);
     // Facturación, punto de venta y cobros van en Ingresos; Pagos vive dentro de Finanzas y no se repite.
     const ingresos = groups.find((g) => g.label === "Ingresos")!;
     expect(ingresos.collapsible).toBe(true);
-    expect(ingresos.items.map((i) => i.label)).toEqual(["Punto de venta", "Cobros en línea", "Facturación", "Factura electrónica"]);
+    expect(ingresos.items.map((i) => i.label)).toEqual(["Facturación", "Punto de venta", "Cobros en línea", "Factura electrónica"]);
     // Con Finanzas activa hay una categoría «Gastos».
     const gastos = groups.find((g) => g.label === "Gastos")!;
     expect(gastos.collapsible).toBe(true);
     expect(gastos.items.map((i) => i.label)).toEqual(["Gastos"]);
     expect(groups.find((g) => g.label === "Dinero")?.items.map((i) => i.label)).toEqual(["Finanzas", "Cartera", "Contabilidad", "Impuestos y numeración"]);
     expect(groups.find((g) => g.label === "Clientes y operación")?.collapsible).toBeUndefined();
+  });
+
+  it("cada pantalla aparece solo si su función está encendida: Pagos no trae punto de venta ni Finanzas trae contabilidad", () => {
+    const labels = (mods: Parameters<typeof buildTenantNav>[1]) => buildTenantNav("gym", mods).flatMap((g) => g.items).map((i) => i.label);
+    const base = labels(["dashboard", "crm", "payments", "finance", "billing"]);
+    for (const hidden of ["Punto de venta", "Cobros en línea", "Cartera", "Contabilidad", "Impuestos y numeración", "Factura electrónica", "Mi sitio web", "Ficha de Google", "Campañas y reseñas"]) expect(base).not.toContain(hidden);
+    expect(labels(["dashboard", "pos", "website", "google", "growth"])).toEqual(expect.arrayContaining(["Punto de venta", "Mi sitio web", "Pedidos de la tienda", "Ficha de Google", "Campañas y reseñas"]));
+    expect(buildTenantNav("gym", ["dashboard", "website"]).map((g) => g.label)).toContain("Visibilidad");
   });
 
   it("sin facturación ni gastos no aparecen esas categorías", () => {

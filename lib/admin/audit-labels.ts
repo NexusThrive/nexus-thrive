@@ -6,6 +6,8 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   TOGGLE_MODULE: "Módulo actualizado",
   EXPORT_TENANTS: "Exportación de negocios",
   IMPERSONATE: "Acceso como negocio",
+  USER_LIMIT_SET: "Límite de negocios cambiado",
+  USER_ORG_CREATE: "Negocio creado para una persona",
   STAFF_INVITE: "Integrante invitado",
   STAFF_ROLE_CHANGE: "Rol de integrante cambiado",
   STAFF_DEACTIVATE: "Integrante desactivado",

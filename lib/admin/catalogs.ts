@@ -8,7 +8,7 @@
  * recetas por vertical (módulos por defecto + vocabulario adaptativo).
  */
 
-import { CAPABILITIES, type CapabilityId } from "@/lib/capabilities/registry";
+import { CAPABILITIES, CHILDREN_OF, type CapabilityId } from "@/lib/capabilities/registry";
 
 /* ------------------------------------------------------------------ */
 /* Verticales (16 rubros)                                              */
@@ -410,6 +410,8 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
 };
+// Las funciones que se desprendieron de otra (Cartera, Punto de venta…) llegan con ella en cada receta.
+for (const vertical of VERTICALS) (VERTICAL_RECIPES[vertical] as { modules: readonly ModuleValue[] }).modules = withChildModules(VERTICAL_RECIPES[vertical].modules);
 
 /**
  * Módulos que NEXUS activa automáticamente por vertical (derivado de las
@@ -532,4 +534,10 @@ export function sortModules(modules: readonly ModuleValue[]): ModuleValue[] {
   return [...modules].sort(
     (a, b) => MODULES.indexOf(a) - MODULES.indexOf(b),
   );
+}
+/** Agrega a cada función las que se desprendieron de ella (Cartera con Finanzas, Punto de venta con Pagos…). */
+export function withChildModules(list: readonly ModuleValue[]): ModuleValue[] {
+  const out = new Set<ModuleValue>(list);
+  for (const m of list) for (const child of CHILDREN_OF[m] ?? []) out.add(child as ModuleValue);
+  return sortModules([...out]);
 }

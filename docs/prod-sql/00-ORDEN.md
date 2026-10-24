@@ -46,6 +46,8 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 34 | `2026-10-24-tienda-en-linea.sql` | Tienda en línea: `StoreOrder` y `StoreOrderLine` (aditivo; requiere los pasos 28 y 33) | generado de la migración |
 | 35 | `2026-10-24-google-business.sql` | Ficha de Google Business: tabla `GoogleListing` (aditivo) | generado de la migración |
 | 36 | `2026-10-24-reputacion-y-atribucion.sql` | Reputación y atribución: `TrackedLink`, `ContactLead`, `Review` y `StoreOrder.origin` (aditivo; requiere el paso 34) | generado de la migración |
+| 37 | `2026-10-25-funciones-hijas.sql` | Solo datos: enciende a cada negocio las funciones hijas (POS, cobros en línea, cartera, contabilidad, impuestos, factura electrónica, sitio, Google, campañas) de las que ya tenía encendidas | datos, idempotente |
+| 38 | `2026-10-24-limite-de-negocios.sql` | Límite de negocios por persona: tabla `AccountLimit` (aditivo; sin fila = sin límite) | generado de la migración |
 
 ## Estado: producción reconstruida desde las migraciones (camino A, 2026-10-23)
 

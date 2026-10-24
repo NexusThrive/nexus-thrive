@@ -9,6 +9,7 @@ import { headers } from "next/headers";
 import { requireStaff } from "@/lib/ops/access";
 import type { PermissionKey } from "@/lib/ops/permissions";
 import { revalidatePath } from "next/cache";
+import { organizationLimitProblem } from "@/lib/admin/users-db";
 import { createAdminDb, type AuditLogInput } from "@/lib/admin/db";
 import { validateSlug, type SlugValidation } from "@/lib/admin/catalogs";
 import {
@@ -133,6 +134,9 @@ export async function createTenantAction(
       values: validation.values,
     };
   }
+
+  const limitMessage = await organizationLimitProblem(ownerEmail);
+  if (limitMessage) return { status: "error", errors: { ownerEmail: limitMessage }, values: validation.values };
 
   try {
     await adminDb.createTenant({

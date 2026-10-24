@@ -3397,3 +3397,12 @@ model Review {
   @@index([tenantId, createdAt])
   @@rls
 }
+
+/// Límite de negocios por persona, fijado desde el Operations Center (clave: correo en minúsculas). Sin fila = sin límite.
+model AccountLimit {
+  email             String   @id
+  maxOrganizations  Int
+  note              String?
+  updatedAt         temporal.updatedAt()
+  @@rls
+}

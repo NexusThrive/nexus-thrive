@@ -5,20 +5,21 @@ import { expectNoAxeViolations, openStory } from "./helpers";
 test.describe("Funciones", () => {
   test("muestra lo que usas, lo sugerido con su motivo y el resto; sin violaciones de accesibilidad", async ({ page }) => {
     await openStory(page, "páginas-funciones-funciones--default");
-    await expect(page.getByRole("heading", { name: "En uso" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Clientes y operación" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Te sugerimos" })).toBeVisible();
     await expect(page.getByText("Controlas inventario de 3 productos")).toBeVisible();
     await expect(page.getByText("Va bien con un negocio de gimnasio.")).toBeVisible();
-    await expect(page.getByText("Funciona junto con")).toHaveCount(0); // inventario ya está encendido
+    await expect(page.getByText("Funciona junto con «Catálogo e inventario»")).toHaveCount(0); // inventario ya está encendido
+    await expect(page.getByText("Funciona junto con «Facturación»")).toHaveCount(3); // factura electrónica, cartera e impuestos
+    await expect(page.getByRole("heading", { name: "Visibilidad" })).toBeVisible();
     await expectNoAxeViolations(page);
   });
 
-  test("encender una función la pasa a «En uso» y lo avisa", async ({ page }) => {
+  test("encender una función la deja en su categoría y lo avisa", async ({ page }) => {
     await openStory(page, "páginas-funciones-funciones--default");
     await page.getByRole("switch", { name: "Encender Facturación" }).click();
     await expect(page.getByText("Función encendida: ya está en tu menú")).toBeVisible();
-    const enUso = page.getByRole("region", { name: "En uso" });
-    await expect(enUso.getByText("Facturación")).toBeVisible();
+    await expect(page.getByRole("region", { name: "Ingresos" }).getByText("Facturación")).toBeVisible();
     await expect(page.getByRole("switch", { name: "Apagar Facturación" })).toBeChecked();
   });
 
