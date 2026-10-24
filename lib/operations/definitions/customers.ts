@@ -13,6 +13,7 @@ const customerSummary = z.object({
 export const customerOperations: OperationDefinition[] = [
   defineOperation({
     id: "customers.search",
+    rest: { method: "GET", path: "/customers" },
     title: "Buscar clientes",
     description: "Busca clientes activos por nombre, correo, teléfono, documento o ciudad. Devuelve lo mínimo para reconocerlos.",
     module: "crm",

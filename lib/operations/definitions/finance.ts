@@ -6,6 +6,7 @@ const totals = z.object({ income: z.number(), expenses: z.number(), balance: z.n
 export const financeOperations: OperationDefinition[] = [
   defineOperation({
     id: "finance.get_summary",
+    rest: { method: "GET", path: "/finance/summary" },
     title: "Resumen de ingresos y gastos",
     description: "Ingresos, gastos y balance de hoy, de los últimos 7 o de los últimos 30 días, con el periodo anterior para comparar.",
     module: "finance",
@@ -21,6 +22,7 @@ export const financeOperations: OperationDefinition[] = [
   }),
   defineOperation({
     id: "sales.list_recent",
+    rest: { method: "GET", path: "/sales/recent" },
     title: "Movimientos recientes",
     description: "Últimos cobros y gastos del negocio, del más reciente al más antiguo.",
     module: "finance",

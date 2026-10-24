@@ -14,6 +14,7 @@ const productSummary = z.object({
 export const inventoryOperations: OperationDefinition[] = [
   defineOperation({
     id: "products.search",
+    rest: { method: "GET", path: "/products" },
     title: "Buscar productos",
     description: "Busca productos y servicios activos del catálogo por nombre.",
     module: "inventory",
@@ -39,6 +40,7 @@ export const inventoryOperations: OperationDefinition[] = [
   }),
   defineOperation({
     id: "inventory.check_stock",
+    rest: { method: "GET", path: "/products/{productId}/stock" },
     title: "Consultar existencias",
     description: "Existencias actuales de un producto y si está por debajo del mínimo.",
     module: "inventory",

@@ -42,5 +42,7 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   BIZ_MEMBER_ROLE: "Negocio · rol cambiado",
   BIZ_MEMBER_ACTIVE: "Negocio · persona retirada o reactivada",
   BIZ_MODULE_TOGGLE: "Negocio · módulo activado o desactivado",
+  BIZ_API_KEY_CREATE: "Negocio · llave de API creada",
+  BIZ_API_KEY_REVOKE: "Negocio · llave de API revocada",
   BIZ_TENANT_DELETE: "Negocio eliminado por su dueño",
 };

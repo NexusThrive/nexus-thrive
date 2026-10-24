@@ -138,7 +138,7 @@ de «hecho»). No se edita a mano.
 | PR | Hito | Qué | Capas | Niveles | Casillas | Esquema | Estado |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **01** | Integrable | Registro de operaciones | — | — | base técnica | — | pendiente |
-| **02** | Integrable | API /api/v1 de lectura y llaves por negocio | X | N1, N2 | 0/7 | `PR-02-api-llaves` | pendiente |
+| **02** | Integrable | API /api/v1 de lectura y llaves por negocio | X | N1, N2 | 6/7 | `PR-02-api-llaves` | pendiente |
 | **03** | Integrable | Outbox y webhooks firmados | I | N1, N2 | 0/2 | `PR-03-outbox-webhooks` | pendiente |
 | **04** | Integrable | Servidor MCP de solo lectura | IX, X | N1, N2 | 0/2 | — | pendiente |
 | **05** | Integrable | Origen en la bitácora y cupos de uso | I | N1 | 0/1 | `PR-05-uso-y-origen` | pendiente |
@@ -186,14 +186,14 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Una llave de prueba lee clientes y ventas de su negocio y de ningún otro (prueba con dos negocios); OpenAPI publicado; límites y errores RFC 9457.
 - **Casillas que marca:**
   - [`X.02 · N1`](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/02-API-Webhooks-y-Marketplace-de-Modulos/README.md)
-    - [ ] Llaves de API por negocio
-    - [ ] API REST documentada
-    - [ ] Límite de peticiones
-    - [ ] API interna `/api/v1` de solo lectura sobre los repositorios de `lib/` (contexto, permisos, módulos y bitácora)
+    - [x] Llaves de API por negocio _hecho: lib/api/keys.ts + Ajustes → Integraciones_
+    - [x] API REST documentada _hecho: GET /api/v1/openapi.json, generado del registro_
+    - [x] Límite de peticiones _hecho: lib/api/rate-limit.ts, 120/min por llave, en memoria_
+    - [x] API interna `/api/v1` de solo lectura sobre los repositorios de `lib/` (contexto, permisos, módulos y bitácora)
   - [`X.02 · N2`](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/02-API-Webhooks-y-Marketplace-de-Modulos/README.md)
     - [ ] Documentación pública interactiva
-    - [ ] Alcances (scopes) granulares
-    - [ ] Versionado de la API
+    - [x] Alcances (scopes) granulares _hecho: lib/api/scopes.ts_
+    - [x] Versionado de la API _hecho: prefijo /api/v1_
 
 ### PR-03 · Outbox y webhooks firmados
 

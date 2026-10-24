@@ -5,6 +5,7 @@ import { defineOperation, OperationError, type OperationDefinition } from "../ty
 export const businessOperations: OperationDefinition[] = [
   defineOperation({
     id: "business.get_summary",
+    rest: { method: "GET", path: "/business" },
     title: "Resumen del negocio",
     description: "Nombre, rubro y módulos activos del negocio; si la persona puede ver dinero, también los totales de los últimos 7 días.",
     module: null,

@@ -45,6 +45,12 @@ export type OperationDefinition<I extends z.ZodType = z.ZodType, O extends z.Zod
   input: I;
   /** Lo mínimo necesario: lo que no esté aquí no sale (zod descarta lo demás). */
   output: O;
+  /**
+   * Ruta REST bajo `/api/v1`. `{param}` toma el valor del campo del mismo nombre de la
+   * entrada; en GET el resto sale de la query. Una operación sin `rest` solo existe
+   * para el MCP y las pantallas.
+   */
+  rest?: { method: "GET" | "POST"; path: string };
   /** Exige `Idempotency-Key` (operaciones que escriben o mueven dinero). */
   idempotent?: boolean;
   /** Eventos de dominio que publica (`recurso.accion.v1`). */

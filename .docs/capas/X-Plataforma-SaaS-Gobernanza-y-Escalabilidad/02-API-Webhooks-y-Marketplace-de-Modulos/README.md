@@ -46,10 +46,10 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Llaves de API por negocio _(PR-02)_
-- [ ] API REST documentada _(PR-02)_
-- [ ] Límite de peticiones _(PR-02)_
-- [ ] API interna `/api/v1` de solo lectura sobre los repositorios de `lib/` (contexto, permisos, módulos y bitácora) _(objetivo 2026 · ver `docs/PENDIENTES.md`)_ _(PR-02)_
+- [x] Llaves de API por negocio _(PR-02)_ _hecho: lib/api/keys.ts + Ajustes → Integraciones_
+- [x] API REST documentada _(PR-02)_ _hecho: GET /api/v1/openapi.json, generado del registro_
+- [x] Límite de peticiones _(PR-02)_ _hecho: lib/api/rate-limit.ts, 120/min por llave, en memoria_
+- [x] API interna `/api/v1` de solo lectura sobre los repositorios de `lib/` (contexto, permisos, módulos y bitácora) _(objetivo 2026 · ver `docs/PENDIENTES.md`)_ _(PR-02)_ _hecho: app/api/v1 + lib/api/handler.ts_
 
 #### Técnico
 
@@ -61,8 +61,8 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [ ] Documentación pública interactiva _(PR-02)_
-- [ ] Alcances (scopes) granulares _(PR-02)_
-- [ ] Versionado de la API _(PR-02)_
+- [x] Alcances (scopes) granulares _(PR-02)_ _hecho: lib/api/scopes.ts_
+- [x] Versionado de la API _(PR-02)_ _hecho: prefijo /api/v1_
 - [ ] OAuth 2.0
 - [ ] Conectores listos
 - [ ] MCP de NEXUS: capa delgada sobre la misma API, sin reglas propias _(objetivo 2026 · ver `docs/PENDIENTES.md`)_ _(PR-04)_

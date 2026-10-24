@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'f2f656b7d59b51bb494e9ff10a2877f6d9edd97e616e457645f43f171ee40ea3'>;
+  StorageHashBase<'e89c55b53d36de86c2915169334dfeec7940e7cc68d368f828b417865c3951b7'>;
 export type ExecutionHash =
-  ExecutionHashBase<'f90187b8442c7d45d0f4849ce5d90a5e406cddb56d20b72d710f4f618d9a3274'>;
+  ExecutionHashBase<'7c26166ca4132100f6756c8f9cb6f304b609664b728ceae8c7f85f1ff78fb00c'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -250,6 +250,37 @@ type DefaultLiteralValue<CodecId extends string, Encoded> = CodecId extends keyo
 
 export type FieldOutputTypes = {
   readonly public: {
+    readonly ApiKey: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly createdById: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdByRole: CodecTypes['pg/text@1']['output'] | null;
+      readonly environment: CodecTypes['pg/text@1']['output'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly ipAllowlist: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+      readonly keyHash: CodecTypes['pg/text@1']['output'];
+      readonly keyPrefix: CodecTypes['pg/text@1']['output'];
+      readonly lastUsedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly name: CodecTypes['pg/text@1']['output'];
+      readonly revokedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly scopes: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly ApiRequestLog: {
+      readonly apiKeyId: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly durationMs: CodecTypes['pg/int4@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly idempotencyKey: CodecTypes['pg/text@1']['output'] | null;
+      readonly ip: CodecTypes['pg/text@1']['output'] | null;
+      readonly method: CodecTypes['pg/text@1']['output'];
+      readonly operationId: CodecTypes['pg/text@1']['output'] | null;
+      readonly path: CodecTypes['pg/text@1']['output'];
+      readonly requestId: CodecTypes['pg/text@1']['output'];
+      readonly status: CodecTypes['pg/int4@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+    };
     readonly ApuActivity: {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly chapterId: CodecTypes['pg/text@1']['output'] | null;
@@ -684,6 +715,17 @@ export type FieldOutputTypes = {
       readonly type: 'ADVANCE' | 'OBSERVATION' | 'AUTHORIZATION' | 'INCIDENT';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly weather: 'SUNNY' | 'CLOUDY' | 'RAIN_LIGHT' | 'RAIN_HEAVY';
+    };
+    readonly IdempotencyRecord: {
+      readonly apiKeyId: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly key: CodecTypes['pg/text@1']['output'];
+      readonly requestHash: CodecTypes['pg/text@1']['output'];
+      readonly responseBody: CodecTypes['pg/json@1']['output'];
+      readonly responseStatus: CodecTypes['pg/int4@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
     readonly InboxConversation: {
       readonly assigneeId: CodecTypes['pg/text@1']['output'] | null;
@@ -1313,6 +1355,37 @@ export type FieldOutputTypes = {
 };
 export type FieldInputTypes = {
   readonly public: {
+    readonly ApiKey: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly createdById: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdByRole: CodecTypes['pg/text@1']['input'] | null;
+      readonly environment: CodecTypes['pg/text@1']['input'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly ipAllowlist: ReadonlyArray<CodecTypes['pg/text@1']['input']>;
+      readonly keyHash: CodecTypes['pg/text@1']['input'];
+      readonly keyPrefix: CodecTypes['pg/text@1']['input'];
+      readonly lastUsedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly name: CodecTypes['pg/text@1']['input'];
+      readonly revokedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly scopes: ReadonlyArray<CodecTypes['pg/text@1']['input']>;
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly ApiRequestLog: {
+      readonly apiKeyId: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly durationMs: CodecTypes['pg/int4@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly idempotencyKey: CodecTypes['pg/text@1']['input'] | null;
+      readonly ip: CodecTypes['pg/text@1']['input'] | null;
+      readonly method: CodecTypes['pg/text@1']['input'];
+      readonly operationId: CodecTypes['pg/text@1']['input'] | null;
+      readonly path: CodecTypes['pg/text@1']['input'];
+      readonly requestId: CodecTypes['pg/text@1']['input'];
+      readonly status: CodecTypes['pg/int4@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+    };
     readonly ApuActivity: {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly chapterId: CodecTypes['pg/text@1']['input'] | null;
@@ -1747,6 +1820,17 @@ export type FieldInputTypes = {
       readonly type: 'ADVANCE' | 'OBSERVATION' | 'AUTHORIZATION' | 'INCIDENT';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly weather: 'SUNNY' | 'CLOUDY' | 'RAIN_LIGHT' | 'RAIN_HEAVY';
+    };
+    readonly IdempotencyRecord: {
+      readonly apiKeyId: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly key: CodecTypes['pg/text@1']['input'];
+      readonly requestHash: CodecTypes['pg/text@1']['input'];
+      readonly responseBody: CodecTypes['pg/json@1']['input'];
+      readonly responseStatus: CodecTypes['pg/int4@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
     readonly InboxConversation: {
       readonly assigneeId: CodecTypes['pg/text@1']['input'] | null;
@@ -2376,6 +2460,37 @@ export type FieldInputTypes = {
 };
 export type StorageColumnTypes = {
   readonly public: {
+    readonly ApiKey: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly createdById: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdByRole: CodecTypes['pg/text@1']['output'] | null;
+      readonly environment: CodecTypes['pg/text@1']['output'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly ipAllowlist: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+      readonly keyHash: CodecTypes['pg/text@1']['output'];
+      readonly keyPrefix: CodecTypes['pg/text@1']['output'];
+      readonly lastUsedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly name: CodecTypes['pg/text@1']['output'];
+      readonly revokedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly scopes: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly ApiRequestLog: {
+      readonly apiKeyId: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly durationMs: CodecTypes['pg/int4@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly idempotencyKey: CodecTypes['pg/text@1']['output'] | null;
+      readonly ip: CodecTypes['pg/text@1']['output'] | null;
+      readonly method: CodecTypes['pg/text@1']['output'];
+      readonly operationId: CodecTypes['pg/text@1']['output'] | null;
+      readonly path: CodecTypes['pg/text@1']['output'];
+      readonly requestId: CodecTypes['pg/text@1']['output'];
+      readonly status: CodecTypes['pg/int4@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+    };
     readonly ApuActivity: {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly chapterId: CodecTypes['pg/text@1']['output'] | null;
@@ -2810,6 +2925,17 @@ export type StorageColumnTypes = {
       readonly type: 'ADVANCE' | 'OBSERVATION' | 'AUTHORIZATION' | 'INCIDENT';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly weather: 'SUNNY' | 'CLOUDY' | 'RAIN_LIGHT' | 'RAIN_HEAVY';
+    };
+    readonly IdempotencyRecord: {
+      readonly apiKeyId: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly key: CodecTypes['pg/text@1']['output'];
+      readonly requestHash: CodecTypes['pg/text@1']['output'];
+      readonly responseBody: CodecTypes['pg/json@1']['output'];
+      readonly responseStatus: CodecTypes['pg/int4@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
     readonly InboxConversation: {
       readonly assigneeId: CodecTypes['pg/text@1']['output'] | null;
@@ -3439,6 +3565,37 @@ export type StorageColumnTypes = {
 };
 export type StorageColumnInputTypes = {
   readonly public: {
+    readonly ApiKey: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly createdById: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdByRole: CodecTypes['pg/text@1']['input'] | null;
+      readonly environment: CodecTypes['pg/text@1']['input'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly ipAllowlist: ReadonlyArray<CodecTypes['pg/text@1']['input']>;
+      readonly keyHash: CodecTypes['pg/text@1']['input'];
+      readonly keyPrefix: CodecTypes['pg/text@1']['input'];
+      readonly lastUsedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly name: CodecTypes['pg/text@1']['input'];
+      readonly revokedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly scopes: ReadonlyArray<CodecTypes['pg/text@1']['input']>;
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly ApiRequestLog: {
+      readonly apiKeyId: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly durationMs: CodecTypes['pg/int4@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly idempotencyKey: CodecTypes['pg/text@1']['input'] | null;
+      readonly ip: CodecTypes['pg/text@1']['input'] | null;
+      readonly method: CodecTypes['pg/text@1']['input'];
+      readonly operationId: CodecTypes['pg/text@1']['input'] | null;
+      readonly path: CodecTypes['pg/text@1']['input'];
+      readonly requestId: CodecTypes['pg/text@1']['input'];
+      readonly status: CodecTypes['pg/int4@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+    };
     readonly ApuActivity: {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly chapterId: CodecTypes['pg/text@1']['input'] | null;
@@ -3873,6 +4030,17 @@ export type StorageColumnInputTypes = {
       readonly type: 'ADVANCE' | 'OBSERVATION' | 'AUTHORIZATION' | 'INCIDENT';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly weather: 'SUNNY' | 'CLOUDY' | 'RAIN_LIGHT' | 'RAIN_HEAVY';
+    };
+    readonly IdempotencyRecord: {
+      readonly apiKeyId: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly key: CodecTypes['pg/text@1']['input'];
+      readonly requestHash: CodecTypes['pg/text@1']['input'];
+      readonly responseBody: CodecTypes['pg/json@1']['input'];
+      readonly responseStatus: CodecTypes['pg/int4@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
     readonly InboxConversation: {
       readonly assigneeId: CodecTypes['pg/text@1']['input'] | null;
@@ -4502,6 +4670,44 @@ export type StorageColumnInputTypes = {
 };
 
 export namespace Models {
+  export type public_ApiKey = {
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    createdById: CodecTypes['pg/text@1']['output'] | null;
+    createdByRole: CodecTypes['pg/text@1']['output'] | null;
+    environment: CodecTypes['pg/text@1']['output'];
+    expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    id: CodecTypes['pg/text@1']['output'];
+    ipAllowlist: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+    keyHash: CodecTypes['pg/text@1']['output'];
+    keyPrefix: CodecTypes['pg/text@1']['output'];
+    lastUsedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    name: CodecTypes['pg/text@1']['output'];
+    revokedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    scopes: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+    tenantId: CodecTypes['pg/text@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    idempotencyRecords: public_IdempotencyRecord[];
+    requestLogs: public_ApiRequestLog[];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'idempotencyRecords' | 'requestLogs' | 'tenant';
+  };
+  export type public_ApiRequestLog = {
+    apiKeyId: CodecTypes['pg/text@1']['output'] | null;
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    durationMs: CodecTypes['pg/int4@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    idempotencyKey: CodecTypes['pg/text@1']['output'] | null;
+    ip: CodecTypes['pg/text@1']['output'] | null;
+    method: CodecTypes['pg/text@1']['output'];
+    operationId: CodecTypes['pg/text@1']['output'] | null;
+    path: CodecTypes['pg/text@1']['output'];
+    requestId: CodecTypes['pg/text@1']['output'];
+    status: CodecTypes['pg/int4@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    apiKey: public_ApiKey | null;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'apiKey' | 'tenant';
+  };
   export type public_ApuActivity = {
     active: CodecTypes['pg/bool@1']['output'];
     chapterId: CodecTypes['pg/text@1']['output'] | null;
@@ -5051,6 +5257,20 @@ export namespace Models {
     log: public_FieldLog;
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'budgetItem' | 'log' | 'tenant';
+  };
+  export type public_IdempotencyRecord = {
+    apiKeyId: CodecTypes['pg/text@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    key: CodecTypes['pg/text@1']['output'];
+    requestHash: CodecTypes['pg/text@1']['output'];
+    responseBody: CodecTypes['pg/json@1']['output'];
+    responseStatus: CodecTypes['pg/int4@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    apiKey: public_ApiKey;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'apiKey' | 'tenant';
   };
   export type public_InboxConversation = {
     assigneeId: CodecTypes['pg/text@1']['output'] | null;
@@ -5636,6 +5856,8 @@ export namespace Models {
       | 'museum';
     websiteUrl: CodecTypes['pg/text@1']['output'] | null;
     whatsappNumber: CodecTypes['pg/text@1']['output'] | null;
+    apiKeys: public_ApiKey[];
+    apiRequestLogs: public_ApiRequestLog[];
     apuActivities: public_ApuActivity[];
     apuChapters: public_ApuChapter[];
     apuImages: public_ApuImage[];
@@ -5661,6 +5883,7 @@ export namespace Models {
     departures: public_Departure[];
     expenses: public_Expense[];
     fieldLogs: public_FieldLog[];
+    idempotencyRecords: public_IdempotencyRecord[];
     inboxConversations: public_InboxConversation[];
     invites: public_TenantInvite[];
     invoices: public_Invoice[];
@@ -5686,6 +5909,8 @@ export namespace Models {
     users: public_User[];
     weeklyCommitments: public_WeeklyCommitment[];
     readonly [RelationKeys]?:
+      | 'apiKeys'
+      | 'apiRequestLogs'
       | 'apuActivities'
       | 'apuChapters'
       | 'apuImages'
@@ -5711,6 +5936,7 @@ export namespace Models {
       | 'departures'
       | 'expenses'
       | 'fieldLogs'
+      | 'idempotencyRecords'
       | 'inboxConversations'
       | 'invites'
       | 'invoices'
@@ -5886,6 +6112,8 @@ export namespace Models {
 
 export declare const models: {
   public: {
+    ApiKey: Models.public_ApiKey;
+    ApiRequestLog: Models.public_ApiRequestLog;
     ApuActivity: Models.public_ApuActivity;
     ApuActivityComposition: Models.public_ApuActivityComposition;
     ApuChapter: Models.public_ApuChapter;
@@ -5919,6 +6147,7 @@ export declare const models: {
     Expense: Models.public_Expense;
     FieldLog: Models.public_FieldLog;
     FieldLogEntry: Models.public_FieldLogEntry;
+    IdempotencyRecord: Models.public_IdempotencyRecord;
     InboxConversation: Models.public_InboxConversation;
     InboxMessage: Models.public_InboxMessage;
     Invoice: Models.public_Invoice;
@@ -5978,6 +6207,233 @@ type ContractBase = Omit<
         readonly kind: 'postgres-schema';
         readonly entries: {
           readonly table: {
+            readonly ApiKey: {
+              columns: {
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly createdById: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly createdByRole: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly environment: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'live'>;
+                  };
+                };
+                readonly expiresAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly ipAllowlist: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly keyHash: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly keyPrefix: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly lastUsedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly name: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly revokedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly scopes: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['keyHash'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'ApiKey_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'ApiKey_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApiKey';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly ApiRequestLog: {
+              columns: {
+                readonly apiKeyId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly durationMs: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly idempotencyKey: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly ip: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly method: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly operationId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly path: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly requestId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly status: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'ApiRequestLog_apiKeyId_createdAt_idx_a8ac7019';
+                  readonly prefix: 'ApiRequestLog_apiKeyId_createdAt_idx';
+                  readonly columns: readonly ['apiKeyId', 'createdAt'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ApiRequestLog_apiKeyId_idx_7bbbe9ea';
+                  readonly prefix: 'ApiRequestLog_apiKeyId_idx';
+                  readonly columns: readonly ['apiKeyId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ApiRequestLog_tenantId_createdAt_idx_88162366';
+                  readonly prefix: 'ApiRequestLog_tenantId_createdAt_idx';
+                  readonly columns: readonly ['tenantId', 'createdAt'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ApiRequestLog_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'ApiRequestLog_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApiRequestLog';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApiRequestLog';
+                    readonly columns: readonly ['apiKeyId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApiKey';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly ApuActivity: {
               columns: {
                 readonly active: {
@@ -9304,6 +9760,104 @@ type ContractBase = Omit<
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'BudgetItem';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly IdempotencyRecord: {
+              columns: {
+                readonly apiKeyId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly expiresAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly key: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly requestHash: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly responseBody: {
+                  readonly nativeType: 'json';
+                  readonly codecId: 'pg/json@1';
+                  readonly nullable: false;
+                };
+                readonly responseStatus: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['apiKeyId', 'key'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'IdempotencyRecord_apiKeyId_idx_7bbbe9ea';
+                  readonly prefix: 'IdempotencyRecord_apiKeyId_idx';
+                  readonly columns: readonly ['apiKeyId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'IdempotencyRecord_expiresAt_idx_6b6b8c10';
+                  readonly prefix: 'IdempotencyRecord_expiresAt_idx';
+                  readonly columns: readonly ['expiresAt'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'IdempotencyRecord_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'IdempotencyRecord_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'IdempotencyRecord';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'IdempotencyRecord';
+                    readonly columns: readonly ['apiKeyId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ApiKey';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -13814,6 +14368,11 @@ type ContractBase = Omit<
   readonly target: 'postgres';
   readonly targetFamily: 'sql';
   readonly roots: {
+    readonly ApiKey: { readonly namespace: 'public' & NamespaceId; readonly model: 'ApiKey' };
+    readonly ApiRequestLog: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'ApiRequestLog';
+    };
     readonly ApuActivity: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'ApuActivity';
@@ -13915,6 +14474,10 @@ type ContractBase = Omit<
     readonly FieldLogEntry: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'FieldLogEntry';
+    };
+    readonly IdempotencyRecord: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'IdempotencyRecord';
     };
     readonly InboxConversation: {
       readonly namespace: 'public' & NamespaceId;
@@ -14043,6 +14606,243 @@ type ContractBase = Omit<
     readonly namespaces: {
       readonly public: {
         readonly models: {
+          readonly ApiKey: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly createdById: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdByRole: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly environment: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly expiresAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly ipAllowlist: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+                readonly many: true;
+              };
+              readonly keyHash: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly keyPrefix: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly lastUsedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly revokedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly scopes: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+                readonly many: true;
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly idempotencyRecords: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'IdempotencyRecord';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['apiKeyId'];
+                };
+              };
+              readonly requestLogs: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApiRequestLog';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['apiKeyId'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'ApiKey';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly createdById: { readonly column: 'createdById' };
+                readonly createdByRole: { readonly column: 'createdByRole' };
+                readonly environment: { readonly column: 'environment' };
+                readonly expiresAt: { readonly column: 'expiresAt' };
+                readonly id: { readonly column: 'id' };
+                readonly ipAllowlist: { readonly column: 'ipAllowlist' };
+                readonly keyHash: { readonly column: 'keyHash' };
+                readonly keyPrefix: { readonly column: 'keyPrefix' };
+                readonly lastUsedAt: { readonly column: 'lastUsedAt' };
+                readonly name: { readonly column: 'name' };
+                readonly revokedAt: { readonly column: 'revokedAt' };
+                readonly scopes: { readonly column: 'scopes' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly ApiRequestLog: {
+            readonly fields: {
+              readonly apiKeyId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly durationMs: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly idempotencyKey: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly ip: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly method: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly operationId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly path: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly requestId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly apiKey: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApiKey';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['apiKeyId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'ApiRequestLog';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly apiKeyId: { readonly column: 'apiKeyId' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly durationMs: { readonly column: 'durationMs' };
+                readonly id: { readonly column: 'id' };
+                readonly idempotencyKey: { readonly column: 'idempotencyKey' };
+                readonly ip: { readonly column: 'ip' };
+                readonly method: { readonly column: 'method' };
+                readonly operationId: { readonly column: 'operationId' };
+                readonly path: { readonly column: 'path' };
+                readonly requestId: { readonly column: 'requestId' };
+                readonly status: { readonly column: 'status' };
+                readonly tenantId: { readonly column: 'tenantId' };
+              };
+            };
+          };
           readonly ApuActivity: {
             readonly fields: {
               readonly active: {
@@ -17335,6 +18135,93 @@ type ContractBase = Omit<
                 readonly type: { readonly column: 'type' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
                 readonly weather: { readonly column: 'weather' };
+              };
+            };
+          };
+          readonly IdempotencyRecord: {
+            readonly fields: {
+              readonly apiKeyId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly expiresAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly key: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly requestHash: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly responseBody: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/json@1' };
+              };
+              readonly responseStatus: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly apiKey: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApiKey';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['apiKeyId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'IdempotencyRecord';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly apiKeyId: { readonly column: 'apiKeyId' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly expiresAt: { readonly column: 'expiresAt' };
+                readonly id: { readonly column: 'id' };
+                readonly key: { readonly column: 'key' };
+                readonly requestHash: { readonly column: 'requestHash' };
+                readonly responseBody: { readonly column: 'responseBody' };
+                readonly responseStatus: { readonly column: 'responseStatus' };
+                readonly tenantId: { readonly column: 'tenantId' };
               };
             };
           };
@@ -20693,6 +21580,28 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
+              readonly apiKeys: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApiKey';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly apiRequestLogs: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ApiRequestLog';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly apuActivities: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -20961,6 +21870,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'FieldLog';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly idempotencyRecords: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'IdempotencyRecord';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -22411,6 +23331,31 @@ type ContractBase = Omit<
         {
           readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
           readonly ref: {
+            readonly entry: 'ApiKey';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'ApiKey';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'ApiRequestLog';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
             readonly entry: 'ApuActivity';
             readonly field: 'id';
             readonly namespace: 'public';
@@ -22806,6 +23751,14 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'FieldLogEntry';
             readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'IdempotencyRecord';
+            readonly field: 'id';
             readonly namespace: 'public';
           };
         },

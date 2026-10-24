@@ -45,6 +45,20 @@ describe("registro de operaciones", () => {
     expect(ids("NO_EXISTE", [])).toContain("business.get_summary");
   });
 
+  test("las rutas REST son únicas por método y sus parámetros existen en la entrada", async () => {
+    const seen = new Set<string>();
+    for (const op of OPERATIONS.filter((o) => o.rest)) {
+      const key = `${op.rest!.method} ${op.rest!.path}`;
+      expect(seen.has(key), `${op.id}: ruta repetida ${key}`).toBe(false);
+      seen.add(key);
+      expect(op.rest!.path.startsWith("/"), op.id).toBe(true);
+      const props = Object.keys((describeOperation(op).inputSchema as { properties?: object }).properties ?? {});
+      for (const m of op.rest!.path.matchAll(/\{(\w+)\}/g)) expect(props, `${op.id}: {${m[1]}}`).toContain(m[1]);
+      // GET no lleva cuerpo: toda lectura expuesta por REST es de riesgo read.
+      if (op.rest!.method === "GET") expect(op.risk, op.id).toBe("read");
+    }
+  });
+
   test("getOperation encuentra por id", () => {
     expect(getOperation("customers.search")?.module).toBe("crm");
     expect(getOperation("no.existe")).toBeUndefined();
