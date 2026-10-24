@@ -284,6 +284,10 @@
       "model": "StaffRole",
       "namespace": "public"
     },
+    "StockLevel": {
+      "model": "StockLevel",
+      "namespace": "public"
+    },
     "StockMovement": {
       "model": "StockMovement",
       "namespace": "public"
@@ -334,6 +338,10 @@
     },
     "VerticalSetting": {
       "model": "VerticalSetting",
+      "namespace": "public"
+    },
+    "Warehouse": {
+      "model": "Warehouse",
       "namespace": "public"
     },
     "WebhookDelivery": {
@@ -10428,6 +10436,21 @@
                   "namespace": "public"
                 }
               },
+              "stockLevels": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "productId"
+                  ]
+                },
+                "to": {
+                  "model": "StockLevel",
+                  "namespace": "public"
+                }
+              },
               "tenant": {
                 "cardinality": "N:1",
                 "nullable": false,
@@ -10796,6 +10819,21 @@
                 },
                 "to": {
                   "model": "Product",
+                  "namespace": "public"
+                }
+              },
+              "stockLevels": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "variantId"
+                  ]
+                },
+                "to": {
+                  "model": "StockLevel",
                   "namespace": "public"
                 }
               },
@@ -13073,8 +13111,181 @@
               "table": "StaffRole"
             }
           },
+          "StockLevel": {
+            "fields": {
+              "avgCost": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "productId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "quantity": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "variantId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "variantKey": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "warehouseId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "product": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "productId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Product",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              },
+              "variant": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "variantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ProductVariant",
+                  "namespace": "public"
+                }
+              },
+              "warehouse": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "warehouseId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Warehouse",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "avgCost": {
+                  "column": "avgCost"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "productId": {
+                  "column": "productId"
+                },
+                "quantity": {
+                  "column": "quantity"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "variantId": {
+                  "column": "variantId"
+                },
+                "variantKey": {
+                  "column": "variantKey"
+                },
+                "warehouseId": {
+                  "column": "warehouseId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "StockLevel"
+            }
+          },
           "StockMovement": {
             "fields": {
+              "balanceAfter": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -13083,6 +13294,20 @@
                 }
               },
               "createdById": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "documentId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "documentType": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
@@ -13131,8 +13356,36 @@
                   "kind": "scalar"
                 }
               },
+              "reason": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "tenantId": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "unitCost": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "variantId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "warehouseId": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -13171,15 +13424,40 @@
                   "model": "Tenant",
                   "namespace": "public"
                 }
+              },
+              "warehouse": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "warehouseId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Warehouse",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
               "fields": {
+                "balanceAfter": {
+                  "column": "balanceAfter"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
                 "createdById": {
                   "column": "createdById"
+                },
+                "documentId": {
+                  "column": "documentId"
+                },
+                "documentType": {
+                  "column": "documentType"
                 },
                 "id": {
                   "column": "id"
@@ -13199,8 +13477,20 @@
                 "quantity": {
                   "column": "quantity"
                 },
+                "reason": {
+                  "column": "reason"
+                },
                 "tenantId": {
                   "column": "tenantId"
+                },
+                "unitCost": {
+                  "column": "unitCost"
+                },
+                "variantId": {
+                  "column": "variantId"
+                },
+                "warehouseId": {
+                  "column": "warehouseId"
                 }
               },
               "namespaceId": "public",
@@ -13690,6 +13980,13 @@
               "contractedModules": {
                 "many": true,
                 "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "costingMethod": {
+                "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -14729,6 +15026,21 @@
                   "namespace": "public"
                 }
               },
+              "stockLevels": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "StockLevel",
+                  "namespace": "public"
+                }
+              },
               "stockMovements": {
                 "cardinality": "1:N",
                 "on": {
@@ -14835,6 +15147,21 @@
                   "namespace": "public"
                 }
               },
+              "warehouses": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "Warehouse",
+                  "namespace": "public"
+                }
+              },
               "webhookDeliveries": {
                 "cardinality": "1:N",
                 "on": {
@@ -14903,6 +15230,9 @@
                 },
                 "contractedModules": {
                   "column": "contractedModules"
+                },
+                "costingMethod": {
+                  "column": "costingMethod"
                 },
                 "createdAt": {
                   "column": "createdAt"
@@ -16200,6 +16530,154 @@
               "table": "VerticalSetting"
             }
           },
+          "Warehouse": {
+            "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "address": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "code": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "isDefault": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "levels": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "warehouseId"
+                  ]
+                },
+                "to": {
+                  "model": "StockLevel",
+                  "namespace": "public"
+                }
+              },
+              "movements": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "warehouseId"
+                  ]
+                },
+                "to": {
+                  "model": "StockMovement",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "active": {
+                  "column": "active"
+                },
+                "address": {
+                  "column": "address"
+                },
+                "code": {
+                  "column": "code"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "isDefault": {
+                  "column": "isDefault"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Warehouse"
+            }
+          },
           "WebhookDelivery": {
             "fields": {
               "attempt": {
@@ -17135,6 +17613,11 @@
               "namespaceId": "public",
               "tableName": "StaffRole"
             },
+            "StockLevel": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "StockLevel"
+            },
             "StockMovement": {
               "kind": "rls",
               "namespaceId": "public",
@@ -17199,6 +17682,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "VerticalSetting"
+            },
+            "Warehouse": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Warehouse"
             },
             "WebhookDelivery": {
               "kind": "rls",
@@ -26785,8 +27273,201 @@
                 }
               ]
             },
+            "StockLevel": {
+              "columns": {
+                "avgCost": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "productId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "quantity": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "variantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "variantKey": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": ""
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "warehouseId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockLevel"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "warehouseId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockLevel"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Warehouse"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "productId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockLevel"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Product"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "variantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockLevel"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProductVariant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "productId"
+                  ],
+                  "name": "StockLevel_productId_idx_5858600a",
+                  "prefix": "StockLevel_productId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "StockLevel_tenantId_idx_c93ed4f1",
+                  "prefix": "StockLevel_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "productId"
+                  ],
+                  "name": "StockLevel_tenantId_productId_idx_b55a019b",
+                  "prefix": "StockLevel_tenantId_productId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "variantId"
+                  ],
+                  "name": "StockLevel_variantId_idx_e16bb45d",
+                  "prefix": "StockLevel_variantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "warehouseId"
+                  ],
+                  "name": "StockLevel_warehouseId_idx_8ff93e70",
+                  "prefix": "StockLevel_warehouseId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "warehouseId",
+                    "productId",
+                    "variantKey"
+                  ]
+                }
+              ]
+            },
             "StockMovement": {
               "columns": {
+                "balanceAfter": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "default": {
@@ -26797,6 +27478,16 @@
                   "nullable": false
                 },
                 "createdById": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "documentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "documentType": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
@@ -26831,10 +27522,30 @@
                   "nativeType": "int4",
                   "nullable": false
                 },
+                "reason": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "tenantId": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "unitCost": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": true
+                },
+                "variantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "warehouseId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 }
               },
               "foreignKeys": [
@@ -26871,9 +27582,35 @@
                     "namespaceId": "public",
                     "tableName": "Product"
                   }
+                },
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "warehouseId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockMovement"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Warehouse"
+                  }
                 }
               ],
               "indexes": [
+                {
+                  "columns": [
+                    "documentType",
+                    "documentId"
+                  ],
+                  "name": "StockMovement_documentType_documentId_idx_b8a84a62",
+                  "prefix": "StockMovement_documentType_documentId_idx",
+                  "unique": false
+                },
                 {
                   "columns": [
                     "productId"
@@ -26888,6 +27625,14 @@
                   ],
                   "name": "StockMovement_tenantId_idx_c93ed4f1",
                   "prefix": "StockMovement_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "warehouseId"
+                  ],
+                  "name": "StockMovement_warehouseId_idx_8ff93e70",
+                  "prefix": "StockMovement_warehouseId_idx",
                   "unique": false
                 }
               ],
@@ -27308,6 +28053,15 @@
                   "many": true,
                   "nativeType": "text",
                   "nullable": true
+                },
+                "costingMethod": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "AVG"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
                 },
                 "createdAt": {
                   "codecId": "pg/timestamptz-temporal@1",
@@ -28493,6 +29247,109 @@
               },
               "uniques": []
             },
+            "Warehouse": {
+              "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "address": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "code": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "isDefault": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Warehouse"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "Warehouse_tenantId_idx_c93ed4f1",
+                  "prefix": "Warehouse_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "name"
+                  ]
+                }
+              ]
+            },
             "WebhookDelivery": {
               "columns": {
                 "attempt": {
@@ -29336,10 +30193,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "e637309ac408074848369fc3aec9650f621a188d2ce07176dbbdef00453130af"
+    "storageHash": "4416dd35d6df9a2e3706cc8703bf36b34002c74bbc2bd8ffae3a4d204f694c67"
   },
   "execution": {
-    "executionHash": "b83ca57dc90acd2b1c9e12d0d1ac0acdf5a818affcd261aa8f95a4e3fed03cc1",
+    "executionHash": "38395a9c5aab6873cbfe3ee05f31c98d3158fcd36f4fb0a7b91ce76a457d4049",
     "mutations": {
       "defaults": [
         {
@@ -30704,6 +31561,32 @@
             "kind": "generator"
           },
           "ref": {
+            "entry": "StockLevel",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "StockLevel",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
             "entry": "StockMovement",
             "field": "id",
             "namespace": "public"
@@ -30961,6 +31844,32 @@
           },
           "ref": {
             "entry": "VerticalSetting",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Warehouse",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Warehouse",
             "field": "updatedAt",
             "namespace": "public"
           }

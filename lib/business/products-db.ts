@@ -1,6 +1,7 @@
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
-import { applyStock, type StockKind } from "./inventory";
+import { applyStockMovement } from "@/lib/inventory/stock-service";
+import type { StockKind } from "./inventory";
 
 /** Catálogo e inventario del negocio (servidor, aislado por tenant). */
 
@@ -99,15 +100,15 @@ export async function saveProduct(tenantId: string, id: string | null, v: Produc
   return created.id;
 }
 
-/** Registra un movimiento y actualiza el stock en la misma transacción. */
-export async function moveStock(tenantId: string, productId: string, kind: StockKind, quantity: number, note: string | null, userId: string | null, paymentId: string | null = null) {
+/**
+ * Registra un movimiento y actualiza el stock en la misma transacción, por el
+ * servicio de inventario (bodega principal, costo promedio y kardex). Devuelve
+ * el stock total del producto. Lanza `StockError` si no hay existencias.
+ */
+export async function moveStock(tenantId: string, productId: string, kind: StockKind, quantity: number, note: string | null, userId: string | null, paymentId: string | null = null, extra: { unitCost?: number | null; documentType?: string | null; documentId?: string | null } = {}) {
   return db.transaction(async (tx) => {
-    const p = await tx.orm.public.Product.where({ tenantId, id: productId }).select("stock").first();
-    if (!p) throw new Error("Producto no encontrado.");
-    const next = applyStock(p.stock, kind, quantity);
-    await tx.orm.public.StockMovement.create({ tenantId, productId, kind, quantity: kind === "ADJUST" ? next - p.stock : quantity, note, paymentId, createdById: userId });
-    await tx.orm.public.Product.where({ tenantId, id: productId }).update({ stock: next });
-    return next;
+    const result = await applyStockMovement(tx, tenantId, { productId, kind, quantity, note, userId, paymentId, ...extra });
+    return result.productStock;
   });
 }
 

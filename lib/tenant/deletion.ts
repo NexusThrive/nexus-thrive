@@ -92,6 +92,7 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "QuoteItem",
   "SatisfactionSurvey",
   "StockMovement",
+  "StockLevel",
   "Subscription",
   "SupportTicket",
   "TenantContact",
@@ -102,6 +103,7 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "TourBooking",
   "UsageCounter",
   "User",
+  "Warehouse",
   "WebhookDelivery",
   "WebhookEndpoint",
   "WeeklyCommitment",
@@ -307,6 +309,8 @@ export async function deleteTenantCompletely(
   count("PresenceRequest", await tx.orm.public.PresenceRequest.where({ tenantId }).deleteAll());
   count("PresenceScan", await tx.orm.public.PresenceScan.where({ tenantId }).deleteAll());
   count("StockMovement", await tx.orm.public.StockMovement.where({ tenantId }).deleteAll());
+  count("StockLevel", await tx.orm.public.StockLevel.where({ tenantId }).deleteAll());
+  count("Warehouse", await tx.orm.public.Warehouse.where({ tenantId }).deleteAll());
   count("Product", await tx.orm.public.Product.where({ tenantId }).deleteAll());
   count("SatisfactionSurvey", await tx.orm.public.SatisfactionSurvey.where({ tenantId }).deleteAll());
   count("Subscription", await tx.orm.public.Subscription.where({ tenantId }).deleteAll());

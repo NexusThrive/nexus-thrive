@@ -329,6 +329,8 @@ model Tenant {
   /// Límites acordados en un código a medida (null = los del plan).
   maxUsers          Int?
   maxCustomers      Int?
+  /// Método de costeo del inventario. Hoy solo AVG (promedio ponderado); FIFO llegará después.
+  costingMethod     String   @default("AVG")
   /// Operations Center: etapa comercial y responsable de cuenta (StaffMember.id).
   accountStage     AccountStage @default(ACTIVE)
   accountManagerId String?
@@ -391,6 +393,8 @@ model Tenant {
   productBarcodes    ProductBarcode[]
   priceLists         PriceList[]
   priceListItems     PriceListItem[]
+  warehouses         Warehouse[]
+  stockLevels        StockLevel[]
   supportTickets     SupportTicket[]
   charges            Charge[]
   benefitRedemptions BenefitRedemption[]
@@ -1981,6 +1985,7 @@ model Product {
   variants        ProductVariant[]
   barcodes        ProductBarcode[]
   priceItems      PriceListItem[]
+  stockLevels     StockLevel[]
 
   @@index([tenantId, kind])
   @@rls
@@ -2004,6 +2009,7 @@ model ProductVariant {
   updatedAt  temporal.updatedAt()
   barcodes   ProductBarcode[]
   priceItems PriceListItem[]
+  stockLevels StockLevel[]
 
   @@index([tenantId, productId])
   @@index([tenantId, sku], unique: true, where: "\"sku\" IS NOT NULL", name: "ProductVariant_tenantId_sku_key")
@@ -2080,8 +2086,22 @@ model StockMovement {
   paymentId   String?
   createdById String?
   createdAt   DateTime @default(now())
+  /// Bodega del movimiento y variante (null = producto sin variante).
+  warehouseId String?
+  warehouse   Warehouse? @relation(fields: [warehouseId], references: [id], onDelete: SetNull)
+  variantId   String?
+  /// Costo unitario al momento del movimiento (entrada: lo que costó; salida: costo promedio vigente).
+  unitCost    Decimal?
+  /// Saldo de la bodega justo después del movimiento (kardex).
+  balanceAfter Int?
+  /// Documento de origen: PURCHASE | SALE | TRANSFER | COUNT | ADJUSTMENT…
+  documentType String?
+  documentId   String?
+  reason       String?
 
   @@index([productId])
+  @@index([warehouseId])
+  @@index([documentType, documentId])
 
   @@index([tenantId])
   @@rls
@@ -2606,5 +2626,49 @@ model PartyRole {
 
   @@unique([partyId, role])
   @@index([tenantId, role])
+  @@rls
+}
+
+/// Bodega o punto de almacenamiento. Una es la predeterminada («Principal»).
+model Warehouse {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  code      String?
+  address   String?
+  isDefault Boolean  @default(false)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+  levels    StockLevel[]
+  movements StockMovement[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@rls
+}
+
+/// Existencias de un producto (o variante) en una bodega, con su costo promedio.
+/// `Product.stock` es la suma de las bodegas (se mantiene para las pantallas actuales).
+model StockLevel {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId   String?
+  variant     ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  quantity    Int      @default(0)
+  /// Costo promedio ponderado por unidad.
+  avgCost     Decimal  @default(0)
+  /// variantId o "" (sin variante): permite una restricción única normal, sin índices parciales.
+  variantKey  String   @default("")
+  updatedAt   temporal.updatedAt()
+
+  @@unique([warehouseId, productId, variantKey])
+  @@index([tenantId, productId])
   @@rls
 }

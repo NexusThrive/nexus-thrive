@@ -84,4 +84,25 @@ export const inventoryOperations: OperationDefinition[] = [
       return hit;
     },
   }),
+  defineOperation({
+    id: "inventory.kardex",
+    rest: { method: "GET", path: "/products/{productId}/kardex" },
+    title: "Kardex de un producto",
+    description: "Movimientos de inventario de un producto, del más reciente al más antiguo, con costo unitario, valor y saldo después de cada movimiento.",
+    module: "inventory",
+    permission: "money.handle",
+    risk: "read",
+    input: z.object({ productId: z.string().min(1).max(80), warehouseId: z.string().max(80).optional(), limit: z.number().int().min(1).max(200).default(50) }),
+    output: z.object({
+      lines: z.array(z.object({ id: z.string(), date: z.string(), kind: z.string(), quantity: z.number(), unitCost: z.number().nullable(), value: z.number().nullable(), balance: z.number().nullable(), warehouseId: z.string().nullable(), note: z.string().nullable(), documentType: z.string().nullable(), documentId: z.string().nullable() })),
+      byWarehouse: z.array(z.object({ warehouse: z.string(), quantity: z.number(), avgCost: z.number(), value: z.number() })),
+    }),
+    handler: async (ctx, input) => {
+      const { getProduct } = await import("@/lib/business/products-db");
+      if (!(await getProduct(ctx.tenantId, input.productId))) throw new OperationError("invalid_input", "El producto no existe en este negocio.", 404);
+      const { kardex, stockByWarehouse } = await import("@/lib/inventory/kardex");
+      const [lines, levels] = await Promise.all([kardex(ctx.tenantId, input.productId, { warehouseId: input.warehouseId, limit: input.limit }), stockByWarehouse(ctx.tenantId, input.productId)]);
+      return { lines, byWarehouse: levels.map((l) => ({ warehouse: l.warehouse, quantity: l.quantity, avgCost: l.avgCost, value: l.value })) };
+    },
+  }),
 ];
