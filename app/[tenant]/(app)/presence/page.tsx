@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { PageHeader } from "@/components/molecules/page-header";
 import { loadPresence } from "@/lib/presence/load";
 import PresencePanel from "../_components/presence-panel";
+import PresenceMaturity from "../_components/presence-maturity";
 import PresencePillars from "../_components/presence-pillars";
 import { presenceV2 } from "@/lib/presence/pillars-db";
 import { requirePageContext } from "@/lib/tenant/context";
@@ -44,6 +45,7 @@ export default async function PresencePage({
         }
       />
       <PresencePillars pillars={v2.pillars} phase={v2.phase} trend={v2.trend} />
+      {v2.maturity ? <PresenceMaturity maturity={v2.maturity} slug={tenantSlug} /> : null}
       <PresencePanel
         tenantSlug={tenantSlug}
         presence={presence}

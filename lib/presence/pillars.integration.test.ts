@@ -8,7 +8,9 @@ import { OPERATIONS } from "@/lib/operations/registry";
 import { confirmIntent, createIntent } from "@/lib/payments/intents-db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { todayCO } from "@/lib/tax/tax";
-import { presenceV2, refreshPresence } from "./pillars-db";
+import { maturityInput, presenceV2, refreshPresence } from "./pillars-db";
+
+const suffixM = Date.now().toString(36);
 
 /** Presencia v2 contra Postgres real y DOS negocios: pilares con datos reales, foto diaria, tendencia y evento. */
 const TEST_URL = process.env.TEST_DATABASE_URL;
@@ -78,5 +80,16 @@ describe.skipIf(!TEST_URL)("presencia v2 (integración)", () => {
     const out = (await runOperation(OPERATIONS, { tenantId: a, role: "OWNER", activeModules: ["inventory", "payments"], origin: "api", actorId: "k" } as never, "presence.get", {})) as { score: number; phase: string; pillars: { key: string }[] };
     expect(out.pillars.map((p) => p.key)).toEqual(["site", "onlineSales", "google", "reputation", "attribution", "basics"]);
     expect(out.score).toBeGreaterThan(0);
+  });
+  test("madurez NEXUS: un negocio nuevo no tiene uso, sus conteos son de SU negocio y la fase B no se abre", async () => {
+    const t = await createAdminDb().createTenant({ name: "Madurez", slug: `mad-${suffixM}`, vertical: "retail", modules: ["inventory"], tenantType: "COMPANY", ownerEmail: `mad-${suffixM}@ejemplo.com` });
+    const id = String(t.id);
+    try {
+      await db.orm.public.Product.create({ tenantId: id, name: "Uno", price: "1000.00" });
+      expect(await maturityInput(id)).toMatchObject({ invoices30d: 0, productsActive: 1, customers: 0, expenses30d: 0, cashSessions30d: 0 });
+      expect((await presenceV2(id)).maturity).toBeNull();
+    } finally {
+      await deleteTenantCompletely(id);
+    }
   });
 });
