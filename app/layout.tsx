@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { clerkLocalization, clerkProviderAppearance } from "@/lib/auth/clerk-appearance";
 import { fontVariables } from "@/lib/fonts";
 import { prefsInitScript, themeInitScript } from "@/lib/init-scripts";
 import { MotionProvider } from "@/components/providers/motion-provider";
 import { PreferencesProvider } from "@/components/providers/preferences";
+import { PwaProvider } from "@/components/providers/pwa";
 import { SplashIntro } from "@/components/organisms/splash-intro";
 import "./globals.css";
 
@@ -12,6 +13,16 @@ export const metadata: Metadata = {
   title: "NEXUS THRIVE",
   description: "NEXUS THRIVE — plataforma de gestión de negocios.",
   applicationName: "NEXUS THRIVE",
+  appleWebApp: { capable: true, title: "NEXUS", statusBarStyle: "black-translucent" },
+  icons: { apple: "/icons/apple-touch-icon.png" },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F7F6F3" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -37,7 +48,7 @@ export default function RootLayout({
           <PreferencesProvider>
             <MotionProvider />
             <SplashIntro />
-            {children}
+            <PwaProvider>{children}</PwaProvider>
           </PreferencesProvider>
         </body>
       </html>
