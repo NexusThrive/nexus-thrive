@@ -28,7 +28,7 @@ describe.skipIf(!TEST_URL)("MCP (integración)", () => {
     log: () => undefined,
   };
   const rpc = async (secret: string, method: string, params?: unknown) =>
-    (await (await handleMcp(new Request("http://localhost/api/mcp", { method: "POST", headers: { authorization: `Bearer ${secret}` }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) }), deps)).json()) as Record<string, any>;
+    (await (await handleMcp(new Request("http://localhost/api/mcp", { method: "POST", headers: { authorization: `Bearer ${secret}` }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) }), deps)).json()) as { result: { tools: { name: string }[]; isError: boolean; structuredContent: unknown } };
 
   beforeAll(async () => {
     if (normalize(process.env.DATABASE_URL) !== normalize(TEST_URL)) throw new Error("DATABASE_URL debe ser igual a TEST_DATABASE_URL.");

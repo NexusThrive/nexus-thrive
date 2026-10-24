@@ -16,7 +16,7 @@ const op = (id: string, risk: "read" | "write", extra: Partial<Parameters<typeof
     risk,
     input: z.object({ q: z.string().min(2).optional() }),
     output: z.object({ echo: z.string() }),
-    handler: async (ctx, input) => ({ echo: `${ctx.tenantId}:${input.q ?? ""}` }),
+    handler: async (ctx, input) => ({ echo: `${ctx.tenantId}:${(input as { q?: string }).q ?? ""}` }),
     ...extra,
   });
 const OPS = [
@@ -31,9 +31,10 @@ let modules: string[];
 const logs: ApiLogEntry[] = [];
 const deps: ApiDeps = { operations: OPS, authenticate: async () => auth, loadTenant: async () => ({ active: true, modules }), log: (e) => void logs.push(e) };
 
+type Rpc = { result: { protocolVersion: string; capabilities: unknown; tools: { name: string; inputSchema: { type: string }; annotations: object }[]; isError: boolean; structuredContent: unknown; content: { text: string }[] }; error: { code: number } };
 const rpc = (body: unknown, init: RequestInit = {}) =>
   handleMcp(new Request("http://localhost/api/mcp", { method: "POST", headers: { authorization: "Bearer nx_live_x" }, body: typeof body === "string" ? body : JSON.stringify(body), ...init }), deps);
-const call = async (method: string, params?: unknown, id: number | string = 1) => (await (await rpc({ jsonrpc: "2.0", id, method, params })).json()) as Record<string, any>;
+const call = async (method: string, params?: unknown, id: number | string = 1) => (await (await rpc({ jsonrpc: "2.0", id, method, params })).json()) as Rpc;
 
 beforeEach(() => {
   resetRateLimits();
