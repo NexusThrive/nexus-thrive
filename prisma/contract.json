@@ -4,6 +4,18 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
+    "Account": {
+      "model": "Account",
+      "namespace": "public"
+    },
+    "AccountingPeriod": {
+      "model": "AccountingPeriod",
+      "namespace": "public"
+    },
+    "AccountingRule": {
+      "model": "AccountingRule",
+      "namespace": "public"
+    },
     "ApiKey": {
       "model": "ApiKey",
       "namespace": "public"
@@ -112,6 +124,14 @@
       "model": "ChargeEvidence",
       "namespace": "public"
     },
+    "ContactLead": {
+      "model": "ContactLead",
+      "namespace": "public"
+    },
+    "CostCenter": {
+      "model": "CostCenter",
+      "namespace": "public"
+    },
     "Customer": {
       "model": "Customer",
       "namespace": "public"
@@ -148,6 +168,14 @@
       "model": "FieldLogEntry",
       "namespace": "public"
     },
+    "FiscalDocument": {
+      "model": "FiscalDocument",
+      "namespace": "public"
+    },
+    "GoogleListing": {
+      "model": "GoogleListing",
+      "namespace": "public"
+    },
     "IdempotencyRecord": {
       "model": "IdempotencyRecord",
       "namespace": "public"
@@ -166,6 +194,14 @@
     },
     "InvoiceLine": {
       "model": "InvoiceLine",
+      "namespace": "public"
+    },
+    "JournalEntry": {
+      "model": "JournalEntry",
+      "namespace": "public"
+    },
+    "JournalLine": {
+      "model": "JournalLine",
       "namespace": "public"
     },
     "Lead": {
@@ -208,8 +244,20 @@
       "model": "Payment",
       "namespace": "public"
     },
+    "PaymentIntent": {
+      "model": "PaymentIntent",
+      "namespace": "public"
+    },
+    "PaymentRefund": {
+      "model": "PaymentRefund",
+      "namespace": "public"
+    },
     "PlanSetting": {
       "model": "PlanSetting",
+      "namespace": "public"
+    },
+    "PosTerminal": {
+      "model": "PosTerminal",
       "namespace": "public"
     },
     "PresenceRequest": {
@@ -218,6 +266,10 @@
     },
     "PresenceScan": {
       "model": "PresenceScan",
+      "namespace": "public"
+    },
+    "PresenceSnapshot": {
+      "model": "PresenceSnapshot",
       "namespace": "public"
     },
     "PriceList": {
@@ -280,8 +332,20 @@
       "model": "QuoteItem",
       "namespace": "public"
     },
+    "ReconciliationRun": {
+      "model": "ReconciliationRun",
+      "namespace": "public"
+    },
+    "Review": {
+      "model": "Review",
+      "namespace": "public"
+    },
     "SatisfactionSurvey": {
       "model": "SatisfactionSurvey",
+      "namespace": "public"
+    },
+    "SiteConfig": {
+      "model": "SiteConfig",
       "namespace": "public"
     },
     "StaffInvite": {
@@ -318,6 +382,14 @@
     },
     "StockTransferLine": {
       "model": "StockTransferLine",
+      "namespace": "public"
+    },
+    "StoreOrder": {
+      "model": "StoreOrder",
+      "namespace": "public"
+    },
+    "StoreOrderLine": {
+      "model": "StoreOrderLine",
       "namespace": "public"
     },
     "Subscription": {
@@ -366,6 +438,10 @@
     },
     "TourBooking": {
       "model": "TourBooking",
+      "namespace": "public"
+    },
+    "TrackedLink": {
+      "model": "TrackedLink",
       "namespace": "public"
     },
     "UsageCounter": {
@@ -1163,6 +1239,350 @@
           }
         },
         "models": {
+          "Account": {
+            "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "code": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "nature": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "postable": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "type": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "active": {
+                  "column": "active"
+                },
+                "code": {
+                  "column": "code"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "nature": {
+                  "column": "nature"
+                },
+                "postable": {
+                  "column": "postable"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "type": {
+                  "column": "type"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Account"
+            }
+          },
+          "AccountingPeriod": {
+            "fields": {
+              "closedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "closedById": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "month": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "note": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "reopenedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "year": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "closedAt": {
+                  "column": "closedAt"
+                },
+                "closedById": {
+                  "column": "closedById"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "month": {
+                  "column": "month"
+                },
+                "note": {
+                  "column": "note"
+                },
+                "reopenedAt": {
+                  "column": "reopenedAt"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "year": {
+                  "column": "year"
+                }
+              },
+              "namespaceId": "public",
+              "table": "AccountingPeriod"
+            }
+          },
+          "AccountingRule": {
+            "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "event": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "lines": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "active": {
+                  "column": "active"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "event": {
+                  "column": "event"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "lines": {
+                  "column": "lines"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "AccountingRule"
+            }
+          },
           "ApiKey": {
             "fields": {
               "createdAt": {
@@ -5182,6 +5602,13 @@
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
+              },
+              "terminalId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
               }
             },
             "relations": {
@@ -5270,6 +5697,9 @@
                 },
                 "tenantId": {
                   "column": "tenantId"
+                },
+                "terminalId": {
+                  "column": "terminalId"
                 }
               },
               "namespaceId": "public",
@@ -5667,6 +6097,212 @@
               },
               "namespaceId": "public",
               "table": "ChargeEvidence"
+            }
+          },
+          "ContactLead": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "email": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "message": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "origin": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
+              "phone": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "email": {
+                  "column": "email"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "message": {
+                  "column": "message"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "origin": {
+                  "column": "origin"
+                },
+                "phone": {
+                  "column": "phone"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "ContactLead"
+            }
+          },
+          "CostCenter": {
+            "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "code": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "kind": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "active": {
+                  "column": "active"
+                },
+                "code": {
+                  "column": "code"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "kind": {
+                  "column": "kind"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "CostCenter"
             }
           },
           "Customer": {
@@ -7052,6 +7688,342 @@
               "table": "FieldLogEntry"
             }
           },
+          "FiscalDocument": {
+            "fields": {
+              "attempts": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "cufe": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "invoiceId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "kind": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "lastAttemptAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "payload": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
+              "provider": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "providerRef": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "rejectReason": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "supplierInvoiceId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "attempts": {
+                  "column": "attempts"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "cufe": {
+                  "column": "cufe"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "invoiceId": {
+                  "column": "invoiceId"
+                },
+                "kind": {
+                  "column": "kind"
+                },
+                "lastAttemptAt": {
+                  "column": "lastAttemptAt"
+                },
+                "payload": {
+                  "column": "payload"
+                },
+                "provider": {
+                  "column": "provider"
+                },
+                "providerRef": {
+                  "column": "providerRef"
+                },
+                "rejectReason": {
+                  "column": "rejectReason"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "supplierInvoiceId": {
+                  "column": "supplierInvoiceId"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "FiscalDocument"
+            }
+          },
+          "GoogleListing": {
+            "fields": {
+              "address": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "lastError": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "phone": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "placeId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "rating": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "ratingCount": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "syncedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "website": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "address": {
+                  "column": "address"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "lastError": {
+                  "column": "lastError"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "phone": {
+                  "column": "phone"
+                },
+                "placeId": {
+                  "column": "placeId"
+                },
+                "rating": {
+                  "column": "rating"
+                },
+                "ratingCount": {
+                  "column": "ratingCount"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "syncedAt": {
+                  "column": "syncedAt"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "website": {
+                  "column": "website"
+                }
+              },
+              "namespaceId": "public",
+              "table": "GoogleListing"
+            }
+          },
           "IdempotencyRecord": {
             "fields": {
               "apiKeyId": {
@@ -7685,6 +8657,13 @@
                   "kind": "scalar"
                 }
               },
+              "tipTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
               "total": {
                 "nullable": false,
                 "type": {
@@ -7828,6 +8807,9 @@
                 "tenantId": {
                   "column": "tenantId"
                 },
+                "tipTotal": {
+                  "column": "tipTotal"
+                },
                 "total": {
                   "column": "total"
                 },
@@ -7964,6 +8946,303 @@
               },
               "namespaceId": "public",
               "table": "InvoiceLine"
+            }
+          },
+          "JournalEntry": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdById": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "date": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "description": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "event": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "hash": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "number": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "reversalOfId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sourceId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sourceType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "lines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "entryId"
+                  ]
+                },
+                "to": {
+                  "model": "JournalLine",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "createdById": {
+                  "column": "createdById"
+                },
+                "date": {
+                  "column": "date"
+                },
+                "description": {
+                  "column": "description"
+                },
+                "event": {
+                  "column": "event"
+                },
+                "hash": {
+                  "column": "hash"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "number": {
+                  "column": "number"
+                },
+                "reversalOfId": {
+                  "column": "reversalOfId"
+                },
+                "sourceId": {
+                  "column": "sourceId"
+                },
+                "sourceType": {
+                  "column": "sourceType"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "JournalEntry"
+            }
+          },
+          "JournalLine": {
+            "fields": {
+              "accountCode": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "costCenterId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "credit": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "debit": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "entryId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "label": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "partyId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "entry": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "entryId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "JournalEntry",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "accountCode": {
+                  "column": "accountCode"
+                },
+                "costCenterId": {
+                  "column": "costCenterId"
+                },
+                "credit": {
+                  "column": "credit"
+                },
+                "debit": {
+                  "column": "debit"
+                },
+                "entryId": {
+                  "column": "entryId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "label": {
+                  "column": "label"
+                },
+                "partyId": {
+                  "column": "partyId"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "JournalLine"
             }
           },
           "Lead": {
@@ -9710,6 +10989,353 @@
               "table": "Payment"
             }
           },
+          "PaymentIntent": {
+            "fields": {
+              "amount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "channel": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "confirmedBy": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdById": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "customerId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "description": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "evidence": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "expiresAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "invoiceId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "paidAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "paymentId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "provider": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "providerRefId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "reference": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "refundedTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "refunds": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "intentId"
+                  ]
+                },
+                "to": {
+                  "model": "PaymentRefund",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "amount": {
+                  "column": "amount"
+                },
+                "channel": {
+                  "column": "channel"
+                },
+                "confirmedBy": {
+                  "column": "confirmedBy"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "createdById": {
+                  "column": "createdById"
+                },
+                "customerId": {
+                  "column": "customerId"
+                },
+                "description": {
+                  "column": "description"
+                },
+                "evidence": {
+                  "column": "evidence"
+                },
+                "expiresAt": {
+                  "column": "expiresAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "invoiceId": {
+                  "column": "invoiceId"
+                },
+                "paidAt": {
+                  "column": "paidAt"
+                },
+                "paymentId": {
+                  "column": "paymentId"
+                },
+                "provider": {
+                  "column": "provider"
+                },
+                "providerRefId": {
+                  "column": "providerRefId"
+                },
+                "reference": {
+                  "column": "reference"
+                },
+                "refundedTotal": {
+                  "column": "refundedTotal"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "PaymentIntent"
+            }
+          },
+          "PaymentRefund": {
+            "fields": {
+              "amount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdById": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "intentId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "reason": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "intent": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "intentId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "PaymentIntent",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "amount": {
+                  "column": "amount"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "createdById": {
+                  "column": "createdById"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "intentId": {
+                  "column": "intentId"
+                },
+                "reason": {
+                  "column": "reason"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "PaymentRefund"
+            }
+          },
           "PlanSetting": {
             "fields": {
               "active": {
@@ -9860,6 +11486,104 @@
               },
               "namespaceId": "public",
               "table": "PlanSetting"
+            }
+          },
+          "PosTerminal": {
+            "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "boxId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "warehouseId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "active": {
+                  "column": "active"
+                },
+                "boxId": {
+                  "column": "boxId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "warehouseId": {
+                  "column": "warehouseId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "PosTerminal"
             }
           },
           "PresenceRequest": {
@@ -10207,6 +11931,114 @@
               },
               "namespaceId": "public",
               "table": "PresenceScan"
+            }
+          },
+          "PresenceSnapshot": {
+            "fields": {
+              "coverage": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "day": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "phase": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "pillars": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
+              "score": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "coverage": {
+                  "column": "coverage"
+                },
+                "day": {
+                  "column": "day"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "phase": {
+                  "column": "phase"
+                },
+                "pillars": {
+                  "column": "pillars"
+                },
+                "score": {
+                  "column": "score"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "PresenceSnapshot"
             }
           },
           "PriceList": {
@@ -13301,6 +15133,262 @@
               "table": "QuoteItem"
             }
           },
+          "ReconciliationRun": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdById": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "day": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "differences": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
+              "expected": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "matched": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "provider": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "reported": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "createdById": {
+                  "column": "createdById"
+                },
+                "day": {
+                  "column": "day"
+                },
+                "differences": {
+                  "column": "differences"
+                },
+                "expected": {
+                  "column": "expected"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "matched": {
+                  "column": "matched"
+                },
+                "provider": {
+                  "column": "provider"
+                },
+                "reported": {
+                  "column": "reported"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "ReconciliationRun"
+            }
+          },
+          "Review": {
+            "fields": {
+              "comment": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "contact": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "customerName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "handledAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "rating": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "source": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "comment": {
+                  "column": "comment"
+                },
+                "contact": {
+                  "column": "contact"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "customerName": {
+                  "column": "customerName"
+                },
+                "handledAt": {
+                  "column": "handledAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "rating": {
+                  "column": "rating"
+                },
+                "source": {
+                  "column": "source"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Review"
+            }
+          },
           "SatisfactionSurvey": {
             "fields": {
               "answeredAt": {
@@ -13437,6 +15525,184 @@
               },
               "namespaceId": "public",
               "table": "SatisfactionSurvey"
+            }
+          },
+          "SiteConfig": {
+            "fields": {
+              "about": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "accent": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "description": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "enabled": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "heroSubtitle": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "heroTitle": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "showCatalog": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "showMap": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "siteSlug": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "template": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "title": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "about": {
+                  "column": "about"
+                },
+                "accent": {
+                  "column": "accent"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "description": {
+                  "column": "description"
+                },
+                "enabled": {
+                  "column": "enabled"
+                },
+                "heroSubtitle": {
+                  "column": "heroSubtitle"
+                },
+                "heroTitle": {
+                  "column": "heroTitle"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "showCatalog": {
+                  "column": "showCatalog"
+                },
+                "showMap": {
+                  "column": "showMap"
+                },
+                "siteSlug": {
+                  "column": "siteSlug"
+                },
+                "template": {
+                  "column": "template"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "title": {
+                  "column": "title"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "SiteConfig"
             }
           },
           "StaffInvite": {
@@ -14778,6 +17044,353 @@
               "table": "StockTransferLine"
             }
           },
+          "StoreOrder": {
+            "fields": {
+              "abandonedNotifiedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "address": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "city": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "customerName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "documentId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "email": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "intentId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "notes": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "number": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "origin": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
+              "paidAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "phone": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "review": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "total": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "lines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "orderId"
+                  ]
+                },
+                "to": {
+                  "model": "StoreOrderLine",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "abandonedNotifiedAt": {
+                  "column": "abandonedNotifiedAt"
+                },
+                "address": {
+                  "column": "address"
+                },
+                "city": {
+                  "column": "city"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "customerName": {
+                  "column": "customerName"
+                },
+                "documentId": {
+                  "column": "documentId"
+                },
+                "email": {
+                  "column": "email"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "intentId": {
+                  "column": "intentId"
+                },
+                "notes": {
+                  "column": "notes"
+                },
+                "number": {
+                  "column": "number"
+                },
+                "origin": {
+                  "column": "origin"
+                },
+                "paidAt": {
+                  "column": "paidAt"
+                },
+                "phone": {
+                  "column": "phone"
+                },
+                "review": {
+                  "column": "review"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "total": {
+                  "column": "total"
+                }
+              },
+              "namespaceId": "public",
+              "table": "StoreOrder"
+            }
+          },
+          "StoreOrderLine": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "orderId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "productId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "quantity": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "taxRatePct": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "unitPrice": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "order": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "orderId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StoreOrder",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "orderId": {
+                  "column": "orderId"
+                },
+                "productId": {
+                  "column": "productId"
+                },
+                "quantity": {
+                  "column": "quantity"
+                },
+                "taxRatePct": {
+                  "column": "taxRatePct"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "unitPrice": {
+                  "column": "unitPrice"
+                }
+              },
+              "namespaceId": "public",
+              "table": "StoreOrderLine"
+            }
+          },
           "Subscription": {
             "fields": {
               "billingCycle": {
@@ -15701,6 +18314,13 @@
                   "plane": "domain"
                 }
               },
+              "accountingEnabled": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "active": {
                 "nullable": false,
                 "type": {
@@ -15783,6 +18403,13 @@
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "einvoiceEnabled": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
                   "kind": "scalar"
                 }
               },
@@ -15989,6 +18616,51 @@
               }
             },
             "relations": {
+              "accountingPeriods": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "AccountingPeriod",
+                  "namespace": "public"
+                }
+              },
+              "accountingRules": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "AccountingRule",
+                  "namespace": "public"
+                }
+              },
+              "accounts": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "Account",
+                  "namespace": "public"
+                }
+              },
               "apiKeys": {
                 "cardinality": "1:N",
                 "on": {
@@ -16304,6 +18976,21 @@
                   "namespace": "public"
                 }
               },
+              "contactLeads": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "ContactLead",
+                  "namespace": "public"
+                }
+              },
               "contacts": {
                 "cardinality": "1:N",
                 "on": {
@@ -16316,6 +19003,21 @@
                 },
                 "to": {
                   "model": "TenantContact",
+                  "namespace": "public"
+                }
+              },
+              "costCenters": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "CostCenter",
                   "namespace": "public"
                 }
               },
@@ -16409,6 +19111,36 @@
                   "namespace": "public"
                 }
               },
+              "fiscalDocuments": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "FiscalDocument",
+                  "namespace": "public"
+                }
+              },
+              "googleListings": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "GoogleListing",
+                  "namespace": "public"
+                }
+              },
               "idempotencyRecords": {
                 "cardinality": "1:N",
                 "on": {
@@ -16466,6 +19198,36 @@
                 },
                 "to": {
                   "model": "Invoice",
+                  "namespace": "public"
+                }
+              },
+              "journalEntries": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "JournalEntry",
+                  "namespace": "public"
+                }
+              },
+              "journalLines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "JournalLine",
                   "namespace": "public"
                 }
               },
@@ -16589,6 +19351,36 @@
                   "namespace": "public"
                 }
               },
+              "paymentIntents": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "PaymentIntent",
+                  "namespace": "public"
+                }
+              },
+              "paymentRefunds": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "PaymentRefund",
+                  "namespace": "public"
+                }
+              },
               "payments": {
                 "cardinality": "1:N",
                 "on": {
@@ -16601,6 +19393,21 @@
                 },
                 "to": {
                   "model": "Payment",
+                  "namespace": "public"
+                }
+              },
+              "posTerminals": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "PosTerminal",
                   "namespace": "public"
                 }
               },
@@ -16631,6 +19438,21 @@
                 },
                 "to": {
                   "model": "PresenceScan",
+                  "namespace": "public"
+                }
+              },
+              "presenceSnapshots": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "PresenceSnapshot",
                   "namespace": "public"
                 }
               },
@@ -16829,6 +19651,36 @@
                   "namespace": "public"
                 }
               },
+              "reconciliationRuns": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "ReconciliationRun",
+                  "namespace": "public"
+                }
+              },
+              "reviews": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "Review",
+                  "namespace": "public"
+                }
+              },
               "satisfactionSurveys": {
                 "cardinality": "1:N",
                 "on": {
@@ -16841,6 +19693,21 @@
                 },
                 "to": {
                   "model": "SatisfactionSurvey",
+                  "namespace": "public"
+                }
+              },
+              "siteConfigs": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "SiteConfig",
                   "namespace": "public"
                 }
               },
@@ -16931,6 +19798,36 @@
                 },
                 "to": {
                   "model": "StockTransfer",
+                  "namespace": "public"
+                }
+              },
+              "storeOrderLines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "StoreOrderLine",
+                  "namespace": "public"
+                }
+              },
+              "storeOrders": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "StoreOrder",
                   "namespace": "public"
                 }
               },
@@ -17040,6 +19937,21 @@
                   "namespace": "public"
                 }
               },
+              "trackedLinks": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "TrackedLink",
+                  "namespace": "public"
+                }
+              },
               "usageCounters": {
                 "cardinality": "1:N",
                 "on": {
@@ -17139,6 +20051,9 @@
                 "accountStage": {
                   "column": "accountStage"
                 },
+                "accountingEnabled": {
+                  "column": "accountingEnabled"
+                },
                 "active": {
                   "column": "active"
                 },
@@ -17171,6 +20086,9 @@
                 },
                 "customerTierId": {
                   "column": "customerTierId"
+                },
+                "einvoiceEnabled": {
+                  "column": "einvoiceEnabled"
                 },
                 "googleBusinessUrl": {
                   "column": "googleBusinessUrl"
@@ -18077,6 +20995,154 @@
               },
               "namespaceId": "public",
               "table": "TourBooking"
+            }
+          },
+          "TrackedLink": {
+            "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "clicks": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "code": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "path": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "spend": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "utmCampaign": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "utmMedium": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "utmSource": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "active": {
+                  "column": "active"
+                },
+                "clicks": {
+                  "column": "clicks"
+                },
+                "code": {
+                  "column": "code"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "path": {
+                  "column": "path"
+                },
+                "spend": {
+                  "column": "spend"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "utmCampaign": {
+                  "column": "utmCampaign"
+                },
+                "utmMedium": {
+                  "column": "utmMedium"
+                },
+                "utmSource": {
+                  "column": "utmSource"
+                }
+              },
+              "namespaceId": "public",
+              "table": "TrackedLink"
             }
           },
           "UsageCounter": {
@@ -19252,6 +22318,21 @@
       "public": {
         "entries": {
           "rls": {
+            "Account": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Account"
+            },
+            "AccountingPeriod": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "AccountingPeriod"
+            },
+            "AccountingRule": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "AccountingRule"
+            },
             "ApiKey": {
               "kind": "rls",
               "namespaceId": "public",
@@ -19387,6 +22468,16 @@
               "namespaceId": "public",
               "tableName": "ChargeEvidence"
             },
+            "ContactLead": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ContactLead"
+            },
+            "CostCenter": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "CostCenter"
+            },
             "Customer": {
               "kind": "rls",
               "namespaceId": "public",
@@ -19432,6 +22523,16 @@
               "namespaceId": "public",
               "tableName": "FieldLogEntry"
             },
+            "FiscalDocument": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "FiscalDocument"
+            },
+            "GoogleListing": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "GoogleListing"
+            },
             "IdempotencyRecord": {
               "kind": "rls",
               "namespaceId": "public",
@@ -19456,6 +22557,16 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "InvoiceLine"
+            },
+            "JournalEntry": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "JournalEntry"
+            },
+            "JournalLine": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "JournalLine"
             },
             "Lead": {
               "kind": "rls",
@@ -19507,10 +22618,25 @@
               "namespaceId": "public",
               "tableName": "Payment"
             },
+            "PaymentIntent": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "PaymentIntent"
+            },
+            "PaymentRefund": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "PaymentRefund"
+            },
             "PlanSetting": {
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "PlanSetting"
+            },
+            "PosTerminal": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "PosTerminal"
             },
             "PresenceRequest": {
               "kind": "rls",
@@ -19521,6 +22647,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "PresenceScan"
+            },
+            "PresenceSnapshot": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "PresenceSnapshot"
             },
             "PriceList": {
               "kind": "rls",
@@ -19597,10 +22728,25 @@
               "namespaceId": "public",
               "tableName": "QuoteItem"
             },
+            "ReconciliationRun": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ReconciliationRun"
+            },
+            "Review": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Review"
+            },
             "SatisfactionSurvey": {
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "SatisfactionSurvey"
+            },
+            "SiteConfig": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "SiteConfig"
             },
             "StaffInvite": {
               "kind": "rls",
@@ -19646,6 +22792,16 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "StockTransferLine"
+            },
+            "StoreOrder": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "StoreOrder"
+            },
+            "StoreOrderLine": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "StoreOrderLine"
             },
             "Subscription": {
               "kind": "rls",
@@ -19707,6 +22863,11 @@
               "namespaceId": "public",
               "tableName": "TourBooking"
             },
+            "TrackedLink": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "TrackedLink"
+            },
             "UsageCounter": {
               "kind": "rls",
               "namespaceId": "public",
@@ -19744,6 +22905,303 @@
             }
           },
           "table": {
+            "Account": {
+              "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "code": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "nature": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "postable": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "type": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Account"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "Account_tenantId_idx_c93ed4f1",
+                  "prefix": "Account_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "code"
+                  ]
+                }
+              ]
+            },
+            "AccountingPeriod": {
+              "columns": {
+                "closedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "closedById": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "month": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "note": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "reopenedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "OPEN"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "year": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "AccountingPeriod"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "AccountingPeriod_tenantId_idx_c93ed4f1",
+                  "prefix": "AccountingPeriod_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "year",
+                    "month"
+                  ]
+                }
+              ]
+            },
+            "AccountingRule": {
+              "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "event": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "lines": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "AccountingRule"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "AccountingRule_tenantId_idx_c93ed4f1",
+                  "prefix": "AccountingRule_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "event"
+                  ]
+                }
+              ]
+            },
             "ApiKey": {
               "checks": [
                 {
@@ -22958,6 +26416,11 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "terminalId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 }
               },
               "foreignKeys": [
@@ -23322,6 +26785,191 @@
                 ]
               },
               "uniques": []
+            },
+            "ContactLead": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "email": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "message": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "origin": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
+                  "nullable": true
+                },
+                "phone": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ContactLead"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "createdAt"
+                  ],
+                  "name": "ContactLead_tenantId_createdAt_idx_88162366",
+                  "prefix": "ContactLead_tenantId_createdAt_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "ContactLead_tenantId_idx_c93ed4f1",
+                  "prefix": "ContactLead_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "CostCenter": {
+              "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "code": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "kind": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "CENTER"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "CostCenter"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "CostCenter_tenantId_idx_c93ed4f1",
+                  "prefix": "CostCenter_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "code"
+                  ]
+                }
+              ]
             },
             "Customer": {
               "checks": [
@@ -24429,6 +28077,263 @@
               },
               "uniques": []
             },
+            "FiscalDocument": {
+              "columns": {
+                "attempts": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "cufe": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "invoiceId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "kind": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "lastAttemptAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "payload": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
+                  "nullable": false
+                },
+                "provider": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "providerRef": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "rejectReason": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "PENDING_PROVIDER"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "supplierInvoiceId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "FiscalDocument"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "FiscalDocument_tenantId_idx_c93ed4f1",
+                  "prefix": "FiscalDocument_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "status"
+                  ],
+                  "name": "FiscalDocument_tenantId_status_idx_d3d04256",
+                  "prefix": "FiscalDocument_tenantId_status_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "invoiceId"
+                  ]
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "supplierInvoiceId"
+                  ]
+                }
+              ]
+            },
+            "GoogleListing": {
+              "columns": {
+                "address": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "lastError": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "phone": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "placeId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "rating": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": true
+                },
+                "ratingCount": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "PENDING"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "syncedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "website": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "GoogleListing"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ]
+                }
+              ]
+            },
             "IdempotencyRecord": {
               "columns": {
                 "apiKeyId": {
@@ -24979,6 +28884,15 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "tipTotal": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
                 "total": {
                   "codecId": "pg/numeric@1",
                   "nativeType": "numeric",
@@ -25152,6 +29066,261 @@
                   ],
                   "name": "InvoiceLine_invoiceId_idx_d5c4f70e",
                   "prefix": "InvoiceLine_invoiceId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "JournalEntry": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "createdById": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "date": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "description": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "event": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "hash": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "number": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "reversalOfId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "sourceId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "sourceType": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "JournalEntry"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "date"
+                  ],
+                  "name": "JournalEntry_tenantId_date_idx_3ef944c7",
+                  "prefix": "JournalEntry_tenantId_date_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "JournalEntry_tenantId_idx_c93ed4f1",
+                  "prefix": "JournalEntry_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "sourceType",
+                    "sourceId"
+                  ],
+                  "name": "JournalEntry_tenantId_sourceType_sourceId_idx_7db9b1c3",
+                  "prefix": "JournalEntry_tenantId_sourceType_sourceId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "number"
+                  ]
+                }
+              ]
+            },
+            "JournalLine": {
+              "columns": {
+                "accountCode": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "costCenterId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "credit": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "debit": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "entryId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "label": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "partyId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "JournalLine"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "entryId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "JournalLine"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "JournalEntry"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "entryId"
+                  ],
+                  "name": "JournalLine_entryId_idx_8b42d1db",
+                  "prefix": "JournalLine_entryId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "accountCode"
+                  ],
+                  "name": "JournalLine_tenantId_accountCode_idx_d8899099",
+                  "prefix": "JournalLine_tenantId_accountCode_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "JournalLine_tenantId_idx_c93ed4f1",
+                  "prefix": "JournalLine_tenantId_idx",
                   "unique": false
                 }
               ],
@@ -26565,6 +30734,296 @@
                 }
               ]
             },
+            "PaymentIntent": {
+              "columns": {
+                "amount": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "channel": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "LINK"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "confirmedBy": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "createdById": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "customerId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "description": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "evidence": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "expiresAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "invoiceId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "paidAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "paymentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "provider": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "sandbox"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "providerRefId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "reference": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "refundedTotal": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "PENDING"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PaymentIntent"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "createdAt"
+                  ],
+                  "name": "PaymentIntent_tenantId_createdAt_idx_88162366",
+                  "prefix": "PaymentIntent_tenantId_createdAt_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "PaymentIntent_tenantId_idx_c93ed4f1",
+                  "prefix": "PaymentIntent_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "status"
+                  ],
+                  "name": "PaymentIntent_tenantId_status_idx_d3d04256",
+                  "prefix": "PaymentIntent_tenantId_status_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "reference"
+                  ]
+                }
+              ]
+            },
+            "PaymentRefund": {
+              "columns": {
+                "amount": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "createdById": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "intentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "reason": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PaymentRefund"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "intentId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PaymentRefund"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PaymentIntent"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "intentId"
+                  ],
+                  "name": "PaymentRefund_intentId_idx_e8967b69",
+                  "prefix": "PaymentRefund_intentId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "PaymentRefund_tenantId_idx_c93ed4f1",
+                  "prefix": "PaymentRefund_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "intentId"
+                  ],
+                  "name": "PaymentRefund_tenantId_intentId_idx_78c4c2b6",
+                  "prefix": "PaymentRefund_tenantId_intentId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "PlanSetting": {
               "checks": [
                 {
@@ -26659,6 +31118,88 @@
               "primaryKey": {
                 "columns": [
                   "key"
+                ]
+              },
+              "uniques": []
+            },
+            "PosTerminal": {
+              "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "boxId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "warehouseId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PosTerminal"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "PosTerminal_tenantId_idx_c93ed4f1",
+                  "prefix": "PosTerminal_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
                 ]
               },
               "uniques": []
@@ -26926,6 +31467,92 @@
                 ]
               },
               "uniques": []
+            },
+            "PresenceSnapshot": {
+              "columns": {
+                "coverage": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "day": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "phase": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "pillars": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
+                  "nullable": false
+                },
+                "score": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PresenceSnapshot"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "PresenceSnapshot_tenantId_idx_c93ed4f1",
+                  "prefix": "PresenceSnapshot_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "day"
+                  ]
+                }
+              ]
             },
             "PriceList": {
               "columns": {
@@ -29407,6 +34034,218 @@
               },
               "uniques": []
             },
+            "ReconciliationRun": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "createdById": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "day": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "differences": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
+                  "nullable": false
+                },
+                "expected": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "matched": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "provider": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "reported": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ReconciliationRun"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "day"
+                  ],
+                  "name": "ReconciliationRun_tenantId_day_idx_4f30fc67",
+                  "prefix": "ReconciliationRun_tenantId_day_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "ReconciliationRun_tenantId_idx_c93ed4f1",
+                  "prefix": "ReconciliationRun_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "Review": {
+              "columns": {
+                "comment": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "contact": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "customerName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "handledAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "rating": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "source": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "INTERNAL"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "NEW"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Review"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "createdAt"
+                  ],
+                  "name": "Review_tenantId_createdAt_idx_88162366",
+                  "prefix": "Review_tenantId_createdAt_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "Review_tenantId_idx_c93ed4f1",
+                  "prefix": "Review_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "SatisfactionSurvey": {
               "columns": {
                 "answeredAt": {
@@ -29516,6 +34355,146 @@
                 {
                   "columns": [
                     "token"
+                  ]
+                }
+              ]
+            },
+            "SiteConfig": {
+              "columns": {
+                "about": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "accent": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "#D4AF37"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "description": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "enabled": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "heroSubtitle": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "heroTitle": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "showCatalog": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "showMap": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "siteSlug": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "template": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "clasica"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "title": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "SiteConfig"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ]
+                },
+                {
+                  "columns": [
+                    "siteSlug"
                   ]
                 }
               ]
@@ -30712,6 +35691,267 @@
               },
               "uniques": []
             },
+            "StoreOrder": {
+              "columns": {
+                "abandonedNotifiedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "address": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "city": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "customerName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "documentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "email": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "intentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "notes": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "number": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "origin": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
+                  "nullable": true
+                },
+                "paidAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "phone": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "review": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "PENDING_PAYMENT"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "total": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StoreOrder"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "StoreOrder_tenantId_idx_c93ed4f1",
+                  "prefix": "StoreOrder_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "status"
+                  ],
+                  "name": "StoreOrder_tenantId_status_idx_d3d04256",
+                  "prefix": "StoreOrder_tenantId_status_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "number"
+                  ]
+                }
+              ]
+            },
+            "StoreOrderLine": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "orderId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "productId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "quantity": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "taxRatePct": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "unitPrice": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StoreOrderLine"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "orderId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StoreOrderLine"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StoreOrder"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "orderId"
+                  ],
+                  "name": "StoreOrderLine_orderId_idx_d284871b",
+                  "prefix": "StoreOrderLine_orderId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "StoreOrderLine_tenantId_idx_c93ed4f1",
+                  "prefix": "StoreOrderLine_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "Subscription": {
               "checks": [
                 {
@@ -31521,6 +36761,15 @@
                     "plane": "storage"
                   }
                 },
+                "accountingEnabled": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
                 "active": {
                   "codecId": "pg/bool@1",
                   "default": {
@@ -31599,6 +36848,15 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
+                },
+                "einvoiceEnabled": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
                 },
                 "googleBusinessUrl": {
                   "codecId": "pg/text@1",
@@ -32458,6 +37716,131 @@
                 {
                   "columns": [
                     "tenantId",
+                    "code"
+                  ]
+                }
+              ]
+            },
+            "TrackedLink": {
+              "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "clicks": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "code": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "path": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": ""
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "spend": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "utmCampaign": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "utmMedium": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "utmSource": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "TrackedLink"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "TrackedLink_tenantId_idx_c93ed4f1",
+                  "prefix": "TrackedLink_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
                     "code"
                   ]
                 }
@@ -33712,12 +39095,45 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "35370b0e28c7b144871c24d4b6596e4c51189286990e98b31bb6bb39ed51a3ae"
+    "storageHash": "d1bd026b9421ab69b622ecbbaaf23191d4f3e77933b070407051f19f540595ba"
   },
   "execution": {
-    "executionHash": "1c46da6992e45937292f6de80d5c0ea99eb962ff42367e534a93e6e239ccd3f6",
+    "executionHash": "a2af63e9ab78679879f3845a7081a9e4408936f14e875486721789c3373a7c3d",
     "mutations": {
       "defaults": [
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Account",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "AccountingPeriod",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "AccountingRule",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
         {
           "onCreate": {
             "id": "uuidv4",
@@ -34175,6 +39591,28 @@
             "kind": "generator"
           },
           "ref": {
+            "entry": "ContactLead",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "CostCenter",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
             "entry": "Customer",
             "field": "id",
             "namespace": "public"
@@ -34383,6 +39821,43 @@
             "kind": "generator"
           },
           "ref": {
+            "entry": "FiscalDocument",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "FiscalDocument",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "GoogleListing",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
             "entry": "IdempotencyRecord",
             "field": "id",
             "namespace": "public"
@@ -34458,6 +39933,28 @@
           },
           "ref": {
             "entry": "InvoiceLine",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "JournalEntry",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "JournalLine",
             "field": "id",
             "namespace": "public"
           }
@@ -34653,6 +40150,28 @@
         },
         {
           "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PaymentIntent",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PaymentRefund",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
             "id": "instantNow",
             "kind": "generator"
           },
@@ -34663,6 +40182,17 @@
           "ref": {
             "entry": "PlanSetting",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PosTerminal",
+            "field": "id",
             "namespace": "public"
           }
         },
@@ -34700,6 +40230,32 @@
           "ref": {
             "entry": "PresenceScan",
             "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PresenceSnapshot",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PresenceSnapshot",
+            "field": "updatedAt",
             "namespace": "public"
           }
         },
@@ -35039,8 +40595,56 @@
             "kind": "generator"
           },
           "ref": {
+            "entry": "ReconciliationRun",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Review",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
             "entry": "SatisfactionSurvey",
             "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "SiteConfig",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "SiteConfig",
+            "field": "updatedAt",
             "namespace": "public"
           }
         },
@@ -35199,6 +40803,28 @@
           },
           "ref": {
             "entry": "StockTransferLine",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "StoreOrder",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "StoreOrderLine",
             "field": "id",
             "namespace": "public"
           }
@@ -35422,6 +41048,17 @@
           "ref": {
             "entry": "TourBooking",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "TrackedLink",
+            "field": "id",
             "namespace": "public"
           }
         },

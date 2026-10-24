@@ -3,6 +3,7 @@ import { customerOperations } from "./definitions/customers";
 import { eventOperations } from "./definitions/events";
 import { financeOperations } from "./definitions/finance";
 import { inventoryOperations } from "./definitions/inventory";
+import { presenceOperations } from "./definitions/presence";
 import { purchaseOperations } from "./definitions/purchases";
 import { partyOperations } from "./definitions/parties";
 import { isAvailable, runOperation } from "./engine";
@@ -17,6 +18,7 @@ export const OPERATIONS: readonly OperationDefinition[] = Object.freeze([
   ...businessOperations,
   ...customerOperations,
   ...inventoryOperations,
+  ...presenceOperations,
   ...financeOperations,
   ...eventOperations,
   ...partyOperations,

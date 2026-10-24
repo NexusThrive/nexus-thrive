@@ -14,6 +14,17 @@ export default clerkMiddleware(
     const url = request.nextUrl;
     const pathname = url.pathname;
 
+    // Subdominio automático del mini-sitio: `negocio.<dominio de sitios>` sirve /s/negocio. Solo si el
+    // dominio de sitios está configurado; sin él, el sitio vive en /s/<dirección> y nada cambia.
+    const sitesDomain = process.env.NEXT_PUBLIC_SITES_DOMAIN?.trim().toLowerCase();
+    const host = (request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "").split(":")[0]?.toLowerCase() ?? "";
+    if (sitesDomain && host.endsWith(`.${sitesDomain}`)) {
+      const sub = host.slice(0, -(sitesDomain.length + 1));
+      if (/^[a-z0-9-]{3,40}$/.test(sub) && !pathname.startsWith("/_next") && !pathname.startsWith("/s/")) {
+        return NextResponse.rewrite(new URL(`/s/${sub}${pathname === "/" ? "" : pathname}`, request.url));
+      }
+    }
+
     // Rutas reservadas que pasan directo
     const isReservedRoute =
       pathname.startsWith("/sign-in") ||

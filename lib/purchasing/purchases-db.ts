@@ -1,6 +1,8 @@
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
 import { msOf } from "@/lib/events/instant";
+import { postByRule } from "@/lib/accounting/ledger-db";
+import { MoneyError } from "@/lib/business/money-error";
 import { moneyTransaction } from "@/lib/business/money-service";
 import { applyStockMovement, ensureDefaultWarehouse, StockError } from "@/lib/inventory/stock-service";
 import { canCancel, canClose, canMarkOrdered, canReceive, nextStatus, orderCode, orderTotals, validateLines, type OrderStatus } from "./purchases";
@@ -71,6 +73,7 @@ export async function createOrder(tenantId: string, input: OrderInput, userId: s
       });
     } catch (error) {
       if (error instanceof PurchaseError) return { ok: false, message: error.message, code: error.code };
+    if (error instanceof MoneyError) return { ok: false, message: error.message, code: "accounting" };
       if (!isNumberCollision(error) || attempt === 14) throw error;
       await new Promise((resolve) => setTimeout(resolve, Math.random() * 20)); // otra orden tomó el mismo número: se espera un poco y se renumera
     }
@@ -183,20 +186,26 @@ export async function registerSupplierInvoice(tenantId: string, input: SupplierI
   if (input.purchaseOrderId && !(await db.orm.public.PurchaseOrder.where({ tenantId, id: input.purchaseOrderId, supplierPartyId: supplier.id }).first())) return { ok: false, message: "La orden no es de este proveedor." };
   if (await db.orm.public.SupplierInvoice.where({ tenantId, supplierPartyId: supplier.id, number }).first()) return { ok: false, code: "duplicate_invoice", message: "Esa factura de este proveedor ya está registrada." };
   try {
-    const created = await db.orm.public.SupplierInvoice.create({
-      tenantId,
-      supplierPartyId: supplier.id,
-      purchaseOrderId: input.purchaseOrderId ?? null,
-      number,
-      issueDate: input.issueDate,
-      dueDate: input.dueDate || null,
-      subtotal: money(input.subtotal),
-      taxTotal: money(input.taxTotal ?? 0),
-      total: money(input.total),
-      cufe: input.cufe?.trim().slice(0, 120) || null,
+    // La factura y su asiento contable se escriben juntos (o ninguno).
+    const created = await db.transaction(async (tx) => {
+      const si = await tx.orm.public.SupplierInvoice.create({
+        tenantId,
+        supplierPartyId: supplier.id,
+        purchaseOrderId: input.purchaseOrderId ?? null,
+        number,
+        issueDate: input.issueDate,
+        dueDate: input.dueDate || null,
+        subtotal: money(input.subtotal),
+        taxTotal: money(input.taxTotal ?? 0),
+        total: money(input.total),
+        cufe: input.cufe?.trim().slice(0, 120) || null,
+      });
+      await postByRule(tx, tenantId, "PURCHASE_RECEIVED", { total: input.total, subtotal: input.subtotal, tax: input.taxTotal ?? 0 }, { date: input.issueDate.slice(0, 10), description: `Compra · factura ${number}`, sourceType: "SUPPLIER_INVOICE", sourceId: si.id, partyId: supplier.id }, null);
+      return si;
     });
     return { ok: true, id: created.id };
   } catch (error) {
+    if (error instanceof MoneyError) return { ok: false, message: error.message };
     if (/unique|duplicate key/i.test(String((error as Error)?.message ?? error))) return { ok: false, code: "duplicate_invoice", message: "Esa factura de este proveedor ya está registrada." };
     throw error;
   }
@@ -261,7 +270,7 @@ export async function receiveOrder(tenantId: string, orderId: string, input: Rec
       if (input.invoice) {
         const dup = await tx.orm.public.SupplierInvoice.where({ tenantId, supplierPartyId: order.supplierPartyId, number: input.invoice.number.trim().slice(0, 60) }).first();
         if (dup) throw new PurchaseError("Esa factura de este proveedor ya está registrada.", "duplicate_invoice");
-        await tx.orm.public.SupplierInvoice.create({
+        const si = await tx.orm.public.SupplierInvoice.create({
           tenantId,
           supplierPartyId: order.supplierPartyId,
           purchaseOrderId: order.id,
@@ -273,6 +282,7 @@ export async function receiveOrder(tenantId: string, orderId: string, input: Rec
           total: money(input.invoice.total),
           cufe: input.invoice.cufe?.trim().slice(0, 120) || null,
         });
+        await postByRule(tx, tenantId, "PURCHASE_RECEIVED", { total: input.invoice.total, subtotal: input.invoice.subtotal, tax: input.invoice.taxTotal ?? 0 }, { date: input.invoice.issueDate.slice(0, 10), description: `Compra · factura ${si.number}`, sourceType: "SUPPLIER_INVOICE", sourceId: si.id, partyId: order.supplierPartyId }, userId);
       }
       return { ok: true as const, status, received };
     });

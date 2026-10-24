@@ -1,3 +1,4 @@
+import { reverseSource } from "@/lib/accounting/ledger-db";
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
 import { type InvoiceKind, type LineInput } from "./invoice";
@@ -10,7 +11,7 @@ const day = (v: unknown) => (v ? String(v).slice(0, 10) : null);
 
 export type InvoiceRow = {
   id: string;
-  kind: InvoiceKind;
+  kind: InvoiceKind | "CREDIT_NOTE" | "DEBIT_NOTE";
   number: number;
   customerId: string | null;
   customerName: string;
@@ -25,14 +26,14 @@ export type InvoiceRow = {
 };
 
 export async function listInvoices(tenantId: string): Promise<InvoiceRow[]> {
-  // Facturación muestra cuentas de cobro y recibos; las ventas al cobrar y
-  // las notas crédito salen en el informe de ventas (documents-db).
+  // Facturación muestra cuentas de cobro, recibos y sus notas crédito y débito;
+  // las ventas al cobrar salen en el informe de ventas (documents-db).
   const rows = await db.orm.public.Invoice.where({ tenantId })
-    .where((i) => i.kind.in(["BILL", "RECEIPT"]))
+    .where((i) => i.kind.in(["BILL", "RECEIPT", "CREDIT_NOTE", "DEBIT_NOTE"]))
     .include("lines").orderBy((i) => i.createdAt.desc()).limit(200).all();
   return rows.map((i) => ({
     id: i.id,
-    kind: i.kind as InvoiceKind,
+    kind: i.kind as InvoiceRow["kind"],
     number: i.number,
     customerId: i.customerId,
     customerName: i.customerName,
@@ -83,5 +84,9 @@ export async function createInvoice(tenantId: string, v: { kind: InvoiceKind; cu
 export { payInvoice } from "./money-service";
 
 export async function voidInvoice(tenantId: string, id: string, reason: string) {
-  await db.orm.public.Invoice.where({ tenantId, id }).update({ status: "VOID", voidReason: reason });
+  // Anular no borra: el asiento de la cuenta de cobro se reversa en el mismo momento (si el mes está cerrado, no se anula).
+  await db.transaction(async (tx) => {
+    await tx.orm.public.Invoice.where({ tenantId, id }).update({ status: "VOID", voidReason: reason });
+    await reverseSource(tx, tenantId, "DOCUMENT", id, reason, null);
+  });
 }

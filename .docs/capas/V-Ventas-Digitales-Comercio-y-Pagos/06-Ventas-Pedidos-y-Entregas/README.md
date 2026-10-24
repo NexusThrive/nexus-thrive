@@ -61,8 +61,8 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [ ] Listas de precios, descuentos y promociones
-- [ ] Notas crédito y débito _(PR-16)_
-- [ ] Devoluciones _(PR-16)_
+- [x] Notas crédito y débito _(PR-16)_
+- [x] Devoluciones _(PR-16)_
 - [ ] Remisiones
 - [ ] Facturación parcial
 - [ ] Vendedor y comisión

@@ -21,6 +21,8 @@ import { HEALTH_LEVELS } from "@/lib/ops/health-rules";
 import { getSubscriptionByTenant, listCharges } from "@/lib/ops/billing";
 import { CHARGE_STATUSES, dunningLabel, SUBSCRIPTION_STATUSES } from "@/lib/ops/billing-rules";
 import type { PlanKey } from "@/lib/plans/catalog";
+import { ConsumptionPanel } from "@/components/organisms/consumption-panel";
+import { consumptionFor } from "@/lib/usage/consumption-db";
 import AuditLog from "../../_components/audit-log";
 import Panel from "../../_components/panel";
 import { ResumenTab, UsuariosTab } from "../../_components/tenant-drawer";
@@ -35,7 +37,7 @@ export const metadata: Metadata = { title: "Ficha del negocio · NEXUS Operation
 type Tab = "general" | "plan" | "acceso" | "actividad";
 const TABS: { value: Tab; label: string }[] = [
   { value: "general", label: "General" },
-  { value: "plan", label: "Plan y módulos" },
+  { value: "plan", label: "Plan, funciones y consumo" },
   { value: "acceso", label: "Usuarios y acceso" },
   { value: "actividad", label: "Actividad" },
 ];
@@ -55,7 +57,7 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
   const can = (p: (typeof staff.permissions)[number]) => staff.permissions.includes(p);
 
   const adminDb = createAdminDb();
-  const [detail, extras, managers, audit, pricing, tickets, subscription, charges, health] = await Promise.all([
+  const [detail, extras, managers, audit, pricing, tickets, subscription, charges, health, usage] = await Promise.all([
     adminDb.getTenantDetail(id),
     getAccountExtras(id),
     listManagers(),
@@ -65,6 +67,7 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
     can("billing.view") ? getSubscriptionByTenant(id) : Promise.resolve(null),
     can("billing.view") ? listCharges({ tenantId: id }) : Promise.resolve([]),
     accountHealth({ tenantId: id }).then((r) => r[0] ?? null),
+    consumptionFor(id),
   ]);
   if (!detail || !extras) notFound();
 
@@ -161,6 +164,7 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
       {tab === "plan" ? (
         <div className="grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
           <div className="grid gap-3.5">
+          <ConsumptionPanel rows={usage} />
           <Panel title="Plan contratado">
             <div className="grid gap-1 p-[18px]">
               <p className="font-display text-[22px] font-bold">

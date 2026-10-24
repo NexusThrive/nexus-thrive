@@ -1,0 +1,326 @@
+[
+  {
+    "id": "table.FiscalDocument",
+    "label": "Create table \"FiscalDocument\"",
+    "summary": "Creates table \"FiscalDocument\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "FiscalDocument"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"FiscalDocument\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FiscalDocument\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"FiscalDocument\"",
+        "sql": "CREATE TABLE \"public\".\"FiscalDocument\" (\n  \"attempts\" int4 DEFAULT 0 NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"cufe\" text,\n  \"id\" text NOT NULL,\n  \"invoiceId\" text,\n  \"kind\" text NOT NULL,\n  \"lastAttemptAt\" timestamptz,\n  \"payload\" json NOT NULL,\n  \"provider\" text,\n  \"providerRef\" text,\n  \"rejectReason\" text,\n  \"status\" text DEFAULT 'PENDING_PROVIDER' NOT NULL,\n  \"supplierInvoiceId\" text,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"FiscalDocument\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FiscalDocument\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.einvoiceEnabled",
+    "label": "Add column \"einvoiceEnabled\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "einvoiceEnabled",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"einvoiceEnabled\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "einvoiceEnabled"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"einvoiceEnabled\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"einvoiceEnabled\" bool DEFAULT false NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"einvoiceEnabled\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "einvoiceEnabled"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.FiscalDocument.FiscalDocument_tenantId_invoiceId_key",
+    "label": "Add unique constraint on \"FiscalDocument\" (tenantId, invoiceId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "FiscalDocument_tenantId_invoiceId_key",
+        "table": "FiscalDocument"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"FiscalDocument_tenantId_invoiceId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FiscalDocument_tenantId_invoiceId_key",
+          "public",
+          "\"public\".\"FiscalDocument\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"FiscalDocument_tenantId_invoiceId_key\"",
+        "sql": "ALTER TABLE \"public\".\"FiscalDocument\" ADD CONSTRAINT \"FiscalDocument_tenantId_invoiceId_key\" UNIQUE (\"tenantId\", \"invoiceId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"FiscalDocument_tenantId_invoiceId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FiscalDocument_tenantId_invoiceId_key",
+          "public",
+          "\"public\".\"FiscalDocument\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.FiscalDocument.FiscalDocument_tenantId_supplierInvoiceId_key",
+    "label": "Add unique constraint on \"FiscalDocument\" (tenantId, supplierInvoiceId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "FiscalDocument_tenantId_supplierInvoiceId_key",
+        "table": "FiscalDocument"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"FiscalDocument_tenantId_supplierInvoiceId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FiscalDocument_tenantId_supplierInvoiceId_key",
+          "public",
+          "\"public\".\"FiscalDocument\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"FiscalDocument_tenantId_supplierInvoiceId_key\"",
+        "sql": "ALTER TABLE \"public\".\"FiscalDocument\" ADD CONSTRAINT \"FiscalDocument_tenantId_supplierInvoiceId_key\" UNIQUE (\"tenantId\", \"supplierInvoiceId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"FiscalDocument_tenantId_supplierInvoiceId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FiscalDocument_tenantId_supplierInvoiceId_key",
+          "public",
+          "\"public\".\"FiscalDocument\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.FiscalDocument.FiscalDocument_tenantId_idx_c93ed4f1",
+    "label": "Create index \"FiscalDocument_tenantId_idx_c93ed4f1\" on \"FiscalDocument\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "FiscalDocument_tenantId_idx_c93ed4f1",
+        "table": "FiscalDocument"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"FiscalDocument_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FiscalDocument_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"FiscalDocument_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"FiscalDocument_tenantId_idx_c93ed4f1\" ON \"public\".\"FiscalDocument\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"FiscalDocument_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FiscalDocument_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.FiscalDocument.FiscalDocument_tenantId_status_idx_d3d04256",
+    "label": "Create index \"FiscalDocument_tenantId_status_idx_d3d04256\" on \"FiscalDocument\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "FiscalDocument_tenantId_status_idx_d3d04256",
+        "table": "FiscalDocument"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"FiscalDocument_tenantId_status_idx_d3d04256\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FiscalDocument_tenantId_status_idx_d3d04256\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"FiscalDocument_tenantId_status_idx_d3d04256\"",
+        "sql": "CREATE INDEX \"FiscalDocument_tenantId_status_idx_d3d04256\" ON \"public\".\"FiscalDocument\" (\"tenantId\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"FiscalDocument_tenantId_status_idx_d3d04256\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FiscalDocument_tenantId_status_idx_d3d04256\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.FiscalDocument.FiscalDocument_tenantId_fkey",
+    "label": "Add foreign key \"FiscalDocument_tenantId_fkey\" on \"FiscalDocument\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "FiscalDocument_tenantId_fkey",
+        "table": "FiscalDocument"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"FiscalDocument_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FiscalDocument_tenantId_fkey",
+          "public",
+          "\"public\".\"FiscalDocument\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"FiscalDocument_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"FiscalDocument\"\nADD CONSTRAINT \"FiscalDocument_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"FiscalDocument_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FiscalDocument_tenantId_fkey",
+          "public",
+          "\"public\".\"FiscalDocument\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.FiscalDocument",
+    "label": "Enable row-level security on \"FiscalDocument\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "FiscalDocument"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"FiscalDocument\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "FiscalDocument"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"FiscalDocument\"",
+        "sql": "ALTER TABLE \"public\".\"FiscalDocument\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"FiscalDocument\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "FiscalDocument"
+        ]
+      }
+    ]
+  }
+]

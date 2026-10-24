@@ -1,4 +1,5 @@
 import { toNumber } from "@/lib/format";
+import { cashAccountFor, postByRule } from "@/lib/accounting/ledger-db";
 import { MoneyError, moneyTransaction } from "@/lib/business/money-service";
 import { todayCO } from "@/lib/tax/tax";
 import { db } from "@/prisma/db";
@@ -78,7 +79,8 @@ export async function paySupplierInvoice(
         .returning("id")
         .build();
       if ((await tx.query(plan)).length === 0) throw new MoneyError("La factura cambió mientras pagabas. Vuelve a intentarlo.");
-      await tx.orm.public.SupplierPayment.create({ tenantId, supplierInvoiceId: id, amount: input.amount.toFixed(2), method: input.method.slice(0, 20), note: input.note?.slice(0, 200) || null, createdById: userId });
+      const sp = await tx.orm.public.SupplierPayment.create({ tenantId, supplierInvoiceId: id, amount: input.amount.toFixed(2), method: input.method.slice(0, 20), note: input.note?.slice(0, 200) || null, createdById: userId });
+      await postByRule(tx, tenantId, "SUPPLIER_PAID", { payment: input.amount }, { date: todayCO(), description: `Pago a proveedor · factura ${inv.number}`, sourceType: "SUPPLIER_PAYMENT", sourceId: sp.id, partyId: inv.supplierPartyId, swap: cashAccountFor(input.method) }, userId);
       return { ok: true as const, balance: Math.round((balance - input.amount) * 100) / 100, settled };
     });
   } catch (e) {

@@ -60,11 +60,11 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [ ] Catálogo con búsqueda, categorías y código de barras. _(PR-09)_
-- [ ] Descuentos, propinas y pago mixto _(PR-15)_
-- [ ] Turnos por cajero _(PR-15)_
+- [x] Descuentos, propinas y pago mixto _(PR-15)_
+- [x] Turnos por cajero _(PR-15)_
 - [x] Descuento automático de inventario — _hecho: `sellProduct` en `money-service`_
-- [ ] Funciona en celular y tablet. _(PR-15)_
-- [ ] Impresoras térmicas _(PR-16)_
+- [x] Funciona en celular y tablet. _(PR-15)_
+- [x] Impresoras térmicas _(PR-16)_
 - [x] Clientes asociados a la venta — _hecho: cliente opcional en la venta_
 
 #### Técnico

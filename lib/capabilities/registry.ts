@@ -13,7 +13,14 @@ import {
   LayoutDashboard,
   MessageCircle,
   Package,
+  BookOpenCheck,
+  FileCheck2,
+  Globe,
   HandCoins,
+  MapPin,
+  Megaphone,
+  PackageCheck,
+  Link2,
   Percent,
   Receipt,
   Repeat,
@@ -128,7 +135,11 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/finance?tab=cobros", icon: Banknote, label: () => "Pagos" }],
+    nav: [
+      { href: "/finance?tab=cobros", icon: Banknote, label: () => "Pagos" },
+      { href: "/pos", icon: ShoppingCart, label: () => "Punto de venta" },
+      { href: "/cobros", icon: Link2, label: () => "Cobros en línea" },
+    ],
   },
   {
     id: "billing",
@@ -141,7 +152,10 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/billing", icon: Receipt, label: () => "Facturación" }],
+    nav: [
+      { href: "/billing", icon: Receipt, label: () => "Facturación" },
+      { href: "/factura-electronica", icon: FileCheck2, label: () => "Factura electrónica" },
+    ],
   },
   {
     id: "inventory",
@@ -157,6 +171,10 @@ export const CAPABILITIES = [
     nav: [
       { href: "/inventory", icon: Package, label: () => "Catálogo" },
       { href: "/stock", icon: Warehouse, label: () => "Existencias" },
+      { href: "/sitio", icon: Globe, label: () => "Mi sitio web" },
+      { href: "/pedidos-tienda", icon: PackageCheck, label: () => "Pedidos de la tienda" },
+      { href: "/google", icon: MapPin, label: () => "Ficha de Google" },
+      { href: "/crecimiento", icon: Megaphone, label: () => "Campañas y reseñas" },
     ],
   },
   {
@@ -173,6 +191,7 @@ export const CAPABILITIES = [
     nav: [
       { href: "/finance", icon: Wallet, label: () => "Finanzas" },
       { href: "/cartera", icon: HandCoins, label: () => "Cartera" },
+      { href: "/contabilidad", icon: BookOpenCheck, label: () => "Contabilidad" },
       { href: "/taxes", icon: Percent, label: () => "Impuestos y numeración" },
     ],
   },

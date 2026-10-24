@@ -99,6 +99,25 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "StockCount",
   "StockCountLine",
   "TaxRate",
+  "PosTerminal",
+  "PaymentIntent",
+  "FiscalDocument",
+  "PresenceSnapshot",
+  "SiteConfig",
+  "StoreOrder",
+  "GoogleListing",
+  "TrackedLink",
+  "ContactLead",
+  "Review",
+  "StoreOrderLine",
+  "JournalEntry",
+  "JournalLine",
+  "Account",
+  "AccountingPeriod",
+  "AccountingRule",
+  "CostCenter",
+  "PaymentRefund",
+  "ReconciliationRun",
   "NumberingResolution",
   "StockLevel",
   "Subscription",
@@ -331,6 +350,25 @@ export async function deleteTenantCompletely(
   count("Warehouse", await tx.orm.public.Warehouse.where({ tenantId }).deleteAll());
   count("Product", await tx.orm.public.Product.where({ tenantId }).deleteAll());
   count("TaxRate", await tx.orm.public.TaxRate.where({ tenantId }).deleteAll());
+  count("FiscalDocument", await tx.orm.public.FiscalDocument.where({ tenantId }).deleteAll());
+  count("PresenceSnapshot", await tx.orm.public.PresenceSnapshot.where({ tenantId }).deleteAll());
+  count("TrackedLink", await tx.orm.public.TrackedLink.where({ tenantId }).deleteAll());
+  count("ContactLead", await tx.orm.public.ContactLead.where({ tenantId }).deleteAll());
+  count("Review", await tx.orm.public.Review.where({ tenantId }).deleteAll());
+  count("GoogleListing", await tx.orm.public.GoogleListing.where({ tenantId }).deleteAll());
+  count("StoreOrderLine", await tx.orm.public.StoreOrderLine.where({ tenantId }).deleteAll());
+  count("StoreOrder", await tx.orm.public.StoreOrder.where({ tenantId }).deleteAll());
+  count("SiteConfig", await tx.orm.public.SiteConfig.where({ tenantId }).deleteAll());
+  count("JournalLine", await tx.orm.public.JournalLine.where({ tenantId }).deleteAll());
+  count("JournalEntry", await tx.orm.public.JournalEntry.where({ tenantId }).deleteAll());
+  count("Account", await tx.orm.public.Account.where({ tenantId }).deleteAll());
+  count("AccountingPeriod", await tx.orm.public.AccountingPeriod.where({ tenantId }).deleteAll());
+  count("AccountingRule", await tx.orm.public.AccountingRule.where({ tenantId }).deleteAll());
+  count("CostCenter", await tx.orm.public.CostCenter.where({ tenantId }).deleteAll());
+  count("PaymentRefund", await tx.orm.public.PaymentRefund.where({ tenantId }).deleteAll());
+  count("PaymentIntent", await tx.orm.public.PaymentIntent.where({ tenantId }).deleteAll());
+  count("ReconciliationRun", await tx.orm.public.ReconciliationRun.where({ tenantId }).deleteAll());
+  count("PosTerminal", await tx.orm.public.PosTerminal.where({ tenantId }).deleteAll());
   count("NumberingResolution", await tx.orm.public.NumberingResolution.where({ tenantId }).deleteAll());
   count("SatisfactionSurvey", await tx.orm.public.SatisfactionSurvey.where({ tenantId }).deleteAll());
   count("Subscription", await tx.orm.public.Subscription.where({ tenantId }).deleteAll());

@@ -3,7 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { customerNameIn } from "@/lib/business/customers-db";
 import { validateLines, type InvoiceKind, type LineInput } from "@/lib/business/invoice";
+import { documentView, issueAdjustmentNote, type DocumentView } from "@/lib/business/documents-db";
 import { createInvoice, payInvoice, voidInvoice, invoiceStatus } from "@/lib/business/invoices-db";
+import { MoneyError } from "@/lib/business/money-error";
 import { canHandleCash, canManage } from "@/lib/business/roles";
 import { receiptCode } from "@/lib/business/invoice";
 import { PAYMENT_METHODS } from "@/lib/finance";
@@ -58,8 +60,34 @@ export async function voidInvoiceAction(slug: string, id: string, reason: string
   if (!ctx || !canManage(ctx.role)) return DENIED;
   if (reason.trim().length < 3) return { ok: false, message: "Escribe el motivo." };
   if ((await invoiceStatus(ctx.tenantId, id)) !== "ISSUED") return { ok: false, message: "Solo se anulan documentos emitidos y sin pagar." };
-  await voidInvoice(ctx.tenantId, id, reason.trim().slice(0, 300));
+  try {
+    await voidInvoice(ctx.tenantId, id, reason.trim().slice(0, 300));
+  } catch (error) {
+    // Un mes contable cerrado (o una cuenta apagada) impide anular: se explica en vez de fallar.
+    if (error instanceof MoneyError) return { ok: false, message: error.message };
+    throw error;
+  }
   await logTenantAction(ctx, "BIZ_INVOICE_VOID", { invoiceId: id, reason: reason.trim().slice(0, 300) });
   refresh(slug);
   return { ok: true, message: "Anulada" };
+}
+
+/** Lo que muestra el visor de pantalla completa de un documento. */
+export async function viewDocumentAction(slug: string, id: string): Promise<{ ok: true; doc: DocumentView } | { ok: false; message: string }> {
+  const ctx = await requireTenantContext(slug, "/billing");
+  if (!ctx) return { ok: false, message: "No tienes acceso a este negocio." };
+  const doc = await documentView(ctx.tenantId, id);
+  return doc ? { ok: true, doc } : { ok: false, message: "No se encontró el documento." };
+}
+
+/** Nota crédito o débito sobre un documento emitido (solo dueño y administración). */
+export async function issueNoteAction(slug: string, input: { documentId: string; kind: "CREDIT_NOTE" | "DEBIT_NOTE"; concept: string; amount: number; taxRatePct: number; reason: string }): Promise<BillingResult> {
+  const ctx = await requireTenantContext(slug, "/billing");
+  if (!ctx || !canManage(ctx.role)) return { ok: false, message: "Solo el dueño o administración emite notas crédito y débito." };
+  if (input.kind !== "CREDIT_NOTE" && input.kind !== "DEBIT_NOTE") return { ok: false, message: "Tipo de nota inválido." };
+  const r = await issueAdjustmentNote(ctx.tenantId, input, ctx.memberId);
+  if (!r.ok) return r;
+  await logTenantAction(ctx, "BIZ_INVOICE_NOTE", { kind: input.kind, documentId: input.documentId, noteId: r.id, total: r.total });
+  refresh(slug);
+  return { ok: true, id: r.id, message: `${input.kind === "CREDIT_NOTE" ? "Nota crédito" : "Nota débito"} N.º ${r.number} emitida` };
 }

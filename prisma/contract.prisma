@@ -333,6 +333,10 @@ model Tenant {
   maxCustomers      Int?
   /// Método de costeo del inventario. Hoy solo AVG (promedio ponderado); FIFO llegará después.
   costingMethod     String   @default("AVG")
+  /// Genera el documento fiscal de cada venta para enviarlo a un proveedor tecnológico autorizado.
+  einvoiceEnabled    Boolean  @default(false)
+  /// Contabiliza automáticamente cada venta, cobro, nota y compra con las reglas del plan de cuentas.
+  accountingEnabled  Boolean  @default(false)
   /// Modelo comercial (contexto, no restricción): B2B | B2C | B2B2C. Vacío = sin definir.
   businessModels    String[]?
   /// Qué hace el negocio, en sus palabras (contexto para recomendaciones).
@@ -409,6 +413,25 @@ model Tenant {
   stockCounts        StockCount[]
   stockCountLines    StockCountLine[]
   taxRates           TaxRate[]
+  posTerminals       PosTerminal[]
+  paymentIntents     PaymentIntent[]
+  fiscalDocuments    FiscalDocument[]
+  accounts           Account[]
+  accountingPeriods  AccountingPeriod[]
+  accountingRules    AccountingRule[]
+  costCenters        CostCenter[]
+  journalEntries     JournalEntry[]
+  presenceSnapshots  PresenceSnapshot[]
+  siteConfigs        SiteConfig[]
+  storeOrders        StoreOrder[]
+  googleListings     GoogleListing[]
+  trackedLinks       TrackedLink[]
+  contactLeads       ContactLead[]
+  reviews            Review[]
+  storeOrderLines    StoreOrderLine[]
+  journalLines       JournalLine[]
+  paymentRefunds     PaymentRefund[]
+  reconciliationRuns ReconciliationRun[]
   supplierPayments   SupplierPayment[]
   numberingResolutions NumberingResolution[]
   supportTickets     SupportTicket[]
@@ -1935,6 +1958,8 @@ model CashSession {
   countedAmount  Decimal?
   difference     Decimal?
   closingNotes   String?
+  /// Terminal de punto de venta en la que se abrió el turno (vacío = caja sin terminal).
+  terminalId     String?
   movements      CashMovement[]
 
   @@index([tenantId, boxId])
@@ -2172,6 +2197,8 @@ model Invoice {
   withholdings Json?
   /// Lo abonado a una cuenta de cobro emitida (cartera). El saldo es total − paidTotal.
   paidTotal    Decimal       @default(0)
+  /// Propina de una venta de mostrador (no es ingreso: se cobra aparte del total).
+  tipTotal     Decimal       @default(0)
   createdAt    DateTime      @default(now())
   updatedAt    temporal.updatedAt()
   lines        InvoiceLine[]
@@ -2937,5 +2964,436 @@ model SupplierPayment {
   createdAt         DateTime        @default(now())
 
   @@index([tenantId, supplierInvoiceId])
+  @@rls
+}
+
+
+/// Terminal de punto de venta: una caja y una bodega desde donde se vende. Cada cajero abre su turno en ella.
+model PosTerminal {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  boxId       String
+  warehouseId String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
+  @@rls
+}
+
+
+/// Intención de cobro en línea: lo que se le pide pagar a alguien (link, botón o QR). Solo se
+/// vuelve ingreso cuando el estado oficial llega (webhook del proveedor o confirmación manual con
+/// evidencia); confirmar dos veces el mismo cobro es imposible.
+model PaymentIntent {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Código público del enlace (`/pay/<reference>`): imposible de adivinar, único en toda la plataforma.
+  reference     String   @unique
+  amount        Decimal
+  description   String
+  /// PENDING | PAID | EXPIRED | FAILED | CANCELED
+  status        String   @default("PENDING")
+  /// LINK | QR
+  channel       String   @default("LINK")
+  provider      String   @default("sandbox")
+  customerId    String?
+  /// Cuenta de cobro que paga (el cobro baja su saldo).
+  invoiceId     String?
+  expiresAt     DateTime
+  paidAt        DateTime?
+  /// Cómo se confirmó: PROVIDER (webhook) | MANUAL (transferencia con evidencia).
+  confirmedBy   String?
+  evidence      String?
+  providerRefId String?
+  paymentId     String?
+  refundedTotal Decimal  @default(0)
+  createdById   String?
+  createdAt     DateTime @default(now())
+  refunds       PaymentRefund[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, createdAt])
+  @@rls
+}
+
+/// Reembolso total o parcial de un cobro en línea.
+model PaymentRefund {
+  id          String        @id @default(uuid())
+  tenantId    String
+  tenant      Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  intentId    String
+  intent      PaymentIntent @relation(fields: [intentId], references: [id], onDelete: Cascade)
+  amount      Decimal
+  reason      String
+  createdById String?
+  createdAt   DateTime      @default(now())
+
+  @@index([tenantId, intentId])
+  @@rls
+}
+
+/// Conciliación diaria: lo que reporta el proveedor contra lo que NEXUS confirmó ese día.
+model ReconciliationRun {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  provider    String
+  /// AAAA-MM-DD (hora de Colombia).
+  day         String
+  expected    Decimal
+  reported    Decimal
+  /// Detalle de lo que no cuadra: [{ kind, externalId, expected, reported }].
+  differences Json
+  matched     Int
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId, day])
+  @@rls
+}
+
+
+/// Documento fiscal electrónico de una venta, nota o compra a no obligado (documento soporte). NEXUS arma el
+/// contenido y lo entrega a un proveedor tecnológico detrás de un puerto; no firma ni emite por su cuenta. Vender
+/// nunca se bloquea: si el proveedor no está, el documento espera en PENDING_PROVIDER.
+model FiscalDocument {
+  id                String   @id @default(uuid())
+  tenantId          String
+  tenant            Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Documento comercial del que sale (único: uno por venta/nota).
+  invoiceId         String?
+  /// Factura de proveedor, cuando es un documento soporte.
+  supplierInvoiceId String?
+  /// INVOICE | CREDIT_NOTE | DEBIT_NOTE | SUPPORT_DOCUMENT
+  kind              String
+  /// PENDING_PROVIDER | SUBMITTED | ACCEPTED | REJECTED
+  status            String   @default("PENDING_PROVIDER")
+  provider          String?
+  providerRef       String?
+  cufe              String?
+  rejectReason      String?
+  /// Foto del emisor, el adquirente, las líneas y los totales al momento de emitir.
+  payload           Json
+  attempts          Int      @default(0)
+  lastAttemptAt     DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         temporal.updatedAt()
+
+  @@unique([tenantId, invoiceId])
+  @@unique([tenantId, supplierInvoiceId])
+  @@index([tenantId, status])
+  @@rls
+}
+
+
+/// Cuenta del plan único de cuentas (PUC) del negocio. Se siembra con la plantilla colombiana y se ajusta con el contador.
+model Account {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Código numérico (1105, 110505…). Un código identifica UNA cuenta por negocio.
+  code       String
+  name       String
+  /// ASSET | LIABILITY | EQUITY | INCOME | EXPENSE | COST
+  type       String
+  /// D (débito) | C (crédito): el lado en que normalmente aumenta.
+  nature     String
+  /// Solo las cuentas de movimiento (auxiliares) reciben asientos; las demás agrupan.
+  postable   Boolean  @default(true)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  @@unique([tenantId, code])
+  @@rls
+}
+
+/// Mes contable. Un mes cerrado no admite asientos nuevos ni cambios (se aplica en el motor contable).
+model AccountingPeriod {
+  id          String    @id @default(uuid())
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  year        Int
+  month       Int
+  /// OPEN | CLOSED
+  status      String    @default("OPEN")
+  closedAt    DateTime?
+  closedById  String?
+  reopenedAt  DateTime?
+  note        String?
+  createdAt   DateTime  @default(now())
+
+  @@unique([tenantId, year, month])
+  @@rls
+}
+
+/// Regla que dice qué asiento genera cada hecho del negocio (venta, costo, compra, cobro…). Se pueden ver y desactivar.
+model AccountingRule {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Hecho que la dispara: SALE | SALE_COST | CREDIT_NOTE | PURCHASE_RECEIVED | PAYMENT_RECEIVED | EXPENSE_PAID …
+  event     String
+  name      String
+  /// [{ side: "D"|"C", account: "1105", amount: "total"|"subtotal"|"tax"|"cost"|"payment"|"withholding", label }]
+  lines     Json
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([tenantId, event])
+  @@rls
+}
+
+/// Centro de costo o sucursal: dimensión analítica de cada asiento.
+model CostCenter {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  code      String
+  name      String
+  /// CENTER | BRANCH
+  kind      String   @default("CENTER")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([tenantId, code])
+  @@rls
+}
+
+
+/// Asiento contable de partida doble. El libro mayor es de solo agregar: un asiento NO se edita ni se borra; se corrige
+/// con otro asiento que lo reversa. Cada asiento encadena el sello (hash) del anterior para detectar cualquier alteración.
+model JournalEntry {
+  id           String   @id @default(uuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Consecutivo por negocio.
+  number       Int
+  /// Fecha contable AAAA-MM-DD (define el período).
+  date         String
+  description  String
+  /// Regla o hecho que lo generó (SALE, PAYMENT_RECEIVED, MANUAL, REVERSAL…).
+  event        String
+  /// DOCUMENT | PAYMENT | STOCK | MANUAL: de qué sale, para trazarlo y reversarlo.
+  sourceType   String
+  sourceId     String?
+  /// Si este asiento reversa a otro.
+  reversalOfId String?
+  /// Sello: SHA-256 de (sello anterior + contenido). Cadena que hace evidente cualquier cambio.
+  hash         String
+  createdById  String?
+  createdAt    DateTime @default(now())
+  lines        JournalLine[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId, date])
+  @@index([tenantId, sourceType, sourceId])
+  @@rls
+}
+
+model JournalLine {
+  id           String       @id @default(uuid())
+  tenantId     String
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  entryId      String
+  entry        JournalEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  accountCode  String
+  debit        Decimal      @default(0)
+  credit       Decimal      @default(0)
+  label        String?
+  /// Dimensiones analíticas: tercero y centro de costo de cada línea.
+  partyId      String?
+  costCenterId String?
+
+  @@index([tenantId, accountCode])
+  @@index([entryId])
+  @@rls
+}
+
+
+/// Foto diaria de la Presencia del negocio (una por día): puntaje de la fase A, sus pilares y cuántos se miden.
+/// Sirve para la tendencia (¿sube o baja?) sin recalcular el pasado.
+model PresenceSnapshot {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// AAAA-MM-DD (hora de Colombia).
+  day       String
+  score     Int
+  /// Cobertura: % de los pilares verificables que ya se miden.
+  coverage  Int
+  /// A | B_READY
+  phase     String
+  /// [{ key, score|null, verified }]
+  pillars   Json
+  updatedAt temporal.updatedAt()
+
+  @@unique([tenantId, day])
+  @@rls
+}
+
+
+/// Mini-sitio público del negocio (`/s/<siteSlug>`): plantilla, textos, color y qué se muestra. Un negocio, un sitio.
+model SiteConfig {
+  id           String   @id @default(uuid())
+  tenantId     String   @unique
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  enabled      Boolean  @default(false)
+  /// Dirección pública del sitio, única en toda la plataforma (editable).
+  siteSlug     String   @unique
+  /// clasica | moderna | oscura | minimal
+  template     String   @default("clasica")
+  /// Título y descripción para buscadores (SEO).
+  title        String?
+  description  String?
+  heroTitle    String?
+  heroSubtitle String?
+  about        String?
+  accent       String   @default("#D4AF37")
+  showCatalog  Boolean  @default(true)
+  showMap      Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    temporal.updatedAt()
+
+  @@rls
+}
+
+
+/// Pedido de la tienda en línea (mini-sitio): el cliente deja sus datos y el pedido espera el pago por el enlace de cobro
+/// (o la confirmación manual de una transferencia). Al pagarse, descuenta existencias y deja su documento de venta.
+model StoreOrder {
+  id                 String    @id @default(uuid())
+  tenantId           String
+  tenant             Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Consecutivo por negocio (T-0001).
+  number             Int
+  /// PENDING_PAYMENT | PAID | CANCELED | ABANDONED
+  status             String    @default("PENDING_PAYMENT")
+  customerName       String
+  phone              String
+  email              String?
+  address            String?
+  city               String?
+  notes              String?
+  total              Decimal
+  /// Cobro en línea del pedido (su enlace y su estado oficial).
+  intentId           String?
+  /// Documento de venta que deja al pagarse.
+  documentId         String?
+  /// Aviso para revisar a mano (p. ej. se pagó sin existencias suficientes).
+  review             String?
+  /// De dónde llegó el cliente: { source, medium, campaign } (UTM).
+  origin             Json?
+  paidAt             DateTime?
+  abandonedNotifiedAt DateTime?
+  createdAt          DateTime  @default(now())
+  lines              StoreOrderLine[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId, status])
+  @@rls
+}
+
+model StoreOrderLine {
+  id        String     @id @default(uuid())
+  tenantId  String
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orderId   String
+  order     StoreOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  name      String
+  quantity  Int
+  unitPrice Decimal
+  taxRatePct Decimal   @default(0)
+
+  @@index([orderId])
+  @@rls
+}
+
+
+/// Ficha de Google Business (Maps) del negocio, leída por la API de Google Places con la llave del negocio: lo que
+/// Google muestra de él (nombre, dirección, teléfono, sitio, calificación y reseñas) para compararlo con lo que dice NEXUS.
+model GoogleListing {
+  id          String    @id @default(uuid())
+  tenantId    String    @unique
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// ID de lugar de Google (ChIJ…).
+  placeId     String
+  /// PENDING | OK | ERROR
+  status      String    @default("PENDING")
+  name        String?
+  address     String?
+  phone       String?
+  website     String?
+  rating      Decimal?
+  ratingCount Int?
+  syncedAt    DateTime?
+  lastError   String?
+  createdAt   DateTime  @default(now())
+
+  @@rls
+}
+
+
+/// Enlace corto con UTM para una campaña (`/l/<código>`): redirige al sitio o la tienda del negocio con su origen marcado y cuenta los clics.
+model TrackedLink {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Código corto único en toda la plataforma.
+  code        String   @unique
+  name        String
+  /// Ruta dentro del sitio del negocio: "" (inicio) o "/p/<id>".
+  path        String   @default("")
+  utmSource   String
+  utmMedium   String
+  utmCampaign String
+  /// Lo invertido en la campaña (para comparar contra lo que trajo).
+  spend       Decimal  @default(0)
+  clicks      Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
+  @@rls
+}
+
+/// Contacto que llega por el formulario del sitio, con su origen.
+model ContactLead {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  phone     String
+  email     String?
+  message   String?
+  /// { source, medium, campaign } o vacío (directo).
+  origin    Json?
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@rls
+}
+
+/// Reseña de un cliente: interna (enlace de reseña del negocio) o de Google. Las de 1–2 estrellas disparan una alerta.
+model Review {
+  id           String    @id @default(uuid())
+  tenantId     String
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// INTERNAL | GOOGLE
+  source       String    @default("INTERNAL")
+  rating       Int
+  comment      String?
+  customerName String?
+  contact      String?
+  /// NEW | ALERTED | HANDLED
+  status       String    @default("NEW")
+  handledAt    DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([tenantId, createdAt])
   @@rls
 }

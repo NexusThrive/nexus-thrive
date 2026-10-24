@@ -1,0 +1,641 @@
+[
+  {
+    "id": "table.ContactLead",
+    "label": "Create table \"ContactLead\"",
+    "summary": "Creates table \"ContactLead\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ContactLead"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ContactLead\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ContactLead\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ContactLead\"",
+        "sql": "CREATE TABLE \"public\".\"ContactLead\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"email\" text,\n  \"id\" text NOT NULL,\n  \"message\" text,\n  \"name\" text NOT NULL,\n  \"origin\" json,\n  \"phone\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ContactLead\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ContactLead\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Review",
+    "label": "Create table \"Review\"",
+    "summary": "Creates table \"Review\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Review"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Review\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Review\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Review\"",
+        "sql": "CREATE TABLE \"public\".\"Review\" (\n  \"comment\" text,\n  \"contact\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"customerName\" text,\n  \"handledAt\" timestamptz,\n  \"id\" text NOT NULL,\n  \"rating\" int4 NOT NULL,\n  \"source\" text DEFAULT 'INTERNAL' NOT NULL,\n  \"status\" text DEFAULT 'NEW' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Review\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Review\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.TrackedLink",
+    "label": "Create table \"TrackedLink\"",
+    "summary": "Creates table \"TrackedLink\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "TrackedLink"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"TrackedLink\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TrackedLink\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"TrackedLink\"",
+        "sql": "CREATE TABLE \"public\".\"TrackedLink\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"clicks\" int4 DEFAULT 0 NOT NULL,\n  \"code\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"path\" text DEFAULT '' NOT NULL,\n  \"spend\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"utmCampaign\" text NOT NULL,\n  \"utmMedium\" text NOT NULL,\n  \"utmSource\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"TrackedLink\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TrackedLink\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.StoreOrder.origin",
+    "label": "Add column \"origin\" to \"StoreOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "origin",
+        "table": "StoreOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"origin\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StoreOrder",
+          "origin"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"origin\"",
+        "sql": "ALTER TABLE \"public\".\"StoreOrder\" ADD COLUMN \"origin\" json"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"origin\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StoreOrder",
+          "origin"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.TrackedLink.TrackedLink_code_key",
+    "label": "Add unique constraint on \"TrackedLink\" (code)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "TrackedLink_code_key",
+        "table": "TrackedLink"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"TrackedLink_code_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "TrackedLink_code_key",
+          "public",
+          "\"public\".\"TrackedLink\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"TrackedLink_code_key\"",
+        "sql": "ALTER TABLE \"public\".\"TrackedLink\" ADD CONSTRAINT \"TrackedLink_code_key\" UNIQUE (\"code\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"TrackedLink_code_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "TrackedLink_code_key",
+          "public",
+          "\"public\".\"TrackedLink\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ContactLead.ContactLead_tenantId_createdAt_idx_88162366",
+    "label": "Create index \"ContactLead_tenantId_createdAt_idx_88162366\" on \"ContactLead\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ContactLead_tenantId_createdAt_idx_88162366",
+        "table": "ContactLead"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ContactLead_tenantId_createdAt_idx_88162366\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ContactLead_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ContactLead_tenantId_createdAt_idx_88162366\"",
+        "sql": "CREATE INDEX \"ContactLead_tenantId_createdAt_idx_88162366\" ON \"public\".\"ContactLead\" (\"tenantId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ContactLead_tenantId_createdAt_idx_88162366\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ContactLead_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ContactLead.ContactLead_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ContactLead_tenantId_idx_c93ed4f1\" on \"ContactLead\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ContactLead_tenantId_idx_c93ed4f1",
+        "table": "ContactLead"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ContactLead_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ContactLead_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ContactLead_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ContactLead_tenantId_idx_c93ed4f1\" ON \"public\".\"ContactLead\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ContactLead_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ContactLead_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Review.Review_tenantId_createdAt_idx_88162366",
+    "label": "Create index \"Review_tenantId_createdAt_idx_88162366\" on \"Review\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Review_tenantId_createdAt_idx_88162366",
+        "table": "Review"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Review_tenantId_createdAt_idx_88162366\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Review_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Review_tenantId_createdAt_idx_88162366\"",
+        "sql": "CREATE INDEX \"Review_tenantId_createdAt_idx_88162366\" ON \"public\".\"Review\" (\"tenantId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Review_tenantId_createdAt_idx_88162366\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Review_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Review.Review_tenantId_idx_c93ed4f1",
+    "label": "Create index \"Review_tenantId_idx_c93ed4f1\" on \"Review\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Review_tenantId_idx_c93ed4f1",
+        "table": "Review"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Review_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Review_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Review_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"Review_tenantId_idx_c93ed4f1\" ON \"public\".\"Review\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Review_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Review_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.TrackedLink.TrackedLink_tenantId_idx_c93ed4f1",
+    "label": "Create index \"TrackedLink_tenantId_idx_c93ed4f1\" on \"TrackedLink\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "TrackedLink_tenantId_idx_c93ed4f1",
+        "table": "TrackedLink"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"TrackedLink_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TrackedLink_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"TrackedLink_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"TrackedLink_tenantId_idx_c93ed4f1\" ON \"public\".\"TrackedLink\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"TrackedLink_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TrackedLink_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ContactLead.ContactLead_tenantId_fkey",
+    "label": "Add foreign key \"ContactLead_tenantId_fkey\" on \"ContactLead\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ContactLead_tenantId_fkey",
+        "table": "ContactLead"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ContactLead_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ContactLead_tenantId_fkey",
+          "public",
+          "\"public\".\"ContactLead\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ContactLead_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ContactLead\"\nADD CONSTRAINT \"ContactLead_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ContactLead_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ContactLead_tenantId_fkey",
+          "public",
+          "\"public\".\"ContactLead\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Review.Review_tenantId_fkey",
+    "label": "Add foreign key \"Review_tenantId_fkey\" on \"Review\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Review_tenantId_fkey",
+        "table": "Review"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Review_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Review_tenantId_fkey",
+          "public",
+          "\"public\".\"Review\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Review_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Review\"\nADD CONSTRAINT \"Review_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Review_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Review_tenantId_fkey",
+          "public",
+          "\"public\".\"Review\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.TrackedLink.TrackedLink_tenantId_fkey",
+    "label": "Add foreign key \"TrackedLink_tenantId_fkey\" on \"TrackedLink\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "TrackedLink_tenantId_fkey",
+        "table": "TrackedLink"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"TrackedLink_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "TrackedLink_tenantId_fkey",
+          "public",
+          "\"public\".\"TrackedLink\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"TrackedLink_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"TrackedLink\"\nADD CONSTRAINT \"TrackedLink_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"TrackedLink_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "TrackedLink_tenantId_fkey",
+          "public",
+          "\"public\".\"TrackedLink\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.ContactLead",
+    "label": "Enable row-level security on \"ContactLead\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "ContactLead"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"ContactLead\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ContactLead"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"ContactLead\"",
+        "sql": "ALTER TABLE \"public\".\"ContactLead\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"ContactLead\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "ContactLead"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.Review",
+    "label": "Enable row-level security on \"Review\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "Review"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"Review\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Review"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"Review\"",
+        "sql": "ALTER TABLE \"public\".\"Review\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"Review\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "Review"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.TrackedLink",
+    "label": "Enable row-level security on \"TrackedLink\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "TrackedLink"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"TrackedLink\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "TrackedLink"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"TrackedLink\"",
+        "sql": "ALTER TABLE \"public\".\"TrackedLink\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"TrackedLink\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "TrackedLink"
+        ]
+      }
+    ]
+  }
+]

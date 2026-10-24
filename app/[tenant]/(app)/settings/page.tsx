@@ -120,7 +120,6 @@ export default async function SettingsPage({
       tenantSlug={tenantRecord.slug}
       canManage={canManage}
       profile={profile}
-      modules={modules}
       team={team}
       apiKeys={apiKeys}
       systemInfo={systemInfo}

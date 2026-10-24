@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, test } from "vitest";
 import { adapterFor } from "./registry";
 import { sandboxPayments, sandboxSignature } from "./sandbox";
+import { wompiPayments } from "./wompi";
 
 beforeAll(() => {
   process.env.WEBHOOK_ENCRYPTION_KEY = "c".repeat(64);
@@ -27,6 +28,8 @@ describe("pasarela de prueba (adaptador)", () => {
   test("el registro encuentra adaptadores por proveedor y tipo", () => {
     expect(adapterFor("sandbox", "PAYMENT")).toBe(sandboxPayments);
     expect(adapterFor("sandbox", "EINVOICE")).toBeUndefined();
-    expect(adapterFor("wompi")).toBeUndefined(); // aún sin contratar
+    expect(adapterFor("wompi", "PAYMENT")).toBe(wompiPayments);
+    expect(adapterFor("wompi", "EINVOICE")).toBeUndefined();
+    expect(adapterFor("otro-que-no-existe")).toBeUndefined();
   });
 });

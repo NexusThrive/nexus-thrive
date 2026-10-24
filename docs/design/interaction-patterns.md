@@ -77,3 +77,10 @@ una pantalla, un formulario o una acción, se elige el patrón con esta guía.
 
 La lista de cada formulario existente y su patrón está en
 [auditoria-2026-10.md §4](auditoria-2026-10.md#4-formularios).
+
+## Modales: pequeño y avanzado
+
+Hay dos tipos y no se mezclan:
+
+- **Pequeño** (`ResponsiveSheet` / `FormDialog`, `size` sm–lg): una acción puntual con uno o dos campos (cobrar, anular, emitir una nota, nueva terminal). Se abre **encima** de lo que se está viendo y no lo reemplaza.
+- **Avanzado** (`ResponsiveSheet size="full"`, p. ej. `DocumentViewer`): pantalla completa para ver o trabajar un documento entero. **Facturas, cuentas de cobro, recibos y notas crédito y débito se ven así**, con su estilo de factura (emisor, adquirente, líneas, impuestos, retenciones, saldo, documentos relacionados) e impresión limpia. Las acciones rápidas del documento (modales pequeños) se abren sobre él.

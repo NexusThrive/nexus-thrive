@@ -151,18 +151,18 @@ de «hecho»). No se edita a mano.
 | **12** | Vende y controla | Importar y exportar clientes y catálogo | — | — | base técnica | — | pendiente |
 | **13** | Vende y controla | Impuestos y numeración por resolución | VII | N1, N2 | 0/4 | `PR-13-impuestos-y-numeracion` | pendiente |
 | **14** | Vende y controla | Cartera: cuentas por cobrar y por pagar | — | — | base técnica | `PR-14-cartera` | pendiente |
-| **15** | Vende y controla | POS I: terminales, turnos y venta multilínea | V | N2 | 0/3 | `PR-15-pos-terminales-turnos` | pendiente |
-| **16** | Vende y controla | POS II: impresión, código de barras y devoluciones | V | N2 | 0/3 | — | pendiente |
-| **17** | Cobra y factura | Pagos: intención de cobro, Nequi y conciliación | V | N1, N2 | 0/8 | `PR-17-pagos-intenciones-conciliacion` | pendiente |
-| **18** | Cobra y factura | Facturación electrónica: puerto sin proveedor | VII | N1, N2 | 0/7 | `PR-18-facturacion-electronica` | pendiente |
-| **19** | Cobra y factura | Adaptador de pagos Wompi | V | N2 | 0/1 | — | pendiente |
+| **15** | Vende y controla | POS I: terminales, turnos y venta multilínea | V | N2 | 3/3 | `PR-15-pos-terminales-turnos` | hecho |
+| **16** | Vende y controla | POS II: impresión, código de barras y devoluciones | V | N2 | 3/3 | — | hecho |
+| **17** | Cobra y factura | Pagos: intención de cobro, Nequi y conciliación | V | N1, N2 | 6/8 | `PR-17-pagos-intenciones-conciliacion` | pendiente |
+| **18** | Cobra y factura | Facturación electrónica: puerto sin proveedor | VII | N1, N2 | 3/6 | `PR-18-facturacion-electronica` | pendiente |
+| **19** | Cobra y factura | Adaptador de pagos Wompi | V | N2 | 1/1 | — | hecho |
 | **20** | Cobra y factura | Proveedor tecnológico DIAN | VII | N2 | 0/1 | — | pendiente |
-| **21** | Contabilidad | Contabilidad I: plan de cuentas, períodos y reglas | I, VII | N1, N2 | 0/4 | `PR-21-contabilidad-plan-y-periodos` | pendiente |
-| **22** | Contabilidad | Contabilidad II: asientos automáticos y partida doble | I, VII | N1, N2 | 0/4 | `PR-22-contabilidad-asientos` | pendiente |
-| **23** | Contabilidad | Estados financieros y exportación al contador | VII | N1, N2 | 0/4 | — | pendiente |
-| **24** | Visible y vende en línea | Presencia v2: pilares, fases y tendencia | II | N2 | 0/1 | `PR-24-presencia-v2` | pendiente |
-| **25** | Visible y vende en línea | Mini-sitio con catálogo y SEO técnico | II | N1 | 0/6 | `PR-25-sitio-y-catalogo-publico` | pendiente |
-| **26** | Visible y vende en línea | Tienda en línea: carrito, pedido y pago | V | N1 | 0/5 | `PR-26-tienda-carrito-y-envios` | pendiente |
+| **21** | Contabilidad | Contabilidad I: plan de cuentas, períodos y reglas | I, VII | N1, N2 | 4/4 | `PR-21-contabilidad-plan-y-periodos` | hecho |
+| **22** | Contabilidad | Contabilidad II: asientos automáticos y partida doble | I, VII | N1, N2 | 3/4 | `PR-22-contabilidad-asientos` | pendiente |
+| **23** | Contabilidad | Estados financieros y exportación al contador | VII | N1, N2 | 4/4 | — | hecho |
+| **24** | Visible y vende en línea | Presencia v2: pilares, fases y tendencia | II | N2 | 1/1 | `PR-24-presencia-v2` | hecho |
+| **25** | Visible y vende en línea | Mini-sitio con catálogo y SEO técnico | II | N1 | 4/6 | `PR-25-sitio-y-catalogo-publico` | pendiente |
+| **26** | Visible y vende en línea | Tienda en línea: carrito, pedido y pago | V | N1 | 2/5 | `PR-26-tienda-carrito-y-envios` | pendiente |
 | **27** | Visible y vende en línea | SEO local y Google Business | II | N1 | 0/1 | — | pendiente |
 | **28** | Visible y vende en línea | Reputación y atribución de ventas | II, III | N1 | 0/5 | `PR-28-reputacion-y-atribucion` | pendiente |
 | **29** | Pulso del negocio | Calculadores de madurez (fase B) | IX | N2 | 0/1 | — | pendiente |
@@ -357,9 +357,9 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Un cajero abre turno, vende 5 líneas con efectivo + Nequi y cierra con arqueo; todo descuenta inventario.
 - **Casillas que marca:**
   - [`V.03 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/03-Punto-de-Venta-Fisico-y-Movil-POS/README.md)
-    - [ ] Descuentos, propinas y pago mixto
-    - [ ] Turnos por cajero
-    - [ ] Funciona en celular y tablet.
+    - [x] Descuentos, propinas y pago mixto
+    - [x] Turnos por cajero
+    - [x] Funciona en celular y tablet.
 
 ### PR-16 · POS II: impresión, código de barras y devoluciones
 
@@ -370,10 +370,10 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Escanear agrega la línea; una devolución genera su nota crédito y reingresa el stock.
 - **Casillas que marca:**
   - [`V.03 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/03-Punto-de-Venta-Fisico-y-Movil-POS/README.md)
-    - [ ] Impresoras térmicas
+    - [x] Impresoras térmicas
   - [`V.06 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/06-Ventas-Pedidos-y-Entregas/README.md)
-    - [ ] Notas crédito y débito
-    - [ ] Devoluciones
+    - [x] Notas crédito y débito
+    - [x] Devoluciones
 
 ### PR-17 · Pagos: intención de cobro, Nequi y conciliación
 
@@ -385,15 +385,15 @@ de «hecho»). No se edita a mano.
 - **Casillas que marca:**
   - [`V.00 · N1`](capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md)
     - [ ] Pago con tarjeta, PSE y Nequi desde un checkout alojado por la pasarela.
-    - [ ] Confirmación de pago por webhook y estado visible en la orden.
+    - [x] Confirmación de pago por webhook y estado visible en la orden.
     - [ ] Nequi Negocios: QR dinámico e intención de cobro; solo se registra el ingreso con el estado oficial
   - [`V.00 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md)
-    - [ ] Reembolsos totales y parciales
-    - [ ] Conciliación diaria
+    - [x] Reembolsos totales y parciales
+    - [x] Conciliación diaria
   - [`V.01 · N1`](capas/V-Ventas-Digitales-Comercio-y-Pagos/01-Enlaces-y-Solicitudes-de-Cobro/README.md)
-    - [ ] Link de pago
-    - [ ] Botón de pago
-    - [ ] Estado del link (pendiente, pagado, vencido).
+    - [x] Link de pago
+    - [x] Botón de pago
+    - [x] Estado del link (pendiente, pagado, vencido).
 
 ### PR-18 · Facturación electrónica: puerto sin proveedor
 
@@ -405,12 +405,11 @@ de «hecho»). No se edita a mano.
 - **Casillas que marca:**
   - [`VII.04 · N1`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md)
     - [ ] Factura electrónica
-    - [ ] Datos del emisor y del adquirente
+    - [x] Datos del emisor y del adquirente
     - [ ] PDF y XML
-    - [ ] Documento soporte
-    - [ ] Factura electrónica por proveedor tecnológico detrás de un puerto (`EInvoicePort`); no firmar XML propio
+    - [x] Documento soporte
   - [`VII.04 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md)
-    - [ ] Factura automática
+    - [x] Factura automática
     - [ ] Estado ante la DIAN
 
 ### PR-19 · Adaptador de pagos Wompi
@@ -422,7 +421,7 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Pago de prueba de punta a punta; la conciliación contra el reporte del proveedor cuadra. (Cuando se decida.)
 - **Casillas que marca:**
   - [`V.00 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md)
-    - [ ] Varias pasarelas
+    - [x] Varias pasarelas
 
 ### PR-20 · Proveedor tecnológico DIAN
 
@@ -444,12 +443,12 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Un negocio nuevo trae su PUC; las reglas iniciales se pueden ver y desactivar.
 - **Casillas que marca:**
   - [`I.00 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/00-Nucleo-Transversal-y-Modelo-de-Tercero-Unico/README.md)
-    - [ ] Dimensiones analíticas
-    - [ ] Periodos y cierres
+    - [x] Dimensiones analíticas
+    - [x] Periodos y cierres
   - [`VII.05 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md)
-    - [ ] Plan de cuentas (PUC)
+    - [x] Plan de cuentas (PUC)
   - [`VII.06 · N1`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/06-Presupuestos-y-Centros-de-Costo/README.md)
-    - [ ] Centros de costo y sucursales
+    - [x] Centros de costo y sucursales
 
 ### PR-22 · Contabilidad II: asientos automáticos y partida doble
 
@@ -460,10 +459,10 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Una venta con IVA, costo y cobro genera un asiento cuadrado y trazable; anular lo reversa; cerrar el mes bloquea cambios.
 - **Casillas que marca:**
   - [`I.00 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/00-Nucleo-Transversal-y-Modelo-de-Tercero-Unico/README.md)
-    - [ ] Motor contable
-    - [ ] Libro mayor inalterable
+    - [x] Motor contable
+    - [x] Libro mayor inalterable
   - [`VII.05 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md)
-    - [ ] Asientos automáticos
+    - [x] Asientos automáticos
     - [ ] Terceros y centros de costo en cada asiento
 
 ### PR-23 · Estados financieros y exportación al contador
@@ -475,11 +474,11 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** El balance de prueba cuadra con una muestra revisada por un contador; el archivo se importa en su software.
 - **Casillas que marca:**
   - [`VII.05 · N1`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md)
-    - [ ] Reportes simples
-    - [ ] Exportación
+    - [x] Reportes simples
+    - [x] Exportación
   - [`VII.05 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md)
-    - [ ] Libros auxiliares, libro diario, libro mayor y balance de prueba.
-    - [ ] Reportes para el contador
+    - [x] Libros auxiliares, libro diario, libro mayor y balance de prueba.
+    - [x] Reportes para el contador
 
 ### PR-24 · Presencia v2: pilares, fases y tendencia
 
@@ -490,7 +489,7 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** La barra muestra la fase A con pilares nuevos y su tendencia; `get_presence` responde por MCP; se recalcula por eventos.
 - **Casillas que marca:**
   - [`II.00 · N2`](capas/II-Visibilidad-Captacion-y-Presencia-Digital/00-Sitios-Web-Landing-Pages-y-Cms/README.md)
-    - [ ] Barra de Presencia en dos fases: visibilidad **verificada** (venta en línea, reputación, atribución) y, cuando está llena, madurez NEXUS
+    - [x] Barra de Presencia en dos fases: visibilidad **verificada** (venta en línea, reputación, atribución) y, cuando está llena, madurez NEXUS
 
 ### PR-25 · Mini-sitio con catálogo y SEO técnico
 
@@ -503,11 +502,11 @@ de «hecho»). No se edita a mano.
   - [`II.00 · N1`](capas/II-Visibilidad-Captacion-y-Presencia-Digital/00-Sitios-Web-Landing-Pages-y-Cms/README.md)
     - [ ] Plantillas por vertical, con edición de textos, imágenes y colores.
     - [ ] Subdominio automático (`negocio.nexusthrive.co`).
-    - [ ] Botón flotante de WhatsApp, mapa y datos de contacto.
-    - [ ] Diseño responsive (celular primero).
+    - [x] Botón flotante de WhatsApp, mapa y datos de contacto.
+    - [x] Diseño responsive (celular primero).
   - [`II.01 · N1`](capas/II-Visibilidad-Captacion-y-Presencia-Digital/01-SEO-Tecnico-y-Posicionamiento-Local/README.md)
-    - [ ] Títulos, descripciones y URLs editables
-    - [ ] Sitemap, robots y etiquetas básicas automáticas.
+    - [x] Títulos, descripciones y URLs editables
+    - [x] Sitemap, robots y etiquetas básicas automáticas.
 
 ### PR-26 · Tienda en línea: carrito, pedido y pago
 
@@ -519,8 +518,8 @@ de «hecho»). No se edita a mano.
 - **Casillas que marca:**
   - [`V.04 · N1`](capas/V-Ventas-Digitales-Comercio-y-Pagos/04-Comercio-Electronico/README.md)
     - [ ] Catálogo con fotos, descripción, precio y categoría.
-    - [ ] Carrito y checkout con datos del cliente.
-    - [ ] Pago por link o por transferencia con confirmación manual.
+    - [x] Carrito y checkout con datos del cliente.
+    - [x] Pago por link o por transferencia con confirmación manual.
     - [ ] Pedido que llega por correo y WhatsApp al negocio.
   - [`V.05 · N1`](capas/V-Ventas-Digitales-Comercio-y-Pagos/05-Reservas-y-Control-de-Disponibilidad/README.md)
     - [ ] Formulario de solicitud de reserva

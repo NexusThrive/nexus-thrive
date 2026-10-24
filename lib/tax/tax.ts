@@ -132,7 +132,7 @@ export function validateResolution(input: { documentKind: string; prefix: string
 export const fiscalCode = (prefix: string, n: number): string => `${prefix}${n}`;
 
 /** Tipos de documento que se numeran con resolución (cotizaciones y pedidos llevan consecutivo interno). */
-export const NUMBERED_KINDS = ["SALE", "BILL", "RECEIPT", "CREDIT_NOTE"] as const;
+export const NUMBERED_KINDS = ["SALE", "BILL", "RECEIPT", "CREDIT_NOTE", "DEBIT_NOTE"] as const;
 
 /** Fecha de hoy en Colombia (UTC−5) como AAAA-MM-DD: la vigencia se mide por día calendario local. */
 export const todayCO = (now: number = Date.now()): string => new Date(now - 5 * 3_600_000).toISOString().slice(0, 10);

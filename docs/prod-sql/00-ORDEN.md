@@ -36,6 +36,16 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 24 | `2026-10-24-traslados-conteos-reposicion.sql` | Traslados entre bodegas, conteos físicos y `Product.maxStock/reorderPoint` (aditivo; requiere los pasos 20 y 22) | generado de la migración |
 | 25 | `2026-10-24-impuestos-y-numeracion.sql` | `TaxRate` y `NumberingResolution` (impuestos con vigencia y numeración por resolución) y en `Invoice`: `resolutionId`, `prefix`, `withholdingTotal`, `withholdings` (aditivo) | generado de la migración |
 | 26 | `2026-10-24-cartera.sql` | Cartera: `Invoice.paidTotal`, `SupplierInvoice.paidTotal` y la tabla `SupplierPayment` (aditivo; requiere los pasos 22 y 25) | generado de la migración |
+| 27 | `2026-10-24-pos-terminales.sql` | Punto de venta: tabla `PosTerminal`, `CashSession.terminalId` e `Invoice.tipTotal` (aditivo; requiere los pasos 25 y 26) | generado de la migración |
+| 28 | `2026-10-24-pagos-cobros-en-linea.sql` | Cobros en línea: `PaymentIntent`, `PaymentRefund` y `ReconciliationRun` (aditivo; requiere los pasos 26 y 27) | generado de la migración |
+| 29 | `2026-10-24-facturacion-electronica.sql` | Facturación electrónica: tabla `FiscalDocument` y `Tenant.einvoiceEnabled` (aditivo; requiere el paso 28) | generado de la migración |
+| 30 | `2026-10-24-contabilidad-plan-y-periodos.sql` | Contabilidad I: `Account` (PUC), `AccountingPeriod`, `AccountingRule` y `CostCenter` (aditivo) | generado de la migración |
+| 31 | `2026-10-24-contabilidad-asientos.sql` | Contabilidad II: `JournalEntry`, `JournalLine` y `Tenant.accountingEnabled` (aditivo; requiere el paso 30) | generado de la migración |
+| 32 | `2026-10-24-presencia-v2.sql` | Presencia v2: tabla `PresenceSnapshot` (foto diaria para la tendencia; aditivo) | generado de la migración |
+| 33 | `2026-10-24-mini-sitio.sql` | Mini-sitio: tabla `SiteConfig` (aditivo) | generado de la migración |
+| 34 | `2026-10-24-tienda-en-linea.sql` | Tienda en línea: `StoreOrder` y `StoreOrderLine` (aditivo; requiere los pasos 28 y 33) | generado de la migración |
+| 35 | `2026-10-24-google-business.sql` | Ficha de Google Business: tabla `GoogleListing` (aditivo) | generado de la migración |
+| 36 | `2026-10-24-reputacion-y-atribucion.sql` | Reputación y atribución: `TrackedLink`, `ContactLead`, `Review` y `StoreOrder.origin` (aditivo; requiere el paso 34) | generado de la migración |
 
 ## Estado: producción reconstruida desde las migraciones (camino A, 2026-10-23)
 

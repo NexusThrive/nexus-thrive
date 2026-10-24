@@ -12,7 +12,7 @@ import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { amountInWords, invoiceTotal, type InvoiceKind } from "@/lib/business/invoice";
 import { formatCurrency } from "@/lib/format";
-import { createInvoiceAction } from "../actions";
+import { createInvoiceAction } from "@/app/[tenant]/(app)/billing/actions";
 import { Select } from "@/components/atoms/select";
 
 type Line = { key: number; productId: string; description: string; quantity: string; unitPrice: number | null };
