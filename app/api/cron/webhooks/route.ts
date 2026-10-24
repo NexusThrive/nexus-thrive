@@ -1,8 +1,9 @@
 import { timingSafeEqual } from "node:crypto";
 import { dispatchPending } from "@/lib/events/dispatcher";
+import { processPendingProviderEvents } from "@/lib/providers/inbound";
 
 /**
- * Despacha el outbox: reparte eventos nuevos y envía/reintenta webhooks.
+ * Reintenta eventos de proveedores sin procesar y despacha el outbox: reparte eventos nuevos y envía/reintenta webhooks.
  * Se llama por un cron (Vercel Cron, n8n o `curl`) con
  * `Authorization: Bearer $CRON_SECRET`. Sin `CRON_SECRET` configurado, responde 503.
  */
@@ -14,5 +15,6 @@ export async function GET(request: Request) {
   const given = Buffer.from(request.headers.get("authorization") ?? "");
   const expected = Buffer.from(`Bearer ${secret}`);
   if (given.length !== expected.length || !timingSafeEqual(given, expected)) return Response.json({ error: "No autorizado." }, { status: 401 });
-  return Response.json(await dispatchPending());
+  const reprocessed = await processPendingProviderEvents();
+  return Response.json({ ...(await dispatchPending()), providerEventsReprocessed: reprocessed });
 }

@@ -383,6 +383,8 @@ model Tenant {
   webhookEndpoints   WebhookEndpoint[]
   webhookDeliveries  WebhookDelivery[]
   usageCounters      UsageCounter[]
+  externalConnections ExternalConnection[]
+  providerEvents     ProviderEvent[]
   supportTickets     SupportTicket[]
   charges            Charge[]
   benefitRedemptions BenefitRedemption[]
@@ -2399,5 +2401,59 @@ model UsageCounter {
 
   @@unique([tenantId, meter, period])
   @@index([tenantId, period])
+  @@rls
+}
+
+/// Conexión de un negocio con un proveedor externo (pasarela de pago,
+/// facturación electrónica, mensajería…) detrás de un «puerto». Las credenciales
+/// se guardan cifradas; nunca salen por la API ni la pantalla.
+model ExternalConnection {
+  id               String   @id @default(uuid())
+  tenantId         String
+  tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// PAYMENT | EINVOICE | MESSAGING | SHIPPING
+  kind             String
+  /// sandbox | wompi | nequi | whatsapp | <proveedor DIAN>…
+  provider         String
+  /// sandbox | production
+  environment      String   @default("sandbox")
+  /// DISCONNECTED | CONNECTED | ERROR
+  status           String   @default("DISCONNECTED")
+  credentialsEnc   String?
+  /// Clave con la que se cifró (permite rotarla).
+  credentialsKeyId String?
+  config           Json?
+  lastCheckedAt    DateTime?
+  lastError        String?
+  createdAt        DateTime @default(now())
+  updatedAt        temporal.updatedAt()
+  events           ProviderEvent[]
+
+  @@unique([tenantId, kind, provider, environment])
+  @@index([tenantId, kind])
+  @@rls
+}
+
+/// Evento que un proveedor envía a NEXUS (webhook entrante). Solo se guarda con
+/// firma válida y una sola vez por (negocio, proveedor, id externo).
+model ProviderEvent {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  connectionId  String
+  connection    ExternalConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  provider      String
+  kind          String
+  /// Tipo normalizado (`payment.succeeded`…).
+  eventType     String
+  externalId    String
+  rawBody       String
+  processedAt   DateTime?
+  error         String?
+  createdAt     DateTime @default(now())
+
+  @@unique([tenantId, provider, externalId])
+  @@index([tenantId, createdAt])
+  @@index([processedAt])
   @@rls
 }

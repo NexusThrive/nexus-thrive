@@ -136,6 +136,10 @@
       "model": "Expense",
       "namespace": "public"
     },
+    "ExternalConnection": {
+      "model": "ExternalConnection",
+      "namespace": "public"
+    },
     "FieldLog": {
       "model": "FieldLog",
       "namespace": "public"
@@ -226,6 +230,10 @@
     },
     "ProjectPlan": {
       "model": "ProjectPlan",
+      "namespace": "public"
+    },
+    "ProviderEvent": {
+      "model": "ProviderEvent",
       "namespace": "public"
     },
     "Quote": {
@@ -6427,6 +6435,179 @@
               "table": "Expense"
             }
           },
+          "ExternalConnection": {
+            "fields": {
+              "config": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "credentialsEnc": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "credentialsKeyId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "environment": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "kind": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "lastCheckedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "lastError": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "provider": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "events": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "connectionId"
+                  ]
+                },
+                "to": {
+                  "model": "ProviderEvent",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "config": {
+                  "column": "config"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "credentialsEnc": {
+                  "column": "credentialsEnc"
+                },
+                "credentialsKeyId": {
+                  "column": "credentialsKeyId"
+                },
+                "environment": {
+                  "column": "environment"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "kind": {
+                  "column": "kind"
+                },
+                "lastCheckedAt": {
+                  "column": "lastCheckedAt"
+                },
+                "lastError": {
+                  "column": "lastError"
+                },
+                "provider": {
+                  "column": "provider"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "ExternalConnection"
+            }
+          },
           "FieldLog": {
             "fields": {
               "createdAt": {
@@ -10691,6 +10872,160 @@
               "table": "ProjectPlan"
             }
           },
+          "ProviderEvent": {
+            "fields": {
+              "connectionId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "error": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "eventType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "externalId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "kind": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "processedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "provider": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "rawBody": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "connection": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "connectionId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ExternalConnection",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "connectionId": {
+                  "column": "connectionId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "error": {
+                  "column": "error"
+                },
+                "eventType": {
+                  "column": "eventType"
+                },
+                "externalId": {
+                  "column": "externalId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "kind": {
+                  "column": "kind"
+                },
+                "processedAt": {
+                  "column": "processedAt"
+                },
+                "provider": {
+                  "column": "provider"
+                },
+                "rawBody": {
+                  "column": "rawBody"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "ProviderEvent"
+            }
+          },
           "Quote": {
             "fields": {
               "adminPercent": {
@@ -12924,6 +13259,21 @@
                   "namespace": "public"
                 }
               },
+              "externalConnections": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "ExternalConnection",
+                  "namespace": "public"
+                }
+              },
               "fieldLogs": {
                 "cardinality": "1:N",
                 "on": {
@@ -13191,6 +13541,21 @@
                 },
                 "to": {
                   "model": "Project",
+                  "namespace": "public"
+                }
+              },
+              "providerEvents": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "ProviderEvent",
                   "namespace": "public"
                 }
               },
@@ -15445,6 +15810,11 @@
               "namespaceId": "public",
               "tableName": "Expense"
             },
+            "ExternalConnection": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ExternalConnection"
+            },
             "FieldLog": {
               "kind": "rls",
               "namespaceId": "public",
@@ -15559,6 +15929,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "ProjectPlan"
+            },
+            "ProviderEvent": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ProviderEvent"
             },
             "Quote": {
               "kind": "rls",
@@ -19861,6 +20236,140 @@
               },
               "uniques": []
             },
+            "ExternalConnection": {
+              "columns": {
+                "config": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "credentialsEnc": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "credentialsKeyId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "environment": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "sandbox"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "kind": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "lastCheckedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "lastError": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "provider": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "DISCONNECTED"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ExternalConnection"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "ExternalConnection_tenantId_idx_c93ed4f1",
+                  "prefix": "ExternalConnection_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "kind"
+                  ],
+                  "name": "ExternalConnection_tenantId_kind_idx_1e76dd5c",
+                  "prefix": "ExternalConnection_tenantId_kind_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "kind",
+                    "provider",
+                    "environment"
+                  ]
+                }
+              ]
+            },
             "FieldLog": {
               "columns": {
                 "createdAt": {
@@ -23276,6 +23785,154 @@
                 }
               ]
             },
+            "ProviderEvent": {
+              "columns": {
+                "connectionId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "error": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "eventType": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "externalId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "kind": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "processedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "provider": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "rawBody": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProviderEvent"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "connectionId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProviderEvent"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ExternalConnection"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "connectionId"
+                  ],
+                  "name": "ProviderEvent_connectionId_idx_b3eeb6ac",
+                  "prefix": "ProviderEvent_connectionId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "processedAt"
+                  ],
+                  "name": "ProviderEvent_processedAt_idx_e83f4a54",
+                  "prefix": "ProviderEvent_processedAt_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "createdAt"
+                  ],
+                  "name": "ProviderEvent_tenantId_createdAt_idx_88162366",
+                  "prefix": "ProviderEvent_tenantId_createdAt_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "ProviderEvent_tenantId_idx_c93ed4f1",
+                  "prefix": "ProviderEvent_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "provider",
+                    "externalId"
+                  ]
+                }
+              ]
+            },
             "Quote": {
               "checks": [
                 {
@@ -26613,10 +27270,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "71ace5dfb84fb9f5cb2047694abcf7ac3ff948d4a58421e95753e84700a01656"
+    "storageHash": "a1e900ea93e9219b8a1d5b0e2dbb14409bfbb2e19e0d79bd37fb989b7ef1da45"
   },
   "execution": {
-    "executionHash": "6c1aeafef78a69a6e09208c0b7f4ffc9e7eb53b4116bf2cd236b25aec36487c2",
+    "executionHash": "c5620100187f67e3fadfa9837767b7c9a601e58432eb93829b3bdae0594e1c2f",
     "mutations": {
       "defaults": [
         {
@@ -27206,6 +27863,32 @@
             "kind": "generator"
           },
           "ref": {
+            "entry": "ExternalConnection",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "ExternalConnection",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
             "entry": "FieldLog",
             "field": "id",
             "namespace": "public"
@@ -27683,6 +28366,17 @@
           "ref": {
             "entry": "ProjectPlan",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "ProviderEvent",
+            "field": "id",
             "namespace": "public"
           }
         },

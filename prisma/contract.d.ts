@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'71ace5dfb84fb9f5cb2047694abcf7ac3ff948d4a58421e95753e84700a01656'>;
+  StorageHashBase<'a1e900ea93e9219b8a1d5b0e2dbb14409bfbb2e19e0d79bd37fb989b7ef1da45'>;
 export type ExecutionHash =
-  ExecutionHashBase<'6c1aeafef78a69a6e09208c0b7f4ffc9e7eb53b4116bf2cd236b25aec36487c2'>;
+  ExecutionHashBase<'c5620100187f67e3fadfa9837767b7c9a601e58432eb93829b3bdae0594e1c2f'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -694,6 +694,21 @@ export type FieldOutputTypes = {
       readonly voidReason: CodecTypes['pg/text@1']['output'] | null;
       readonly voidedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     };
+    readonly ExternalConnection: {
+      readonly config: CodecTypes['pg/json@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly credentialsEnc: CodecTypes['pg/text@1']['output'] | null;
+      readonly credentialsKeyId: CodecTypes['pg/text@1']['output'] | null;
+      readonly environment: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly kind: CodecTypes['pg/text@1']['output'];
+      readonly lastCheckedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly lastError: CodecTypes['pg/text@1']['output'] | null;
+      readonly provider: CodecTypes['pg/text@1']['output'];
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
     readonly FieldLog: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
@@ -1050,6 +1065,19 @@ export type FieldOutputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly windowStartDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly ProviderEvent: {
+      readonly connectionId: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly error: CodecTypes['pg/text@1']['output'] | null;
+      readonly eventType: CodecTypes['pg/text@1']['output'];
+      readonly externalId: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly kind: CodecTypes['pg/text@1']['output'];
+      readonly processedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly provider: CodecTypes['pg/text@1']['output'];
+      readonly rawBody: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
     readonly Quote: {
       readonly adminPercent: CodecTypes['pg/numeric@1']['output'];
@@ -1853,6 +1881,21 @@ export type FieldInputTypes = {
       readonly voidReason: CodecTypes['pg/text@1']['input'] | null;
       readonly voidedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
     };
+    readonly ExternalConnection: {
+      readonly config: CodecTypes['pg/json@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly credentialsEnc: CodecTypes['pg/text@1']['input'] | null;
+      readonly credentialsKeyId: CodecTypes['pg/text@1']['input'] | null;
+      readonly environment: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly kind: CodecTypes['pg/text@1']['input'];
+      readonly lastCheckedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly lastError: CodecTypes['pg/text@1']['input'] | null;
+      readonly provider: CodecTypes['pg/text@1']['input'];
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly FieldLog: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
@@ -2209,6 +2252,19 @@ export type FieldInputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly windowStartDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly ProviderEvent: {
+      readonly connectionId: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly error: CodecTypes['pg/text@1']['input'] | null;
+      readonly eventType: CodecTypes['pg/text@1']['input'];
+      readonly externalId: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly kind: CodecTypes['pg/text@1']['input'];
+      readonly processedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly provider: CodecTypes['pg/text@1']['input'];
+      readonly rawBody: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
     readonly Quote: {
       readonly adminPercent: CodecTypes['pg/numeric@1']['input'];
@@ -3012,6 +3068,21 @@ export type StorageColumnTypes = {
       readonly voidedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly voidReason: CodecTypes['pg/text@1']['output'] | null;
     };
+    readonly ExternalConnection: {
+      readonly config: CodecTypes['pg/json@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly credentialsEnc: CodecTypes['pg/text@1']['output'] | null;
+      readonly credentialsKeyId: CodecTypes['pg/text@1']['output'] | null;
+      readonly environment: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly kind: CodecTypes['pg/text@1']['output'];
+      readonly lastCheckedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly lastError: CodecTypes['pg/text@1']['output'] | null;
+      readonly provider: CodecTypes['pg/text@1']['output'];
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
     readonly FieldLog: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
@@ -3368,6 +3439,19 @@ export type StorageColumnTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly windowStartDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly ProviderEvent: {
+      readonly connectionId: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly error: CodecTypes['pg/text@1']['output'] | null;
+      readonly eventType: CodecTypes['pg/text@1']['output'];
+      readonly externalId: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly kind: CodecTypes['pg/text@1']['output'];
+      readonly processedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly provider: CodecTypes['pg/text@1']['output'];
+      readonly rawBody: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
     readonly Quote: {
       readonly adminPercent: CodecTypes['pg/numeric@1']['output'];
@@ -4171,6 +4255,21 @@ export type StorageColumnInputTypes = {
       readonly voidedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly voidReason: CodecTypes['pg/text@1']['input'] | null;
     };
+    readonly ExternalConnection: {
+      readonly config: CodecTypes['pg/json@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly credentialsEnc: CodecTypes['pg/text@1']['input'] | null;
+      readonly credentialsKeyId: CodecTypes['pg/text@1']['input'] | null;
+      readonly environment: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly kind: CodecTypes['pg/text@1']['input'];
+      readonly lastCheckedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly lastError: CodecTypes['pg/text@1']['input'] | null;
+      readonly provider: CodecTypes['pg/text@1']['input'];
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly FieldLog: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
@@ -4527,6 +4626,19 @@ export type StorageColumnInputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly windowStartDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly ProviderEvent: {
+      readonly connectionId: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly error: CodecTypes['pg/text@1']['input'] | null;
+      readonly eventType: CodecTypes['pg/text@1']['input'];
+      readonly externalId: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly kind: CodecTypes['pg/text@1']['input'];
+      readonly processedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly provider: CodecTypes['pg/text@1']['input'];
+      readonly rawBody: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
     readonly Quote: {
       readonly adminPercent: CodecTypes['pg/numeric@1']['input'];
@@ -5444,6 +5556,24 @@ export namespace Models {
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'tenant';
   };
+  export type public_ExternalConnection = {
+    config: CodecTypes['pg/json@1']['output'] | null;
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    credentialsEnc: CodecTypes['pg/text@1']['output'] | null;
+    credentialsKeyId: CodecTypes['pg/text@1']['output'] | null;
+    environment: CodecTypes['pg/text@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    kind: CodecTypes['pg/text@1']['output'];
+    lastCheckedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    lastError: CodecTypes['pg/text@1']['output'] | null;
+    provider: CodecTypes['pg/text@1']['output'];
+    status: CodecTypes['pg/text@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    events: public_ProviderEvent[];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'events' | 'tenant';
+  };
   export type public_FieldLog = {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     id: CodecTypes['pg/text@1']['output'];
@@ -5875,6 +6005,22 @@ export namespace Models {
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'commitments' | 'lookaheadTasks' | 'project' | 'tenant';
   };
+  export type public_ProviderEvent = {
+    connectionId: CodecTypes['pg/text@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    error: CodecTypes['pg/text@1']['output'] | null;
+    eventType: CodecTypes['pg/text@1']['output'];
+    externalId: CodecTypes['pg/text@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    kind: CodecTypes['pg/text@1']['output'];
+    processedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    provider: CodecTypes['pg/text@1']['output'];
+    rawBody: CodecTypes['pg/text@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    connection: public_ExternalConnection;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'connection' | 'tenant';
+  };
   export type public_Quote = {
     adminPercent: CodecTypes['pg/numeric@1']['output'];
     budgetRevision: CodecTypes['pg/int4@1']['output'] | null;
@@ -6115,6 +6261,7 @@ export namespace Models {
     customers: public_Customer[];
     departures: public_Departure[];
     expenses: public_Expense[];
+    externalConnections: public_ExternalConnection[];
     fieldLogs: public_FieldLog[];
     idempotencyRecords: public_IdempotencyRecord[];
     inboxConversations: public_InboxConversation[];
@@ -6133,6 +6280,7 @@ export namespace Models {
     projectFollowUps: public_ProjectFollowUp[];
     projectPlans: public_ProjectPlan[];
     projects: public_Project[];
+    providerEvents: public_ProviderEvent[];
     quotes: public_Quote[];
     satisfactionSurveys: public_SatisfactionSurvey[];
     stockMovements: public_StockMovement[];
@@ -6172,6 +6320,7 @@ export namespace Models {
       | 'customers'
       | 'departures'
       | 'expenses'
+      | 'externalConnections'
       | 'fieldLogs'
       | 'idempotencyRecords'
       | 'inboxConversations'
@@ -6190,6 +6339,7 @@ export namespace Models {
       | 'projectFollowUps'
       | 'projectPlans'
       | 'projects'
+      | 'providerEvents'
       | 'quotes'
       | 'satisfactionSurveys'
       | 'stockMovements'
@@ -6435,6 +6585,7 @@ export declare const models: {
     Departure: Models.public_Departure;
     DismissedNotification: Models.public_DismissedNotification;
     Expense: Models.public_Expense;
+    ExternalConnection: Models.public_ExternalConnection;
     FieldLog: Models.public_FieldLog;
     FieldLogEntry: Models.public_FieldLogEntry;
     IdempotencyRecord: Models.public_IdempotencyRecord;
@@ -6458,6 +6609,7 @@ export declare const models: {
     ProjectFollowUp: Models.public_ProjectFollowUp;
     ProjectHeader: Models.public_ProjectHeader;
     ProjectPlan: Models.public_ProjectPlan;
+    ProviderEvent: Models.public_ProviderEvent;
     Quote: Models.public_Quote;
     QuoteItem: Models.public_QuoteItem;
     SatisfactionSurvey: Models.public_SatisfactionSurvey;
@@ -9841,6 +9993,116 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly ExternalConnection: {
+              columns: {
+                readonly config: {
+                  readonly nativeType: 'json';
+                  readonly codecId: 'pg/json@1';
+                  readonly nullable: true;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly credentialsEnc: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly credentialsKeyId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly environment: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'sandbox'>;
+                  };
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly kind: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly lastCheckedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly lastError: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly provider: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'DISCONNECTED'>;
+                  };
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [
+                { readonly columns: readonly ['tenantId', 'kind', 'provider', 'environment'] },
+              ];
+              indexes: readonly [
+                {
+                  readonly name: 'ExternalConnection_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'ExternalConnection_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ExternalConnection_tenantId_kind_idx_1e76dd5c';
+                  readonly prefix: 'ExternalConnection_tenantId_kind_idx';
+                  readonly columns: readonly ['tenantId', 'kind'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ExternalConnection';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly FieldLog: {
               columns: {
                 readonly createdAt: {
@@ -12552,6 +12814,122 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly ProviderEvent: {
+              columns: {
+                readonly connectionId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly error: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly eventType: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly externalId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly kind: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly processedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly provider: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly rawBody: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [
+                { readonly columns: readonly ['tenantId', 'provider', 'externalId'] },
+              ];
+              indexes: readonly [
+                {
+                  readonly name: 'ProviderEvent_connectionId_idx_b3eeb6ac';
+                  readonly prefix: 'ProviderEvent_connectionId_idx';
+                  readonly columns: readonly ['connectionId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ProviderEvent_processedAt_idx_e83f4a54';
+                  readonly prefix: 'ProviderEvent_processedAt_idx';
+                  readonly columns: readonly ['processedAt'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ProviderEvent_tenantId_createdAt_idx_88162366';
+                  readonly prefix: 'ProviderEvent_tenantId_createdAt_idx';
+                  readonly columns: readonly ['tenantId', 'createdAt'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ProviderEvent_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'ProviderEvent_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ProviderEvent';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ProviderEvent';
+                    readonly columns: readonly ['connectionId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ExternalConnection';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly Quote: {
               columns: {
                 readonly adminPercent: {
@@ -15215,6 +15593,10 @@ type ContractBase = Omit<
       readonly model: 'DismissedNotification';
     };
     readonly Expense: { readonly namespace: 'public' & NamespaceId; readonly model: 'Expense' };
+    readonly ExternalConnection: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'ExternalConnection';
+    };
     readonly FieldLog: { readonly namespace: 'public' & NamespaceId; readonly model: 'FieldLog' };
     readonly FieldLogEntry: {
       readonly namespace: 'public' & NamespaceId;
@@ -15288,6 +15670,10 @@ type ContractBase = Omit<
     readonly ProjectPlan: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'ProjectPlan';
+    };
+    readonly ProviderEvent: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'ProviderEvent';
     };
     readonly Quote: { readonly namespace: 'public' & NamespaceId; readonly model: 'Quote' };
     readonly QuoteItem: { readonly namespace: 'public' & NamespaceId; readonly model: 'QuoteItem' };
@@ -18698,6 +19084,115 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly ExternalConnection: {
+            readonly fields: {
+              readonly config: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/json@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly credentialsEnc: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly credentialsKeyId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly environment: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly kind: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly lastCheckedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly lastError: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly provider: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly events: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ProviderEvent';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['connectionId'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'ExternalConnection';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly config: { readonly column: 'config' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly credentialsEnc: { readonly column: 'credentialsEnc' };
+                readonly credentialsKeyId: { readonly column: 'credentialsKeyId' };
+                readonly environment: { readonly column: 'environment' };
+                readonly id: { readonly column: 'id' };
+                readonly kind: { readonly column: 'kind' };
+                readonly lastCheckedAt: { readonly column: 'lastCheckedAt' };
+                readonly lastError: { readonly column: 'lastError' };
+                readonly provider: { readonly column: 'provider' };
+                readonly status: { readonly column: 'status' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
           readonly FieldLog: {
             readonly fields: {
               readonly createdAt: {
@@ -21304,6 +21799,103 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly ProviderEvent: {
+            readonly fields: {
+              readonly connectionId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly error: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly eventType: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly externalId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly kind: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly processedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly provider: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly rawBody: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly connection: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ExternalConnection';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['connectionId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'ProviderEvent';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly connectionId: { readonly column: 'connectionId' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly error: { readonly column: 'error' };
+                readonly eventType: { readonly column: 'eventType' };
+                readonly externalId: { readonly column: 'externalId' };
+                readonly id: { readonly column: 'id' };
+                readonly kind: { readonly column: 'kind' };
+                readonly processedAt: { readonly column: 'processedAt' };
+                readonly provider: { readonly column: 'provider' };
+                readonly rawBody: { readonly column: 'rawBody' };
+                readonly tenantId: { readonly column: 'tenantId' };
+              };
+            };
+          };
           readonly Quote: {
             readonly fields: {
               readonly adminPercent: {
@@ -22728,6 +23320,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly externalConnections: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ExternalConnection';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly fieldLogs: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -22916,6 +23519,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'Project';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly providerEvents: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ProviderEvent';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -24931,6 +25545,23 @@ type ContractBase = Omit<
         {
           readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
           readonly ref: {
+            readonly entry: 'ExternalConnection';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'ExternalConnection';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
             readonly entry: 'FieldLog';
             readonly field: 'id';
             readonly namespace: 'public';
@@ -25246,6 +25877,14 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'ProjectPlan';
             readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'ProviderEvent';
+            readonly field: 'id';
             readonly namespace: 'public';
           };
         },
