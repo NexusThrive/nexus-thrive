@@ -1,8 +1,8 @@
 "use client";
 
-import { Fragment, useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { PanelLeft } from "lucide-react";
+import { ChevronDown, PanelLeft } from "lucide-react";
 import { usePreferences } from "@/components/providers/preferences";
 import { useShell } from "@/components/providers/shell-context";
 import styles from "./app-sidebar.module.css";
@@ -26,6 +26,25 @@ export function AppSidebar() {
   const indicatorRef = useRef<HTMLSpanElement>(null);
   const [tip, setTip] = useState<{ text: string; top: number; left: number } | null>(null);
   const [peek, setPeek] = useState(false);
+  // Ingresos y Gastos se despliegan y se ocultan; lo elegido se recuerda en este navegador.
+  const [closed, setClosed] = useState<Record<string, boolean>>({});
+  useEffect(() => {
+    try {
+      setClosed(JSON.parse(localStorage.getItem("nx-nav-closed") ?? "{}") as Record<string, boolean>);
+    } catch {
+      /* sin almacenamiento: todo abierto */
+    }
+  }, []);
+  const toggle = (label: string) =>
+    setClosed((prev) => {
+      const next = { ...prev, [label]: !prev[label] };
+      try {
+        localStorage.setItem("nx-nav-closed", JSON.stringify(next));
+      } catch {
+        /* se ignora */
+      }
+      return next;
+    });
   const peekTimer = useRef<number | undefined>(undefined);
 
   useLayoutEffect(() => {
@@ -46,7 +65,7 @@ export function AppSidebar() {
     const observer = new ResizeObserver(place);
     observer.observe(nav);
     return () => observer.disconnect();
-  }, [activeKey, rail]);
+  }, [activeKey, rail, closed]);
 
   function showTip(event: React.PointerEvent) {
     const link = (event.target as Element).closest<HTMLElement>("a[aria-label]");
@@ -87,32 +106,47 @@ export function AppSidebar() {
     >
       <nav ref={navRef} className={styles.nav} onPointerOver={showTip} onPointerLeave={() => setTip(null)}>
         <span ref={indicatorRef} className={styles.indicator} aria-hidden="true" />
-        {groups.map((group, g) => (
-          <Fragment key={group.label}>
-            {g > 0 ? <div className={styles.sep} aria-hidden="true" /> : null}
-            <div className={styles.groupLabel}>{group.label}</div>
-            {group.items.map((item) => {
-              const Icon = item.icon;
-              const active = item.key === activeKey;
-              return (
-                <Link
-                  key={item.key}
-                  href={hrefFor(item.href)}
-                  aria-label={item.label}
-                  aria-current={active ? "page" : undefined}
-                  onClick={(event) => {
-                    setPeek(false); // al elegir, el riel vuelve a su tamaño
-                    onNavigate?.(item, event);
-                  }}
-                  className={styles.link}
-                >
-                  <Icon aria-hidden="true" strokeWidth={1.6} />
-                  <span className={styles.label}>{item.label}</span>
-                </Link>
-              );
-            })}
-          </Fragment>
-        ))}
+        {groups.map((group, g) => {
+          // El riel (solo iconos) no oculta nada; el grupo con la página activa tampoco se esconde.
+          const hasActive = group.items.some((item) => item.key === activeKey);
+          const collapsed = Boolean(group.collapsible && closed[group.label] && !rail && !hasActive);
+          const panel = `nav-group-${g}`;
+          return (
+            <Fragment key={group.label}>
+              {g > 0 ? <div className={styles.sep} aria-hidden="true" /> : null}
+              {group.collapsible ? (
+                <button type="button" className={`${styles.groupLabel} ${styles.groupToggle}`} aria-expanded={!collapsed} aria-controls={panel} onClick={() => toggle(group.label)}>
+                  <span>{group.label}</span>
+                  <ChevronDown aria-hidden="true" className={styles.chevron} data-open={collapsed ? undefined : ""} />
+                </button>
+              ) : (
+                <div className={styles.groupLabel}>{group.label}</div>
+              )}
+              <div id={panel} className={styles.groupItems} hidden={collapsed}>
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  const active = item.key === activeKey;
+                  return (
+                    <Link
+                      key={item.key}
+                      href={hrefFor(item.href)}
+                      aria-label={item.label}
+                      aria-current={active ? "page" : undefined}
+                      onClick={(event) => {
+                        setPeek(false); // al elegir, el riel vuelve a su tamaño
+                        onNavigate?.(item, event);
+                      }}
+                      className={styles.link}
+                    >
+                      <Icon aria-hidden="true" strokeWidth={1.6} />
+                      <span className={styles.label}>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </Fragment>
+          );
+        })}
       </nav>
 
       <div className={styles.foot}>

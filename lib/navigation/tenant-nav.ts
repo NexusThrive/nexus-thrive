@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Settings } from "lucide-react";
+import { Receipt, Settings } from "lucide-react";
 import { MODULES, type ModuleValue, type VerticalValue } from "@/lib/admin/catalogs";
 import { CAPABILITIES, type CapabilityNav } from "@/lib/capabilities/registry";
 import { getVerticalTerms } from "@/lib/vertical-terms";
@@ -15,7 +15,8 @@ export type NavItem = {
   icon: LucideIcon;
 };
 
-export type NavGroup = { label: string; items: NavItem[] };
+/** `collapsible`: el grupo se despliega y se oculta en la barra lateral (Ingresos, Gastos). */
+export type NavGroup = { label: string; items: NavItem[]; collapsible?: boolean };
 
 type ModuleNav = CapabilityNav;
 
@@ -65,10 +66,15 @@ export const SETTINGS_ITEM: NavItem = {
 
 /**
  * Grupo de la barra lateral de cada módulo, por el trabajo que resuelve (no
- * por el orden en que se activó): atender y operar, mover dinero, hablar con
- * los clientes. Un grupo sin módulos activos no aparece.
+ * por el orden en que se activó): atender y operar, **ingresos** (facturar,
+ * vender, cobrar), **gastos** (comprar, pagar), mover dinero y hablar con los
+ * clientes. Un grupo sin módulos activos no aparece. Ingresos y Gastos se
+ * pueden desplegar y ocultar.
  */
-const MODULE_GROUP: Record<Exclude<ModuleValue, "dashboard">, "Clientes y operación" | "Dinero" | "Canales"> = {
+const GROUPS = ["Clientes y operación", "Ingresos", "Gastos", "Dinero", "Canales"] as const;
+type GroupName = (typeof GROUPS)[number];
+const COLLAPSIBLE: readonly GroupName[] = ["Ingresos", "Gastos"];
+const MODULE_GROUP: Partial<Record<string, GroupName>> = {
   crm: "Clientes y operación",
   bookings: "Clientes y operación",
   memberships: "Clientes y operación",
@@ -76,12 +82,12 @@ const MODULE_GROUP: Record<Exclude<ModuleValue, "dashboard">, "Clientes y operac
   quotes: "Clientes y operación",
   construction: "Clientes y operación",
   inventory: "Clientes y operación",
+  billing: "Ingresos",
+  payments: "Ingresos",
+  purchases: "Gastos",
   finance: "Dinero",
-  payments: "Dinero",
-  billing: "Dinero",
   whatsapp: "Canales",
 };
-const GROUP_ORDER = ["Clientes y operación", "Dinero", "Canales"] as const;
 
 /**
  * Navegación del negocio: solo los módulos activos, en el orden del catálogo,
@@ -100,14 +106,20 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
       label: nav.label(terms, vertical),
     }));
   };
-  // Pagos vive dentro de Finanzas: con Finanzas activa no se repite en el menú.
-  const enabled = MODULES.filter((moduleName) => active.has(moduleName) && !(moduleName === "payments" && active.has("finance")));
+  const enabled = MODULES.filter((moduleName) => active.has(moduleName));
+  // «Pagos» vive dentro de Finanzas: con Finanzas activa no se repite (las demás pantallas de Pagos, como el punto de venta, sí).
+  const forGroup = (label: GroupName): NavItem[] =>
+    enabled
+      .filter((m) => m !== "dashboard" && (MODULE_GROUP[m] ?? "Clientes y operación") === label)
+      .flatMap((m) => items(m).filter((item) => !(m === "payments" && active.has("finance") && item.href.startsWith("/finance"))));
+  const expenses: NavItem[] = active.has("finance") ? [{ key: "/finance?tab=gastos", module: "finance", href: "/finance?tab=gastos", icon: Receipt, label: "Gastos" }] : [];
   return [
     // El inicio existe siempre (es la raíz del negocio), con o sin el módulo.
     { label: "General", items: items("dashboard") },
-    ...GROUP_ORDER.map((label) => ({
+    ...GROUPS.map((label) => ({
       label,
-      items: enabled.filter((m) => m !== "dashboard" && MODULE_GROUP[m] === label).flatMap(items),
+      items: label === "Gastos" ? [...expenses, ...forGroup(label)] : forGroup(label),
+      ...(COLLAPSIBLE.includes(label) ? { collapsible: true } : {}),
     })),
     { label: "Sistema", items: [SETTINGS_ITEM] },
   ].filter((group) => group.items.length > 0);

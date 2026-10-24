@@ -17,11 +17,25 @@ describe("buildTenantNav", () => {
     expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["", "/crm", "/settings"]);
   });
 
-  it("agrupa por trabajo y omite los grupos vacíos", () => {
-    const groups = buildTenantNav("gym", ["dashboard", "crm", "memberships", "finance", "payments", "whatsapp"]);
-    expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y operación", "Dinero", "Canales", "Sistema"]);
-    // Pagos vive dentro de Finanzas: no se repite.
+  it("agrupa por trabajo, con Ingresos y Gastos desplegables, y omite los grupos vacíos", () => {
+    const groups = buildTenantNav("gym", ["dashboard", "crm", "memberships", "finance", "payments", "billing", "whatsapp"]);
+    expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y operación", "Ingresos", "Gastos", "Dinero", "Canales", "Sistema"]);
+    // Facturación va en Ingresos; Pagos vive dentro de Finanzas y no se repite.
+    const ingresos = groups.find((g) => g.label === "Ingresos")!;
+    expect(ingresos.collapsible).toBe(true);
+    expect(ingresos.items.map((i) => i.label)).toEqual(["Facturación"]);
+    // Con Finanzas activa hay una categoría «Gastos».
+    const gastos = groups.find((g) => g.label === "Gastos")!;
+    expect(gastos.collapsible).toBe(true);
+    expect(gastos.items.map((i) => i.label)).toEqual(["Gastos"]);
     expect(groups.find((g) => g.label === "Dinero")?.items.map((i) => i.label)).toEqual(["Finanzas"]);
+    expect(groups.find((g) => g.label === "Clientes y operación")?.collapsible).toBeUndefined();
+  });
+
+  it("sin facturación ni gastos no aparecen esas categorías", () => {
+    const labels = buildTenantNav("gym", ["dashboard", "crm"]).map((g) => g.label);
+    expect(labels).not.toContain("Ingresos");
+    expect(labels).not.toContain("Gastos");
   });
 
   it("la suite de construcción abre Obras, Cotizaciones y Catálogo APU", () => {

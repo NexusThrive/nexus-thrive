@@ -46,7 +46,18 @@
   gap: 2px;
   overflow-x: hidden;
   overflow-y: auto;
-  scrollbar-width: none;
+  min-height: 0;
+  /* Barra de desplazamiento fina y visible: con muchos grupos el menú se recorre. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--sidebar-border) transparent;
+}
+.groupItems {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.groupItems[hidden] {
+  display: none;
 }
 .link {
   position: relative;
@@ -182,5 +193,38 @@
 @media (min-width: 1200px) {
   :global(html:not([data-rail])) .side[data-peek] {
     box-shadow: none;
+  }
+}
+
+/* Grupo que se despliega y se oculta (Ingresos, Gastos): el título es un botón. */
+.groupToggle {
+  width: 100%;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  align-items: center;
+  justify-content: space-between;
+}
+:global(html:not([data-rail])) .groupToggle,
+.side[data-peek] .groupToggle {
+  display: flex;
+}
+.groupToggle:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+.chevron {
+  width: 14px;
+  height: 14px;
+  transition: transform var(--d2, 200ms);
+  transform: rotate(-90deg);
+}
+.chevron[data-open] {
+  transform: rotate(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .chevron {
+    transition: none;
   }
 }
