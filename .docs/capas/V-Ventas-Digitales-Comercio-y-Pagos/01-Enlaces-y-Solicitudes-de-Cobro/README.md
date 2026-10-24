@@ -46,9 +46,9 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Link de pago _(PR-17)_
-- [ ] Botón de pago _(PR-17)_
-- [ ] Estado del link (pendiente, pagado, vencido). _(PR-17)_
+- [x] Link de pago _(PR-17)_
+- [x] Botón de pago _(PR-17)_
+- [x] Estado del link (pendiente, pagado, vencido). _(PR-17)_
 
 #### Técnico
 

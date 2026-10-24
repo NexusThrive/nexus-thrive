@@ -48,7 +48,7 @@ tags: [capas, estructura, subcapa]
 
 - [ ] Una pasarela (Wompi o la que elijas) conectada _(PR-06)_
 - [ ] Pago con tarjeta, PSE y Nequi desde un checkout alojado por la pasarela. _(PR-17)_
-- [ ] Confirmación de pago por webhook y estado visible en la orden. _(PR-17)_
+- [x] Confirmación de pago por webhook y estado visible en la orden. _(PR-17)_
 - [ ] Nequi Negocios: QR dinámico e intención de cobro; solo se registra el ingreso con el estado oficial _(objetivo 2026 · ver `docs/PENDIENTES.md`)_ _(PR-17)_
 
 #### Técnico
@@ -62,9 +62,9 @@ tags: [capas, estructura, subcapa]
 
 - [ ] Varias pasarelas _(PR-19)_
 - [ ] Métodos locales completos
-- [ ] Reembolsos totales y parciales _(PR-17)_
+- [x] Reembolsos totales y parciales _(PR-17)_
 - [ ] Pagos parciales y depósitos
-- [ ] Conciliación diaria _(PR-17)_
+- [x] Conciliación diaria _(PR-17)_
 - [ ] Cuotas y pagos en moneda extranjera según la pasarela.
 
 #### Técnico

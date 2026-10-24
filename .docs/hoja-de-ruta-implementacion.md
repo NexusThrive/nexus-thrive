@@ -153,7 +153,7 @@ de «hecho»). No se edita a mano.
 | **14** | Vende y controla | Cartera: cuentas por cobrar y por pagar | — | — | base técnica | `PR-14-cartera` | pendiente |
 | **15** | Vende y controla | POS I: terminales, turnos y venta multilínea | V | N2 | 3/3 | `PR-15-pos-terminales-turnos` | hecho |
 | **16** | Vende y controla | POS II: impresión, código de barras y devoluciones | V | N2 | 3/3 | — | hecho |
-| **17** | Cobra y factura | Pagos: intención de cobro, Nequi y conciliación | V | N1, N2 | 0/8 | `PR-17-pagos-intenciones-conciliacion` | pendiente |
+| **17** | Cobra y factura | Pagos: intención de cobro, Nequi y conciliación | V | N1, N2 | 6/8 | `PR-17-pagos-intenciones-conciliacion` | pendiente |
 | **18** | Cobra y factura | Facturación electrónica: puerto sin proveedor | VII | N1, N2 | 0/7 | `PR-18-facturacion-electronica` | pendiente |
 | **19** | Cobra y factura | Adaptador de pagos Wompi | V | N2 | 0/1 | — | pendiente |
 | **20** | Cobra y factura | Proveedor tecnológico DIAN | VII | N2 | 1/1 | — | hecho |
@@ -385,15 +385,15 @@ de «hecho»). No se edita a mano.
 - **Casillas que marca:**
   - [`V.00 · N1`](capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md)
     - [ ] Pago con tarjeta, PSE y Nequi desde un checkout alojado por la pasarela.
-    - [ ] Confirmación de pago por webhook y estado visible en la orden.
+    - [x] Confirmación de pago por webhook y estado visible en la orden.
     - [ ] Nequi Negocios: QR dinámico e intención de cobro; solo se registra el ingreso con el estado oficial
   - [`V.00 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md)
-    - [ ] Reembolsos totales y parciales
-    - [ ] Conciliación diaria
+    - [x] Reembolsos totales y parciales
+    - [x] Conciliación diaria
   - [`V.01 · N1`](capas/V-Ventas-Digitales-Comercio-y-Pagos/01-Enlaces-y-Solicitudes-de-Cobro/README.md)
-    - [ ] Link de pago
-    - [ ] Botón de pago
-    - [ ] Estado del link (pendiente, pagado, vencido).
+    - [x] Link de pago
+    - [x] Botón de pago
+    - [x] Estado del link (pendiente, pagado, vencido).
 
 ### PR-18 · Facturación electrónica: puerto sin proveedor
 

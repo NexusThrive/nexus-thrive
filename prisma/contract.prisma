@@ -410,6 +410,9 @@ model Tenant {
   stockCountLines    StockCountLine[]
   taxRates           TaxRate[]
   posTerminals       PosTerminal[]
+  paymentIntents     PaymentIntent[]
+  paymentRefunds     PaymentRefund[]
+  reconciliationRuns ReconciliationRun[]
   supplierPayments   SupplierPayment[]
   numberingResolutions NumberingResolution[]
   supportTickets     SupportTicket[]
@@ -2958,5 +2961,78 @@ model PosTerminal {
   createdAt   DateTime @default(now())
 
   @@index([tenantId])
+  @@rls
+}
+
+
+/// Intención de cobro en línea: lo que se le pide pagar a alguien (link, botón o QR). Solo se
+/// vuelve ingreso cuando el estado oficial llega (webhook del proveedor o confirmación manual con
+/// evidencia); confirmar dos veces el mismo cobro es imposible.
+model PaymentIntent {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Código público del enlace (`/pay/<reference>`): imposible de adivinar, único en toda la plataforma.
+  reference     String   @unique
+  amount        Decimal
+  description   String
+  /// PENDING | PAID | EXPIRED | FAILED | CANCELED
+  status        String   @default("PENDING")
+  /// LINK | QR
+  channel       String   @default("LINK")
+  provider      String   @default("sandbox")
+  customerId    String?
+  /// Cuenta de cobro que paga (el cobro baja su saldo).
+  invoiceId     String?
+  expiresAt     DateTime
+  paidAt        DateTime?
+  /// Cómo se confirmó: PROVIDER (webhook) | MANUAL (transferencia con evidencia).
+  confirmedBy   String?
+  evidence      String?
+  providerRefId String?
+  paymentId     String?
+  refundedTotal Decimal  @default(0)
+  createdById   String?
+  createdAt     DateTime @default(now())
+  refunds       PaymentRefund[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, createdAt])
+  @@rls
+}
+
+/// Reembolso total o parcial de un cobro en línea.
+model PaymentRefund {
+  id          String        @id @default(uuid())
+  tenantId    String
+  tenant      Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  intentId    String
+  intent      PaymentIntent @relation(fields: [intentId], references: [id], onDelete: Cascade)
+  amount      Decimal
+  reason      String
+  createdById String?
+  createdAt   DateTime      @default(now())
+
+  @@index([tenantId, intentId])
+  @@rls
+}
+
+/// Conciliación diaria: lo que reporta el proveedor contra lo que NEXUS confirmó ese día.
+model ReconciliationRun {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  provider    String
+  /// AAAA-MM-DD (hora de Colombia).
+  day         String
+  expected    Decimal
+  reported    Decimal
+  /// Detalle de lo que no cuadra: [{ kind, externalId, expected, reported }].
+  differences Json
+  matched     Int
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId, day])
   @@rls
 }

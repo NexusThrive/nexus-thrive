@@ -14,6 +14,7 @@ import {
   MessageCircle,
   Package,
   HandCoins,
+  Link2,
   Percent,
   Receipt,
   Repeat,
@@ -131,6 +132,7 @@ export const CAPABILITIES = [
     nav: [
       { href: "/finance?tab=cobros", icon: Banknote, label: () => "Pagos" },
       { href: "/pos", icon: ShoppingCart, label: () => "Punto de venta" },
+      { href: "/cobros", icon: Link2, label: () => "Cobros en línea" },
     ],
   },
   {

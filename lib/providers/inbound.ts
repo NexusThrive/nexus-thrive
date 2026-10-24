@@ -1,6 +1,7 @@
 import { db } from "@/prisma/db";
 import { emitEvent } from "@/lib/events/outbox";
 import { toInstant } from "@/lib/events/instant";
+import { handlePaymentEvent } from "@/lib/payments/intents-db";
 import { decryptCredentials } from "./connections";
 import { adapterFor } from "./registry";
 
@@ -65,6 +66,9 @@ export async function processProviderEvent(eventId: string): Promise<boolean> {
   const event = adapter?.parseWebhook(stored.rawBody);
   try {
     if (!event) throw new Error("El proveedor ya no está disponible o el evento no se entiende.");
+    // Los eventos de una pasarela confirman (o fallan) el cobro en línea que referencian. Es idempotente:
+    // si el evento se reprocesa, el cobro ya pagado no vuelve a registrar el ingreso.
+    const warning = stored.kind === "PAYMENT" ? await handlePaymentEvent(stored.tenantId, event) : null;
     await db.transaction(async (tx) => {
       await emitEvent(tx, stored.tenantId, {
         type: "provider.event_received",
@@ -72,7 +76,7 @@ export async function processProviderEvent(eventId: string): Promise<boolean> {
         resourceId: stored.id,
         payload: { provider: stored.provider, kind: stored.kind, event_type: event.type, external_id: event.externalId, reference: event.reference ?? null, amount: event.amount ?? null, connection_id: stored.connectionId },
       });
-      await tx.orm.public.ProviderEvent.where({ id: stored.id }).update({ processedAt: toInstant(Date.now()), error: null });
+      await tx.orm.public.ProviderEvent.where({ id: stored.id }).update({ processedAt: toInstant(Date.now()), error: warning ? warning.slice(0, 300) : null });
     });
     return true;
   } catch (error) {
