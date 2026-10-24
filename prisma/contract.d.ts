@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'8288b50d0b1468636868c169926e7292ece34ebd659818feec25d333d3028a93'>;
+  StorageHashBase<'dd56633c277604483ea709e355b291eeda810165528f2c8e4d3355e6fa47d398'>;
 export type ExecutionHash =
-  ExecutionHashBase<'816317c135066cfcaaca3881624ca713649772ba3d3293da1f3999fc5ef0866f'>;
+  ExecutionHashBase<'e8580bcdc862f79a49e6b13139d0f99075be5db3a07d857040336ddaf379d477'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -735,6 +735,23 @@ export type FieldOutputTypes = {
       readonly type: 'ADVANCE' | 'OBSERVATION' | 'AUTHORIZATION' | 'INCIDENT';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly weather: 'SUNNY' | 'CLOUDY' | 'RAIN_LIGHT' | 'RAIN_HEAVY';
+    };
+    readonly FiscalDocument: {
+      readonly attempts: CodecTypes['pg/int4@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly cufe: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly invoiceId: CodecTypes['pg/text@1']['output'] | null;
+      readonly kind: CodecTypes['pg/text@1']['output'];
+      readonly lastAttemptAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly payload: CodecTypes['pg/json@1']['output'];
+      readonly provider: CodecTypes['pg/text@1']['output'] | null;
+      readonly providerRef: CodecTypes['pg/text@1']['output'] | null;
+      readonly rejectReason: CodecTypes['pg/text@1']['output'] | null;
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly supplierInvoiceId: CodecTypes['pg/text@1']['output'] | null;
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly IdempotencyRecord: {
       readonly apiKeyId: CodecTypes['pg/text@1']['output'];
@@ -1496,6 +1513,7 @@ export type FieldOutputTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly customDomain: CodecTypes['pg/text@1']['output'] | null;
       readonly customerTierId: CodecTypes['pg/text@1']['output'] | null;
+      readonly einvoiceEnabled: CodecTypes['pg/bool@1']['output'];
       readonly googleBusinessUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly instagramHandle: CodecTypes['pg/text@1']['output'] | null;
@@ -2208,6 +2226,23 @@ export type FieldInputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly weather: 'SUNNY' | 'CLOUDY' | 'RAIN_LIGHT' | 'RAIN_HEAVY';
     };
+    readonly FiscalDocument: {
+      readonly attempts: CodecTypes['pg/int4@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly cufe: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly invoiceId: CodecTypes['pg/text@1']['input'] | null;
+      readonly kind: CodecTypes['pg/text@1']['input'];
+      readonly lastAttemptAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly payload: CodecTypes['pg/json@1']['input'];
+      readonly provider: CodecTypes['pg/text@1']['input'] | null;
+      readonly providerRef: CodecTypes['pg/text@1']['input'] | null;
+      readonly rejectReason: CodecTypes['pg/text@1']['input'] | null;
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly supplierInvoiceId: CodecTypes['pg/text@1']['input'] | null;
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly IdempotencyRecord: {
       readonly apiKeyId: CodecTypes['pg/text@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -2968,6 +3003,7 @@ export type FieldInputTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly customDomain: CodecTypes['pg/text@1']['input'] | null;
       readonly customerTierId: CodecTypes['pg/text@1']['input'] | null;
+      readonly einvoiceEnabled: CodecTypes['pg/bool@1']['input'];
       readonly googleBusinessUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly instagramHandle: CodecTypes['pg/text@1']['input'] | null;
@@ -3679,6 +3715,23 @@ export type StorageColumnTypes = {
       readonly type: 'ADVANCE' | 'OBSERVATION' | 'AUTHORIZATION' | 'INCIDENT';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly weather: 'SUNNY' | 'CLOUDY' | 'RAIN_LIGHT' | 'RAIN_HEAVY';
+    };
+    readonly FiscalDocument: {
+      readonly attempts: CodecTypes['pg/int4@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly cufe: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly invoiceId: CodecTypes['pg/text@1']['output'] | null;
+      readonly kind: CodecTypes['pg/text@1']['output'];
+      readonly lastAttemptAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly payload: CodecTypes['pg/json@1']['output'];
+      readonly provider: CodecTypes['pg/text@1']['output'] | null;
+      readonly providerRef: CodecTypes['pg/text@1']['output'] | null;
+      readonly rejectReason: CodecTypes['pg/text@1']['output'] | null;
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly supplierInvoiceId: CodecTypes['pg/text@1']['output'] | null;
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly IdempotencyRecord: {
       readonly apiKeyId: CodecTypes['pg/text@1']['output'];
@@ -4440,6 +4493,7 @@ export type StorageColumnTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly customDomain: CodecTypes['pg/text@1']['output'] | null;
       readonly customerTierId: CodecTypes['pg/text@1']['output'] | null;
+      readonly einvoiceEnabled: CodecTypes['pg/bool@1']['output'];
       readonly googleBusinessUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly instagramHandle: CodecTypes['pg/text@1']['output'] | null;
@@ -5151,6 +5205,23 @@ export type StorageColumnInputTypes = {
       readonly type: 'ADVANCE' | 'OBSERVATION' | 'AUTHORIZATION' | 'INCIDENT';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly weather: 'SUNNY' | 'CLOUDY' | 'RAIN_LIGHT' | 'RAIN_HEAVY';
+    };
+    readonly FiscalDocument: {
+      readonly attempts: CodecTypes['pg/int4@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly cufe: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly invoiceId: CodecTypes['pg/text@1']['input'] | null;
+      readonly kind: CodecTypes['pg/text@1']['input'];
+      readonly lastAttemptAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly payload: CodecTypes['pg/json@1']['input'];
+      readonly provider: CodecTypes['pg/text@1']['input'] | null;
+      readonly providerRef: CodecTypes['pg/text@1']['input'] | null;
+      readonly rejectReason: CodecTypes['pg/text@1']['input'] | null;
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly supplierInvoiceId: CodecTypes['pg/text@1']['input'] | null;
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly IdempotencyRecord: {
       readonly apiKeyId: CodecTypes['pg/text@1']['input'];
@@ -5912,6 +5983,7 @@ export type StorageColumnInputTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly customDomain: CodecTypes['pg/text@1']['input'] | null;
       readonly customerTierId: CodecTypes['pg/text@1']['input'] | null;
+      readonly einvoiceEnabled: CodecTypes['pg/bool@1']['input'];
       readonly googleBusinessUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly instagramHandle: CodecTypes['pg/text@1']['input'] | null;
@@ -6749,6 +6821,25 @@ export namespace Models {
     log: public_FieldLog;
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'budgetItem' | 'log' | 'tenant';
+  };
+  export type public_FiscalDocument = {
+    attempts: CodecTypes['pg/int4@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    cufe: CodecTypes['pg/text@1']['output'] | null;
+    id: CodecTypes['pg/text@1']['output'];
+    invoiceId: CodecTypes['pg/text@1']['output'] | null;
+    kind: CodecTypes['pg/text@1']['output'];
+    lastAttemptAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    payload: CodecTypes['pg/json@1']['output'];
+    provider: CodecTypes['pg/text@1']['output'] | null;
+    providerRef: CodecTypes['pg/text@1']['output'] | null;
+    rejectReason: CodecTypes['pg/text@1']['output'] | null;
+    status: CodecTypes['pg/text@1']['output'];
+    supplierInvoiceId: CodecTypes['pg/text@1']['output'] | null;
+    tenantId: CodecTypes['pg/text@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
   };
   export type public_IdempotencyRecord = {
     apiKeyId: CodecTypes['pg/text@1']['output'];
@@ -7705,6 +7796,7 @@ export namespace Models {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     customDomain: CodecTypes['pg/text@1']['output'] | null;
     customerTierId: CodecTypes['pg/text@1']['output'] | null;
+    einvoiceEnabled: CodecTypes['pg/bool@1']['output'];
     googleBusinessUrl: CodecTypes['pg/text@1']['output'] | null;
     id: CodecTypes['pg/text@1']['output'];
     instagramHandle: CodecTypes['pg/text@1']['output'] | null;
@@ -7777,6 +7869,7 @@ export namespace Models {
     expenses: public_Expense[];
     externalConnections: public_ExternalConnection[];
     fieldLogs: public_FieldLog[];
+    fiscalDocuments: public_FiscalDocument[];
     idempotencyRecords: public_IdempotencyRecord[];
     inboxConversations: public_InboxConversation[];
     invites: public_TenantInvite[];
@@ -7858,6 +7951,7 @@ export namespace Models {
       | 'expenses'
       | 'externalConnections'
       | 'fieldLogs'
+      | 'fiscalDocuments'
       | 'idempotencyRecords'
       | 'inboxConversations'
       | 'invites'
@@ -8172,6 +8266,7 @@ export declare const models: {
     ExternalConnection: Models.public_ExternalConnection;
     FieldLog: Models.public_FieldLog;
     FieldLogEntry: Models.public_FieldLogEntry;
+    FiscalDocument: Models.public_FiscalDocument;
     IdempotencyRecord: Models.public_IdempotencyRecord;
     InboxConversation: Models.public_InboxConversation;
     InboxMessage: Models.public_InboxMessage;
@@ -11975,6 +12070,127 @@ type ContractBase = Omit<
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'BudgetItem';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly FiscalDocument: {
+              columns: {
+                readonly attempts: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+                  };
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly cufe: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly invoiceId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly kind: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly lastAttemptAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly payload: {
+                  readonly nativeType: 'json';
+                  readonly codecId: 'pg/json@1';
+                  readonly nullable: false;
+                };
+                readonly provider: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly providerRef: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly rejectReason: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'PENDING_PROVIDER'>;
+                  };
+                };
+                readonly supplierInvoiceId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [
+                { readonly columns: readonly ['tenantId', 'invoiceId'] },
+                { readonly columns: readonly ['tenantId', 'supplierInvoiceId'] },
+              ];
+              indexes: readonly [
+                {
+                  readonly name: 'FiscalDocument_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'FiscalDocument_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'FiscalDocument_tenantId_status_idx_d3d04256';
+                  readonly prefix: 'FiscalDocument_tenantId_status_idx';
+                  readonly columns: readonly ['tenantId', 'status'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'FiscalDocument';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -18079,6 +18295,15 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
+                readonly einvoiceEnabled: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+                  };
+                };
                 readonly googleBusinessUrl: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -19821,6 +20046,10 @@ type ContractBase = Omit<
     readonly FieldLogEntry: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'FieldLogEntry';
+    };
+    readonly FiscalDocument: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'FiscalDocument';
     };
     readonly IdempotencyRecord: {
       readonly namespace: 'public' & NamespaceId;
@@ -23721,6 +23950,114 @@ type ContractBase = Omit<
                 readonly type: { readonly column: 'type' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
                 readonly weather: { readonly column: 'weather' };
+              };
+            };
+          };
+          readonly FiscalDocument: {
+            readonly fields: {
+              readonly attempts: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly cufe: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly invoiceId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly kind: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly lastAttemptAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly payload: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/json@1' };
+              };
+              readonly provider: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly providerRef: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly rejectReason: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly supplierInvoiceId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'FiscalDocument';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly attempts: { readonly column: 'attempts' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly cufe: { readonly column: 'cufe' };
+                readonly id: { readonly column: 'id' };
+                readonly invoiceId: { readonly column: 'invoiceId' };
+                readonly kind: { readonly column: 'kind' };
+                readonly lastAttemptAt: { readonly column: 'lastAttemptAt' };
+                readonly payload: { readonly column: 'payload' };
+                readonly provider: { readonly column: 'provider' };
+                readonly providerRef: { readonly column: 'providerRef' };
+                readonly rejectReason: { readonly column: 'rejectReason' };
+                readonly status: { readonly column: 'status' };
+                readonly supplierInvoiceId: { readonly column: 'supplierInvoiceId' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
               };
             };
           };
@@ -29510,6 +29847,10 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly einvoiceEnabled: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
               readonly googleBusinessUrl: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -29927,6 +30268,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'FieldLog';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly fiscalDocuments: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'FiscalDocument';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -30519,6 +30871,7 @@ type ContractBase = Omit<
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly customDomain: { readonly column: 'customDomain' };
                 readonly customerTierId: { readonly column: 'customerTierId' };
+                readonly einvoiceEnabled: { readonly column: 'einvoiceEnabled' };
                 readonly googleBusinessUrl: { readonly column: 'googleBusinessUrl' };
                 readonly id: { readonly column: 'id' };
                 readonly instagramHandle: { readonly column: 'instagramHandle' };
@@ -32568,6 +32921,23 @@ type ContractBase = Omit<
           readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'FieldLogEntry';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'FiscalDocument';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'FiscalDocument';
             readonly field: 'updatedAt';
             readonly namespace: 'public';
           };

@@ -129,9 +129,7 @@ export async function cancelIntent(tenantId: string, id: string): Promise<boolea
   const i = await db.orm.public.PaymentIntent.where({ tenantId, id }).first();
   if (!i || i.status !== "PENDING") return false;
   const plan = db.sql.public.PaymentIntent.update({ status: "CANCELED" }).where((f, fns) => fns.and(fns.eq(f.id, id), fns.eq(f.tenantId, tenantId), fns.eq(f.status, "PENDING"))).returning("id").build();
-  const rows = await db.runtime().execute(plan);
-  void rows;
-  return true;
+  return (await db.transaction((tx) => tx.query(plan))).length > 0;
 }
 
 /**
@@ -176,7 +174,7 @@ export async function handlePaymentEvent(tenantId: string, event: { type: string
   }
   if (event.type === "payment.failed") {
     const plan = db.sql.public.PaymentIntent.update({ status: "FAILED" }).where((f, fns) => fns.and(fns.eq(f.reference, event.reference!), fns.eq(f.tenantId, tenantId), fns.eq(f.status, "PENDING"))).returning("id").build();
-    await db.runtime().execute(plan);
+    await db.transaction((tx) => tx.query(plan));
   }
   return null;
 }

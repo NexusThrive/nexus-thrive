@@ -45,6 +45,7 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   BIZ_API_KEY_CREATE: "Negocio · llave de API creada",
   BIZ_API_KEY_REVOKE: "Negocio · llave de API revocada",
   BIZ_API_OPERATION: "Negocio · acción por API o automatización",
+  BIZ_EINVOICE: "Negocio · factura electrónica",
   BIZ_ONLINE_PAYMENT: "Negocio · cobro en línea",
   BIZ_INVOICE_NOTE: "Negocio · nota crédito o débito",
   BIZ_POS_TURN: "Negocio · turno de punto de venta",

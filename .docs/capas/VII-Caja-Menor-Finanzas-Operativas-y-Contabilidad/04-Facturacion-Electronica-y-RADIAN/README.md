@@ -47,10 +47,10 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [ ] Factura electrónica _(PR-18)_
-- [ ] Datos del emisor y del adquirente _(PR-18)_
+- [x] Datos del emisor y del adquirente _(PR-18)_
 - [ ] PDF y XML _(PR-18)_
-- [ ] Documento soporte _(PR-18)_
-- [ ] Factura electrónica por proveedor tecnológico detrás de un puerto (`EInvoicePort`); no firmar XML propio _(objetivo 2026 · ver `docs/PENDIENTES.md`)_ _(PR-18)_
+- [x] Documento soporte _(PR-18)_
+- [x] Factura electrónica por proveedor tecnológico detrás de un puerto (`EInvoicePort`); no firmar XML propio _(objetivo 2026 · ver `docs/PENDIENTES.md`)_ _hecho: lib/einvoice (puerto + proveedor de prueba)_
 
 #### Técnico
 
@@ -61,7 +61,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Factura automática _(PR-18)_
+- [x] Factura automática _(PR-18)_
 - [x] Notas crédito y débito electrónicas _(PR-20)_
 - [ ] Estado ante la DIAN _(PR-18)_
 - [ ] Impuestos por ítem y por tercero _(PR-13)_

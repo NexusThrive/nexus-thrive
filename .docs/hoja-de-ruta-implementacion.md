@@ -154,7 +154,7 @@ de «hecho»). No se edita a mano.
 | **15** | Vende y controla | POS I: terminales, turnos y venta multilínea | V | N2 | 3/3 | `PR-15-pos-terminales-turnos` | hecho |
 | **16** | Vende y controla | POS II: impresión, código de barras y devoluciones | V | N2 | 3/3 | — | hecho |
 | **17** | Cobra y factura | Pagos: intención de cobro, Nequi y conciliación | V | N1, N2 | 6/8 | `PR-17-pagos-intenciones-conciliacion` | pendiente |
-| **18** | Cobra y factura | Facturación electrónica: puerto sin proveedor | VII | N1, N2 | 0/7 | `PR-18-facturacion-electronica` | pendiente |
+| **18** | Cobra y factura | Facturación electrónica: puerto sin proveedor | VII | N1, N2 | 3/6 | `PR-18-facturacion-electronica` | pendiente |
 | **19** | Cobra y factura | Adaptador de pagos Wompi | V | N2 | 0/1 | — | pendiente |
 | **20** | Cobra y factura | Proveedor tecnológico DIAN | VII | N2 | 1/1 | — | hecho |
 | **21** | Contabilidad | Contabilidad I: plan de cuentas, períodos y reglas | I, VII | N1, N2 | 0/4 | `PR-21-contabilidad-plan-y-periodos` | pendiente |
@@ -405,12 +405,11 @@ de «hecho»). No se edita a mano.
 - **Casillas que marca:**
   - [`VII.04 · N1`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md)
     - [ ] Factura electrónica
-    - [ ] Datos del emisor y del adquirente
+    - [x] Datos del emisor y del adquirente
     - [ ] PDF y XML
-    - [ ] Documento soporte
-    - [ ] Factura electrónica por proveedor tecnológico detrás de un puerto (`EInvoicePort`); no firmar XML propio
+    - [x] Documento soporte
   - [`VII.04 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md)
-    - [ ] Factura automática
+    - [x] Factura automática
     - [ ] Estado ante la DIAN
 
 ### PR-19 · Adaptador de pagos Wompi

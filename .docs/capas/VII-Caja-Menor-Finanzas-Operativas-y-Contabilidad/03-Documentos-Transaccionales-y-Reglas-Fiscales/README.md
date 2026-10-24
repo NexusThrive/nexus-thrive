@@ -77,7 +77,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Documento soporte en adquisiciones a no obligados a facturar
+- [x] Documento soporte en adquisiciones a no obligados a facturar
 - [ ] Impuestos por gasto
 - [ ] Régimen y responsabilidades del tercero
 - [ ] Validación del NIT

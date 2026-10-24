@@ -67,7 +67,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Recepción de mercancía
 - [ ] Cruce de tres vías
 - [ ] Notas crédito de proveedor y devoluciones de compra.
-- [ ] Documento soporte
+- [x] Documento soporte
 - [ ] Retenciones aplicadas
 - [ ] Costo de compra
 - [ ] Cotizaciones comparativas

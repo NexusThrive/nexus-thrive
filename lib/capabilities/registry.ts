@@ -13,6 +13,7 @@ import {
   LayoutDashboard,
   MessageCircle,
   Package,
+  FileCheck2,
   HandCoins,
   Link2,
   Percent,
@@ -146,7 +147,10 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/billing", icon: Receipt, label: () => "Facturación" }],
+    nav: [
+      { href: "/billing", icon: Receipt, label: () => "Facturación" },
+      { href: "/factura-electronica", icon: FileCheck2, label: () => "Factura electrónica" },
+    ],
   },
   {
     id: "inventory",

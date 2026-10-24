@@ -101,6 +101,7 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "TaxRate",
   "PosTerminal",
   "PaymentIntent",
+  "FiscalDocument",
   "PaymentRefund",
   "ReconciliationRun",
   "NumberingResolution",
@@ -335,6 +336,7 @@ export async function deleteTenantCompletely(
   count("Warehouse", await tx.orm.public.Warehouse.where({ tenantId }).deleteAll());
   count("Product", await tx.orm.public.Product.where({ tenantId }).deleteAll());
   count("TaxRate", await tx.orm.public.TaxRate.where({ tenantId }).deleteAll());
+  count("FiscalDocument", await tx.orm.public.FiscalDocument.where({ tenantId }).deleteAll());
   count("PaymentRefund", await tx.orm.public.PaymentRefund.where({ tenantId }).deleteAll());
   count("PaymentIntent", await tx.orm.public.PaymentIntent.where({ tenantId }).deleteAll());
   count("ReconciliationRun", await tx.orm.public.ReconciliationRun.where({ tenantId }).deleteAll());

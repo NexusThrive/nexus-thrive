@@ -333,6 +333,8 @@ model Tenant {
   maxCustomers      Int?
   /// Método de costeo del inventario. Hoy solo AVG (promedio ponderado); FIFO llegará después.
   costingMethod     String   @default("AVG")
+  /// Genera el documento fiscal de cada venta para enviarlo a un proveedor tecnológico autorizado.
+  einvoiceEnabled    Boolean  @default(false)
   /// Modelo comercial (contexto, no restricción): B2B | B2C | B2B2C. Vacío = sin definir.
   businessModels    String[]?
   /// Qué hace el negocio, en sus palabras (contexto para recomendaciones).
@@ -411,6 +413,7 @@ model Tenant {
   taxRates           TaxRate[]
   posTerminals       PosTerminal[]
   paymentIntents     PaymentIntent[]
+  fiscalDocuments    FiscalDocument[]
   paymentRefunds     PaymentRefund[]
   reconciliationRuns ReconciliationRun[]
   supplierPayments   SupplierPayment[]
@@ -3034,5 +3037,38 @@ model ReconciliationRun {
   createdAt   DateTime @default(now())
 
   @@index([tenantId, day])
+  @@rls
+}
+
+
+/// Documento fiscal electrónico de una venta, nota o compra a no obligado (documento soporte). NEXUS arma el
+/// contenido y lo entrega a un proveedor tecnológico detrás de un puerto; no firma ni emite por su cuenta. Vender
+/// nunca se bloquea: si el proveedor no está, el documento espera en PENDING_PROVIDER.
+model FiscalDocument {
+  id                String   @id @default(uuid())
+  tenantId          String
+  tenant            Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Documento comercial del que sale (único: uno por venta/nota).
+  invoiceId         String?
+  /// Factura de proveedor, cuando es un documento soporte.
+  supplierInvoiceId String?
+  /// INVOICE | CREDIT_NOTE | DEBIT_NOTE | SUPPORT_DOCUMENT
+  kind              String
+  /// PENDING_PROVIDER | SUBMITTED | ACCEPTED | REJECTED
+  status            String   @default("PENDING_PROVIDER")
+  provider          String?
+  providerRef       String?
+  cufe              String?
+  rejectReason      String?
+  /// Foto del emisor, el adquirente, las líneas y los totales al momento de emitir.
+  payload           Json
+  attempts          Int      @default(0)
+  lastAttemptAt     DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         temporal.updatedAt()
+
+  @@unique([tenantId, invoiceId])
+  @@unique([tenantId, supplierInvoiceId])
+  @@index([tenantId, status])
   @@rls
 }

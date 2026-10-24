@@ -1,5 +1,6 @@
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
+import { enqueueFiscal } from "@/lib/einvoice/einvoice-db";
 import { allocateNumber, commitNumber, withholdingsFor } from "@/lib/tax/tax-db";
 import { todayCO } from "@/lib/tax/tax";
 import {
@@ -90,6 +91,7 @@ export async function insertDocument(tx: Writer, tenantId: string, doc: NewDocum
     withholdings: withholdings.length ? (withholdings as never) : null,
   });
   if (allocation) await commitNumber(tx, tenantId, allocation);
+  const createdLines: (DocumentLineInput & { total: number })[] = [];
   for (const l of doc.lines) {
     await tx.orm.public.InvoiceLine.create({
       invoiceId: created.id,
@@ -101,7 +103,11 @@ export async function insertDocument(tx: Writer, tenantId: string, doc: NewDocum
       taxRatePct: dec(l.taxRatePct ?? 0),
       total: dec(lineAmounts(l).total),
     });
+    createdLines.push({ ...l, total: lineAmounts(l).total });
   }
+  // Con la facturación electrónica activada, el documento fiscal queda en cola en esta misma transacción.
+  const relatedCode = doc.sourceDocumentId ? await tx.orm.public.Invoice.where({ tenantId, id: doc.sourceDocumentId }).select("kind", "number").first().then((o) => (o ? documentCode(o.kind as DocumentKind, o.number) : null)) : null;
+  await enqueueFiscal(tx, tenantId, { id: created.id, kind: doc.kind, number, prefix: allocation?.prefix || null, issueDate: String(issueDate).slice(0, 10), customerName: doc.customerName, customerDoc: doc.customerDoc ?? null, lines: createdLines, totals, relatedCode, notes: doc.notes ?? null });
   return { id: created.id, number, total: totals.total };
 }
 
