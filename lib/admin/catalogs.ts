@@ -248,7 +248,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   carpentry: {
-    modules: ["dashboard", "crm", "construction", "inventory", "finance"],
+    modules: ["dashboard", "crm", "construction", "inventory", "purchases", "finance"],
     terms: {
       customer: "Cliente",
       customers: "Clientes",
@@ -260,7 +260,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   restaurant: {
-    modules: ["dashboard", "crm", "orders", "inventory", "payments", "finance"],
+    modules: ["dashboard", "crm", "orders", "inventory", "purchases", "payments", "finance"],
     terms: {
       customer: "Comensal",
       customers: "Comensales",
@@ -271,7 +271,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   retail: {
-    modules: ["dashboard", "crm", "orders", "inventory", "payments", "finance"],
+    modules: ["dashboard", "crm", "orders", "inventory", "purchases", "payments", "finance"],
     terms: {
       customer: "Cliente",
       customers: "Clientes",
@@ -304,7 +304,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   mechanic: {
-    modules: ["dashboard", "crm", "bookings", "inventory", "finance"],
+    modules: ["dashboard", "crm", "bookings", "inventory", "purchases", "finance"],
     terms: {
       customer: "Cliente",
       customers: "Clientes",
@@ -337,7 +337,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   hardware_store: {
-    modules: ["dashboard", "crm", "orders", "inventory", "finance"],
+    modules: ["dashboard", "crm", "orders", "inventory", "purchases", "finance"],
     terms: {
       customer: "Cliente",
       customers: "Clientes",

@@ -1,0 +1,1127 @@
+[
+  {
+    "id": "table.PurchaseOrder",
+    "label": "Create table \"PurchaseOrder\"",
+    "summary": "Creates table \"PurchaseOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "PurchaseOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"PurchaseOrder\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrder\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"PurchaseOrder\"",
+        "sql": "CREATE TABLE \"public\".\"PurchaseOrder\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"expectedDate\" text,\n  \"id\" text NOT NULL,\n  \"note\" text,\n  \"number\" int4 NOT NULL,\n  \"status\" text DEFAULT 'DRAFT' NOT NULL,\n  \"subtotal\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"supplierPartyId\" text NOT NULL,\n  \"taxTotal\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"total\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"warehouseId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"PurchaseOrder\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrder\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.PurchaseOrderLine",
+    "label": "Create table \"PurchaseOrderLine\"",
+    "summary": "Creates table \"PurchaseOrderLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "PurchaseOrderLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"PurchaseOrderLine\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrderLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"PurchaseOrderLine\"",
+        "sql": "CREATE TABLE \"public\".\"PurchaseOrderLine\" (\n  \"id\" text NOT NULL,\n  \"orderId\" text NOT NULL,\n  \"productId\" text NOT NULL,\n  \"quantity\" int4 NOT NULL,\n  \"receivedQuantity\" int4 DEFAULT 0 NOT NULL,\n  \"taxRatePct\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"unitCost\" numeric NOT NULL,\n  \"variantId\" text,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"PurchaseOrderLine\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrderLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.SupplierInvoice",
+    "label": "Create table \"SupplierInvoice\"",
+    "summary": "Creates table \"SupplierInvoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "SupplierInvoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"SupplierInvoice\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierInvoice\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"SupplierInvoice\"",
+        "sql": "CREATE TABLE \"public\".\"SupplierInvoice\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"cufe\" text,\n  \"dueDate\" text,\n  \"id\" text NOT NULL,\n  \"issueDate\" text NOT NULL,\n  \"number\" text NOT NULL,\n  \"purchaseOrderId\" text,\n  \"status\" text DEFAULT 'REGISTERED' NOT NULL,\n  \"subtotal\" numeric NOT NULL,\n  \"supplierPartyId\" text NOT NULL,\n  \"taxTotal\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"total\" numeric NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"SupplierInvoice\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierInvoice\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.PurchaseOrder.PurchaseOrder_tenantId_number_key",
+    "label": "Add unique constraint on \"PurchaseOrder\" (tenantId, number)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "PurchaseOrder_tenantId_number_key",
+        "table": "PurchaseOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"PurchaseOrder_tenantId_number_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PurchaseOrder_tenantId_number_key",
+          "public",
+          "\"public\".\"PurchaseOrder\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"PurchaseOrder_tenantId_number_key\"",
+        "sql": "ALTER TABLE \"public\".\"PurchaseOrder\" ADD CONSTRAINT \"PurchaseOrder_tenantId_number_key\" UNIQUE (\"tenantId\", \"number\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"PurchaseOrder_tenantId_number_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PurchaseOrder_tenantId_number_key",
+          "public",
+          "\"public\".\"PurchaseOrder\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.SupplierInvoice.SupplierInvoice_tenantId_supplierPartyId_number_key",
+    "label": "Add unique constraint on \"SupplierInvoice\" (tenantId, supplierPartyId, number)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "SupplierInvoice_tenantId_supplierPartyId_number_key",
+        "table": "SupplierInvoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"SupplierInvoice_tenantId_supplierPartyId_number_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SupplierInvoice_tenantId_supplierPartyId_number_key",
+          "public",
+          "\"public\".\"SupplierInvoice\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"SupplierInvoice_tenantId_supplierPartyId_number_key\"",
+        "sql": "ALTER TABLE \"public\".\"SupplierInvoice\" ADD CONSTRAINT \"SupplierInvoice_tenantId_supplierPartyId_number_key\" UNIQUE (\"tenantId\", \"supplierPartyId\", \"number\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"SupplierInvoice_tenantId_supplierPartyId_number_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SupplierInvoice_tenantId_supplierPartyId_number_key",
+          "public",
+          "\"public\".\"SupplierInvoice\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PurchaseOrder.PurchaseOrder_supplierPartyId_idx_65784de3",
+    "label": "Create index \"PurchaseOrder_supplierPartyId_idx_65784de3\" on \"PurchaseOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PurchaseOrder_supplierPartyId_idx_65784de3",
+        "table": "PurchaseOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PurchaseOrder_supplierPartyId_idx_65784de3\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrder_supplierPartyId_idx_65784de3\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PurchaseOrder_supplierPartyId_idx_65784de3\"",
+        "sql": "CREATE INDEX \"PurchaseOrder_supplierPartyId_idx_65784de3\" ON \"public\".\"PurchaseOrder\" (\"supplierPartyId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PurchaseOrder_supplierPartyId_idx_65784de3\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrder_supplierPartyId_idx_65784de3\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PurchaseOrder.PurchaseOrder_tenantId_idx_c93ed4f1",
+    "label": "Create index \"PurchaseOrder_tenantId_idx_c93ed4f1\" on \"PurchaseOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PurchaseOrder_tenantId_idx_c93ed4f1",
+        "table": "PurchaseOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PurchaseOrder_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrder_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PurchaseOrder_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"PurchaseOrder_tenantId_idx_c93ed4f1\" ON \"public\".\"PurchaseOrder\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PurchaseOrder_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrder_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PurchaseOrder.PurchaseOrder_tenantId_status_idx_d3d04256",
+    "label": "Create index \"PurchaseOrder_tenantId_status_idx_d3d04256\" on \"PurchaseOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PurchaseOrder_tenantId_status_idx_d3d04256",
+        "table": "PurchaseOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PurchaseOrder_tenantId_status_idx_d3d04256\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrder_tenantId_status_idx_d3d04256\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PurchaseOrder_tenantId_status_idx_d3d04256\"",
+        "sql": "CREATE INDEX \"PurchaseOrder_tenantId_status_idx_d3d04256\" ON \"public\".\"PurchaseOrder\" (\"tenantId\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PurchaseOrder_tenantId_status_idx_d3d04256\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrder_tenantId_status_idx_d3d04256\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PurchaseOrder.PurchaseOrder_warehouseId_idx_8ff93e70",
+    "label": "Create index \"PurchaseOrder_warehouseId_idx_8ff93e70\" on \"PurchaseOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PurchaseOrder_warehouseId_idx_8ff93e70",
+        "table": "PurchaseOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PurchaseOrder_warehouseId_idx_8ff93e70\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrder_warehouseId_idx_8ff93e70\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PurchaseOrder_warehouseId_idx_8ff93e70\"",
+        "sql": "CREATE INDEX \"PurchaseOrder_warehouseId_idx_8ff93e70\" ON \"public\".\"PurchaseOrder\" (\"warehouseId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PurchaseOrder_warehouseId_idx_8ff93e70\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrder_warehouseId_idx_8ff93e70\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PurchaseOrderLine.PurchaseOrderLine_orderId_idx_d284871b",
+    "label": "Create index \"PurchaseOrderLine_orderId_idx_d284871b\" on \"PurchaseOrderLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PurchaseOrderLine_orderId_idx_d284871b",
+        "table": "PurchaseOrderLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PurchaseOrderLine_orderId_idx_d284871b\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrderLine_orderId_idx_d284871b\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PurchaseOrderLine_orderId_idx_d284871b\"",
+        "sql": "CREATE INDEX \"PurchaseOrderLine_orderId_idx_d284871b\" ON \"public\".\"PurchaseOrderLine\" (\"orderId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PurchaseOrderLine_orderId_idx_d284871b\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrderLine_orderId_idx_d284871b\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PurchaseOrderLine.PurchaseOrderLine_productId_idx_5858600a",
+    "label": "Create index \"PurchaseOrderLine_productId_idx_5858600a\" on \"PurchaseOrderLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PurchaseOrderLine_productId_idx_5858600a",
+        "table": "PurchaseOrderLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PurchaseOrderLine_productId_idx_5858600a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrderLine_productId_idx_5858600a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PurchaseOrderLine_productId_idx_5858600a\"",
+        "sql": "CREATE INDEX \"PurchaseOrderLine_productId_idx_5858600a\" ON \"public\".\"PurchaseOrderLine\" (\"productId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PurchaseOrderLine_productId_idx_5858600a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrderLine_productId_idx_5858600a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PurchaseOrderLine.PurchaseOrderLine_tenantId_idx_c93ed4f1",
+    "label": "Create index \"PurchaseOrderLine_tenantId_idx_c93ed4f1\" on \"PurchaseOrderLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PurchaseOrderLine_tenantId_idx_c93ed4f1",
+        "table": "PurchaseOrderLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PurchaseOrderLine_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrderLine_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PurchaseOrderLine_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"PurchaseOrderLine_tenantId_idx_c93ed4f1\" ON \"public\".\"PurchaseOrderLine\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PurchaseOrderLine_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PurchaseOrderLine_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SupplierInvoice.SupplierInvoice_purchaseOrderId_idx_3e3a8c45",
+    "label": "Create index \"SupplierInvoice_purchaseOrderId_idx_3e3a8c45\" on \"SupplierInvoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SupplierInvoice_purchaseOrderId_idx_3e3a8c45",
+        "table": "SupplierInvoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SupplierInvoice_purchaseOrderId_idx_3e3a8c45\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierInvoice_purchaseOrderId_idx_3e3a8c45\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SupplierInvoice_purchaseOrderId_idx_3e3a8c45\"",
+        "sql": "CREATE INDEX \"SupplierInvoice_purchaseOrderId_idx_3e3a8c45\" ON \"public\".\"SupplierInvoice\" (\"purchaseOrderId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SupplierInvoice_purchaseOrderId_idx_3e3a8c45\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierInvoice_purchaseOrderId_idx_3e3a8c45\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SupplierInvoice.SupplierInvoice_supplierPartyId_idx_65784de3",
+    "label": "Create index \"SupplierInvoice_supplierPartyId_idx_65784de3\" on \"SupplierInvoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SupplierInvoice_supplierPartyId_idx_65784de3",
+        "table": "SupplierInvoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SupplierInvoice_supplierPartyId_idx_65784de3\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierInvoice_supplierPartyId_idx_65784de3\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SupplierInvoice_supplierPartyId_idx_65784de3\"",
+        "sql": "CREATE INDEX \"SupplierInvoice_supplierPartyId_idx_65784de3\" ON \"public\".\"SupplierInvoice\" (\"supplierPartyId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SupplierInvoice_supplierPartyId_idx_65784de3\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierInvoice_supplierPartyId_idx_65784de3\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SupplierInvoice.SupplierInvoice_tenantId_dueDate_idx_ab958bc0",
+    "label": "Create index \"SupplierInvoice_tenantId_dueDate_idx_ab958bc0\" on \"SupplierInvoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SupplierInvoice_tenantId_dueDate_idx_ab958bc0",
+        "table": "SupplierInvoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SupplierInvoice_tenantId_dueDate_idx_ab958bc0\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierInvoice_tenantId_dueDate_idx_ab958bc0\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SupplierInvoice_tenantId_dueDate_idx_ab958bc0\"",
+        "sql": "CREATE INDEX \"SupplierInvoice_tenantId_dueDate_idx_ab958bc0\" ON \"public\".\"SupplierInvoice\" (\"tenantId\", \"dueDate\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SupplierInvoice_tenantId_dueDate_idx_ab958bc0\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierInvoice_tenantId_dueDate_idx_ab958bc0\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SupplierInvoice.SupplierInvoice_tenantId_idx_c93ed4f1",
+    "label": "Create index \"SupplierInvoice_tenantId_idx_c93ed4f1\" on \"SupplierInvoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SupplierInvoice_tenantId_idx_c93ed4f1",
+        "table": "SupplierInvoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SupplierInvoice_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierInvoice_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SupplierInvoice_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"SupplierInvoice_tenantId_idx_c93ed4f1\" ON \"public\".\"SupplierInvoice\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SupplierInvoice_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierInvoice_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PurchaseOrder.PurchaseOrder_tenantId_fkey",
+    "label": "Add foreign key \"PurchaseOrder_tenantId_fkey\" on \"PurchaseOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PurchaseOrder_tenantId_fkey",
+        "table": "PurchaseOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PurchaseOrder_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PurchaseOrder_tenantId_fkey",
+          "public",
+          "\"public\".\"PurchaseOrder\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PurchaseOrder_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PurchaseOrder\"\nADD CONSTRAINT \"PurchaseOrder_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PurchaseOrder_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PurchaseOrder_tenantId_fkey",
+          "public",
+          "\"public\".\"PurchaseOrder\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PurchaseOrder.PurchaseOrder_supplierPartyId_fkey",
+    "label": "Add foreign key \"PurchaseOrder_supplierPartyId_fkey\" on \"PurchaseOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PurchaseOrder_supplierPartyId_fkey",
+        "table": "PurchaseOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PurchaseOrder_supplierPartyId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PurchaseOrder_supplierPartyId_fkey",
+          "public",
+          "\"public\".\"PurchaseOrder\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PurchaseOrder_supplierPartyId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PurchaseOrder\"\nADD CONSTRAINT \"PurchaseOrder_supplierPartyId_fkey\"\nFOREIGN KEY (\"supplierPartyId\")\nREFERENCES \"public\".\"Party\" (\"id\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PurchaseOrder_supplierPartyId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PurchaseOrder_supplierPartyId_fkey",
+          "public",
+          "\"public\".\"PurchaseOrder\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PurchaseOrder.PurchaseOrder_warehouseId_fkey",
+    "label": "Add foreign key \"PurchaseOrder_warehouseId_fkey\" on \"PurchaseOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PurchaseOrder_warehouseId_fkey",
+        "table": "PurchaseOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PurchaseOrder_warehouseId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PurchaseOrder_warehouseId_fkey",
+          "public",
+          "\"public\".\"PurchaseOrder\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PurchaseOrder_warehouseId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PurchaseOrder\"\nADD CONSTRAINT \"PurchaseOrder_warehouseId_fkey\"\nFOREIGN KEY (\"warehouseId\")\nREFERENCES \"public\".\"Warehouse\" (\"id\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PurchaseOrder_warehouseId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PurchaseOrder_warehouseId_fkey",
+          "public",
+          "\"public\".\"PurchaseOrder\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PurchaseOrderLine.PurchaseOrderLine_tenantId_fkey",
+    "label": "Add foreign key \"PurchaseOrderLine_tenantId_fkey\" on \"PurchaseOrderLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PurchaseOrderLine_tenantId_fkey",
+        "table": "PurchaseOrderLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PurchaseOrderLine_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PurchaseOrderLine_tenantId_fkey",
+          "public",
+          "\"public\".\"PurchaseOrderLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PurchaseOrderLine_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PurchaseOrderLine\"\nADD CONSTRAINT \"PurchaseOrderLine_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PurchaseOrderLine_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PurchaseOrderLine_tenantId_fkey",
+          "public",
+          "\"public\".\"PurchaseOrderLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PurchaseOrderLine.PurchaseOrderLine_orderId_fkey",
+    "label": "Add foreign key \"PurchaseOrderLine_orderId_fkey\" on \"PurchaseOrderLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PurchaseOrderLine_orderId_fkey",
+        "table": "PurchaseOrderLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PurchaseOrderLine_orderId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PurchaseOrderLine_orderId_fkey",
+          "public",
+          "\"public\".\"PurchaseOrderLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PurchaseOrderLine_orderId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PurchaseOrderLine\"\nADD CONSTRAINT \"PurchaseOrderLine_orderId_fkey\"\nFOREIGN KEY (\"orderId\")\nREFERENCES \"public\".\"PurchaseOrder\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PurchaseOrderLine_orderId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PurchaseOrderLine_orderId_fkey",
+          "public",
+          "\"public\".\"PurchaseOrderLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PurchaseOrderLine.PurchaseOrderLine_productId_fkey",
+    "label": "Add foreign key \"PurchaseOrderLine_productId_fkey\" on \"PurchaseOrderLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PurchaseOrderLine_productId_fkey",
+        "table": "PurchaseOrderLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PurchaseOrderLine_productId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PurchaseOrderLine_productId_fkey",
+          "public",
+          "\"public\".\"PurchaseOrderLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PurchaseOrderLine_productId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PurchaseOrderLine\"\nADD CONSTRAINT \"PurchaseOrderLine_productId_fkey\"\nFOREIGN KEY (\"productId\")\nREFERENCES \"public\".\"Product\" (\"id\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PurchaseOrderLine_productId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PurchaseOrderLine_productId_fkey",
+          "public",
+          "\"public\".\"PurchaseOrderLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.SupplierInvoice.SupplierInvoice_tenantId_fkey",
+    "label": "Add foreign key \"SupplierInvoice_tenantId_fkey\" on \"SupplierInvoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "SupplierInvoice_tenantId_fkey",
+        "table": "SupplierInvoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"SupplierInvoice_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SupplierInvoice_tenantId_fkey",
+          "public",
+          "\"public\".\"SupplierInvoice\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"SupplierInvoice_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"SupplierInvoice\"\nADD CONSTRAINT \"SupplierInvoice_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"SupplierInvoice_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SupplierInvoice_tenantId_fkey",
+          "public",
+          "\"public\".\"SupplierInvoice\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.SupplierInvoice.SupplierInvoice_supplierPartyId_fkey",
+    "label": "Add foreign key \"SupplierInvoice_supplierPartyId_fkey\" on \"SupplierInvoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "SupplierInvoice_supplierPartyId_fkey",
+        "table": "SupplierInvoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"SupplierInvoice_supplierPartyId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SupplierInvoice_supplierPartyId_fkey",
+          "public",
+          "\"public\".\"SupplierInvoice\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"SupplierInvoice_supplierPartyId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"SupplierInvoice\"\nADD CONSTRAINT \"SupplierInvoice_supplierPartyId_fkey\"\nFOREIGN KEY (\"supplierPartyId\")\nREFERENCES \"public\".\"Party\" (\"id\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"SupplierInvoice_supplierPartyId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SupplierInvoice_supplierPartyId_fkey",
+          "public",
+          "\"public\".\"SupplierInvoice\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.SupplierInvoice.SupplierInvoice_purchaseOrderId_fkey",
+    "label": "Add foreign key \"SupplierInvoice_purchaseOrderId_fkey\" on \"SupplierInvoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "SupplierInvoice_purchaseOrderId_fkey",
+        "table": "SupplierInvoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"SupplierInvoice_purchaseOrderId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SupplierInvoice_purchaseOrderId_fkey",
+          "public",
+          "\"public\".\"SupplierInvoice\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"SupplierInvoice_purchaseOrderId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"SupplierInvoice\"\nADD CONSTRAINT \"SupplierInvoice_purchaseOrderId_fkey\"\nFOREIGN KEY (\"purchaseOrderId\")\nREFERENCES \"public\".\"PurchaseOrder\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"SupplierInvoice_purchaseOrderId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SupplierInvoice_purchaseOrderId_fkey",
+          "public",
+          "\"public\".\"SupplierInvoice\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.PurchaseOrder",
+    "label": "Enable row-level security on \"PurchaseOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "PurchaseOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"PurchaseOrder\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "PurchaseOrder"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"PurchaseOrder\"",
+        "sql": "ALTER TABLE \"public\".\"PurchaseOrder\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"PurchaseOrder\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "PurchaseOrder"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.PurchaseOrderLine",
+    "label": "Enable row-level security on \"PurchaseOrderLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "PurchaseOrderLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"PurchaseOrderLine\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "PurchaseOrderLine"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"PurchaseOrderLine\"",
+        "sql": "ALTER TABLE \"public\".\"PurchaseOrderLine\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"PurchaseOrderLine\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "PurchaseOrderLine"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.SupplierInvoice",
+    "label": "Enable row-level security on \"SupplierInvoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "SupplierInvoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"SupplierInvoice\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "SupplierInvoice"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"SupplierInvoice\"",
+        "sql": "ALTER TABLE \"public\".\"SupplierInvoice\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"SupplierInvoice\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "SupplierInvoice"
+        ]
+      }
+    ]
+  }
+]

@@ -147,7 +147,7 @@ de «hecho»). No se edita a mano.
 | **08** | Vende y controla | Tercero único mínimo | I, IV | N1, N2 | 1/5 | `PR-08-terceros` | pendiente |
 | **09** | Vende y controla | Catálogo maestro: variantes, códigos de barras y precios | I, V | N2 | 0/4 | `PR-09-catalogo-maestro` | pendiente |
 | **10** | Vende y controla | Inventario I: bodegas y kardex con costo | VI | N1, N2 | 0/4 | `PR-10-inventario-bodegas-kardex` | pendiente |
-| **11** | Vende y controla | Inventario II: traslados, conteos y compras | VI | N1, N2 | 0/7 | `PR-11-traslados-conteos-compras` | pendiente |
+| **11** | Vende y controla | Inventario II: traslados, conteos y compras | VI | N1, N2 | 5/7 | `PR-11-traslados-conteos-compras` | pendiente |
 | **12** | Vende y controla | Importar y exportar clientes y catálogo | I, IV | N1 | 0/2 | — | pendiente |
 | **13** | Vende y controla | Impuestos y numeración por resolución | I, VII | N1, N2 | 0/8 | `PR-13-impuestos-y-numeracion` | pendiente |
 | **14** | Vende y controla | Cartera: cuentas por cobrar y por pagar | VII | N1 | 0/2 | `PR-14-cartera` | pendiente |
@@ -314,11 +314,11 @@ de «hecho»). No se edita a mano.
     - [ ] Stock mínimo, máximo y punto de reorden
     - [ ] Conteos físicos y ajustes por inventario
   - [`VI.05 · N1`](capas/VI-Operacion-Productividad-y-Logistica/05-Compras-y-Gestion-de-Proveedores/README.md)
-    - [ ] Orden de compra
-    - [ ] Registro de la factura del proveedor
-    - [ ] Entrada de mercancía al inventario al recibir.
-    - [ ] Ficha de proveedor
-    - [ ] Listado y búsqueda
+    - [x] Orden de compra _hecho: app/[tenant]/(app)/purchases + lib/purchasing_
+    - [x] Registro de la factura del proveedor _hecho: se registra al recibir (SupplierInvoice)_
+    - [x] Entrada de mercancía al inventario al recibir. _hecho: receiveOrder → servicio de inventario con costo_
+    - [x] Ficha de proveedor _hecho: Proveedores = terceros con rol SUPPLIER_
+    - [x] Listado y búsqueda _hecho: lista de órdenes con filtros y búsqueda de proveedores_
 
 ### PR-12 · Importar y exportar clientes y catálogo
 

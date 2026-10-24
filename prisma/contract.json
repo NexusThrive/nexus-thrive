@@ -260,6 +260,14 @@
       "model": "ProviderEvent",
       "namespace": "public"
     },
+    "PurchaseOrder": {
+      "model": "PurchaseOrder",
+      "namespace": "public"
+    },
+    "PurchaseOrderLine": {
+      "model": "PurchaseOrderLine",
+      "namespace": "public"
+    },
     "Quote": {
       "model": "Quote",
       "namespace": "public"
@@ -294,6 +302,10 @@
     },
     "Subscription": {
       "model": "Subscription",
+      "namespace": "public"
+    },
+    "SupplierInvoice": {
+      "model": "SupplierInvoice",
       "namespace": "public"
     },
     "SupportTicket": {
@@ -8995,6 +9007,21 @@
                   "namespace": "public"
                 }
               },
+              "purchaseOrders": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "supplierPartyId"
+                  ]
+                },
+                "to": {
+                  "model": "PurchaseOrder",
+                  "namespace": "public"
+                }
+              },
               "roles": {
                 "cardinality": "1:N",
                 "on": {
@@ -9007,6 +9034,21 @@
                 },
                 "to": {
                   "model": "PartyRole",
+                  "namespace": "public"
+                }
+              },
+              "supplierInvoices": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "supplierPartyId"
+                  ]
+                },
+                "to": {
+                  "model": "SupplierInvoice",
                   "namespace": "public"
                 }
               },
@@ -10433,6 +10475,21 @@
                 },
                 "to": {
                   "model": "PriceListItem",
+                  "namespace": "public"
+                }
+              },
+              "purchaseLines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "productId"
+                  ]
+                },
+                "to": {
+                  "model": "PurchaseOrderLine",
                   "namespace": "public"
                 }
               },
@@ -12114,6 +12171,386 @@
               "table": "ProviderEvent"
             }
           },
+          "PurchaseOrder": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdById": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "expectedDate": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "note": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "number": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "subtotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "supplierPartyId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "taxTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "total": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "warehouseId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "invoices": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "purchaseOrderId"
+                  ]
+                },
+                "to": {
+                  "model": "SupplierInvoice",
+                  "namespace": "public"
+                }
+              },
+              "lines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "orderId"
+                  ]
+                },
+                "to": {
+                  "model": "PurchaseOrderLine",
+                  "namespace": "public"
+                }
+              },
+              "supplier": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "supplierPartyId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Party",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              },
+              "warehouse": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "warehouseId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Warehouse",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "createdById": {
+                  "column": "createdById"
+                },
+                "expectedDate": {
+                  "column": "expectedDate"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "note": {
+                  "column": "note"
+                },
+                "number": {
+                  "column": "number"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "subtotal": {
+                  "column": "subtotal"
+                },
+                "supplierPartyId": {
+                  "column": "supplierPartyId"
+                },
+                "taxTotal": {
+                  "column": "taxTotal"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "total": {
+                  "column": "total"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "warehouseId": {
+                  "column": "warehouseId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "PurchaseOrder"
+            }
+          },
+          "PurchaseOrderLine": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "orderId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "productId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "quantity": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "receivedQuantity": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "taxRatePct": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "unitCost": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "variantId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "order": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "orderId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "PurchaseOrder",
+                  "namespace": "public"
+                }
+              },
+              "product": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "productId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Product",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "orderId": {
+                  "column": "orderId"
+                },
+                "productId": {
+                  "column": "productId"
+                },
+                "quantity": {
+                  "column": "quantity"
+                },
+                "receivedQuantity": {
+                  "column": "receivedQuantity"
+                },
+                "taxRatePct": {
+                  "column": "taxRatePct"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "unitCost": {
+                  "column": "unitCost"
+                },
+                "variantId": {
+                  "column": "variantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "PurchaseOrderLine"
+            }
+          },
           "Quote": {
             "fields": {
               "adminPercent": {
@@ -13676,6 +14113,196 @@
               "table": "Subscription"
             }
           },
+          "SupplierInvoice": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "cufe": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "dueDate": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "issueDate": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "number": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "purchaseOrderId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "subtotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "supplierPartyId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "taxTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "total": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "purchaseOrder": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "purchaseOrderId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "PurchaseOrder",
+                  "namespace": "public"
+                }
+              },
+              "supplier": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "supplierPartyId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Party",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "cufe": {
+                  "column": "cufe"
+                },
+                "dueDate": {
+                  "column": "dueDate"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "issueDate": {
+                  "column": "issueDate"
+                },
+                "number": {
+                  "column": "number"
+                },
+                "purchaseOrderId": {
+                  "column": "purchaseOrderId"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "subtotal": {
+                  "column": "subtotal"
+                },
+                "supplierPartyId": {
+                  "column": "supplierPartyId"
+                },
+                "taxTotal": {
+                  "column": "taxTotal"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "total": {
+                  "column": "total"
+                }
+              },
+              "namespaceId": "public",
+              "table": "SupplierInvoice"
+            }
+          },
           "SupportTicket": {
             "fields": {
               "assigneeId": {
@@ -14996,6 +15623,36 @@
                   "namespace": "public"
                 }
               },
+              "purchaseOrderLines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "PurchaseOrderLine",
+                  "namespace": "public"
+                }
+              },
+              "purchaseOrders": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "PurchaseOrder",
+                  "namespace": "public"
+                }
+              },
               "quotes": {
                 "cardinality": "1:N",
                 "on": {
@@ -15069,6 +15726,21 @@
                 },
                 "to": {
                   "model": "Subscription",
+                  "namespace": "public"
+                }
+              },
+              "supplierInvoices": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "SupplierInvoice",
                   "namespace": "public"
                 }
               },
@@ -16627,6 +17299,21 @@
                   "namespace": "public"
                 }
               },
+              "purchaseOrders": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "warehouseId"
+                  ]
+                },
+                "to": {
+                  "model": "PurchaseOrder",
+                  "namespace": "public"
+                }
+              },
               "tenant": {
                 "cardinality": "N:1",
                 "nullable": false,
@@ -17583,6 +18270,16 @@
               "namespaceId": "public",
               "tableName": "ProviderEvent"
             },
+            "PurchaseOrder": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "PurchaseOrder"
+            },
+            "PurchaseOrderLine": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "PurchaseOrderLine"
+            },
             "Quote": {
               "kind": "rls",
               "namespaceId": "public",
@@ -17627,6 +18324,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "Subscription"
+            },
+            "SupplierInvoice": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "SupplierInvoice"
             },
             "SupportTicket": {
               "kind": "rls",
@@ -26487,6 +27189,343 @@
                 }
               ]
             },
+            "PurchaseOrder": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "createdById": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "expectedDate": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "note": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "number": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "DRAFT"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "subtotal": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "supplierPartyId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "taxTotal": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "total": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "warehouseId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PurchaseOrder"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "restrict",
+                  "source": {
+                    "columns": [
+                      "supplierPartyId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PurchaseOrder"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Party"
+                  }
+                },
+                {
+                  "onDelete": "restrict",
+                  "source": {
+                    "columns": [
+                      "warehouseId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PurchaseOrder"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Warehouse"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "supplierPartyId"
+                  ],
+                  "name": "PurchaseOrder_supplierPartyId_idx_65784de3",
+                  "prefix": "PurchaseOrder_supplierPartyId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "PurchaseOrder_tenantId_idx_c93ed4f1",
+                  "prefix": "PurchaseOrder_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "status"
+                  ],
+                  "name": "PurchaseOrder_tenantId_status_idx_d3d04256",
+                  "prefix": "PurchaseOrder_tenantId_status_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "warehouseId"
+                  ],
+                  "name": "PurchaseOrder_warehouseId_idx_8ff93e70",
+                  "prefix": "PurchaseOrder_warehouseId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "number"
+                  ]
+                }
+              ]
+            },
+            "PurchaseOrderLine": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "orderId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "productId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "quantity": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "receivedQuantity": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "taxRatePct": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "unitCost": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "variantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PurchaseOrderLine"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "orderId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PurchaseOrderLine"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PurchaseOrder"
+                  }
+                },
+                {
+                  "onDelete": "restrict",
+                  "source": {
+                    "columns": [
+                      "productId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PurchaseOrderLine"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Product"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "orderId"
+                  ],
+                  "name": "PurchaseOrderLine_orderId_idx_d284871b",
+                  "prefix": "PurchaseOrderLine_orderId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "productId"
+                  ],
+                  "name": "PurchaseOrderLine_productId_idx_5858600a",
+                  "prefix": "PurchaseOrderLine_productId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "PurchaseOrderLine_tenantId_idx_c93ed4f1",
+                  "prefix": "PurchaseOrderLine_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "Quote": {
               "checks": [
                 {
@@ -27761,6 +28800,189 @@
                 {
                   "columns": [
                     "tenantId"
+                  ]
+                }
+              ]
+            },
+            "SupplierInvoice": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "cufe": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "dueDate": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "issueDate": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "number": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "purchaseOrderId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "REGISTERED"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "subtotal": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "supplierPartyId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "taxTotal": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "total": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "SupplierInvoice"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "restrict",
+                  "source": {
+                    "columns": [
+                      "supplierPartyId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "SupplierInvoice"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Party"
+                  }
+                },
+                {
+                  "onDelete": "setNull",
+                  "source": {
+                    "columns": [
+                      "purchaseOrderId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "SupplierInvoice"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PurchaseOrder"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "purchaseOrderId"
+                  ],
+                  "name": "SupplierInvoice_purchaseOrderId_idx_3e3a8c45",
+                  "prefix": "SupplierInvoice_purchaseOrderId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "supplierPartyId"
+                  ],
+                  "name": "SupplierInvoice_supplierPartyId_idx_65784de3",
+                  "prefix": "SupplierInvoice_supplierPartyId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "dueDate"
+                  ],
+                  "name": "SupplierInvoice_tenantId_dueDate_idx_ab958bc0",
+                  "prefix": "SupplierInvoice_tenantId_dueDate_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "SupplierInvoice_tenantId_idx_c93ed4f1",
+                  "prefix": "SupplierInvoice_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "supplierPartyId",
+                    "number"
                   ]
                 }
               ]
@@ -30193,10 +31415,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "4416dd35d6df9a2e3706cc8703bf36b34002c74bbc2bd8ffae3a4d204f694c67"
+    "storageHash": "5102e126472fee6d7350ac798fd4bc06e65763a6cffc609a914d0462dd251bb9"
   },
   "execution": {
-    "executionHash": "38395a9c5aab6873cbfe3ee05f31c98d3158fcd36f4fb0a7b91ce76a457d4049",
+    "executionHash": "757905704f9b57bbe1fc8d234f9699b108b52b74eba179cbdbbbc4cbbbe5ccb2",
     "mutations": {
       "defaults": [
         {
@@ -31435,6 +32657,43 @@
             "kind": "generator"
           },
           "ref": {
+            "entry": "PurchaseOrder",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PurchaseOrder",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PurchaseOrderLine",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
             "entry": "Quote",
             "field": "id",
             "namespace": "public"
@@ -31615,6 +32874,17 @@
           "ref": {
             "entry": "Subscription",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "SupplierInvoice",
+            "field": "id",
             "namespace": "public"
           }
         },

@@ -19,6 +19,7 @@ import type { OnboardingTenantType } from "./types";
 const TEAM_HEAVY_MODULES: readonly ModuleValue[] = [
   "orders",
   "inventory",
+  "purchases",
   "memberships",
   "billing",
 ];

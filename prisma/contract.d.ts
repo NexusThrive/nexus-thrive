@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'4416dd35d6df9a2e3706cc8703bf36b34002c74bbc2bd8ffae3a4d204f694c67'>;
+  StorageHashBase<'5102e126472fee6d7350ac798fd4bc06e65763a6cffc609a914d0462dd251bb9'>;
 export type ExecutionHash =
-  ExecutionHashBase<'38395a9c5aab6873cbfe3ee05f31c98d3158fcd36f4fb0a7b91ce76a457d4049'>;
+  ExecutionHashBase<'757905704f9b57bbe1fc8d234f9699b108b52b74eba179cbdbbbc4cbbbe5ccb2'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -1152,6 +1152,33 @@ export type FieldOutputTypes = {
       readonly rawBody: CodecTypes['pg/text@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
+    readonly PurchaseOrder: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly createdById: CodecTypes['pg/text@1']['output'] | null;
+      readonly expectedDate: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly note: CodecTypes['pg/text@1']['output'] | null;
+      readonly number: CodecTypes['pg/int4@1']['output'];
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly subtotal: CodecTypes['pg/numeric@1']['output'];
+      readonly supplierPartyId: CodecTypes['pg/text@1']['output'];
+      readonly taxTotal: CodecTypes['pg/numeric@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly total: CodecTypes['pg/numeric@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly warehouseId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly PurchaseOrderLine: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly orderId: CodecTypes['pg/text@1']['output'];
+      readonly productId: CodecTypes['pg/text@1']['output'];
+      readonly quantity: CodecTypes['pg/int4@1']['output'];
+      readonly receivedQuantity: CodecTypes['pg/int4@1']['output'];
+      readonly taxRatePct: CodecTypes['pg/numeric@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly unitCost: CodecTypes['pg/numeric@1']['output'];
+      readonly variantId: CodecTypes['pg/text@1']['output'] | null;
+    };
     readonly Quote: {
       readonly adminPercent: CodecTypes['pg/numeric@1']['output'];
       readonly budgetRevision: CodecTypes['pg/int4@1']['output'] | null;
@@ -1280,6 +1307,21 @@ export type FieldOutputTypes = {
       readonly status: 'TRIAL' | 'ACTIVE' | 'PAST_DUE' | 'SUSPENDED' | 'CANCELLED';
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly SupplierInvoice: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly cufe: CodecTypes['pg/text@1']['output'] | null;
+      readonly dueDate: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly issueDate: CodecTypes['pg/text@1']['output'];
+      readonly number: CodecTypes['pg/text@1']['output'];
+      readonly purchaseOrderId: CodecTypes['pg/text@1']['output'] | null;
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly subtotal: CodecTypes['pg/numeric@1']['output'];
+      readonly supplierPartyId: CodecTypes['pg/text@1']['output'];
+      readonly taxTotal: CodecTypes['pg/numeric@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly total: CodecTypes['pg/numeric@1']['output'];
     };
     readonly SupportTicket: {
       readonly assigneeId: CodecTypes['pg/text@1']['output'] | null;
@@ -2442,6 +2484,33 @@ export type FieldInputTypes = {
       readonly rawBody: CodecTypes['pg/text@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
+    readonly PurchaseOrder: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly createdById: CodecTypes['pg/text@1']['input'] | null;
+      readonly expectedDate: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly note: CodecTypes['pg/text@1']['input'] | null;
+      readonly number: CodecTypes['pg/int4@1']['input'];
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly subtotal: CodecTypes['pg/numeric@1']['input'];
+      readonly supplierPartyId: CodecTypes['pg/text@1']['input'];
+      readonly taxTotal: CodecTypes['pg/numeric@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly total: CodecTypes['pg/numeric@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly warehouseId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly PurchaseOrderLine: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly orderId: CodecTypes['pg/text@1']['input'];
+      readonly productId: CodecTypes['pg/text@1']['input'];
+      readonly quantity: CodecTypes['pg/int4@1']['input'];
+      readonly receivedQuantity: CodecTypes['pg/int4@1']['input'];
+      readonly taxRatePct: CodecTypes['pg/numeric@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly unitCost: CodecTypes['pg/numeric@1']['input'];
+      readonly variantId: CodecTypes['pg/text@1']['input'] | null;
+    };
     readonly Quote: {
       readonly adminPercent: CodecTypes['pg/numeric@1']['input'];
       readonly budgetRevision: CodecTypes['pg/int4@1']['input'] | null;
@@ -2570,6 +2639,21 @@ export type FieldInputTypes = {
       readonly status: 'TRIAL' | 'ACTIVE' | 'PAST_DUE' | 'SUSPENDED' | 'CANCELLED';
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly SupplierInvoice: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly cufe: CodecTypes['pg/text@1']['input'] | null;
+      readonly dueDate: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly issueDate: CodecTypes['pg/text@1']['input'];
+      readonly number: CodecTypes['pg/text@1']['input'];
+      readonly purchaseOrderId: CodecTypes['pg/text@1']['input'] | null;
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly subtotal: CodecTypes['pg/numeric@1']['input'];
+      readonly supplierPartyId: CodecTypes['pg/text@1']['input'];
+      readonly taxTotal: CodecTypes['pg/numeric@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly total: CodecTypes['pg/numeric@1']['input'];
     };
     readonly SupportTicket: {
       readonly assigneeId: CodecTypes['pg/text@1']['input'] | null;
@@ -3732,6 +3816,33 @@ export type StorageColumnTypes = {
       readonly rawBody: CodecTypes['pg/text@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
+    readonly PurchaseOrder: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly createdById: CodecTypes['pg/text@1']['output'] | null;
+      readonly expectedDate: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly note: CodecTypes['pg/text@1']['output'] | null;
+      readonly number: CodecTypes['pg/int4@1']['output'];
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly subtotal: CodecTypes['pg/numeric@1']['output'];
+      readonly supplierPartyId: CodecTypes['pg/text@1']['output'];
+      readonly taxTotal: CodecTypes['pg/numeric@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly total: CodecTypes['pg/numeric@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly warehouseId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly PurchaseOrderLine: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly orderId: CodecTypes['pg/text@1']['output'];
+      readonly productId: CodecTypes['pg/text@1']['output'];
+      readonly quantity: CodecTypes['pg/int4@1']['output'];
+      readonly receivedQuantity: CodecTypes['pg/int4@1']['output'];
+      readonly taxRatePct: CodecTypes['pg/numeric@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly unitCost: CodecTypes['pg/numeric@1']['output'];
+      readonly variantId: CodecTypes['pg/text@1']['output'] | null;
+    };
     readonly Quote: {
       readonly adminPercent: CodecTypes['pg/numeric@1']['output'];
       readonly budgetRevision: CodecTypes['pg/int4@1']['output'] | null;
@@ -3860,6 +3971,21 @@ export type StorageColumnTypes = {
       readonly status: 'TRIAL' | 'ACTIVE' | 'PAST_DUE' | 'SUSPENDED' | 'CANCELLED';
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly SupplierInvoice: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly cufe: CodecTypes['pg/text@1']['output'] | null;
+      readonly dueDate: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly issueDate: CodecTypes['pg/text@1']['output'];
+      readonly number: CodecTypes['pg/text@1']['output'];
+      readonly purchaseOrderId: CodecTypes['pg/text@1']['output'] | null;
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly subtotal: CodecTypes['pg/numeric@1']['output'];
+      readonly supplierPartyId: CodecTypes['pg/text@1']['output'];
+      readonly taxTotal: CodecTypes['pg/numeric@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly total: CodecTypes['pg/numeric@1']['output'];
     };
     readonly SupportTicket: {
       readonly assigneeId: CodecTypes['pg/text@1']['output'] | null;
@@ -5022,6 +5148,33 @@ export type StorageColumnInputTypes = {
       readonly rawBody: CodecTypes['pg/text@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
+    readonly PurchaseOrder: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly createdById: CodecTypes['pg/text@1']['input'] | null;
+      readonly expectedDate: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly note: CodecTypes['pg/text@1']['input'] | null;
+      readonly number: CodecTypes['pg/int4@1']['input'];
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly subtotal: CodecTypes['pg/numeric@1']['input'];
+      readonly supplierPartyId: CodecTypes['pg/text@1']['input'];
+      readonly taxTotal: CodecTypes['pg/numeric@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly total: CodecTypes['pg/numeric@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly warehouseId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly PurchaseOrderLine: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly orderId: CodecTypes['pg/text@1']['input'];
+      readonly productId: CodecTypes['pg/text@1']['input'];
+      readonly quantity: CodecTypes['pg/int4@1']['input'];
+      readonly receivedQuantity: CodecTypes['pg/int4@1']['input'];
+      readonly taxRatePct: CodecTypes['pg/numeric@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly unitCost: CodecTypes['pg/numeric@1']['input'];
+      readonly variantId: CodecTypes['pg/text@1']['input'] | null;
+    };
     readonly Quote: {
       readonly adminPercent: CodecTypes['pg/numeric@1']['input'];
       readonly budgetRevision: CodecTypes['pg/int4@1']['input'] | null;
@@ -5150,6 +5303,21 @@ export type StorageColumnInputTypes = {
       readonly status: 'TRIAL' | 'ACTIVE' | 'PAST_DUE' | 'SUSPENDED' | 'CANCELLED';
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly SupplierInvoice: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly cufe: CodecTypes['pg/text@1']['input'] | null;
+      readonly dueDate: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly issueDate: CodecTypes['pg/text@1']['input'];
+      readonly number: CodecTypes['pg/text@1']['input'];
+      readonly purchaseOrderId: CodecTypes['pg/text@1']['input'] | null;
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly subtotal: CodecTypes['pg/numeric@1']['input'];
+      readonly supplierPartyId: CodecTypes['pg/text@1']['input'];
+      readonly taxTotal: CodecTypes['pg/numeric@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly total: CodecTypes['pg/numeric@1']['input'];
     };
     readonly SupportTicket: {
       readonly assigneeId: CodecTypes['pg/text@1']['input'] | null;
@@ -6230,9 +6398,12 @@ export namespace Models {
     tradeName: CodecTypes['pg/text@1']['output'] | null;
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     customers: public_Customer[];
+    purchaseOrders: public_PurchaseOrder[];
     roles: public_PartyRole[];
+    supplierInvoices: public_SupplierInvoice[];
     tenant: public_Tenant;
-    readonly [RelationKeys]?: 'customers' | 'roles' | 'tenant';
+    readonly [RelationKeys]?:
+      'customers' | 'purchaseOrders' | 'roles' | 'supplierInvoices' | 'tenant';
   };
   export type public_PartyRole = {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -6379,11 +6550,18 @@ export namespace Models {
     barcodes: public_ProductBarcode[];
     movements: public_StockMovement[];
     priceItems: public_PriceListItem[];
+    purchaseLines: public_PurchaseOrderLine[];
     stockLevels: public_StockLevel[];
     tenant: public_Tenant;
     variants: public_ProductVariant[];
     readonly [RelationKeys]?:
-      'barcodes' | 'movements' | 'priceItems' | 'stockLevels' | 'tenant' | 'variants';
+      | 'barcodes'
+      | 'movements'
+      | 'priceItems'
+      | 'purchaseLines'
+      | 'stockLevels'
+      | 'tenant'
+      | 'variants';
   };
   export type public_ProductBarcode = {
     code: CodecTypes['pg/text@1']['output'];
@@ -6536,6 +6714,43 @@ export namespace Models {
     connection: public_ExternalConnection;
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'connection' | 'tenant';
+  };
+  export type public_PurchaseOrder = {
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    createdById: CodecTypes['pg/text@1']['output'] | null;
+    expectedDate: CodecTypes['pg/text@1']['output'] | null;
+    id: CodecTypes['pg/text@1']['output'];
+    note: CodecTypes['pg/text@1']['output'] | null;
+    number: CodecTypes['pg/int4@1']['output'];
+    status: CodecTypes['pg/text@1']['output'];
+    subtotal: CodecTypes['pg/numeric@1']['output'];
+    supplierPartyId: CodecTypes['pg/text@1']['output'];
+    taxTotal: CodecTypes['pg/numeric@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    total: CodecTypes['pg/numeric@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    warehouseId: CodecTypes['pg/text@1']['output'];
+    invoices: public_SupplierInvoice[];
+    lines: public_PurchaseOrderLine[];
+    supplier: public_Party;
+    tenant: public_Tenant;
+    warehouse: public_Warehouse;
+    readonly [RelationKeys]?: 'invoices' | 'lines' | 'supplier' | 'tenant' | 'warehouse';
+  };
+  export type public_PurchaseOrderLine = {
+    id: CodecTypes['pg/text@1']['output'];
+    orderId: CodecTypes['pg/text@1']['output'];
+    productId: CodecTypes['pg/text@1']['output'];
+    quantity: CodecTypes['pg/int4@1']['output'];
+    receivedQuantity: CodecTypes['pg/int4@1']['output'];
+    taxRatePct: CodecTypes['pg/numeric@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    unitCost: CodecTypes['pg/numeric@1']['output'];
+    variantId: CodecTypes['pg/text@1']['output'] | null;
+    order: public_PurchaseOrder;
+    product: public_Product;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'order' | 'product' | 'tenant';
   };
   export type public_Quote = {
     adminPercent: CodecTypes['pg/numeric@1']['output'];
@@ -6696,6 +6911,25 @@ export namespace Models {
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'charges' | 'tenant';
   };
+  export type public_SupplierInvoice = {
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    cufe: CodecTypes['pg/text@1']['output'] | null;
+    dueDate: CodecTypes['pg/text@1']['output'] | null;
+    id: CodecTypes['pg/text@1']['output'];
+    issueDate: CodecTypes['pg/text@1']['output'];
+    number: CodecTypes['pg/text@1']['output'];
+    purchaseOrderId: CodecTypes['pg/text@1']['output'] | null;
+    status: CodecTypes['pg/text@1']['output'];
+    subtotal: CodecTypes['pg/numeric@1']['output'];
+    supplierPartyId: CodecTypes['pg/text@1']['output'];
+    taxTotal: CodecTypes['pg/numeric@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    total: CodecTypes['pg/numeric@1']['output'];
+    purchaseOrder: public_PurchaseOrder | null;
+    supplier: public_Party;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'purchaseOrder' | 'supplier' | 'tenant';
+  };
   export type public_SupportTicket = {
     assigneeId: CodecTypes['pg/text@1']['output'] | null;
     category: CodecTypes['pg/text@1']['output'];
@@ -6828,11 +7062,14 @@ export namespace Models {
     projectPlans: public_ProjectPlan[];
     projects: public_Project[];
     providerEvents: public_ProviderEvent[];
+    purchaseOrderLines: public_PurchaseOrderLine[];
+    purchaseOrders: public_PurchaseOrder[];
     quotes: public_Quote[];
     satisfactionSurveys: public_SatisfactionSurvey[];
     stockLevels: public_StockLevel[];
     stockMovements: public_StockMovement[];
     subscription: public_Subscription | null;
+    supplierInvoices: public_SupplierInvoice[];
     supportTickets: public_SupportTicket[];
     ticketSales: public_TicketSale[];
     tourBookings: public_TourBooking[];
@@ -6895,11 +7132,14 @@ export namespace Models {
       | 'projectPlans'
       | 'projects'
       | 'providerEvents'
+      | 'purchaseOrderLines'
+      | 'purchaseOrders'
       | 'quotes'
       | 'satisfactionSurveys'
       | 'stockLevels'
       | 'stockMovements'
       | 'subscription'
+      | 'supplierInvoices'
       | 'supportTickets'
       | 'ticketSales'
       | 'tourBookings'
@@ -7052,8 +7292,9 @@ export namespace Models {
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     levels: public_StockLevel[];
     movements: public_StockMovement[];
+    purchaseOrders: public_PurchaseOrder[];
     tenant: public_Tenant;
-    readonly [RelationKeys]?: 'levels' | 'movements' | 'tenant';
+    readonly [RelationKeys]?: 'levels' | 'movements' | 'purchaseOrders' | 'tenant';
   };
   export type public_WebhookDelivery = {
     attempt: CodecTypes['pg/int4@1']['output'];
@@ -7188,6 +7429,8 @@ export declare const models: {
     ProjectHeader: Models.public_ProjectHeader;
     ProjectPlan: Models.public_ProjectPlan;
     ProviderEvent: Models.public_ProviderEvent;
+    PurchaseOrder: Models.public_PurchaseOrder;
+    PurchaseOrderLine: Models.public_PurchaseOrderLine;
     Quote: Models.public_Quote;
     QuoteItem: Models.public_QuoteItem;
     SatisfactionSurvey: Models.public_SatisfactionSurvey;
@@ -7197,6 +7440,7 @@ export declare const models: {
     StockLevel: Models.public_StockLevel;
     StockMovement: Models.public_StockMovement;
     Subscription: Models.public_Subscription;
+    SupplierInvoice: Models.public_SupplierInvoice;
     SupportTicket: Models.public_SupportTicket;
     Tenant: Models.public_Tenant;
     TenantContact: Models.public_TenantContact;
@@ -14226,6 +14470,280 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly PurchaseOrder: {
+              columns: {
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly createdById: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly expectedDate: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly note: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly number: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'DRAFT'>;
+                  };
+                };
+                readonly subtotal: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/numeric@1', '0'>;
+                  };
+                };
+                readonly supplierPartyId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly taxTotal: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/numeric@1', '0'>;
+                  };
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly total: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/numeric@1', '0'>;
+                  };
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly warehouseId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['tenantId', 'number'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'PurchaseOrder_supplierPartyId_idx_65784de3';
+                  readonly prefix: 'PurchaseOrder_supplierPartyId_idx';
+                  readonly columns: readonly ['supplierPartyId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'PurchaseOrder_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'PurchaseOrder_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'PurchaseOrder_tenantId_status_idx_d3d04256';
+                  readonly prefix: 'PurchaseOrder_tenantId_status_idx';
+                  readonly columns: readonly ['tenantId', 'status'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'PurchaseOrder_warehouseId_idx_8ff93e70';
+                  readonly prefix: 'PurchaseOrder_warehouseId_idx';
+                  readonly columns: readonly ['warehouseId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'PurchaseOrder';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'PurchaseOrder';
+                    readonly columns: readonly ['supplierPartyId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Party';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'PurchaseOrder';
+                    readonly columns: readonly ['warehouseId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Warehouse';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly PurchaseOrderLine: {
+              columns: {
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly orderId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly productId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly quantity: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly receivedQuantity: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+                  };
+                };
+                readonly taxRatePct: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/numeric@1', '0'>;
+                  };
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly unitCost: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+                readonly variantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'PurchaseOrderLine_orderId_idx_d284871b';
+                  readonly prefix: 'PurchaseOrderLine_orderId_idx';
+                  readonly columns: readonly ['orderId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'PurchaseOrderLine_productId_idx_5858600a';
+                  readonly prefix: 'PurchaseOrderLine_productId_idx';
+                  readonly columns: readonly ['productId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'PurchaseOrderLine_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'PurchaseOrderLine_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'PurchaseOrderLine';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'PurchaseOrderLine';
+                    readonly columns: readonly ['orderId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'PurchaseOrder';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'PurchaseOrderLine';
+                    readonly columns: readonly ['productId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Product';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly Quote: {
               columns: {
                 readonly adminPercent: {
@@ -15236,6 +15754,152 @@ type ContractBase = Omit<
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly SupplierInvoice: {
+              columns: {
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly cufe: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly dueDate: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly issueDate: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly number: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly purchaseOrderId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'REGISTERED'>;
+                  };
+                };
+                readonly subtotal: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+                readonly supplierPartyId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly taxTotal: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/numeric@1', '0'>;
+                  };
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly total: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [
+                { readonly columns: readonly ['tenantId', 'supplierPartyId', 'number'] },
+              ];
+              indexes: readonly [
+                {
+                  readonly name: 'SupplierInvoice_purchaseOrderId_idx_3e3a8c45';
+                  readonly prefix: 'SupplierInvoice_purchaseOrderId_idx';
+                  readonly columns: readonly ['purchaseOrderId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'SupplierInvoice_supplierPartyId_idx_65784de3';
+                  readonly prefix: 'SupplierInvoice_supplierPartyId_idx';
+                  readonly columns: readonly ['supplierPartyId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'SupplierInvoice_tenantId_dueDate_idx_ab958bc0';
+                  readonly prefix: 'SupplierInvoice_tenantId_dueDate_idx';
+                  readonly columns: readonly ['tenantId', 'dueDate'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'SupplierInvoice_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'SupplierInvoice_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'SupplierInvoice';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'SupplierInvoice';
+                    readonly columns: readonly ['supplierPartyId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Party';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'SupplierInvoice';
+                    readonly columns: readonly ['purchaseOrderId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'PurchaseOrder';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -17283,6 +17947,14 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'ProviderEvent';
     };
+    readonly PurchaseOrder: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'PurchaseOrder';
+    };
+    readonly PurchaseOrderLine: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'PurchaseOrderLine';
+    };
     readonly Quote: { readonly namespace: 'public' & NamespaceId; readonly model: 'Quote' };
     readonly QuoteItem: { readonly namespace: 'public' & NamespaceId; readonly model: 'QuoteItem' };
     readonly SatisfactionSurvey: {
@@ -17309,6 +17981,10 @@ type ContractBase = Omit<
     readonly Subscription: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'Subscription';
+    };
+    readonly SupplierInvoice: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'SupplierInvoice';
     };
     readonly SupportTicket: {
       readonly namespace: 'public' & NamespaceId;
@@ -22260,6 +22936,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['partyId'];
                 };
               };
+              readonly purchaseOrders: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'PurchaseOrder';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['supplierPartyId'];
+                };
+              };
               readonly roles: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -22269,6 +22956,17 @@ type ContractBase = Omit<
                 readonly on: {
                   readonly localFields: readonly ['id'];
                   readonly targetFields: readonly ['partyId'];
+                };
+              };
+              readonly supplierInvoices: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'SupplierInvoice';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['supplierPartyId'];
                 };
               };
               readonly tenant: {
@@ -23129,6 +23827,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'PriceListItem';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['productId'];
+                };
+              };
+              readonly purchaseLines: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'PurchaseOrderLine';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -24191,6 +24900,245 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly PurchaseOrder: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly createdById: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly expectedDate: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly note: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly number: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly subtotal: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly supplierPartyId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly taxTotal: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly total: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly warehouseId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly invoices: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'SupplierInvoice';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['purchaseOrderId'];
+                };
+              };
+              readonly lines: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'PurchaseOrderLine';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['orderId'];
+                };
+              };
+              readonly supplier: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Party';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['supplierPartyId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly warehouse: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Warehouse';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['warehouseId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'PurchaseOrder';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly createdById: { readonly column: 'createdById' };
+                readonly expectedDate: { readonly column: 'expectedDate' };
+                readonly id: { readonly column: 'id' };
+                readonly note: { readonly column: 'note' };
+                readonly number: { readonly column: 'number' };
+                readonly status: { readonly column: 'status' };
+                readonly subtotal: { readonly column: 'subtotal' };
+                readonly supplierPartyId: { readonly column: 'supplierPartyId' };
+                readonly taxTotal: { readonly column: 'taxTotal' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly total: { readonly column: 'total' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+                readonly warehouseId: { readonly column: 'warehouseId' };
+              };
+            };
+          };
+          readonly PurchaseOrderLine: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly orderId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly productId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly quantity: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly receivedQuantity: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly taxRatePct: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly unitCost: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly variantId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly order: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'PurchaseOrder';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['orderId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly product: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Product';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['productId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'PurchaseOrderLine';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly orderId: { readonly column: 'orderId' };
+                readonly productId: { readonly column: 'productId' };
+                readonly quantity: { readonly column: 'quantity' };
+                readonly receivedQuantity: { readonly column: 'receivedQuantity' };
+                readonly taxRatePct: { readonly column: 'taxRatePct' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly unitCost: { readonly column: 'unitCost' };
+                readonly variantId: { readonly column: 'variantId' };
+              };
+            };
+          };
           readonly Quote: {
             readonly fields: {
               readonly adminPercent: {
@@ -25177,6 +26125,122 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly SupplierInvoice: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly cufe: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly dueDate: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly issueDate: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly number: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly purchaseOrderId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly subtotal: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly supplierPartyId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly taxTotal: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly total: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+            };
+            readonly relations: {
+              readonly purchaseOrder: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'PurchaseOrder';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['purchaseOrderId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly supplier: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Party';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['supplierPartyId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'SupplierInvoice';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly cufe: { readonly column: 'cufe' };
+                readonly dueDate: { readonly column: 'dueDate' };
+                readonly id: { readonly column: 'id' };
+                readonly issueDate: { readonly column: 'issueDate' };
+                readonly number: { readonly column: 'number' };
+                readonly purchaseOrderId: { readonly column: 'purchaseOrderId' };
+                readonly status: { readonly column: 'status' };
+                readonly subtotal: { readonly column: 'subtotal' };
+                readonly supplierPartyId: { readonly column: 'supplierPartyId' };
+                readonly taxTotal: { readonly column: 'taxTotal' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly total: { readonly column: 'total' };
+              };
+            };
+          };
           readonly SupportTicket: {
             readonly fields: {
               readonly assigneeId: {
@@ -26057,6 +27121,28 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly purchaseOrderLines: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'PurchaseOrderLine';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly purchaseOrders: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'PurchaseOrder';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly quotes: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -26108,6 +27194,17 @@ type ContractBase = Omit<
                 };
                 readonly cardinality: '1:1';
                 readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly supplierInvoices: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'SupplierInvoice';
+                };
+                readonly cardinality: '1:N';
                 readonly on: {
                   readonly localFields: readonly ['id'];
                   readonly targetFields: readonly ['tenantId'];
@@ -27055,6 +28152,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'StockMovement';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['warehouseId'];
+                };
+              };
+              readonly purchaseOrders: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'PurchaseOrder';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -28615,6 +29723,31 @@ type ContractBase = Omit<
         {
           readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
           readonly ref: {
+            readonly entry: 'PurchaseOrder';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'PurchaseOrder';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'PurchaseOrderLine';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
             readonly entry: 'Quote';
             readonly field: 'id';
             readonly namespace: 'public';
@@ -28735,6 +29868,14 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'Subscription';
             readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'SupplierInvoice';
+            readonly field: 'id';
             readonly namespace: 'public';
           };
         },

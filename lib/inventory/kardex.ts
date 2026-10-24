@@ -37,7 +37,7 @@ export async function stockByWarehouse(tenantId: string, productId: string) {
   });
 }
 
-/** ¿El kardex cuadra? Total de bodegas = `Product.stock`, y el último saldo de cada bodega = su existencia. */
+/** ¿El kardex cuadra? Total de bodegas = `Product.stock`, sin saldos negativos y con la existencia actual entre los saldos registrados. */
 export async function reconcile(tenantId: string, productId: string): Promise<{ ok: boolean; productStock: number; levelsTotal: number; problems: string[] }> {
   const product = await db.orm.public.Product.where({ tenantId, id: productId }).first();
   if (!product) return { ok: false, productStock: 0, levelsTotal: 0, problems: ["Producto no encontrado."] };
@@ -46,8 +46,12 @@ export async function reconcile(tenantId: string, productId: string): Promise<{ 
   const problems: string[] = [];
   if (levelsTotal !== product.stock) problems.push(`Las bodegas suman ${levelsTotal} y el producto dice ${product.stock}.`);
   for (const level of levels) {
-    const last = await db.orm.public.StockMovement.where({ tenantId, productId, warehouseId: level.warehouseId }).orderBy((m) => m.createdAt.desc()).limit(1).first();
-    if (last?.balanceAfter != null && last.balanceAfter !== level.quantity) problems.push(`El último saldo del kardex (${last.balanceAfter}) no coincide con la bodega (${level.quantity}).`);
+    // Con movimientos simultáneos la fecha no ordena el orden en que se aplicaron, así que no se
+    // compara «el último» saldo: se exige que ningún saldo sea negativo y que la existencia actual
+    // sea uno de los saldos que el kardex registró (la cadena de movimientos termina en ella).
+    const balances = (await db.orm.public.StockMovement.where({ tenantId, productId, warehouseId: level.warehouseId }).all()).map((m) => m.balanceAfter).filter((b): b is number => b != null);
+    if (balances.some((b) => b < 0)) problems.push("El kardex tiene un saldo negativo.");
+    if (balances.length && !balances.includes(level.quantity)) problems.push(`La existencia de la bodega (${level.quantity}) no aparece entre los saldos del kardex.`);
   }
   return { ok: problems.length === 0, productStock: product.stock, levelsTotal, problems };
 }

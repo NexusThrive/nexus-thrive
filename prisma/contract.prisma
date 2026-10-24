@@ -395,6 +395,9 @@ model Tenant {
   priceListItems     PriceListItem[]
   warehouses         Warehouse[]
   stockLevels        StockLevel[]
+  purchaseOrders     PurchaseOrder[]
+  purchaseOrderLines PurchaseOrderLine[]
+  supplierInvoices   SupplierInvoice[]
   supportTickets     SupportTicket[]
   charges            Charge[]
   benefitRedemptions BenefitRedemption[]
@@ -1986,6 +1989,7 @@ model Product {
   barcodes        ProductBarcode[]
   priceItems      PriceListItem[]
   stockLevels     StockLevel[]
+  purchaseLines   PurchaseOrderLine[]
 
   @@index([tenantId, kind])
   @@rls
@@ -2607,6 +2611,8 @@ model Party {
   updatedAt      temporal.updatedAt()
   roles          PartyRole[]
   customers      Customer[]
+  purchaseOrders PurchaseOrder[]
+  supplierInvoices SupplierInvoice[]
 
   @@index([tenantId, legalName])
   /// Un documento identifica a UN tercero por negocio.
@@ -2643,6 +2649,7 @@ model Warehouse {
   updatedAt temporal.updatedAt()
   levels    StockLevel[]
   movements StockMovement[]
+  purchaseOrders PurchaseOrder[]
 
   @@unique([tenantId, name])
   @@index([tenantId])
@@ -2670,5 +2677,82 @@ model StockLevel {
 
   @@unique([warehouseId, productId, variantKey])
   @@index([tenantId, productId])
+  @@rls
+}
+
+/// Orden de compra a un proveedor (tercero con rol SUPPLIER). Al recibir la mercancía
+/// entra al inventario con su costo por el servicio de inventario.
+model PurchaseOrder {
+  id              String   @id @default(uuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Consecutivo por negocio (OC-0001).
+  number          Int
+  supplierPartyId String
+  supplier        Party    @relation(fields: [supplierPartyId], references: [id], onDelete: Restrict)
+  /// Bodega a la que entra la mercancía.
+  warehouseId     String
+  warehouse       Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
+  /// DRAFT | ORDERED | PARTIAL | RECEIVED | CANCELED
+  status          String   @default("DRAFT")
+  expectedDate    String?
+  subtotal        Decimal  @default(0)
+  taxTotal        Decimal  @default(0)
+  total           Decimal  @default(0)
+  note            String?
+  createdById     String?
+  createdAt       DateTime @default(now())
+  updatedAt       temporal.updatedAt()
+  lines           PurchaseOrderLine[]
+  invoices        SupplierInvoice[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId, status])
+  @@rls
+}
+
+model PurchaseOrderLine {
+  id               String   @id @default(uuid())
+  tenantId         String
+  tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orderId          String
+  order            PurchaseOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId        String
+  product          Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  variantId        String?
+  quantity         Int
+  receivedQuantity Int      @default(0)
+  /// Costo por unidad SIN impuesto: es el que entra al costo promedio.
+  unitCost         Decimal
+  taxRatePct       Decimal  @default(0)
+
+  @@index([orderId])
+  @@rls
+}
+
+/// Factura que el proveedor entrega por una compra. Es el insumo de las cuentas por pagar (PR-14).
+model SupplierInvoice {
+  id              String   @id @default(uuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplierPartyId String
+  supplier        Party    @relation(fields: [supplierPartyId], references: [id], onDelete: Restrict)
+  purchaseOrderId String?
+  purchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id], onDelete: SetNull)
+  /// Número que trae la factura del proveedor.
+  number          String
+  issueDate       String
+  dueDate         String?
+  subtotal        Decimal
+  taxTotal        Decimal  @default(0)
+  total           Decimal
+  /// REGISTERED | PAID | VOID
+  status          String   @default("REGISTERED")
+  /// CUFE de la factura electrónica, si la trae.
+  cufe            String?
+  createdAt       DateTime @default(now())
+
+  @@unique([tenantId, supplierPartyId, number])
+  @@index([tenantId, dueDate])
   @@rls
 }

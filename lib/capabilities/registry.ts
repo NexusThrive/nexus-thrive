@@ -18,6 +18,7 @@ import {
   ScanLine,
   ShoppingCart,
   Ticket,
+  Truck,
   UserRoundPlus,
   Users,
   Wallet,
@@ -195,6 +196,22 @@ export const CAPABILITIES = [
       { href: "/memberships", icon: CreditCard, label: () => "Membresías" },
       { href: "/checkin", icon: ScanLine, label: () => "Control de acceso", verticals: ["gym"] },
     ],
+  },
+  {
+    // Compras a proveedores con recepción de mercancía al inventario. Depende
+    // de «Catálogo e inventario» (la mercancía entra por su servicio de stock).
+    id: "purchases",
+    kind: "specialized",
+    label: "Compras",
+    name: "Compras y proveedores",
+    description: "Órdenes de compra, proveedores y recepción de mercancía.",
+    pitch: "Compra a tus proveedores y recibe la mercancía en tu inventario.",
+    icon: Truck,
+    status: "BETA",
+    priceUsd: 0,
+    general: true,
+    // El restaurante compra insumos; el resto, mercancía.
+    nav: [{ href: "/purchases", icon: Truck, label: (_terms, vertical) => (vertical === "restaurant" ? "Compras de insumos" : "Compras") }],
   },
   {
     id: "orders",

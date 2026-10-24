@@ -46,12 +46,12 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Orden de compra _(PR-11)_
-- [ ] Registro de la factura del proveedor _(PR-11)_
-- [ ] Entrada de mercancía al inventario al recibir. _(PR-11)_
-- [ ] Ficha de proveedor _(PR-11)_
+- [x] Orden de compra _(PR-11)_ _hecho: app/[tenant]/(app)/purchases + lib/purchasing_
+- [x] Registro de la factura del proveedor _(PR-11)_ _hecho: se registra al recibir (SupplierInvoice)_
+- [x] Entrada de mercancía al inventario al recibir. _(PR-11)_ _hecho: receiveOrder → servicio de inventario con costo_
+- [x] Ficha de proveedor _(PR-11)_ _hecho: Proveedores = terceros con rol SUPPLIER_
 - [ ] Documentos básicos
-- [ ] Listado y búsqueda _(PR-11)_
+- [x] Listado y búsqueda _(PR-11)_ _hecho: lista de órdenes con filtros y búsqueda de proveedores_
 
 #### Técnico
 

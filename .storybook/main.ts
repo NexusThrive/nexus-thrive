@@ -30,6 +30,8 @@ const config: StorybookConfig = {
       "@nexus/brand": path.resolve(import.meta.dirname, "../packages/brand/src"),
       // Server action de la búsqueda: en Storybook no hay servidor ni base.
       "@/app/[tenant]/(app)/_actions/search": path.resolve(import.meta.dirname, "mocks/search.ts"),
+      // Acciones de compras: en Storybook hay datos de muestra.
+      "@/app/[tenant]/(app)/purchases/actions": path.resolve(import.meta.dirname, "mocks/purchases-actions.ts"),
       "@": path.resolve(import.meta.dirname, ".."),
     };
     return viteConfig;

@@ -36,7 +36,9 @@ export type MovementInput = {
 
 export type MovementResult = { warehouseId: string; balance: number; productStock: number; unitCost: number; delta: number };
 
-const ATTEMPTS = 8;
+const ATTEMPTS = 40;
+/** Espera corta y aleatoria al perder una carrera: evita que todos reintenten a la vez. */
+const backoff = () => new Promise((resolve) => setTimeout(resolve, Math.random() * 12));
 const cost2 = (n: number) => n.toFixed(4);
 
 /**
@@ -119,6 +121,7 @@ export async function applyStockMovement(tx: MoneyTx, tenantId: string, input: M
       const fresh = await readLevel(tx, tenantId, warehouseId, product.id, variantId);
       if (!fresh) throw new StockError("El inventario cambió. Intenta de nuevo.");
       level = fresh;
+      await backoff();
       continue;
     }
 
@@ -156,6 +159,7 @@ async function addToProductStock(tx: MoneyTx, tenantId: string, productId: strin
       .returning("stock")
       .build();
     if ((await tx.query(plan)).length > 0) return p.stock + delta;
+    await backoff();
   }
   throw new StockError("El inventario cambió mientras se registraba. Intenta de nuevo.");
 }
