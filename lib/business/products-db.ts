@@ -24,6 +24,8 @@ export type ProductRow = {
   durationDays: number | null;
   capacity: number | null;
   active: boolean;
+  /** IVA que se cobra (0 si no es gravado). */
+  taxRatePct: number;
 };
 
 const dec = (n: number) => n.toFixed(2);
@@ -46,6 +48,7 @@ function toRow(p: NonNullable<Awaited<ReturnType<typeof db.orm.public.Product.fi
     durationDays: p.durationDays,
     capacity: p.capacity,
     active: p.active,
+    taxRatePct: p.taxCategory === "GRAVADO" ? toNumber(p.taxRatePct) : 0,
   };
 }
 
@@ -70,7 +73,7 @@ export async function getProduct(tenantId: string, id: string) {
   return p ? toRow(p) : null;
 }
 
-export type ProductInput = Omit<ProductRow, "id" | "stock"> & { initialStock?: number };
+export type ProductInput = Omit<ProductRow, "id" | "stock" | "taxRatePct"> & { initialStock?: number };
 
 export async function saveProduct(tenantId: string, id: string | null, v: ProductInput, userId: string): Promise<string> {
   const data = {

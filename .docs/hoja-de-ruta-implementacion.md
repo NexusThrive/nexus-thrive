@@ -151,7 +151,7 @@ de «hecho»). No se edita a mano.
 | **12** | Vende y controla | Importar y exportar clientes y catálogo | — | — | base técnica | — | pendiente |
 | **13** | Vende y controla | Impuestos y numeración por resolución | VII | N1, N2 | 0/4 | `PR-13-impuestos-y-numeracion` | pendiente |
 | **14** | Vende y controla | Cartera: cuentas por cobrar y por pagar | — | — | base técnica | `PR-14-cartera` | pendiente |
-| **15** | Vende y controla | POS I: terminales, turnos y venta multilínea | V | N2 | 0/3 | `PR-15-pos-terminales-turnos` | pendiente |
+| **15** | Vende y controla | POS I: terminales, turnos y venta multilínea | V | N2 | 3/3 | `PR-15-pos-terminales-turnos` | hecho |
 | **16** | Vende y controla | POS II: impresión, código de barras y devoluciones | V | N2 | 0/3 | — | pendiente |
 | **17** | Cobra y factura | Pagos: intención de cobro, Nequi y conciliación | V | N1, N2 | 0/8 | `PR-17-pagos-intenciones-conciliacion` | pendiente |
 | **18** | Cobra y factura | Facturación electrónica: puerto sin proveedor | VII | N1, N2 | 0/7 | `PR-18-facturacion-electronica` | pendiente |
@@ -357,9 +357,9 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Un cajero abre turno, vende 5 líneas con efectivo + Nequi y cierra con arqueo; todo descuenta inventario.
 - **Casillas que marca:**
   - [`V.03 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/03-Punto-de-Venta-Fisico-y-Movil-POS/README.md)
-    - [ ] Descuentos, propinas y pago mixto
-    - [ ] Turnos por cajero
-    - [ ] Funciona en celular y tablet.
+    - [x] Descuentos, propinas y pago mixto
+    - [x] Turnos por cajero
+    - [x] Funciona en celular y tablet.
 
 ### PR-16 · POS II: impresión, código de barras y devoluciones
 

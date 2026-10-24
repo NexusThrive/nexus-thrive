@@ -409,6 +409,7 @@ model Tenant {
   stockCounts        StockCount[]
   stockCountLines    StockCountLine[]
   taxRates           TaxRate[]
+  posTerminals       PosTerminal[]
   supplierPayments   SupplierPayment[]
   numberingResolutions NumberingResolution[]
   supportTickets     SupportTicket[]
@@ -1935,6 +1936,8 @@ model CashSession {
   countedAmount  Decimal?
   difference     Decimal?
   closingNotes   String?
+  /// Terminal de punto de venta en la que se abrió el turno (vacío = caja sin terminal).
+  terminalId     String?
   movements      CashMovement[]
 
   @@index([tenantId, boxId])
@@ -2172,6 +2175,8 @@ model Invoice {
   withholdings Json?
   /// Lo abonado a una cuenta de cobro emitida (cartera). El saldo es total − paidTotal.
   paidTotal    Decimal       @default(0)
+  /// Propina de una venta de mostrador (no es ingreso: se cobra aparte del total).
+  tipTotal     Decimal       @default(0)
   createdAt    DateTime      @default(now())
   updatedAt    temporal.updatedAt()
   lines        InvoiceLine[]
@@ -2937,5 +2942,21 @@ model SupplierPayment {
   createdAt         DateTime        @default(now())
 
   @@index([tenantId, supplierInvoiceId])
+  @@rls
+}
+
+
+/// Terminal de punto de venta: una caja y una bodega desde donde se vende. Cada cajero abre su turno en ella.
+model PosTerminal {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  boxId       String
+  warehouseId String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
   @@rls
 }

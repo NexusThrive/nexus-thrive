@@ -212,6 +212,10 @@
       "model": "PlanSetting",
       "namespace": "public"
     },
+    "PosTerminal": {
+      "model": "PosTerminal",
+      "namespace": "public"
+    },
     "PresenceRequest": {
       "model": "PresenceRequest",
       "namespace": "public"
@@ -5182,6 +5186,13 @@
                   "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
+              },
+              "terminalId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
               }
             },
             "relations": {
@@ -5270,6 +5281,9 @@
                 },
                 "tenantId": {
                   "column": "tenantId"
+                },
+                "terminalId": {
+                  "column": "terminalId"
                 }
               },
               "namespaceId": "public",
@@ -7685,6 +7699,13 @@
                   "kind": "scalar"
                 }
               },
+              "tipTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
               "total": {
                 "nullable": false,
                 "type": {
@@ -7827,6 +7848,9 @@
                 },
                 "tenantId": {
                   "column": "tenantId"
+                },
+                "tipTotal": {
+                  "column": "tipTotal"
                 },
                 "total": {
                   "column": "total"
@@ -9860,6 +9884,104 @@
               },
               "namespaceId": "public",
               "table": "PlanSetting"
+            }
+          },
+          "PosTerminal": {
+            "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "boxId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "warehouseId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "active": {
+                  "column": "active"
+                },
+                "boxId": {
+                  "column": "boxId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "warehouseId": {
+                  "column": "warehouseId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "PosTerminal"
             }
           },
           "PresenceRequest": {
@@ -16604,6 +16726,21 @@
                   "namespace": "public"
                 }
               },
+              "posTerminals": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "PosTerminal",
+                  "namespace": "public"
+                }
+              },
               "presenceRequests": {
                 "cardinality": "1:N",
                 "on": {
@@ -19511,6 +19648,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "PlanSetting"
+            },
+            "PosTerminal": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "PosTerminal"
             },
             "PresenceRequest": {
               "kind": "rls",
@@ -22958,6 +23100,11 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "terminalId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 }
               },
               "foreignKeys": [
@@ -24979,6 +25126,15 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "tipTotal": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
                 "total": {
                   "codecId": "pg/numeric@1",
                   "nativeType": "numeric",
@@ -26659,6 +26815,88 @@
               "primaryKey": {
                 "columns": [
                   "key"
+                ]
+              },
+              "uniques": []
+            },
+            "PosTerminal": {
+              "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "boxId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "warehouseId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PosTerminal"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "PosTerminal_tenantId_idx_c93ed4f1",
+                  "prefix": "PosTerminal_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
                 ]
               },
               "uniques": []
@@ -33712,10 +33950,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "35370b0e28c7b144871c24d4b6596e4c51189286990e98b31bb6bb39ed51a3ae"
+    "storageHash": "c64fb7aa0031082c2b69496d95068f5860f317eb47193e31da424bb2d4cc2dfb"
   },
   "execution": {
-    "executionHash": "1c46da6992e45937292f6de80d5c0ea99eb962ff42367e534a93e6e239ccd3f6",
+    "executionHash": "a8fa8f8a23d22b48c75c16d0f7f7e3cde59a2dccc19d14c80b7ce74ec149bbbf",
     "mutations": {
       "defaults": [
         {
@@ -34663,6 +34901,17 @@
           "ref": {
             "entry": "PlanSetting",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PosTerminal",
+            "field": "id",
             "namespace": "public"
           }
         },

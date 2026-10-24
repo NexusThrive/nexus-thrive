@@ -86,6 +86,10 @@ export type IncomeInput = {
    * (`sourceType: "INVOICE"`) no crea otro documento: la cuenta ya lo es.
    */
   documentLines?: DocumentLineInput[];
+  /** Turno en el que entra el efectivo (punto de venta); por defecto, el de la caja principal. */
+  cashSessionId?: string | null;
+  /** El documento de venta lo crea quien llama (venta con varios pagos): este cobro no crea otro. */
+  skipDocument?: boolean;
 };
 
 export type Income = { paymentId: string; receiptNumber: number; receipt: string; createdAt: string; documentId: string | null };
@@ -101,7 +105,7 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
 
   const { top } = await tx.orm.public.Payment.where({ tenantId }).aggregate((a) => ({ top: a.max("receiptNumber") }));
   const receiptNumber = (top ?? 0) + 1;
-  const sessionId = input.method === "CASH" && status === "APPROVED" ? await openCashSessionId(tx, tenantId) : null;
+  const sessionId = input.method === "CASH" && status === "APPROVED" ? (input.cashSessionId ?? (await openCashSessionId(tx, tenantId))) : null;
 
   const payment = await tx.orm.public.Payment.create({
     tenantId,
@@ -136,7 +140,7 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
   // Documento comercial unificado (paso 2): toda venta cobrada deja el mismo
   // tipo de documento, en la misma transacción que el dinero.
   let documentId: string | null = null;
-  if (status === "APPROVED" && input.sourceType !== "INVOICE") {
+  if (status === "APPROVED" && input.sourceType !== "INVOICE" && !input.skipDocument) {
     const customer = input.customerId
       ? await tx.orm.public.Customer.where({ tenantId, id: input.customerId }).select("name").first()
       : null;

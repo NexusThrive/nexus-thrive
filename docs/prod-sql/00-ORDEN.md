@@ -36,6 +36,7 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 24 | `2026-10-24-traslados-conteos-reposicion.sql` | Traslados entre bodegas, conteos físicos y `Product.maxStock/reorderPoint` (aditivo; requiere los pasos 20 y 22) | generado de la migración |
 | 25 | `2026-10-24-impuestos-y-numeracion.sql` | `TaxRate` y `NumberingResolution` (impuestos con vigencia y numeración por resolución) y en `Invoice`: `resolutionId`, `prefix`, `withholdingTotal`, `withholdings` (aditivo) | generado de la migración |
 | 26 | `2026-10-24-cartera.sql` | Cartera: `Invoice.paidTotal`, `SupplierInvoice.paidTotal` y la tabla `SupplierPayment` (aditivo; requiere los pasos 22 y 25) | generado de la migración |
+| 27 | `2026-10-24-pos-terminales.sql` | Punto de venta: tabla `PosTerminal`, `CashSession.terminalId` e `Invoice.tipTotal` (aditivo; requiere los pasos 25 y 26) | generado de la migración |
 
 ## Estado: producción reconstruida desde las migraciones (camino A, 2026-10-23)
 

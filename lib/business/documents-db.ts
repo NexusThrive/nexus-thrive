@@ -40,6 +40,8 @@ export type NewDocument = {
   paymentId?: string | null;
   /** Retenciones que practica quien paga (códigos de `TaxRate`); se calculan con las vigentes a la fecha. */
   withholdingCodes?: readonly string[];
+  /** Propina cobrada junto con la venta (no suma al total del documento). */
+  tipTotal?: number;
   lines: readonly DocumentLineInput[];
 };
 
@@ -83,6 +85,7 @@ export async function insertDocument(tx: Writer, tenantId: string, doc: NewDocum
     resolutionId: allocation?.resolutionId ?? null,
     prefix: allocation?.prefix || null,
     withholdingTotal: dec(withheld),
+    tipTotal: dec(doc.tipTotal ?? 0),
     withholdings: withholdings.length ? (withholdings as never) : null,
   });
   if (allocation) await commitNumber(tx, tenantId, allocation);

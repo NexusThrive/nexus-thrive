@@ -128,7 +128,10 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/finance?tab=cobros", icon: Banknote, label: () => "Pagos" }],
+    nav: [
+      { href: "/finance?tab=cobros", icon: Banknote, label: () => "Pagos" },
+      { href: "/pos", icon: ShoppingCart, label: () => "Punto de venta" },
+    ],
   },
   {
     id: "billing",
