@@ -3,11 +3,13 @@ import { notFound } from "next/navigation";
 import { tenantWithModules } from "@/lib/tenant/membership";
 import { createTenantDb } from "@/lib/tenant/db";
 import { listTeam, seatLimit } from "@/lib/business/team-db";
+import type { BusinessModel } from "@/lib/tenant/business-context";
 import { listApiKeys } from "@/lib/api/keys";
 import { canManageTeam } from "@/lib/business/roles";
 import { paymentMethodLabel } from "@/lib/finance";
 import { getTenantAccess } from "@/lib/benefits/benefits-db";
 import {
+  type VerticalValue,
   MODULES,
   VERTICAL_LABELS,
   sortModules,
@@ -122,6 +124,7 @@ export default async function SettingsPage({
       systemInfo={systemInfo}
       plan={plan}
       card={card}
+      context={{ vertical: tenantRecord.vertical as VerticalValue, businessModels: (tenantRecord.businessModels ?? []) as BusinessModel[], activity: tenantRecord.activity ?? "" }}
     />
   );
 }

@@ -11,6 +11,9 @@ import {
   type ProfileFormState,
 } from "../actions";
 import type { ProfileInitialValues, SystemInfoItem } from "./settings-shell";
+import BusinessContextCard from "./business-context-card";
+import type { VerticalValue } from "@/lib/admin/catalogs";
+import type { BusinessModel } from "@/lib/tenant/business-context";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { labelClasses } from "@/components/atoms/input";
 
@@ -35,11 +38,13 @@ export default function ProfileTab({
   canManage,
   initialValues,
   systemInfo,
+  context,
 }: {
   tenantSlug: string;
   canManage: boolean;
   initialValues: ProfileInitialValues;
   systemInfo: SystemInfoItem[];
+  context: { vertical: VerticalValue; businessModels: BusinessModel[]; activity: string };
 }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -203,6 +208,8 @@ export default function ProfileTab({
           </div>
         )}
       </form>
+
+      <BusinessContextCard slug={tenantSlug} canManage={canManage} initial={context} />
 
       <div className="rounded-lg border border-border bg-card p-6">
         <h3 className="font-display text-[15px] mb-3 font-semibold text-foreground">Información del sistema</h3>

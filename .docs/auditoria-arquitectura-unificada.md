@@ -27,7 +27,7 @@ Visión: **NEXUS es el sistema; las funciones son opciones; el rubro es contexto
 | 1 | **El rubro limitaba funciones**: `VerticalSetting.modules` «lo demás no se ofrece ni se activa» y `checkModuleToggle` rechazaba «no es compatible con el rubro». | **Corregido en este PR**: el rubro solo *sugiere* (`suggestedModules`); cualquier función operativa se puede encender. |
 | 2 | **Se cobraba por función y por rubro** (`priceUsd` por módulo, factor de precio por rubro, Signature «módulos −40 %»). | **Corregido en este PR (valores por defecto)**: todas las funciones valen 0, factores ×1; los planes se diferencian por usuarios y tramos de clientes. Los precios ya guardados en el panel de planes no se tocan. |
 | 3 | No había dónde **descubrir** funciones apagadas. | **Corregido**: página `Funciones` («En uso / Te sugerimos / Más funciones») con sugerencias por rubro y por uso. |
-| 4 | **El rubro es obligatorio y cerrado**: `Tenant.vertical` es un enum requerido de 17 valores, y el registro ofrece solo 6. No existe «general/otro», ni modelo comercial (B2B/B2C), ni actividades. | **Pendiente (Etapa B)**. |
+| 4 | **El rubro es obligatorio y cerrado**: `Tenant.vertical` es un enum requerido de 17 valores, y el registro ofrece solo 6. No existe «general/otro», ni modelo comercial (B2B/B2C), ni actividades. | **Corregido en la Etapa B**: perfil «General / Otro», modelo comercial (B2B/B2C/B2B2C, combinables) y actividad, editables en Configuración sin apagar nada ni borrar datos. |
 | 5 | **Una cuenta = un negocio en la práctica**: el alta rechaza crear otro negocio (`completedTenantOf`), «Crear otro negocio» abre WhatsApp, y `homeTenantFor` toma «la primera» membresía. El esquema ya lo permite. | **Pendiente (Etapa C)**. |
 | 6 | `Taquilla` es una entrada del menú solo para el rubro museo (`nav.verticals`). | **Pendiente (Etapa D)**: convertirla en función propia. |
 | 7 | El buscador no encuentra funciones apagadas. | **Pendiente (Etapa D)**. |
@@ -46,7 +46,7 @@ Visión: **NEXUS es el sistema; las funciones son opciones; el rubro es contexto
 | Etapa | Qué | Datos / migración | Riesgo |
 |---|---|---|---|
 | **A (hecha)** | Regla: rubro sugiere, todo incluido, planes por uso, página Funciones | Ninguna | Bajo |
-| **B** | **Perfil general**: valor `general` («General / Otro») del perfil con receta y vocabulario neutro; campos opcionales `modelos comerciales` (B2B/B2C/B2B2C/híbrido) y `actividad`; editable en Configuración y preguntado (opcional) al registrarse | Añadir un valor al enum y dos columnas con valor por defecto (aditivo) | Bajo-medio (enum) |
+| **B (hecha)** | **Perfil general**: valor `general` («General / Otro») del perfil con receta y vocabulario neutro; campos opcionales `modelos comerciales` (B2B/B2C/B2B2C/híbrido) y `actividad`; editable en Configuración y preguntado (opcional) al registrarse | Añadir un valor al enum y dos columnas con valor por defecto (aditivo) | Bajo-medio (enum) |
 | **C** | **Varias organizaciones por cuenta**: permitir crear otro negocio desde el selector; «negocio de inicio» = el último usado; invitaciones a un negocio existente ya funcionan | Ninguna (el esquema ya lo soporta) | Medio (flujo de registro) |
 | **D** | Taquilla como función propia (migrando los museos actuales para que no pierdan su menú), buscador con funciones apagadas, textos del panel de NEXUS | Una fila `TenantModule` por museo | Medio |
 | **E** | Pantalla de **plan y consumo** (usuarios, clientes, consumo) y límites aplicados con un solo punto central | Ninguna | Bajo |
@@ -55,7 +55,7 @@ Cada etapa deja el sistema funcionando, con pruebas, y se puede detener ahí.
 
 ## 5. Criterios de aceptación
 
-1. Una organización puede usar NEXUS sin elegir un rubro cerrado (Etapa B).
+1. Una organización puede usar NEXUS sin elegir un rubro cerrado (**cumple desde la Etapa B**: perfil «General / Otro»).
 2. El perfil no bloquea funciones por pertenecer a otra actividad (**cumple desde Etapa A**).
 3. Se pueden combinar funciones generales y especializadas (**cumple**).
 4. Lo compartido reutiliza modelos comunes (**cumple**: tercero, catálogo, inventario, cobros).

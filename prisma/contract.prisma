@@ -154,6 +154,8 @@ enum Vertical {
   tour_guides
   events
   museum
+  /// Perfil general: agencia, consultora, empresa B2B, emprendimiento o negocio mixto. No exige un rubro.
+  general
 }
 
 enum PaymentStatus {
@@ -331,6 +333,10 @@ model Tenant {
   maxCustomers      Int?
   /// Método de costeo del inventario. Hoy solo AVG (promedio ponderado); FIFO llegará después.
   costingMethod     String   @default("AVG")
+  /// Modelo comercial (contexto, no restricción): B2B | B2C | B2B2C. Vacío = sin definir.
+  businessModels    String[]?
+  /// Qué hace el negocio, en sus palabras (contexto para recomendaciones).
+  activity          String?
   /// Operations Center: etapa comercial y responsable de cuenta (StaffMember.id).
   accountStage     AccountStage @default(ACTIVE)
   accountManagerId String?

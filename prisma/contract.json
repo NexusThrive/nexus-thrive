@@ -1105,6 +1105,10 @@
               {
                 "name": "museum",
                 "value": "museum"
+              },
+              {
+                "name": "general",
+                "value": "general"
               }
             ]
           },
@@ -14577,6 +14581,13 @@
                   "kind": "scalar"
                 }
               },
+              "activity": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "address": {
                 "nullable": true,
                 "type": {
@@ -14595,6 +14606,14 @@
                   "entityName": "BillingCycle",
                   "namespaceId": "public",
                   "plane": "domain"
+                }
+              },
+              "businessModels": {
+                "many": true,
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
                 }
               },
               "city": {
@@ -15891,11 +15910,17 @@
                 "active": {
                   "column": "active"
                 },
+                "activity": {
+                  "column": "activity"
+                },
                 "address": {
                   "column": "address"
                 },
                 "billingCycle": {
                   "column": "billingCycle"
+                },
+                "businessModels": {
+                  "column": "businessModels"
                 },
                 "city": {
                   "column": "city"
@@ -29185,6 +29210,11 @@
                   "prefix": "Tenant_billingCycle_check"
                 },
                 {
+                  "expression": "array_position(\"businessModels\", NULL) IS NULL",
+                  "name": "Tenant_businessModels_elem_not_null_de2f8db1",
+                  "prefix": "Tenant_businessModels_elem_not_null"
+                },
+                {
                   "expression": "array_position(\"contractedModules\", NULL) IS NULL",
                   "name": "Tenant_contractedModules_elem_not_null_6b619961",
                   "prefix": "Tenant_contractedModules_elem_not_null"
@@ -29210,8 +29240,8 @@
                   "prefix": "Tenant_tenantType_check"
                 },
                 {
-                  "expression": "\"vertical\" IN ('gym', 'tourism_agency', 'hospitality', 'construction', 'carpentry', 'restaurant', 'retail', 'beauty', 'healthcare', 'mechanic', 'education', 'real_estate', 'hardware_store', 'nautical_transport', 'tour_guides', 'events', 'museum')",
-                  "name": "Tenant_vertical_check_7ca0b77e",
+                  "expression": "\"vertical\" IN ('gym', 'tourism_agency', 'hospitality', 'construction', 'carpentry', 'restaurant', 'retail', 'beauty', 'healthcare', 'mechanic', 'education', 'real_estate', 'hardware_store', 'nautical_transport', 'tour_guides', 'events', 'museum', 'general')",
+                  "name": "Tenant_vertical_check_1e2766aa",
                   "prefix": "Tenant_vertical_check"
                 }
               ],
@@ -29245,6 +29275,11 @@
                   "nativeType": "bool",
                   "nullable": false
                 },
+                "activity": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "address": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -29264,6 +29299,12 @@
                     "namespaceId": "public",
                     "plane": "storage"
                   }
+                },
+                "businessModels": {
+                  "codecId": "pg/text@1",
+                  "many": true,
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "city": {
                   "codecId": "pg/text@1",
@@ -31397,7 +31438,8 @@
                 "nautical_transport",
                 "tour_guides",
                 "events",
-                "museum"
+                "museum",
+                "general"
               ]
             },
             "WeatherCondition": {
@@ -31415,7 +31457,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "5102e126472fee6d7350ac798fd4bc06e65763a6cffc609a914d0462dd251bb9"
+    "storageHash": "872b04caffe0db3459ddbe2438c59e6abc6848fde503322e39e0235e9be67ee0"
   },
   "execution": {
     "executionHash": "757905704f9b57bbe1fc8d234f9699b108b52b74eba179cbdbbbc4cbbbe5ccb2",

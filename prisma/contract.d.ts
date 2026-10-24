@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'5102e126472fee6d7350ac798fd4bc06e65763a6cffc609a914d0462dd251bb9'>;
+  StorageHashBase<'872b04caffe0db3459ddbe2438c59e6abc6848fde503322e39e0235e9be67ee0'>;
 export type ExecutionHash =
   ExecutionHashBase<'757905704f9b57bbe1fc8d234f9699b108b52b74eba179cbdbbbc4cbbbe5ccb2'>;
 export type ProfileHash =
@@ -1349,8 +1349,10 @@ export type FieldOutputTypes = {
       readonly accountManagerId: CodecTypes['pg/text@1']['output'] | null;
       readonly accountStage: 'ONBOARDING' | 'ACTIVE' | 'CANCELLED' | 'ARCHIVED';
       readonly active: CodecTypes['pg/bool@1']['output'];
+      readonly activity: CodecTypes['pg/text@1']['output'] | null;
       readonly address: CodecTypes['pg/text@1']['output'] | null;
       readonly billingCycle: 'MONTHLY' | 'ANNUAL';
+      readonly businessModels: ReadonlyArray<CodecTypes['pg/text@1']['output']> | null;
       readonly city: CodecTypes['pg/text@1']['output'] | null;
       readonly contractedModules: ReadonlyArray<CodecTypes['pg/text@1']['output']> | null;
       readonly costingMethod: CodecTypes['pg/text@1']['output'];
@@ -1397,7 +1399,8 @@ export type FieldOutputTypes = {
         | 'nautical_transport'
         | 'tour_guides'
         | 'events'
-        | 'museum';
+        | 'museum'
+        | 'general';
       readonly websiteUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly whatsappNumber: CodecTypes['pg/text@1']['output'] | null;
     };
@@ -2681,8 +2684,10 @@ export type FieldInputTypes = {
       readonly accountManagerId: CodecTypes['pg/text@1']['input'] | null;
       readonly accountStage: 'ONBOARDING' | 'ACTIVE' | 'CANCELLED' | 'ARCHIVED';
       readonly active: CodecTypes['pg/bool@1']['input'];
+      readonly activity: CodecTypes['pg/text@1']['input'] | null;
       readonly address: CodecTypes['pg/text@1']['input'] | null;
       readonly billingCycle: 'MONTHLY' | 'ANNUAL';
+      readonly businessModels: ReadonlyArray<CodecTypes['pg/text@1']['input']> | null;
       readonly city: CodecTypes['pg/text@1']['input'] | null;
       readonly contractedModules: ReadonlyArray<CodecTypes['pg/text@1']['input']> | null;
       readonly costingMethod: CodecTypes['pg/text@1']['input'];
@@ -2729,7 +2734,8 @@ export type FieldInputTypes = {
         | 'nautical_transport'
         | 'tour_guides'
         | 'events'
-        | 'museum';
+        | 'museum'
+        | 'general';
       readonly websiteUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly whatsappNumber: CodecTypes['pg/text@1']['input'] | null;
     };
@@ -4013,8 +4019,10 @@ export type StorageColumnTypes = {
       readonly accountManagerId: CodecTypes['pg/text@1']['output'] | null;
       readonly accountStage: 'ONBOARDING' | 'ACTIVE' | 'CANCELLED' | 'ARCHIVED';
       readonly active: CodecTypes['pg/bool@1']['output'];
+      readonly activity: CodecTypes['pg/text@1']['output'] | null;
       readonly address: CodecTypes['pg/text@1']['output'] | null;
       readonly billingCycle: 'MONTHLY' | 'ANNUAL';
+      readonly businessModels: ReadonlyArray<CodecTypes['pg/text@1']['output']> | null;
       readonly city: CodecTypes['pg/text@1']['output'] | null;
       readonly contractedModules: ReadonlyArray<CodecTypes['pg/text@1']['output']> | null;
       readonly costingMethod: CodecTypes['pg/text@1']['output'];
@@ -4061,7 +4069,8 @@ export type StorageColumnTypes = {
         | 'nautical_transport'
         | 'tour_guides'
         | 'events'
-        | 'museum';
+        | 'museum'
+        | 'general';
       readonly websiteUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly whatsappNumber: CodecTypes['pg/text@1']['output'] | null;
     };
@@ -5345,8 +5354,10 @@ export type StorageColumnInputTypes = {
       readonly accountManagerId: CodecTypes['pg/text@1']['input'] | null;
       readonly accountStage: 'ONBOARDING' | 'ACTIVE' | 'CANCELLED' | 'ARCHIVED';
       readonly active: CodecTypes['pg/bool@1']['input'];
+      readonly activity: CodecTypes['pg/text@1']['input'] | null;
       readonly address: CodecTypes['pg/text@1']['input'] | null;
       readonly billingCycle: 'MONTHLY' | 'ANNUAL';
+      readonly businessModels: ReadonlyArray<CodecTypes['pg/text@1']['input']> | null;
       readonly city: CodecTypes['pg/text@1']['input'] | null;
       readonly contractedModules: ReadonlyArray<CodecTypes['pg/text@1']['input']> | null;
       readonly costingMethod: CodecTypes['pg/text@1']['input'];
@@ -5393,7 +5404,8 @@ export type StorageColumnInputTypes = {
         | 'nautical_transport'
         | 'tour_guides'
         | 'events'
-        | 'museum';
+        | 'museum'
+        | 'general';
       readonly websiteUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly whatsappNumber: CodecTypes['pg/text@1']['input'] | null;
     };
@@ -6959,8 +6971,10 @@ export namespace Models {
     accountManagerId: CodecTypes['pg/text@1']['output'] | null;
     accountStage: 'ONBOARDING' | 'ACTIVE' | 'CANCELLED' | 'ARCHIVED';
     active: CodecTypes['pg/bool@1']['output'];
+    activity: CodecTypes['pg/text@1']['output'] | null;
     address: CodecTypes['pg/text@1']['output'] | null;
     billingCycle: 'MONTHLY' | 'ANNUAL';
+    businessModels: ReadonlyArray<CodecTypes['pg/text@1']['output']> | null;
     city: CodecTypes['pg/text@1']['output'] | null;
     contractedModules: ReadonlyArray<CodecTypes['pg/text@1']['output']> | null;
     costingMethod: CodecTypes['pg/text@1']['output'];
@@ -7007,7 +7021,8 @@ export namespace Models {
       | 'nautical_transport'
       | 'tour_guides'
       | 'events'
-      | 'museum';
+      | 'museum'
+      | 'general';
     websiteUrl: CodecTypes['pg/text@1']['output'] | null;
     whatsappNumber: CodecTypes['pg/text@1']['output'] | null;
     apiKeys: public_ApiKey[];
@@ -16068,6 +16083,11 @@ type ContractBase = Omit<
                     readonly value: DefaultLiteralValue<'pg/bool@1', true>;
                   };
                 };
+                readonly activity: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly address: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -16081,6 +16101,11 @@ type ContractBase = Omit<
                     readonly kind: 'literal';
                     readonly value: DefaultLiteralValue<'pg/text@1', 'MONTHLY'>;
                   };
+                };
+                readonly businessModels: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                 };
                 readonly city: {
                   readonly nativeType: 'text';
@@ -17731,6 +17756,7 @@ type ContractBase = Omit<
                 'tour_guides',
                 'events',
                 'museum',
+                'general',
               ];
             };
             readonly WeatherCondition: {
@@ -26400,6 +26426,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
               };
+              readonly activity: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly address: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -26407,6 +26437,11 @@ type ContractBase = Omit<
               readonly billingCycle: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly businessModels: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+                readonly many: true;
               };
               readonly city: {
                 readonly nullable: true;
@@ -27314,8 +27349,10 @@ type ContractBase = Omit<
                 readonly accountManagerId: { readonly column: 'accountManagerId' };
                 readonly accountStage: { readonly column: 'accountStage' };
                 readonly active: { readonly column: 'active' };
+                readonly activity: { readonly column: 'activity' };
                 readonly address: { readonly column: 'address' };
                 readonly billingCycle: { readonly column: 'billingCycle' };
+                readonly businessModels: { readonly column: 'businessModels' };
                 readonly city: { readonly column: 'city' };
                 readonly contractedModules: { readonly column: 'contractedModules' };
                 readonly costingMethod: { readonly column: 'costingMethod' };
@@ -28858,6 +28895,7 @@ type ContractBase = Omit<
               { readonly name: 'tour_guides'; readonly value: 'tour_guides' },
               { readonly name: 'events'; readonly value: 'events' },
               { readonly name: 'museum'; readonly value: 'museum' },
+              { readonly name: 'general'; readonly value: 'general' },
             ];
           };
           readonly WeatherCondition: {

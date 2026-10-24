@@ -71,6 +71,7 @@ export const VERTICAL_FACTORS: Record<VerticalValue, number> = {
   tour_guides: 1,
   events: 1,
   museum: 1,
+  general: 1,
 };
 
 /** Pago anual: 20 % menos. */
