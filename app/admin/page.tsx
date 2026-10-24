@@ -12,6 +12,7 @@ import ActivityFeed from "./_components/activity-feed";
 import AuditLog from "./_components/audit-log";
 import ExecutiveKpis from "./_components/executive-kpis";
 import { PriorityBoard } from "./_components/priority-board";
+import { CustomizableDashboard, type DashboardWidget } from "@/components/organisms/customizable-dashboard";
 
 export const metadata: Metadata = { title: "Inicio · NEXUS Operations Center" };
 
@@ -38,14 +39,10 @@ export default async function OpsHome() {
   const first = staff?.name?.split(" ")[0] ?? staff?.email.split("@")[0] ?? "equipo";
   const date = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", weekday: "long", day: "numeric", month: "long" }).format(new Date());
 
-  return (
-    <div className="grid gap-8">
-      <PageHeader
-        eyebrow={date.charAt(0).toUpperCase() + date.slice(1)}
-        title={<RevealText parts={[`${greetingFor()}, `, { text: first, gold: true }]} />}
-        description={`NEXUS Operations Center · ${staff?.roleName ?? ""}`}
-      />
-
+  // Cada bloque se puede ocultar y reordenar desde «Personalizar»; la
+  // preferencia es de cada persona del equipo (clave con su id) en este navegador.
+  const widgets: DashboardWidget[] = [
+    { id: "priorities", label: "Prioridades de hoy", node: (
       <PriorityBoard
         groups={[
           ...(inbox ? [{ key: "inbox", title: "Bandeja sin leer", hint: "WhatsApp y correo que esperan respuesta", icon: Inbox, itemIcon: Inbox, tone: "warning" as const, items: inbox, href: "/admin/bandeja" }] : []),
@@ -59,11 +56,13 @@ export default async function OpsHome() {
           { key: "recent", title: "Negocios nuevos (7 días)", hint: "Dar la bienvenida y revisar su configuración", icon: Rocket, tone: "neutral", items: priorities.recent },
         ]}
       />
-
+    ) },
+    { id: "kpis", label: "Métricas de la plataforma", node: (
       <section aria-label="Métricas de la plataforma">
         <ExecutiveKpis metrics={metrics} />
       </section>
-
+    ) },
+    { id: "activity", label: "Actividad", node: (
       <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
         <section className="rounded-lg border border-border bg-surface p-5">
           <h2 className="font-display text-[15px] font-semibold">Actividad de los negocios</h2>
@@ -82,6 +81,20 @@ export default async function OpsHome() {
           </section>
         ) : null}
       </div>
-    </div>
+    ) },
+  ];
+
+  return (
+    <CustomizableDashboard
+      scope={`admin:${staff?.staffId ?? "anon"}`}
+      widgets={widgets}
+      header={
+      <PageHeader
+        eyebrow={date.charAt(0).toUpperCase() + date.slice(1)}
+        title={<RevealText parts={[`${greetingFor()}, `, { text: first, gold: true }]} />}
+        description={`NEXUS Operations Center · ${staff?.roleName ?? ""}`}
+      />
+      }
+    />
   );
 }

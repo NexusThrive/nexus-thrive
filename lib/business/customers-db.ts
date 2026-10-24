@@ -1,3 +1,4 @@
+import { syncCustomerParty } from "@/lib/parties/parties-db";
 import { db } from "@/prisma/db";
 import { withinLimit } from "@/lib/benefits/benefits";
 
@@ -84,13 +85,16 @@ export async function saveCustomer(
     const exists = await db.orm.public.Customer.where({ tenantId, id }).select("id").first();
     if (!exists) return { ok: false, message: "No se encontró." };
     await db.orm.public.Customer.where({ tenantId, id }).update(data);
+    await syncCustomerParty(tenantId, id);
     return { ok: true, id };
   }
   const { limit, used } = await customerLimit(tenantId);
   if (!withinLimit(limit, used)) {
     return { ok: false, message: `Tu acuerdo incluye ${limit} clientes activos. Archiva alguno o escríbenos para ampliarlo.` };
   }
-  return { ok: true, id: (await db.orm.public.Customer.create({ tenantId, ...data, active: true })).id };
+  const created = await db.orm.public.Customer.create({ tenantId, ...data, active: true });
+  await syncCustomerParty(tenantId, created.id);
+  return { ok: true, id: created.id };
 }
 
 /** Asocia la foto (adjunto ya guardado) a la ficha del cliente. */

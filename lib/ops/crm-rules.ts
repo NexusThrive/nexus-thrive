@@ -147,3 +147,14 @@ export function pipelineSummary(leads: { stage: LeadStageValue; valueUsdCents: n
   const won = closed.filter((l) => l.stage === "WON").length;
   return { by, activeCount: active.length, weightedCents, winRatePct: closed.length ? Math.round((won / closed.length) * 100) : null };
 }
+
+/**
+ * ¿Se puede soltar un lead de `from` en `to` desde el tablero? El destino
+ * debe ser una etapa activa: ganar o perder pide el negocio vinculado o el motivo, y eso
+ * se hace abriendo el lead (misma regla que `moveLeadAction` en el servidor).
+ */
+export function dropRule(from: LeadStageValue, to: LeadStageValue): { ok: true } | { ok: false; reason: string } {
+  if (from === to) return { ok: false, reason: "Ya está en esa etapa." };
+  if (!isActiveStage(to)) return { ok: false, reason: "Para ganar o perder un lead, ábrelo: hay que indicar el negocio o el motivo." };
+  return { ok: true };
+}

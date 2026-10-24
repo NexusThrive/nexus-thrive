@@ -21,6 +21,33 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 10 | `2026-10-23-codigos-a-medida.sql` | Códigos a medida: precio, módulos y límites en `BenefitCode`; límites en `Tenant`; precio en `BenefitRedemption` (aditivo) | **PENDIENTE** |
 | 11 | `2026-10-23-registro-de-capacidades.sql` | Módulos como texto validado (sin el CHECK del enum) y suite de construcción de `quotes` a `construction` (datos) | **PENDIENTE** |
 | 12 | `2026-10-23-documento-comercial.sql` | Documento comercial unificado: totales, origen y cobro en `Invoice`; descuento e impuesto en `InvoiceLine` (aditivo) | **PENDIENTE** |
+| 13 | `2026-10-24-api-llaves.sql` | API: llaves por negocio, registro de uso e idempotencia (`ApiKey`, `ApiRequestLog`, `IdempotencyRecord`) | generado de la migración |
+| 14 | `2026-10-24-webhooks-outbox.sql` | Eventos: outbox transaccional y webhooks firmados (`OutboxEvent`, `WebhookEndpoint`, `WebhookDelivery`) | generado de la migración |
+| 15 | `2026-10-24-uso-y-origen.sql` | Bitácora con origen (`actorType`, `apiKeyId`, `requestId` en `AuditLog`) y medidores de uso (`UsageCounter`) | generado de la migración |
+| 16 | `2026-10-24-conexiones-externas.sql` | Conexiones con proveedores y webhooks entrantes (`ExternalConnection`, `ProviderEvent`) | generado de la migración |
+| 17 | `2026-10-24-tercero-unico.sql` | Tercero único: `Party`, `PartyRole` y `Customer.partyId` (aditivo) | generado de la migración |
+| 18 | `2026-10-24-tercero-unico-relleno.sql` | **Datos**: crea el tercero y el rol CLIENTE de cada cliente existente (idempotente; correr DESPUÉS del 17) | **PENDIENTE** |
+| 19 | `2026-10-24-catalogo-maestro.sql` | Catálogo maestro: variantes, códigos de barras, listas de precios y clasificación fiscal en `Product` (aditivo) | generado de la migración |
+| 20 | `2026-10-24-inventario-bodegas-kardex.sql` | Inventario: bodegas, existencias por bodega, kardex con costo y `Tenant.costingMethod` (aditivo) | generado de la migración |
+| 20b | `2026-10-24-existencias-llave-unica.sql` | Cambia los índices parciales de `StockLevel` por una llave única normal (`variantKey`); la tabla es nueva y está vacía (DESPUÉS del 20) | generado de la migración |
+| 21 | `2026-10-24-inventario-relleno.sql` | **Datos**: bodega «Principal» y existencias iniciales por producto (idempotente; DESPUÉS del 20) | **PENDIENTE** |
+| 22 | `2026-10-24-compras-y-proveedores.sql` | Compras: `PurchaseOrder`, `PurchaseOrderLine` y `SupplierInvoice` (aditivo; requiere los pasos 17 y 20) | generado de la migración |
+| 23 | `2026-10-24-perfil-general.sql` | Perfil general: valor `general` del rubro (restricción), `Tenant.businessModels` y `Tenant.activity` (aditivo) | generado de la migración |
+| 24 | `2026-10-24-traslados-conteos-reposicion.sql` | Traslados entre bodegas, conteos físicos y `Product.maxStock/reorderPoint` (aditivo; requiere los pasos 20 y 22) | generado de la migración |
+| 25 | `2026-10-24-impuestos-y-numeracion.sql` | `TaxRate` y `NumberingResolution` (impuestos con vigencia y numeración por resolución) y en `Invoice`: `resolutionId`, `prefix`, `withholdingTotal`, `withholdings` (aditivo) | generado de la migración |
+| 26 | `2026-10-24-cartera.sql` | Cartera: `Invoice.paidTotal`, `SupplierInvoice.paidTotal` y la tabla `SupplierPayment` (aditivo; requiere los pasos 22 y 25) | generado de la migración |
+| 27 | `2026-10-24-pos-terminales.sql` | Punto de venta: tabla `PosTerminal`, `CashSession.terminalId` e `Invoice.tipTotal` (aditivo; requiere los pasos 25 y 26) | generado de la migración |
+| 28 | `2026-10-24-pagos-cobros-en-linea.sql` | Cobros en línea: `PaymentIntent`, `PaymentRefund` y `ReconciliationRun` (aditivo; requiere los pasos 26 y 27) | generado de la migración |
+| 29 | `2026-10-24-facturacion-electronica.sql` | Facturación electrónica: tabla `FiscalDocument` y `Tenant.einvoiceEnabled` (aditivo; requiere el paso 28) | generado de la migración |
+| 30 | `2026-10-24-contabilidad-plan-y-periodos.sql` | Contabilidad I: `Account` (PUC), `AccountingPeriod`, `AccountingRule` y `CostCenter` (aditivo) | generado de la migración |
+| 31 | `2026-10-24-contabilidad-asientos.sql` | Contabilidad II: `JournalEntry`, `JournalLine` y `Tenant.accountingEnabled` (aditivo; requiere el paso 30) | generado de la migración |
+| 32 | `2026-10-24-presencia-v2.sql` | Presencia v2: tabla `PresenceSnapshot` (foto diaria para la tendencia; aditivo) | generado de la migración |
+| 33 | `2026-10-24-mini-sitio.sql` | Mini-sitio: tabla `SiteConfig` (aditivo) | generado de la migración |
+| 34 | `2026-10-24-tienda-en-linea.sql` | Tienda en línea: `StoreOrder` y `StoreOrderLine` (aditivo; requiere los pasos 28 y 33) | generado de la migración |
+| 35 | `2026-10-24-google-business.sql` | Ficha de Google Business: tabla `GoogleListing` (aditivo) | generado de la migración |
+| 36 | `2026-10-24-reputacion-y-atribucion.sql` | Reputación y atribución: `TrackedLink`, `ContactLead`, `Review` y `StoreOrder.origin` (aditivo; requiere el paso 34) | generado de la migración |
+| 37 | `2026-10-25-funciones-hijas.sql` | Solo datos: enciende a cada negocio las funciones hijas (POS, cobros en línea, cartera, contabilidad, impuestos, factura electrónica, sitio, Google, campañas) de las que ya tenía encendidas | datos, idempotente |
+| 38 | `2026-10-24-limite-de-negocios.sql` | Límite de negocios por persona: tabla `AccountLimit` (aditivo; sin fila = sin límite) | generado de la migración |
 
 ## Estado: producción reconstruida desde las migraciones (camino A, 2026-10-23)
 

@@ -6,12 +6,20 @@ import { cn } from "@/lib/utils";
  * Card NEXUS THRIVE: fondo `--surface`, borde 1 px, radio 6 px, padding 20 px,
  * sin sombra. Altura automática: nunca altura fija con espacio vacío.
  */
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+function Card({
+  className,
+  interactive = false,
+  ...props
+}: React.ComponentProps<"div"> & {
+  /** La tarjeta entera es accionable: se eleva 2 px al pasar el puntero. */
+  interactive?: boolean;
+}) {
   return (
     <div
       data-slot="card"
       className={cn(
         "flex flex-col rounded-lg border border-border bg-card p-5 text-card-foreground",
+        interactive && "nx-lift",
         className,
       )}
       {...props}

@@ -1,0 +1,99 @@
+import { expect, test } from "@playwright/test";
+import { expectNoAxeViolations, openStory } from "./helpers";
+
+/** Contabilidad I: plan de cuentas, reglas, centros de costo y períodos. */
+test.describe("Contabilidad", () => {
+  test("libro de asientos: cuadrados, con sus cuentas, y se verifica su integridad", async ({ page }) => {
+    await openStory(page, "páginas-finanzas-contabilidad--default");
+    const venta = page.getByRole("table", { name: "Líneas del asiento 1" });
+    await expect(venta.getByRole("row", { name: /1305.*238\.000/ })).toBeVisible();
+    await expect(venta.getByRole("row", { name: /4135.*200\.000/ })).toBeVisible();
+    await expect(venta.getByRole("row", { name: /2408.*38\.000/ })).toBeVisible();
+    await page.getByRole("button", { name: "Verificar integridad del libro" }).click();
+    await expect(page.getByText(/Libro íntegro: 6 asientos/)).toBeVisible();
+    await expectNoAxeViolations(page);
+  });
+
+  test("sin asientos explica cómo activar la contabilización", async ({ page }) => {
+    await openStory(page, "páginas-finanzas-contabilidad--sin-asientos");
+    await expect(page.getByText("Aún no hay asientos")).toBeVisible();
+    await expect(page.getByText(/Activa la contabilización automática/)).toBeVisible();
+  });
+
+  test("plan de cuentas con búsqueda, naturaleza y cuentas que agrupan", async ({ page }) => {
+    await openStory(page, "páginas-finanzas-contabilidad--default");
+    await page.getByRole("button", { name: "Plan de cuentas" }).click();
+    const table = page.getByRole("table", { name: "Plan de cuentas" });
+    await expect(table.getByRole("row", { name: /1105.*Caja.*Activo.*Débito/ })).toBeVisible();
+    await expect(table.getByRole("row", { name: /2408.*IVA.*Pasivo.*Crédito/ })).toBeVisible();
+    await page.getByLabel("Buscar cuenta").fill("proveedores");
+    await expect(table.getByRole("row", { name: /2205/ })).toBeVisible();
+    await expect(table.getByRole("row", { name: /1105/ })).toHaveCount(0);
+    await expectNoAxeViolations(page);
+  });
+
+  test("nueva cuenta: explica cuando no cuelga de una existente", async ({ page }) => {
+    await openStory(page, "páginas-finanzas-contabilidad--default");
+    await page.getByRole("button", { name: "Plan de cuentas" }).click();
+    await page.getByRole("button", { name: "Nueva cuenta" }).click();
+    const dialog = page.getByRole("dialog", { name: "Nueva cuenta" });
+    await dialog.getByLabel(/Código/).fill("199999");
+    await dialog.getByLabel(/Nombre/).fill("Sin padre");
+    await dialog.getByRole("button", { name: "Crear cuenta" }).click();
+    await expect(dialog.getByText(/colgar de una cuenta existente/).first()).toBeVisible();
+    await dialog.getByLabel(/Código/).fill("110505");
+    await dialog.getByRole("button", { name: "Crear cuenta" }).click();
+    await expect(page.getByText("Cuenta creada")).toBeVisible();
+  });
+
+  test("las reglas muestran sus débitos y créditos y se desactivan", async ({ page }) => {
+    await openStory(page, "páginas-finanzas-contabilidad--default");
+    await page.getByRole("button", { name: /Reglas de asientos/ }).click();
+    const sale = page.getByRole("listitem").filter({ hasText: "Costo de la venta" }).first();
+    await expect(sale.getByText("Costo de ventas")).toBeVisible();
+    await sale.getByRole("button", { name: /Desactivar la regla Costo de la venta/ }).click();
+    await expect(page.getByText("Regla desactivada")).toBeVisible();
+    await expectNoAxeViolations(page);
+  });
+
+  test("períodos: cerrar en orden y reabrir pide motivo", async ({ page }) => {
+    await openStory(page, "páginas-finanzas-contabilidad--default");
+    await page.getByRole("button", { name: "Períodos" }).click();
+    await page.getByRole("button", { name: /Cerrar julio de 2026/ }).click();
+    await expect(page.getByText(/cierra 06\/2026/)).toBeVisible();
+    await page.getByRole("button", { name: /Reabrir agosto de 2026/ }).click();
+    const dialog = page.getByRole("dialog", { name: "Reabrir mes" });
+    await dialog.getByLabel(/Motivo/).fill("x");
+    await dialog.getByRole("button", { name: "Reabrir mes" }).click();
+    await expect(dialog.getByText(/Escribe el motivo/).first()).toBeVisible();
+  });
+
+  test("sin plan ofrece cargar el PUC", async ({ page }) => {
+    await openStory(page, "páginas-finanzas-contabilidad--sin-plan");
+    await page.getByRole("button", { name: "Plan de cuentas" }).click();
+    await page.getByRole("button", { name: "Cargar el PUC" }).click();
+    await expect(page.getByText(/cuentas y 8 reglas cargadas/)).toBeVisible();
+  });
+
+  test("informes: balance de prueba que cuadra, estado de resultados y descarga CSV", async ({ page }) => {
+    await openStory(page, "páginas-finanzas-contabilidad--default");
+    await page.getByRole("button", { name: "Informes" }).click();
+    await expect(page.getByRole("link", { name: /Descargar CSV/ })).toHaveAttribute("href", /\/demo\/contabilidad\/export\/trial\?desde=2026-10-01&hasta=2026-10-24/);
+    await page.getByRole("button", { name: "Ver informe" }).click();
+    await expect(page.getByText("El balance de prueba cuadra")).toBeVisible();
+    await expect(page.getByRole("table", { name: "Balance de prueba" }).getByRole("row", { name: /Totales/ })).toBeVisible();
+    await expectNoAxeViolations(page);
+    await page.getByRole("combobox", { name: "Informe" }).selectOption("income");
+    await page.getByRole("button", { name: "Ver informe" }).click();
+    await expect(page.getByRole("region", { name: "Estado de resultados" }).getByText("Resultado del período")).toBeVisible();
+    await expect(page.getByRole("link", { name: /Descargar CSV/ })).toHaveAttribute("href", /export\/income/);
+  });
+
+  test("informes: fechas al revés se explican", async ({ page }) => {
+    await openStory(page, "páginas-finanzas-contabilidad--default");
+    await page.getByRole("button", { name: "Informes" }).click();
+    await page.getByLabel("Desde").fill("2026-10-30");
+    await page.getByRole("button", { name: "Ver informe" }).click();
+    await expect(page.getByText(/no puede ser posterior/)).toBeVisible();
+  });
+});

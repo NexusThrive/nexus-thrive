@@ -82,6 +82,7 @@ export function ConfirmDialog({
 
   return (
     <ResponsiveSheet
+      unsavedGuard={false}
       open={open}
       onOpenChange={close}
       title={title}

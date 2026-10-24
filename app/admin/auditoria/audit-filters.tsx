@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { selectClasses } from "@/components/atoms/input";
 import { cn } from "@/lib/utils";
+import { Select } from "@/components/atoms/select";
 
 /** Filtros de la auditoría en la URL (acción e integrante). */
 export default function AuditFilters({
@@ -28,22 +28,22 @@ export default function AuditFilters({
   };
   return (
     <div className="flex flex-wrap gap-2">
-      <select aria-label="Filtrar por acción" value={action} onChange={(e) => set("accion", e.target.value)} className={cn(selectClasses, "w-auto min-w-52")}>
+      <Select aria-label="Filtrar por acción" value={action} onChange={(e) => set("accion", e.target.value)} className="w-auto min-w-52">
         <option value="">Todas las acciones</option>
         {actions.map((a) => (
           <option key={a.value} value={a.value}>
             {a.label}
           </option>
         ))}
-      </select>
-      <select aria-label="Filtrar por integrante" value={actor} onChange={(e) => set("integrante", e.target.value)} className={cn(selectClasses, "w-auto min-w-52")}>
+      </Select>
+      <Select aria-label="Filtrar por integrante" value={actor} onChange={(e) => set("integrante", e.target.value)} className="w-auto min-w-52">
         <option value="">Todo el equipo</option>
         {actors.map((a) => (
           <option key={a.value} value={a.value}>
             {a.label}
           </option>
         ))}
-      </select>
+      </Select>
     </div>
   );
 }

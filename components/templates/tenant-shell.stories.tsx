@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Building2, HandCoins, Wallet } from "lucide-react";
+import { Button } from "@/components/atoms/button";
 import { KpiCard } from "@/components/molecules/kpi-card";
+import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { TenantShell } from "./tenant-shell";
 
 const meta = {
@@ -40,3 +42,18 @@ type Story = StoryObj<typeof meta>;
 
 export const Desktop: Story = {};
 export const Mobile: Story = { globals: { viewport: { value: "mobile1" } } };
+
+/** Página larga (hay barra de scroll) con un modal: abrirlo no debe mover la navbar ni el contenido. */
+export const WithModal: Story = {
+  args: {
+    children: (
+      <div className="space-y-6">
+        <h1 className="font-display text-2xl font-semibold">Clientes</h1>
+        <ResponsiveSheet title="Nuevo cliente" description="Prueba de que abrir un modal no mueve la página." trigger={<Button>Nuevo cliente</Button>}>
+          <p className="text-sm text-muted-foreground">Contenido del modal.</p>
+        </ResponsiveSheet>
+        <div className="h-[2400px] rounded-lg border border-dashed border-border-strong p-4 text-sm text-muted-foreground">Contenido largo (fuerza la barra de scroll).</div>
+      </div>
+    ),
+  },
+};

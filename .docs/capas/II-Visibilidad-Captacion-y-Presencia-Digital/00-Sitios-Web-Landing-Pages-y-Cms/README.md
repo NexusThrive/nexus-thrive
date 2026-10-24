@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `sites`, `pages`, `blocks`, `domains` |
+| Eventos (outbox → webhooks) | `site.published`, `page.updated` |
+| MCP · lectura | `list_pages`, `get_site_status` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `draft_page`, `publish_site` |
+| Sistemas externos (puertos y adaptadores) | DNS / dominios, CDN |
+
+#### Integración
+
+- [ ] API REST de lectura: sites, pages, blocks, domains (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: site.published, page.updated (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: list_pages, get_site_status (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: draft_page, publish_site (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de presencia digital y contenidos
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
@@ -23,10 +46,10 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Plantillas por vertical, con edición de textos, imágenes y colores.
-- [ ] Subdominio automático (`negocio.nexusthrive.co`).
-- [ ] Botón flotante de WhatsApp, mapa y datos de contacto.
-- [ ] Diseño responsive (celular primero).
+- [ ] Plantillas por vertical, con edición de textos, imágenes y colores. _(PR-25)_
+- [ ] Subdominio automático (`negocio.nexusthrive.co`). _(PR-25)_
+- [x] Botón flotante de WhatsApp, mapa y datos de contacto. _(PR-25)_
+- [x] Diseño responsive (celular primero). _(PR-25)_
 - [ ] Editor de entradas con título, imagen, texto y categoría.
 - [ ] Publicar, programar y guardar borrador.
 - [ ] Página de blog automática en el sitio del negocio.
@@ -51,6 +74,7 @@ tags: [capas, estructura, subcapa]
 - [ ] SEO por entrada
 - [ ] Biblioteca de contenido reutilizable
 - [ ] Llamados a la acción
+- [x] Barra de Presencia en dos fases: visibilidad **verificada** (venta en línea, reputación, atribución) y, cuando está llena, madurez NEXUS _(objetivo 2026)_ _(PR-24)_
 
 #### Técnico
 

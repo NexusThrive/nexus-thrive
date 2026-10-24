@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { withShell } from "../../.storybook/decorators";
 import { AppShellProvider } from "@/components/providers/shell-context";
 import { opsNavFor } from "@/lib/ops/nav";
+import { buildTenantNav } from "@/lib/navigation/tenant-nav";
 import { AppSidebar } from "./app-sidebar";
 
 const meta = {
@@ -15,7 +16,7 @@ const meta = {
       story: { inline: false, iframeHeight: 640 },
       description: {
         component:
-          "Riel de 76 px en tablet o contraída; 248 px con el logo completo desde 1200 px. El fondo del activo se desliza con el corte oro; pasa el cursor por el riel para ver los tooltips. Oculta en móvil.",
+          "Riel de 76 px en tablet o contraída; 248 px desde 1200 px. En riel, al pasar el mouse (o enfocar con teclado) se despliega por encima del contenido, sin moverlo, para elegir; al elegir o salir vuelve a riel. El fondo del activo se desliza con el corte oro. Arranca debajo de la navbar y no lleva logo ni negocio (eso vive en la navbar). Oculta en móvil.",
       },
     },
   },
@@ -24,8 +25,15 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Desktop: Story = { render: () => <div className="h-[640px]"><AppSidebar /></div> };
-export const Tablet: Story = { ...Desktop, globals: { viewport: { value: "tablet" } } };
+/** `--sw` (ancho de la barra) lo define la plantilla; aquí se fija a mano. */
+const sized = (width: string) => ({ "--sw": width }) as React.CSSProperties;
+
+export const Desktop: Story = { render: () => <div className="h-[640px]" style={sized("248px")}><AppSidebar /></div> };
+/** Riel: pasa el mouse por la barra para verla desplegarse por encima. */
+export const Tablet: Story = {
+  render: () => <div className="h-[640px]" style={sized("76px")}><AppSidebar /></div>,
+  globals: { viewport: { value: "tablet" } },
+};
 
 /** Panel CEO (Operations Center) con todos los permisos: grupos por responsabilidad. */
 export const OperationsCenter: Story = {
@@ -44,7 +52,21 @@ export const OperationsCenter: Story = {
           openSearch: () => {},
         }}
       >
-        <div className="h-[720px]">
+        <div className="h-[720px]" style={sized("248px")}>
+          <AppSidebar />
+        </div>
+      </AppShellProvider>
+    );
+  },
+};
+
+/** Ingresos y Gastos se despliegan y se ocultan; con muchos grupos el menú tiene su propio desplazamiento. */
+export const IngresosYGastos: Story = {
+  render: () => {
+    const groups = buildTenantNav("gym", ["dashboard", "crm", "bookings", "memberships", "orders", "quotes", "inventory", "billing", "payments", "finance", "whatsapp"]);
+    return (
+      <AppShellProvider value={{ brandName: "Simplapp", brandSub: "simplapp", groups, activeKey: "/crm", title: "Clientes", hrefFor: (href) => href, quickActions: [], openSearch: () => {} }}>
+        <div className="h-[420px]" style={sized("248px")}>
           <AppSidebar />
         </div>
       </AppShellProvider>

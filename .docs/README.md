@@ -17,6 +17,12 @@ Esta carpeta es **la guía de qué construimos y en qué orden**. Las capas
 | --- | --- |
 | Este README | Visión, objetivos, progreso y ruta por fases |
 | [capas/](capas/README.md) | Las 11 capas, 70 subcapas y su escalera de madurez N0–N6, con casillas de hecho/pendiente |
+| [vision-negocio-conectado.md](vision-negocio-conectado.md) | **A dónde llegamos:** negocio visible, que vende en línea y conectado por dentro (facturación, contabilidad, POS, inventario, visibilidad); la barra de Presencia en dos fases; puertos listos para DIAN y Wompi; n8n en casa |
+| [hoja-de-ruta-implementacion.md](hoja-de-ruta-implementacion.md) | **Cómo empezamos:** 30 PR en orden de dependencia, cómo se migra y por dónde arrancar |
+| [sql/](sql/README.md) | Borradores de esquema (SQL) de cada PR, validados contra Postgres |
+| [integracion-api-mcp-webhooks.md](integracion-api-mcp-webhooks.md) | **Regla transversal:** todo tiene API, MCP y webhooks; pagos, DIAN y n8n por puertos; cómo ordenar el trabajo |
+| [distribucion-por-rubro.md](distribucion-por-rubro.md) | **Un solo sistema:** núcleo compartido, el rubro como perfil (no frontera), funciones incluidas en todos los planes, planes por uso; revisión del estado contra esta visión |
+| [auditoria-arquitectura-unificada.md](auditoria-arquitectura-unificada.md) | **Auditoría:** qué del código ya cumple la visión unificada y multiempresa, qué la contradecía y la migración por etapas (A–E) |
 | [mapa-de-capacidades.md](mapa-de-capacidades.md) | Las 447 capacidades que usa una empresa contra las capas y el código: qué hay, qué falta y **qué sigue** |
 | [fuentes/](fuentes/) | Material de origen de las capas (no se edita; se consulta) |
 | [`docs/PENDIENTES.md`](../docs/PENDIENTES.md) | Lista viva de tareas, decisiones abiertas y la ruta de automatizaciones y agentes de IA |
@@ -67,7 +73,21 @@ en operación, rubro, atención e IA.
 
 ---
 
-## 2. Objetivos nuevos (2026)
+## 2. Regla transversal: todo tiene API, MCP y webhooks
+
+> Nada de NEXUS existe solo como pantalla. Lo que el sistema hace, lo puede
+> hacer también otro sistema (**API**), un agente de IA (**MCP**) o un flujo de
+> **n8n** (**webhooks** y API). Se define una vez en el registro de operaciones
+> y de ahí salen la ruta REST, la herramienta MCP, el evento y la
+> documentación. Pagos (Nequi, pasarelas), facturación **DIAN** y demás
+> proveedores entran por **puertos y adaptadores**, nunca atados al dominio.
+
+Cada subcapa lleva su **Superficie de integración** (recursos, eventos,
+herramientas MCP) y sus casillas, que se cuentan aparte en el progreso.
+Reglas, estándares, seguridad, escalabilidad y definición de «hecho»:
+[`integracion-api-mcp-webhooks.md`](integracion-api-mcp-webhooks.md).
+
+## 2.1 Objetivos nuevos (2026)
 
 Estos objetivos se agregaron dentro de las subcapas con la marca
 _(objetivo 2026)_; el detalle está en [`docs/PENDIENTES.md`](../docs/PENDIENTES.md).
@@ -95,22 +115,22 @@ Cuenta las casillas de *Funcionalidad* de cada subcapa. Una casilla se marca
 solo si existe en el producto, con una nota de dónde (_hecho: …_).
 
 <!-- progreso:inicio -->
-| Capa | Nombre | Nivel N1 (lo básico) | Todas las funcionalidades | |
-| --- | --- | --- | --- | --- |
-| I | [FUNDACIÓN, NÚCLEO E INFRAESTRUCTURA](capas/I-Fundacion-Nucleo-e-Infraestructura/README.md) | 16/34 · 47 % | 19/138 · 14 % | `█░░░░░░░░░` |
-| II | [VISIBILIDAD, CAPTACIÓN Y PRESENCIA DIGITAL](capas/II-Visibilidad-Captacion-y-Presencia-Digital/README.md) | 3/26 · 12 % | 4/169 · 2 % | `░░░░░░░░░░` |
-| III | [ATENCIÓN Y COMUNICACIÓN](capas/III-Atencion-y-Comunicacion/README.md) | 1/9 · 11 % | 1/78 · 1 % | `░░░░░░░░░░` |
-| IV | [GESTIÓN COMERCIAL Y RELACIÓN CON CLIENTES](capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/README.md) | 4/14 · 29 % | 4/92 · 4 % | `░░░░░░░░░░` |
-| V | [VENTAS DIGITALES, COMERCIO Y PAGOS](capas/V-Ventas-Digitales-Comercio-y-Pagos/README.md) | 5/24 · 21 % | 8/162 · 5 % | `░░░░░░░░░░` |
-| VI | [OPERACIÓN, PRODUCTIVIDAD Y LOGÍSTICA](capas/VI-Operacion-Productividad-y-Logistica/README.md) | 7/36 · 19 % | 7/247 · 3 % | `░░░░░░░░░░` |
-| VII | [CAJA MENOR, FINANZAS OPERATIVAS Y CONTABILIDAD](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/README.md) | 9/31 · 29 % | 13/195 · 7 % | `█░░░░░░░░░` |
-| VIII | [TALENTO HUMANO Y ADMINISTRACIÓN DEL EQUIPO](capas/VIII-Talento-Humano-y-Administracion-del-Equipo/README.md) | 0/23 · 0 % | 0/173 · 0 % | `░░░░░░░░░░` |
-| IX | [INTELIGENCIA DE NEGOCIO, ANALÍTICA E IA](capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/README.md) | 8/26 · 31 % | 8/127 · 6 % | `█░░░░░░░░░` |
-| X | [PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/README.md) | 7/18 · 39 % | 13/127 · 10 % | `█░░░░░░░░░` |
-| XI | [ESPECIALIZACIÓN POR VERTICAL](capas/XI-Especializacion-por-Vertical/README.md) | 0/0 · — | 0/0 · — | `` |
-| | **Total** | **60/241 · 25 %** | **77/1508 · 5 %** | |
+| Capa | Nombre | Nivel N1 (lo básico) | Todas las funcionalidades | Integración (API · MCP · Webhooks) | |
+| --- | --- | --- | --- | --- | --- |
+| I | [FUNDACIÓN, NÚCLEO E INFRAESTRUCTURA](capas/I-Fundacion-Nucleo-e-Infraestructura/README.md) | 27/34 · 79 % | 35/138 · 25 % | 0/47 · 0 % | `███░░░░░░░` |
+| II | [VISIBILIDAD, CAPTACIÓN Y PRESENCIA DIGITAL](capas/II-Visibilidad-Captacion-y-Presencia-Digital/README.md) | 11/26 · 42 % | 13/170 · 8 % | 0/42 · 0 % | `█░░░░░░░░░` |
+| III | [ATENCIÓN Y COMUNICACIÓN](capas/III-Atencion-y-Comunicacion/README.md) | 2/9 · 22 % | 2/78 · 3 % | 0/30 · 0 % | `░░░░░░░░░░` |
+| IV | [GESTIÓN COMERCIAL Y RELACIÓN CON CLIENTES](capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/README.md) | 5/14 · 36 % | 5/92 · 5 % | 0/30 · 0 % | `█░░░░░░░░░` |
+| V | [VENTAS DIGITALES, COMERCIO Y PAGOS](capas/V-Ventas-Digitales-Comercio-y-Pagos/README.md) | 11/24 · 46 % | 24/162 · 15 % | 0/48 · 0 % | `█░░░░░░░░░` |
+| VI | [OPERACIÓN, PRODUCTIVIDAD Y LOGÍSTICA](capas/VI-Operacion-Productividad-y-Logistica/README.md) | 13/36 · 36 % | 18/247 · 7 % | 0/54 · 0 % | `█░░░░░░░░░` |
+| VII | [CAJA MENOR, FINANZAS OPERATIVAS Y CONTABILIDAD](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/README.md) | 19/31 · 61 % | 29/195 · 15 % | 0/48 · 0 % | `█░░░░░░░░░` |
+| VIII | [TALENTO HUMANO Y ADMINISTRACIÓN DEL EQUIPO](capas/VIII-Talento-Humano-y-Administracion-del-Equipo/README.md) | 0/23 · 0 % | 0/173 · 0 % | 0/48 · 0 % | `░░░░░░░░░░` |
+| IX | [INTELIGENCIA DE NEGOCIO, ANALÍTICA E IA](capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/README.md) | 9/26 · 35 % | 9/128 · 7 % | 0/35 · 0 % | `█░░░░░░░░░` |
+| X | [PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/README.md) | 11/18 · 61 % | 20/127 · 16 % | 0/30 · 0 % | `██░░░░░░░░` |
+| XI | [ESPECIALIZACIÓN POR VERTICAL](capas/XI-Especializacion-por-Vertical/README.md) | 0/0 · — | 0/0 · — | 0/6 · 0 % | `` |
+| | **Total** | **108/241 · 45 %** | **155/1510 · 10 %** | **0/418 · 0 %** | |
 
-_Generado con `node scripts/capas-progreso.mjs --write`. La capa XI (construcción) usa pestañas en lugar de casillas: su estado está en su README._
+_Generado con `node scripts/capas-progreso.mjs --write`. La capa XI (construcción) usa pestañas en lugar de casillas: su estado está en su README. «Integración» cuenta las casillas de la superficie API · MCP · Webhooks de cada subcapa (no suman al porcentaje de funcionalidades)._
 <!-- progreso:fin -->
 
 Además de lo contado arriba, ya está hecha la base que no aparece como
@@ -149,6 +169,21 @@ eventos, porque hoy una venta vive en cinco formas distintas.
 | 4 | POS de varias líneas | V.03 | Sobre el documento |
 | 5 | Tercero único mínimo e importar/exportar clientes y catálogo | I.00, I.01, IV.00 | Requisito DIAN y migración desde Excel o Alegra |
 
+### Fase 2B · Columna de integración — a construir **junto** con la Fase 2
+
+Se construye **una vez** y todo lo posterior la hereda: cada subcapa nueva solo
+declara su operación. Detalle en
+[`integracion-api-mcp-webhooks.md`](integracion-api-mcp-webhooks.md).
+
+| # | Qué | Subcapas |
+| --- | --- | --- |
+| 1 | Registro de operaciones (módulo, permiso, esquema, riesgo) hermano del registro de capacidades | X.02, I.03 |
+| 2 | API `/api/v1` de lectura: llaves por negocio, alcances, límites, errores y OpenAPI | X.02 N1–N2 |
+| 3 | Outbox transaccional y webhooks firmados con reintentos y reenvío | I.05 N1–N3 |
+| 4 | Servidor MCP de solo lectura generado del registro | X.02 N2, IX.04 N1 |
+| 5 | Bitácora con origen (persona, llave, agente) y cupos básicos de uso | I.06, X.00 |
+| 6 | Nodo de n8n y primeras plantillas de flujo | VI.08, X.02 |
+
 ### Fase 3 · Vender, cobrar y facturar
 
 | Qué | Subcapas |
@@ -164,8 +199,8 @@ eventos, porque hoy una venta vive en cinco formas distintas.
 
 | Qué | Subcapas |
 | --- | --- |
-| API `/api/v1` + llaves por negocio + MCP de NEXUS | X.02 |
-| Eventos (outbox) y n8n | I.05, VI.08 |
+| API de escritura con idempotencia y MCP con aprobación (la lectura y los eventos vienen de la Fase 2B) | X.02, I.05 |
+| n8n con flujos de producción | VI.08 |
 | Agente de consulta → acciones con aprobación | IX.04 |
 | WhatsApp Business por negocio y asistente | III.00, III.01 |
 | Recordatorios y cobros recurrentes automáticos | VI.01, V.02, II.05 |
@@ -190,6 +225,20 @@ eventos, porque hoy una venta vive en cinco formas distintas.
 | Varios negocios por persona | I.04 N2 |
 | Dashboards por rubro y por rol, reportes automáticos | IX.00, IX.03 |
 
+### Cómo se recorre
+
+El plan concreto —30 PR, de lo más básico a lo más avanzado, con su esquema y
+cómo se migra— está en
+[`hoja-de-ruta-implementacion.md`](hoja-de-ruta-implementacion.md); lo que
+queremos lograr, en [`vision-negocio-conectado.md`](vision-negocio-conectado.md).
+
+No por capa completa ni «N1 de las 70 a la vez»: **columna de integración
+primero, luego cadenas de valor completas a N1** (vender → cobrar → facturar;
+atender y automatizar; conocer el negocio; que te encuentren; equipo y
+contabilidad; operación por rubro), y de ahí subir a N2 por cadena. Las
+razones y la definición de «cadena hecha» están en
+[`integracion-api-mcp-webhooks.md` §10](integracion-api-mcp-webhooks.md#10-cómo-ordenar-el-trabajo).
+
 Lo que no está en ninguna fase (por ejemplo producción y BOM industrial,
 marketplace, telefonía) queda en las capas como posibilidad, sin fecha.
 
@@ -200,7 +249,9 @@ marketplace, telefonía) queda en las capas como posibilidad, sin fecha.
 1. Al terminar algo, se marca su casilla: `- [x] Texto — _hecho: dónde está_`.
    Solo se marca lo que existe de punta a punta (pantalla → servidor → base).
 2. Un objetivo nuevo se agrega como casilla en la subcapa y nivel que le
-   corresponden, con la marca _(objetivo AAAA)_.
+   corresponden, con la marca _(objetivo AAAA)_. Toda subcapa nueva nace con su
+   **Superficie de integración** (datos en `scripts/capas-integracion.data.mjs`;
+   `node scripts/capas-integracion.mjs --write` la escribe).
 3. Se regenera el progreso:
 
    ```bash

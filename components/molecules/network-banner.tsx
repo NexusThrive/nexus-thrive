@@ -42,7 +42,7 @@ export function NetworkBanner() {
       )}
     >
       <WifiOff aria-hidden="true" className="size-4" />
-      <span>Sin conexión. Mostramos los últimos datos guardados.</span>
+      <span>Sin conexión. Los cambios nuevos esperan a que vuelva la red.</span>
     </div>
   );
 }

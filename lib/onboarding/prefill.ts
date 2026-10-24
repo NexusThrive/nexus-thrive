@@ -69,6 +69,8 @@ function tenantToDraft(tenant: TenantForDraft): OnboardingDraft {
 export async function getOnboardingPrefill(
   clerkUserId: string,
   preferredSlug?: string,
+  /** La persona ya tiene organizaciones y pide crear otra (`/onboarding?nuevo=1`). */
+  wantsNew = false,
 ): Promise<OnboardingPrefill> {
   const memberships = await db.orm.public.User.where({
     clerkUserId,
@@ -121,6 +123,8 @@ export async function getOnboardingPrefill(
       draft: tenantToDraft(pending.tenant),
     };
   }
+
+  if (wantsNew) return { mode: "create", draft: EMPTY_DRAFT };
 
   const completed = target?.tenant ?? memberships[0]?.tenant;
   if (completed) {

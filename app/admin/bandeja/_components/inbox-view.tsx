@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ExternalLink, Lock, Mail, MessageCircle, Send, Ticket } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { selectClasses, textareaClasses } from "@/components/atoms/input";
+import { textareaClasses } from "@/components/atoms/input";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
@@ -16,6 +16,7 @@ import { mailtoLink, waLink, whatsappWindow } from "@/lib/ops/inbox-rules";
 import { useMinute } from "@/lib/hooks/use-minute";
 import { cn } from "@/lib/utils";
 import { markReadAction, replyAction, toTicketAction, updateConversationAction } from "../actions";
+import { Select } from "@/components/atoms/select";
 
 type Option = { id: string; name: string };
 type Filter = "OPEN" | "PENDING" | "CLOSED" | "mine";
@@ -163,18 +164,18 @@ export default function InboxView({
             <div className="grid gap-2 border-b border-border bg-surface-muted/50 px-4 py-2.5 text-[12.5px] sm:grid-cols-3">
               <label className="grid gap-1">
                 Negocio
-                <select disabled={!canReply || pending} value={active.tenantId ?? ""} onChange={(e) => run(() => updateConversationAction(active.id, { tenantId: e.target.value || null }))} className={cn(selectClasses, "h-8 text-[12.5px]")}>
+                <Select disabled={!canReply || pending} value={active.tenantId ?? ""} onChange={(e) => run(() => updateConversationAction(active.id, { tenantId: e.target.value || null }))} className="h-8 text-[12.5px]">
                   <option value="">Sin negocio</option>
                   {tenants.map((t) => (
                     <option key={t.id} value={t.id}>
                       {t.name}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               <label className="grid gap-1">
                 Responsable
-                <select disabled={!canReply || pending} value={active.assigneeId ?? ""} onChange={(e) => run(() => updateConversationAction(active.id, { assigneeId: e.target.value || null }))} className={cn(selectClasses, "h-8 text-[12.5px]")}>
+                <Select disabled={!canReply || pending} value={active.assigneeId ?? ""} onChange={(e) => run(() => updateConversationAction(active.id, { assigneeId: e.target.value || null }))} className="h-8 text-[12.5px]">
                   <option value="">Sin asignar</option>
                   {staff.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -182,15 +183,15 @@ export default function InboxView({
                       {s.id === me ? " (tú)" : ""}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               <label className="grid gap-1">
                 Estado
-                <select disabled={!canReply || pending} value={active.status} onChange={(e) => run(() => updateConversationAction(active.id, { status: e.target.value }))} className={cn(selectClasses, "h-8 text-[12.5px]")}>
+                <Select disabled={!canReply || pending} value={active.status} onChange={(e) => run(() => updateConversationAction(active.id, { status: e.target.value }))} className="h-8 text-[12.5px]">
                   <option value="OPEN">Abierta</option>
                   <option value="PENDING">Esperando respuesta</option>
                   <option value="CLOSED">Cerrada</option>
-                </select>
+                </Select>
               </label>
             </div>
 

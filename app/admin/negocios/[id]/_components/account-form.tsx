@@ -4,12 +4,12 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { selectClasses } from "@/components/atoms/input";
 import { NMark } from "@/components/atoms/n-mark";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { ACCOUNT_STAGES, type AccountStageValue } from "@/lib/ops/account-stages";
 import { updateAccountAction } from "../../actions";
+import { Select } from "@/components/atoms/select";
 
 /** Etapa comercial y responsable de la cuenta (permiso accounts.edit). */
 export default function AccountForm({
@@ -47,25 +47,25 @@ export default function AccountForm({
     >
       <Field label="Etapa de la cuenta" hint="Distinta del estado del servicio (activo o suspendido).">
         {(c) => (
-          <select {...c} disabled={!canEdit} value={value.stage} onChange={(e) => setValue({ ...value, stage: e.target.value })} className={selectClasses}>
+          <Select {...c} disabled={!canEdit} value={value.stage} onChange={(e) => setValue({ ...value, stage: e.target.value })}>
             {ACCOUNT_STAGES.map((s) => (
               <option key={s.value} value={s.value}>
                 {s.label}
               </option>
             ))}
-          </select>
+          </Select>
         )}
       </Field>
       <Field label="Responsable de cuenta" hint="Toda cuenta activa necesita un responsable en el equipo NEXUS.">
         {(c) => (
-          <select {...c} disabled={!canEdit} value={value.managerId} onChange={(e) => setValue({ ...value, managerId: e.target.value })} className={selectClasses}>
+          <Select {...c} disabled={!canEdit} value={value.managerId} onChange={(e) => setValue({ ...value, managerId: e.target.value })}>
             <option value="">Sin asignar</option>
             {managers.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.name}
               </option>
             ))}
-          </select>
+          </Select>
         )}
       </Field>
       {canEdit ? (

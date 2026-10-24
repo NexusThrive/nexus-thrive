@@ -1,19 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import type { ModuleValue } from "@/lib/admin/catalogs";
 import ProfileTab from "./profile-tab";
-import ModulesTab from "./modules-tab";
 import TeamTab, { type Seats } from "./team-tab";
 import type { PendingInvite, TeamMember as BusinessMember } from "@/lib/business/team-db";
 import PlanTab, { type PlanInfo } from "./plan-tab";
 import NfcTab, { type CardOwner } from "./nfc-tab";
 import DangerTab from "./danger-tab";
-import { Blocks, CreditCard, Nfc, Palette, Store, TriangleAlert, Users } from "lucide-react";
+import AccountTab, { type MyAccount } from "./account-tab";
+import { CreditCard, Plug, Nfc, Palette, Store, TriangleAlert, UserRound, Users } from "lucide-react";
 import { SectionNav } from "@/components/molecules/section-nav";
 import { PageHeader } from "@/components/molecules/page-header";
+import { ApiKeysPanel } from "@/components/organisms/api-keys-panel";
+import type { ApiKeyRow } from "@/lib/api/keys";
+import type { VerticalValue } from "@/lib/admin/catalogs";
+import type { BusinessModel } from "@/lib/tenant/business-context";
+import { createApiKeyAction, revokeApiKeyAction } from "../api-keys-actions";
 import { AppearanceSettings } from "@/components/organisms/appearance-settings";
 
 
@@ -35,17 +40,19 @@ export type ModuleState = {
 export type SystemInfoItem = { label: string; value: string };
 export type { CardOwner, PlanInfo };
 
-type Tab = "profile" | "plan" | "modules" | "team" | "card" | "appearance" | "danger";
+type Tab = "profile" | "plan" | "team" | "account" | "appearance" | "card" | "integrations" | "danger";
 
+/** Agrupadas por propósito: la organización, las personas, lo personal, las conexiones y lo irreversible. */
 const TABS = [
-  { id: "profile", label: "Perfil del negocio", icon: Store, hint: "Nombre, enlace y contacto" },
-  { id: "plan", label: "Plan", icon: CreditCard, hint: "Thrive y lo que incluye" },
-  { id: "modules", label: "Módulos", icon: Blocks, hint: "Activa lo que usas" },
-  { id: "team", label: "Equipo", icon: Users, hint: "Quién entra al negocio" },
-  { id: "card", label: "Tarjeta NFC", icon: Nfc, hint: "Tu tarjeta de contacto" },
-  { id: "appearance", label: "Apariencia", icon: Palette, hint: "Tema, densidad y movimiento" },
-  { id: "danger", label: "Zona de peligro", icon: TriangleAlert, hint: "Eliminar el negocio" },
-] as const satisfies readonly { id: Tab; label: string; icon: unknown; hint: string }[];
+  { id: "profile", label: "Perfil del negocio", icon: Store, hint: "Nombre, contacto y datos fiscales", group: "Organización" },
+  { id: "plan", label: "Plan y consumo", icon: CreditCard, hint: "Tu plan y lo que has usado", group: "Organización" },
+  { id: "team", label: "Equipo y permisos", icon: Users, hint: "Quién entra y con qué rol", group: "Personas" },
+  { id: "account", label: "Mi cuenta", icon: UserRound, hint: "Tus datos en este negocio", group: "Preferencias personales" },
+  { id: "appearance", label: "Apariencia", icon: Palette, hint: "Tema, densidad y movimiento", group: "Preferencias personales" },
+  { id: "card", label: "Tarjeta NFC", icon: Nfc, hint: "Tu tarjeta de contacto", group: "Preferencias personales" },
+  { id: "integrations", label: "Integraciones", icon: Plug, hint: "Llaves de API para n8n y agentes", group: "Conexiones" },
+  { id: "danger", label: "Zona de peligro", icon: TriangleAlert, hint: "Eliminar el negocio", group: "Zona de peligro" },
+] as const satisfies readonly { id: Tab; label: string; icon: unknown; hint: string; group: string }[];
 
 /**
  * Shell cliente del módulo de Ajustes: pestañas + provider de notificaciones.
@@ -55,26 +62,31 @@ export default function SettingsShell({
   tenantSlug: initialTenantSlug,
   canManage,
   profile,
-  modules,
   team,
+  apiKeys,
   systemInfo,
   plan,
   card,
+  context,
+  me,
 }: {
   tenantSlug: string;
   canManage: boolean;
   profile: ProfileInitialValues;
-  modules: ModuleState[];
   team: { members: BusinessMember[]; invites: PendingInvite[]; seats: Seats; canManage: boolean; meRole: string };
+  apiKeys: ApiKeyRow[];
   systemInfo: SystemInfoItem[];
   plan: PlanInfo;
   card: CardOwner;
+  context: { vertical: VerticalValue; businessModels: BusinessModel[]; activity: string };
+  me: MyAccount;
 }) {
   const params = useParams();
   const currentSlug = Array.isArray(params?.tenant)
     ? params.tenant[0]
     : (params?.tenant ?? initialTenantSlug);
 
+  const router = useRouter();
   const [tab, setTab] = useState<Tab>("profile");
 
   return (
@@ -82,7 +94,7 @@ export default function SettingsShell({
         <PageHeader
           eyebrow="Sistema"
           title="Ajustes"
-          description="Perfil, plan, módulos, equipo y apariencia de tu negocio."
+          description="Los datos de tu negocio, las personas que lo usan y tus preferencias."
         />
 
         <div className="lg:grid lg:grid-cols-[248px_minmax(0,1fr)] lg:gap-8">
@@ -94,17 +106,21 @@ export default function SettingsShell({
             canManage={canManage}
             initialValues={profile}
             systemInfo={systemInfo}
-          />
-        )}
-        {tab === "modules" && (
-          <ModulesTab
-            tenantSlug={currentSlug}
-            canManage={canManage}
-            modules={modules}
+            context={context}
           />
         )}
         {tab === "plan" && <PlanTab info={plan} />}
         {tab === "team" && <TeamTab slug={initialTenantSlug} {...team} />}
+        {tab === "account" && <AccountTab slug={initialTenantSlug} me={me} />}
+        {tab === "integrations" && (
+          <ApiKeysPanel
+            keys={apiKeys}
+            canManage={team.canManage}
+            onCreate={(input) => createApiKeyAction(currentSlug, input)}
+            onRevoke={(id) => revokeApiKeyAction(currentSlug, id)}
+            onChanged={() => router.refresh()}
+          />
+        )}
         {tab === "card" && <NfcTab owner={card} />}
         {tab === "appearance" && <AppearanceSettings />}
         {tab === "danger" && <DangerTab slug={initialTenantSlug} canManage={canManage} />}

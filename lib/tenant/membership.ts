@@ -50,11 +50,45 @@ export async function isActiveMember(tenantId: string, clerkUserId: string): Pro
 export async function homeTenantFor(
   clerkUserId: string,
 ): Promise<{ tenantId: string; slug: string; name: string; onboardingCompleted: boolean } | null> {
-  const user = await db.orm.public.User.where({ clerkUserId, active: true })
-    .include("tenant", (t) => t.select("slug", "name", "onboardingCompleted"))
-    .first();
+  const rows = await db.orm.public.User.where({ clerkUserId, active: true })
+    .include("tenant", (t) => t.select("slug", "name", "onboardingCompleted", "active"))
+    .all();
+  // Una cuenta puede tener varias organizaciones: entra a la que usó por última vez
+  // (completas y activas primero; una pendiente de alta solo si no hay otra).
+  const usable = rows.filter((r) => r.tenant);
+  const ranked = [...usable].sort(
+    (a, b) =>
+      Number(Boolean(b.tenant?.onboardingCompleted && b.tenant.active)) - Number(Boolean(a.tenant?.onboardingCompleted && a.tenant.active)) ||
+      b.updatedAt.epochMilliseconds - a.updatedAt.epochMilliseconds,
+  );
+  const user = ranked[0];
   if (!user?.tenant) return null;
   return { tenantId: user.tenantId, slug: user.tenant.slug, name: user.tenant.name, onboardingCompleted: user.tenant.onboardingCompleted };
+}
+
+/**
+ * Marca la organización como la última usada por la cuenta (la que abre al volver a entrar).
+ * Solo si es miembro activo; devuelve si se recordó.
+ */
+export async function rememberBusiness(clerkUserId: string, tenantId: string): Promise<boolean> {
+  const member = await db.orm.public.User.where({ clerkUserId, tenantId, active: true }).select("id").first();
+  if (!member) return false;
+  await db.orm.public.User.where({ clerkUserId, tenantId, active: true }).update({ active: true });
+  return true;
+}
+
+/**
+ * Negocios en los que la cuenta es miembro activo (activos y con el alta
+ * completa), por nombre. Solo lee las membresías de esa cuenta: es lo que
+ * muestra el selector de negocio de la navbar.
+ */
+export async function businessesOfMember(clerkUserId: string): Promise<{ slug: string; name: string }[]> {
+  const rows = await db.orm.public.User.where({ clerkUserId, active: true })
+    .include("tenant", (t) => t.select("slug", "name", "active", "onboardingCompleted"))
+    .all();
+  return rows
+    .flatMap((row) => (row.tenant && row.tenant.active && row.tenant.onboardingCompleted ? [{ slug: row.tenant.slug, name: row.tenant.name }] : []))
+    .sort((a, b) => a.name.localeCompare(b.name, "es"));
 }
 
 /** Registro completo del negocio por id, con sus módulos (Configuración). */

@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `pos-terminals`, `pos-shifts`, `pos-sales`, `cash-movements` |
+| Eventos (outbox → webhooks) | `pos_shift.opened`, `pos_shift.closed`, `pos_sale.completed` |
+| MCP · lectura | `list_pos_sales`, `get_shift_summary` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `open_shift`, `close_shift` |
+| Sistemas externos (puertos y adaptadores) | Impresora térmica, lector de códigos, datáfono |
+
+#### Integración
+
+- [ ] API REST de lectura: pos-terminals, pos-shifts, pos-sales, cash-movements (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: pos_shift.opened, pos_shift.closed, pos_sale.completed (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: list_pos_sales, get_shift_summary (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: open_shift, close_shift (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de caja, terminales y operaciones de venta
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
@@ -36,12 +59,12 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Catálogo con búsqueda, categorías y código de barras.
-- [ ] Descuentos, propinas y pago mixto
-- [ ] Turnos por cajero
+- [x] Catálogo con búsqueda, categorías y código de barras. _(PR-09)_
+- [x] Descuentos, propinas y pago mixto _(PR-15)_
+- [x] Turnos por cajero _(PR-15)_
 - [x] Descuento automático de inventario — _hecho: `sellProduct` en `money-service`_
-- [ ] Funciona en celular y tablet.
-- [ ] Impresoras térmicas
+- [x] Funciona en celular y tablet. _(PR-15)_
+- [x] Impresoras térmicas _(PR-16)_
 - [x] Clientes asociados a la venta — _hecho: cliente opcional en la venta_
 
 #### Técnico

@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `api-keys`, `oauth-clients`, `api-usage`, `openapi (documento)`, `mcp (servidor)` |
+| Eventos (outbox → webhooks) | `api_key.created`, `api_key.revoked`, `api.rate_limited` |
+| MCP · lectura | `list_api_keys`, `get_api_usage`, `describe_api` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `create_api_key`, `revoke_api_key` |
+| Sistemas externos (puertos y adaptadores) | Es la puerta de todas las demás: genera REST, MCP y OpenAPI desde el registro de capacidades |
+
+#### Integración
+
+- [ ] API REST de lectura: api-keys, oauth-clients, api-usage, openapi (documento), mcp (servidor) (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: api_key.created, api_key.revoked, api.rate_limited (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: list_api_keys, get_api_usage, describe_api (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: create_api_key, revoke_api_key (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de contratos, recursos y estándares de integración
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
@@ -23,10 +46,10 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Llaves de API por negocio
-- [ ] API REST documentada
-- [ ] Límite de peticiones
-- [ ] API interna `/api/v1` de solo lectura sobre los repositorios de `lib/` (contexto, permisos, módulos y bitácora) _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
+- [x] Llaves de API por negocio _(PR-02)_ _hecho: lib/api/keys.ts + Ajustes → Integraciones_
+- [x] API REST documentada _(PR-02)_ _hecho: GET /api/v1/openapi.json, generado del registro_
+- [x] Límite de peticiones _(PR-02)_ _hecho: lib/api/rate-limit.ts, 120/min por llave, en memoria_
+- [x] API interna `/api/v1` de solo lectura sobre los repositorios de `lib/` (contexto, permisos, módulos y bitácora) _(objetivo 2026 · ver `docs/PENDIENTES.md`)_ _(PR-02)_ _hecho: app/api/v1 + lib/api/handler.ts_
 
 #### Técnico
 
@@ -37,12 +60,12 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Documentación pública interactiva
-- [ ] Alcances (scopes) granulares
-- [ ] Versionado de la API
+- [ ] Documentación pública interactiva _(PR-02)_
+- [x] Alcances (scopes) granulares _(PR-02)_ _hecho: lib/api/scopes.ts_
+- [x] Versionado de la API _(PR-02)_ _hecho: prefijo /api/v1_
 - [ ] OAuth 2.0
 - [ ] Conectores listos
-- [ ] MCP de NEXUS: capa delgada sobre la misma API, sin reglas propias _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
+- [x] MCP de NEXUS: capa delgada sobre la misma API, sin reglas propias _(objetivo 2026 · ver `docs/PENDIENTES.md`)_ _(PR-04)_ _hecho: lib/mcp/server.ts + app/api/mcp (solo lectura)_
 
 #### Técnico
 

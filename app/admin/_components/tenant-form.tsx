@@ -25,6 +25,7 @@ import { getOnboardingModulePreset } from "@/lib/onboarding/presets";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { labelClasses } from "@/components/atoms/input";
+import { Select } from "@/components/atoms/select";
 
 const IDLE_STATE: AdminFormState = { status: "idle" };
 const SLUG_DEBOUNCE_MS = 350;
@@ -366,7 +367,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                 Equipo{" "}
                 <span className="font-normal text-muted-foreground">(opcional)</span>
               </label>
-              <select
+              <Select
                 id="tenant-team-size"
                 name="teamSize"
                 value={teamSize}
@@ -389,7 +390,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                     {label}
                   </option>
                 ))}
-              </select>
+              </Select>
               {errors.teamSize ? (
                 <p role="alert" className="mt-1 text-xs text-destructive">
                   {errors.teamSize}
@@ -483,7 +484,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
             >
               Vertical
             </label>
-            <select
+            <Select
               id="tenant-vertical"
               name="vertical"
               value={vertical}
@@ -508,7 +509,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                   {VERTICAL_ICONS[value]} {VERTICAL_LABELS[value]}
                 </option>
               ))}
-            </select>
+            </Select>
             {errors.vertical ? (
               <p role="alert" className="mt-1 text-xs text-destructive">
                 {errors.vertical}

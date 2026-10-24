@@ -14,6 +14,28 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `metrics`, `metric-definitions`, `dimensions` |
+| Eventos (outbox → webhooks) | `metric.definition_changed` |
+| MCP · lectura | `list_metrics`, `query_metric`, `explain_metric` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | — |
+| Sistemas externos (puertos y adaptadores) | Exportación a BI externo (Metabase, Looker Studio) |
+
+#### Integración
+
+- [ ] API REST de lectura: metrics, metric-definitions, dimensions (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: metric.definition_changed (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: list_metrics, query_metric, explain_metric (N2) <!-- mcp-lectura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de entidades, métricas y definiciones
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).

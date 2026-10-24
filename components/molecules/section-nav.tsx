@@ -1,10 +1,10 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import { Fragment, useLayoutEffect, useRef } from "react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type SectionNavItem<T extends string> = { id: T; label: string; icon: LucideIcon; hint?: string };
+export type SectionNavItem<T extends string> = { id: T; label: string; icon: LucideIcon; hint?: string; /** Título del grupo; se muestra donde cambia de un elemento al siguiente. */ group?: string };
 
 /**
  * Navegación de secciones (Ajustes): en escritorio, columna fija a la
@@ -69,15 +69,16 @@ export function SectionNav<T extends string>({
             aria-hidden="true"
             className="absolute inset-x-0 top-0 z-0 rounded-md bg-surface-muted transition-transform duration-[460ms] ease-[var(--nx-ease-out)] before:absolute before:bottom-2 before:left-0 before:top-2 before:w-[3px] before:bg-accent"
           />
-          {items.map((item) => (
+          {items.map((item, i) => (
+            <Fragment key={item.id}>
+              {item.group && item.group !== items[i - 1]?.group ? <p className={cn("relative z-10 px-3.5 pb-1 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground", i > 0 && "mt-3")}>{item.group}</p> : null}
             <button
-              key={item.id}
               type="button"
               aria-current={item.id === value ? "page" : undefined}
               onClick={() => onChange(item.id)}
               className={cn(
                 "relative z-10 flex items-center gap-3 rounded-md px-3.5 py-2.5 text-left transition-opacity",
-                item.id === value ? "opacity-100" : "opacity-70 hover:opacity-100",
+                item.id === value ? "opacity-100" : "text-foreground/90 hover:opacity-100",
               )}
             >
               <item.icon aria-hidden="true" className="size-[18px] shrink-0" strokeWidth={1.6} />
@@ -86,6 +87,7 @@ export function SectionNav<T extends string>({
                 {item.hint ? <small className="block truncate text-xs text-muted-foreground">{item.hint}</small> : null}
               </span>
             </button>
+            </Fragment>
           ))}
         </div>
       </nav>

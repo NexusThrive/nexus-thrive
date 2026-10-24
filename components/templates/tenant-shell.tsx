@@ -4,6 +4,8 @@ import { ToastProvider } from "@/components/molecules/toast";
 import { AppSidebar } from "@/components/organisms/app-sidebar";
 import { AppTopbar } from "@/components/organisms/app-topbar";
 import { CommandPalette } from "@/components/organisms/command-palette";
+import { BusinessSwitcher } from "@/components/organisms/business-switcher";
+import { NavbarSearch } from "@/components/organisms/navbar-search";
 import { MobileTabBar } from "@/components/organisms/mobile-tab-bar";
 import { NetworkBanner } from "@/components/molecules/network-banner";
 import { ShellProvider } from "@/components/providers/shell-context";
@@ -22,6 +24,8 @@ export function TenantShell({
   tenantName,
   vertical,
   activeModules,
+  businesses,
+  onSwitchBusiness,
   topbarActions,
   children,
 }: {
@@ -30,6 +34,10 @@ export function TenantShell({
   vertical: VerticalValue;
   /** Módulos activos, ya filtrados y ordenados. */
   activeModules: ModuleValue[];
+  /** Negocios de la cuenta, para el selector de la navbar (el activo es `tenantSlug`). */
+  businesses?: { slug: string; name: string }[];
+  /** Acción de servidor que recuerda la organización elegida como la última usada. */
+  onSwitchBusiness?: (slug: string) => void | Promise<void>;
   /** Botones extra de la barra superior (p. ej. la campana de notificaciones). */
   topbarActions?: ReactNode;
   children: ReactNode;
@@ -45,13 +53,17 @@ export function TenantShell({
         <div className={styles.root}>
           <AppSidebar />
           <div className={styles.main}>
-            <AppTopbar actions={topbarActions} />
+            <AppTopbar
+              actions={topbarActions}
+              search={<NavbarSearch />}
+              switcher={<BusinessSwitcher currentSlug={tenantSlug} currentName={tenantName} businesses={businesses ?? []} onSwitch={onSwitchBusiness} />}
+            />
             <main id="contenido" tabIndex={-1} className={styles.view}>
               {children}
             </main>
           </div>
           <MobileTabBar />
-          <CommandPalette />
+          <CommandPalette inlineOnDesktop />
           <NetworkBanner />
         </div>
       </ToastProvider>

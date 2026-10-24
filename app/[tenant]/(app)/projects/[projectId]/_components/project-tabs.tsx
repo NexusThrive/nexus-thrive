@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { LoadingState } from "@/components/molecules/loading-state";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { PROJECT_TABS, type ProjectTab } from "@/lib/construction/project-domain";
@@ -53,9 +54,7 @@ export default function ProjectTabs({
           </button>
         ))}
         {isPending ? (
-          <span className="ml-2 self-center text-xs text-muted-foreground">
-            Cargando…
-          </span>
+          <LoadingState inline label="Cargando…" className="ml-2 self-center text-xs" />
         ) : null}
       </div>
       <div>{children}</div>

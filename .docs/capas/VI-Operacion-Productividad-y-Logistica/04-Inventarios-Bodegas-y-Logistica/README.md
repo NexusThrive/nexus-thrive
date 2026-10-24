@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `warehouses`, `stock-levels`, `stock-movements`, `transfers`, `kardex` |
+| Eventos (outbox → webhooks) | `stock.moved`, `stock.below_minimum`, `stock.adjusted`, `transfer.completed` |
+| MCP · lectura | `get_stock`, `list_low_stock`, `get_kardex` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `adjust_stock`, `create_transfer` |
+| Sistemas externos (puertos y adaptadores) | Lectores de código de barras, transportadoras |
+
+#### Integración
+
+- [ ] API REST de lectura: warehouses, stock-levels, stock-movements, transfers, kardex (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: stock.moved, stock.below_minimum, stock.adjusted, transfer.completed (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: get_stock, list_low_stock, get_kardex (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: adjust_stock, create_transfer (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de artículos, existencias y ubicaciones
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
@@ -26,7 +49,7 @@ tags: [capas, estructura, subcapa]
 - [x] Entradas, salidas y existencias — _hecho: movimientos de stock_
 - [x] Ajustes manuales con motivo. — _hecho: salida o ajuste exige motivo_
 - [x] Stock actual — _hecho: Catálogo_
-- [ ] Descuento automático al facturar y suma al recibir compras.
+- [x] Descuento automático al facturar y suma al recibir compras. _(PR-10)_
 
 #### Técnico
 
@@ -37,12 +60,12 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Múltiples bodegas
-- [ ] Kardex
+- [x] Múltiples bodegas _(PR-10)_
+- [x] Kardex _(PR-10)_
 - [ ] Lotes, fechas de vencimiento y series.
-- [ ] Stock mínimo, máximo y punto de reorden
-- [ ] Conteos físicos y ajustes por inventario
-- [ ] Método de costeo
+- [x] Stock mínimo, máximo y punto de reorden _hecho: lib/inventory/stock-docs-db.ts (reorderOverview) + pestaña Reposición_
+- [x] Conteos físicos y ajustes por inventario _hecho: StockCount; cerrar aplica la diferencia con motivo_
+- [x] Método de costeo _(PR-10)_
 - [ ] Inventario por obra o por sede
 
 #### Técnico

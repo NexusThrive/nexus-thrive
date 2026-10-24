@@ -1,0 +1,482 @@
+[
+  {
+    "id": "table.StoreOrder",
+    "label": "Create table \"StoreOrder\"",
+    "summary": "Creates table \"StoreOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "StoreOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"StoreOrder\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StoreOrder\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"StoreOrder\"",
+        "sql": "CREATE TABLE \"public\".\"StoreOrder\" (\n  \"abandonedNotifiedAt\" timestamptz,\n  \"address\" text,\n  \"city\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"customerName\" text NOT NULL,\n  \"documentId\" text,\n  \"email\" text,\n  \"id\" text NOT NULL,\n  \"intentId\" text,\n  \"notes\" text,\n  \"number\" int4 NOT NULL,\n  \"paidAt\" timestamptz,\n  \"phone\" text NOT NULL,\n  \"review\" text,\n  \"status\" text DEFAULT 'PENDING_PAYMENT' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"total\" numeric NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"StoreOrder\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StoreOrder\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.StoreOrderLine",
+    "label": "Create table \"StoreOrderLine\"",
+    "summary": "Creates table \"StoreOrderLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "StoreOrderLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"StoreOrderLine\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StoreOrderLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"StoreOrderLine\"",
+        "sql": "CREATE TABLE \"public\".\"StoreOrderLine\" (\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"orderId\" text NOT NULL,\n  \"productId\" text NOT NULL,\n  \"quantity\" int4 NOT NULL,\n  \"taxRatePct\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"unitPrice\" numeric NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"StoreOrderLine\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StoreOrderLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.StoreOrder.StoreOrder_tenantId_number_key",
+    "label": "Add unique constraint on \"StoreOrder\" (tenantId, number)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "StoreOrder_tenantId_number_key",
+        "table": "StoreOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"StoreOrder_tenantId_number_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StoreOrder_tenantId_number_key",
+          "public",
+          "\"public\".\"StoreOrder\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"StoreOrder_tenantId_number_key\"",
+        "sql": "ALTER TABLE \"public\".\"StoreOrder\" ADD CONSTRAINT \"StoreOrder_tenantId_number_key\" UNIQUE (\"tenantId\", \"number\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"StoreOrder_tenantId_number_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StoreOrder_tenantId_number_key",
+          "public",
+          "\"public\".\"StoreOrder\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StoreOrder.StoreOrder_tenantId_idx_c93ed4f1",
+    "label": "Create index \"StoreOrder_tenantId_idx_c93ed4f1\" on \"StoreOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StoreOrder_tenantId_idx_c93ed4f1",
+        "table": "StoreOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StoreOrder_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StoreOrder_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StoreOrder_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"StoreOrder_tenantId_idx_c93ed4f1\" ON \"public\".\"StoreOrder\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StoreOrder_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StoreOrder_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StoreOrder.StoreOrder_tenantId_status_idx_d3d04256",
+    "label": "Create index \"StoreOrder_tenantId_status_idx_d3d04256\" on \"StoreOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StoreOrder_tenantId_status_idx_d3d04256",
+        "table": "StoreOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StoreOrder_tenantId_status_idx_d3d04256\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StoreOrder_tenantId_status_idx_d3d04256\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StoreOrder_tenantId_status_idx_d3d04256\"",
+        "sql": "CREATE INDEX \"StoreOrder_tenantId_status_idx_d3d04256\" ON \"public\".\"StoreOrder\" (\"tenantId\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StoreOrder_tenantId_status_idx_d3d04256\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StoreOrder_tenantId_status_idx_d3d04256\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StoreOrderLine.StoreOrderLine_orderId_idx_d284871b",
+    "label": "Create index \"StoreOrderLine_orderId_idx_d284871b\" on \"StoreOrderLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StoreOrderLine_orderId_idx_d284871b",
+        "table": "StoreOrderLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StoreOrderLine_orderId_idx_d284871b\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StoreOrderLine_orderId_idx_d284871b\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StoreOrderLine_orderId_idx_d284871b\"",
+        "sql": "CREATE INDEX \"StoreOrderLine_orderId_idx_d284871b\" ON \"public\".\"StoreOrderLine\" (\"orderId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StoreOrderLine_orderId_idx_d284871b\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StoreOrderLine_orderId_idx_d284871b\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StoreOrderLine.StoreOrderLine_tenantId_idx_c93ed4f1",
+    "label": "Create index \"StoreOrderLine_tenantId_idx_c93ed4f1\" on \"StoreOrderLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StoreOrderLine_tenantId_idx_c93ed4f1",
+        "table": "StoreOrderLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StoreOrderLine_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StoreOrderLine_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StoreOrderLine_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"StoreOrderLine_tenantId_idx_c93ed4f1\" ON \"public\".\"StoreOrderLine\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StoreOrderLine_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StoreOrderLine_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StoreOrder.StoreOrder_tenantId_fkey",
+    "label": "Add foreign key \"StoreOrder_tenantId_fkey\" on \"StoreOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StoreOrder_tenantId_fkey",
+        "table": "StoreOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StoreOrder_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StoreOrder_tenantId_fkey",
+          "public",
+          "\"public\".\"StoreOrder\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StoreOrder_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StoreOrder\"\nADD CONSTRAINT \"StoreOrder_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StoreOrder_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StoreOrder_tenantId_fkey",
+          "public",
+          "\"public\".\"StoreOrder\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StoreOrderLine.StoreOrderLine_tenantId_fkey",
+    "label": "Add foreign key \"StoreOrderLine_tenantId_fkey\" on \"StoreOrderLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StoreOrderLine_tenantId_fkey",
+        "table": "StoreOrderLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StoreOrderLine_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StoreOrderLine_tenantId_fkey",
+          "public",
+          "\"public\".\"StoreOrderLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StoreOrderLine_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StoreOrderLine\"\nADD CONSTRAINT \"StoreOrderLine_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StoreOrderLine_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StoreOrderLine_tenantId_fkey",
+          "public",
+          "\"public\".\"StoreOrderLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StoreOrderLine.StoreOrderLine_orderId_fkey",
+    "label": "Add foreign key \"StoreOrderLine_orderId_fkey\" on \"StoreOrderLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StoreOrderLine_orderId_fkey",
+        "table": "StoreOrderLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StoreOrderLine_orderId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StoreOrderLine_orderId_fkey",
+          "public",
+          "\"public\".\"StoreOrderLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StoreOrderLine_orderId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StoreOrderLine\"\nADD CONSTRAINT \"StoreOrderLine_orderId_fkey\"\nFOREIGN KEY (\"orderId\")\nREFERENCES \"public\".\"StoreOrder\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StoreOrderLine_orderId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StoreOrderLine_orderId_fkey",
+          "public",
+          "\"public\".\"StoreOrderLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.StoreOrder",
+    "label": "Enable row-level security on \"StoreOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "StoreOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"StoreOrder\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "StoreOrder"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"StoreOrder\"",
+        "sql": "ALTER TABLE \"public\".\"StoreOrder\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"StoreOrder\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "StoreOrder"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.StoreOrderLine",
+    "label": "Enable row-level security on \"StoreOrderLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "StoreOrderLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"StoreOrderLine\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "StoreOrderLine"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"StoreOrderLine\"",
+        "sql": "ALTER TABLE \"public\".\"StoreOrderLine\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"StoreOrderLine\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "StoreOrderLine"
+        ]
+      }
+    ]
+  }
+]

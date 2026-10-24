@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { inputClasses, selectClasses, textareaClasses } from "@/components/atoms/input";
+import { inputClasses, textareaClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { UsdInput } from "@/components/molecules/usd-input";
@@ -12,6 +12,7 @@ import { VERTICALS, VERTICAL_LABELS } from "@/lib/admin/catalogs";
 import { isActiveStage, LEAD_SOURCES, LEAD_STAGES, LOST_REASONS, type LeadInput, type LeadStageValue } from "@/lib/ops/crm-rules";
 import type { LeadRow } from "@/lib/ops/leads";
 import { saveLeadAction } from "../actions";
+import { Select } from "@/components/atoms/select";
 
 export type Option = { id: string; name: string };
 
@@ -111,24 +112,24 @@ export default function LeadSheet({
         </Field>
         <Field label="Rubro">
           {(c) => (
-            <select {...c} value={v.vertical ?? ""} onChange={(e) => set("vertical", e.target.value)} className={selectClasses}>
+            <Select {...c} value={v.vertical ?? ""} onChange={(e) => set("vertical", e.target.value)}>
               <option value="">Sin definir</option>
               {VERTICALS.map((x) => (
                 <option key={x} value={x}>
                   {VERTICAL_LABELS[x]}
                 </option>
               ))}
-            </select>
+            </Select>
           )}
         </Field>
         <Field label="Ciudad">{(c) => <input {...c} value={v.city ?? ""} onChange={(e) => set("city", e.target.value)} className={inputClasses} />}</Field>
         <Field label="Origen" error={errors.source}>
           {(c) => (
-            <select {...c} value={v.source} onChange={(e) => set("source", e.target.value)} className={selectClasses}>
+            <Select {...c} value={v.source} onChange={(e) => set("source", e.target.value)}>
               {LEAD_SOURCES.map((s) => (
                 <option key={s}>{s}</option>
               ))}
-            </select>
+            </Select>
           )}
         </Field>
         <Field label="Valor mensual estimado" hint="Lo que pagaría al mes.">
@@ -136,18 +137,18 @@ export default function LeadSheet({
         </Field>
         <Field label="Etapa" error={errors.stage}>
           {(c) => (
-            <select {...c} value={v.stage} onChange={(e) => set("stage", e.target.value as LeadStageValue)} className={selectClasses}>
+            <Select {...c} value={v.stage} onChange={(e) => set("stage", e.target.value as LeadStageValue)}>
               {LEAD_STAGES.map((s) => (
                 <option key={s.value} value={s.value}>
                   {s.label}
                 </option>
               ))}
-            </select>
+            </Select>
           )}
         </Field>
         <Field label="Responsable" required={active} error={errors.ownerId} hint={canAssign ? undefined : "Solo puedes asignarte a ti."}>
           {(c) => (
-            <select {...c} value={v.ownerId ?? ""} onChange={(e) => set("ownerId", e.target.value || null)} className={selectClasses}>
+            <Select {...c} value={v.ownerId ?? ""} onChange={(e) => set("ownerId", e.target.value || null)}>
               <option value="">Sin responsable</option>
               {owners
                 .filter((o) => canAssign || o.id === me || o.id === lead?.ownerId)
@@ -157,7 +158,7 @@ export default function LeadSheet({
                     {o.id === me ? " (tú)" : ""}
                   </option>
                 ))}
-            </select>
+            </Select>
           )}
         </Field>
         {active ? (
@@ -173,26 +174,26 @@ export default function LeadSheet({
         {v.stage === "LOST" ? (
           <Field label="Motivo" required error={errors.lostReason}>
             {(c) => (
-              <select {...c} value={v.lostReason ?? ""} onChange={(e) => set("lostReason", e.target.value || null)} className={selectClasses}>
+              <Select {...c} value={v.lostReason ?? ""} onChange={(e) => set("lostReason", e.target.value || null)}>
                 <option value="">Elige un motivo</option>
                 {LOST_REASONS.map((r) => (
                   <option key={r}>{r}</option>
                 ))}
-              </select>
+              </Select>
             )}
           </Field>
         ) : null}
         {v.stage === "WON" ? (
           <Field label="Negocio en NEXUS" hint="Vincula la cuenta que creó al registrarse.">
             {(c) => (
-              <select {...c} value={v.tenantId ?? ""} onChange={(e) => set("tenantId", e.target.value || null)} className={selectClasses}>
+              <Select {...c} value={v.tenantId ?? ""} onChange={(e) => set("tenantId", e.target.value || null)}>
                 <option value="">Aún sin negocio</option>
                 {tenants.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.name}
                   </option>
                 ))}
-              </select>
+              </Select>
             )}
           </Field>
         ) : null}

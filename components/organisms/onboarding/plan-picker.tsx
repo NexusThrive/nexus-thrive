@@ -211,7 +211,7 @@ export function PlanPicker({
                       {m.label}
                       {m.status === "BETA" ? <span className="ml-1 font-mono text-[10px] text-accent-text">beta</span> : null}
                     </span>
-                    {m.included ? (
+                    {m.included || price === 0 ? (
                       <span className="text-[11px] font-medium text-success">Incluido</span>
                     ) : locked ? (
                       <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">

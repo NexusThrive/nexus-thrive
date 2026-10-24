@@ -8,7 +8,7 @@
  * recetas por vertical (módulos por defecto + vocabulario adaptativo).
  */
 
-import { CAPABILITIES, type CapabilityId } from "@/lib/capabilities/registry";
+import { CAPABILITIES, CHILDREN_OF, type CapabilityId } from "@/lib/capabilities/registry";
 
 /* ------------------------------------------------------------------ */
 /* Verticales (16 rubros)                                              */
@@ -32,6 +32,7 @@ export const VERTICALS = [
   "tour_guides",
   "events",
   "museum",
+  "general",
 ] as const;
 export type VerticalValue = (typeof VERTICALS)[number];
 
@@ -41,6 +42,7 @@ export type VerticalValue = (typeof VERTICALS)[number];
  * se ofrece al crear un negocio.
  */
 export const SIGNUP_VERTICALS = [
+  "general",
   "gym",
   "tourism_agency",
   "construction",
@@ -67,6 +69,7 @@ export const VERTICAL_LABELS: Record<VerticalValue, string> = {
   tour_guides: "Guías Turísticos",
   events: "Eventos",
   museum: "Museo",
+  general: "General / Otro",
 };
 
 /** Íconos emoji por vertical (badges del Panel CEO y selección del onboarding). */
@@ -88,6 +91,7 @@ export const VERTICAL_ICONS: Record<VerticalValue, string> = {
   tour_guides: "🧭",
   events: "🎉",
   museum: "🏛️",
+  general: "🧩",
 };
 
 /**
@@ -248,7 +252,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   carpentry: {
-    modules: ["dashboard", "crm", "construction", "inventory", "finance"],
+    modules: ["dashboard", "crm", "construction", "inventory", "purchases", "finance"],
     terms: {
       customer: "Cliente",
       customers: "Clientes",
@@ -260,7 +264,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   restaurant: {
-    modules: ["dashboard", "crm", "orders", "inventory", "payments", "finance"],
+    modules: ["dashboard", "crm", "orders", "inventory", "purchases", "payments", "finance"],
     terms: {
       customer: "Comensal",
       customers: "Comensales",
@@ -271,7 +275,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   retail: {
-    modules: ["dashboard", "crm", "orders", "inventory", "payments", "finance"],
+    modules: ["dashboard", "crm", "orders", "inventory", "purchases", "payments", "finance"],
     terms: {
       customer: "Cliente",
       customers: "Clientes",
@@ -304,7 +308,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   mechanic: {
-    modules: ["dashboard", "crm", "bookings", "inventory", "finance"],
+    modules: ["dashboard", "crm", "bookings", "inventory", "purchases", "finance"],
     terms: {
       customer: "Cliente",
       customers: "Clientes",
@@ -337,7 +341,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   hardware_store: {
-    modules: ["dashboard", "crm", "orders", "inventory", "finance"],
+    modules: ["dashboard", "crm", "orders", "inventory", "purchases", "finance"],
     terms: {
       customer: "Cliente",
       customers: "Clientes",
@@ -392,7 +396,22 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
       items: "Entradas",
     },
   },
+  general: {
+    // Perfil general (agencia, consultora, empresa B2B, emprendimiento o negocio mixto): sin rubro cerrado.
+    // Parte con lo esencial; el resto se enciende en Funciones según lo que haga el negocio.
+    modules: ["dashboard", "crm", "finance", "billing", "payments"],
+    terms: {
+      customer: "Cliente",
+      customers: "Clientes",
+      booking: "Cita",
+      bookings: "Citas",
+      item: "Servicio",
+      items: "Servicios",
+    },
+  },
 };
+// Las funciones que se desprendieron de otra (Cartera, Punto de venta…) llegan con ella en cada receta.
+for (const vertical of VERTICALS) (VERTICAL_RECIPES[vertical] as { modules: readonly ModuleValue[] }).modules = withChildModules(VERTICAL_RECIPES[vertical].modules);
 
 /**
  * Módulos que NEXUS activa automáticamente por vertical (derivado de las
@@ -515,4 +534,10 @@ export function sortModules(modules: readonly ModuleValue[]): ModuleValue[] {
   return [...modules].sort(
     (a, b) => MODULES.indexOf(a) - MODULES.indexOf(b),
   );
+}
+/** Agrega a cada función las que se desprendieron de ella (Cartera con Finanzas, Punto de venta con Pagos…). */
+export function withChildModules(list: readonly ModuleValue[]): ModuleValue[] {
+  const out = new Set<ModuleValue>(list);
+  for (const m of list) for (const child of CHILDREN_OF[m] ?? []) out.add(child as ModuleValue);
+  return sortModules([...out]);
 }

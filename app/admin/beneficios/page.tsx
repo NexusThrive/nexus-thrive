@@ -7,6 +7,7 @@ import { listBenefitCodes, FIXED_BENEFIT_CODE } from "@/lib/benefits/benefits-db
 import { receiptQrDataUrl } from "@/lib/business/receipt-qr";
 import { createBenefitAction, toggleBenefitAction, updateBenefitAction } from "./actions";
 import { ContractFields, contractSummary } from "./_components/contract-fields";
+import { Select } from "@/components/atoms/select";
 
 export const metadata: Metadata = { title: "Accesos · NEXUS Operations Center" };
 
@@ -94,11 +95,11 @@ export default async function BeneficiosPage({
           </label>
           <label className={labelClass}>
             Plan que otorga
-            <select name="plan" defaultValue="ELITE" className={inputClass}>
+            <Select name="plan" defaultValue="ELITE">
               <option value="ESSENTIAL">Esencial</option>
               <option value="ELITE">Elite</option>
               <option value="SIGNATURE">Signature</option>
-            </select>
+            </Select>
           </label>
           <label className={labelClass}>
             Días pagados
@@ -138,11 +139,11 @@ export default async function BeneficiosPage({
           </label>
           <label className={labelClass}>
             Plan que otorga
-            <select name="plan" defaultValue="ELITE" className={inputClass}>
+            <Select name="plan" defaultValue="ELITE">
               <option value="ESSENTIAL">Esencial</option>
               <option value="ELITE">Elite</option>
               <option value="SIGNATURE">Signature</option>
-            </select>
+            </Select>
           </label>
           <label className={labelClass}>
             Días de regalo
@@ -273,18 +274,18 @@ export default async function BeneficiosPage({
                       </label>
                       <label className={labelClass}>
                         Membresía que otorga
-                        <select name="plan" defaultValue={row.plan} className={inputClass}>
+                        <Select name="plan" defaultValue={row.plan}>
                           <option value="ESSENTIAL">Esencial</option>
                           <option value="ELITE">Elite</option>
                           <option value="SIGNATURE">Signature</option>
-                        </select>
+                        </Select>
                       </label>
                       <label className={labelClass}>
                         Tipo de acceso
-                        <select name="kind" defaultValue={row.kind} className={inputClass}>
+                        <Select name="kind" defaultValue={row.kind}>
                           <option value="PROMO">Promo (gratis)</option>
                           <option value="PAID">Acceso pagado</option>
-                        </select>
+                        </Select>
                       </label>
                       <label className={labelClass}>
                         Días del beneficio

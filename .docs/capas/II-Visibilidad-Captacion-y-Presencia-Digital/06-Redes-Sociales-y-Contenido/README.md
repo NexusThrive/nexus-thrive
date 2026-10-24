@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `social-accounts`, `posts`, `content-calendar` |
+| Eventos (outbox → webhooks) | `post.scheduled`, `post.published` |
+| MCP · lectura | `list_scheduled_posts`, `get_post_metrics` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `draft_post`, `schedule_post` |
+| Sistemas externos (puertos y adaptadores) | Instagram / Facebook Graph API, Google Business posts |
+
+#### Integración
+
+- [ ] API REST de lectura: social-accounts, posts, content-calendar (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: post.scheduled, post.published (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: list_scheduled_posts, get_post_metrics (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: draft_post, schedule_post (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de perfiles, calendario y biblioteca
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).

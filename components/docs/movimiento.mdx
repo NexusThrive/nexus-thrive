@@ -74,3 +74,10 @@ escalonada).
 `prefers-reduced-motion` o **Ajustes → Reducir movimiento** (`<html data-motion="off">`)
 apagan todo: CSS en `app/styles/motion.css` y JS vía `motionOff()`. Los contadores muestran
 el valor final de inmediato.
+
+## Modales que nacen del botón
+
+En PC los diálogos de `ResponsiveSheet` se abren con un morfeo desde el botón que los activó
+(380 ms, con enfoque) y se cierran hacia él. Es automático para `FormDialog`, `FormDrawer` y
+`ConfirmDialog`; no se reimplementa. Sin botón de origen visible, o con movimiento reducido,
+entra la animación centrada. Guía completa: `docs/design/movimiento.md`.

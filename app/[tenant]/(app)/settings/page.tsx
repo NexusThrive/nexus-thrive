@@ -1,12 +1,16 @@
+import { consumptionFor } from "@/lib/usage/consumption-db";
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { tenantWithModules } from "@/lib/tenant/membership";
 import { createTenantDb } from "@/lib/tenant/db";
 import { listTeam, seatLimit } from "@/lib/business/team-db";
+import type { BusinessModel } from "@/lib/tenant/business-context";
+import { listApiKeys } from "@/lib/api/keys";
 import { canManageTeam } from "@/lib/business/roles";
 import { paymentMethodLabel } from "@/lib/finance";
 import { getTenantAccess } from "@/lib/benefits/benefits-db";
 import {
+  type VerticalValue,
   MODULES,
   VERTICAL_LABELS,
   sortModules,
@@ -19,6 +23,7 @@ import SettingsShell, {
   type SystemInfoItem,
 } from "./_components/settings-shell";
 import { requirePageContext } from "@/lib/tenant/context";
+import { roleLabel } from "@/lib/business/roles";
 
 /**
  * Módulo de Ajustes del negocio (Server Component).
@@ -99,6 +104,7 @@ export default async function SettingsPage({
     selectedAt: tenantRecord.planSelectedAt ? String(tenantRecord.planSelectedAt) : null,
     activeModules: modules.filter((m) => m.active).map((m) => m.moduleName),
     access: await getTenantAccess(tenantRecord.id),
+    usage: await consumptionFor(tenantRecord.id),
   };
 
   const ROLE_LABELS = { OWNER: "Propietario", STAFF: "Equipo", SUPERADMIN: "Administrador" } as const;
@@ -108,16 +114,20 @@ export default async function SettingsPage({
     code: `NT-${tenantRecord.id.replace(/-/g, "").slice(0, 4).toUpperCase()}`,
   };
 
+  const apiKeys = team.canManage ? await listApiKeys(tenantRecord.id) : [];
+
   return (
     <SettingsShell
       tenantSlug={tenantRecord.slug}
       canManage={canManage}
       profile={profile}
-      modules={modules}
       team={team}
+      apiKeys={apiKeys}
       systemInfo={systemInfo}
       plan={plan}
       card={card}
+      me={(() => { const m = team.members.find((x) => x.isMe); return { name: m?.name ?? "", email: m?.email ?? "", roleLabel: roleLabel(m?.role ?? "STAFF"), title: m?.title ?? "", phone: m?.phone ?? "" }; })()}
+      context={{ vertical: tenantRecord.vertical as VerticalValue, businessModels: (tenantRecord.businessModels ?? []) as BusinessModel[], activity: tenantRecord.activity ?? "" }}
     />
   );
 }

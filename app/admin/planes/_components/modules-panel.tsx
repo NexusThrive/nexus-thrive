@@ -7,11 +7,14 @@ import { inputClasses } from "@/components/atoms/input";
 import { Switch } from "@/components/atoms/switch";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { UsdInput } from "@/components/molecules/usd-input";
+import { CAPABILITIES, CAPABILITY_CATEGORIES } from "@/lib/capabilities/registry";
 import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
 import type { ModuleConfig, ModuleStatus } from "@/lib/plans/pricing";
 import { cn } from "@/lib/utils";
 import { saveModuleAction } from "../actions";
 import { useSave } from "./use-save";
+
+const categoryOf = (module: string) => CAPABILITIES.find((c) => c.id === module)?.category;
 
 const STATUS_HINT: Record<ModuleStatus, string> = {
   READY: "Se vende y se activa.",
@@ -69,11 +72,19 @@ export default function ModulesPanel({ modules, canPrice, canStructure }: { modu
         <span>Estado</span>
         <span />
       </header>
-      <ul className="divide-y divide-border">
-        {[...modules].sort((a, b) => a.order - b.order).map((m) => (
-          <ModuleRow key={`${m.module}-${m.priceUsdCents}-${m.status}-${m.included}`} mod={m} canPrice={canPrice} canStructure={canStructure} />
-        ))}
-      </ul>
+      {CAPABILITY_CATEGORIES.map((category) => {
+        const rows = [...modules].filter((m) => categoryOf(m.module) === category).sort((a, b) => a.order - b.order);
+        return rows.length ? (
+          <div key={category}>
+            <h3 className="border-b border-border bg-surface-muted/60 px-[18px] py-1.5 text-[12px] font-semibold">{category} <span className="font-normal text-muted-foreground">· {rows.length}</span></h3>
+            <ul className="divide-y divide-border">
+              {rows.map((m) => (
+                <ModuleRow key={`${m.module}-${m.priceUsdCents}-${m.status}-${m.included}`} mod={m} canPrice={canPrice} canStructure={canStructure} />
+              ))}
+            </ul>
+          </div>
+        ) : null;
+      })}
     </section>
   );
 }

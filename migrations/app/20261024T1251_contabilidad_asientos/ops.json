@@ -1,0 +1,602 @@
+[
+  {
+    "id": "table.JournalEntry",
+    "label": "Create table \"JournalEntry\"",
+    "summary": "Creates table \"JournalEntry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "JournalEntry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"JournalEntry\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"JournalEntry\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"JournalEntry\"",
+        "sql": "CREATE TABLE \"public\".\"JournalEntry\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"date\" text NOT NULL,\n  \"description\" text NOT NULL,\n  \"event\" text NOT NULL,\n  \"hash\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"number\" int4 NOT NULL,\n  \"reversalOfId\" text,\n  \"sourceId\" text,\n  \"sourceType\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"JournalEntry\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"JournalEntry\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.JournalLine",
+    "label": "Create table \"JournalLine\"",
+    "summary": "Creates table \"JournalLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "JournalLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"JournalLine\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"JournalLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"JournalLine\"",
+        "sql": "CREATE TABLE \"public\".\"JournalLine\" (\n  \"accountCode\" text NOT NULL,\n  \"costCenterId\" text,\n  \"credit\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"debit\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"entryId\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"label\" text,\n  \"partyId\" text,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"JournalLine\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"JournalLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.accountingEnabled",
+    "label": "Add column \"accountingEnabled\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "accountingEnabled",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"accountingEnabled\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "accountingEnabled"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"accountingEnabled\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"accountingEnabled\" bool DEFAULT false NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"accountingEnabled\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "accountingEnabled"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.JournalEntry.JournalEntry_tenantId_number_key",
+    "label": "Add unique constraint on \"JournalEntry\" (tenantId, number)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "JournalEntry_tenantId_number_key",
+        "table": "JournalEntry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"JournalEntry_tenantId_number_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "JournalEntry_tenantId_number_key",
+          "public",
+          "\"public\".\"JournalEntry\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"JournalEntry_tenantId_number_key\"",
+        "sql": "ALTER TABLE \"public\".\"JournalEntry\" ADD CONSTRAINT \"JournalEntry_tenantId_number_key\" UNIQUE (\"tenantId\", \"number\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"JournalEntry_tenantId_number_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "JournalEntry_tenantId_number_key",
+          "public",
+          "\"public\".\"JournalEntry\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.JournalEntry.JournalEntry_tenantId_date_idx_3ef944c7",
+    "label": "Create index \"JournalEntry_tenantId_date_idx_3ef944c7\" on \"JournalEntry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "JournalEntry_tenantId_date_idx_3ef944c7",
+        "table": "JournalEntry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"JournalEntry_tenantId_date_idx_3ef944c7\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"JournalEntry_tenantId_date_idx_3ef944c7\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"JournalEntry_tenantId_date_idx_3ef944c7\"",
+        "sql": "CREATE INDEX \"JournalEntry_tenantId_date_idx_3ef944c7\" ON \"public\".\"JournalEntry\" (\"tenantId\", \"date\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"JournalEntry_tenantId_date_idx_3ef944c7\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"JournalEntry_tenantId_date_idx_3ef944c7\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.JournalEntry.JournalEntry_tenantId_idx_c93ed4f1",
+    "label": "Create index \"JournalEntry_tenantId_idx_c93ed4f1\" on \"JournalEntry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "JournalEntry_tenantId_idx_c93ed4f1",
+        "table": "JournalEntry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"JournalEntry_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"JournalEntry_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"JournalEntry_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"JournalEntry_tenantId_idx_c93ed4f1\" ON \"public\".\"JournalEntry\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"JournalEntry_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"JournalEntry_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.JournalEntry.JournalEntry_tenantId_sourceType_sourceId_idx_7db9b1c3",
+    "label": "Create index \"JournalEntry_tenantId_sourceType_sourceId_idx_7db9b1c3\" on \"JournalEntry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "JournalEntry_tenantId_sourceType_sourceId_idx_7db9b1c3",
+        "table": "JournalEntry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"JournalEntry_tenantId_sourceType_sourceId_idx_7db9b1c3\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"JournalEntry_tenantId_sourceType_sourceId_idx_7db9b1c3\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"JournalEntry_tenantId_sourceType_sourceId_idx_7db9b1c3\"",
+        "sql": "CREATE INDEX \"JournalEntry_tenantId_sourceType_sourceId_idx_7db9b1c3\" ON \"public\".\"JournalEntry\" (\"tenantId\", \"sourceType\", \"sourceId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"JournalEntry_tenantId_sourceType_sourceId_idx_7db9b1c3\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"JournalEntry_tenantId_sourceType_sourceId_idx_7db9b1c3\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.JournalLine.JournalLine_entryId_idx_8b42d1db",
+    "label": "Create index \"JournalLine_entryId_idx_8b42d1db\" on \"JournalLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "JournalLine_entryId_idx_8b42d1db",
+        "table": "JournalLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"JournalLine_entryId_idx_8b42d1db\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"JournalLine_entryId_idx_8b42d1db\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"JournalLine_entryId_idx_8b42d1db\"",
+        "sql": "CREATE INDEX \"JournalLine_entryId_idx_8b42d1db\" ON \"public\".\"JournalLine\" (\"entryId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"JournalLine_entryId_idx_8b42d1db\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"JournalLine_entryId_idx_8b42d1db\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.JournalLine.JournalLine_tenantId_accountCode_idx_d8899099",
+    "label": "Create index \"JournalLine_tenantId_accountCode_idx_d8899099\" on \"JournalLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "JournalLine_tenantId_accountCode_idx_d8899099",
+        "table": "JournalLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"JournalLine_tenantId_accountCode_idx_d8899099\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"JournalLine_tenantId_accountCode_idx_d8899099\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"JournalLine_tenantId_accountCode_idx_d8899099\"",
+        "sql": "CREATE INDEX \"JournalLine_tenantId_accountCode_idx_d8899099\" ON \"public\".\"JournalLine\" (\"tenantId\", \"accountCode\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"JournalLine_tenantId_accountCode_idx_d8899099\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"JournalLine_tenantId_accountCode_idx_d8899099\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.JournalLine.JournalLine_tenantId_idx_c93ed4f1",
+    "label": "Create index \"JournalLine_tenantId_idx_c93ed4f1\" on \"JournalLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "JournalLine_tenantId_idx_c93ed4f1",
+        "table": "JournalLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"JournalLine_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"JournalLine_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"JournalLine_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"JournalLine_tenantId_idx_c93ed4f1\" ON \"public\".\"JournalLine\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"JournalLine_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"JournalLine_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.JournalEntry.JournalEntry_tenantId_fkey",
+    "label": "Add foreign key \"JournalEntry_tenantId_fkey\" on \"JournalEntry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "JournalEntry_tenantId_fkey",
+        "table": "JournalEntry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"JournalEntry_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "JournalEntry_tenantId_fkey",
+          "public",
+          "\"public\".\"JournalEntry\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"JournalEntry_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"JournalEntry\"\nADD CONSTRAINT \"JournalEntry_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"JournalEntry_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "JournalEntry_tenantId_fkey",
+          "public",
+          "\"public\".\"JournalEntry\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.JournalLine.JournalLine_tenantId_fkey",
+    "label": "Add foreign key \"JournalLine_tenantId_fkey\" on \"JournalLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "JournalLine_tenantId_fkey",
+        "table": "JournalLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"JournalLine_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "JournalLine_tenantId_fkey",
+          "public",
+          "\"public\".\"JournalLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"JournalLine_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"JournalLine\"\nADD CONSTRAINT \"JournalLine_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"JournalLine_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "JournalLine_tenantId_fkey",
+          "public",
+          "\"public\".\"JournalLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.JournalLine.JournalLine_entryId_fkey",
+    "label": "Add foreign key \"JournalLine_entryId_fkey\" on \"JournalLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "JournalLine_entryId_fkey",
+        "table": "JournalLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"JournalLine_entryId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "JournalLine_entryId_fkey",
+          "public",
+          "\"public\".\"JournalLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"JournalLine_entryId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"JournalLine\"\nADD CONSTRAINT \"JournalLine_entryId_fkey\"\nFOREIGN KEY (\"entryId\")\nREFERENCES \"public\".\"JournalEntry\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"JournalLine_entryId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "JournalLine_entryId_fkey",
+          "public",
+          "\"public\".\"JournalLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.JournalEntry",
+    "label": "Enable row-level security on \"JournalEntry\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "JournalEntry"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"JournalEntry\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "JournalEntry"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"JournalEntry\"",
+        "sql": "ALTER TABLE \"public\".\"JournalEntry\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"JournalEntry\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "JournalEntry"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.JournalLine",
+    "label": "Enable row-level security on \"JournalLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "JournalLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"JournalLine\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "JournalLine"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"JournalLine\"",
+        "sql": "ALTER TABLE \"public\".\"JournalLine\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"JournalLine\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "JournalLine"
+        ]
+      }
+    ]
+  }
+]

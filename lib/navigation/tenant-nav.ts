@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
-import { Settings } from "lucide-react";
+import { Blocks, FileSpreadsheet, Receipt, Settings } from "lucide-react";
 import { MODULES, type ModuleValue, type VerticalValue } from "@/lib/admin/catalogs";
-import { CAPABILITIES, type CapabilityNav } from "@/lib/capabilities/registry";
+import { CAPABILITIES, CAPABILITY_CATEGORIES, type CapabilityCategory, type CapabilityNav } from "@/lib/capabilities/registry";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 
 export type NavItem = {
@@ -15,7 +15,8 @@ export type NavItem = {
   icon: LucideIcon;
 };
 
-export type NavGroup = { label: string; items: NavItem[] };
+/** `collapsible`: el grupo se despliega y se oculta en la barra lateral (Ingresos, Gastos). */
+export type NavGroup = { label: string; items: NavItem[]; collapsible?: boolean };
 
 type ModuleNav = CapabilityNav;
 
@@ -55,6 +56,24 @@ export function modulesForRoute(route: string): readonly ModuleValue[] | null {
   return best ? ROUTE_MODULES.get(best)! : null;
 }
 
+/** Todas las funciones del sistema: encender o apagar lo que usa el negocio (no depende de un módulo). */
+export const FUNCTIONS_ITEM: NavItem = {
+  key: "functions",
+  module: "settings",
+  label: "Funciones",
+  href: "/functions",
+  icon: Blocks,
+};
+
+/** Subir clientes y catálogo desde Excel/CSV y bajar copias (no depende de un módulo). */
+export const DATA_ITEM: NavItem = {
+  key: "data",
+  module: "settings",
+  label: "Importar y exportar",
+  href: "/data",
+  icon: FileSpreadsheet,
+};
+
 export const SETTINGS_ITEM: NavItem = {
   key: "settings",
   module: "settings",
@@ -65,23 +84,16 @@ export const SETTINGS_ITEM: NavItem = {
 
 /**
  * Grupo de la barra lateral de cada módulo, por el trabajo que resuelve (no
- * por el orden en que se activó): atender y operar, mover dinero, hablar con
- * los clientes. Un grupo sin módulos activos no aparece.
+ * por el orden en que se activó): atender y operar, **ingresos** (facturar,
+ * vender, cobrar), **gastos** (comprar, pagar), mover dinero y hablar con los
+ * clientes. Un grupo sin módulos activos no aparece. Ingresos y Gastos se
+ * pueden desplegar y ocultar.
  */
-const MODULE_GROUP: Record<Exclude<ModuleValue, "dashboard">, "Clientes y operación" | "Dinero" | "Canales"> = {
-  crm: "Clientes y operación",
-  bookings: "Clientes y operación",
-  memberships: "Clientes y operación",
-  orders: "Clientes y operación",
-  quotes: "Clientes y operación",
-  construction: "Clientes y operación",
-  inventory: "Clientes y operación",
-  finance: "Dinero",
-  payments: "Dinero",
-  billing: "Dinero",
-  whatsapp: "Canales",
-};
-const GROUP_ORDER = ["Clientes y operación", "Dinero", "Canales"] as const;
+const GROUPS = CAPABILITY_CATEGORIES;
+type GroupName = CapabilityCategory;
+const COLLAPSIBLE: readonly GroupName[] = ["Ventas y cobros", "Compras y gastos"];
+/** Grupo de cada función: su categoría en el registro (la misma que ve en «Funciones»). */
+const MODULE_GROUP: Partial<Record<string, GroupName>> = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.category]));
 
 /**
  * Navegación del negocio: solo los módulos activos, en el orden del catálogo,
@@ -100,16 +112,22 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
       label: nav.label(terms, vertical),
     }));
   };
-  // Pagos vive dentro de Finanzas: con Finanzas activa no se repite en el menú.
-  const enabled = MODULES.filter((moduleName) => active.has(moduleName) && !(moduleName === "payments" && active.has("finance")));
+  const enabled = MODULES.filter((moduleName) => active.has(moduleName));
+  // «Pagos» vive dentro de Finanzas: con Finanzas activa no se repite (las demás pantallas de Pagos, como el punto de venta, sí).
+  const forGroup = (label: GroupName): NavItem[] =>
+    enabled
+      .filter((m) => m !== "dashboard" && (MODULE_GROUP[m] ?? "Clientes y operación") === label)
+      .flatMap((m) => items(m).filter((item) => !(m === "payments" && active.has("finance") && item.href.startsWith("/finance"))));
+  const expenses: NavItem[] = active.has("finance") ? [{ key: "/finance?tab=gastos", module: "finance", href: "/finance?tab=gastos", icon: Receipt, label: "Gastos" }] : [];
   return [
     // El inicio existe siempre (es la raíz del negocio), con o sin el módulo.
     { label: "General", items: items("dashboard") },
-    ...GROUP_ORDER.map((label) => ({
+    ...GROUPS.map((label) => ({
       label,
-      items: enabled.filter((m) => m !== "dashboard" && MODULE_GROUP[m] === label).flatMap(items),
+      items: label === "Compras y gastos" ? [...expenses, ...forGroup(label)] : forGroup(label),
+      ...(COLLAPSIBLE.includes(label) ? { collapsible: true } : {}),
     })),
-    { label: "Sistema", items: [SETTINGS_ITEM] },
+    { label: "Sistema", items: [FUNCTIONS_ITEM, DATA_ITEM, SETTINGS_ITEM] },
   ].filter((group) => group.items.length > 0);
 }
 
@@ -128,4 +146,16 @@ export function isNavActive(href: string, relativePath: string): boolean {
 /** El ítem activo (para el título de la barra superior). */
 export function activeNavItem(groups: NavGroup[], relativePath: string): NavItem | undefined {
   return groups.flatMap((g) => g.items).find((item) => isNavActive(item.href, relativePath));
+}
+
+/**
+ * Categoría de una pantalla del negocio ("/pos" → «Ventas y cobros»): la misma de la barra lateral y de «Funciones».
+ * Los encabezados de página la usan para que el menú y la página siempre digan lo mismo.
+ */
+export function routeCategory(route: string): CapabilityCategory {
+  const path = route.split("?")[0]!;
+  const exact = CAPABILITIES.find((c) => c.nav.some((n) => n.href === path));
+  if (exact) return exact.category;
+  const prefix = CAPABILITIES.find((c) => c.nav.some((n) => n.href && path.startsWith(`${n.href}/`)));
+  return prefix?.category ?? "Clientes y agenda";
 }

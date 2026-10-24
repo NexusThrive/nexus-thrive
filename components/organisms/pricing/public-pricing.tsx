@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { selectClasses } from "@/components/atoms/input";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { PlanPicker, type PlanSelection } from "@/components/organisms/onboarding/plan-picker";
 import type { VerticalValue } from "@/lib/admin/catalogs";
 import { signupVerticals, type PricingConfig } from "@/lib/plans/pricing";
+import { Select } from "@/components/atoms/select";
 
 /**
  * Precios públicos: el mismo selector y el mismo cálculo que el onboarding,
@@ -22,20 +22,19 @@ export function PublicPricing({ config }: { config: PricingConfig }) {
     <div className="grid gap-5">
       <label className="grid max-w-sm gap-1.5 text-[13px] font-medium">
         Tu rubro
-        <select
+        <Select
           value={vertical}
           onChange={(e) => {
             setVertical(e.target.value as VerticalValue);
             setSelection((s) => ({ ...s, selected: [] }));
           }}
-          className={selectClasses}
         >
           {verticals.map((v) => (
             <option key={v.vertical} value={v.vertical}>
               {v.label}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
       <PlanPicker config={config} vertical={vertical} value={selection} onChange={setSelection} />
       <div>

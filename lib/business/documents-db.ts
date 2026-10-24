@@ -1,7 +1,13 @@
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
+import { postByRule } from "@/lib/accounting/ledger-db";
+import { enqueueFiscal } from "@/lib/einvoice/einvoice-db";
+import { allocateNumber, commitNumber, withholdingsFor } from "@/lib/tax/tax-db";
+import { todayCO } from "@/lib/tax/tax";
 import {
   canConvert,
+  DOCUMENT_LABELS,
+  documentCode,
   documentTotals,
   lineAmounts,
   salesSummary,
@@ -36,6 +42,10 @@ export type NewDocument = {
   originType?: string | null;
   originId?: string | null;
   paymentId?: string | null;
+  /** Retenciones que practica quien paga (códigos de `TaxRate`); se calculan con las vigentes a la fecha. */
+  withholdingCodes?: readonly string[];
+  /** Propina cobrada junto con la venta (no suma al total del documento). */
+  tipTotal?: number;
   lines: readonly DocumentLineInput[];
 };
 
@@ -46,9 +56,15 @@ export type NewDocument = {
  * transacción y quien la abrió la reintenta.
  */
 export async function insertDocument(tx: Writer, tenantId: string, doc: NewDocument, userId: string | null) {
+  const issueDate = doc.issueDate ?? now();
+  // Con resolución de numeración el número sale de su rango; sin ella, máximo + 1 como siempre.
+  const allocation = await allocateNumber(tx, tenantId, doc.kind, todayCO(issueDate.epochMilliseconds));
   const { top } = await tx.orm.public.Invoice.where({ tenantId, kind: doc.kind }).aggregate((a) => ({ top: a.max("number") }));
-  const number = (top ?? 0) + 1;
+  const number = allocation ? allocation.number : (top ?? 0) + 1;
   const totals = documentTotals(doc.lines);
+  const taxableTotal = Math.round((totals.subtotal - totals.discountTotal) * 100) / 100;
+  const withholdings = await withholdingsFor(tx, tenantId, doc.withholdingCodes ?? [], { taxable: taxableTotal, tax: totals.taxTotal }, todayCO(issueDate.epochMilliseconds));
+  const withheld = Math.round(withholdings.reduce((s, w) => s + w.amount, 0) * 100) / 100;
   const created = await tx.orm.public.Invoice.create({
     tenantId,
     kind: doc.kind,
@@ -56,7 +72,7 @@ export async function insertDocument(tx: Writer, tenantId: string, doc: NewDocum
     customerId: doc.customerId,
     customerName: doc.customerName.slice(0, 120),
     customerDoc: doc.customerDoc ?? null,
-    issueDate: doc.issueDate ?? now(),
+    issueDate,
     dueDate: doc.dueDate ?? null,
     status: doc.status ?? "ISSUED",
     notes: doc.notes ?? null,
@@ -70,7 +86,14 @@ export async function insertDocument(tx: Writer, tenantId: string, doc: NewDocum
     originType: doc.originType ?? null,
     originId: doc.originId ?? null,
     paymentId: doc.paymentId ?? null,
+    resolutionId: allocation?.resolutionId ?? null,
+    prefix: allocation?.prefix || null,
+    withholdingTotal: dec(withheld),
+    tipTotal: dec(doc.tipTotal ?? 0),
+    withholdings: withholdings.length ? (withholdings as never) : null,
   });
+  if (allocation) await commitNumber(tx, tenantId, allocation);
+  const createdLines: (DocumentLineInput & { total: number })[] = [];
   for (const l of doc.lines) {
     await tx.orm.public.InvoiceLine.create({
       invoiceId: created.id,
@@ -82,11 +105,21 @@ export async function insertDocument(tx: Writer, tenantId: string, doc: NewDocum
       taxRatePct: dec(l.taxRatePct ?? 0),
       total: dec(lineAmounts(l).total),
     });
+    createdLines.push({ ...l, total: lineAmounts(l).total });
   }
+  // Con la facturación electrónica activada, el documento fiscal queda en cola en esta misma transacción.
+  const relatedCode = doc.sourceDocumentId ? await tx.orm.public.Invoice.where({ tenantId, id: doc.sourceDocumentId }).select("kind", "number").first().then((o) => (o ? documentCode(o.kind as DocumentKind, o.number) : null)) : null;
+  // Contabilidad: la venta y las notas se contabilizan en esta misma transacción (si el negocio lo tiene activado).
+  const accountingEvent = ({ SALE: "SALE", BILL: "SALE", RECEIPT: "SALE", CREDIT_NOTE: "CREDIT_NOTE", DEBIT_NOTE: "DEBIT_NOTE" } as Partial<Record<DocumentKind, string>>)[doc.kind];
+  if (accountingEvent) {
+    const customer = doc.customerId ? await tx.orm.public.Customer.where({ tenantId, id: doc.customerId }).select("partyId").first() : null;
+    await postByRule(tx, tenantId, accountingEvent, { total: totals.total, subtotal: Math.round((totals.subtotal - totals.discountTotal) * 100) / 100, tax: totals.taxTotal }, { date: String(issueDate).slice(0, 10), description: `${DOCUMENT_LABELS[doc.kind]} ${documentCode(doc.kind, number)}`, sourceType: "DOCUMENT", sourceId: created.id, partyId: customer?.partyId ?? null }, userId);
+  }
+  await enqueueFiscal(tx, tenantId, { id: created.id, kind: doc.kind, number, prefix: allocation?.prefix || null, issueDate: String(issueDate).slice(0, 10), customerName: doc.customerName, customerDoc: doc.customerDoc ?? null, lines: createdLines, totals, relatedCode, notes: doc.notes ?? null });
   return { id: created.id, number, total: totals.total };
 }
 
-const isNumberCollision = (e: unknown) => /Invoice_tenantId_kind_number|unique|duplicate/i.test(String((e as Error)?.message ?? e));
+const isNumberCollision = (e: unknown) => /Invoice_tenantId_kind_number|JournalEntry_tenantId_number|unique|duplicate/i.test(String((e as Error)?.message ?? e));
 
 /** Crea un documento suelto (cotización, pedido, cuenta de cobro, recibo) en su propia transacción. */
 export async function createDocument(tenantId: string, doc: NewDocument, userId: string | null) {
@@ -198,4 +231,103 @@ export async function salesOfDay(tenantId: string, day: string) {
     .select("kind", "status", "total")
     .all();
   return salesSummary(rows.map((r) => ({ kind: r.kind as DocumentKind, status: String(r.status), total: toNumber(r.total) })));
+}
+
+/* -------------------- Notas crédito y débito sobre un documento -------------------- */
+
+export type AdjustmentInput = { documentId: string; kind: "CREDIT_NOTE" | "DEBIT_NOTE"; concept: string; amount: number; taxRatePct: number; reason: string };
+
+/**
+ * Nota crédito (baja lo cobrado: descuento posterior, error de precio) o nota débito
+ * (suma un cargo: intereses, ajuste a favor) sobre un documento emitido. La crédito no
+ * puede pasar de lo que queda del documento; ambas apuntan al original y llevan su consecutivo.
+ */
+export async function issueAdjustmentNote(tenantId: string, input: AdjustmentInput, userId: string): Promise<{ ok: true; id: string; number: number; total: number } | { ok: false; message: string }> {
+  const concept = input.concept.trim().slice(0, 120);
+  if (concept.length < 2) return { ok: false, message: "Escribe el concepto." };
+  if (input.reason.trim().length < 3) return { ok: false, message: "Escribe el motivo." };
+  if (!(input.amount > 0)) return { ok: false, message: "El valor debe ser mayor que cero." };
+  if (!(input.taxRatePct >= 0 && input.taxRatePct <= 100)) return { ok: false, message: "El impuesto va de 0 % a 100 %." };
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await db.transaction(async (tx) => {
+        const original = await tx.orm.public.Invoice.where({ tenantId, id: input.documentId }).first();
+        if (!original || original.status === "VOID") return { ok: false as const, message: "El documento no existe o está anulado." };
+        if (!canConvert(original.kind as DocumentKind, input.kind)) return { ok: false as const, message: "A ese documento no se le puede hacer una nota." };
+        const lines = [{ description: concept, quantity: 1, unitPrice: input.amount, taxRatePct: input.taxRatePct }];
+        const value = documentTotals(lines).total;
+        if (input.kind === "CREDIT_NOTE") {
+          const prior = await tx.orm.public.Invoice.where({ tenantId, sourceDocumentId: original.id }).all();
+          const credited = prior.filter((n) => n.kind === "CREDIT_NOTE" && n.status !== "VOID").reduce((s, n) => s + toNumber(n.total), 0);
+          const debited = prior.filter((n) => n.kind === "DEBIT_NOTE" && n.status !== "VOID").reduce((s, n) => s + toNumber(n.total), 0);
+          const left = Math.round((toNumber(original.total) + debited - credited) * 100) / 100;
+          if (value > left) return { ok: false as const, message: `La nota crédito no puede pasar de lo que queda del documento (${left.toLocaleString("es-CO")}).` };
+        }
+        const note = await insertDocument(tx, tenantId, { kind: input.kind, customerId: original.customerId, customerName: original.customerName, customerDoc: original.customerDoc, status: "ISSUED", notes: input.reason.trim().slice(0, 200), sourceDocumentId: original.id, originType: "ADJUSTMENT", originId: original.id, lines }, userId);
+        return { ok: true as const, id: note.id, number: note.number, total: note.total };
+      });
+    } catch (e) {
+      if (attempt >= 5 || !isNumberCollision(e)) throw e;
+    }
+  }
+}
+
+export type DocumentView = {
+  id: string;
+  kind: DocumentKind;
+  code: string;
+  status: "ISSUED" | "PAID" | "VOID";
+  issueDate: string;
+  dueDate: string | null;
+  customer: { name: string; doc: string | null };
+  issuer: { name: string; legalName: string | null; taxId: string | null; address: string | null; city: string | null; phone: string | null };
+  lines: { description: string; quantity: number; unitPrice: number; discountPct: number; taxRatePct: number; total: number }[];
+  subtotal: number;
+  discountTotal: number;
+  taxTotal: number;
+  total: number;
+  withholdings: { name: string; amount: number }[];
+  paid: number;
+  balance: number;
+  notes: string | null;
+  voidReason: string | null;
+  source: { id: string; code: string } | null;
+  related: { id: string; kind: DocumentKind; code: string; total: number; status: string }[];
+};
+
+/** Todo lo que muestra el documento en pantalla completa (emisor, adquirente, líneas, impuestos, notas relacionadas). */
+export async function documentView(tenantId: string, id: string): Promise<DocumentView | null> {
+  const inv = await db.orm.public.Invoice.where({ tenantId, id }).first();
+  if (!inv) return null;
+  const [lines, shop, related, source] = await Promise.all([
+    db.orm.public.InvoiceLine.where({ invoiceId: inv.id }).all(),
+    db.orm.public.Tenant.where({ id: tenantId }).select("name", "legalName", "taxId", "address", "city", "whatsappNumber").first(),
+    db.orm.public.Invoice.where({ tenantId, sourceDocumentId: inv.id }).all(),
+    inv.sourceDocumentId ? db.orm.public.Invoice.where({ tenantId, id: inv.sourceDocumentId }).select("id", "kind", "number").first() : Promise.resolve(null),
+  ]);
+  const total = toNumber(inv.total);
+  const paid = inv.status === "PAID" ? total : toNumber(inv.paidTotal);
+  const wh = (inv.withholdings ?? []) as { name: string; amount: number }[];
+  return {
+    id: inv.id,
+    kind: inv.kind as DocumentKind,
+    code: documentCode(inv.kind as DocumentKind, inv.number),
+    status: inv.status as DocumentView["status"],
+    issueDate: String(inv.issueDate).slice(0, 10),
+    dueDate: inv.dueDate ? String(inv.dueDate).slice(0, 10) : null,
+    customer: { name: inv.customerName, doc: inv.customerDoc },
+    issuer: { name: shop?.name ?? "", legalName: shop?.legalName ?? null, taxId: shop?.taxId ?? null, address: shop?.address ?? null, city: shop?.city ?? null, phone: shop?.whatsappNumber ?? null },
+    lines: lines.map((l) => ({ description: l.description, quantity: toNumber(l.quantity), unitPrice: toNumber(l.unitPrice), discountPct: toNumber(l.discountPct), taxRatePct: toNumber(l.taxRatePct), total: toNumber(l.total) })),
+    subtotal: toNumber(inv.subtotal),
+    discountTotal: toNumber(inv.discountTotal),
+    taxTotal: toNumber(inv.taxTotal),
+    total,
+    withholdings: wh.map((w) => ({ name: w.name, amount: w.amount })),
+    paid,
+    balance: inv.status === "ISSUED" && inv.kind === "BILL" ? Math.max(0, Math.round((total - paid) * 100) / 100) : 0,
+    notes: inv.notes,
+    voidReason: inv.voidReason,
+    source: source ? { id: source.id, code: documentCode(source.kind as DocumentKind, source.number) } : null,
+    related: related.map((r) => ({ id: r.id, kind: r.kind as DocumentKind, code: documentCode(r.kind as DocumentKind, r.number), total: toNumber(r.total), status: String(r.status) })),
+  };
 }

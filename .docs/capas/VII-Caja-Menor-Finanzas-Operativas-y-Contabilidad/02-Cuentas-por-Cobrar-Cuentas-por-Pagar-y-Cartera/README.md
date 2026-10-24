@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `receivables`, `payables`, `aging`, `collection-reminders`, `payments-applied` |
+| Eventos (outbox → webhooks) | `receivable.created`, `receivable.overdue`, `payable.due`, `payment.applied` |
+| MCP · lectura | `get_receivables_aging`, `list_overdue_customers`, `list_payables_due` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `apply_payment`, `send_collection_reminder` |
+| Sistemas externos (puertos y adaptadores) | Bancos (conciliación), WhatsApp / correo para recordatorios |
+
+#### Integración
+
+- [ ] API REST de lectura: receivables, payables, aging, collection-reminders, payments-applied (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: receivable.created, receivable.overdue, payable.due, payment.applied (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: get_receivables_aging, list_overdue_customers, list_payables_due (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: apply_payment, send_collection_reminder (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de obligaciones, vencimientos y saldos
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
@@ -23,8 +46,8 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Cuentas por cobrar
-- [ ] Cuentas por pagar
+- [x] Cuentas por cobrar _hecho: receiveInvoicePayment + /cartera (abonos, saldo, antigüedad)_
+- [x] Cuentas por pagar _hecho: paySupplierInvoice + SupplierPayment_
 
 #### Técnico
 

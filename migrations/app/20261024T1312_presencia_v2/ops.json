@@ -1,0 +1,203 @@
+[
+  {
+    "id": "table.PresenceSnapshot",
+    "label": "Create table \"PresenceSnapshot\"",
+    "summary": "Creates table \"PresenceSnapshot\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "PresenceSnapshot"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"PresenceSnapshot\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PresenceSnapshot\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"PresenceSnapshot\"",
+        "sql": "CREATE TABLE \"public\".\"PresenceSnapshot\" (\n  \"coverage\" int4 NOT NULL,\n  \"day\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"phase\" text NOT NULL,\n  \"pillars\" json NOT NULL,\n  \"score\" int4 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"PresenceSnapshot\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PresenceSnapshot\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.PresenceSnapshot.PresenceSnapshot_tenantId_day_key",
+    "label": "Add unique constraint on \"PresenceSnapshot\" (tenantId, day)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "PresenceSnapshot_tenantId_day_key",
+        "table": "PresenceSnapshot"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"PresenceSnapshot_tenantId_day_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PresenceSnapshot_tenantId_day_key",
+          "public",
+          "\"public\".\"PresenceSnapshot\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"PresenceSnapshot_tenantId_day_key\"",
+        "sql": "ALTER TABLE \"public\".\"PresenceSnapshot\" ADD CONSTRAINT \"PresenceSnapshot_tenantId_day_key\" UNIQUE (\"tenantId\", \"day\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"PresenceSnapshot_tenantId_day_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PresenceSnapshot_tenantId_day_key",
+          "public",
+          "\"public\".\"PresenceSnapshot\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PresenceSnapshot.PresenceSnapshot_tenantId_idx_c93ed4f1",
+    "label": "Create index \"PresenceSnapshot_tenantId_idx_c93ed4f1\" on \"PresenceSnapshot\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PresenceSnapshot_tenantId_idx_c93ed4f1",
+        "table": "PresenceSnapshot"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PresenceSnapshot_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PresenceSnapshot_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PresenceSnapshot_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"PresenceSnapshot_tenantId_idx_c93ed4f1\" ON \"public\".\"PresenceSnapshot\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PresenceSnapshot_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PresenceSnapshot_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PresenceSnapshot.PresenceSnapshot_tenantId_fkey",
+    "label": "Add foreign key \"PresenceSnapshot_tenantId_fkey\" on \"PresenceSnapshot\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PresenceSnapshot_tenantId_fkey",
+        "table": "PresenceSnapshot"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PresenceSnapshot_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PresenceSnapshot_tenantId_fkey",
+          "public",
+          "\"public\".\"PresenceSnapshot\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PresenceSnapshot_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PresenceSnapshot\"\nADD CONSTRAINT \"PresenceSnapshot_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PresenceSnapshot_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PresenceSnapshot_tenantId_fkey",
+          "public",
+          "\"public\".\"PresenceSnapshot\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.PresenceSnapshot",
+    "label": "Enable row-level security on \"PresenceSnapshot\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "PresenceSnapshot"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"PresenceSnapshot\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "PresenceSnapshot"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"PresenceSnapshot\"",
+        "sql": "ALTER TABLE \"public\".\"PresenceSnapshot\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"PresenceSnapshot\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "PresenceSnapshot"
+        ]
+      }
+    ]
+  }
+]

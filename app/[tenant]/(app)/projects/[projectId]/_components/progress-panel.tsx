@@ -14,6 +14,7 @@ import {
   type ProgressActionResult,
 } from "../progress/actions";
 import { inputClasses, labelClasses } from "@/components/atoms/input";
+import { Select } from "@/components/atoms/select";
 
 const inputClass =
   inputClasses;
@@ -83,14 +84,14 @@ export default function ProgressPanel({
           >
             <label htmlFor="progress-item" className="block">
               <span className={labelClasses}>Partida</span>
-              <select id="progress-item" name="budgetItemId" required defaultValue="" className={inputClass}>
+              <Select id="progress-item" name="budgetItemId" required defaultValue="">
                 <option value="">Elige la partida…</option>
                 {items.map((item) => (
                   <option key={item.itemId} value={item.itemId}>
                     {item.code} · {item.description} ({item.unit})
                   </option>
                 ))}
-              </select>
+              </Select>
             </label>
             <label htmlFor="progress-date" className="block">
               <span className={labelClasses}>Fecha de corte</span>

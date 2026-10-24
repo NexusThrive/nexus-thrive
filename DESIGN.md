@@ -9,6 +9,8 @@ documento dice qué existe, dónde vive y cómo se usa.
 | Este archivo | Marca, tokens, componentes, movimiento, layout |
 | [PRODUCT.md](PRODUCT.md) | A quién servimos, principios y restricciones |
 | [docs/design/interaction-patterns.md](docs/design/interaction-patterns.md) | Diálogo, panel lateral, ventana flotante, página o en línea: cuándo cada uno |
+| [docs/design/movimiento.md](docs/design/movimiento.md) | Guía de uso del movimiento: dueños, tokens, morfeo de modales, arrastre |
+| [docs/design/pwa.md](docs/design/pwa.md) | PWA: qué se cachea (solo estáticos), instalación y límites |
 | [docs/design/accessibility.md](docs/design/accessibility.md) | WCAG 2.2 AA: requisitos y cómo se verifican |
 | [docs/design/quality-checklist.md](docs/design/quality-checklist.md) | Lista obligatoria antes de abrir un PR con UI |
 | [docs/design/auditoria-2026-10.md](docs/design/auditoria-2026-10.md) | Inventario y auditoría de partida (octubre 2026) |
@@ -80,7 +82,7 @@ z-index o una duración sueltos: usa el token, y si falta, se agrega aquí.
 | `--accent` / `--accent-text` | oro 500 / oro 700 | oro 500 | Acento; texto dorado legible |
 | `--ring` | `#8F6F12` | oro 500 | Foco visible |
 | `--success` · `--danger` · `--warning-*` | verde · rojo · oro | más claros | Estados (nunca decorativos) |
-| `--overlay` | tinta 42 % | negro 60 % | Fondo de diálogos |
+| `--overlay` | tinta 32 % | negro 50 % | Fondo de diálogos |
 
 El tema se cambia con la clase `.dark` en `<html>` (Ajustes → Apariencia o el
 interruptor de la barra). Densidad compacta con `data-density="compact"`
@@ -93,7 +95,7 @@ interruptor de la barra). Densidad compacta con `data-density="compact"`
 | Espacio (base 4 px) | `--space-1`…`--space-20` (4–80 px) |
 | Radios | `--radius-sm` 2 · `md` 4 · `lg` 6 · `xl` 8 px |
 | Controles | `--control-h` 40 px · `--row-h` 56 px |
-| Layout | `--sidebar-width` 248 · colapsada 76 · `--topbar-height` 60 · `--content-max` 1280 · `--content-prose` 72 ch |
+| Layout | `--sidebar-width` 248 · colapsada 76 · `--topbar-height` 60 (72 desde 768 px) · `--content-max` 1280 · `--content-prose` 72 ch |
 | Superficies | `--dialog-w-sm` 440 · `md` 520 · `lg` 640 · `xl` 768 · `--drawer-w` 440 · `--drawer-w-lg` 560 · `--popover-w` 320 |
 
 ### Elevación y capas
@@ -104,17 +106,29 @@ Sombra solo en lo que flota: `--shadow-popover` (menús, ayuda) y
 | Capa | Token | Valor | Qué va |
 |---|---|---|---|
 | Elevado | `--z-raised` | 10 | Adornos sobre su tarjeta |
-| Fijo | `--z-sticky` | 40 | Barra superior |
+| Fijo | `--z-sticky` | 40 | Encabezados fijos dentro del contenido |
 | Barra móvil | `--z-tabbar` | 45 | Barra inferior del celular |
 | Barra lateral | `--z-sidebar` | 50 | Navegación |
+| Navbar | `--z-topbar` | 55 | Barra superior global, a todo el ancho y sobre la lateral |
 | Fondo | `--z-overlay` | 70 | Velo de diálogos |
 | Modal | `--z-modal` | 71 | Diálogo, panel lateral, hoja |
+| Aviso sobre un panel | `--z-alert-overlay` / `--z-alert` | 72 / 73 | «¿Guardar los cambios?»: su fondo oscuro y difuminado cubre también el panel de abajo |
 | Flotante | `--z-popover` | 80 | Tooltip, menú, ayuda "?" — **siempre sobre el modal que los contiene** |
 | Aviso | `--z-banner` | 85 | Conexión, barra de ruta |
 | Notificación | `--z-toast` | 90 | Toasts |
 | Pantalla completa | `--z-takeover` | 120 | Paleta de comandos, escáner, cinemáticas |
 
 En Tailwind: `z-(--z-popover)`. En CSS: `z-index: var(--z-modal)`.
+
+### Barra de scroll
+
+Una sola, sutil y propia para toda la app: pista transparente y trazo de 6 px
+redondeado (`--scrollbar-thumb`, más oscuro al pasar el puntero con
+`--scrollbar-thumb-hover`; `--scrollbar-size` 10 px de zona). Se define en
+`app/globals.css`; ningún componente la estiliza por su cuenta. Para ocultarla
+a propósito (carruseles, listas con scroll táctil) se usa
+`[scrollbar-width:none] [&::-webkit-scrollbar]:hidden`, y solo donde el
+contenido sigue siendo alcanzable con teclado y toque.
 
 ### Foco
 
@@ -154,9 +168,15 @@ Storybook con sus estados.
 | Resultado de una acción | `useToast()` | `components/molecules/toast.tsx` |
 | Error o aviso dentro del formulario | `Alert` | `components/molecules/alert.tsx` |
 | Nada que mostrar | `EmptyState` | `components/molecules/empty-state.tsx` |
-| Esperando una sección | `LoadingState` | `components/molecules/loading-state.tsx` |
+| Esperando una sección (sin forma conocida / en línea) | `LoadingState` (la N) | `components/molecules/loading-state.tsx` |
+| Esperando contenido dentro de un panel, ficha o lista | `SkeletonRows` (esqueleto con la forma de lo que viene) | `components/molecules/skeleton-rows.tsx` |
 | Esperando la página | `PageSkeleton` (en `loading.tsx`) | `components/organisms/page-skeleton.tsx` |
+| Elegir una opción de una lista | `Select` propio (mismos props que `<select>`; **no** usar `<select>` nativo) | `components/atoms/select.tsx` |
 | Menú de acciones | `DropdownMenu` | `components/molecules/dropdown-menu.tsx` |
+| Inicio que cada persona ordena | `CustomizableDashboard` (12 columnas, modo de edición con arrastrar, ancho y ocultar; bloques `widgets` con `id`, `label` y `span`; preferencia versionada en `localStorage`) | `components/organisms/customizable-dashboard.tsx`, lógica en `lib/dashboard/layout.ts` |
+| Guiar a una cuenta nueva | `WelcomeChecklist` («Primeros pasos»): pasos por módulo activo, marcados por datos reales; «Ocultar» por negocio en `localStorage` | `components/organisms/welcome-checklist.tsx`, armado en `app/[tenant]/(app)/page.tsx` |
+| Buscar clientes y catálogo | `CommandPalette` (Ctrl K) + `searchEntitiesAction`: desde 2 letras, 250 ms de espera, máx. 5 por tipo, solo módulos activos y siempre por `tenantId` | `components/organisms/command-palette.tsx`, `app/[tenant]/(app)/_actions/search.ts` |
+| Instalar la app / aviso de versión | `usePwa()`, `UpdateNotice` | `components/providers/pwa.tsx` (política en `docs/design/pwa.md`) |
 
 **Prohibido en código nuevo:** `window.confirm`/`alert`, un `<div
 className="fixed inset-0">` como modal, Radix Dialog directo (el Dialog y el
@@ -216,7 +236,30 @@ Reglas:
    animación.
 4. Escalonado solo en la primera carga de una lista (`nx-rise`, 50 ms por
    ítem, máximo ~8 ítems).
-5. **Movimiento reducido:** `prefers-reduced-motion` o Ajustes → Reducir
+5. **Modales que nacen del botón.** En PC, `ResponsiveSheet` (modal
+   centrado) se abre con un morfeo desde el control que lo activó (arranca con
+   su tamaño y posición, 380 ms, con enfoque) y se cierra hacia él (200 ms). Si
+   el control ya no existe, está fuera de pantalla, hay movimiento reducido o
+   la forma es panel lateral u hoja móvil, entra la animación centrada de
+   siempre. No bloquea la interacción ni el foco. Detalle y fundamento (por qué
+   no la API nativa de View Transitions) en
+   [docs/design/movimiento.md](docs/design/movimiento.md).
+6. **Propietario de cada transición** (una sola técnica por superficie):
+
+   | Superficie | Dueño |
+   |---|---|
+   | Entrada de una vista al navegar | CSS: `nx-view-in` en `template.tsx` |
+   | Diálogo, panel, hoja | CSS (módulo de `ResponsiveSheet`) + origen contextual |
+   | Menús, popovers, ayuda, buscador | CSS (`tw-animate-css` de Radix / `nx-drop`) |
+   | Cifras, barras, gráficos | Web Animations (`lib/motion`) |
+
+   **View Transitions: no se usan.** La documentación de Next 16 las ofrece
+   con `<ViewTransition>` de React, pero hoy (React 19.2 estable) esa pieza
+   solo existe en canary, la entrada de vistas ya tiene dueño (CSS) y dos
+   dueños sobre la misma navegación se pisan. Se reevalúa cuando sea estable y
+   haya un caso real de elemento compartido (p. ej. tarjeta → ficha de una
+   obra), con `prefers-reduced-motion` y fallback sin la API.
+7. **Movimiento reducido:** `prefers-reduced-motion` o Ajustes → Reducir
    movimiento (`<html data-motion="off">`) llevan toda animación a 1 ms.
    El cambio de estado se sigue entendiendo (texto, color, icono).
 

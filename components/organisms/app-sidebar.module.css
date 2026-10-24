@@ -5,12 +5,12 @@
   .side {
     position: fixed;
     z-index: var(--z-sidebar);
-    inset: 0 auto 0 0;
+    inset: calc(var(--topbar-height) + env(safe-area-inset-top, 0px)) auto 0 0;
     width: var(--sw);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    padding: calc(14px + env(safe-area-inset-top, 0px)) 12px calc(12px + env(safe-area-inset-bottom, 0px))
+    padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px))
       max(12px, env(safe-area-inset-left, 0px));
     background: var(--sidebar-bg);
     color: var(--sidebar-fg);
@@ -19,42 +19,12 @@
   }
 }
 
-.head {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  height: 72px;
-  padding: 0 4px 12px;
-  margin-bottom: 12px;
-  border-bottom: 1px solid var(--sidebar-border);
-}
-.mark {
-  display: block;
-  flex: none;
-}
-.lockup,
-.workspace,
 .groupLabel,
 .label,
 .collapse {
   display: none;
 }
-.workspace {
-  flex-direction: column;
-  min-width: 0;
-  line-height: 1.25;
-}
-.workspace b {
-  font: 600 13px var(--font-display);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.workspace small {
-  font: 400 11px var(--font-mono);
-  color: var(--sidebar-fg-muted);
-}
+
 .groupLabel {
   padding: 14px 10px 6px;
   font: 600 10px var(--font-sans);
@@ -76,7 +46,18 @@
   gap: 2px;
   overflow-x: hidden;
   overflow-y: auto;
-  scrollbar-width: none;
+  min-height: 0;
+  /* Barra de desplazamiento fina y visible: con muchos grupos el menú se recorre. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--sidebar-border) transparent;
+}
+.groupItems {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.groupItems[hidden] {
+  display: none;
 }
 .link {
   position: relative;
@@ -184,21 +165,66 @@
     padding-left: max(14px, env(safe-area-inset-left, 0px));
     padding-right: 14px;
   }
-  :global(html:not([data-rail])) .head {
-    height: 112px;
-  }
-  :global(html:not([data-rail])) .mark,
   :global(html:not([data-rail])) .sep {
     display: none;
-  }
-  :global(html:not([data-rail])) .lockup {
-    display: block;
-  }
-  :global(html:not([data-rail])) .workspace {
-    display: flex;
   }
   :global(html:not([data-rail])) .groupLabel,
   :global(html:not([data-rail])) .label {
     display: block;
+  }
+}
+
+/* Vistazo: el riel se despliega encima del contenido (que no se mueve porque
+   el margen del contenido sigue usando --sw). Con la barra ya completa
+   (≥ 1200 px y sin contraer) no cambia nada. */
+.side[data-peek] {
+  width: var(--sidebar-width);
+  box-shadow: var(--nx-shadow-overlay);
+  padding-left: max(14px, env(safe-area-inset-left, 0px));
+  padding-right: 14px;
+}
+.side[data-peek] .groupLabel,
+.side[data-peek] .label {
+  display: block;
+}
+.side[data-peek] .sep {
+  display: none;
+}
+@media (min-width: 1200px) {
+  :global(html:not([data-rail])) .side[data-peek] {
+    box-shadow: none;
+  }
+}
+
+/* Grupo que se despliega y se oculta (Ingresos, Gastos): el título es un botón. */
+.groupToggle {
+  width: 100%;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  align-items: center;
+  justify-content: space-between;
+}
+:global(html:not([data-rail])) .groupToggle,
+.side[data-peek] .groupToggle {
+  display: flex;
+}
+.groupToggle:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+.chevron {
+  width: 14px;
+  height: 14px;
+  transition: transform var(--d2, 200ms);
+  transform: rotate(-90deg);
+}
+.chevron[data-open] {
+  transform: rotate(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .chevron {
+    transition: none;
   }
 }

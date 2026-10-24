@@ -13,6 +13,7 @@ import type { ProjectHeaderFormValues } from "../../validators";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { fieldClasses, labelClasses } from "@/components/atoms/input";
 import { cn } from "@/lib/utils";
+import { Select } from "@/components/atoms/select";
 
 const IDLE_STATE: ProjectHeaderFormState = { status: "idle" };
 
@@ -188,7 +189,7 @@ export default function ProjectHeaderForm({
           >
             Tipo de obra
           </label>
-          <select
+          <Select
             id="header-projectType"
             name="projectType"
             defaultValue={val("projectType")}
@@ -201,7 +202,7 @@ export default function ProjectHeaderForm({
                 {option.label}
               </option>
             ))}
-          </select>
+          </Select>
           {errors.projectType ? (
             <p role="alert" className="mt-1 text-xs text-destructive">
               {errors.projectType}

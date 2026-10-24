@@ -1,10 +1,12 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { ClerkProvider } from "@clerk/nextjs";
 import { clerkLocalization, clerkProviderAppearance } from "@/lib/auth/clerk-appearance";
 import { fontVariables } from "@/lib/fonts";
 import { prefsInitScript, themeInitScript } from "@/lib/init-scripts";
 import { MotionProvider } from "@/components/providers/motion-provider";
 import { PreferencesProvider } from "@/components/providers/preferences";
+import { PwaProvider } from "@/components/providers/pwa";
 import { SplashIntro } from "@/components/organisms/splash-intro";
 import "./globals.css";
 
@@ -12,6 +14,16 @@ export const metadata: Metadata = {
   title: "NEXUS THRIVE",
   description: "NEXUS THRIVE — plataforma de gestión de negocios.",
   applicationName: "NEXUS THRIVE",
+  appleWebApp: { capable: true, title: "NEXUS", statusBarStyle: "black-translucent" },
+  icons: { apple: "/icons/apple-touch-icon.png" },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F7F6F3" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -20,27 +32,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider localization={clerkLocalization} appearance={clerkProviderAppearance}>
-      <html
-        lang="es"
-        className={`${fontVariables} h-full antialiased`}
-        suppressHydrationWarning
-      >
-        <head>
-          {/* Tema y preferencias antes del primer pintado (sin parpadeo).
-              Script inline crudo: se ejecuta síncrono durante el parseo del
-              HTML, antes del primer paint. next/script no aplica aquí porque
-              React 19 no ejecuta <script> renderizados en el cliente. */}
-          <script dangerouslySetInnerHTML={{ __html: themeInitScript + prefsInitScript }} />
-        </head>
-        <body className="min-h-full flex flex-col bg-background text-foreground">
+    <html
+      lang="es"
+      className={`${fontVariables} h-full antialiased`}
+      suppressHydrationWarning
+    >
+      <body className="min-h-full flex flex-col bg-background text-foreground">
+        {/* Tema y preferencias antes del primer pintado (sin parpadeo). `beforeInteractive`
+            de next/script lo inserta en el HTML del servidor y se ejecuta al parsear,
+            sin que React renderice una etiqueta <script> en el cliente (su aviso). */}
+        <Script id="nexus-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: themeInitScript + prefsInitScript }} />
+        <ClerkProvider localization={clerkLocalization} appearance={clerkProviderAppearance}>
           <PreferencesProvider>
             <MotionProvider />
             <SplashIntro />
-            {children}
+            <PwaProvider>{children}</PwaProvider>
           </PreferencesProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { inputClasses, selectClasses, textareaClasses } from "@/components/atoms/input";
+import { inputClasses, textareaClasses } from "@/components/atoms/input";
 import { Switch } from "@/components/atoms/switch";
 import { Field } from "@/components/molecules/field";
 import { UsdInput } from "@/components/molecules/usd-input";
@@ -12,6 +12,7 @@ import type { SubscriptionRow } from "@/lib/ops/billing";
 import { formatUsdCents } from "@/lib/plans/pricing";
 import { createSubscriptionAction, updateSubscriptionAction } from "../actions";
 import { useBilling } from "./use-billing";
+import { Select } from "@/components/atoms/select";
 
 export type NewSubscription = { tenantId: string; name: string; plan: string; billingCycle: Cycle; monthlyCents: number };
 
@@ -54,19 +55,19 @@ export default function SubscriptionSheet({ create, edit, onClose, today, canPri
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Plan">
           {(c) => (
-            <select {...c} disabled={!create} value={plan} onChange={(e) => setPlan(e.target.value)} className={selectClasses}>
+            <Select {...c} disabled={!create} value={plan} onChange={(e) => setPlan(e.target.value)}>
               <option value="ESSENTIAL">Essential</option>
               <option value="ELITE">Elite</option>
               <option value="SIGNATURE">Signature</option>
-            </select>
+            </Select>
           )}
         </Field>
         <Field label="Ciclo">
           {(c) => (
-            <select {...c} value={cycle} onChange={(e) => setCycle(e.target.value as Cycle)} className={selectClasses}>
+            <Select {...c} value={cycle} onChange={(e) => setCycle(e.target.value as Cycle)}>
               <option value="MONTHLY">Mensual</option>
               <option value="ANNUAL">Anual</option>
-            </select>
+            </Select>
           )}
         </Field>
         <Field label="Precio mensual" hint={cycle === "ANNUAL" ? `Se cobra ${formatUsdCents(periodAmount(cents, cycle))} al año.` : undefined}>
@@ -79,12 +80,12 @@ export default function SubscriptionSheet({ create, edit, onClose, today, canPri
         ) : (
           <Field label="Estado">
             {(c) => (
-              <select {...c} value={status} onChange={(e) => setStatus(e.target.value)} className={selectClasses}>
+              <Select {...c} value={status} onChange={(e) => setStatus(e.target.value)}>
                 <option value="TRIAL">Prueba</option>
                 <option value="ACTIVE">Activa</option>
                 <option value="CANCELLED">Cancelada</option>
                 {edit?.status === "SUSPENDED" ? <option value="SUSPENDED">Suspendida (se reactiva al confirmar el pago)</option> : null}
-              </select>
+              </Select>
             )}
           </Field>
         )}

@@ -1,0 +1,878 @@
+[
+  {
+    "id": "table.OutboxEvent",
+    "label": "Create table \"OutboxEvent\"",
+    "summary": "Creates table \"OutboxEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "OutboxEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"OutboxEvent\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OutboxEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"OutboxEvent\"",
+        "sql": "CREATE TABLE \"public\".\"OutboxEvent\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"payload\" json NOT NULL,\n  \"processedAt\" timestamptz,\n  \"resourceId\" text,\n  \"resourceType\" text,\n  \"tenantId\" text NOT NULL,\n  \"type\" text NOT NULL,\n  \"version\" int4 DEFAULT 1 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"OutboxEvent\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OutboxEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.WebhookDelivery",
+    "label": "Create table \"WebhookDelivery\"",
+    "summary": "Creates table \"WebhookDelivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "WebhookDelivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"WebhookDelivery\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookDelivery\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"WebhookDelivery\"",
+        "sql": "CREATE TABLE \"public\".\"WebhookDelivery\" (\n  \"attempt\" int4 DEFAULT 0 NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"deliveredAt\" timestamptz,\n  \"durationMs\" int4,\n  \"endpointId\" text NOT NULL,\n  \"eventId\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"nextAttemptAt\" timestamptz,\n  \"responseExcerpt\" text,\n  \"responseStatus\" int4,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"WebhookDelivery\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookDelivery\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.WebhookEndpoint",
+    "label": "Create table \"WebhookEndpoint\"",
+    "summary": "Creates table \"WebhookEndpoint\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "WebhookEndpoint"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"WebhookEndpoint\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookEndpoint\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"WebhookEndpoint\"",
+        "sql": "CREATE TABLE \"public\".\"WebhookEndpoint\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"consecutiveFailures\" int4 DEFAULT 0 NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"description\" text,\n  \"disabledAt\" timestamptz,\n  \"disabledReason\" text,\n  \"eventTypes\" text[] NOT NULL,\n  \"id\" text NOT NULL,\n  \"previousSecretEnc\" text,\n  \"previousSecretUntil\" timestamptz,\n  \"secretEnc\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"url\" text NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"WebhookEndpoint_eventTypes_elem_not_null_9d7fdd2b\" CHECK (array_position(\"eventTypes\", NULL) IS NULL)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"WebhookEndpoint\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookEndpoint\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.WebhookDelivery.WebhookDelivery_endpointId_eventId_key",
+    "label": "Add unique constraint on \"WebhookDelivery\" (endpointId, eventId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "WebhookDelivery_endpointId_eventId_key",
+        "table": "WebhookDelivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"WebhookDelivery_endpointId_eventId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WebhookDelivery_endpointId_eventId_key",
+          "public",
+          "\"public\".\"WebhookDelivery\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"WebhookDelivery_endpointId_eventId_key\"",
+        "sql": "ALTER TABLE \"public\".\"WebhookDelivery\" ADD CONSTRAINT \"WebhookDelivery_endpointId_eventId_key\" UNIQUE (\"endpointId\", \"eventId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"WebhookDelivery_endpointId_eventId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WebhookDelivery_endpointId_eventId_key",
+          "public",
+          "\"public\".\"WebhookDelivery\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.OutboxEvent.OutboxEvent_processedAt_createdAt_idx_cbbcce26",
+    "label": "Create index \"OutboxEvent_processedAt_createdAt_idx_cbbcce26\" on \"OutboxEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "OutboxEvent_processedAt_createdAt_idx_cbbcce26",
+        "table": "OutboxEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"OutboxEvent_processedAt_createdAt_idx_cbbcce26\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OutboxEvent_processedAt_createdAt_idx_cbbcce26\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"OutboxEvent_processedAt_createdAt_idx_cbbcce26\"",
+        "sql": "CREATE INDEX \"OutboxEvent_processedAt_createdAt_idx_cbbcce26\" ON \"public\".\"OutboxEvent\" (\"processedAt\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"OutboxEvent_processedAt_createdAt_idx_cbbcce26\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OutboxEvent_processedAt_createdAt_idx_cbbcce26\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.OutboxEvent.OutboxEvent_tenantId_createdAt_idx_88162366",
+    "label": "Create index \"OutboxEvent_tenantId_createdAt_idx_88162366\" on \"OutboxEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "OutboxEvent_tenantId_createdAt_idx_88162366",
+        "table": "OutboxEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"OutboxEvent_tenantId_createdAt_idx_88162366\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OutboxEvent_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"OutboxEvent_tenantId_createdAt_idx_88162366\"",
+        "sql": "CREATE INDEX \"OutboxEvent_tenantId_createdAt_idx_88162366\" ON \"public\".\"OutboxEvent\" (\"tenantId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"OutboxEvent_tenantId_createdAt_idx_88162366\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OutboxEvent_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.OutboxEvent.OutboxEvent_tenantId_idx_c93ed4f1",
+    "label": "Create index \"OutboxEvent_tenantId_idx_c93ed4f1\" on \"OutboxEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "OutboxEvent_tenantId_idx_c93ed4f1",
+        "table": "OutboxEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"OutboxEvent_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OutboxEvent_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"OutboxEvent_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"OutboxEvent_tenantId_idx_c93ed4f1\" ON \"public\".\"OutboxEvent\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"OutboxEvent_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OutboxEvent_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WebhookDelivery.WebhookDelivery_endpointId_createdAt_idx_6af13a6b",
+    "label": "Create index \"WebhookDelivery_endpointId_createdAt_idx_6af13a6b\" on \"WebhookDelivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WebhookDelivery_endpointId_createdAt_idx_6af13a6b",
+        "table": "WebhookDelivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WebhookDelivery_endpointId_createdAt_idx_6af13a6b\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookDelivery_endpointId_createdAt_idx_6af13a6b\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WebhookDelivery_endpointId_createdAt_idx_6af13a6b\"",
+        "sql": "CREATE INDEX \"WebhookDelivery_endpointId_createdAt_idx_6af13a6b\" ON \"public\".\"WebhookDelivery\" (\"endpointId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WebhookDelivery_endpointId_createdAt_idx_6af13a6b\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookDelivery_endpointId_createdAt_idx_6af13a6b\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WebhookDelivery.WebhookDelivery_endpointId_idx_48273c15",
+    "label": "Create index \"WebhookDelivery_endpointId_idx_48273c15\" on \"WebhookDelivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WebhookDelivery_endpointId_idx_48273c15",
+        "table": "WebhookDelivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WebhookDelivery_endpointId_idx_48273c15\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookDelivery_endpointId_idx_48273c15\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WebhookDelivery_endpointId_idx_48273c15\"",
+        "sql": "CREATE INDEX \"WebhookDelivery_endpointId_idx_48273c15\" ON \"public\".\"WebhookDelivery\" (\"endpointId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WebhookDelivery_endpointId_idx_48273c15\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookDelivery_endpointId_idx_48273c15\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WebhookDelivery.WebhookDelivery_eventId_idx_6a266d47",
+    "label": "Create index \"WebhookDelivery_eventId_idx_6a266d47\" on \"WebhookDelivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WebhookDelivery_eventId_idx_6a266d47",
+        "table": "WebhookDelivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WebhookDelivery_eventId_idx_6a266d47\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookDelivery_eventId_idx_6a266d47\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WebhookDelivery_eventId_idx_6a266d47\"",
+        "sql": "CREATE INDEX \"WebhookDelivery_eventId_idx_6a266d47\" ON \"public\".\"WebhookDelivery\" (\"eventId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WebhookDelivery_eventId_idx_6a266d47\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookDelivery_eventId_idx_6a266d47\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WebhookDelivery.WebhookDelivery_tenantId_idx_c93ed4f1",
+    "label": "Create index \"WebhookDelivery_tenantId_idx_c93ed4f1\" on \"WebhookDelivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WebhookDelivery_tenantId_idx_c93ed4f1",
+        "table": "WebhookDelivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WebhookDelivery_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookDelivery_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WebhookDelivery_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"WebhookDelivery_tenantId_idx_c93ed4f1\" ON \"public\".\"WebhookDelivery\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WebhookDelivery_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookDelivery_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WebhookDelivery.WebhookDelivery_tenantId_status_nextAttemptAt_idx_925e31da",
+    "label": "Create index \"WebhookDelivery_tenantId_status_nextAttemptAt_idx_925e31da\" on \"WebhookDelivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WebhookDelivery_tenantId_status_nextAttemptAt_idx_925e31da",
+        "table": "WebhookDelivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WebhookDelivery_tenantId_status_nextAttemptAt_idx_925e31da\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookDelivery_tenantId_status_nextAttemptAt_idx_925e31da\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WebhookDelivery_tenantId_status_nextAttemptAt_idx_925e31da\"",
+        "sql": "CREATE INDEX \"WebhookDelivery_tenantId_status_nextAttemptAt_idx_925e31da\" ON \"public\".\"WebhookDelivery\" (\"tenantId\", \"status\", \"nextAttemptAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WebhookDelivery_tenantId_status_nextAttemptAt_idx_925e31da\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookDelivery_tenantId_status_nextAttemptAt_idx_925e31da\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WebhookEndpoint.WebhookEndpoint_tenantId_active_idx_35aa10e5",
+    "label": "Create index \"WebhookEndpoint_tenantId_active_idx_35aa10e5\" on \"WebhookEndpoint\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WebhookEndpoint_tenantId_active_idx_35aa10e5",
+        "table": "WebhookEndpoint"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WebhookEndpoint_tenantId_active_idx_35aa10e5\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookEndpoint_tenantId_active_idx_35aa10e5\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WebhookEndpoint_tenantId_active_idx_35aa10e5\"",
+        "sql": "CREATE INDEX \"WebhookEndpoint_tenantId_active_idx_35aa10e5\" ON \"public\".\"WebhookEndpoint\" (\"tenantId\", \"active\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WebhookEndpoint_tenantId_active_idx_35aa10e5\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookEndpoint_tenantId_active_idx_35aa10e5\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WebhookEndpoint.WebhookEndpoint_tenantId_idx_c93ed4f1",
+    "label": "Create index \"WebhookEndpoint_tenantId_idx_c93ed4f1\" on \"WebhookEndpoint\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WebhookEndpoint_tenantId_idx_c93ed4f1",
+        "table": "WebhookEndpoint"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WebhookEndpoint_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookEndpoint_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WebhookEndpoint_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"WebhookEndpoint_tenantId_idx_c93ed4f1\" ON \"public\".\"WebhookEndpoint\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WebhookEndpoint_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WebhookEndpoint_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.OutboxEvent.OutboxEvent_tenantId_fkey",
+    "label": "Add foreign key \"OutboxEvent_tenantId_fkey\" on \"OutboxEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "OutboxEvent_tenantId_fkey",
+        "table": "OutboxEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"OutboxEvent_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "OutboxEvent_tenantId_fkey",
+          "public",
+          "\"public\".\"OutboxEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"OutboxEvent_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"OutboxEvent\"\nADD CONSTRAINT \"OutboxEvent_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"OutboxEvent_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "OutboxEvent_tenantId_fkey",
+          "public",
+          "\"public\".\"OutboxEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.WebhookDelivery.WebhookDelivery_tenantId_fkey",
+    "label": "Add foreign key \"WebhookDelivery_tenantId_fkey\" on \"WebhookDelivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "WebhookDelivery_tenantId_fkey",
+        "table": "WebhookDelivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"WebhookDelivery_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WebhookDelivery_tenantId_fkey",
+          "public",
+          "\"public\".\"WebhookDelivery\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"WebhookDelivery_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"WebhookDelivery\"\nADD CONSTRAINT \"WebhookDelivery_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"WebhookDelivery_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WebhookDelivery_tenantId_fkey",
+          "public",
+          "\"public\".\"WebhookDelivery\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.WebhookDelivery.WebhookDelivery_endpointId_fkey",
+    "label": "Add foreign key \"WebhookDelivery_endpointId_fkey\" on \"WebhookDelivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "WebhookDelivery_endpointId_fkey",
+        "table": "WebhookDelivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"WebhookDelivery_endpointId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WebhookDelivery_endpointId_fkey",
+          "public",
+          "\"public\".\"WebhookDelivery\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"WebhookDelivery_endpointId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"WebhookDelivery\"\nADD CONSTRAINT \"WebhookDelivery_endpointId_fkey\"\nFOREIGN KEY (\"endpointId\")\nREFERENCES \"public\".\"WebhookEndpoint\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"WebhookDelivery_endpointId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WebhookDelivery_endpointId_fkey",
+          "public",
+          "\"public\".\"WebhookDelivery\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.WebhookDelivery.WebhookDelivery_eventId_fkey",
+    "label": "Add foreign key \"WebhookDelivery_eventId_fkey\" on \"WebhookDelivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "WebhookDelivery_eventId_fkey",
+        "table": "WebhookDelivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"WebhookDelivery_eventId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WebhookDelivery_eventId_fkey",
+          "public",
+          "\"public\".\"WebhookDelivery\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"WebhookDelivery_eventId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"WebhookDelivery\"\nADD CONSTRAINT \"WebhookDelivery_eventId_fkey\"\nFOREIGN KEY (\"eventId\")\nREFERENCES \"public\".\"OutboxEvent\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"WebhookDelivery_eventId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WebhookDelivery_eventId_fkey",
+          "public",
+          "\"public\".\"WebhookDelivery\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.WebhookEndpoint.WebhookEndpoint_tenantId_fkey",
+    "label": "Add foreign key \"WebhookEndpoint_tenantId_fkey\" on \"WebhookEndpoint\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "WebhookEndpoint_tenantId_fkey",
+        "table": "WebhookEndpoint"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"WebhookEndpoint_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WebhookEndpoint_tenantId_fkey",
+          "public",
+          "\"public\".\"WebhookEndpoint\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"WebhookEndpoint_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"WebhookEndpoint\"\nADD CONSTRAINT \"WebhookEndpoint_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"WebhookEndpoint_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WebhookEndpoint_tenantId_fkey",
+          "public",
+          "\"public\".\"WebhookEndpoint\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.OutboxEvent",
+    "label": "Enable row-level security on \"OutboxEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "OutboxEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"OutboxEvent\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "OutboxEvent"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"OutboxEvent\"",
+        "sql": "ALTER TABLE \"public\".\"OutboxEvent\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"OutboxEvent\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "OutboxEvent"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.WebhookDelivery",
+    "label": "Enable row-level security on \"WebhookDelivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "WebhookDelivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"WebhookDelivery\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "WebhookDelivery"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"WebhookDelivery\"",
+        "sql": "ALTER TABLE \"public\".\"WebhookDelivery\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"WebhookDelivery\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "WebhookDelivery"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.WebhookEndpoint",
+    "label": "Enable row-level security on \"WebhookEndpoint\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "WebhookEndpoint"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"WebhookEndpoint\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "WebhookEndpoint"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"WebhookEndpoint\"",
+        "sql": "ALTER TABLE \"public\".\"WebhookEndpoint\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"WebhookEndpoint\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "WebhookEndpoint"
+        ]
+      }
+    ]
+  }
+]

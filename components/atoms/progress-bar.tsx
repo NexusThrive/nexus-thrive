@@ -28,7 +28,7 @@ export function ProgressBar({
       aria-label={label}
     >
       <i
-        className={cn("block h-full", tone === "gold" ? "bg-gold-500" : "bg-foreground")}
+        className={cn("block h-full transition-[width] duration-[var(--d3)] ease-[var(--nx-ease-out)]", tone === "gold" ? "bg-gold-500" : "bg-foreground")}
         style={{
           width: `${pct}%`,
           clipPath: "polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%)",

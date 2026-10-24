@@ -9,6 +9,7 @@ import {
   HeartPulse,
   House,
   Landmark,
+  LayoutGrid,
   PartyPopper,
   Package,
   Plane,
@@ -96,6 +97,7 @@ const VERTICAL_VISUALS: Record<
   hardware_store: { icon: Package, tone: "ink" },
   nautical_transport: { icon: Ship, tone: "graphite" },
   tour_guides: { icon: Compass, tone: "muted" },
+  general: { icon: LayoutGrid, tone: "ink" },
 };
 
 const DEFAULT_VISUAL: VerticalVisual = {

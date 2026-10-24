@@ -24,6 +24,8 @@ import {
 } from "../budget/actions";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
+import { Select } from "@/components/atoms/select";
+import { SkeletonRows } from "@/components/molecules/skeleton-rows";
 
 const DEBOUNCE_MS = 250;
 
@@ -201,7 +203,7 @@ export default function CatalogImportModal({
             >
               Filtrar por unidad
             </label>
-            <select
+            <Select
               id="catalog-unit-filter"
               value={unit}
               onChange={(event) => setUnit(event.target.value)}
@@ -213,7 +215,7 @@ export default function CatalogImportModal({
                   {formatApuUnit(option)}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
 
           <div className="max-h-[22rem] overflow-y-auto rounded-lg border border-border">
@@ -282,11 +284,8 @@ export default function CatalogImportModal({
               </p>
             </div>
           ) : loadingDetail ? (
-            <div className="flex h-full min-h-[12rem] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card p-6">
-              <NLoader size={32} />
-              <p className="mt-3 text-xs text-muted-foreground">
-                Cargando composición…
-              </p>
+            <div className="h-full min-h-[12rem] rounded-lg border border-dashed border-border bg-card p-6">
+              <SkeletonRows rows={5} label="Cargando composición" />
             </div>
           ) : !detail ? (
             <div className="flex h-full min-h-[12rem] flex-col items-center justify-center rounded-lg border border-dashed border-danger/40 bg-card p-6 text-center">

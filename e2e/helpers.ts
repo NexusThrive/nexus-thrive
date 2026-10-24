@@ -14,7 +14,24 @@ export const WCAG_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
 /** Escanea la página con axe y falla con un resumen legible si hay violaciones. */
 export async function expectNoAxeViolations(page: Page) {
-  const results = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
+  // Con una animación a medias (hoja subiendo, velo apareciendo) axe mide
+  // contrastes intermedios: se espera a que terminen las finitas.
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((a) => Number.isFinite(a.effect?.getComputedTiming().endTime as number))
+        .map((a) => a.finished.catch(() => undefined)),
+    ),
+  );
+  // El complemento de accesibilidad de Storybook también corre axe al pintar la historia:
+  // si coincide con este escaneo, se espera un instante y se repite una vez.
+  const scan = () => new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
+  const results = await scan().catch(async (error: Error) => {
+    if (!/already running/i.test(error.message)) throw error;
+    await page.waitForTimeout(500);
+    return scan();
+  });
   const summary = results.violations.map(
     (v) => `${v.id} (${v.impact}): ${v.help} → ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`,
   );

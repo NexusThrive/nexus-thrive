@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `storefronts`, `carts`, `orders`, `shipping-rates` |
+| Eventos (outbox → webhooks) | `cart.abandoned`, `order.placed`, `order.paid`, `order.shipped` |
+| MCP · lectura | `list_orders`, `get_order`, `get_storefront_status` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `update_order_status`, `create_discount` |
+| Sistemas externos (puertos y adaptadores) | Transportadoras (Servientrega, Coordinadora, Envía), pasarelas de V.00 |
+
+#### Integración
+
+- [ ] API REST de lectura: storefronts, carts, orders, shipping-rates (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: cart.abandoned, order.placed, order.paid, order.shipped (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: list_orders, get_order, get_storefront_status (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: update_order_status, create_discount (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de catálogo, pedidos y comercio digital
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
@@ -23,10 +46,10 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Catálogo con fotos, descripción, precio y categoría.
-- [ ] Carrito y checkout con datos del cliente.
-- [ ] Pago por link o por transferencia con confirmación manual.
-- [ ] Pedido que llega por correo y WhatsApp al negocio.
+- [ ] Catálogo con fotos, descripción, precio y categoría. _(PR-26)_
+- [x] Carrito y checkout con datos del cliente. _(PR-26)_
+- [x] Pago por link o por transferencia con confirmación manual. _(PR-26)_
+- [ ] Pedido que llega por correo y WhatsApp al negocio. _(PR-26)_
 
 #### Técnico
 

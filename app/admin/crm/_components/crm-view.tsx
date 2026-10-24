@@ -1,101 +1,27 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import Link from "next/link";
+import { useOptimistic, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowRight, CalendarClock, MoreHorizontal, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { Chip, ChipRow } from "@/components/atoms/chip";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/molecules/dropdown-menu";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { KpiCard } from "@/components/molecules/kpi-card";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { followUpState, isActiveStage, LEAD_STAGES, pipelineSummary, stageMeta, type LeadStageValue } from "@/lib/ops/crm-rules";
-import type { LeadRow } from "@/lib/ops/leads";
 import { formatUsdCents } from "@/lib/plans/pricing";
-import { cn } from "@/lib/utils";
 import { moveLeadAction } from "../actions";
+import type { LeadRow } from "@/lib/ops/leads";
+import LeadBoard, { LeadCard } from "./lead-board";
 import LeadSheet, { type Option } from "./lead-sheet";
-
-const FOLLOW = {
-  overdue: "text-danger",
-  today: "text-accent-text",
-  upcoming: "text-muted-foreground",
-  none: "text-muted-foreground",
-} as const;
-
-function shortDate(d: string, today: string) {
-  if (d === today) return "Hoy";
-  const [y, m, day] = d.split("-").map(Number);
-  return new Date(Date.UTC(y, m - 1, day, 12)).toLocaleDateString("es-CO", { day: "numeric", month: "short", timeZone: "UTC" });
-}
-
-function LeadCard({ lead, today, canEdit }: { lead: LeadRow; today: string; canEdit: boolean }) {
-  const [pending, start] = useTransition();
-  const router = useRouter();
-  const { toast } = useToast();
-  const follow = followUpState(lead.stage, lead.nextStepDate, today);
-  const move = (stage: LeadStageValue) =>
-    start(async () => {
-      const r = await moveLeadAction(lead.id, stage);
-      if (r.ok) {
-        toast(`${lead.company} → ${stageMeta(stage).short}`, "success");
-        router.refresh();
-      } else toast({ title: "No se movió", description: r.message, variant: "error" });
-    });
-  return (
-    <li className={cn("group relative rounded-md border border-border bg-surface p-3 transition-[border-color,opacity]", pending && "opacity-60", follow === "overdue" && "border-l-2 border-l-danger")}>
-      <Link href={`/admin/crm/${lead.id}`} className="grid gap-1 pr-6">
-        <b className="truncate text-[13.5px] font-medium">{lead.company}</b>
-        <small className="truncate text-xs text-muted-foreground">
-          {[lead.contactName, lead.city].filter(Boolean).join(" · ") || lead.source}
-        </small>
-        {lead.nextStep ? (
-          <small className={cn("mt-1 flex items-center gap-1 text-xs", FOLLOW[follow])}>
-            <CalendarClock aria-hidden="true" className="size-3.5 shrink-0" />
-            <span className="truncate">
-              {lead.nextStepDate ? `${shortDate(lead.nextStepDate, today)} · ` : ""}
-              {lead.nextStep}
-            </span>
-          </small>
-        ) : null}
-        <span className="mt-1 flex items-center justify-between gap-2 text-[11.5px] text-muted-foreground">
-          <span className="truncate">{lead.ownerName ?? <span className="text-danger">Sin responsable</span>}</span>
-          {lead.valueUsdCents ? <span className="font-mono tabular-nums text-foreground">{formatUsdCents(lead.valueUsdCents)}/mes</span> : null}
-        </span>
-      </Link>
-      {canEdit && isActiveStage(lead.stage) ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button type="button" aria-label={`Mover ${lead.company}`} className="absolute right-1.5 top-1.5 inline-flex size-7 items-center justify-center rounded text-muted-foreground hover:bg-surface-muted hover:text-foreground">
-              <MoreHorizontal aria-hidden="true" className="size-4" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52">
-            <DropdownMenuLabel>Mover a</DropdownMenuLabel>
-            {LEAD_STAGES.filter((s) => isActiveStage(s.value) && s.value !== lead.stage).map((s) => (
-              <DropdownMenuItem key={s.value} onSelect={() => move(s.value)}>
-                <ArrowRight aria-hidden="true" />
-                {s.label}
-              </DropdownMenuItem>
-            ))}
-            <DropdownMenuItem asChild>
-              <Link href={`/admin/crm/${lead.id}`}>Ganar o perder…</Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : null}
-    </li>
-  );
-}
 
 /**
  * CRM comercial: indicadores, tablero por etapa (escritorio) y lista por
  * etapa (celular). "Míos" filtra por responsable; los vencidos se marcan.
  */
 export default function CrmView({
-  leads,
+  leads: serverLeads,
   owners,
   tenants,
   me,
@@ -112,6 +38,41 @@ export default function CrmView({
   canAssign: boolean;
 }) {
   const params = useSearchParams();
+  const router = useRouter();
+  const { toast } = useToast();
+  // Estado visual inmediato: el lead cambia de columna al soltarlo; si el
+  // servidor rechaza, al terminar la transición vuelve a lo que dicen los datos.
+  const [leads, applyMove] = useOptimistic(serverLeads, (current, move: { id: string; stage: LeadStageValue }) =>
+    current.map((l) => (l.id === move.id ? { ...l, stage: move.stage } : l)),
+  );
+  const [savingIds, setSavingIds] = useState<ReadonlySet<string>>(new Set());
+  const [, startMove] = useTransition();
+
+  /** Un solo camino para arrastrar y para el menú «Mover a»: una acción por movimiento. */
+  function moveLead(lead: LeadRow, stage: LeadStageValue) {
+    if (lead.stage === stage) return;
+    setSavingIds((ids) => new Set(ids).add(lead.id));
+    startMove(async () => {
+      applyMove({ id: lead.id, stage });
+      let r: Awaited<ReturnType<typeof moveLeadAction>>;
+      try {
+        r = await moveLeadAction(lead.id, stage, lead.stage);
+      } catch {
+        // Pestaña con una versión vieja de la app (tras un despliegue o al
+        // reiniciar el servidor) o sin red: la acción no se encuentra o no llega.
+        r = { ok: false, message: "No se pudo contactar al servidor. Recarga la página (la app pudo actualizarse) e inténtalo de nuevo." };
+      }
+      setSavingIds((ids) => {
+        const next = new Set(ids);
+        next.delete(lead.id);
+        return next;
+      });
+      if (r.ok) toast(`${lead.company} → ${stageMeta(stage).short}`, "success");
+      else toast({ title: "No se movió", description: r.message, variant: "error" });
+      router.refresh(); // también tras un error: trae el estado real (p. ej. conflicto)
+    });
+  }
+
   const [creating, setCreating] = useState(params.get("nuevo") === "1");
   const [mine, setMine] = useState(false);
   const [closed, setClosed] = useState(false);
@@ -156,30 +117,16 @@ export default function CrmView({
         </div>
       ) : (
         <>
-          {/* Escritorio: tablero por etapa con desplazamiento horizontal. */}
+          {/* Escritorio: tablero por etapa; los leads se arrastran entre etapas activas. */}
           <div className="hidden overflow-x-auto pb-2 md:block">
-            <div className="grid auto-cols-[minmax(232px,1fr)] grid-flow-col gap-3">
-              {stages.map((s) => {
-                const items = column(s.value);
-                const value = items.reduce((t, l) => t + l.valueUsdCents, 0);
-                return (
-                  <section key={s.value} aria-label={s.label} className="flex min-h-40 flex-col rounded-lg bg-surface-muted p-2.5">
-                    <header className="mb-2 flex items-baseline justify-between gap-2 px-1">
-                      <h2 className="truncate text-[12.5px] font-semibold">{s.label}</h2>
-                      <span className="font-mono text-[11px] text-muted-foreground">
-                        {items.length}
-                        {value ? ` · ${formatUsdCents(value)}` : ""}
-                      </span>
-                    </header>
-                    <ul className="grid content-start gap-2">
-                      {items.map((l) => (
-                        <LeadCard key={l.id} lead={l} today={today} canEdit={canEdit} />
-                      ))}
-                    </ul>
-                  </section>
-                );
-              })}
-            </div>
+            <LeadBoard
+              leads={visible}
+              stages={stages.map((s) => ({ value: s.value, label: s.label }))}
+              today={today}
+              canEdit={canEdit}
+              savingIds={savingIds}
+              onMove={moveLead}
+            />
           </div>
 
           {/* Celular: una etapa a la vez. */}
@@ -195,7 +142,7 @@ export default function CrmView({
             </div>
             <ul className="grid gap-2">
               {column(mobileStage).map((l) => (
-                <LeadCard key={l.id} lead={l} today={today} canEdit={canEdit} />
+                <LeadCard key={l.id} lead={l} today={today} canEdit={canEdit} saving={savingIds.has(l.id)} onMove={moveLead} />
               ))}
               {column(mobileStage).length === 0 ? <li className="py-8 text-center text-sm text-muted-foreground">Nada en esta etapa.</li> : null}
             </ul>

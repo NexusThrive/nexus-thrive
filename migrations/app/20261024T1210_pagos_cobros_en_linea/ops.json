@@ -1,0 +1,758 @@
+[
+  {
+    "id": "table.PaymentIntent",
+    "label": "Create table \"PaymentIntent\"",
+    "summary": "Creates table \"PaymentIntent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "PaymentIntent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"PaymentIntent\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentIntent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"PaymentIntent\"",
+        "sql": "CREATE TABLE \"public\".\"PaymentIntent\" (\n  \"amount\" numeric NOT NULL,\n  \"channel\" text DEFAULT 'LINK' NOT NULL,\n  \"confirmedBy\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"customerId\" text,\n  \"description\" text NOT NULL,\n  \"evidence\" text,\n  \"expiresAt\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"invoiceId\" text,\n  \"paidAt\" timestamptz,\n  \"paymentId\" text,\n  \"provider\" text DEFAULT 'sandbox' NOT NULL,\n  \"providerRefId\" text,\n  \"reference\" text NOT NULL,\n  \"refundedTotal\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"PaymentIntent\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentIntent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.PaymentRefund",
+    "label": "Create table \"PaymentRefund\"",
+    "summary": "Creates table \"PaymentRefund\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "PaymentRefund"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"PaymentRefund\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentRefund\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"PaymentRefund\"",
+        "sql": "CREATE TABLE \"public\".\"PaymentRefund\" (\n  \"amount\" numeric NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"id\" text NOT NULL,\n  \"intentId\" text NOT NULL,\n  \"reason\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"PaymentRefund\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentRefund\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ReconciliationRun",
+    "label": "Create table \"ReconciliationRun\"",
+    "summary": "Creates table \"ReconciliationRun\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ReconciliationRun"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ReconciliationRun\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ReconciliationRun\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ReconciliationRun\"",
+        "sql": "CREATE TABLE \"public\".\"ReconciliationRun\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"day\" text NOT NULL,\n  \"differences\" json NOT NULL,\n  \"expected\" numeric NOT NULL,\n  \"id\" text NOT NULL,\n  \"matched\" int4 NOT NULL,\n  \"provider\" text NOT NULL,\n  \"reported\" numeric NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ReconciliationRun\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ReconciliationRun\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.PaymentIntent.PaymentIntent_reference_key",
+    "label": "Add unique constraint on \"PaymentIntent\" (reference)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "PaymentIntent_reference_key",
+        "table": "PaymentIntent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"PaymentIntent_reference_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PaymentIntent_reference_key",
+          "public",
+          "\"public\".\"PaymentIntent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"PaymentIntent_reference_key\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentIntent\" ADD CONSTRAINT \"PaymentIntent_reference_key\" UNIQUE (\"reference\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"PaymentIntent_reference_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PaymentIntent_reference_key",
+          "public",
+          "\"public\".\"PaymentIntent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PaymentIntent.PaymentIntent_tenantId_createdAt_idx_88162366",
+    "label": "Create index \"PaymentIntent_tenantId_createdAt_idx_88162366\" on \"PaymentIntent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PaymentIntent_tenantId_createdAt_idx_88162366",
+        "table": "PaymentIntent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PaymentIntent_tenantId_createdAt_idx_88162366\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentIntent_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PaymentIntent_tenantId_createdAt_idx_88162366\"",
+        "sql": "CREATE INDEX \"PaymentIntent_tenantId_createdAt_idx_88162366\" ON \"public\".\"PaymentIntent\" (\"tenantId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PaymentIntent_tenantId_createdAt_idx_88162366\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentIntent_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PaymentIntent.PaymentIntent_tenantId_idx_c93ed4f1",
+    "label": "Create index \"PaymentIntent_tenantId_idx_c93ed4f1\" on \"PaymentIntent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PaymentIntent_tenantId_idx_c93ed4f1",
+        "table": "PaymentIntent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PaymentIntent_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentIntent_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PaymentIntent_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"PaymentIntent_tenantId_idx_c93ed4f1\" ON \"public\".\"PaymentIntent\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PaymentIntent_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentIntent_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PaymentIntent.PaymentIntent_tenantId_status_idx_d3d04256",
+    "label": "Create index \"PaymentIntent_tenantId_status_idx_d3d04256\" on \"PaymentIntent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PaymentIntent_tenantId_status_idx_d3d04256",
+        "table": "PaymentIntent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PaymentIntent_tenantId_status_idx_d3d04256\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentIntent_tenantId_status_idx_d3d04256\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PaymentIntent_tenantId_status_idx_d3d04256\"",
+        "sql": "CREATE INDEX \"PaymentIntent_tenantId_status_idx_d3d04256\" ON \"public\".\"PaymentIntent\" (\"tenantId\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PaymentIntent_tenantId_status_idx_d3d04256\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentIntent_tenantId_status_idx_d3d04256\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PaymentRefund.PaymentRefund_intentId_idx_e8967b69",
+    "label": "Create index \"PaymentRefund_intentId_idx_e8967b69\" on \"PaymentRefund\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PaymentRefund_intentId_idx_e8967b69",
+        "table": "PaymentRefund"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PaymentRefund_intentId_idx_e8967b69\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentRefund_intentId_idx_e8967b69\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PaymentRefund_intentId_idx_e8967b69\"",
+        "sql": "CREATE INDEX \"PaymentRefund_intentId_idx_e8967b69\" ON \"public\".\"PaymentRefund\" (\"intentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PaymentRefund_intentId_idx_e8967b69\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentRefund_intentId_idx_e8967b69\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PaymentRefund.PaymentRefund_tenantId_idx_c93ed4f1",
+    "label": "Create index \"PaymentRefund_tenantId_idx_c93ed4f1\" on \"PaymentRefund\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PaymentRefund_tenantId_idx_c93ed4f1",
+        "table": "PaymentRefund"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PaymentRefund_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentRefund_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PaymentRefund_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"PaymentRefund_tenantId_idx_c93ed4f1\" ON \"public\".\"PaymentRefund\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PaymentRefund_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentRefund_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PaymentRefund.PaymentRefund_tenantId_intentId_idx_78c4c2b6",
+    "label": "Create index \"PaymentRefund_tenantId_intentId_idx_78c4c2b6\" on \"PaymentRefund\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PaymentRefund_tenantId_intentId_idx_78c4c2b6",
+        "table": "PaymentRefund"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PaymentRefund_tenantId_intentId_idx_78c4c2b6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentRefund_tenantId_intentId_idx_78c4c2b6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PaymentRefund_tenantId_intentId_idx_78c4c2b6\"",
+        "sql": "CREATE INDEX \"PaymentRefund_tenantId_intentId_idx_78c4c2b6\" ON \"public\".\"PaymentRefund\" (\"tenantId\", \"intentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PaymentRefund_tenantId_intentId_idx_78c4c2b6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentRefund_tenantId_intentId_idx_78c4c2b6\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ReconciliationRun.ReconciliationRun_tenantId_day_idx_4f30fc67",
+    "label": "Create index \"ReconciliationRun_tenantId_day_idx_4f30fc67\" on \"ReconciliationRun\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ReconciliationRun_tenantId_day_idx_4f30fc67",
+        "table": "ReconciliationRun"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ReconciliationRun_tenantId_day_idx_4f30fc67\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ReconciliationRun_tenantId_day_idx_4f30fc67\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ReconciliationRun_tenantId_day_idx_4f30fc67\"",
+        "sql": "CREATE INDEX \"ReconciliationRun_tenantId_day_idx_4f30fc67\" ON \"public\".\"ReconciliationRun\" (\"tenantId\", \"day\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ReconciliationRun_tenantId_day_idx_4f30fc67\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ReconciliationRun_tenantId_day_idx_4f30fc67\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ReconciliationRun.ReconciliationRun_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ReconciliationRun_tenantId_idx_c93ed4f1\" on \"ReconciliationRun\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ReconciliationRun_tenantId_idx_c93ed4f1",
+        "table": "ReconciliationRun"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ReconciliationRun_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ReconciliationRun_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ReconciliationRun_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ReconciliationRun_tenantId_idx_c93ed4f1\" ON \"public\".\"ReconciliationRun\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ReconciliationRun_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ReconciliationRun_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PaymentIntent.PaymentIntent_tenantId_fkey",
+    "label": "Add foreign key \"PaymentIntent_tenantId_fkey\" on \"PaymentIntent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PaymentIntent_tenantId_fkey",
+        "table": "PaymentIntent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PaymentIntent_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PaymentIntent_tenantId_fkey",
+          "public",
+          "\"public\".\"PaymentIntent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PaymentIntent_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentIntent\"\nADD CONSTRAINT \"PaymentIntent_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PaymentIntent_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PaymentIntent_tenantId_fkey",
+          "public",
+          "\"public\".\"PaymentIntent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PaymentRefund.PaymentRefund_tenantId_fkey",
+    "label": "Add foreign key \"PaymentRefund_tenantId_fkey\" on \"PaymentRefund\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PaymentRefund_tenantId_fkey",
+        "table": "PaymentRefund"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PaymentRefund_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PaymentRefund_tenantId_fkey",
+          "public",
+          "\"public\".\"PaymentRefund\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PaymentRefund_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentRefund\"\nADD CONSTRAINT \"PaymentRefund_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PaymentRefund_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PaymentRefund_tenantId_fkey",
+          "public",
+          "\"public\".\"PaymentRefund\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PaymentRefund.PaymentRefund_intentId_fkey",
+    "label": "Add foreign key \"PaymentRefund_intentId_fkey\" on \"PaymentRefund\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PaymentRefund_intentId_fkey",
+        "table": "PaymentRefund"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PaymentRefund_intentId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PaymentRefund_intentId_fkey",
+          "public",
+          "\"public\".\"PaymentRefund\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PaymentRefund_intentId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentRefund\"\nADD CONSTRAINT \"PaymentRefund_intentId_fkey\"\nFOREIGN KEY (\"intentId\")\nREFERENCES \"public\".\"PaymentIntent\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PaymentRefund_intentId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PaymentRefund_intentId_fkey",
+          "public",
+          "\"public\".\"PaymentRefund\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ReconciliationRun.ReconciliationRun_tenantId_fkey",
+    "label": "Add foreign key \"ReconciliationRun_tenantId_fkey\" on \"ReconciliationRun\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ReconciliationRun_tenantId_fkey",
+        "table": "ReconciliationRun"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ReconciliationRun_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ReconciliationRun_tenantId_fkey",
+          "public",
+          "\"public\".\"ReconciliationRun\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ReconciliationRun_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ReconciliationRun\"\nADD CONSTRAINT \"ReconciliationRun_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ReconciliationRun_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ReconciliationRun_tenantId_fkey",
+          "public",
+          "\"public\".\"ReconciliationRun\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.PaymentIntent",
+    "label": "Enable row-level security on \"PaymentIntent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "PaymentIntent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"PaymentIntent\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentIntent"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"PaymentIntent\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentIntent\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"PaymentIntent\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentIntent"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.PaymentRefund",
+    "label": "Enable row-level security on \"PaymentRefund\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "PaymentRefund"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"PaymentRefund\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentRefund"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"PaymentRefund\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentRefund\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"PaymentRefund\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentRefund"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.ReconciliationRun",
+    "label": "Enable row-level security on \"ReconciliationRun\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "ReconciliationRun"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"ReconciliationRun\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ReconciliationRun"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"ReconciliationRun\"",
+        "sql": "ALTER TABLE \"public\".\"ReconciliationRun\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"ReconciliationRun\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "ReconciliationRun"
+        ]
+      }
+    ]
+  }
+]

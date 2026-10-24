@@ -82,7 +82,7 @@ export function KpiCard({
   const classes = cn(
     "nx-rise nx-spot relative flex h-full flex-col gap-0.5 overflow-hidden rounded-lg border border-border bg-card p-4",
     trend && "min-h-[148px]",
-    href && "transition-colors duration-200 hover:border-border-input focus-visible:outline-2 focus-visible:outline-ring",
+    href && "nx-lift focus-visible:outline-2 focus-visible:outline-ring",
     className,
   );
   const style = { ["--i" as string]: index };

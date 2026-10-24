@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { selectClasses } from "@/components/atoms/input";
 import { Chip, ChipRow } from "@/components/atoms/chip";
 import { Odometer } from "@/components/atoms/odometer";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
@@ -9,6 +8,7 @@ import type { VerticalValue, ModuleValue } from "@/lib/admin/catalogs";
 import type { Billing, PlanKey } from "@/lib/plans/catalog";
 import { activePlans, offeredModules, quote, type PricingConfig, formatUsdCents } from "@/lib/plans/pricing";
 import { cn } from "@/lib/utils";
+import { Select } from "@/components/atoms/select";
 
 /** Simulador: el precio exacto que verá un negocio con la configuración guardada. */
 export default function Simulator({ config }: { config: PricingConfig }) {
@@ -27,24 +27,24 @@ export default function Simulator({ config }: { config: PricingConfig }) {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="grid gap-1.5 text-[13px] font-medium">
             Rubro
-            <select value={vertical} onChange={(e) => { setVertical(e.target.value as VerticalValue); setSelected([]); }} className={selectClasses}>
+            <Select value={vertical} onChange={(e) => { setVertical(e.target.value as VerticalValue); setSelected([]); }}>
               {verticals.map((v) => (
                 <option key={v.vertical} value={v.vertical}>
                   {v.label}
                   {v.signupEnabled ? "" : " (oculto)"}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
           <label className="grid gap-1.5 text-[13px] font-medium">
             Clientes
-            <select value={tierId} onChange={(e) => setTierId(e.target.value)} className={selectClasses}>
+            <Select value={tierId} onChange={(e) => setTierId(e.target.value)}>
               {[...config.tiers].sort((a, b) => a.order - b.order).map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.label} · {formatUsdCents(t.priceUsdCents)}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
         </div>
         <div className="flex flex-wrap gap-2">

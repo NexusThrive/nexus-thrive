@@ -1,4 +1,5 @@
 import { and, or } from "@prisma/orm-postgres/orm-client";
+import { seedAccounting } from "@/lib/accounting/accounting-db";
 import { db } from "@/prisma/db";
 import {
   formatCurrency,
@@ -268,6 +269,8 @@ export type AuditAction =
   | "EXPORT_TENANTS"
   | "IMPERSONATE"
   // Operations Center (equipo, cuentas, catálogo, comercial, soporte, cobros)
+  | "USER_LIMIT_SET"
+  | "USER_ORG_CREATE"
   | "STAFF_INVITE"
   | "STAFF_ROLE_CHANGE"
   | "STAFF_DEACTIVATE"
@@ -305,6 +308,31 @@ export type AuditAction =
   | "BIZ_MEMBER_ROLE"
   | "BIZ_MEMBER_ACTIVE"
   | "BIZ_MODULE_TOGGLE"
+  | "BIZ_API_KEY_CREATE"
+  | "BIZ_API_KEY_REVOKE"
+  | "BIZ_API_OPERATION"
+  | "BIZ_PROFILE_UPDATE"
+  | "BIZ_GROWTH"
+  | "BIZ_GOOGLE"
+  | "BIZ_STORE_ORDER"
+  | "BIZ_SITE"
+  | "BIZ_ACCOUNTING"
+  | "BIZ_EINVOICE"
+  | "BIZ_ONLINE_PAYMENT"
+  | "BIZ_INVOICE_NOTE"
+  | "BIZ_POS_TURN"
+  | "BIZ_CARTERA_PAYMENT"
+  | "BIZ_TAX_CHANGE"
+  | "BIZ_NUMBERING_CHANGE"
+  | "BIZ_DATA_IMPORT"
+  | "BIZ_DATA_EXPORT"
+  | "BIZ_STOCK_TRANSFER"
+  | "BIZ_STOCK_COUNT"
+  | "BIZ_WAREHOUSE_CREATE"
+  | "BIZ_PURCHASE_CREATE"
+  | "BIZ_PURCHASE_RECEIVE"
+  | "BIZ_PURCHASE_CANCEL"
+  | "BIZ_SUPPLIER_CREATE"
   | "BIZ_TENANT_DELETE";
 
 export type AuditLogInput = {
@@ -815,6 +843,9 @@ export function createAdminDb() {
           invitedById: null,
           expiresAt: instantFromMs(Date.now() + OWNER_INVITE_DAYS * 86_400_000),
         });
+
+        // Un negocio nuevo trae su plan de cuentas y sus reglas contables de partida.
+        await seedAccounting(tenant.id, tx);
 
         return tenant;
       }),

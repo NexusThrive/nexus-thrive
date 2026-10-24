@@ -32,6 +32,7 @@ import {
 } from "../lean/actions";
 import { inputClasses, labelClasses } from "@/components/atoms/input";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { Select } from "@/components/atoms/select";
 
 /** Partida del presupuesto para enlazar tareas y compromisos (opcional). */
 export type BudgetItemOption = { id: string; label: string };
@@ -71,14 +72,14 @@ function BudgetItemField({ id, items }: { id: string; items: BudgetItemOption[] 
   return (
     <label htmlFor={id} className="block">
       <span className={labelClasses}>Partida del presupuesto (opcional)</span>
-      <select id={id} name="budgetItemId" defaultValue="" className={inputClass}>
+      <Select id={id} name="budgetItemId" defaultValue="">
         <option value="">Sin partida</option>
         {items.map((item) => (
           <option key={item.id} value={item.id}>
             {item.label}
           </option>
         ))}
-      </select>
+      </Select>
     </label>
   );
 }
@@ -263,14 +264,14 @@ function CommitmentEvaluation({
     return (
       <form action={action} className="flex flex-wrap items-center gap-2">
         <input type="hidden" name="status" value="FAILED" />
-        <select name="failureCause" required defaultValue="" aria-label="Causa de no cumplimiento" className="h-8 rounded-lg border border-border bg-card px-2 text-xs">
+        <Select name="failureCause" required defaultValue="" aria-label="Causa de no cumplimiento" className="h-8 rounded-lg border border-border bg-card px-2 text-xs">
           <option value="">Causa…</option>
           {NON_COMPLIANCE_CAUSES.map((cause) => (
             <option key={cause.value} value={cause.value}>
               {cause.label}
             </option>
           ))}
-        </select>
+        </Select>
         <input name="failureNotes" maxLength={300} placeholder="Nota" aria-label="Nota de no cumplimiento" className="h-8 w-36 rounded-lg border border-border bg-card px-2 text-xs" />
         <Button type="submit" size="sm" disabled={pending}>Guardar</Button>
         <button type="button" onClick={() => setFailing(false)} aria-label="Cancelar" className="rounded p-1 text-muted-foreground hover:bg-muted">

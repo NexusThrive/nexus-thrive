@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import { SkeletonRows } from "@/components/molecules/skeleton-rows";
 import { useRouter } from "next/navigation";
 import { ExternalLink, FileText, Paperclip, Send, XCircle } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
@@ -135,7 +136,7 @@ export default function MoneyDetailSheet({ slug, item, business, onClose }: { sl
               ))}
             </ul>
           ) : (
-            <p className="text-[13px] text-muted-foreground">{detail ? "Sin archivos." : "Cargando…"}</p>
+            detail ? <p className="text-[13px] text-muted-foreground">Sin archivos.</p> : <SkeletonRows rows={2} label="Cargando archivos" />
           )}
           {!voided ? (
             <>

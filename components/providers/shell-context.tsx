@@ -22,6 +22,8 @@ export type ShellContextValue = {
   brandName: string;
   brandSub: string;
   groups: NavGroup[];
+  /** Funciones encendidas del negocio (el buscador ofrece activar las demás). */
+  activeModules?: ModuleValue[];
   /** Clave del ítem activo (resalta la barra lateral y la inferior). */
   activeKey: string | undefined;
   /** Título de la barra superior. */
@@ -31,6 +33,8 @@ export type ShellContextValue = {
   onNavigate?: (item: NavItem, event: MouseEvent) => void;
   /** Acciones del botón "Crear"; vacío = el botón central abre el buscador. */
   quickActions: QuickCreateAction[];
+  /** Todas las acciones de «Crear» (la navbar de PC las muestra completas). */
+  createActions?: QuickCreateAction[];
   /** Abre el buscador de la barra superior (paleta propia de cada espacio). */
   openSearch: () => void;
 };
@@ -91,6 +95,11 @@ export function ShellProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [vertical, modulesKey],
   );
+  const createActions = useMemo(
+    () => quickCreateActions(vertical, activeModules, Infinity),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [vertical, modulesKey],
+  );
   const relativePath = tenantRelativePath(pathname, tenantSlug);
   const active = groups.flatMap((g) => g.items).find((item) => isNavActive(item.href, relativePath));
 
@@ -99,13 +108,15 @@ export function ShellProvider({
       brandName: tenantName,
       brandSub: tenantSlug,
       groups,
+      activeModules,
       activeKey: active?.key,
       title: active?.label ?? "Inicio",
       hrefFor: (href) => (href === "" ? `/${tenantSlug}` : `/${tenantSlug}${href}`),
       quickActions,
+      createActions,
       openSearch: () => setOpen(true),
     }),
-    [tenantSlug, tenantName, groups, active, quickActions],
+    [tenantSlug, tenantName, groups, activeModules, active, quickActions, createActions],
   );
   const palette = useMemo(() => ({ open, setOpen }), [open]);
 

@@ -1,3 +1,4 @@
+import { seedAccounting } from "@/lib/accounting/accounting-db";
 import { db } from "@/prisma/db";
 import type { ModuleValue } from "@/lib/onboarding/types";
 
@@ -50,14 +51,6 @@ export async function slugInUse(slug: string): Promise<boolean> {
   return (await db.orm.public.Tenant.where({ slug }).select("id").first()) !== null;
 }
 
-/** Negocio ya completado de la cuenta, si tiene (en el piloto, una cuenta = un negocio). */
-export async function completedTenantOf(clerkUserId: string): Promise<{ name: string } | null> {
-  const membership = await db.orm.public.User.where({ clerkUserId }).first();
-  if (!membership?.tenantId) return null;
-  const owned = await db.orm.public.Tenant.where({ id: membership.tenantId }).first();
-  return owned?.onboardingCompleted ? { name: owned.name } : null;
-}
-
 /** Completa el alta de un negocio que ya existía: perfil, plan y módulos juntos. */
 export async function completeExistingTenant(
   tenantId: string,
@@ -80,6 +73,8 @@ export async function createTenantWithOwner(
     const tenant = await tx.orm.public.Tenant.create(fields);
     await tx.orm.public.User.create({ ...owner, role: "OWNER", tenantId: tenant.id });
     await syncModules(tx, tenant.id, modules);
+    // Un negocio nuevo trae su plan de cuentas y sus reglas contables de partida.
+    await seedAccounting(tenant.id, tx);
     return tenant.id;
   });
 }

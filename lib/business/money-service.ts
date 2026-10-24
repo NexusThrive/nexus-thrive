@@ -1,7 +1,12 @@
+import { emitEvent } from "@/lib/events/outbox";
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
 import type { PaymentStatusValue } from "@/lib/finance";
-import { applyStock, validateStockMove } from "./inventory";
+import { applyStockMovement, StockError } from "@/lib/inventory/stock-service";
+import { balanceOf, validatePayment } from "@/lib/receivables/aging";
+import { cashAccountFor, postByRule, reverseSource } from "@/lib/accounting/ledger-db";
+import { todayCO } from "@/lib/tax/tax";
+import { MoneyError } from "./money-error";
 import { receiptCode } from "./invoice";
 import type { DocumentLineInput } from "./commercial-document";
 import { insertDocument, issueCreditNote, saleDocumentOfPayment } from "./documents-db";
@@ -23,12 +28,11 @@ import { insertDocument, issueCreditNote, saleDocumentOfPayment } from "./docume
 
 export type MoneyTx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
-/** Regla de negocio que impide el cobro: aborta la transacción con un mensaje para la persona. */
-export class MoneyError extends Error {}
+export { MoneyError };
 
 // Dos cobros a la vez pueden tomar el mismo recibo o el mismo número de
 // documento de venta: la restricción única falla y se reintenta todo.
-const isReceiptCollision = (e: unknown) => /receiptNumber|Invoice_tenantId_kind_number/i.test(String((e as Error)?.message ?? e));
+const isReceiptCollision = (e: unknown) => /receiptNumber|Invoice_tenantId_kind_number|JournalEntry_tenantId_number/i.test(String((e as Error)?.message ?? e));
 
 /** Corre `fn` en una transacción; la reintenta completa si dos cobros toman el mismo recibo. */
 export async function moneyTransaction<T>(fn: (tx: MoneyTx) => Promise<T>): Promise<T> {
@@ -84,6 +88,10 @@ export type IncomeInput = {
    * (`sourceType: "INVOICE"`) no crea otro documento: la cuenta ya lo es.
    */
   documentLines?: DocumentLineInput[];
+  /** Turno en el que entra el efectivo (punto de venta); por defecto, el de la caja principal. */
+  cashSessionId?: string | null;
+  /** El documento de venta lo crea quien llama (venta con varios pagos): este cobro no crea otro. */
+  skipDocument?: boolean;
 };
 
 export type Income = { paymentId: string; receiptNumber: number; receipt: string; createdAt: string; documentId: string | null };
@@ -99,7 +107,7 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
 
   const { top } = await tx.orm.public.Payment.where({ tenantId }).aggregate((a) => ({ top: a.max("receiptNumber") }));
   const receiptNumber = (top ?? 0) + 1;
-  const sessionId = input.method === "CASH" && status === "APPROVED" ? await openCashSessionId(tx, tenantId) : null;
+  const sessionId = input.method === "CASH" && status === "APPROVED" ? (input.cashSessionId ?? (await openCashSessionId(tx, tenantId))) : null;
 
   const payment = await tx.orm.public.Payment.create({
     tenantId,
@@ -118,6 +126,10 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
   });
 
   const receipt = receiptCode(receiptNumber);
+  if (status === "APPROVED") {
+    const payer = input.customerId ? await tx.orm.public.Customer.where({ tenantId, id: input.customerId }).select("partyId").first() : null;
+    await postByRule(tx, tenantId, "PAYMENT_RECEIVED", { payment: Number(amount) }, { date: todayCO(), description: `Cobro ${receipt}`, sourceType: "PAYMENT", sourceId: payment.id, partyId: payer?.partyId ?? null, swap: cashAccountFor(input.method) }, userId);
+  }
   if (sessionId) {
     await tx.orm.public.CashMovement.create({
       tenantId,
@@ -134,7 +146,7 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
   // Documento comercial unificado (paso 2): toda venta cobrada deja el mismo
   // tipo de documento, en la misma transacción que el dinero.
   let documentId: string | null = null;
-  if (status === "APPROVED" && input.sourceType !== "INVOICE") {
+  if (status === "APPROVED" && input.sourceType !== "INVOICE" && !input.skipDocument) {
     const customer = input.customerId
       ? await tx.orm.public.Customer.where({ tenantId, id: input.customerId }).select("name").first()
       : null;
@@ -156,6 +168,22 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
       userId,
     );
     documentId = doc.id;
+    await emitEvent(tx, tenantId, {
+      type: "sale.completed",
+      resourceType: "payment",
+      resourceId: payment.id,
+      payload: {
+        payment_id: payment.id,
+        receipt: receipt,
+        amount,
+        currency: "COP",
+        method: input.method,
+        customer_id: input.customerId ?? null,
+        document_id: documentId,
+        source_type: input.sourceType ?? null,
+        source_id: input.sourceId ?? null,
+      },
+    });
   }
   return { paymentId: payment.id, receiptNumber, receipt, createdAt: String(payment.createdAt), documentId };
 }
@@ -185,22 +213,6 @@ async function claimTicketSale(tx: MoneyTx, tenantId: string, id: string): Promi
   return (await tx.query(plan)).length > 0;
 }
 
-/** Descuenta stock solo si nadie lo cambió desde la lectura (reintenta con la lectura nueva). */
-async function takeStock(tx: MoneyTx, tenantId: string, productId: string, quantity: number): Promise<void> {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const p = await tx.orm.public.Product.where({ tenantId, id: productId }).select("stock").first();
-    if (!p) throw new MoneyError("No se encontró.");
-    const err = validateStockMove(p.stock, "SALE", quantity);
-    if (err) throw new MoneyError(err);
-    const plan = tx.sql.public.Product.update({ stock: applyStock(p.stock, "SALE", quantity) })
-      .where((f, fns) => fns.and(fns.eq(f.id, productId), fns.eq(f.tenantId, tenantId), fns.eq(f.stock, p.stock)))
-      .returning("stock")
-      .build();
-    if ((await tx.query(plan)).length > 0) return;
-  }
-  throw new MoneyError("El inventario cambió mientras vendías. Intenta de nuevo.");
-}
-
 // --- Operaciones --------------------------------------------------------------
 
 /** Paga una factura o cuenta de cobro. `null` si ya no está emitida (pagada, anulada o en otro clic). */
@@ -208,14 +220,17 @@ export async function payInvoice(tenantId: string, id: string, method: string, u
   try {
     return await moneyTransaction(async (tx) => {
       const inv = await tx.orm.public.Invoice.where({ tenantId, id })
-        .select("id", "kind", "number", "customerId", "customerName", "total")
+        .select("id", "kind", "number", "customerId", "customerName", "total", "paidTotal")
         .first();
       if (!inv || !(await claimInvoice(tx, tenantId, id))) throw new MoneyError("Solo se pagan documentos emitidos.");
+      // Si ya tenía abonos, se cobra solo lo que falta y la cuenta queda saldada.
+      const balance = balanceOf(toNumber(inv.total), toNumber(inv.paidTotal));
+      await tx.orm.public.Invoice.where({ tenantId, id }).update({ paidTotal: toNumber(inv.total).toFixed(2) });
       const income = await recordIncome(
         tx,
         tenantId,
         {
-          amount: String(inv.total),
+          amount: balance.toFixed(2),
           method,
           customerId: inv.customerId,
           invoiceId: inv.id,
@@ -230,6 +245,59 @@ export async function payInvoice(tenantId: string, id: string, method: string, u
     });
   } catch (e) {
     if (e instanceof MoneyError) return null;
+    throw e;
+  }
+}
+
+/**
+ * Abono a una cuenta de cobro emitida: el pago con su recibo, la caja y el nuevo
+ * saldo se escriben juntos. Si el abono salda la cuenta, queda pagada. Dos abonos
+ * a la vez no se pisan: el UPDATE exige que lo abonado siga siendo lo que se leyó.
+ */
+export async function receiveInvoicePayment(
+  tenantId: string,
+  id: string,
+  amount: number,
+  method: string,
+  userId: string,
+): Promise<{ ok: true; receipt: string; balance: number; settled: boolean } | { ok: false; message: string }> {
+  try {
+    return await moneyTransaction(async (tx) => {
+      const inv = await tx.orm.public.Invoice.where({ tenantId, id })
+        .select("id", "kind", "number", "customerId", "customerName", "total", "paidTotal", "status")
+        .first();
+      if (!inv || inv.kind !== "BILL" || inv.status !== "ISSUED") throw new MoneyError("Solo se abonan cuentas de cobro emitidas.");
+      const total = toNumber(inv.total);
+      const paidBefore = toNumber(inv.paidTotal);
+      const balance = balanceOf(total, paidBefore);
+      const problem = validatePayment(amount, balance);
+      if (problem) throw new MoneyError(problem);
+      const paid = Math.round((paidBefore + amount) * 100) / 100;
+      const settled = paid >= total;
+      const plan = tx.sql.public.Invoice.update({ paidTotal: paid.toFixed(2), ...(settled ? { status: "PAID" as const } : {}) })
+        .where((f, fns) => fns.and(fns.eq(f.id, id), fns.eq(f.tenantId, tenantId), fns.eq(f.status, "ISSUED"), fns.eq(f.paidTotal, paidBefore.toFixed(2))))
+        .returning("id")
+        .build();
+      if ((await tx.query(plan)).length === 0) throw new MoneyError("La cuenta cambió mientras abonabas. Vuelve a intentarlo.");
+      const income = await recordIncome(
+        tx,
+        tenantId,
+        {
+          amount,
+          method,
+          customerId: inv.customerId,
+          invoiceId: inv.id,
+          description: `Abono a cuenta de cobro N.º ${inv.number} · ${inv.customerName}`,
+          cashDescription: `Abono a cuenta N.º ${inv.number}`,
+          sourceType: "INVOICE",
+          sourceId: inv.id,
+        },
+        userId,
+      );
+      return { ok: true as const, receipt: income.receipt, balance: Math.round((balance - amount) * 100) / 100, settled };
+    });
+  } catch (e) {
+    if (e instanceof MoneyError) return { ok: false as const, message: e.message };
     throw e;
   }
 }
@@ -279,7 +347,6 @@ export async function sellProduct(
   const total = Math.round(input.price * input.quantity * 100) / 100;
   try {
     return await moneyTransaction(async (tx) => {
-      if (input.trackStock) await takeStock(tx, tenantId, input.productId, input.quantity);
       const income = await recordIncome(
         tx,
         tenantId,
@@ -296,15 +363,13 @@ export async function sellProduct(
         userId,
       );
       if (input.trackStock) {
-        await tx.orm.public.StockMovement.create({
-          tenantId,
-          productId: input.productId,
-          kind: "SALE",
-          quantity: input.quantity,
-          note: `Venta ${income.receipt}`,
-          paymentId: income.paymentId,
-          createdById: userId,
-        });
+        // Descuenta de la bodega con su costo promedio y deja la línea del kardex (misma transacción que el cobro).
+        try {
+          await applyStockMovement(tx, tenantId, { productId: input.productId, kind: "SALE", quantity: input.quantity, note: `Venta ${income.receipt}`, paymentId: income.paymentId, userId, documentType: "SALE", documentId: income.paymentId });
+        } catch (e) {
+          if (e instanceof StockError) throw new MoneyError(e.message);
+          throw e;
+        }
       }
       return { ok: true as const, paymentId: income.paymentId, receipt: income.receipt };
     });
@@ -344,6 +409,16 @@ export async function voidPayment(tenantId: string, paymentId: string, reason: s
             expenseId: null,
             createdById: userId,
           });
+        }
+      }
+      // Contabilidad: el asiento del cobro se reversa (el libro no se edita, se corrige con otro asiento).
+      await reverseSource(tx, tenantId, "PAYMENT", paymentId, reason, userId);
+      // Anular un abono (o el pago) de una cuenta de cobro la devuelve a la cartera.
+      if (p.invoiceId && p.sourceType === "INVOICE") {
+        const inv = await tx.orm.public.Invoice.where({ tenantId, id: p.invoiceId }).select("status", "paidTotal").first();
+        if (inv && inv.status !== "VOID") {
+          const paid = Math.max(0, Math.round((toNumber(inv.paidTotal) - toNumber(p.amount)) * 100) / 100);
+          await tx.orm.public.Invoice.where({ tenantId, id: p.invoiceId }).update({ paidTotal: paid.toFixed(2), status: "ISSUED" });
         }
       }
       // Anular no borra la venta: emite su nota crédito (documento comercial).

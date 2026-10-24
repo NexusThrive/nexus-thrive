@@ -17,6 +17,7 @@ import { UrlSegmentedControl } from "@/components/molecules/url-segmented-contro
 import { BalanceCard } from "@/components/organisms/balance-card";
 import { MovementsList } from "@/components/organisms/movements-list";
 import PettyCashCard from "./_components/petty-cash-card";
+import { routeCategory } from "@/lib/navigation/tenant-nav";
 
 const PAGE_SIZE = 10;
 
@@ -167,7 +168,7 @@ export default async function FinancePage({
   return (
     <div className="grid gap-6">
       <PageHeader
-        eyebrow="Dinero"
+        eyebrow={routeCategory("/finance")}
         title="Finanzas"
         description={<>Cobros, gastos y caja menor de{" "}
           <span className="font-medium text-foreground/80">{tenantRecord.name}</span>.</>}

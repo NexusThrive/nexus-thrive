@@ -1,13 +1,14 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Blocks, CreditCard, Palette, Store } from "lucide-react";
+import { CreditCard, Palette, Store, UserRound, Users } from "lucide-react";
 import { SectionNav } from "./section-nav";
 
 const ITEMS = [
-  { id: "profile", label: "Perfil del negocio", icon: Store, hint: "Nombre, enlace y contacto" },
-  { id: "plan", label: "Plan", icon: CreditCard, hint: "Thrive y lo que incluye" },
-  { id: "modules", label: "Módulos", icon: Blocks, hint: "Activa lo que usas" },
-  { id: "appearance", label: "Apariencia", icon: Palette, hint: "Tema y movimiento" },
+  { id: "profile", label: "Perfil del negocio", icon: Store, hint: "Nombre, contacto y datos fiscales", group: "Organización" },
+  { id: "plan", label: "Plan y consumo", icon: CreditCard, hint: "Tu plan y lo que has usado", group: "Organización" },
+  { id: "team", label: "Equipo y permisos", icon: Users, hint: "Quién entra y con qué rol", group: "Personas" },
+  { id: "account", label: "Mi cuenta", icon: UserRound, hint: "Tus datos en este negocio", group: "Preferencias personales" },
+  { id: "appearance", label: "Apariencia", icon: Palette, hint: "Tema y movimiento", group: "Preferencias personales" },
 ] as const;
 
 function Demo() {

@@ -1,6 +1,7 @@
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
-import { applyStock, type StockKind } from "./inventory";
+import { applyStockMovement } from "@/lib/inventory/stock-service";
+import type { StockKind } from "./inventory";
 
 /** Catálogo e inventario del negocio (servidor, aislado por tenant). */
 
@@ -23,6 +24,8 @@ export type ProductRow = {
   durationDays: number | null;
   capacity: number | null;
   active: boolean;
+  /** IVA que se cobra (0 si no es gravado). */
+  taxRatePct: number;
 };
 
 const dec = (n: number) => n.toFixed(2);
@@ -45,10 +48,11 @@ function toRow(p: NonNullable<Awaited<ReturnType<typeof db.orm.public.Product.fi
     durationDays: p.durationDays,
     capacity: p.capacity,
     active: p.active,
+    taxRatePct: p.taxCategory === "GRAVADO" ? toNumber(p.taxRatePct) : 0,
   };
 }
 
-export async function listProducts(tenantId: string, filter: { kind?: ProductKindValue | ProductKindValue[]; activeOnly?: boolean; q?: string } = {}): Promise<ProductRow[]> {
+export async function listProducts(tenantId: string, filter: { kind?: ProductKindValue | ProductKindValue[]; activeOnly?: boolean; q?: string; limit?: number } = {}): Promise<ProductRow[]> {
   let q = db.orm.public.Product.where({ tenantId });
   if (filter.kind) {
     const kinds = [filter.kind].flat();
@@ -59,7 +63,9 @@ export async function listProducts(tenantId: string, filter: { kind?: ProductKin
     const pattern = `%${filter.q.trim().replace(/[%_\\]/g, (m) => `\\${m}`)}%`;
     q = q.where((p) => p.name.ilike(pattern));
   }
-  return (await q.orderBy((p) => p.name.asc()).all()).map(toRow);
+  const ordered = q.orderBy((p) => p.name.asc());
+  const rows = await (filter.limit ? ordered.limit(filter.limit) : ordered).all();
+  return rows.map(toRow);
 }
 
 export async function getProduct(tenantId: string, id: string) {
@@ -67,7 +73,7 @@ export async function getProduct(tenantId: string, id: string) {
   return p ? toRow(p) : null;
 }
 
-export type ProductInput = Omit<ProductRow, "id" | "stock"> & { initialStock?: number };
+export type ProductInput = Omit<ProductRow, "id" | "stock" | "taxRatePct"> & { initialStock?: number };
 
 export async function saveProduct(tenantId: string, id: string | null, v: ProductInput, userId: string): Promise<string> {
   const data = {
@@ -97,15 +103,15 @@ export async function saveProduct(tenantId: string, id: string | null, v: Produc
   return created.id;
 }
 
-/** Registra un movimiento y actualiza el stock en la misma transacción. */
-export async function moveStock(tenantId: string, productId: string, kind: StockKind, quantity: number, note: string | null, userId: string | null, paymentId: string | null = null) {
+/**
+ * Registra un movimiento y actualiza el stock en la misma transacción, por el
+ * servicio de inventario (bodega principal, costo promedio y kardex). Devuelve
+ * el stock total del producto. Lanza `StockError` si no hay existencias.
+ */
+export async function moveStock(tenantId: string, productId: string, kind: StockKind, quantity: number, note: string | null, userId: string | null, paymentId: string | null = null, extra: { unitCost?: number | null; documentType?: string | null; documentId?: string | null } = {}) {
   return db.transaction(async (tx) => {
-    const p = await tx.orm.public.Product.where({ tenantId, id: productId }).select("stock").first();
-    if (!p) throw new Error("Producto no encontrado.");
-    const next = applyStock(p.stock, kind, quantity);
-    await tx.orm.public.StockMovement.create({ tenantId, productId, kind, quantity: kind === "ADJUST" ? next - p.stock : quantity, note, paymentId, createdById: userId });
-    await tx.orm.public.Product.where({ tenantId, id: productId }).update({ stock: next });
-    return next;
+    const result = await applyStockMovement(tx, tenantId, { productId, kind, quantity, note, userId, paymentId, ...extra });
+    return result.productStock;
   });
 }
 

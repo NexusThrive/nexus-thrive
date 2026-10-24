@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `parties`, `party-roles`, `addresses`, `contacts` |
+| Eventos (outbox → webhooks) | `party.created`, `party.updated`, `party.merged` |
+| MCP · lectura | `search_parties`, `get_party` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `create_party`, `merge_parties` |
+| Sistemas externos (puertos y adaptadores) | RUES / DIAN (consulta de NIT, vía proveedor) |
+
+#### Integración
+
+- [ ] API REST de lectura: parties, party-roles, addresses, contacts (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: party.created, party.updated, party.merged (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: search_parties, get_party (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: create_party, merge_parties (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento del modelo de terceros
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
@@ -23,14 +46,14 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Tercero único con roles
+- [x] Tercero único con roles _(PR-08)_ _hecho: lib/parties/parties-db.ts (Party, PartyRole; cada cliente guardado tiene su tercero)_
 - [ ] Documento transaccional unificado
-- [ ] Motor contable
-- [ ] Libro mayor inalterable
-- [ ] Impuestos y retenciones parametrizables con vigencia
-- [ ] Dimensiones analíticas
-- [ ] Periodos y cierres
-- [ ] Numeración y resoluciones
+- [x] Motor contable _(PR-22)_
+- [x] Libro mayor inalterable _(PR-22)_
+- [x] Impuestos y retenciones parametrizables con vigencia _hecho: lib/tax + app/[tenant]/(app)/taxes (tarifas con vigencia y retenciones)_
+- [x] Dimensiones analíticas _(PR-21)_
+- [x] Periodos y cierres _(PR-21)_
+- [x] Numeración y resoluciones _hecho: NumberingResolution; el consecutivo sale del rango y avisa/bloquea_
 - [ ] Multi-moneda y tasas de cambio
 - [ ] Motor de aprobaciones, bitácora global y permisos
 

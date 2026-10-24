@@ -3,6 +3,8 @@ import { MODULE_LABELS, type ModuleValue } from "@/lib/admin/catalogs";
 import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
 import { PLANS, type Billing, type PlanKey } from "@/lib/plans/catalog";
 import type { TenantAccess } from "@/lib/benefits/benefits-db";
+import { ConsumptionPanel } from "@/components/organisms/consumption-panel";
+import type { ConsumptionRow } from "@/lib/usage/consumption";
 
 export type PlanInfo = {
   plan: PlanKey;
@@ -12,6 +14,8 @@ export type PlanInfo = {
   activeModules: ModuleValue[];
   /** Último acceso (canje): si fue promo o pagado, y hasta cuándo. */
   access?: TenantAccess | null;
+  /** Consumo frente a los límites de uso (el plan limita uso, no funciones). */
+  usage?: ConsumptionRow[];
 };
 
 function formatDate(iso: string): string {
@@ -56,8 +60,10 @@ export default function PlanTab({ info }: { info: PlanInfo }) {
         <p className="mt-3 text-xs text-[#A1A1A8]">{accessDetail}</p>
       </section>
 
+      {info.usage?.length ? <ConsumptionPanel rows={info.usage} /> : null}
+
       <section className="rounded-lg border border-border bg-surface">
-        <h2 className="border-b border-border px-[18px] py-4 font-display text-[15px] font-semibold">Módulos incluidos</h2>
+        <h2 className="border-b border-border px-[18px] py-4 font-display text-[15px] font-semibold">Funciones en uso</h2>
         <ul className="flex flex-wrap gap-1.5 p-[18px]">
           {info.activeModules.map((m) => {
             const Icon = MODULE_ICONS[m];

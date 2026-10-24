@@ -30,6 +30,8 @@ import { db } from "@/prisma/db";
  * aquí.
  */
 export const TENANT_DELETION_TABLES: readonly string[] = [
+  "ApiKey",
+  "ApiRequestLog",
   "ApuActivity",
   "ApuActivityComposition",
   "ApuChapter",
@@ -57,18 +59,30 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "Departure",
   "DismissedNotification",
   "Expense",
+  "ExternalConnection",
   "FieldLog",
   "FieldLogEntry",
   "InboxConversation",
   "InboxMessage",
   "Invoice",
   "InvoiceLine",
+  "IdempotencyRecord",
   "Lead",
   "LeadActivity",
   "LookaheadTask",
   "Membership",
+  "OutboxEvent",
+  "Party",
+  "PartyRole",
   "Payment",
+  "PriceList",
+  "PriceListItem",
   "PresenceRequest",
+  "ProductBarcode",
+  "ProductVariant",
+  "ProviderEvent",
+  "PurchaseOrder",
+  "PurchaseOrderLine",
   "PresenceScan",
   "Product",
   "Project",
@@ -80,7 +94,35 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "QuoteItem",
   "SatisfactionSurvey",
   "StockMovement",
+  "StockTransfer",
+  "StockTransferLine",
+  "StockCount",
+  "StockCountLine",
+  "TaxRate",
+  "PosTerminal",
+  "PaymentIntent",
+  "FiscalDocument",
+  "PresenceSnapshot",
+  "SiteConfig",
+  "StoreOrder",
+  "GoogleListing",
+  "TrackedLink",
+  "ContactLead",
+  "Review",
+  "StoreOrderLine",
+  "JournalEntry",
+  "JournalLine",
+  "Account",
+  "AccountingPeriod",
+  "AccountingRule",
+  "CostCenter",
+  "PaymentRefund",
+  "ReconciliationRun",
+  "NumberingResolution",
+  "StockLevel",
   "Subscription",
+  "SupplierInvoice",
+  "SupplierPayment",
   "SupportTicket",
   "TenantContact",
   "TenantInvite",
@@ -88,7 +130,11 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "TicketMessage",
   "TicketSale",
   "TourBooking",
+  "UsageCounter",
   "User",
+  "Warehouse",
+  "WebhookDelivery",
+  "WebhookEndpoint",
   "WeeklyCommitment",
 ];
 
@@ -242,6 +288,28 @@ export async function deleteTenantCompletely(
   count("ApuChapter", await tx.orm.public.ApuChapter.where({ tenantId }).deleteAll());
   count("ApuImage", await tx.orm.public.ApuImage.where({ tenantId }).deleteAll());
   count("ApuImportRun", await tx.orm.public.ApuImportRun.where({ tenantId }).deleteAll());
+  count("PriceListItem", await tx.orm.public.PriceListItem.where({ tenantId }).deleteAll());
+  count("PriceList", await tx.orm.public.PriceList.where({ tenantId }).deleteAll());
+  count("ProductBarcode", await tx.orm.public.ProductBarcode.where({ tenantId }).deleteAll());
+  count("ProductVariant", await tx.orm.public.ProductVariant.where({ tenantId }).deleteAll());
+  count("PartyRole", await tx.orm.public.PartyRole.where({ tenantId }).deleteAll());
+  count("ProviderEvent", await tx.orm.public.ProviderEvent.where({ tenantId }).deleteAll());
+  count("ExternalConnection", await tx.orm.public.ExternalConnection.where({ tenantId }).deleteAll());
+  count("UsageCounter", await tx.orm.public.UsageCounter.where({ tenantId }).deleteAll());
+  count("StockCountLine", await tx.orm.public.StockCountLine.where({ tenantId }).deleteAll());
+  count("StockCount", await tx.orm.public.StockCount.where({ tenantId }).deleteAll());
+  count("StockTransferLine", await tx.orm.public.StockTransferLine.where({ tenantId }).deleteAll());
+  count("StockTransfer", await tx.orm.public.StockTransfer.where({ tenantId }).deleteAll());
+  count("SupplierPayment", await tx.orm.public.SupplierPayment.where({ tenantId }).deleteAll());
+  count("SupplierInvoice", await tx.orm.public.SupplierInvoice.where({ tenantId }).deleteAll());
+  count("PurchaseOrderLine", await tx.orm.public.PurchaseOrderLine.where({ tenantId }).deleteAll());
+  count("PurchaseOrder", await tx.orm.public.PurchaseOrder.where({ tenantId }).deleteAll());
+  count("WebhookDelivery", await tx.orm.public.WebhookDelivery.where({ tenantId }).deleteAll());
+  count("WebhookEndpoint", await tx.orm.public.WebhookEndpoint.where({ tenantId }).deleteAll());
+  count("OutboxEvent", await tx.orm.public.OutboxEvent.where({ tenantId }).deleteAll());
+  count("ApiRequestLog", await tx.orm.public.ApiRequestLog.where({ tenantId }).deleteAll());
+  count("IdempotencyRecord", await tx.orm.public.IdempotencyRecord.where({ tenantId }).deleteAll());
+  count("ApiKey", await tx.orm.public.ApiKey.where({ tenantId }).deleteAll());
   count("Attachment", await tx.orm.public.Attachment.where({ tenantId }).deleteAll());
   count("Attendance", await tx.orm.public.Attendance.where({ tenantId }).deleteAll());
   count("BenefitRedemption", await tx.orm.public.BenefitRedemption.where({ tenantId }).deleteAll());
@@ -269,6 +337,7 @@ export async function deleteTenantCompletely(
   count("Quote", await tx.orm.public.Quote.where({ tenantId }).deleteAll());
   count("Project", await tx.orm.public.Project.where({ tenantId }).deleteAll());
   count("Customer", await tx.orm.public.Customer.where({ tenantId }).deleteAll());
+  count("Party", await tx.orm.public.Party.where({ tenantId }).deleteAll());
   count("Departure", await tx.orm.public.Departure.where({ tenantId }).deleteAll());
   count("Expense", await tx.orm.public.Expense.where({ tenantId }).deleteAll());
   count("InboxConversation", await tx.orm.public.InboxConversation.where({ tenantId }).deleteAll());
@@ -277,7 +346,30 @@ export async function deleteTenantCompletely(
   count("PresenceRequest", await tx.orm.public.PresenceRequest.where({ tenantId }).deleteAll());
   count("PresenceScan", await tx.orm.public.PresenceScan.where({ tenantId }).deleteAll());
   count("StockMovement", await tx.orm.public.StockMovement.where({ tenantId }).deleteAll());
+  count("StockLevel", await tx.orm.public.StockLevel.where({ tenantId }).deleteAll());
+  count("Warehouse", await tx.orm.public.Warehouse.where({ tenantId }).deleteAll());
   count("Product", await tx.orm.public.Product.where({ tenantId }).deleteAll());
+  count("TaxRate", await tx.orm.public.TaxRate.where({ tenantId }).deleteAll());
+  count("FiscalDocument", await tx.orm.public.FiscalDocument.where({ tenantId }).deleteAll());
+  count("PresenceSnapshot", await tx.orm.public.PresenceSnapshot.where({ tenantId }).deleteAll());
+  count("TrackedLink", await tx.orm.public.TrackedLink.where({ tenantId }).deleteAll());
+  count("ContactLead", await tx.orm.public.ContactLead.where({ tenantId }).deleteAll());
+  count("Review", await tx.orm.public.Review.where({ tenantId }).deleteAll());
+  count("GoogleListing", await tx.orm.public.GoogleListing.where({ tenantId }).deleteAll());
+  count("StoreOrderLine", await tx.orm.public.StoreOrderLine.where({ tenantId }).deleteAll());
+  count("StoreOrder", await tx.orm.public.StoreOrder.where({ tenantId }).deleteAll());
+  count("SiteConfig", await tx.orm.public.SiteConfig.where({ tenantId }).deleteAll());
+  count("JournalLine", await tx.orm.public.JournalLine.where({ tenantId }).deleteAll());
+  count("JournalEntry", await tx.orm.public.JournalEntry.where({ tenantId }).deleteAll());
+  count("Account", await tx.orm.public.Account.where({ tenantId }).deleteAll());
+  count("AccountingPeriod", await tx.orm.public.AccountingPeriod.where({ tenantId }).deleteAll());
+  count("AccountingRule", await tx.orm.public.AccountingRule.where({ tenantId }).deleteAll());
+  count("CostCenter", await tx.orm.public.CostCenter.where({ tenantId }).deleteAll());
+  count("PaymentRefund", await tx.orm.public.PaymentRefund.where({ tenantId }).deleteAll());
+  count("PaymentIntent", await tx.orm.public.PaymentIntent.where({ tenantId }).deleteAll());
+  count("ReconciliationRun", await tx.orm.public.ReconciliationRun.where({ tenantId }).deleteAll());
+  count("PosTerminal", await tx.orm.public.PosTerminal.where({ tenantId }).deleteAll());
+  count("NumberingResolution", await tx.orm.public.NumberingResolution.where({ tenantId }).deleteAll());
   count("SatisfactionSurvey", await tx.orm.public.SatisfactionSurvey.where({ tenantId }).deleteAll());
   count("Subscription", await tx.orm.public.Subscription.where({ tenantId }).deleteAll());
   count("SupportTicket", await tx.orm.public.SupportTicket.where({ tenantId }).deleteAll());

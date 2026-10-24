@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/ops/access";
 import { logOps } from "@/lib/ops/audit";
-import { isLeadStage, LEAD_ACTIVITY_KINDS, stageMeta, validateLead, type LeadInput } from "@/lib/ops/crm-rules";
+import { dropRule, isLeadStage, LEAD_ACTIVITY_KINDS, stageMeta, validateLead, type LeadInput } from "@/lib/ops/crm-rules";
 import { assignManagerIfMissing } from "@/lib/ops/accounts";
 import { addLeadActivity, createLead, deleteLead, getLead, touchLead, updateLead } from "@/lib/ops/leads";
 import { isActiveStaff } from "@/lib/ops/team";
@@ -51,12 +51,20 @@ export async function saveLeadAction(id: string | null, input: LeadInput): Promi
   return { ok: true, id: leadId! };
 }
 
-/** Mueve un lead de etapa desde el tablero (sin perder las reglas). */
-export async function moveLeadAction(id: string, stage: string): Promise<LeadResult> {
+/**
+ * Mueve un lead de etapa desde el tablero (sin perder las reglas). Con
+ * `expectedStage` (la etapa que la persona veía) detecta el cambio
+ * concurrente: si otra persona ya lo movió, no pisa su trabajo.
+ */
+export async function moveLeadAction(id: string, stage: string, expectedStage?: string): Promise<LeadResult> {
   const lead = await getLead(id);
   if (!lead) return { ok: false, message: "El lead no existe." };
   if (!isLeadStage(stage)) return { ok: false, message: "Etapa no válida." };
-  if (stage === "LOST" || stage === "WON") return { ok: false, message: "Para ganar o perder un lead, ábrelo: hay que indicar el negocio o el motivo." };
+  if (expectedStage && lead.stage !== expectedStage) {
+    return { ok: false, message: `Alguien ya movió este lead a «${stageMeta(lead.stage).label}». Se actualizó el tablero.` };
+  }
+  const rule = dropRule(lead.stage, stage);
+  if (!rule.ok && lead.stage !== stage) return { ok: false, message: rule.reason };
   return saveLeadAction(id, { ...lead, stage, nextStepDate: lead.nextStepDate });
 }
 

@@ -1,0 +1,365 @@
+[
+  {
+    "id": "table.SupplierPayment",
+    "label": "Create table \"SupplierPayment\"",
+    "summary": "Creates table \"SupplierPayment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "SupplierPayment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"SupplierPayment\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierPayment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"SupplierPayment\"",
+        "sql": "CREATE TABLE \"public\".\"SupplierPayment\" (\n  \"amount\" numeric NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"id\" text NOT NULL,\n  \"method\" text NOT NULL,\n  \"note\" text,\n  \"supplierInvoiceId\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"SupplierPayment\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierPayment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Invoice.paidTotal",
+    "label": "Add column \"paidTotal\" to \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "paidTotal",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"paidTotal\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "paidTotal"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"paidTotal\"",
+        "sql": "ALTER TABLE \"public\".\"Invoice\" ADD COLUMN \"paidTotal\" numeric DEFAULT '0'::numeric NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"paidTotal\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "paidTotal"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.SupplierInvoice.paidTotal",
+    "label": "Add column \"paidTotal\" to \"SupplierInvoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "paidTotal",
+        "table": "SupplierInvoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"paidTotal\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "SupplierInvoice",
+          "paidTotal"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"paidTotal\"",
+        "sql": "ALTER TABLE \"public\".\"SupplierInvoice\" ADD COLUMN \"paidTotal\" numeric DEFAULT '0'::numeric NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"paidTotal\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "SupplierInvoice",
+          "paidTotal"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SupplierPayment.SupplierPayment_supplierInvoiceId_idx_7f6ba885",
+    "label": "Create index \"SupplierPayment_supplierInvoiceId_idx_7f6ba885\" on \"SupplierPayment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SupplierPayment_supplierInvoiceId_idx_7f6ba885",
+        "table": "SupplierPayment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SupplierPayment_supplierInvoiceId_idx_7f6ba885\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierPayment_supplierInvoiceId_idx_7f6ba885\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SupplierPayment_supplierInvoiceId_idx_7f6ba885\"",
+        "sql": "CREATE INDEX \"SupplierPayment_supplierInvoiceId_idx_7f6ba885\" ON \"public\".\"SupplierPayment\" (\"supplierInvoiceId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SupplierPayment_supplierInvoiceId_idx_7f6ba885\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierPayment_supplierInvoiceId_idx_7f6ba885\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SupplierPayment.SupplierPayment_tenantId_idx_c93ed4f1",
+    "label": "Create index \"SupplierPayment_tenantId_idx_c93ed4f1\" on \"SupplierPayment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SupplierPayment_tenantId_idx_c93ed4f1",
+        "table": "SupplierPayment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SupplierPayment_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierPayment_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SupplierPayment_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"SupplierPayment_tenantId_idx_c93ed4f1\" ON \"public\".\"SupplierPayment\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SupplierPayment_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierPayment_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SupplierPayment.SupplierPayment_tenantId_supplierInvoiceId_idx_ed90e67e",
+    "label": "Create index \"SupplierPayment_tenantId_supplierInvoiceId_idx_ed90e67e\" on \"SupplierPayment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SupplierPayment_tenantId_supplierInvoiceId_idx_ed90e67e",
+        "table": "SupplierPayment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SupplierPayment_tenantId_supplierInvoiceId_idx_ed90e67e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierPayment_tenantId_supplierInvoiceId_idx_ed90e67e\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SupplierPayment_tenantId_supplierInvoiceId_idx_ed90e67e\"",
+        "sql": "CREATE INDEX \"SupplierPayment_tenantId_supplierInvoiceId_idx_ed90e67e\" ON \"public\".\"SupplierPayment\" (\"tenantId\", \"supplierInvoiceId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SupplierPayment_tenantId_supplierInvoiceId_idx_ed90e67e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SupplierPayment_tenantId_supplierInvoiceId_idx_ed90e67e\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.SupplierPayment.SupplierPayment_tenantId_fkey",
+    "label": "Add foreign key \"SupplierPayment_tenantId_fkey\" on \"SupplierPayment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "SupplierPayment_tenantId_fkey",
+        "table": "SupplierPayment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"SupplierPayment_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SupplierPayment_tenantId_fkey",
+          "public",
+          "\"public\".\"SupplierPayment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"SupplierPayment_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"SupplierPayment\"\nADD CONSTRAINT \"SupplierPayment_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"SupplierPayment_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SupplierPayment_tenantId_fkey",
+          "public",
+          "\"public\".\"SupplierPayment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.SupplierPayment.SupplierPayment_supplierInvoiceId_fkey",
+    "label": "Add foreign key \"SupplierPayment_supplierInvoiceId_fkey\" on \"SupplierPayment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "SupplierPayment_supplierInvoiceId_fkey",
+        "table": "SupplierPayment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"SupplierPayment_supplierInvoiceId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SupplierPayment_supplierInvoiceId_fkey",
+          "public",
+          "\"public\".\"SupplierPayment\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"SupplierPayment_supplierInvoiceId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"SupplierPayment\"\nADD CONSTRAINT \"SupplierPayment_supplierInvoiceId_fkey\"\nFOREIGN KEY (\"supplierInvoiceId\")\nREFERENCES \"public\".\"SupplierInvoice\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"SupplierPayment_supplierInvoiceId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SupplierPayment_supplierInvoiceId_fkey",
+          "public",
+          "\"public\".\"SupplierPayment\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.SupplierPayment",
+    "label": "Enable row-level security on \"SupplierPayment\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "SupplierPayment"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"SupplierPayment\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "SupplierPayment"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"SupplierPayment\"",
+        "sql": "ALTER TABLE \"public\".\"SupplierPayment\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"SupplierPayment\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "SupplierPayment"
+        ]
+      }
+    ]
+  }
+]

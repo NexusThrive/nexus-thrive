@@ -1,0 +1,407 @@
+[
+  {
+    "id": "table.UsageCounter",
+    "label": "Create table \"UsageCounter\"",
+    "summary": "Creates table \"UsageCounter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "UsageCounter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"UsageCounter\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UsageCounter\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"UsageCounter\"",
+        "sql": "CREATE TABLE \"public\".\"UsageCounter\" (\n  \"id\" text NOT NULL,\n  \"limitQuantity\" int4,\n  \"meter\" text NOT NULL,\n  \"period\" text NOT NULL,\n  \"quantity\" int4 DEFAULT 0 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"UsageCounter\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UsageCounter\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.AuditLog.actorType",
+    "label": "Add column \"actorType\" to \"AuditLog\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "actorType",
+        "table": "AuditLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"actorType\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "AuditLog",
+          "actorType"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"actorType\"",
+        "sql": "ALTER TABLE \"public\".\"AuditLog\" ADD COLUMN \"actorType\" text DEFAULT 'USER' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"actorType\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "AuditLog",
+          "actorType"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.AuditLog.apiKeyId",
+    "label": "Add column \"apiKeyId\" to \"AuditLog\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "apiKeyId",
+        "table": "AuditLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"apiKeyId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "AuditLog",
+          "apiKeyId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"apiKeyId\"",
+        "sql": "ALTER TABLE \"public\".\"AuditLog\" ADD COLUMN \"apiKeyId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"apiKeyId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "AuditLog",
+          "apiKeyId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.AuditLog.requestId",
+    "label": "Add column \"requestId\" to \"AuditLog\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "requestId",
+        "table": "AuditLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"requestId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "AuditLog",
+          "requestId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"requestId\"",
+        "sql": "ALTER TABLE \"public\".\"AuditLog\" ADD COLUMN \"requestId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"requestId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "AuditLog",
+          "requestId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.UsageCounter.UsageCounter_tenantId_meter_period_key",
+    "label": "Add unique constraint on \"UsageCounter\" (tenantId, meter, period)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "UsageCounter_tenantId_meter_period_key",
+        "table": "UsageCounter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"UsageCounter_tenantId_meter_period_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "UsageCounter_tenantId_meter_period_key",
+          "public",
+          "\"public\".\"UsageCounter\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"UsageCounter_tenantId_meter_period_key\"",
+        "sql": "ALTER TABLE \"public\".\"UsageCounter\" ADD CONSTRAINT \"UsageCounter_tenantId_meter_period_key\" UNIQUE (\"tenantId\", \"meter\", \"period\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"UsageCounter_tenantId_meter_period_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "UsageCounter_tenantId_meter_period_key",
+          "public",
+          "\"public\".\"UsageCounter\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.AuditLog.AuditLog_apiKeyId_idx_7bbbe9ea",
+    "label": "Create index \"AuditLog_apiKeyId_idx_7bbbe9ea\" on \"AuditLog\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "AuditLog_apiKeyId_idx_7bbbe9ea",
+        "table": "AuditLog"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"AuditLog_apiKeyId_idx_7bbbe9ea\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AuditLog_apiKeyId_idx_7bbbe9ea\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"AuditLog_apiKeyId_idx_7bbbe9ea\"",
+        "sql": "CREATE INDEX \"AuditLog_apiKeyId_idx_7bbbe9ea\" ON \"public\".\"AuditLog\" (\"apiKeyId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"AuditLog_apiKeyId_idx_7bbbe9ea\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AuditLog_apiKeyId_idx_7bbbe9ea\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.UsageCounter.UsageCounter_tenantId_idx_c93ed4f1",
+    "label": "Create index \"UsageCounter_tenantId_idx_c93ed4f1\" on \"UsageCounter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "UsageCounter_tenantId_idx_c93ed4f1",
+        "table": "UsageCounter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"UsageCounter_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UsageCounter_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"UsageCounter_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"UsageCounter_tenantId_idx_c93ed4f1\" ON \"public\".\"UsageCounter\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"UsageCounter_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UsageCounter_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.UsageCounter.UsageCounter_tenantId_period_idx_f0994702",
+    "label": "Create index \"UsageCounter_tenantId_period_idx_f0994702\" on \"UsageCounter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "UsageCounter_tenantId_period_idx_f0994702",
+        "table": "UsageCounter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"UsageCounter_tenantId_period_idx_f0994702\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UsageCounter_tenantId_period_idx_f0994702\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"UsageCounter_tenantId_period_idx_f0994702\"",
+        "sql": "CREATE INDEX \"UsageCounter_tenantId_period_idx_f0994702\" ON \"public\".\"UsageCounter\" (\"tenantId\", \"period\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"UsageCounter_tenantId_period_idx_f0994702\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UsageCounter_tenantId_period_idx_f0994702\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.UsageCounter.UsageCounter_tenantId_fkey",
+    "label": "Add foreign key \"UsageCounter_tenantId_fkey\" on \"UsageCounter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "UsageCounter_tenantId_fkey",
+        "table": "UsageCounter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"UsageCounter_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "UsageCounter_tenantId_fkey",
+          "public",
+          "\"public\".\"UsageCounter\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"UsageCounter_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"UsageCounter\"\nADD CONSTRAINT \"UsageCounter_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"UsageCounter_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "UsageCounter_tenantId_fkey",
+          "public",
+          "\"public\".\"UsageCounter\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.UsageCounter",
+    "label": "Enable row-level security on \"UsageCounter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "UsageCounter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"UsageCounter\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "UsageCounter"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"UsageCounter\"",
+        "sql": "ALTER TABLE \"public\".\"UsageCounter\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"UsageCounter\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "UsageCounter"
+        ]
+      }
+    ]
+  }
+]

@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `subscriptions`, `plans`, `billing-cycles`, `dunning` |
+| Eventos (outbox → webhooks) | `subscription.created`, `subscription.renewed`, `subscription.payment_failed`, `subscription.canceled` |
+| MCP · lectura | `list_subscriptions`, `get_subscription` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `create_subscription`, `cancel_subscription` |
+| Sistemas externos (puertos y adaptadores) | Pasarelas con cobro recurrente (Nequi, Wompi, Stripe) |
+
+#### Integración
+
+- [ ] API REST de lectura: subscriptions, plans, billing-cycles, dunning (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: subscription.created, subscription.renewed, subscription.payment_failed, subscription.canceled (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: list_subscriptions, get_subscription (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: create_subscription, cancel_subscription (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de ciclos, planes y renovaciones
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).

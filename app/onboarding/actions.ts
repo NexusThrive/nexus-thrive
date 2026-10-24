@@ -1,7 +1,8 @@
 "use server";
 
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { completeExistingTenant, completedTenantOf, createTenantWithOwner, onboardingMembership, onboardingTenant, slugInUse } from "@/lib/onboarding/onboarding-db";
+import { organizationLimitProblem } from "@/lib/admin/users-db";
+import { completeExistingTenant, createTenantWithOwner, onboardingMembership, onboardingTenant, slugInUse } from "@/lib/onboarding/onboarding-db";
 import { validateAdaptiveOnboarding } from "@/lib/onboarding/validation";
 import { suggestSlug } from "@/lib/onboarding/slug";
 import { quote as quotePlan } from "@/lib/plans/pricing";
@@ -250,15 +251,8 @@ export async function completeAdaptiveOnboardingAction(
   }
 
   // 4) Modo create: dispersión de identidad desde Clerk -----------------
-  // En el piloto, una cuenta de Clerk es un negocio: si ya tiene uno, no
-  // puede crear otro (ni canjear el mismo código dos veces).
-  const owned = await completedTenantOf(userId);
-  if (owned) {
-    return {
-      status: "error",
-      message: `Ya tienes un negocio en NEXUS (${owned.name}). Escríbenos si necesitas otro.`,
-    };
-  }
+  // Una cuenta puede tener varias organizaciones (membresías independientes):
+  // crear otra no toca las que ya tiene. Cada una nace con su dueño, equipo y plan.
 
   const clerkUser = await currentUser();
   const primaryEmail =
@@ -268,6 +262,10 @@ export async function completeAdaptiveOnboardingAction(
   const displayName =
     `${clerkUser?.firstName ?? ""} ${clerkUser?.lastName ?? ""}`.trim() ||
     "Usuario";
+
+  // Límite de negocios por persona fijado desde el Operations Center (sin fila = sin límite).
+  const limitMessage = primaryEmail ? await organizationLimitProblem(primaryEmail) : null;
+  if (limitMessage) return { status: "error", message: limitMessage };
 
   // Disponibilidad del slug (carrera posible: el @unique del contract
   // es la última barrera; el catch convierte la colisión en mensaje).

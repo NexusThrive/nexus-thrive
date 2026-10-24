@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `employees`, `contracts`, `employee-documents` |
+| Eventos (outbox → webhooks) | `employee.hired`, `employee.updated`, `contract.expiring`, `employee.terminated` |
+| MCP · lectura | `list_employees`, `get_employee`, `list_expiring_contracts` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `create_employee`, `attach_document` |
+| Sistemas externos (puertos y adaptadores) | — |
+
+#### Integración
+
+- [ ] API REST de lectura: employees, contracts, employee-documents (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: employee.hired, employee.updated, contract.expiring, employee.terminated (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: list_employees, get_employee, list_expiring_contracts (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: create_employee, attach_document (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de empleados, expedientes y relaciones laborales
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).

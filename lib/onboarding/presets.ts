@@ -10,24 +10,28 @@
 import {
   VERTICAL_RECIPES,
   sortModules,
+  withChildModules,
   type ModuleValue,
   type VerticalValue,
 } from "@/lib/admin/catalogs";
 import type { OnboardingTenantType } from "./types";
 
 /** Módulos que implican equipo/operación: se omiten en el perfil INDIVIDUAL. */
-const TEAM_HEAVY_MODULES: readonly ModuleValue[] = [
+const TEAM_HEAVY_MODULES: readonly ModuleValue[] = withChildModules([
   "orders",
   "inventory",
+  "purchases",
   "memberships",
   "billing",
-];
+]);
 
 /** Mínimo que todo negocio necesita (garantía de utilidad al entrar). */
 export const MINIMAL_MODULES: readonly ModuleValue[] = [
   "dashboard",
   "crm",
   "payments",
+  "pos",
+  "online_payments",
 ];
 
 export function getOnboardingModulePreset(input: {

@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `workflows`, `workflow-runs`, `triggers`, `connections` |
+| Eventos (outbox → webhooks) | `workflow.run_completed`, `workflow.run_failed` |
+| MCP · lectura | `list_workflows`, `get_run_status` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `trigger_workflow`, `pause_workflow` |
+| Sistemas externos (puertos y adaptadores) | n8n (instancia propia o en la nube): nodo comunitario de NEXUS, disparadores por webhook y acciones por la API |
+
+#### Integración
+
+- [ ] API REST de lectura: workflows, workflow-runs, triggers, connections (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: workflow.run_completed, workflow.run_failed (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: list_workflows, get_run_status (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: trigger_workflow, pause_workflow (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de reglas, disparadores y acciones
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
@@ -26,7 +49,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Reglas simples “si pasa X, haz Y”
 - [ ] Activar y desactivar cada regla.
 - [ ] Acciones básicas: enviar mensaje, crear tarea, cambiar estado, notificar al…
-- [ ] n8n conectado a NEXUS por la API con llave del negocio (nunca a la base) _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
+- [ ] n8n conectado a NEXUS por la API con llave del negocio (nunca a la base) _(objetivo 2026 · ver `docs/PENDIENTES.md`)_ _(PR-07)_
 
 #### Técnico
 
