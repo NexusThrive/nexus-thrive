@@ -1,3 +1,7 @@
+> [!NOTE]
+> **Esta es la versión 1 (V1) de NEXUS THRIVE, archivada.** Es el piloto interno original y ya no recibe cambios.
+> La versión vigente es la **V2**, en la rama [`main`](https://github.com/NexusThrive/nexus-thrive/tree/main) (etiqueta [`v2.0.0`](https://github.com/NexusThrive/nexus-thrive/releases/tag/v2.0.0)).
+
 <p align="center">
   <img src="app/icon.svg" alt="Logo de NEXUS THRIVE" width="104" height="104">
 </p>
