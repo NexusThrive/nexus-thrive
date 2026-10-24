@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { closePeriod, createAccount, createCostCenter, reopenPeriod, seedAccounting, setAccountActive, setCostCenterActive, setRuleActive } from "@/lib/accounting/accounting-db";
 import { listEntries, setAccountingEnabled, verifyLedger } from "@/lib/accounting/ledger-db";
+import { REPORTS, buildReport, ledgerRows, type ReportKind, type ReportResult } from "@/lib/accounting/reports-db";
 import { can } from "@/lib/business/permissions";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";
@@ -109,3 +110,14 @@ export async function verifyLedgerAction(slug: string): Promise<AccResult> {
 
 export type { EntryRow } from "@/lib/accounting/ledger-db";
 void listEntries;
+
+/** Un informe contable en pantalla para un rango de fechas (los mismos datos que baja el contador en CSV). */
+export async function reportAction(slug: string, kind: string, from: string, to: string, account: string): Promise<{ ok: true; report: ReportResult } | { ok: false; message: string }> {
+  const ctx = await manager(slug);
+  if (!ctx) return { ok: false, message: DENIED.message };
+  if (!(REPORTS as readonly string[]).includes(kind)) return { ok: false, message: "Elige un informe." };
+  const date = /^\d{4}-\d{2}-\d{2}$/;
+  if (!date.test(from) || !date.test(to) || from > to) return { ok: false, message: "Revisa las fechas: «desde» no puede ser posterior a «hasta»." };
+  if ((kind === "ledger" || kind === "auxiliary") && !/^\d{4,10}$/.test(account)) return { ok: false, message: "Escribe el código de la cuenta (por ejemplo 1305)." };
+  return { ok: true, report: buildReport(kind as ReportKind, await ledgerRows(ctx.tenantId, from, to), account) };
+}

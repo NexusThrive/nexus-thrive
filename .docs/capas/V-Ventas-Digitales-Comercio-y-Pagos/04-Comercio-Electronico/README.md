@@ -79,7 +79,7 @@ tags: [capas, estructura, subcapa]
 
 - [ ] Inventario multi-bodega
 - [ ] Transportadoras integradas
-- [x] Devoluciones y garantías
+- [ ] Devoluciones y garantías
 - [ ] Reglas de precio
 - [ ] Roles y permisos
 - [ ] Reportes: ventas por producto, margen, conversión y abandono.

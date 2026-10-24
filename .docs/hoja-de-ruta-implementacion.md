@@ -156,10 +156,10 @@ de «hecho»). No se edita a mano.
 | **17** | Cobra y factura | Pagos: intención de cobro, Nequi y conciliación | V | N1, N2 | 6/8 | `PR-17-pagos-intenciones-conciliacion` | pendiente |
 | **18** | Cobra y factura | Facturación electrónica: puerto sin proveedor | VII | N1, N2 | 3/6 | `PR-18-facturacion-electronica` | pendiente |
 | **19** | Cobra y factura | Adaptador de pagos Wompi | V | N2 | 1/1 | — | hecho |
-| **20** | Cobra y factura | Proveedor tecnológico DIAN | VII | N2 | 1/1 | — | hecho |
+| **20** | Cobra y factura | Proveedor tecnológico DIAN | VII | N2 | 0/1 | — | pendiente |
 | **21** | Contabilidad | Contabilidad I: plan de cuentas, períodos y reglas | I, VII | N1, N2 | 4/4 | `PR-21-contabilidad-plan-y-periodos` | hecho |
 | **22** | Contabilidad | Contabilidad II: asientos automáticos y partida doble | I, VII | N1, N2 | 3/4 | `PR-22-contabilidad-asientos` | pendiente |
-| **23** | Contabilidad | Estados financieros y exportación al contador | VII | N1, N2 | 0/4 | — | pendiente |
+| **23** | Contabilidad | Estados financieros y exportación al contador | VII | N1, N2 | 4/4 | — | hecho |
 | **24** | Visible y vende en línea | Presencia v2: pilares, fases y tendencia | II | N2 | 0/1 | `PR-24-presencia-v2` | pendiente |
 | **25** | Visible y vende en línea | Mini-sitio con catálogo y SEO técnico | II | N1 | 0/6 | `PR-25-sitio-y-catalogo-publico` | pendiente |
 | **26** | Visible y vende en línea | Tienda en línea: carrito, pedido y pago | V | N1 | 0/5 | `PR-26-tienda-carrito-y-envios` | pendiente |
@@ -432,7 +432,7 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Un documento del set de pruebas queda aceptado y los pendientes históricos se envían en orden sin duplicar. (Cuando se elija.)
 - **Casillas que marca:**
   - [`VII.04 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md)
-    - [x] Notas crédito y débito electrónicas
+    - [ ] Notas crédito y débito electrónicas
 
 ### PR-21 · Contabilidad I: plan de cuentas, períodos y reglas
 
@@ -474,11 +474,11 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** El balance de prueba cuadra con una muestra revisada por un contador; el archivo se importa en su software.
 - **Casillas que marca:**
   - [`VII.05 · N1`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md)
-    - [ ] Reportes simples
-    - [ ] Exportación
+    - [x] Reportes simples
+    - [x] Exportación
   - [`VII.05 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md)
-    - [ ] Libros auxiliares, libro diario, libro mayor y balance de prueba.
-    - [ ] Reportes para el contador
+    - [x] Libros auxiliares, libro diario, libro mayor y balance de prueba.
+    - [x] Reportes para el contador
 
 ### PR-24 · Presencia v2: pilares, fases y tendencia
 

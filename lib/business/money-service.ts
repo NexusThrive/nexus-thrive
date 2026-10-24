@@ -126,7 +126,10 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
   });
 
   const receipt = receiptCode(receiptNumber);
-  if (status === "APPROVED") await postByRule(tx, tenantId, "PAYMENT_RECEIVED", { payment: Number(amount) }, { date: todayCO(), description: `Cobro ${receipt}`, sourceType: "PAYMENT", sourceId: payment.id, swap: cashAccountFor(input.method) }, userId);
+  if (status === "APPROVED") {
+    const payer = input.customerId ? await tx.orm.public.Customer.where({ tenantId, id: input.customerId }).select("partyId").first() : null;
+    await postByRule(tx, tenantId, "PAYMENT_RECEIVED", { payment: Number(amount) }, { date: todayCO(), description: `Cobro ${receipt}`, sourceType: "PAYMENT", sourceId: payment.id, partyId: payer?.partyId ?? null, swap: cashAccountFor(input.method) }, userId);
+  }
   if (sessionId) {
     await tx.orm.public.CashMovement.create({
       tenantId,

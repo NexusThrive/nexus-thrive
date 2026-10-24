@@ -12,6 +12,7 @@ import { Field } from "@/components/molecules/field";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
+import ReportsPanel from "./reports-panel";
 import { Switch } from "@/components/atoms/switch";
 import { setEnabledAction, verifyLedgerAction, closePeriodAction, createAccountAction, createCostCenterAction, loadPucAction, reopenPeriodAction, toggleAccountAction, toggleCostCenterAction, toggleRuleAction, type AccResult } from "@/app/[tenant]/(app)/contabilidad/actions";
 import { TYPE_LABELS, periodLabel } from "@/lib/accounting/puc";
@@ -19,7 +20,7 @@ import type { AccountRow, CostCenterRow, PeriodRow, RuleRow } from "@/lib/accoun
 import type { EntryRow } from "@/lib/accounting/ledger-db";
 import { formatCurrency } from "@/lib/format";
 
-type Tab = "entries" | "puc" | "rules" | "centers" | "periods";
+type Tab = "entries" | "reports" | "puc" | "rules" | "centers" | "periods";
 const AMOUNT_TEXT = { total: "total", subtotal: "subtotal", tax: "IVA", cost: "costo", payment: "valor cobrado/pagado", withholding: "retención", tip: "propina" } as const;
 
 export default function AccountingView({ slug, accounts, rules, centers, periods, entries = [], auto = false, today, canReopen }: { slug: string; accounts: AccountRow[]; rules: RuleRow[]; centers: CostCenterRow[]; periods: PeriodRow[]; entries?: EntryRow[]; auto?: boolean; today: string; canReopen: boolean }) {
@@ -54,7 +55,7 @@ export default function AccountingView({ slug, accounts, rules, centers, periods
   return (
     <div className="grid gap-4">
       <div className="max-w-full overflow-x-auto pb-1">
-        <SegmentedControl ariaLabel="Sección" value={tab} onChange={setTab} options={[{ value: "entries", label: "Libro de asientos" }, { value: "puc", label: "Plan de cuentas", count: accounts.length }, { value: "rules", label: "Reglas de asientos", count: rules.length }, { value: "centers", label: "Centros de costo" }, { value: "periods", label: "Períodos" }]} />
+        <SegmentedControl ariaLabel="Sección" value={tab} onChange={setTab} options={[{ value: "entries", label: "Libro de asientos" }, { value: "reports", label: "Informes" }, { value: "puc", label: "Plan de cuentas", count: accounts.length }, { value: "rules", label: "Reglas de asientos", count: rules.length }, { value: "centers", label: "Centros de costo" }, { value: "periods", label: "Períodos" }]} />
       </div>
 
       {tab === "entries" ? (
@@ -92,6 +93,8 @@ export default function AccountingView({ slug, accounts, rules, centers, periods
           )}
         </div>
       ) : null}
+
+      {tab === "reports" ? <ReportsPanel slug={slug} today={today} /> : null}
 
       {tab === "puc" ? (
         accounts.length === 0 ? (
