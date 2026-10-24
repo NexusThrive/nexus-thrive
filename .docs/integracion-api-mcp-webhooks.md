@@ -21,10 +21,12 @@ Se apoya en lo ya decidido en [`docs/PENDIENTES.md` §5](../docs/PENDIENTES.md),
 en el outbox de [`scaling-path.md` Etapa 2](../docs/nexus-architecture/scaling-path.md)
 y en el registro de capacidades (ADR-0003, `lib/capabilities/registry.ts`).
 
-> Estado: **diseño**. Hoy no existe `/api/v1`, ni servidor MCP, ni outbox; sí
+> Estado: **en construcción**. Ya existe el **registro de operaciones**
+> (`lib/operations/`: tipos, motor y 6 operaciones de lectura, PR-01). Todavía
+> no existen `/api/v1`, el servidor MCP ni el outbox (PR-02 a PR-04). Sí
 > existen los repositorios de `lib/` con `tenantId`, `can()`, `money-service` y
-> `logTenantAction`, que son lo que la API va a envolver, y dos webhooks
-> entrantes (`app/api/webhooks/whatsapp`, `email`) de uso interno.
+> `logTenantAction`, que son lo que la API envuelve, y dos webhooks entrantes
+> (`app/api/webhooks/whatsapp`, `email`) de uso interno.
 
 ---
 
