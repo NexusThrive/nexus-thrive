@@ -62,4 +62,26 @@ export const inventoryOperations: OperationDefinition[] = [
       };
     },
   }),
+  defineOperation({
+    id: "products.find_by_barcode",
+    rest: { method: "GET", path: "/products/barcode/{code}" },
+    title: "Buscar por código de barras",
+    description: "Encuentra el producto (y la variante) de un código de barras con su precio de venta. Con `priceListId` usa esa lista de precios; si no, la predeterminada.",
+    module: "inventory",
+    permission: null,
+    risk: "read",
+    input: z.object({ code: z.string().trim().min(3).max(48), priceListId: z.string().max(80).optional() }),
+    output: z.object({
+      product: z.object({ id: z.string(), name: z.string(), sku: z.string().nullable(), kind: z.string(), category: z.string().nullable(), active: z.boolean(), trackStock: z.boolean(), stock: z.number().nullable() }),
+      variant: z.object({ id: z.string(), name: z.string(), sku: z.string().nullable(), attributes: z.record(z.string(), z.string()) }).nullable(),
+      price: z.number(),
+      priceSource: z.enum(["list_variant", "list_product", "variant", "product"]),
+    }),
+    handler: async (ctx, input) => {
+      const { findByBarcode } = await import("@/lib/catalog/catalog-db");
+      const hit = await findByBarcode(ctx.tenantId, input.code, input.priceListId);
+      if (!hit) throw new OperationError("invalid_input", "No hay un producto con ese código.", 404);
+      return hit;
+    },
+  }),
 ];
