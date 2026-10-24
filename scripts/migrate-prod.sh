@@ -81,7 +81,18 @@ if [ "$BACKUP" = 1 ]; then
   FILE="backups/respaldo-$(date +%Y%m%d-%H%M%S).dump"
   echo
   echo "── 2. Respaldo → $FILE ──"
-  pg_dump "$URL" --format=custom --no-owner --file "$FILE"
+  # pg_dump debe ser de la misma versión mayor que el servidor (o más nueva). Si el local es más viejo,
+  # se usa la imagen oficial de postgres con Docker (con --network host para llegar a la misma base).
+  SERVER_MAJOR="$(psql "$URL" -t -A -c "show server_version_num" | cut -c1-2)"
+  LOCAL_MAJOR="$(pg_dump --version | grep -oE '[0-9]+' | head -1)"
+  if [ "${PG_DUMP_DOCKER:-0}" = 1 ] || [ "$LOCAL_MAJOR" -lt "$SERVER_MAJOR" ]; then
+    command -v docker >/dev/null || { echo "pg_dump $LOCAL_MAJOR es más viejo que el servidor ($SERVER_MAJOR) y no hay Docker. Instala postgresql-client-$SERVER_MAJOR." >&2; exit 1; }
+    echo "(pg_dump local $LOCAL_MAJOR < servidor $SERVER_MAJOR: se usa postgres:$SERVER_MAJOR con Docker)"
+    docker run --rm --network host "postgres:$SERVER_MAJOR" pg_dump "$URL" --format=custom --no-owner > "$FILE"
+  else
+    pg_dump "$URL" --format=custom --no-owner --file "$FILE"
+  fi
+  [ -s "$FILE" ] || { echo "El respaldo quedó vacío: no se aplica nada." >&2; exit 1; }
 fi
 
 echo
