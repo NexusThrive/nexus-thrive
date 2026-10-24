@@ -1,11 +1,38 @@
 "use client";
 
-import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { ChevronDown, PanelLeft } from "lucide-react";
 import { usePreferences } from "@/components/providers/preferences";
 import { useShell } from "@/components/providers/shell-context";
 import styles from "./app-sidebar.module.css";
+
+const CLOSED_KEY = "nx-nav-closed";
+const EMPTY: Record<string, boolean> = {};
+const closedListeners = new Set<() => void>();
+let cachedRaw: string | null = null;
+let cachedValue = EMPTY;
+const subscribeClosed = (fn: () => void) => {
+  closedListeners.add(fn);
+  return () => void closedListeners.delete(fn);
+};
+/** Grupos ocultos (con la misma referencia mientras no cambie, como pide useSyncExternalStore). */
+function readClosed(): Record<string, boolean> {
+  let raw: string | null = null;
+  try {
+    raw = localStorage.getItem(CLOSED_KEY);
+  } catch {
+    /* sin almacenamiento */
+  }
+  if (raw === cachedRaw) return cachedValue;
+  cachedRaw = raw;
+  try {
+    cachedValue = raw ? (JSON.parse(raw) as Record<string, boolean>) : EMPTY;
+  } catch {
+    cachedValue = EMPTY;
+  }
+  return cachedValue;
+}
 
 /**
  * Barra lateral del negocio (oculta en móvil, donde manda la barra inferior).
@@ -27,25 +54,17 @@ export function AppSidebar() {
   const [tip, setTip] = useState<{ text: string; top: number; left: number } | null>(null);
   const [peek, setPeek] = useState(false);
   // Ingresos y Gastos se despliegan y se ocultan; lo elegido se recuerda en este navegador.
-  const [closed, setClosed] = useState<Record<string, boolean>>({});
-  useEffect(() => {
+  const closed = useSyncExternalStore(subscribeClosed, readClosed, () => EMPTY);
+  const toggle = (label: string) => {
+    const next = { ...closed, [label]: !closed[label] };
     try {
-      setClosed(JSON.parse(localStorage.getItem("nx-nav-closed") ?? "{}") as Record<string, boolean>);
+      localStorage.setItem(CLOSED_KEY, JSON.stringify(next));
     } catch {
-      /* sin almacenamiento: todo abierto */
+      /* sin almacenamiento: no se recuerda */
     }
-  }, []);
-  const toggle = (label: string) =>
-    setClosed((prev) => {
-      const next = { ...prev, [label]: !prev[label] };
-      try {
-        localStorage.setItem("nx-nav-closed", JSON.stringify(next));
-      } catch {
-        /* se ignora */
-      }
-      return next;
-    });
-  const peekTimer = useRef<number | undefined>(undefined);
+    cachedRaw = null;
+    closedListeners.forEach((fn) => fn());
+  };
 
   useLayoutEffect(() => {
     const nav = navRef.current;
