@@ -328,6 +328,10 @@
       "model": "SupplierInvoice",
       "namespace": "public"
     },
+    "SupplierPayment": {
+      "model": "SupplierPayment",
+      "namespace": "public"
+    },
     "SupportTicket": {
       "model": "SupportTicket",
       "namespace": "public"
@@ -7605,6 +7609,13 @@
                   "kind": "scalar"
                 }
               },
+              "paidTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
               "paymentId": {
                 "nullable": true,
                 "type": {
@@ -7786,6 +7797,9 @@
                 },
                 "originType": {
                   "column": "originType"
+                },
+                "paidTotal": {
+                  "column": "paidTotal"
                 },
                 "paymentId": {
                   "column": "paymentId"
@@ -14987,6 +15001,13 @@
                   "kind": "scalar"
                 }
               },
+              "paidTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
               "purchaseOrderId": {
                 "nullable": true,
                 "type": {
@@ -15038,6 +15059,21 @@
               }
             },
             "relations": {
+              "payments": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "supplierInvoiceId"
+                  ]
+                },
+                "to": {
+                  "model": "SupplierPayment",
+                  "namespace": "public"
+                }
+              },
               "purchaseOrder": {
                 "cardinality": "N:1",
                 "nullable": true,
@@ -15107,6 +15143,9 @@
                 "number": {
                   "column": "number"
                 },
+                "paidTotal": {
+                  "column": "paidTotal"
+                },
                 "purchaseOrderId": {
                   "column": "purchaseOrderId"
                 },
@@ -15131,6 +15170,130 @@
               },
               "namespaceId": "public",
               "table": "SupplierInvoice"
+            }
+          },
+          "SupplierPayment": {
+            "fields": {
+              "amount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdById": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "method": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "note": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "supplierInvoiceId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "supplierInvoice": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "supplierInvoiceId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "SupplierInvoice",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "amount": {
+                  "column": "amount"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "createdById": {
+                  "column": "createdById"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "method": {
+                  "column": "method"
+                },
+                "note": {
+                  "column": "note"
+                },
+                "supplierInvoiceId": {
+                  "column": "supplierInvoiceId"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "SupplierPayment"
             }
           },
           "SupportTicket": {
@@ -16799,6 +16962,21 @@
                 },
                 "to": {
                   "model": "SupplierInvoice",
+                  "namespace": "public"
+                }
+              },
+              "supplierPayments": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "SupplierPayment",
                   "namespace": "public"
                 }
               },
@@ -19478,6 +19656,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "SupplierInvoice"
+            },
+            "SupplierPayment": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "SupplierPayment"
             },
             "SupportTicket": {
               "kind": "rls",
@@ -24723,6 +24906,15 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
+                },
+                "paidTotal": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
                 },
                 "paymentId": {
                   "codecId": "pg/text@1",
@@ -30678,6 +30870,15 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "paidTotal": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
                 "purchaseOrderId": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -30824,6 +31025,123 @@
                   ]
                 }
               ]
+            },
+            "SupplierPayment": {
+              "columns": {
+                "amount": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "createdById": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "method": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "note": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "supplierInvoiceId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "SupplierPayment"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "supplierInvoiceId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "SupplierPayment"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "SupplierInvoice"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "supplierInvoiceId"
+                  ],
+                  "name": "SupplierPayment_supplierInvoiceId_idx_7f6ba885",
+                  "prefix": "SupplierPayment_supplierInvoiceId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "SupplierPayment_tenantId_idx_c93ed4f1",
+                  "prefix": "SupplierPayment_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "supplierInvoiceId"
+                  ],
+                  "name": "SupplierPayment_tenantId_supplierInvoiceId_idx_ed90e67e",
+                  "prefix": "SupplierPayment_tenantId_supplierInvoiceId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
             },
             "SupportTicket": {
               "checks": [
@@ -33394,10 +33712,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "f64f52cd3e517b822dd8cae378a5000d223f0dd188d7c3e52deac8c31a8ebff4"
+    "storageHash": "35370b0e28c7b144871c24d4b6596e4c51189286990e98b31bb6bb39ed51a3ae"
   },
   "execution": {
-    "executionHash": "8626695fcb32fec2d6d0e1d527b5a028fdaeee996c457728b86937ab97485f18",
+    "executionHash": "1c46da6992e45937292f6de80d5c0ea99eb962ff42367e534a93e6e239ccd3f6",
     "mutations": {
       "defaults": [
         {
@@ -34918,6 +35236,17 @@
           },
           "ref": {
             "entry": "SupplierInvoice",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "SupplierPayment",
             "field": "id",
             "namespace": "public"
           }

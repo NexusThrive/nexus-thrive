@@ -103,6 +103,7 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "StockLevel",
   "Subscription",
   "SupplierInvoice",
+  "SupplierPayment",
   "SupportTicket",
   "TenantContact",
   "TenantInvite",
@@ -280,6 +281,7 @@ export async function deleteTenantCompletely(
   count("StockCount", await tx.orm.public.StockCount.where({ tenantId }).deleteAll());
   count("StockTransferLine", await tx.orm.public.StockTransferLine.where({ tenantId }).deleteAll());
   count("StockTransfer", await tx.orm.public.StockTransfer.where({ tenantId }).deleteAll());
+  count("SupplierPayment", await tx.orm.public.SupplierPayment.where({ tenantId }).deleteAll());
   count("SupplierInvoice", await tx.orm.public.SupplierInvoice.where({ tenantId }).deleteAll());
   count("PurchaseOrderLine", await tx.orm.public.PurchaseOrderLine.where({ tenantId }).deleteAll());
   count("PurchaseOrder", await tx.orm.public.PurchaseOrder.where({ tenantId }).deleteAll());

@@ -409,6 +409,7 @@ model Tenant {
   stockCounts        StockCount[]
   stockCountLines    StockCountLine[]
   taxRates           TaxRate[]
+  supplierPayments   SupplierPayment[]
   numberingResolutions NumberingResolution[]
   supportTickets     SupportTicket[]
   charges            Charge[]
@@ -2169,6 +2170,8 @@ model Invoice {
   /// Retenciones que practica quien paga (retefuente, reteIVA…): total y detalle por concepto.
   withholdingTotal Decimal    @default(0)
   withholdings Json?
+  /// Lo abonado a una cuenta de cobro emitida (cartera). El saldo es total − paidTotal.
+  paidTotal    Decimal       @default(0)
   createdAt    DateTime      @default(now())
   updatedAt    temporal.updatedAt()
   lines        InvoiceLine[]
@@ -2777,6 +2780,9 @@ model SupplierInvoice {
   status          String   @default("REGISTERED")
   /// CUFE de la factura electrónica, si la trae.
   cufe            String?
+  /// Lo ya pagado al proveedor (cartera por pagar). El saldo es total − paidTotal.
+  paidTotal       Decimal  @default(0)
+  payments        SupplierPayment[]
   createdAt       DateTime @default(now())
 
   @@unique([tenantId, supplierPartyId, number])
@@ -2912,5 +2918,24 @@ model NumberingResolution {
   createdAt        DateTime  @default(now())
 
   @@index([tenantId, documentKind])
+  @@rls
+}
+
+
+/// Pago (o abono) a una factura de proveedor. Baja el saldo de la cartera por pagar en la
+/// misma transacción que lo registra.
+model SupplierPayment {
+  id                String          @id @default(uuid())
+  tenantId          String
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplierInvoiceId String
+  supplierInvoice   SupplierInvoice @relation(fields: [supplierInvoiceId], references: [id], onDelete: Cascade)
+  amount            Decimal
+  method            String
+  note              String?
+  createdById       String?
+  createdAt         DateTime        @default(now())
+
+  @@index([tenantId, supplierInvoiceId])
   @@rls
 }

@@ -21,7 +21,7 @@ describe("buildTenantNav", () => {
     const groups = buildTenantNav("gym", ["dashboard", "crm", "memberships", "finance", "payments", "whatsapp"]);
     expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y operación", "Dinero", "Canales", "Sistema"]);
     // Pagos vive dentro de Finanzas: no se repite.
-    expect(groups.find((g) => g.label === "Dinero")?.items.map((i) => i.label)).toEqual(["Finanzas", "Impuestos y numeración"]);
+    expect(groups.find((g) => g.label === "Dinero")?.items.map((i) => i.label)).toEqual(["Finanzas", "Cartera", "Impuestos y numeración"]);
   });
 
   it("la suite de construcción abre Obras, Cotizaciones y Catálogo APU", () => {
