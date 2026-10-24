@@ -13,6 +13,7 @@ import {
   LayoutDashboard,
   MessageCircle,
   Package,
+  HandCoins,
   Percent,
   Receipt,
   Repeat,
@@ -171,6 +172,7 @@ export const CAPABILITIES = [
     included: true,
     nav: [
       { href: "/finance", icon: Wallet, label: () => "Finanzas" },
+      { href: "/cartera", icon: HandCoins, label: () => "Cartera" },
       { href: "/taxes", icon: Percent, label: () => "Impuestos y numeración" },
     ],
   },

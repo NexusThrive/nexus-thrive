@@ -150,7 +150,7 @@ de «hecho»). No se edita a mano.
 | **11** | Vende y controla | Inventario II: traslados, conteos y compras | VI | N1 | 5/5 | `PR-11-traslados-conteos-compras` | hecho |
 | **12** | Vende y controla | Importar y exportar clientes y catálogo | — | — | base técnica | — | pendiente |
 | **13** | Vende y controla | Impuestos y numeración por resolución | VII | N1, N2 | 0/4 | `PR-13-impuestos-y-numeracion` | pendiente |
-| **14** | Vende y controla | Cartera: cuentas por cobrar y por pagar | VII | N1 | 0/2 | `PR-14-cartera` | pendiente |
+| **14** | Vende y controla | Cartera: cuentas por cobrar y por pagar | — | — | base técnica | `PR-14-cartera` | pendiente |
 | **15** | Vende y controla | POS I: terminales, turnos y venta multilínea | V | N2 | 0/3 | `PR-15-pos-terminales-turnos` | pendiente |
 | **16** | Vende y controla | POS II: impresión, código de barras y devoluciones | V | N2 | 0/3 | — | pendiente |
 | **17** | Cobra y factura | Pagos: intención de cobro, Nequi y conciliación | V | N1, N2 | 0/8 | `PR-17-pagos-intenciones-conciliacion` | pendiente |
@@ -343,14 +343,10 @@ de «hecho»). No se edita a mano.
 ### PR-14 · Cartera: cuentas por cobrar y por pagar
 
 - **Rama:** `cobro/cartera` · **Hito:** 2 · Vende y controla
-- **Etiquetas:** `capa-VII` `N1` `tipo:migracion` `hito-2-vende-y-controla`
+- **Etiquetas:** `tipo:migracion` `hito-2-vende-y-controla`
 - **Depende de:** PR-13
 - **Esquema:** [`sql/PR-14-cartera.sql`](sql/PR-14-cartera.sql)
 - **Hecho cuando:** Un abono baja el saldo en la misma transacción; el reporte por antigüedad suma la cartera.
-- **Casillas que marca:**
-  - [`VII.02 · N1`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/02-Cuentas-por-Cobrar-Cuentas-por-Pagar-y-Cartera/README.md)
-    - [ ] Cuentas por cobrar
-    - [ ] Cuentas por pagar
 
 ### PR-15 · POS I: terminales, turnos y venta multilínea
 

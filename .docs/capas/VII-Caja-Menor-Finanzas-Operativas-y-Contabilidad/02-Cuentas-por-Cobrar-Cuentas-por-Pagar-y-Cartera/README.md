@@ -46,8 +46,8 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Cuentas por cobrar _(PR-14)_
-- [ ] Cuentas por pagar _(PR-14)_
+- [x] Cuentas por cobrar _hecho: receiveInvoicePayment + /cartera (abonos, saldo, antigüedad)_
+- [x] Cuentas por pagar _hecho: paySupplierInvoice + SupplierPayment_
 
 #### Técnico
 
