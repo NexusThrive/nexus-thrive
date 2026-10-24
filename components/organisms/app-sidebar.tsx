@@ -53,6 +53,7 @@ export function AppSidebar() {
   const indicatorRef = useRef<HTMLSpanElement>(null);
   const [tip, setTip] = useState<{ text: string; top: number; left: number } | null>(null);
   const [peek, setPeek] = useState(false);
+  const peekTimer = useRef<number | undefined>(undefined);
   // Ingresos y Gastos se despliegan y se ocultan; lo elegido se recuerda en este navegador.
   const closed = useSyncExternalStore(subscribeClosed, readClosed, () => EMPTY);
   const toggle = (label: string) => {
