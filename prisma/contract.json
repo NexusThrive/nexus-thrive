@@ -260,6 +260,10 @@
       "model": "PresenceScan",
       "namespace": "public"
     },
+    "PresenceSnapshot": {
+      "model": "PresenceSnapshot",
+      "namespace": "public"
+    },
     "PriceList": {
       "model": "PriceList",
       "namespace": "public"
@@ -11635,6 +11639,114 @@
               "table": "PresenceScan"
             }
           },
+          "PresenceSnapshot": {
+            "fields": {
+              "coverage": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "day": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "phase": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "pillars": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
+              "score": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "coverage": {
+                  "column": "coverage"
+                },
+                "day": {
+                  "column": "day"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "phase": {
+                  "column": "phase"
+                },
+                "pillars": {
+                  "column": "pillars"
+                },
+                "score": {
+                  "column": "score"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "PresenceSnapshot"
+            }
+          },
           "PriceList": {
             "fields": {
               "active": {
@@ -18352,6 +18464,21 @@
                   "namespace": "public"
                 }
               },
+              "presenceSnapshots": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "PresenceSnapshot",
+                  "namespace": "public"
+                }
+              },
               "priceListItems": {
                 "cardinality": "1:N",
                 "on": {
@@ -21310,6 +21437,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "PresenceScan"
+            },
+            "PresenceSnapshot": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "PresenceSnapshot"
             },
             "PriceList": {
               "kind": "rls",
@@ -29900,6 +30032,92 @@
               },
               "uniques": []
             },
+            "PresenceSnapshot": {
+              "columns": {
+                "coverage": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "day": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "phase": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "pillars": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
+                  "nullable": false
+                },
+                "score": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PresenceSnapshot"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "PresenceSnapshot_tenantId_idx_c93ed4f1",
+                  "prefix": "PresenceSnapshot_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "day"
+                  ]
+                }
+              ]
+            },
             "PriceList": {
               "columns": {
                 "active": {
@@ -36805,10 +37023,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "83f21004c2a7e93bc0f80dd61a41375c9949309808334ed8f281eca35699ea26"
+    "storageHash": "45c5cc2af8378c4ffe212ee6f3afa72956c4ef4b87820b7be018d2c1a5e19c12"
   },
   "execution": {
-    "executionHash": "c94ba508fe10847f0a1c720f8ce2d69bcb9b3a01557c8c0f5bee29ce75d81f4a",
+    "executionHash": "8786468134338fafe6f8b68d50dfc378652b24c3d9f81517bd3c33be0f5d141f",
     "mutations": {
       "defaults": [
         {
@@ -37918,6 +38136,32 @@
           "ref": {
             "entry": "PresenceScan",
             "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PresenceSnapshot",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PresenceSnapshot",
+            "field": "updatedAt",
             "namespace": "public"
           }
         },

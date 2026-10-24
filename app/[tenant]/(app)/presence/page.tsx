@@ -4,6 +4,8 @@ import { ArrowLeft } from "lucide-react";
 import { PageHeader } from "@/components/molecules/page-header";
 import { loadPresence } from "@/lib/presence/load";
 import PresencePanel from "../_components/presence-panel";
+import PresencePillars from "../_components/presence-pillars";
+import { presenceV2 } from "@/lib/presence/pillars-db";
 import { requirePageContext } from "@/lib/tenant/context";
 
 /**
@@ -23,7 +25,7 @@ export default async function PresencePage({
   const pageCtx = await requirePageContext(tenantSlug);
   const tenantRecord = pageCtx.tenant;
 
-  const presence = await loadPresence(tenantRecord);
+  const [presence, v2] = await Promise.all([loadPresence(tenantRecord), presenceV2(tenantRecord.id)]);
 
   return (
     <div className="flex flex-col gap-3.5">
@@ -41,6 +43,7 @@ export default async function PresencePage({
           </Link>
         }
       />
+      <PresencePillars pillars={v2.pillars} phase={v2.phase} trend={v2.trend} />
       <PresencePanel
         tenantSlug={tenantSlug}
         presence={presence}

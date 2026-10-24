@@ -421,6 +421,7 @@ model Tenant {
   accountingRules    AccountingRule[]
   costCenters        CostCenter[]
   journalEntries     JournalEntry[]
+  presenceSnapshots  PresenceSnapshot[]
   journalLines       JournalLine[]
   paymentRefunds     PaymentRefund[]
   reconciliationRuns ReconciliationRun[]
@@ -3202,5 +3203,27 @@ model JournalLine {
 
   @@index([tenantId, accountCode])
   @@index([entryId])
+  @@rls
+}
+
+
+/// Foto diaria de la Presencia del negocio (una por día): puntaje de la fase A, sus pilares y cuántos se miden.
+/// Sirve para la tendencia (¿sube o baja?) sin recalcular el pasado.
+model PresenceSnapshot {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// AAAA-MM-DD (hora de Colombia).
+  day       String
+  score     Int
+  /// Cobertura: % de los pilares verificables que ya se miden.
+  coverage  Int
+  /// A | B_READY
+  phase     String
+  /// [{ key, score|null, verified }]
+  pillars   Json
+  updatedAt temporal.updatedAt()
+
+  @@unique([tenantId, day])
   @@rls
 }

@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'83f21004c2a7e93bc0f80dd61a41375c9949309808334ed8f281eca35699ea26'>;
+  StorageHashBase<'45c5cc2af8378c4ffe212ee6f3afa72956c4ef4b87820b7be018d2c1a5e19c12'>;
 export type ExecutionHash =
-  ExecutionHashBase<'c94ba508fe10847f0a1c720f8ce2d69bcb9b3a01557c8c0f5bee29ce75d81f4a'>;
+  ExecutionHashBase<'8786468134338fafe6f8b68d50dfc378652b24c3d9f81517bd3c33be0f5d141f'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -1134,6 +1134,16 @@ export type FieldOutputTypes = {
       readonly state: CodecTypes['pg/text@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly website: CodecTypes['pg/json@1']['output'] | null;
+    };
+    readonly PresenceSnapshot: {
+      readonly coverage: CodecTypes['pg/int4@1']['output'];
+      readonly day: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly phase: CodecTypes['pg/text@1']['output'];
+      readonly pillars: CodecTypes['pg/json@1']['output'];
+      readonly score: CodecTypes['pg/int4@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly PriceList: {
       readonly active: CodecTypes['pg/bool@1']['output'];
@@ -2692,6 +2702,16 @@ export type FieldInputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly website: CodecTypes['pg/json@1']['input'] | null;
     };
+    readonly PresenceSnapshot: {
+      readonly coverage: CodecTypes['pg/int4@1']['input'];
+      readonly day: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly phase: CodecTypes['pg/text@1']['input'];
+      readonly pillars: CodecTypes['pg/json@1']['input'];
+      readonly score: CodecTypes['pg/int4@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly PriceList: {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -4249,6 +4269,16 @@ export type StorageColumnTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly website: CodecTypes['pg/json@1']['output'] | null;
     };
+    readonly PresenceSnapshot: {
+      readonly coverage: CodecTypes['pg/int4@1']['output'];
+      readonly day: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly phase: CodecTypes['pg/text@1']['output'];
+      readonly pillars: CodecTypes['pg/json@1']['output'];
+      readonly score: CodecTypes['pg/int4@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
     readonly PriceList: {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -5805,6 +5835,16 @@ export type StorageColumnInputTypes = {
       readonly state: CodecTypes['pg/text@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly website: CodecTypes['pg/json@1']['input'] | null;
+    };
+    readonly PresenceSnapshot: {
+      readonly coverage: CodecTypes['pg/int4@1']['input'];
+      readonly day: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly phase: CodecTypes['pg/text@1']['input'];
+      readonly pillars: CodecTypes['pg/json@1']['input'];
+      readonly score: CodecTypes['pg/int4@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly PriceList: {
       readonly active: CodecTypes['pg/bool@1']['input'];
@@ -7563,6 +7603,18 @@ export namespace Models {
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'tenant';
   };
+  export type public_PresenceSnapshot = {
+    coverage: CodecTypes['pg/int4@1']['output'];
+    day: CodecTypes['pg/text@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    phase: CodecTypes['pg/text@1']['output'];
+    pillars: CodecTypes['pg/json@1']['output'];
+    score: CodecTypes['pg/int4@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
+  };
   export type public_PriceList = {
     active: CodecTypes['pg/bool@1']['output'];
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -8243,6 +8295,7 @@ export namespace Models {
     posTerminals: public_PosTerminal[];
     presenceRequests: public_PresenceRequest[];
     presenceScans: public_PresenceScan[];
+    presenceSnapshots: public_PresenceSnapshot[];
     priceListItems: public_PriceListItem[];
     priceLists: public_PriceList[];
     productBarcodes: public_ProductBarcode[];
@@ -8331,6 +8384,7 @@ export namespace Models {
       | 'posTerminals'
       | 'presenceRequests'
       | 'presenceScans'
+      | 'presenceSnapshots'
       | 'priceListItems'
       | 'priceLists'
       | 'productBarcodes'
@@ -8655,6 +8709,7 @@ export declare const models: {
     PosTerminal: Models.public_PosTerminal;
     PresenceRequest: Models.public_PresenceRequest;
     PresenceScan: Models.public_PresenceScan;
+    PresenceSnapshot: Models.public_PresenceSnapshot;
     PriceList: Models.public_PriceList;
     PriceListItem: Models.public_PriceListItem;
     Product: Models.public_Product;
@@ -15403,6 +15458,74 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly PresenceSnapshot: {
+              columns: {
+                readonly coverage: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly day: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly phase: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly pillars: {
+                  readonly nativeType: 'json';
+                  readonly codecId: 'pg/json@1';
+                  readonly nullable: false;
+                };
+                readonly score: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['tenantId', 'day'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'PresenceSnapshot_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'PresenceSnapshot_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'PresenceSnapshot';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly PriceList: {
               columns: {
                 readonly active: {
@@ -21027,6 +21150,10 @@ type ContractBase = Omit<
     readonly PresenceScan: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'PresenceScan';
+    };
+    readonly PresenceSnapshot: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'PresenceSnapshot';
     };
     readonly PriceList: { readonly namespace: 'public' & NamespaceId; readonly model: 'PriceList' };
     readonly PriceListItem: {
@@ -27622,6 +27749,73 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly PresenceSnapshot: {
+            readonly fields: {
+              readonly coverage: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly day: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly phase: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly pillars: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/json@1' };
+              };
+              readonly score: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'PresenceSnapshot';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly coverage: { readonly column: 'coverage' };
+                readonly day: { readonly column: 'day' };
+                readonly id: { readonly column: 'id' };
+                readonly phase: { readonly column: 'phase' };
+                readonly pillars: { readonly column: 'pillars' };
+                readonly score: { readonly column: 'score' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
           readonly PriceList: {
             readonly fields: {
               readonly active: {
@@ -31917,6 +32111,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly presenceSnapshots: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'PresenceSnapshot';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly priceListItems: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -34666,6 +34871,23 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'PresenceScan';
             readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'PresenceSnapshot';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'PresenceSnapshot';
+            readonly field: 'updatedAt';
             readonly namespace: 'public';
           };
         },

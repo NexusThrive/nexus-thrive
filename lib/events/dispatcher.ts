@@ -62,6 +62,16 @@ export async function dispatchPending(deps: DispatchDeps = {}): Promise<Dispatch
     }
     await db.orm.public.OutboxEvent.where({ id: event.id }).update({ processedAt: toInstant(nowMs()) });
   }
+  // La presencia se recalcula cuando pasa algo que la mueve (una venta, un cobro, un evento de pasarela): una vez por negocio y corrida.
+  const touched = [...new Set(events.filter((e) => /^(sale\.|provider\.)/.test(e.type)).map((e) => e.tenantId))];
+  for (const tenantId of touched) {
+    try {
+      const { refreshPresence } = await import("@/lib/presence/pillars-db");
+      await refreshPresence(tenantId);
+    } catch (error) {
+      console.error(`[presencia] no se pudo recalcular ${tenantId}:`, error);
+    }
+  }
 
   // 2) Enviar las entregas vencidas.
   const due = await db.orm.public.WebhookDelivery
