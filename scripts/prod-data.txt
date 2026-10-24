@@ -1,0 +1,5 @@
+# Scripts de DATOS (idempotentes) que se corren DESPUÉS de las migraciones, en este orden.
+# Las migraciones de esquema NO se listan aquí: las aplica `prisma db migrate`.
+2026-10-24-tercero-unico-relleno.sql
+2026-10-24-inventario-relleno.sql
+2026-10-25-funciones-hijas.sql

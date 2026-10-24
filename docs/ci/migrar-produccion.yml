@@ -1,0 +1,47 @@
+# Copiar a .github/workflows/migrar-produccion.yml (el token de la sesión no puede crear workflows).
+#
+# Migra la base de producción con un clic: Actions → «Migrar producción» → Run workflow.
+# Requisitos (una sola vez, en Settings del repositorio):
+#   1. Environments → New environment «production» → Required reviewers: tú (aprobación manual).
+#   2. En ese environment, Secret «PROD_DATABASE_URL» = conexión DIRECTA de Supabase (puerto 5432).
+name: Migrar producción
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Solo mostrar lo pendiente (no aplica nada)"
+        type: boolean
+        default: true
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production # pide la aprobación del revisor antes de correr
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Cliente de PostgreSQL (psql, pg_dump)
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Migrar
+        env:
+          PROD_DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            bash scripts/migrate-prod.sh --dry-run
+          else
+            bash scripts/migrate-prod.sh --yes
+          fi
+      - name: Guardar el respaldo (7 días)
+        if: ${{ !inputs.dry_run }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: respaldo-produccion
+          path: backups/
+          retention-days: 7

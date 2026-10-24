@@ -1,5 +1,7 @@
 # Orden de ejecución del SQL de producción (Supabase)
 
+> **Automatizado:** `bash scripts/migrate-prod.sh` (o el workflow de [AUTOMATIZACION.md](AUTOMATIZACION.md)) aplica lo pendiente en el orden correcto, con respaldo y verificación. Esta tabla queda como referencia y vía manual.
+
 Todos los archivos son **aditivos e idempotentes**: se pueden correr en cualquier
 orden y volver a correr sin romper nada. Aun así, este es el orden recomendado
 (va de lo más antiguo a lo más reciente).
