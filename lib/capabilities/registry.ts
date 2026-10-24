@@ -19,6 +19,7 @@ import {
   ShoppingCart,
   Ticket,
   Truck,
+  Warehouse,
   UserRoundPlus,
   Users,
   Wallet,
@@ -151,7 +152,10 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/inventory", icon: Package, label: () => "Catálogo" }],
+    nav: [
+      { href: "/inventory", icon: Package, label: () => "Catálogo" },
+      { href: "/stock", icon: Warehouse, label: () => "Existencias" },
+    ],
   },
   {
     id: "finance",

@@ -32,13 +32,13 @@ tags: [capas, estructura, indice]
 | III | [ATENCIÓN Y COMUNICACIÓN](III-Atencion-y-Comunicacion/README.md) | 1/9 · 11 % | 1/78 · 1 % | 0/30 · 0 % | `░░░░░░░░░░` |
 | IV | [GESTIÓN COMERCIAL Y RELACIÓN CON CLIENTES](IV-Gestion-Comercial-y-Relacion-con-Clientes/README.md) | 4/14 · 29 % | 4/92 · 4 % | 0/30 · 0 % | `░░░░░░░░░░` |
 | V | [VENTAS DIGITALES, COMERCIO Y PAGOS](V-Ventas-Digitales-Comercio-y-Pagos/README.md) | 5/24 · 21 % | 8/162 · 5 % | 0/48 · 0 % | `░░░░░░░░░░` |
-| VI | [OPERACIÓN, PRODUCTIVIDAD Y LOGÍSTICA](VI-Operacion-Productividad-y-Logistica/README.md) | 12/36 · 33 % | 12/247 · 5 % | 0/54 · 0 % | `░░░░░░░░░░` |
+| VI | [OPERACIÓN, PRODUCTIVIDAD Y LOGÍSTICA](VI-Operacion-Productividad-y-Logistica/README.md) | 12/36 · 33 % | 14/247 · 6 % | 0/54 · 0 % | `█░░░░░░░░░` |
 | VII | [CAJA MENOR, FINANZAS OPERATIVAS Y CONTABILIDAD](VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/README.md) | 9/31 · 29 % | 13/195 · 7 % | 0/48 · 0 % | `█░░░░░░░░░` |
 | VIII | [TALENTO HUMANO Y ADMINISTRACIÓN DEL EQUIPO](VIII-Talento-Humano-y-Administracion-del-Equipo/README.md) | 0/23 · 0 % | 0/173 · 0 % | 0/48 · 0 % | `░░░░░░░░░░` |
 | IX | [INTELIGENCIA DE NEGOCIO, ANALÍTICA E IA](IX-Inteligencia-de-Negocio-Analitica-e-IA/README.md) | 9/26 · 35 % | 9/128 · 7 % | 0/35 · 0 % | `█░░░░░░░░░` |
 | X | [PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD](X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/README.md) | 11/18 · 61 % | 20/127 · 16 % | 0/30 · 0 % | `██░░░░░░░░` |
 | XI | [ESPECIALIZACIÓN POR VERTICAL](XI-Especializacion-por-Vertical/README.md) | 0/0 · — | 0/0 · — | 0/6 · 0 % | `` |
-| | **Total** | **73/241 · 30 %** | **94/1510 · 6 %** | **0/418 · 0 %** | |
+| | **Total** | **73/241 · 30 %** | **96/1510 · 6 %** | **0/418 · 0 %** | |
 
 _Generado con `node scripts/capas-progreso.mjs --write`. La capa XI (construcción) usa pestañas en lugar de casillas: su estado está en su README. «Integración» cuenta las casillas de la superficie API · MCP · Webhooks de cada subcapa (no suman al porcentaje de funcionalidades)._
 <!-- progreso:fin -->

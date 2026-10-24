@@ -33,6 +33,7 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 21 | `2026-10-24-inventario-relleno.sql` | **Datos**: bodega «Principal» y existencias iniciales por producto (idempotente; DESPUÉS del 20) | **PENDIENTE** |
 | 22 | `2026-10-24-compras-y-proveedores.sql` | Compras: `PurchaseOrder`, `PurchaseOrderLine` y `SupplierInvoice` (aditivo; requiere los pasos 17 y 20) | generado de la migración |
 | 23 | `2026-10-24-perfil-general.sql` | Perfil general: valor `general` del rubro (restricción), `Tenant.businessModels` y `Tenant.activity` (aditivo) | generado de la migración |
+| 24 | `2026-10-24-traslados-conteos-reposicion.sql` | Traslados entre bodegas, conteos físicos y `Product.maxStock/reorderPoint` (aditivo; requiere los pasos 20 y 22) | generado de la migración |
 
 ## Estado: producción reconstruida desde las migraciones (camino A, 2026-10-23)
 

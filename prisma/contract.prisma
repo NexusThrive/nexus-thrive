@@ -404,6 +404,10 @@ model Tenant {
   purchaseOrders     PurchaseOrder[]
   purchaseOrderLines PurchaseOrderLine[]
   supplierInvoices   SupplierInvoice[]
+  stockTransfers     StockTransfer[]
+  stockTransferLines StockTransferLine[]
+  stockCounts        StockCount[]
+  stockCountLines    StockCountLine[]
   supportTickets     SupportTicket[]
   charges            Charge[]
   benefitRedemptions BenefitRedemption[]
@@ -1996,6 +2000,12 @@ model Product {
   priceItems      PriceListItem[]
   stockLevels     StockLevel[]
   purchaseLines   PurchaseOrderLine[]
+  transferLines   StockTransferLine[]
+  countLines      StockCountLine[]
+  /// Techo de existencias (para sugerir cuánto reponer).
+  maxStock        Int?
+  /// Cuando las existencias bajan a este número conviene pedir más.
+  reorderPoint    Int?
 
   @@index([tenantId, kind])
   @@rls
@@ -2656,6 +2666,9 @@ model Warehouse {
   levels    StockLevel[]
   movements StockMovement[]
   purchaseOrders PurchaseOrder[]
+  transfersFrom  StockTransfer[] @relation("TransferFrom")
+  transfersTo    StockTransfer[] @relation("TransferTo")
+  counts         StockCount[]
 
   @@unique([tenantId, name])
   @@index([tenantId])
@@ -2760,5 +2773,87 @@ model SupplierInvoice {
 
   @@unique([tenantId, supplierPartyId, number])
   @@index([tenantId, dueDate])
+  @@rls
+}
+
+/// Traslado de mercancía entre dos bodegas. Sale de una y entra a la otra al costo
+/// promedio de la bodega de origen, en la misma transacción (por el servicio de inventario).
+model StockTransfer {
+  id              String   @id @default(uuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Consecutivo por negocio (TR-0001).
+  number          Int
+  fromWarehouseId String
+  fromWarehouse   Warehouse @relation("TransferFrom", fields: [fromWarehouseId], references: [id], onDelete: Restrict)
+  toWarehouseId   String
+  toWarehouse     Warehouse @relation("TransferTo", fields: [toWarehouseId], references: [id], onDelete: Restrict)
+  note            String?
+  createdById     String?
+  createdAt       DateTime @default(now())
+  lines           StockTransferLine[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId, createdAt])
+  @@rls
+}
+
+model StockTransferLine {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  transferId  String
+  transfer    StockTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  variantId   String?
+  quantity    Int
+  /// Costo unitario con el que pasó (el promedio de la bodega de origen).
+  unitCost    Decimal
+
+  @@index([transferId])
+  @@rls
+}
+
+/// Conteo físico de una bodega. Se toma una foto de lo esperado; se anota lo contado;
+/// al cerrarlo, cada diferencia genera su ajuste en el kardex con el motivo.
+model StockCount {
+  id           String   @id @default(uuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Consecutivo por negocio (CT-0001).
+  number       Int
+  warehouseId  String
+  warehouse    Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
+  /// DRAFT | COMPLETED | CANCELED
+  status       String   @default("DRAFT")
+  /// Motivo de los ajustes (obligatorio si hay diferencias).
+  note         String?
+  createdById  String?
+  createdAt    DateTime @default(now())
+  completedAt  DateTime?
+  lines        StockCountLine[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId, status])
+  @@rls
+}
+
+model StockCountLine {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  countId    String
+  count      StockCount @relation(fields: [countId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  /// Lo que decía el sistema al empezar el conteo.
+  expected   Int
+  /// Lo que se contó (null = aún no contado).
+  counted    Int?
+  /// Diferencia aplicada al cerrar (contado − esperado).
+  adjustment Int?
+
+  @@index([countId])
   @@rls
 }

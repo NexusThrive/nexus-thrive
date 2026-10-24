@@ -147,7 +147,7 @@ de «hecho»). No se edita a mano.
 | **08** | Vende y controla | Tercero único mínimo | I, IV | N1, N2 | 1/5 | `PR-08-terceros` | pendiente |
 | **09** | Vende y controla | Catálogo maestro: variantes, códigos de barras y precios | I, V | N2 | 0/4 | `PR-09-catalogo-maestro` | pendiente |
 | **10** | Vende y controla | Inventario I: bodegas y kardex con costo | VI | N1, N2 | 0/4 | `PR-10-inventario-bodegas-kardex` | pendiente |
-| **11** | Vende y controla | Inventario II: traslados, conteos y compras | VI | N1, N2 | 5/7 | `PR-11-traslados-conteos-compras` | pendiente |
+| **11** | Vende y controla | Inventario II: traslados, conteos y compras | VI | N1 | 5/5 | `PR-11-traslados-conteos-compras` | hecho |
 | **12** | Vende y controla | Importar y exportar clientes y catálogo | I, IV | N1 | 0/2 | — | pendiente |
 | **13** | Vende y controla | Impuestos y numeración por resolución | I, VII | N1, N2 | 0/8 | `PR-13-impuestos-y-numeracion` | pendiente |
 | **14** | Vende y controla | Cartera: cuentas por cobrar y por pagar | VII | N1 | 0/2 | `PR-14-cartera` | pendiente |
@@ -305,14 +305,11 @@ de «hecho»). No se edita a mano.
 ### PR-11 · Inventario II: traslados, conteos y compras
 
 - **Rama:** `datos/traslados-conteos-y-compras` · **Hito:** 2 · Vende y controla
-- **Etiquetas:** `capa-VI` `N1` `N2` `tipo:migracion` `hito-2-vende-y-controla`
+- **Etiquetas:** `capa-VI` `N1` `tipo:migracion` `hito-2-vende-y-controla`
 - **Depende de:** PR-08, PR-10
 - **Esquema:** [`sql/PR-11-traslados-conteos-compras.sql`](sql/PR-11-traslados-conteos-compras.sql)
 - **Hecho cuando:** Recibir una compra sube stock y costo; un conteo con diferencia genera su ajuste con motivo.
 - **Casillas que marca:**
-  - [`VI.04 · N2`](capas/VI-Operacion-Productividad-y-Logistica/04-Inventarios-Bodegas-y-Logistica/README.md)
-    - [ ] Stock mínimo, máximo y punto de reorden
-    - [ ] Conteos físicos y ajustes por inventario
   - [`VI.05 · N1`](capas/VI-Operacion-Productividad-y-Logistica/05-Compras-y-Gestion-de-Proveedores/README.md)
     - [x] Orden de compra _hecho: app/[tenant]/(app)/purchases + lib/purchasing_
     - [x] Registro de la factura del proveedor _hecho: se registra al recibir (SupplierInvoice)_

@@ -105,4 +105,35 @@ export const inventoryOperations: OperationDefinition[] = [
       return { lines, byWarehouse: levels.map((l) => ({ warehouse: l.warehouse, quantity: l.quantity, avgCost: l.avgCost, value: l.value })) };
     },
   }),
+  defineOperation({
+    id: "inventory.list_warehouses",
+    rest: { method: "GET", path: "/warehouses" },
+    title: "Bodegas",
+    description: "Bodegas activas del negocio y cuál es la principal.",
+    module: "inventory",
+    permission: null,
+    risk: "read",
+    input: z.object({}),
+    output: z.object({ items: z.array(z.object({ id: z.string(), name: z.string(), code: z.string().nullable(), isDefault: z.boolean() })) }),
+    handler: async (ctx) => {
+      const { listWarehouses } = await import("@/lib/inventory/kardex");
+      return { items: await listWarehouses(ctx.tenantId) };
+    },
+  }),
+  defineOperation({
+    id: "inventory.reorder_suggestions",
+    rest: { method: "GET", path: "/inventory/reorder" },
+    title: "Qué conviene reponer",
+    description: "Productos con inventario que llegaron a su punto de reposición, con lo que ya está pedido a proveedores y cuánto conviene pedir para llegar al máximo.",
+    module: "inventory",
+    permission: "business.manage",
+    risk: "read",
+    input: z.object({ onlyNeeded: z.boolean().default(true) }),
+    output: z.object({ items: z.array(z.object({ productId: z.string(), name: z.string(), stock: z.number(), minStock: z.number(), maxStock: z.number().nullable(), reorderPoint: z.number().nullable(), onOrder: z.number(), suggested: z.number() })) }),
+    handler: async (ctx, input) => {
+      const { reorderOverview } = await import("@/lib/inventory/stock-docs-db");
+      const rows = await reorderOverview(ctx.tenantId);
+      return { items: rows.filter((r) => !input.onlyNeeded || r.needsOrder).map(({ needsOrder: _n, ...r }) => r) };
+    },
+  }),
 ];

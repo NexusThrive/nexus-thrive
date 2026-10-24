@@ -29,6 +29,8 @@ const config: StorybookConfig = {
       "@clerk/nextjs": path.resolve(import.meta.dirname, "mocks/clerk.tsx"),
       "@nexus/brand": path.resolve(import.meta.dirname, "../packages/brand/src"),
       // Acciones de compras: en Storybook hay datos de muestra.
+      // Existencias: en Storybook hay datos de muestra.
+      "@/app/[tenant]/(app)/stock/actions": path.resolve(import.meta.dirname, "mocks/stock-actions.ts"),
       // Perfil del negocio: en Storybook responde sin servidor.
       "@/app/[tenant]/(app)/settings/context-actions": path.resolve(import.meta.dirname, "mocks/context-actions.ts"),
       // Acción de funciones: en Storybook responde sin servidor.
