@@ -382,6 +382,7 @@ model Tenant {
   outboxEvents       OutboxEvent[]
   webhookEndpoints   WebhookEndpoint[]
   webhookDeliveries  WebhookDelivery[]
+  usageCounters      UsageCounter[]
   supportTickets     SupportTicket[]
   charges            Charge[]
   benefitRedemptions BenefitRedemption[]
@@ -904,10 +905,17 @@ model AuditLog {
   ipAddress  String?
   userAgent  String?
   createdAt  DateTime @default(now())
+  /// Quién actuó: USER | API_KEY | AGENT | AUTOMATION | SYSTEM.
+  actorType  String   @default("USER")
+  /// Llave de API que ejecutó la acción (si fue por API/MCP).
+  apiKeyId   String?
+  /// Identificador de la petición (el mismo de `X-Request-Id`).
+  requestId  String?
 
   @@index([createdAt])
   @@index([targetTenantId])
   @@index([actorId])
+  @@index([apiKeyId])
   @@rls
 }
 
@@ -2373,5 +2381,23 @@ model WebhookDelivery {
   @@unique([endpointId, eventId])
   @@index([tenantId, status, nextAttemptAt])
   @@index([endpointId, createdAt])
+  @@rls
+}
+
+/// Consumo medido por negocio, medidor y periodo (`YYYY-MM`). Base de los cupos
+/// (`limitQuantity` null = el predeterminado del medidor) y del cobro por uso.
+model UsageCounter {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// api.requests | events.delivered | ai.tokens | messages.sent | automations.runs
+  meter         String
+  period        String
+  quantity      Int      @default(0)
+  limitQuantity Int?
+  updatedAt     temporal.updatedAt()
+
+  @@unique([tenantId, meter, period])
+  @@index([tenantId, period])
   @@rls
 }

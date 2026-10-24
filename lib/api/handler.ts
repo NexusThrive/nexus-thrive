@@ -33,6 +33,10 @@ export type ApiDeps = {
   authenticate: (authorization: string | null) => Promise<AuthResult>;
   loadTenant: (tenantId: string) => Promise<{ active: boolean; modules: string[] } | null>;
   log: (entry: ApiLogEntry) => Promise<void> | void;
+  /** Cupo mensual (medidor `api.requests`). Opcional: sin él no hay cupo. */
+  usage?: (tenantId: string) => Promise<{ allowed: boolean; used: number; limit: number; resetSeconds: number }>;
+  /** Deja en la bitácora quién ejecutó una operación que no es de lectura. */
+  audit?: (ctx: OperationContext, op: OperationDefinition, input: unknown) => Promise<void> | void;
 };
 
 const BASE = "/api/v1";
@@ -129,6 +133,15 @@ export async function guardRequest(request: Request, deps: ApiDeps, meta: { requ
   const tenant = await deps.loadTenant(key.tenantId);
   if (!tenant || !tenant.active) return { response: await record(problem(403, "tenant_inactive", "El negocio de esta llave no está activo.", requestId, { headers: rateHeaders }), null) };
 
+  let quotaHeaders: Record<string, string> = {};
+  if (deps.usage) {
+    const quota = await deps.usage(key.tenantId);
+    if (quota.limit > 0) quotaHeaders = { "x-quota-limit": String(quota.limit), "x-quota-remaining": String(Math.max(0, quota.limit - quota.used)) };
+    if (!quota.allowed) {
+      return { response: await record(problem(429, "quota_exceeded", "El negocio agotó su cupo mensual de peticiones.", requestId, { headers: { ...rateHeaders, ...quotaHeaders, "retry-after": String(quota.resetSeconds) } }), null) };
+    }
+  }
+
   const ctx: OperationContext = {
     tenantId: key.tenantId,
     // El rol de la llave es el de quien la creó: la llave nunca puede más que su creador.
@@ -138,7 +151,7 @@ export async function guardRequest(request: Request, deps: ApiDeps, meta: { requ
     requestId,
   };
 
-  return { key, ctx, rateHeaders, record };
+  return { key, ctx, rateHeaders: { ...rateHeaders, ...quotaHeaders }, record };
 }
 
 export async function handleApi(request: Request, deps: ApiDeps): Promise<Response> {
@@ -199,6 +212,7 @@ export async function handleApi(request: Request, deps: ApiDeps): Promise<Respon
 
   try {
     const data = await runOperation(deps.operations, ctx, match.op.id, input);
+    if (match.op.risk !== "read") await deps.audit?.(ctx, match.op, input);
     return finish(json(200, { data }, rateHeaders));
   } catch (error) {
     if (error instanceof OperationError) {

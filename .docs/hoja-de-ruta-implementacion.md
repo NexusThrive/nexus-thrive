@@ -141,7 +141,7 @@ de «hecho»). No se edita a mano.
 | **02** | Integrable | API /api/v1 de lectura y llaves por negocio | X | N1, N2 | 6/7 | `PR-02-api-llaves` | pendiente |
 | **03** | Integrable | Outbox y webhooks firmados | I | N1, N2 | 2/2 | `PR-03-outbox-webhooks` | hecho |
 | **04** | Integrable | Servidor MCP de solo lectura | IX, X | N1, N2 | 2/2 | — | hecho |
-| **05** | Integrable | Origen en la bitácora y cupos de uso | I | N1 | 0/1 | `PR-05-uso-y-origen` | pendiente |
+| **05** | Integrable | Origen en la bitácora y cupos de uso | I | N1 | 1/1 | `PR-05-uso-y-origen` | hecho |
 | **06** | Integrable | Conexiones externas y puertos | V | N1 | 0/1 | `PR-06-conexiones-externas` | pendiente |
 | **07** | Integrable | n8n en casa: túnel, nodo y plantillas | VI | N1 | 0/1 | — | pendiente |
 | **08** | Vende y controla | Tercero único mínimo | I, IV | N1, N2 | 0/5 | `PR-08-terceros` | pendiente |
@@ -230,7 +230,7 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Cada acción por API/MCP deja quién fue; superar el cupo devuelve 429.
 - **Casillas que marca:**
   - [`I.04 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/04-Multi-Tenancy-y-Aislamiento-de-Datos/README.md)
-    - [ ] Medición de uso
+    - [x] Medición de uso _hecho: lib/usage/meters.ts (UsageCounter, cupo mensual con 429) y origen en la bitácora (lib/operations/audit.ts)_
 
 ### PR-06 · Conexiones externas y puertos
 

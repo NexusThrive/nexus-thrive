@@ -14,6 +14,7 @@ export type ProblemCode =
   | "method_not_allowed"
   | "invalid_input"
   | "rate_limited"
+  | "quota_exceeded"
   | "tenant_inactive"
   | "internal";
 
@@ -29,6 +30,7 @@ const TITLES: Record<ProblemCode, string> = {
   method_not_allowed: "Método no permitido",
   invalid_input: "Datos inválidos",
   rate_limited: "Demasiadas peticiones",
+  quota_exceeded: "Cupo mensual agotado",
   tenant_inactive: "Negocio inactivo",
   internal: "Error interno",
 };

@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'cc24854806689dd427b75f8507abc0584c00f554c22fd521a60dc6d9fb3354a7'>;
+  StorageHashBase<'71ace5dfb84fb9f5cb2047694abcf7ac3ff948d4a58421e95753e84700a01656'>;
 export type ExecutionHash =
-  ExecutionHashBase<'5490f6c4f92c3fa0a214c5d777049074e97c56c12d5bb1a3937f2aba89a10679'>;
+  ExecutionHashBase<'6c1aeafef78a69a6e09208c0b7f4ffc9e7eb53b4116bf2cd236b25aec36487c2'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -397,10 +397,13 @@ export type FieldOutputTypes = {
       readonly action: CodecTypes['pg/text@1']['output'];
       readonly actorEmail: CodecTypes['pg/text@1']['output'] | null;
       readonly actorId: CodecTypes['pg/text@1']['output'];
+      readonly actorType: CodecTypes['pg/text@1']['output'];
+      readonly apiKeyId: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly ipAddress: CodecTypes['pg/text@1']['output'] | null;
       readonly metadata: CodecTypes['pg/json@1']['output'] | null;
+      readonly requestId: CodecTypes['pg/text@1']['output'] | null;
       readonly targetTenantId: CodecTypes['pg/text@1']['output'] | null;
       readonly targetTenantName: CodecTypes['pg/text@1']['output'] | null;
       readonly userAgent: CodecTypes['pg/text@1']['output'] | null;
@@ -1311,6 +1314,15 @@ export type FieldOutputTypes = {
       readonly status: CodecTypes['pg/text@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly total: CodecTypes['pg/numeric@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly UsageCounter: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly limitQuantity: CodecTypes['pg/int4@1']['output'] | null;
+      readonly meter: CodecTypes['pg/text@1']['output'];
+      readonly period: CodecTypes['pg/text@1']['output'];
+      readonly quantity: CodecTypes['pg/int4@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly User: {
@@ -1544,10 +1556,13 @@ export type FieldInputTypes = {
       readonly action: CodecTypes['pg/text@1']['input'];
       readonly actorEmail: CodecTypes['pg/text@1']['input'] | null;
       readonly actorId: CodecTypes['pg/text@1']['input'];
+      readonly actorType: CodecTypes['pg/text@1']['input'];
+      readonly apiKeyId: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly ipAddress: CodecTypes['pg/text@1']['input'] | null;
       readonly metadata: CodecTypes['pg/json@1']['input'] | null;
+      readonly requestId: CodecTypes['pg/text@1']['input'] | null;
       readonly targetTenantId: CodecTypes['pg/text@1']['input'] | null;
       readonly targetTenantName: CodecTypes['pg/text@1']['input'] | null;
       readonly userAgent: CodecTypes['pg/text@1']['input'] | null;
@@ -2460,6 +2475,15 @@ export type FieldInputTypes = {
       readonly total: CodecTypes['pg/numeric@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
+    readonly UsageCounter: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly limitQuantity: CodecTypes['pg/int4@1']['input'] | null;
+      readonly meter: CodecTypes['pg/text@1']['input'];
+      readonly period: CodecTypes['pg/text@1']['input'];
+      readonly quantity: CodecTypes['pg/int4@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly User: {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly clerkUserId: CodecTypes['pg/text@1']['input'];
@@ -2691,10 +2715,13 @@ export type StorageColumnTypes = {
       readonly action: CodecTypes['pg/text@1']['output'];
       readonly actorEmail: CodecTypes['pg/text@1']['output'] | null;
       readonly actorId: CodecTypes['pg/text@1']['output'];
+      readonly actorType: CodecTypes['pg/text@1']['output'];
+      readonly apiKeyId: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly ipAddress: CodecTypes['pg/text@1']['output'] | null;
       readonly metadata: CodecTypes['pg/json@1']['output'] | null;
+      readonly requestId: CodecTypes['pg/text@1']['output'] | null;
       readonly targetTenantId: CodecTypes['pg/text@1']['output'] | null;
       readonly targetTenantName: CodecTypes['pg/text@1']['output'] | null;
       readonly userAgent: CodecTypes['pg/text@1']['output'] | null;
@@ -3607,6 +3634,15 @@ export type StorageColumnTypes = {
       readonly total: CodecTypes['pg/numeric@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
+    readonly UsageCounter: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly limitQuantity: CodecTypes['pg/int4@1']['output'] | null;
+      readonly meter: CodecTypes['pg/text@1']['output'];
+      readonly period: CodecTypes['pg/text@1']['output'];
+      readonly quantity: CodecTypes['pg/int4@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
     readonly User: {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly clerkUserId: CodecTypes['pg/text@1']['output'];
@@ -3838,10 +3874,13 @@ export type StorageColumnInputTypes = {
       readonly action: CodecTypes['pg/text@1']['input'];
       readonly actorEmail: CodecTypes['pg/text@1']['input'] | null;
       readonly actorId: CodecTypes['pg/text@1']['input'];
+      readonly actorType: CodecTypes['pg/text@1']['input'];
+      readonly apiKeyId: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly ipAddress: CodecTypes['pg/text@1']['input'] | null;
       readonly metadata: CodecTypes['pg/json@1']['input'] | null;
+      readonly requestId: CodecTypes['pg/text@1']['input'] | null;
       readonly targetTenantId: CodecTypes['pg/text@1']['input'] | null;
       readonly targetTenantName: CodecTypes['pg/text@1']['input'] | null;
       readonly userAgent: CodecTypes['pg/text@1']['input'] | null;
@@ -4752,6 +4791,15 @@ export type StorageColumnInputTypes = {
       readonly status: CodecTypes['pg/text@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly total: CodecTypes['pg/numeric@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly UsageCounter: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly limitQuantity: CodecTypes['pg/int4@1']['input'] | null;
+      readonly meter: CodecTypes['pg/text@1']['input'];
+      readonly period: CodecTypes['pg/text@1']['input'];
+      readonly quantity: CodecTypes['pg/int4@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly User: {
@@ -5025,10 +5073,13 @@ export namespace Models {
     action: CodecTypes['pg/text@1']['output'];
     actorEmail: CodecTypes['pg/text@1']['output'] | null;
     actorId: CodecTypes['pg/text@1']['output'];
+    actorType: CodecTypes['pg/text@1']['output'];
+    apiKeyId: CodecTypes['pg/text@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     id: CodecTypes['pg/text@1']['output'];
     ipAddress: CodecTypes['pg/text@1']['output'] | null;
     metadata: CodecTypes['pg/json@1']['output'] | null;
+    requestId: CodecTypes['pg/text@1']['output'] | null;
     targetTenantId: CodecTypes['pg/text@1']['output'] | null;
     targetTenantName: CodecTypes['pg/text@1']['output'] | null;
     userAgent: CodecTypes['pg/text@1']['output'] | null;
@@ -6089,6 +6140,7 @@ export namespace Models {
     supportTickets: public_SupportTicket[];
     ticketSales: public_TicketSale[];
     tourBookings: public_TourBooking[];
+    usageCounters: public_UsageCounter[];
     users: public_User[];
     webhookDeliveries: public_WebhookDelivery[];
     webhookEndpoints: public_WebhookEndpoint[];
@@ -6145,6 +6197,7 @@ export namespace Models {
       | 'supportTickets'
       | 'ticketSales'
       | 'tourBookings'
+      | 'usageCounters'
       | 'users'
       | 'webhookDeliveries'
       | 'webhookEndpoints'
@@ -6235,6 +6288,17 @@ export namespace Models {
     status: CodecTypes['pg/text@1']['output'];
     tenantId: CodecTypes['pg/text@1']['output'];
     total: CodecTypes['pg/numeric@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
+  };
+  export type public_UsageCounter = {
+    id: CodecTypes['pg/text@1']['output'];
+    limitQuantity: CodecTypes['pg/int4@1']['output'] | null;
+    meter: CodecTypes['pg/text@1']['output'];
+    period: CodecTypes['pg/text@1']['output'];
+    quantity: CodecTypes['pg/int4@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'tenant';
@@ -6410,6 +6474,7 @@ export declare const models: {
     TicketMessage: Models.public_TicketMessage;
     TicketSale: Models.public_TicketSale;
     TourBooking: Models.public_TourBooking;
+    UsageCounter: Models.public_UsageCounter;
     User: Models.public_User;
     VerticalSetting: Models.public_VerticalSetting;
     WebhookDelivery: Models.public_WebhookDelivery;
@@ -7572,6 +7637,20 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
                 };
+                readonly actorType: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'USER'>;
+                  };
+                };
+                readonly apiKeyId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly createdAt: {
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
@@ -7591,6 +7670,11 @@ type ContractBase = Omit<
                 readonly metadata: {
                   readonly nativeType: 'json';
                   readonly codecId: 'pg/json@1';
+                  readonly nullable: true;
+                };
+                readonly requestId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
                 readonly targetTenantId: {
@@ -7616,6 +7700,12 @@ type ContractBase = Omit<
                   readonly name: 'AuditLog_actorId_idx_a58f6b4b';
                   readonly prefix: 'AuditLog_actorId_idx';
                   readonly columns: readonly ['actorId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'AuditLog_apiKeyId_idx_7bbbe9ea';
+                  readonly prefix: 'AuditLog_apiKeyId_idx';
+                  readonly columns: readonly ['apiKeyId'];
                   readonly unique: false;
                 },
                 {
@@ -14173,6 +14263,79 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly UsageCounter: {
+              columns: {
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly limitQuantity: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
+                readonly meter: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly period: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly quantity: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 0>;
+                  };
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['tenantId', 'meter', 'period'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'UsageCounter_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'UsageCounter_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'UsageCounter_tenantId_period_idx_f0994702';
+                  readonly prefix: 'UsageCounter_tenantId_period_idx';
+                  readonly columns: readonly ['tenantId', 'period'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'UsageCounter';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly User: {
               columns: {
                 readonly active: {
@@ -15177,6 +15340,10 @@ type ContractBase = Omit<
     readonly TourBooking: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'TourBooking';
+    };
+    readonly UsageCounter: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'UsageCounter';
     };
     readonly User: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
     readonly VerticalSetting: {
@@ -16331,6 +16498,14 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly actorType: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly apiKeyId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly createdAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -16349,6 +16524,10 @@ type ContractBase = Omit<
               readonly metadata: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/json@1' };
+              };
+              readonly requestId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly targetTenantId: {
                 readonly nullable: true;
@@ -16371,10 +16550,13 @@ type ContractBase = Omit<
                 readonly action: { readonly column: 'action' };
                 readonly actorEmail: { readonly column: 'actorEmail' };
                 readonly actorId: { readonly column: 'actorId' };
+                readonly actorType: { readonly column: 'actorType' };
+                readonly apiKeyId: { readonly column: 'apiKeyId' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly id: { readonly column: 'id' };
                 readonly ipAddress: { readonly column: 'ipAddress' };
                 readonly metadata: { readonly column: 'metadata' };
+                readonly requestId: { readonly column: 'requestId' };
                 readonly targetTenantId: { readonly column: 'targetTenantId' };
                 readonly targetTenantName: { readonly column: 'targetTenantName' };
                 readonly userAgent: { readonly column: 'userAgent' };
@@ -22819,6 +23001,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly usageCounters: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'UsageCounter';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly users: {
                 readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
                 readonly cardinality: '1:N';
@@ -23408,6 +23601,68 @@ type ContractBase = Omit<
                 readonly status: { readonly column: 'status' };
                 readonly tenantId: { readonly column: 'tenantId' };
                 readonly total: { readonly column: 'total' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly UsageCounter: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly limitQuantity: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly meter: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly period: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly quantity: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'UsageCounter';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly limitQuantity: { readonly column: 'limitQuantity' };
+                readonly meter: { readonly column: 'meter' };
+                readonly period: { readonly column: 'period' };
+                readonly quantity: { readonly column: 'quantity' };
+                readonly tenantId: { readonly column: 'tenantId' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
               };
             };
@@ -25208,6 +25463,23 @@ type ContractBase = Omit<
           readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'TourBooking';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'UsageCounter';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'UsageCounter';
             readonly field: 'updatedAt';
             readonly namespace: 'public';
           };

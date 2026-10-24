@@ -27,7 +27,7 @@ tags: [capas, estructura, indice]
 <!-- progreso:inicio -->
 | Capa | Nombre | Nivel N1 (lo básico) | Todas las funcionalidades | Integración (API · MCP · Webhooks) | |
 | --- | --- | --- | --- | --- | --- |
-| I | [FUNDACIÓN, NÚCLEO E INFRAESTRUCTURA](I-Fundacion-Nucleo-e-Infraestructura/README.md) | 17/34 · 50 % | 21/138 · 15 % | 0/47 · 0 % | `██░░░░░░░░` |
+| I | [FUNDACIÓN, NÚCLEO E INFRAESTRUCTURA](I-Fundacion-Nucleo-e-Infraestructura/README.md) | 18/34 · 53 % | 22/138 · 16 % | 0/47 · 0 % | `██░░░░░░░░` |
 | II | [VISIBILIDAD, CAPTACIÓN Y PRESENCIA DIGITAL](II-Visibilidad-Captacion-y-Presencia-Digital/README.md) | 3/26 · 12 % | 4/170 · 2 % | 0/42 · 0 % | `░░░░░░░░░░` |
 | III | [ATENCIÓN Y COMUNICACIÓN](III-Atencion-y-Comunicacion/README.md) | 1/9 · 11 % | 1/78 · 1 % | 0/30 · 0 % | `░░░░░░░░░░` |
 | IV | [GESTIÓN COMERCIAL Y RELACIÓN CON CLIENTES](IV-Gestion-Comercial-y-Relacion-con-Clientes/README.md) | 4/14 · 29 % | 4/92 · 4 % | 0/30 · 0 % | `░░░░░░░░░░` |
@@ -38,7 +38,7 @@ tags: [capas, estructura, indice]
 | IX | [INTELIGENCIA DE NEGOCIO, ANALÍTICA E IA](IX-Inteligencia-de-Negocio-Analitica-e-IA/README.md) | 9/26 · 35 % | 9/128 · 7 % | 0/35 · 0 % | `█░░░░░░░░░` |
 | X | [PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD](X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/README.md) | 11/18 · 61 % | 20/127 · 16 % | 0/30 · 0 % | `██░░░░░░░░` |
 | XI | [ESPECIALIZACIÓN POR VERTICAL](XI-Especializacion-por-Vertical/README.md) | 0/0 · — | 0/0 · — | 0/6 · 0 % | `` |
-| | **Total** | **66/241 · 27 %** | **87/1510 · 6 %** | **0/418 · 0 %** | |
+| | **Total** | **67/241 · 28 %** | **88/1510 · 6 %** | **0/418 · 0 %** | |
 
 _Generado con `node scripts/capas-progreso.mjs --write`. La capa XI (construcción) usa pestañas en lugar de casillas: su estado está en su README. «Integración» cuenta las casillas de la superficie API · MCP · Webhooks de cada subcapa (no suman al porcentaje de funcionalidades)._
 <!-- progreso:fin -->

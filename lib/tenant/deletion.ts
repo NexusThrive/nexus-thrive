@@ -92,6 +92,7 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "TicketMessage",
   "TicketSale",
   "TourBooking",
+  "UsageCounter",
   "User",
   "WebhookDelivery",
   "WebhookEndpoint",
@@ -248,6 +249,7 @@ export async function deleteTenantCompletely(
   count("ApuChapter", await tx.orm.public.ApuChapter.where({ tenantId }).deleteAll());
   count("ApuImage", await tx.orm.public.ApuImage.where({ tenantId }).deleteAll());
   count("ApuImportRun", await tx.orm.public.ApuImportRun.where({ tenantId }).deleteAll());
+  count("UsageCounter", await tx.orm.public.UsageCounter.where({ tenantId }).deleteAll());
   count("WebhookDelivery", await tx.orm.public.WebhookDelivery.where({ tenantId }).deleteAll());
   count("WebhookEndpoint", await tx.orm.public.WebhookEndpoint.where({ tenantId }).deleteAll());
   count("OutboxEvent", await tx.orm.public.OutboxEvent.where({ tenantId }).deleteAll());

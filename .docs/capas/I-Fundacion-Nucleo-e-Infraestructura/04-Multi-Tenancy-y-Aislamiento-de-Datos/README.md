@@ -50,7 +50,7 @@ tags: [capas, estructura, subcapa]
 - [x] Identidad unificada
 - [x] Catálogo de permisos y módulos
 - [x] Configuración por negocio
-- [ ] Medición de uso _(PR-05)_
+- [x] Medición de uso _(PR-05)_ _hecho: lib/usage/meters.ts (UsageCounter, cupo mensual con 429) y origen en la bitácora (lib/operations/audit.ts)_
 - [x] Aislamiento total de datos
 
 #### Técnico

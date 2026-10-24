@@ -48,11 +48,15 @@ const KEY: AuthenticatedKey = { id: "k1", tenantId: "t1", name: "n8n", environme
 const logs: ApiLogEntry[] = [];
 let auth: AuthResult;
 let tenant: { active: boolean; modules: string[] } | null;
+let quota = { allowed: true, used: 10, limit: 100, resetSeconds: 3600 };
+const audited: string[] = [];
 const deps: ApiDeps = {
   operations: OPS,
   authenticate: async () => auth,
   loadTenant: async () => tenant,
   log: (e) => void logs.push(e),
+  usage: async () => quota,
+  audit: (_ctx, op) => void audited.push(op.id),
 };
 const call = (path: string, init: RequestInit & { ip?: string } = {}) =>
   handleApi(new Request(`http://localhost/api/v1${path}`, { ...init, headers: { authorization: "Bearer nx_live_x", ...(init.ip ? { "x-forwarded-for": init.ip } : {}), ...(init.headers as Record<string, string>) } }), deps);
@@ -61,6 +65,8 @@ const body = async (r: Response) => (await r.json()) as Record<string, unknown>;
 beforeEach(() => {
   resetRateLimits();
   logs.length = 0;
+  audited.length = 0;
+  quota = { allowed: true, used: 10, limit: 100, resetSeconds: 3600 };
   auth = { ok: true, key: KEY };
   tenant = { active: true, modules: ["crm", "finance"] };
 });
@@ -171,5 +177,22 @@ describe("API /api/v1 (núcleo)", () => {
       },
     });
     expect(res.status).toBe(200);
+  });
+
+  test("cupo mensual: informa lo que queda y, agotado, responde 429 con Retry-After", async () => {
+    const ok = await call("/customers?q=ma");
+    expect(ok.headers.get("x-quota-limit")).toBe("100");
+    expect(ok.headers.get("x-quota-remaining")).toBe("90");
+    quota = { allowed: false, used: 100, limit: 100, resetSeconds: 7200 };
+    const res = await call("/customers?q=ma");
+    expect(res.status).toBe(429);
+    expect(res.headers.get("retry-after")).toBe("7200");
+    expect(await body(res)).toMatchObject({ code: "quota_exceeded" });
+    expect(logs.at(-1)).toMatchObject({ status: 429 });
+  });
+
+  test("las lecturas no se auditan; las demás sí (ver api.integration para el origen)", async () => {
+    await call("/customers?q=ma");
+    expect(audited).toEqual([]);
   });
 });

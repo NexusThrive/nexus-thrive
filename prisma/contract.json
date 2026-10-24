@@ -292,6 +292,10 @@
       "model": "TourBooking",
       "namespace": "public"
     },
+    "UsageCounter": {
+      "model": "UsageCounter",
+      "namespace": "public"
+    },
     "User": {
       "model": "User",
       "namespace": "public"
@@ -2882,6 +2886,20 @@
                   "kind": "scalar"
                 }
               },
+              "actorType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "apiKeyId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -2907,6 +2925,13 @@
                 "nullable": true,
                 "type": {
                   "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
+              "requestId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -2944,6 +2969,12 @@
                 "actorId": {
                   "column": "actorId"
                 },
+                "actorType": {
+                  "column": "actorType"
+                },
+                "apiKeyId": {
+                  "column": "apiKeyId"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
@@ -2955,6 +2986,9 @@
                 },
                 "metadata": {
                   "column": "metadata"
+                },
+                "requestId": {
+                  "column": "requestId"
                 },
                 "targetTenantId": {
                   "column": "targetTenantId"
@@ -13266,6 +13300,21 @@
                   "namespace": "public"
                 }
               },
+              "usageCounters": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "UsageCounter",
+                  "namespace": "public"
+                }
+              },
               "users": {
                 "cardinality": "1:N",
                 "on": {
@@ -14264,6 +14313,104 @@
               },
               "namespaceId": "public",
               "table": "TourBooking"
+            }
+          },
+          "UsageCounter": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "limitQuantity": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "meter": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "period": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "quantity": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "limitQuantity": {
+                  "column": "limitQuantity"
+                },
+                "meter": {
+                  "column": "meter"
+                },
+                "period": {
+                  "column": "period"
+                },
+                "quantity": {
+                  "column": "quantity"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "UsageCounter"
             }
           },
           "User": {
@@ -15492,6 +15639,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "TourBooking"
+            },
+            "UsageCounter": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "UsageCounter"
             },
             "User": {
               "kind": "rls",
@@ -16957,6 +17109,20 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "actorType": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "USER"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "apiKeyId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "default": {
@@ -16979,6 +17145,11 @@
                 "metadata": {
                   "codecId": "pg/json@1",
                   "nativeType": "json",
+                  "nullable": true
+                },
+                "requestId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
                   "nullable": true
                 },
                 "targetTenantId": {
@@ -17005,6 +17176,14 @@
                   ],
                   "name": "AuditLog_actorId_idx_a58f6b4b",
                   "prefix": "AuditLog_actorId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "apiKeyId"
+                  ],
+                  "name": "AuditLog_apiKeyId_idx_7bbbe9ea",
+                  "prefix": "AuditLog_apiKeyId_idx",
                   "unique": false
                 },
                 {
@@ -25289,6 +25468,101 @@
                 }
               ]
             },
+            "UsageCounter": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "limitQuantity": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "meter": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "period": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "quantity": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "UsageCounter"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "UsageCounter_tenantId_idx_c93ed4f1",
+                  "prefix": "UsageCounter_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "period"
+                  ],
+                  "name": "UsageCounter_tenantId_period_idx_f0994702",
+                  "prefix": "UsageCounter_tenantId_period_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "meter",
+                    "period"
+                  ]
+                }
+              ]
+            },
             "User": {
               "checks": [
                 {
@@ -26339,10 +26613,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "cc24854806689dd427b75f8507abc0584c00f554c22fd521a60dc6d9fb3354a7"
+    "storageHash": "71ace5dfb84fb9f5cb2047694abcf7ac3ff948d4a58421e95753e84700a01656"
   },
   "execution": {
-    "executionHash": "5490f6c4f92c3fa0a214c5d777049074e97c56c12d5bb1a3937f2aba89a10679",
+    "executionHash": "6c1aeafef78a69a6e09208c0b7f4ffc9e7eb53b4116bf2cd236b25aec36487c2",
     "mutations": {
       "defaults": [
         {
@@ -27734,6 +28008,32 @@
           },
           "ref": {
             "entry": "TourBooking",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "UsageCounter",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "UsageCounter",
             "field": "updatedAt",
             "namespace": "public"
           }
