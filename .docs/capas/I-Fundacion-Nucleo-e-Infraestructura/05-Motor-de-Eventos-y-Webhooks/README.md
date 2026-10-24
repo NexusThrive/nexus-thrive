@@ -46,7 +46,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Webhooks salientes _(PR-03)_
+- [x] Webhooks salientes _(PR-03)_ _hecho: lib/events/dispatcher.ts + app/api/cron/webhooks_
 
 #### Técnico
 
@@ -57,7 +57,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Webhooks firmados _(PR-03)_
+- [x] Webhooks firmados _(PR-03)_ _hecho: lib/events/signing.ts (HMAC-SHA256, rotación de secreto)_
 - [ ] Panel del desarrollador
 
 #### Técnico

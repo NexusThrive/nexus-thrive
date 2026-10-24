@@ -139,7 +139,7 @@ de «hecho»). No se edita a mano.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **01** | Integrable | Registro de operaciones | — | — | base técnica | — | pendiente |
 | **02** | Integrable | API /api/v1 de lectura y llaves por negocio | X | N1, N2 | 6/7 | `PR-02-api-llaves` | pendiente |
-| **03** | Integrable | Outbox y webhooks firmados | I | N1, N2 | 0/2 | `PR-03-outbox-webhooks` | pendiente |
+| **03** | Integrable | Outbox y webhooks firmados | I | N1, N2 | 2/2 | `PR-03-outbox-webhooks` | hecho |
 | **04** | Integrable | Servidor MCP de solo lectura | IX, X | N1, N2 | 0/2 | — | pendiente |
 | **05** | Integrable | Origen en la bitácora y cupos de uso | I | N1 | 0/1 | `PR-05-uso-y-origen` | pendiente |
 | **06** | Integrable | Conexiones externas y puertos | V | N1 | 0/1 | `PR-06-conexiones-externas` | pendiente |
@@ -204,9 +204,9 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Un receptor de prueba recibe `sale.completed` firmado; si cae, reintenta y al volver recibe todo; reenvío manual.
 - **Casillas que marca:**
   - [`I.05 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/05-Motor-de-Eventos-y-Webhooks/README.md)
-    - [ ] Webhooks salientes
+    - [x] Webhooks salientes _hecho: lib/events/dispatcher.ts + app/api/cron/webhooks_
   - [`I.05 · N2`](capas/I-Fundacion-Nucleo-e-Infraestructura/05-Motor-de-Eventos-y-Webhooks/README.md)
-    - [ ] Webhooks firmados
+    - [x] Webhooks firmados _hecho: lib/events/signing.ts (HMAC-SHA256, rotación de secreto)_
 
 ### PR-04 · Servidor MCP de solo lectura
 
