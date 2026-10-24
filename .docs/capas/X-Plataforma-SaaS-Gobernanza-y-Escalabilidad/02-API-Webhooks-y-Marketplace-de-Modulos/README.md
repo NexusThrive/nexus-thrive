@@ -65,7 +65,7 @@ tags: [capas, estructura, subcapa]
 - [x] Versionado de la API _(PR-02)_ _hecho: prefijo /api/v1_
 - [ ] OAuth 2.0
 - [ ] Conectores listos
-- [ ] MCP de NEXUS: capa delgada sobre la misma API, sin reglas propias _(objetivo 2026 · ver `docs/PENDIENTES.md`)_ _(PR-04)_
+- [x] MCP de NEXUS: capa delgada sobre la misma API, sin reglas propias _(objetivo 2026 · ver `docs/PENDIENTES.md`)_ _(PR-04)_ _hecho: lib/mcp/server.ts + app/api/mcp (solo lectura)_
 
 #### Técnico
 

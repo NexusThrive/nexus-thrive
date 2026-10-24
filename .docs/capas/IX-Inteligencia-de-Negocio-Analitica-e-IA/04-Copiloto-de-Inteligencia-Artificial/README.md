@@ -49,7 +49,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Asistente de consultas básicas
 - [ ] Resumen de una conversación
 - [ ] Redacción asistida
-- [ ] Agente de consulta de solo lectura: ventas, caja, clientes e inventario con datos reales _(objetivo 2026 · ver `docs/PENDIENTES.md`)_ _(PR-04)_
+- [x] Agente de consulta de solo lectura: ventas, caja, clientes e inventario con datos reales _(objetivo 2026 · ver `docs/PENDIENTES.md`)_ _(PR-04)_ _hecho: lib/mcp/server.ts + app/api/mcp (solo lectura)_
 
 #### Técnico
 

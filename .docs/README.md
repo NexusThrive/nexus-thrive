@@ -123,10 +123,10 @@ solo si existe en el producto, con una nota de dónde (_hecho: …_).
 | VI | [OPERACIÓN, PRODUCTIVIDAD Y LOGÍSTICA](capas/VI-Operacion-Productividad-y-Logistica/README.md) | 7/36 · 19 % | 7/247 · 3 % | 0/54 · 0 % | `░░░░░░░░░░` |
 | VII | [CAJA MENOR, FINANZAS OPERATIVAS Y CONTABILIDAD](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/README.md) | 9/31 · 29 % | 13/195 · 7 % | 0/48 · 0 % | `█░░░░░░░░░` |
 | VIII | [TALENTO HUMANO Y ADMINISTRACIÓN DEL EQUIPO](capas/VIII-Talento-Humano-y-Administracion-del-Equipo/README.md) | 0/23 · 0 % | 0/173 · 0 % | 0/48 · 0 % | `░░░░░░░░░░` |
-| IX | [INTELIGENCIA DE NEGOCIO, ANALÍTICA E IA](capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/README.md) | 8/26 · 31 % | 8/128 · 6 % | 0/35 · 0 % | `█░░░░░░░░░` |
-| X | [PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/README.md) | 11/18 · 61 % | 19/127 · 15 % | 0/30 · 0 % | `█░░░░░░░░░` |
+| IX | [INTELIGENCIA DE NEGOCIO, ANALÍTICA E IA](capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/README.md) | 9/26 · 35 % | 9/128 · 7 % | 0/35 · 0 % | `█░░░░░░░░░` |
+| X | [PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/README.md) | 11/18 · 61 % | 20/127 · 16 % | 0/30 · 0 % | `██░░░░░░░░` |
 | XI | [ESPECIALIZACIÓN POR VERTICAL](capas/XI-Especializacion-por-Vertical/README.md) | 0/0 · — | 0/0 · — | 0/6 · 0 % | `` |
-| | **Total** | **65/241 · 27 %** | **85/1510 · 6 %** | **0/418 · 0 %** | |
+| | **Total** | **66/241 · 27 %** | **87/1510 · 6 %** | **0/418 · 0 %** | |
 
 _Generado con `node scripts/capas-progreso.mjs --write`. La capa XI (construcción) usa pestañas en lugar de casillas: su estado está en su README. «Integración» cuenta las casillas de la superficie API · MCP · Webhooks de cada subcapa (no suman al porcentaje de funcionalidades)._
 <!-- progreso:fin -->

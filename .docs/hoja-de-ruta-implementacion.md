@@ -140,7 +140,7 @@ de «hecho»). No se edita a mano.
 | **01** | Integrable | Registro de operaciones | — | — | base técnica | — | pendiente |
 | **02** | Integrable | API /api/v1 de lectura y llaves por negocio | X | N1, N2 | 6/7 | `PR-02-api-llaves` | pendiente |
 | **03** | Integrable | Outbox y webhooks firmados | I | N1, N2 | 2/2 | `PR-03-outbox-webhooks` | hecho |
-| **04** | Integrable | Servidor MCP de solo lectura | IX, X | N1, N2 | 0/2 | — | pendiente |
+| **04** | Integrable | Servidor MCP de solo lectura | IX, X | N1, N2 | 2/2 | — | hecho |
 | **05** | Integrable | Origen en la bitácora y cupos de uso | I | N1 | 0/1 | `PR-05-uso-y-origen` | pendiente |
 | **06** | Integrable | Conexiones externas y puertos | V | N1 | 0/1 | `PR-06-conexiones-externas` | pendiente |
 | **07** | Integrable | n8n en casa: túnel, nodo y plantillas | VI | N1 | 0/1 | — | pendiente |
@@ -217,9 +217,9 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Un cliente MCP lista solo las herramientas que permite su llave y responde «¿cómo nos fue hoy?» con datos reales.
 - **Casillas que marca:**
   - [`IX.04 · N1`](capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/04-Copiloto-de-Inteligencia-Artificial/README.md)
-    - [ ] Agente de consulta de solo lectura: ventas, caja, clientes e inventario con datos reales
+    - [x] Agente de consulta de solo lectura: ventas, caja, clientes e inventario con datos reales
   - [`X.02 · N2`](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/02-API-Webhooks-y-Marketplace-de-Modulos/README.md)
-    - [ ] MCP de NEXUS: capa delgada sobre la misma API, sin reglas propias
+    - [x] MCP de NEXUS: capa delgada sobre la misma API, sin reglas propias
 
 ### PR-05 · Origen en la bitácora y cupos de uso
 

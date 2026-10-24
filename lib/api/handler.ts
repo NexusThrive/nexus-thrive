@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { runOperation } from "@/lib/operations/engine";
 import { OperationError, type OperationContext, type OperationDefinition } from "@/lib/operations/types";
-import type { AuthResult } from "./keys";
+import type { AuthenticatedKey, AuthResult } from "./keys";
 import { buildOpenApi } from "./openapi";
 import { problem, type ProblemCode } from "./problem";
 import { consume } from "./rate-limit";
@@ -84,32 +84,32 @@ function coerceQuery(op: OperationDefinition, query: URLSearchParams): Record<st
 
 const STATUS_CODE: Record<number, ProblemCode> = { 404: "not_found" };
 
-export async function handleApi(request: Request, deps: ApiDeps): Promise<Response> {
-  const started = Date.now();
-  const requestId = `req_${randomUUID().replace(/-/g, "").slice(0, 16)}`;
-  const url = new URL(request.url);
-  const path = url.pathname.startsWith(BASE) ? url.pathname.slice(BASE.length) || "/" : url.pathname;
-  const method = request.method.toUpperCase();
+export type Guarded = {
+  key: AuthenticatedKey;
+  ctx: OperationContext;
+  rateHeaders: Record<string, string>;
+  /** Registra la llamada (sin romper la respuesta si el registro falla) y devuelve la respuesta. */
+  record: (res: Response, operationId: string | null) => Promise<Response>;
+};
+
+/**
+ * Lo común a la API REST y al MCP: llave → IP permitida → límite → negocio
+ * activo → contexto (el rol de la llave es el de quien la creó, nunca más).
+ */
+export async function guardRequest(request: Request, deps: ApiDeps, meta: { requestId: string; started: number; method: string; path: string }): Promise<{ response: Response } | Guarded> {
+  const { requestId, started, method, path } = meta;
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || null;
-  const json = (status: number, body: unknown, headers: Record<string, string> = {}) =>
-    new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", "x-request-id": requestId, "cache-control": "no-store", ...headers } });
-
-  // Rutas públicas: documentación e índice.
-  if (method === "GET" && path === "/openapi.json") return json(200, buildOpenApi(deps.operations), { "cache-control": "public, max-age=300" });
-  if (method === "GET" && (path === "/" || path === "")) return json(200, { name: "NEXUS THRIVE API", version: "v1", docs: `${BASE}/openapi.json` });
-
   const auth = await deps.authenticate(request.headers.get("authorization"));
   if (!auth.ok) {
     const code: ProblemCode = auth.reason === "revoked" ? "key_revoked" : auth.reason === "expired" ? "key_expired" : "unauthorized";
     const detail =
       auth.reason === "missing" ? "Falta la cabecera `Authorization: Bearer <llave>`." : auth.reason === "revoked" ? "Esta llave fue revocada." : auth.reason === "expired" ? "Esta llave venció." : "La llave no es válida.";
-    return problem(401, code, detail, requestId, { headers: { "www-authenticate": 'Bearer realm="nexus"' } });
+    return { response: problem(401, code, detail, requestId, { headers: { "www-authenticate": 'Bearer realm="nexus"' } }) };
   }
   const key = auth.key;
-  let opId: string | null = null;
-  const finish = async (res: Response) => {
+  const record = async (res: Response, operationId: string | null) => {
     try {
-      await deps.log({ tenantId: key.tenantId, apiKeyId: key.id, requestId, method, path, operationId: opId, status: res.status, durationMs: Date.now() - started, ip });
+      await deps.log({ tenantId: key.tenantId, apiKeyId: key.id, requestId, method, path, operationId, status: res.status, durationMs: Date.now() - started, ip });
     } catch {
       /* el registro nunca rompe la respuesta */
     }
@@ -117,17 +117,17 @@ export async function handleApi(request: Request, deps: ApiDeps): Promise<Respon
   };
 
   if (key.ipAllowlist.length && (!ip || !key.ipAllowlist.includes(ip))) {
-    return finish(problem(403, "ip_not_allowed", "Esta llave solo funciona desde direcciones IP autorizadas.", requestId));
+    return { response: await record(problem(403, "ip_not_allowed", "Esta llave solo funciona desde direcciones IP autorizadas.", requestId), null) };
   }
 
   const limit = consume(`key:${key.id}`);
   const rateHeaders = { "ratelimit-limit": String(limit.limit), "ratelimit-remaining": String(limit.remaining), "ratelimit-reset": String(limit.resetSeconds) };
   if (!limit.allowed) {
-    return finish(problem(429, "rate_limited", "Superaste el límite de peticiones por minuto.", requestId, { headers: { ...rateHeaders, "retry-after": String(limit.resetSeconds) } }));
+    return { response: await record(problem(429, "rate_limited", "Superaste el límite de peticiones por minuto.", requestId, { headers: { ...rateHeaders, "retry-after": String(limit.resetSeconds) } }), null) };
   }
 
   const tenant = await deps.loadTenant(key.tenantId);
-  if (!tenant || !tenant.active) return finish(problem(403, "tenant_inactive", "El negocio de esta llave no está activo.", requestId, { headers: rateHeaders }));
+  if (!tenant || !tenant.active) return { response: await record(problem(403, "tenant_inactive", "El negocio de esta llave no está activo.", requestId, { headers: rateHeaders }), null) };
 
   const ctx: OperationContext = {
     tenantId: key.tenantId,
@@ -137,6 +137,28 @@ export async function handleApi(request: Request, deps: ApiDeps): Promise<Respon
     actor: { type: "API_KEY", id: key.id },
     requestId,
   };
+
+  return { key, ctx, rateHeaders, record };
+}
+
+export async function handleApi(request: Request, deps: ApiDeps): Promise<Response> {
+  const started = Date.now();
+  const requestId = `req_${randomUUID().replace(/-/g, "").slice(0, 16)}`;
+  const url = new URL(request.url);
+  const path = url.pathname.startsWith(BASE) ? url.pathname.slice(BASE.length) || "/" : url.pathname;
+  const method = request.method.toUpperCase();
+  const json = (status: number, body: unknown, headers: Record<string, string> = {}) =>
+    new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", "x-request-id": requestId, "cache-control": "no-store", ...headers } });
+
+  // Rutas públicas: documentación e índice.
+  if (method === "GET" && path === "/openapi.json") return json(200, buildOpenApi(deps.operations), { "cache-control": "public, max-age=300" });
+  if (method === "GET" && (path === "/" || path === "")) return json(200, { name: "NEXUS THRIVE API", version: "v1", docs: `${BASE}/openapi.json` });
+
+  const guarded = await guardRequest(request, deps, { requestId, started, method, path });
+  if ("response" in guarded) return guarded.response;
+  const { key, ctx, rateHeaders } = guarded;
+  let opId: string | null = null;
+  const finish = (res: Response) => guarded.record(res, opId);
 
   // Quién soy y qué puedo hacer con esta llave.
   if (method === "GET" && path === "/me") {
