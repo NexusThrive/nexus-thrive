@@ -63,8 +63,8 @@ tags: [capas, estructura, subcapa]
 - [ ] Múltiples bodegas _(PR-10)_
 - [ ] Kardex _(PR-10)_
 - [ ] Lotes, fechas de vencimiento y series.
-- [ ] Stock mínimo, máximo y punto de reorden _(PR-11)_
-- [ ] Conteos físicos y ajustes por inventario _(PR-11)_
+- [x] Stock mínimo, máximo y punto de reorden _hecho: lib/inventory/stock-docs-db.ts (reorderOverview) + pestaña Reposición_
+- [x] Conteos físicos y ajustes por inventario _hecho: StockCount; cerrar aplica la diferencia con motivo_
 - [ ] Método de costeo _(PR-10)_
 - [ ] Inventario por obra o por sede
 

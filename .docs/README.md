@@ -21,7 +21,8 @@ Esta carpeta es **la guía de qué construimos y en qué orden**. Las capas
 | [hoja-de-ruta-implementacion.md](hoja-de-ruta-implementacion.md) | **Cómo empezamos:** 30 PR en orden de dependencia, cómo se migra y por dónde arrancar |
 | [sql/](sql/README.md) | Borradores de esquema (SQL) de cada PR, validados contra Postgres |
 | [integracion-api-mcp-webhooks.md](integracion-api-mcp-webhooks.md) | **Regla transversal:** todo tiene API, MCP y webhooks; pagos, DIAN y n8n por puertos; cómo ordenar el trabajo |
-| [distribucion-por-rubro.md](distribucion-por-rubro.md) | **Cómo se reparte el sistema por rubro:** módulo = capacidad, receta = lo que viene encendido y cómo se llama, rol = quién puede; qué rubro enciende qué; checklist para módulos nuevos |
+| [distribucion-por-rubro.md](distribucion-por-rubro.md) | **Un solo sistema:** núcleo compartido, el rubro como perfil (no frontera), funciones incluidas en todos los planes, planes por uso; revisión del estado contra esta visión |
+| [auditoria-arquitectura-unificada.md](auditoria-arquitectura-unificada.md) | **Auditoría:** qué del código ya cumple la visión unificada y multiempresa, qué la contradecía y la migración por etapas (A–E) |
 | [mapa-de-capacidades.md](mapa-de-capacidades.md) | Las 447 capacidades que usa una empresa contra las capas y el código: qué hay, qué falta y **qué sigue** |
 | [fuentes/](fuentes/) | Material de origen de las capas (no se edita; se consulta) |
 | [`docs/PENDIENTES.md`](../docs/PENDIENTES.md) | Lista viva de tareas, decisiones abiertas y la ruta de automatizaciones y agentes de IA |
@@ -116,18 +117,18 @@ solo si existe en el producto, con una nota de dónde (_hecho: …_).
 <!-- progreso:inicio -->
 | Capa | Nombre | Nivel N1 (lo básico) | Todas las funcionalidades | Integración (API · MCP · Webhooks) | |
 | --- | --- | --- | --- | --- | --- |
-| I | [FUNDACIÓN, NÚCLEO E INFRAESTRUCTURA](capas/I-Fundacion-Nucleo-e-Infraestructura/README.md) | 19/34 · 56 % | 23/138 · 17 % | 0/47 · 0 % | `██░░░░░░░░` |
+| I | [FUNDACIÓN, NÚCLEO E INFRAESTRUCTURA](capas/I-Fundacion-Nucleo-e-Infraestructura/README.md) | 20/34 · 59 % | 24/138 · 17 % | 0/47 · 0 % | `██░░░░░░░░` |
 | II | [VISIBILIDAD, CAPTACIÓN Y PRESENCIA DIGITAL](capas/II-Visibilidad-Captacion-y-Presencia-Digital/README.md) | 3/26 · 12 % | 4/170 · 2 % | 0/42 · 0 % | `░░░░░░░░░░` |
 | III | [ATENCIÓN Y COMUNICACIÓN](capas/III-Atencion-y-Comunicacion/README.md) | 1/9 · 11 % | 1/78 · 1 % | 0/30 · 0 % | `░░░░░░░░░░` |
-| IV | [GESTIÓN COMERCIAL Y RELACIÓN CON CLIENTES](capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/README.md) | 4/14 · 29 % | 4/92 · 4 % | 0/30 · 0 % | `░░░░░░░░░░` |
+| IV | [GESTIÓN COMERCIAL Y RELACIÓN CON CLIENTES](capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/README.md) | 5/14 · 36 % | 5/92 · 5 % | 0/30 · 0 % | `█░░░░░░░░░` |
 | V | [VENTAS DIGITALES, COMERCIO Y PAGOS](capas/V-Ventas-Digitales-Comercio-y-Pagos/README.md) | 5/24 · 21 % | 8/162 · 5 % | 0/48 · 0 % | `░░░░░░░░░░` |
-| VI | [OPERACIÓN, PRODUCTIVIDAD Y LOGÍSTICA](capas/VI-Operacion-Productividad-y-Logistica/README.md) | 12/36 · 33 % | 12/247 · 5 % | 0/54 · 0 % | `░░░░░░░░░░` |
+| VI | [OPERACIÓN, PRODUCTIVIDAD Y LOGÍSTICA](capas/VI-Operacion-Productividad-y-Logistica/README.md) | 12/36 · 33 % | 14/247 · 6 % | 0/54 · 0 % | `█░░░░░░░░░` |
 | VII | [CAJA MENOR, FINANZAS OPERATIVAS Y CONTABILIDAD](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/README.md) | 9/31 · 29 % | 13/195 · 7 % | 0/48 · 0 % | `█░░░░░░░░░` |
 | VIII | [TALENTO HUMANO Y ADMINISTRACIÓN DEL EQUIPO](capas/VIII-Talento-Humano-y-Administracion-del-Equipo/README.md) | 0/23 · 0 % | 0/173 · 0 % | 0/48 · 0 % | `░░░░░░░░░░` |
 | IX | [INTELIGENCIA DE NEGOCIO, ANALÍTICA E IA](capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/README.md) | 9/26 · 35 % | 9/128 · 7 % | 0/35 · 0 % | `█░░░░░░░░░` |
 | X | [PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/README.md) | 11/18 · 61 % | 20/127 · 16 % | 0/30 · 0 % | `██░░░░░░░░` |
 | XI | [ESPECIALIZACIÓN POR VERTICAL](capas/XI-Especializacion-por-Vertical/README.md) | 0/0 · — | 0/0 · — | 0/6 · 0 % | `` |
-| | **Total** | **73/241 · 30 %** | **94/1510 · 6 %** | **0/418 · 0 %** | |
+| | **Total** | **75/241 · 31 %** | **98/1510 · 6 %** | **0/418 · 0 %** | |
 
 _Generado con `node scripts/capas-progreso.mjs --write`. La capa XI (construcción) usa pestañas en lugar de casillas: su estado está en su README. «Integración» cuenta las casillas de la superficie API · MCP · Webhooks de cada subcapa (no suman al porcentaje de funcionalidades)._
 <!-- progreso:fin -->

@@ -32,6 +32,7 @@ export const VERTICALS = [
   "tour_guides",
   "events",
   "museum",
+  "general",
 ] as const;
 export type VerticalValue = (typeof VERTICALS)[number];
 
@@ -41,6 +42,7 @@ export type VerticalValue = (typeof VERTICALS)[number];
  * se ofrece al crear un negocio.
  */
 export const SIGNUP_VERTICALS = [
+  "general",
   "gym",
   "tourism_agency",
   "construction",
@@ -67,6 +69,7 @@ export const VERTICAL_LABELS: Record<VerticalValue, string> = {
   tour_guides: "Guías Turísticos",
   events: "Eventos",
   museum: "Museo",
+  general: "General / Otro",
 };
 
 /** Íconos emoji por vertical (badges del Panel CEO y selección del onboarding). */
@@ -88,6 +91,7 @@ export const VERTICAL_ICONS: Record<VerticalValue, string> = {
   tour_guides: "🧭",
   events: "🎉",
   museum: "🏛️",
+  general: "🧩",
 };
 
 /**
@@ -390,6 +394,19 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
       bookings: "Visitas guiadas",
       item: "Entrada",
       items: "Entradas",
+    },
+  },
+  general: {
+    // Perfil general (agencia, consultora, empresa B2B, emprendimiento o negocio mixto): sin rubro cerrado.
+    // Parte con lo esencial; el resto se enciende en Funciones según lo que haga el negocio.
+    modules: ["dashboard", "crm", "finance", "billing", "payments"],
+    terms: {
+      customer: "Cliente",
+      customers: "Clientes",
+      booking: "Cita",
+      bookings: "Citas",
+      item: "Servicio",
+      items: "Servicios",
     },
   },
 };

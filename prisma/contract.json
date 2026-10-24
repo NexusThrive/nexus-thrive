@@ -292,12 +292,28 @@
       "model": "StaffRole",
       "namespace": "public"
     },
+    "StockCount": {
+      "model": "StockCount",
+      "namespace": "public"
+    },
+    "StockCountLine": {
+      "model": "StockCountLine",
+      "namespace": "public"
+    },
     "StockLevel": {
       "model": "StockLevel",
       "namespace": "public"
     },
     "StockMovement": {
       "model": "StockMovement",
+      "namespace": "public"
+    },
+    "StockTransfer": {
+      "model": "StockTransfer",
+      "namespace": "public"
+    },
+    "StockTransferLine": {
+      "model": "StockTransferLine",
       "namespace": "public"
     },
     "Subscription": {
@@ -1105,6 +1121,10 @@
               {
                 "name": "museum",
                 "value": "museum"
+              },
+              {
+                "name": "general",
+                "value": "general"
               }
             ]
           },
@@ -10340,6 +10360,13 @@
                   "plane": "domain"
                 }
               },
+              "maxStock": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "minStock": {
                 "nullable": false,
                 "type": {
@@ -10365,6 +10392,13 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "reorderPoint": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -10448,6 +10482,21 @@
                   "namespace": "public"
                 }
               },
+              "countLines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "productId"
+                  ]
+                },
+                "to": {
+                  "model": "StockCountLine",
+                  "namespace": "public"
+                }
+              },
               "movements": {
                 "cardinality": "1:N",
                 "on": {
@@ -10524,6 +10573,21 @@
                   "namespace": "public"
                 }
               },
+              "transferLines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "productId"
+                  ]
+                },
+                "to": {
+                  "model": "StockTransferLine",
+                  "namespace": "public"
+                }
+              },
               "variants": {
                 "cardinality": "1:N",
                 "on": {
@@ -10578,6 +10642,9 @@
                 "kind": {
                   "column": "kind"
                 },
+                "maxStock": {
+                  "column": "maxStock"
+                },
                 "minStock": {
                   "column": "minStock"
                 },
@@ -10589,6 +10656,9 @@
                 },
                 "publishedOnline": {
                   "column": "publishedOnline"
+                },
+                "reorderPoint": {
+                  "column": "reorderPoint"
                 },
                 "sku": {
                   "column": "sku"
@@ -13548,6 +13618,285 @@
               "table": "StaffRole"
             }
           },
+          "StockCount": {
+            "fields": {
+              "completedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdById": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "note": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "number": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "warehouseId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "lines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "countId"
+                  ]
+                },
+                "to": {
+                  "model": "StockCountLine",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              },
+              "warehouse": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "warehouseId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Warehouse",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "completedAt": {
+                  "column": "completedAt"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "createdById": {
+                  "column": "createdById"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "note": {
+                  "column": "note"
+                },
+                "number": {
+                  "column": "number"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "warehouseId": {
+                  "column": "warehouseId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "StockCount"
+            }
+          },
+          "StockCountLine": {
+            "fields": {
+              "adjustment": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "countId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "counted": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "expected": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "productId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "count": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "countId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StockCount",
+                  "namespace": "public"
+                }
+              },
+              "product": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "productId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Product",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "adjustment": {
+                  "column": "adjustment"
+                },
+                "countId": {
+                  "column": "countId"
+                },
+                "counted": {
+                  "column": "counted"
+                },
+                "expected": {
+                  "column": "expected"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "productId": {
+                  "column": "productId"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "StockCountLine"
+            }
+          },
           "StockLevel": {
             "fields": {
               "avgCost": {
@@ -13932,6 +14281,291 @@
               },
               "namespaceId": "public",
               "table": "StockMovement"
+            }
+          },
+          "StockTransfer": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdById": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "fromWarehouseId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "note": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "number": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "toWarehouseId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "fromWarehouse": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "fromWarehouseId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Warehouse",
+                  "namespace": "public"
+                }
+              },
+              "lines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "transferId"
+                  ]
+                },
+                "to": {
+                  "model": "StockTransferLine",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              },
+              "toWarehouse": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "toWarehouseId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Warehouse",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "createdById": {
+                  "column": "createdById"
+                },
+                "fromWarehouseId": {
+                  "column": "fromWarehouseId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "note": {
+                  "column": "note"
+                },
+                "number": {
+                  "column": "number"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "toWarehouseId": {
+                  "column": "toWarehouseId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "StockTransfer"
+            }
+          },
+          "StockTransferLine": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "productId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "quantity": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "transferId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "unitCost": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "variantId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "product": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "productId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Product",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              },
+              "transfer": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "transferId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StockTransfer",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "productId": {
+                  "column": "productId"
+                },
+                "quantity": {
+                  "column": "quantity"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "transferId": {
+                  "column": "transferId"
+                },
+                "unitCost": {
+                  "column": "unitCost"
+                },
+                "variantId": {
+                  "column": "variantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "StockTransferLine"
             }
           },
           "Subscription": {
@@ -14577,6 +15211,13 @@
                   "kind": "scalar"
                 }
               },
+              "activity": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "address": {
                 "nullable": true,
                 "type": {
@@ -14595,6 +15236,14 @@
                   "entityName": "BillingCycle",
                   "namespaceId": "public",
                   "plane": "domain"
+                }
+              },
+              "businessModels": {
+                "many": true,
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
                 }
               },
               "city": {
@@ -15683,6 +16332,36 @@
                   "namespace": "public"
                 }
               },
+              "stockCountLines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "StockCountLine",
+                  "namespace": "public"
+                }
+              },
+              "stockCounts": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "StockCount",
+                  "namespace": "public"
+                }
+              },
               "stockLevels": {
                 "cardinality": "1:N",
                 "on": {
@@ -15710,6 +16389,36 @@
                 },
                 "to": {
                   "model": "StockMovement",
+                  "namespace": "public"
+                }
+              },
+              "stockTransferLines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "StockTransferLine",
+                  "namespace": "public"
+                }
+              },
+              "stockTransfers": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "StockTransfer",
                   "namespace": "public"
                 }
               },
@@ -15891,11 +16600,17 @@
                 "active": {
                   "column": "active"
                 },
+                "activity": {
+                  "column": "activity"
+                },
                 "address": {
                   "column": "address"
                 },
                 "billingCycle": {
                   "column": "billingCycle"
+                },
+                "businessModels": {
+                  "column": "businessModels"
                 },
                 "city": {
                   "column": "city"
@@ -17269,6 +17984,21 @@
               }
             },
             "relations": {
+              "counts": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "warehouseId"
+                  ]
+                },
+                "to": {
+                  "model": "StockCount",
+                  "namespace": "public"
+                }
+              },
               "levels": {
                 "cardinality": "1:N",
                 "on": {
@@ -17327,6 +18057,36 @@
                 },
                 "to": {
                   "model": "Tenant",
+                  "namespace": "public"
+                }
+              },
+              "transfersFrom": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "fromWarehouseId"
+                  ]
+                },
+                "to": {
+                  "model": "StockTransfer",
+                  "namespace": "public"
+                }
+              },
+              "transfersTo": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "toWarehouseId"
+                  ]
+                },
+                "to": {
+                  "model": "StockTransfer",
                   "namespace": "public"
                 }
               }
@@ -18310,6 +19070,16 @@
               "namespaceId": "public",
               "tableName": "StaffRole"
             },
+            "StockCount": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "StockCount"
+            },
+            "StockCountLine": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "StockCountLine"
+            },
             "StockLevel": {
               "kind": "rls",
               "namespaceId": "public",
@@ -18319,6 +19089,16 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "StockMovement"
+            },
+            "StockTransfer": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "StockTransfer"
+            },
+            "StockTransferLine": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "StockTransferLine"
             },
             "Subscription": {
               "kind": "rls",
@@ -25796,6 +26576,11 @@
                     "plane": "storage"
                   }
                 },
+                "maxStock": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
                 "minStock": {
                   "codecId": "pg/int4@1",
                   "default": {
@@ -25823,6 +26608,11 @@
                   },
                   "nativeType": "bool",
                   "nullable": false
+                },
+                "reorderPoint": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
                 },
                 "sku": {
                   "codecId": "pg/text@1",
@@ -28312,6 +29102,263 @@
                 }
               ]
             },
+            "StockCount": {
+              "columns": {
+                "completedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "createdById": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "note": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "number": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "DRAFT"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "warehouseId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockCount"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "restrict",
+                  "source": {
+                    "columns": [
+                      "warehouseId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockCount"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Warehouse"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "StockCount_tenantId_idx_c93ed4f1",
+                  "prefix": "StockCount_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "status"
+                  ],
+                  "name": "StockCount_tenantId_status_idx_d3d04256",
+                  "prefix": "StockCount_tenantId_status_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "warehouseId"
+                  ],
+                  "name": "StockCount_warehouseId_idx_8ff93e70",
+                  "prefix": "StockCount_warehouseId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "number"
+                  ]
+                }
+              ]
+            },
+            "StockCountLine": {
+              "columns": {
+                "adjustment": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "countId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "counted": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "expected": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "productId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockCountLine"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "countId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockCountLine"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockCount"
+                  }
+                },
+                {
+                  "onDelete": "restrict",
+                  "source": {
+                    "columns": [
+                      "productId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockCountLine"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Product"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "countId"
+                  ],
+                  "name": "StockCountLine_countId_idx_825076b6",
+                  "prefix": "StockCountLine_countId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "productId"
+                  ],
+                  "name": "StockCountLine_productId_idx_5858600a",
+                  "prefix": "StockCountLine_productId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "StockCountLine_tenantId_idx_c93ed4f1",
+                  "prefix": "StockCountLine_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "StockLevel": {
               "columns": {
                 "avgCost": {
@@ -28672,6 +29719,279 @@
                   ],
                   "name": "StockMovement_warehouseId_idx_8ff93e70",
                   "prefix": "StockMovement_warehouseId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "StockTransfer": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "createdById": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "fromWarehouseId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "note": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "number": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "toWarehouseId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockTransfer"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "restrict",
+                  "source": {
+                    "columns": [
+                      "fromWarehouseId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockTransfer"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Warehouse"
+                  }
+                },
+                {
+                  "onDelete": "restrict",
+                  "source": {
+                    "columns": [
+                      "toWarehouseId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockTransfer"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Warehouse"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "fromWarehouseId"
+                  ],
+                  "name": "StockTransfer_fromWarehouseId_idx_4006b0b1",
+                  "prefix": "StockTransfer_fromWarehouseId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "createdAt"
+                  ],
+                  "name": "StockTransfer_tenantId_createdAt_idx_88162366",
+                  "prefix": "StockTransfer_tenantId_createdAt_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "StockTransfer_tenantId_idx_c93ed4f1",
+                  "prefix": "StockTransfer_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "toWarehouseId"
+                  ],
+                  "name": "StockTransfer_toWarehouseId_idx_f640a978",
+                  "prefix": "StockTransfer_toWarehouseId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "number"
+                  ]
+                }
+              ]
+            },
+            "StockTransferLine": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "productId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "quantity": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "transferId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "unitCost": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "variantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockTransferLine"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "transferId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockTransferLine"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockTransfer"
+                  }
+                },
+                {
+                  "onDelete": "restrict",
+                  "source": {
+                    "columns": [
+                      "productId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StockTransferLine"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Product"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "productId"
+                  ],
+                  "name": "StockTransferLine_productId_idx_5858600a",
+                  "prefix": "StockTransferLine_productId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "StockTransferLine_tenantId_idx_c93ed4f1",
+                  "prefix": "StockTransferLine_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "transferId"
+                  ],
+                  "name": "StockTransferLine_transferId_idx_2ecab561",
+                  "prefix": "StockTransferLine_transferId_idx",
                   "unique": false
                 }
               ],
@@ -29185,6 +30505,11 @@
                   "prefix": "Tenant_billingCycle_check"
                 },
                 {
+                  "expression": "array_position(\"businessModels\", NULL) IS NULL",
+                  "name": "Tenant_businessModels_elem_not_null_de2f8db1",
+                  "prefix": "Tenant_businessModels_elem_not_null"
+                },
+                {
                   "expression": "array_position(\"contractedModules\", NULL) IS NULL",
                   "name": "Tenant_contractedModules_elem_not_null_6b619961",
                   "prefix": "Tenant_contractedModules_elem_not_null"
@@ -29210,8 +30535,8 @@
                   "prefix": "Tenant_tenantType_check"
                 },
                 {
-                  "expression": "\"vertical\" IN ('gym', 'tourism_agency', 'hospitality', 'construction', 'carpentry', 'restaurant', 'retail', 'beauty', 'healthcare', 'mechanic', 'education', 'real_estate', 'hardware_store', 'nautical_transport', 'tour_guides', 'events', 'museum')",
-                  "name": "Tenant_vertical_check_7ca0b77e",
+                  "expression": "\"vertical\" IN ('gym', 'tourism_agency', 'hospitality', 'construction', 'carpentry', 'restaurant', 'retail', 'beauty', 'healthcare', 'mechanic', 'education', 'real_estate', 'hardware_store', 'nautical_transport', 'tour_guides', 'events', 'museum', 'general')",
+                  "name": "Tenant_vertical_check_1e2766aa",
                   "prefix": "Tenant_vertical_check"
                 }
               ],
@@ -29245,6 +30570,11 @@
                   "nativeType": "bool",
                   "nullable": false
                 },
+                "activity": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "address": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -29264,6 +30594,12 @@
                     "namespaceId": "public",
                     "plane": "storage"
                   }
+                },
+                "businessModels": {
+                  "codecId": "pg/text@1",
+                  "many": true,
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "city": {
                   "codecId": "pg/text@1",
@@ -31397,7 +32733,8 @@
                 "nautical_transport",
                 "tour_guides",
                 "events",
-                "museum"
+                "museum",
+                "general"
               ]
             },
             "WeatherCondition": {
@@ -31415,10 +32752,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "5102e126472fee6d7350ac798fd4bc06e65763a6cffc609a914d0462dd251bb9"
+    "storageHash": "ce8102383574e467af1bd700279b74f5c2e184c88398de66b05b7273b722cee0"
   },
   "execution": {
-    "executionHash": "757905704f9b57bbe1fc8d234f9699b108b52b74eba179cbdbbbc4cbbbe5ccb2",
+    "executionHash": "45278fcd5a74cc7ed0d60f7af17390c316b5de6a50b9cfd02d4314dfb2a8885e",
     "mutations": {
       "defaults": [
         {
@@ -32820,6 +34157,28 @@
             "kind": "generator"
           },
           "ref": {
+            "entry": "StockCount",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "StockCountLine",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
             "entry": "StockLevel",
             "field": "id",
             "namespace": "public"
@@ -32847,6 +34206,28 @@
           },
           "ref": {
             "entry": "StockMovement",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "StockTransfer",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "StockTransferLine",
             "field": "id",
             "namespace": "public"
           }

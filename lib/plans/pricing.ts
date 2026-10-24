@@ -6,7 +6,6 @@ import {
   INCLUDED_MODULES,
   MODULE_PRICES,
   PLANS,
-  SIGNATURE_MODULE_FACTOR,
   VERTICAL_FACTORS,
   type Billing,
   type PlanKey,
@@ -62,7 +61,7 @@ export type VerticalConfig = {
   signupEnabled: boolean;
   /** 100 = ×1,00. */
   priceFactorPct: number;
-  /** Módulos que el rubro puede usar (lo demás no se ofrece ni se activa). */
+  /** Funciones que el rubro SUGIERE al empezar. No limita: cualquier negocio puede encender cualquiera. */
   modules: ModuleValue[];
   /** Preseleccionados en el plan Elite. */
   recommended: ModuleValue[];
@@ -105,9 +104,10 @@ export function defaultPricingConfig(): PricingConfig {
       tagline: PLANS[key].tagline,
       features: [...PLANS[key].features],
       basePriceUsdCents: PLANS[key].base * 100,
-      moduleDiscountPct: key === "SIGNATURE" ? Math.round((1 - SIGNATURE_MODULE_FACTOR) * 100) : 0,
-      includesAllModules: key === "SIGNATURE",
-      chargesModules: key !== "ESSENTIAL",
+      // Todo está incluido: ningún plan descuenta ni cobra funciones; los planes se diferencian por uso.
+      moduleDiscountPct: 0,
+      includesAllModules: false,
+      chargesModules: true,
       annualDiscountPct: Math.round(ANNUAL_DISCOUNT * 100),
       recommended: key === "ELITE",
       active: true,
@@ -169,27 +169,32 @@ export function signupVerticals(config: PricingConfig): VerticalConfig[] {
 }
 
 /**
- * Módulos que se ofrecen al rubro: permitidos por el rubro y que no estén
- * PLANNED. El Inicio no se ofrece (siempre está). Ordenados como el catálogo.
+ * Funciones que se ofrecen a un negocio: TODAS las operativas (no PLANNED), sea
+ * cual sea su rubro. El Inicio no se ofrece (siempre está). Ordenadas como el catálogo.
  */
-export function offeredModules(config: PricingConfig, vertical: VerticalValue): ModuleConfig[] {
-  const allowed = new Set(verticalOf(config, vertical)?.modules ?? []);
-  return byOrder(config.modules.filter((m) => m.module !== CORE_MODULE && allowed.has(m.module) && m.status !== "PLANNED"));
+export function offeredModules(config: PricingConfig, _vertical?: VerticalValue): ModuleConfig[] {
+  return byOrder(config.modules.filter((m) => m.module !== CORE_MODULE && m.status !== "PLANNED"));
 }
 
-/** Módulos que quedan activos con el plan. Siempre incluye el Inicio. */
+/** Lo que el rubro sugiere al empezar (su receta): preselecciona y recomienda, nunca bloquea. */
+export function suggestedModules(config: PricingConfig, vertical: VerticalValue): ModuleConfig[] {
+  const suggested = new Set(verticalOf(config, vertical)?.modules ?? []);
+  return offeredModules(config).filter((m) => suggested.has(m.module));
+}
+
+/**
+ * Funciones que quedan ENCENDIDAS al empezar: el Inicio, lo esencial (`included`)
+ * y lo que se eligió. Con `includesAllModules` (Signature) entra además todo lo
+ * que el rubro sugiere. El plan no recorta funciones: todas se pueden encender
+ * después; el plan limita usuarios y clientes.
+ */
 export function resolveModules(config: PricingConfig, plan: PlanKey, vertical: VerticalValue, selected: readonly ModuleValue[]): ModuleValue[] {
   const p = planOf(config, plan);
-  const offered = offeredModules(config, vertical);
+  const offered = offeredModules(config);
+  const allowed = new Set(offered.map((m) => m.module));
   const included = offered.filter((m) => m.included).map((m) => m.module);
-  let picked: ModuleValue[];
-  if (!p || (!p.chargesModules && !p.includesAllModules)) picked = included;
-  else if (p.includesAllModules) picked = offered.map((m) => m.module);
-  else {
-    const allowed = new Set(offered.map((m) => m.module));
-    picked = [...new Set([...included, ...selected.filter((m) => allowed.has(m))])];
-  }
-  const set = new Set<ModuleValue>([CORE_MODULE, ...picked]);
+  const suggested = p?.includesAllModules ? suggestedModules(config, vertical).map((m) => m.module) : [];
+  const set = new Set<ModuleValue>([CORE_MODULE, ...included, ...suggested, ...selected.filter((m) => allowed.has(m))]);
   return MODULES.filter((m) => set.has(m));
 }
 

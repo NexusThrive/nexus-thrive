@@ -16,6 +16,8 @@ import { SectionNav } from "@/components/molecules/section-nav";
 import { PageHeader } from "@/components/molecules/page-header";
 import { ApiKeysPanel } from "@/components/organisms/api-keys-panel";
 import type { ApiKeyRow } from "@/lib/api/keys";
+import type { VerticalValue } from "@/lib/admin/catalogs";
+import type { BusinessModel } from "@/lib/tenant/business-context";
 import { createApiKeyAction, revokeApiKeyAction } from "../api-keys-actions";
 import { AppearanceSettings } from "@/components/organisms/appearance-settings";
 
@@ -65,6 +67,7 @@ export default function SettingsShell({
   systemInfo,
   plan,
   card,
+  context,
 }: {
   tenantSlug: string;
   canManage: boolean;
@@ -75,6 +78,7 @@ export default function SettingsShell({
   systemInfo: SystemInfoItem[];
   plan: PlanInfo;
   card: CardOwner;
+  context: { vertical: VerticalValue; businessModels: BusinessModel[]; activity: string };
 }) {
   const params = useParams();
   const currentSlug = Array.isArray(params?.tenant)
@@ -101,6 +105,7 @@ export default function SettingsShell({
             canManage={canManage}
             initialValues={profile}
             systemInfo={systemInfo}
+            context={context}
           />
         )}
         {tab === "modules" && (

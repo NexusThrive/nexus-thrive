@@ -1,0 +1,1451 @@
+[
+  {
+    "id": "table.StockCount",
+    "label": "Create table \"StockCount\"",
+    "summary": "Creates table \"StockCount\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "StockCount"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"StockCount\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockCount\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"StockCount\"",
+        "sql": "CREATE TABLE \"public\".\"StockCount\" (\n  \"completedAt\" timestamptz,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"id\" text NOT NULL,\n  \"note\" text,\n  \"number\" int4 NOT NULL,\n  \"status\" text DEFAULT 'DRAFT' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"warehouseId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"StockCount\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockCount\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.StockCountLine",
+    "label": "Create table \"StockCountLine\"",
+    "summary": "Creates table \"StockCountLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "StockCountLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"StockCountLine\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockCountLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"StockCountLine\"",
+        "sql": "CREATE TABLE \"public\".\"StockCountLine\" (\n  \"adjustment\" int4,\n  \"countId\" text NOT NULL,\n  \"counted\" int4,\n  \"expected\" int4 NOT NULL,\n  \"id\" text NOT NULL,\n  \"productId\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"StockCountLine\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockCountLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.StockTransfer",
+    "label": "Create table \"StockTransfer\"",
+    "summary": "Creates table \"StockTransfer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "StockTransfer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"StockTransfer\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransfer\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"StockTransfer\"",
+        "sql": "CREATE TABLE \"public\".\"StockTransfer\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"fromWarehouseId\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"note\" text,\n  \"number\" int4 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"toWarehouseId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"StockTransfer\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransfer\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.StockTransferLine",
+    "label": "Create table \"StockTransferLine\"",
+    "summary": "Creates table \"StockTransferLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "StockTransferLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"StockTransferLine\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransferLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"StockTransferLine\"",
+        "sql": "CREATE TABLE \"public\".\"StockTransferLine\" (\n  \"id\" text NOT NULL,\n  \"productId\" text NOT NULL,\n  \"quantity\" int4 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"transferId\" text NOT NULL,\n  \"unitCost\" numeric NOT NULL,\n  \"variantId\" text,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"StockTransferLine\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransferLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Product.maxStock",
+    "label": "Add column \"maxStock\" to \"Product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "maxStock",
+        "table": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"maxStock\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "maxStock"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"maxStock\"",
+        "sql": "ALTER TABLE \"public\".\"Product\" ADD COLUMN \"maxStock\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"maxStock\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "maxStock"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Product.reorderPoint",
+    "label": "Add column \"reorderPoint\" to \"Product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "reorderPoint",
+        "table": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"reorderPoint\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "reorderPoint"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"reorderPoint\"",
+        "sql": "ALTER TABLE \"public\".\"Product\" ADD COLUMN \"reorderPoint\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"reorderPoint\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "reorderPoint"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.StockCount.StockCount_tenantId_number_key",
+    "label": "Add unique constraint on \"StockCount\" (tenantId, number)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "StockCount_tenantId_number_key",
+        "table": "StockCount"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"StockCount_tenantId_number_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockCount_tenantId_number_key",
+          "public",
+          "\"public\".\"StockCount\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"StockCount_tenantId_number_key\"",
+        "sql": "ALTER TABLE \"public\".\"StockCount\" ADD CONSTRAINT \"StockCount_tenantId_number_key\" UNIQUE (\"tenantId\", \"number\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"StockCount_tenantId_number_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockCount_tenantId_number_key",
+          "public",
+          "\"public\".\"StockCount\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.StockTransfer.StockTransfer_tenantId_number_key",
+    "label": "Add unique constraint on \"StockTransfer\" (tenantId, number)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "StockTransfer_tenantId_number_key",
+        "table": "StockTransfer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"StockTransfer_tenantId_number_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockTransfer_tenantId_number_key",
+          "public",
+          "\"public\".\"StockTransfer\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"StockTransfer_tenantId_number_key\"",
+        "sql": "ALTER TABLE \"public\".\"StockTransfer\" ADD CONSTRAINT \"StockTransfer_tenantId_number_key\" UNIQUE (\"tenantId\", \"number\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"StockTransfer_tenantId_number_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockTransfer_tenantId_number_key",
+          "public",
+          "\"public\".\"StockTransfer\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockCount.StockCount_tenantId_idx_c93ed4f1",
+    "label": "Create index \"StockCount_tenantId_idx_c93ed4f1\" on \"StockCount\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockCount_tenantId_idx_c93ed4f1",
+        "table": "StockCount"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockCount_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockCount_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockCount_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"StockCount_tenantId_idx_c93ed4f1\" ON \"public\".\"StockCount\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockCount_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockCount_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockCount.StockCount_tenantId_status_idx_d3d04256",
+    "label": "Create index \"StockCount_tenantId_status_idx_d3d04256\" on \"StockCount\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockCount_tenantId_status_idx_d3d04256",
+        "table": "StockCount"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockCount_tenantId_status_idx_d3d04256\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockCount_tenantId_status_idx_d3d04256\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockCount_tenantId_status_idx_d3d04256\"",
+        "sql": "CREATE INDEX \"StockCount_tenantId_status_idx_d3d04256\" ON \"public\".\"StockCount\" (\"tenantId\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockCount_tenantId_status_idx_d3d04256\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockCount_tenantId_status_idx_d3d04256\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockCount.StockCount_warehouseId_idx_8ff93e70",
+    "label": "Create index \"StockCount_warehouseId_idx_8ff93e70\" on \"StockCount\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockCount_warehouseId_idx_8ff93e70",
+        "table": "StockCount"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockCount_warehouseId_idx_8ff93e70\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockCount_warehouseId_idx_8ff93e70\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockCount_warehouseId_idx_8ff93e70\"",
+        "sql": "CREATE INDEX \"StockCount_warehouseId_idx_8ff93e70\" ON \"public\".\"StockCount\" (\"warehouseId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockCount_warehouseId_idx_8ff93e70\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockCount_warehouseId_idx_8ff93e70\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockCountLine.StockCountLine_countId_idx_825076b6",
+    "label": "Create index \"StockCountLine_countId_idx_825076b6\" on \"StockCountLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockCountLine_countId_idx_825076b6",
+        "table": "StockCountLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockCountLine_countId_idx_825076b6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockCountLine_countId_idx_825076b6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockCountLine_countId_idx_825076b6\"",
+        "sql": "CREATE INDEX \"StockCountLine_countId_idx_825076b6\" ON \"public\".\"StockCountLine\" (\"countId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockCountLine_countId_idx_825076b6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockCountLine_countId_idx_825076b6\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockCountLine.StockCountLine_productId_idx_5858600a",
+    "label": "Create index \"StockCountLine_productId_idx_5858600a\" on \"StockCountLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockCountLine_productId_idx_5858600a",
+        "table": "StockCountLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockCountLine_productId_idx_5858600a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockCountLine_productId_idx_5858600a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockCountLine_productId_idx_5858600a\"",
+        "sql": "CREATE INDEX \"StockCountLine_productId_idx_5858600a\" ON \"public\".\"StockCountLine\" (\"productId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockCountLine_productId_idx_5858600a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockCountLine_productId_idx_5858600a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockCountLine.StockCountLine_tenantId_idx_c93ed4f1",
+    "label": "Create index \"StockCountLine_tenantId_idx_c93ed4f1\" on \"StockCountLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockCountLine_tenantId_idx_c93ed4f1",
+        "table": "StockCountLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockCountLine_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockCountLine_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockCountLine_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"StockCountLine_tenantId_idx_c93ed4f1\" ON \"public\".\"StockCountLine\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockCountLine_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockCountLine_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockTransfer.StockTransfer_fromWarehouseId_idx_4006b0b1",
+    "label": "Create index \"StockTransfer_fromWarehouseId_idx_4006b0b1\" on \"StockTransfer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockTransfer_fromWarehouseId_idx_4006b0b1",
+        "table": "StockTransfer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockTransfer_fromWarehouseId_idx_4006b0b1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransfer_fromWarehouseId_idx_4006b0b1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockTransfer_fromWarehouseId_idx_4006b0b1\"",
+        "sql": "CREATE INDEX \"StockTransfer_fromWarehouseId_idx_4006b0b1\" ON \"public\".\"StockTransfer\" (\"fromWarehouseId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockTransfer_fromWarehouseId_idx_4006b0b1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransfer_fromWarehouseId_idx_4006b0b1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockTransfer.StockTransfer_tenantId_createdAt_idx_88162366",
+    "label": "Create index \"StockTransfer_tenantId_createdAt_idx_88162366\" on \"StockTransfer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockTransfer_tenantId_createdAt_idx_88162366",
+        "table": "StockTransfer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockTransfer_tenantId_createdAt_idx_88162366\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransfer_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockTransfer_tenantId_createdAt_idx_88162366\"",
+        "sql": "CREATE INDEX \"StockTransfer_tenantId_createdAt_idx_88162366\" ON \"public\".\"StockTransfer\" (\"tenantId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockTransfer_tenantId_createdAt_idx_88162366\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransfer_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockTransfer.StockTransfer_tenantId_idx_c93ed4f1",
+    "label": "Create index \"StockTransfer_tenantId_idx_c93ed4f1\" on \"StockTransfer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockTransfer_tenantId_idx_c93ed4f1",
+        "table": "StockTransfer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockTransfer_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransfer_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockTransfer_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"StockTransfer_tenantId_idx_c93ed4f1\" ON \"public\".\"StockTransfer\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockTransfer_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransfer_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockTransfer.StockTransfer_toWarehouseId_idx_f640a978",
+    "label": "Create index \"StockTransfer_toWarehouseId_idx_f640a978\" on \"StockTransfer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockTransfer_toWarehouseId_idx_f640a978",
+        "table": "StockTransfer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockTransfer_toWarehouseId_idx_f640a978\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransfer_toWarehouseId_idx_f640a978\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockTransfer_toWarehouseId_idx_f640a978\"",
+        "sql": "CREATE INDEX \"StockTransfer_toWarehouseId_idx_f640a978\" ON \"public\".\"StockTransfer\" (\"toWarehouseId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockTransfer_toWarehouseId_idx_f640a978\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransfer_toWarehouseId_idx_f640a978\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockTransferLine.StockTransferLine_productId_idx_5858600a",
+    "label": "Create index \"StockTransferLine_productId_idx_5858600a\" on \"StockTransferLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockTransferLine_productId_idx_5858600a",
+        "table": "StockTransferLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockTransferLine_productId_idx_5858600a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransferLine_productId_idx_5858600a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockTransferLine_productId_idx_5858600a\"",
+        "sql": "CREATE INDEX \"StockTransferLine_productId_idx_5858600a\" ON \"public\".\"StockTransferLine\" (\"productId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockTransferLine_productId_idx_5858600a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransferLine_productId_idx_5858600a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockTransferLine.StockTransferLine_tenantId_idx_c93ed4f1",
+    "label": "Create index \"StockTransferLine_tenantId_idx_c93ed4f1\" on \"StockTransferLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockTransferLine_tenantId_idx_c93ed4f1",
+        "table": "StockTransferLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockTransferLine_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransferLine_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockTransferLine_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"StockTransferLine_tenantId_idx_c93ed4f1\" ON \"public\".\"StockTransferLine\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockTransferLine_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransferLine_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockTransferLine.StockTransferLine_transferId_idx_2ecab561",
+    "label": "Create index \"StockTransferLine_transferId_idx_2ecab561\" on \"StockTransferLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockTransferLine_transferId_idx_2ecab561",
+        "table": "StockTransferLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockTransferLine_transferId_idx_2ecab561\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransferLine_transferId_idx_2ecab561\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockTransferLine_transferId_idx_2ecab561\"",
+        "sql": "CREATE INDEX \"StockTransferLine_transferId_idx_2ecab561\" ON \"public\".\"StockTransferLine\" (\"transferId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockTransferLine_transferId_idx_2ecab561\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockTransferLine_transferId_idx_2ecab561\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockCount.StockCount_tenantId_fkey",
+    "label": "Add foreign key \"StockCount_tenantId_fkey\" on \"StockCount\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockCount_tenantId_fkey",
+        "table": "StockCount"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockCount_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockCount_tenantId_fkey",
+          "public",
+          "\"public\".\"StockCount\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockCount_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockCount\"\nADD CONSTRAINT \"StockCount_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockCount_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockCount_tenantId_fkey",
+          "public",
+          "\"public\".\"StockCount\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockCount.StockCount_warehouseId_fkey",
+    "label": "Add foreign key \"StockCount_warehouseId_fkey\" on \"StockCount\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockCount_warehouseId_fkey",
+        "table": "StockCount"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockCount_warehouseId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockCount_warehouseId_fkey",
+          "public",
+          "\"public\".\"StockCount\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockCount_warehouseId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockCount\"\nADD CONSTRAINT \"StockCount_warehouseId_fkey\"\nFOREIGN KEY (\"warehouseId\")\nREFERENCES \"public\".\"Warehouse\" (\"id\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockCount_warehouseId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockCount_warehouseId_fkey",
+          "public",
+          "\"public\".\"StockCount\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockCountLine.StockCountLine_tenantId_fkey",
+    "label": "Add foreign key \"StockCountLine_tenantId_fkey\" on \"StockCountLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockCountLine_tenantId_fkey",
+        "table": "StockCountLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockCountLine_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockCountLine_tenantId_fkey",
+          "public",
+          "\"public\".\"StockCountLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockCountLine_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockCountLine\"\nADD CONSTRAINT \"StockCountLine_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockCountLine_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockCountLine_tenantId_fkey",
+          "public",
+          "\"public\".\"StockCountLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockCountLine.StockCountLine_countId_fkey",
+    "label": "Add foreign key \"StockCountLine_countId_fkey\" on \"StockCountLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockCountLine_countId_fkey",
+        "table": "StockCountLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockCountLine_countId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockCountLine_countId_fkey",
+          "public",
+          "\"public\".\"StockCountLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockCountLine_countId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockCountLine\"\nADD CONSTRAINT \"StockCountLine_countId_fkey\"\nFOREIGN KEY (\"countId\")\nREFERENCES \"public\".\"StockCount\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockCountLine_countId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockCountLine_countId_fkey",
+          "public",
+          "\"public\".\"StockCountLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockCountLine.StockCountLine_productId_fkey",
+    "label": "Add foreign key \"StockCountLine_productId_fkey\" on \"StockCountLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockCountLine_productId_fkey",
+        "table": "StockCountLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockCountLine_productId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockCountLine_productId_fkey",
+          "public",
+          "\"public\".\"StockCountLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockCountLine_productId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockCountLine\"\nADD CONSTRAINT \"StockCountLine_productId_fkey\"\nFOREIGN KEY (\"productId\")\nREFERENCES \"public\".\"Product\" (\"id\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockCountLine_productId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockCountLine_productId_fkey",
+          "public",
+          "\"public\".\"StockCountLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockTransfer.StockTransfer_tenantId_fkey",
+    "label": "Add foreign key \"StockTransfer_tenantId_fkey\" on \"StockTransfer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockTransfer_tenantId_fkey",
+        "table": "StockTransfer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockTransfer_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockTransfer_tenantId_fkey",
+          "public",
+          "\"public\".\"StockTransfer\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockTransfer_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockTransfer\"\nADD CONSTRAINT \"StockTransfer_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockTransfer_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockTransfer_tenantId_fkey",
+          "public",
+          "\"public\".\"StockTransfer\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockTransfer.StockTransfer_fromWarehouseId_fkey",
+    "label": "Add foreign key \"StockTransfer_fromWarehouseId_fkey\" on \"StockTransfer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockTransfer_fromWarehouseId_fkey",
+        "table": "StockTransfer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockTransfer_fromWarehouseId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockTransfer_fromWarehouseId_fkey",
+          "public",
+          "\"public\".\"StockTransfer\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockTransfer_fromWarehouseId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockTransfer\"\nADD CONSTRAINT \"StockTransfer_fromWarehouseId_fkey\"\nFOREIGN KEY (\"fromWarehouseId\")\nREFERENCES \"public\".\"Warehouse\" (\"id\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockTransfer_fromWarehouseId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockTransfer_fromWarehouseId_fkey",
+          "public",
+          "\"public\".\"StockTransfer\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockTransfer.StockTransfer_toWarehouseId_fkey",
+    "label": "Add foreign key \"StockTransfer_toWarehouseId_fkey\" on \"StockTransfer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockTransfer_toWarehouseId_fkey",
+        "table": "StockTransfer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockTransfer_toWarehouseId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockTransfer_toWarehouseId_fkey",
+          "public",
+          "\"public\".\"StockTransfer\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockTransfer_toWarehouseId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockTransfer\"\nADD CONSTRAINT \"StockTransfer_toWarehouseId_fkey\"\nFOREIGN KEY (\"toWarehouseId\")\nREFERENCES \"public\".\"Warehouse\" (\"id\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockTransfer_toWarehouseId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockTransfer_toWarehouseId_fkey",
+          "public",
+          "\"public\".\"StockTransfer\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockTransferLine.StockTransferLine_tenantId_fkey",
+    "label": "Add foreign key \"StockTransferLine_tenantId_fkey\" on \"StockTransferLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockTransferLine_tenantId_fkey",
+        "table": "StockTransferLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockTransferLine_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockTransferLine_tenantId_fkey",
+          "public",
+          "\"public\".\"StockTransferLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockTransferLine_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockTransferLine\"\nADD CONSTRAINT \"StockTransferLine_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockTransferLine_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockTransferLine_tenantId_fkey",
+          "public",
+          "\"public\".\"StockTransferLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockTransferLine.StockTransferLine_transferId_fkey",
+    "label": "Add foreign key \"StockTransferLine_transferId_fkey\" on \"StockTransferLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockTransferLine_transferId_fkey",
+        "table": "StockTransferLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockTransferLine_transferId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockTransferLine_transferId_fkey",
+          "public",
+          "\"public\".\"StockTransferLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockTransferLine_transferId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockTransferLine\"\nADD CONSTRAINT \"StockTransferLine_transferId_fkey\"\nFOREIGN KEY (\"transferId\")\nREFERENCES \"public\".\"StockTransfer\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockTransferLine_transferId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockTransferLine_transferId_fkey",
+          "public",
+          "\"public\".\"StockTransferLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockTransferLine.StockTransferLine_productId_fkey",
+    "label": "Add foreign key \"StockTransferLine_productId_fkey\" on \"StockTransferLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockTransferLine_productId_fkey",
+        "table": "StockTransferLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockTransferLine_productId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockTransferLine_productId_fkey",
+          "public",
+          "\"public\".\"StockTransferLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockTransferLine_productId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockTransferLine\"\nADD CONSTRAINT \"StockTransferLine_productId_fkey\"\nFOREIGN KEY (\"productId\")\nREFERENCES \"public\".\"Product\" (\"id\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockTransferLine_productId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockTransferLine_productId_fkey",
+          "public",
+          "\"public\".\"StockTransferLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.StockCount",
+    "label": "Enable row-level security on \"StockCount\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "StockCount"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"StockCount\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "StockCount"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"StockCount\"",
+        "sql": "ALTER TABLE \"public\".\"StockCount\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"StockCount\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "StockCount"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.StockCountLine",
+    "label": "Enable row-level security on \"StockCountLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "StockCountLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"StockCountLine\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "StockCountLine"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"StockCountLine\"",
+        "sql": "ALTER TABLE \"public\".\"StockCountLine\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"StockCountLine\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "StockCountLine"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.StockTransfer",
+    "label": "Enable row-level security on \"StockTransfer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "StockTransfer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"StockTransfer\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "StockTransfer"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"StockTransfer\"",
+        "sql": "ALTER TABLE \"public\".\"StockTransfer\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"StockTransfer\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "StockTransfer"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.StockTransferLine",
+    "label": "Enable row-level security on \"StockTransferLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "StockTransferLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"StockTransferLine\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "StockTransferLine"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"StockTransferLine\"",
+        "sql": "ALTER TABLE \"public\".\"StockTransferLine\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"StockTransferLine\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "StockTransferLine"
+        ]
+      }
+    ]
+  }
+]

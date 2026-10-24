@@ -22,6 +22,11 @@ export async function updateTenantProfile(
   await db.orm.public.Tenant.where({ id: tenantId }).update(fields);
 }
 
+/** Perfil del negocio como contexto: perfil de partida, modelo comercial y actividad (no toca módulos ni datos). */
+export async function updateBusinessContext(tenantId: string, value: { vertical: string; businessModels: string[]; activity: string }) {
+  await db.orm.public.Tenant.where({ id: tenantId }).update({ vertical: value.vertical as never, businessModels: value.businessModels, activity: value.activity || null });
+}
+
 /** Rubro y módulos contratados: lo que decide qué módulos se pueden prender. */
 export async function moduleRulesOf(tenantId: string) {
   return db.orm.public.Tenant.select("vertical", "contractedModules").where({ id: tenantId }).first();

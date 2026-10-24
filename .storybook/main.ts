@@ -31,6 +31,13 @@ const config: StorybookConfig = {
       // Server action de la búsqueda: en Storybook no hay servidor ni base.
       "@/app/[tenant]/(app)/_actions/search": path.resolve(import.meta.dirname, "mocks/search.ts"),
       // Acciones de compras: en Storybook hay datos de muestra.
+      // Existencias: en Storybook hay datos de muestra.
+      "@/app/[tenant]/(app)/stock/actions": path.resolve(import.meta.dirname, "mocks/stock-actions.ts"),
+      "@/app/[tenant]/(app)/data/actions": path.resolve(import.meta.dirname, "mocks/data-actions.ts"),
+      // Perfil del negocio: en Storybook responde sin servidor.
+      "@/app/[tenant]/(app)/settings/context-actions": path.resolve(import.meta.dirname, "mocks/context-actions.ts"),
+      // Acción de funciones: en Storybook responde sin servidor.
+      "@/app/[tenant]/(app)/functions/actions": path.resolve(import.meta.dirname, "mocks/functions-actions.ts"),
       "@/app/[tenant]/(app)/purchases/actions": path.resolve(import.meta.dirname, "mocks/purchases-actions.ts"),
       "@": path.resolve(import.meta.dirname, ".."),
     };

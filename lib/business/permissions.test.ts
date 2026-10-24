@@ -15,6 +15,7 @@ const EXPECTED: Record<BusinessPermission, boolean[]> = {
   "team.manage":           [true,  true,  true,  false, false, false],
   "business.setup":        [true,  true,  false, false, false, false],
   "money.handle":          [true,  true,  true,  true,  false, true ],
+  "data.exchange":         [true,  true,  true,  false, false, false],
   "customers.delete":      [true,  true,  true,  false, false, false],
   "budget.govern":         [true,  true,  true,  false, false, false],
   "budget.edit":           [true,  true,  true,  false, false, true ],
