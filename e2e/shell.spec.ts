@@ -86,7 +86,7 @@ test.describe("Selector de negocio (PC)", () => {
     const menu = page.getByRole("menu");
     await expect(menu.getByText("Spa Centro")).toBeVisible();
     await expect(menu.getByRole("menuitem", { name: /Crear otro negocio/ })).toBeVisible();
-    await expect(menu.getByRole("menuitem", { name: /Crear otro negocio/ })).toHaveAttribute("href", /wa\.me/);
+    await expect(menu.getByRole("menuitem", { name: /Crear otro negocio/ })).toHaveAttribute("href", "/onboarding?nuevo=1");
     await expectNoAxeViolations(page);
     await page.keyboard.press("Escape");
     await expect(menu).toHaveCount(0);

@@ -25,7 +25,6 @@ const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
   { file: "lib/business/team-db.ts", model: "TenantInvite", why: "Invitaciones a un correo en cualquier negocio, al entrar con ese correo verificado." },
   { file: "lib/tenant/membership.ts", model: "User", why: "Resuelve el negocio de una cuenta de la sesión (clerkUserId)." },
   { file: "lib/onboarding/prefill.ts", model: "User", why: "Membresías de la cuenta de la sesión para reanudar el alta." },
-  { file: "lib/onboarding/onboarding-db.ts", model: "User", why: "En el piloto, una cuenta = un negocio: se busca por la cuenta." },
   { file: "lib/construction/shared.ts", model: "LookaheadTask", why: "Hijas de un plan leído con tenantId (la fila del plan no lo trae)." },
   { file: "lib/construction/shared.ts", model: "WeeklyCommitment", why: "Igual que LookaheadTask." },
   { file: "lib/construction/shared.ts", model: "BudgetChapter", why: "sumBudgetDirect recibe un presupuesto ya leído con tenantId." },

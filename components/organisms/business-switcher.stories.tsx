@@ -16,7 +16,7 @@ const meta = {
       story: { inline: false, iframeHeight: 320 },
       description: {
         component:
-          "Selector de negocio de la navbar (PC). Cuadro con inicial y nombre hecho con divs que despliega los negocios de la cuenta (el actual lleva ✓) y «Crear otro negocio». En el piloto una cuenta tiene un solo negocio y el alta de otro se coordina con NEXUS, así que esa opción abre WhatsApp con el mensaje listo. Bajo 768 px no se muestra: ahí el negocio va junto al logo.",
+          "Selector de negocio de la navbar (PC). Cuadro con inicial y nombre hecho con divs que despliega los negocios de la cuenta (el actual lleva ✓) y «Crear otro negocio». Una cuenta puede tener varias organizaciones; elegir otra la recuerda como la última usada y «Crear otro negocio» abre el asistente de alta. Bajo 768 px no se muestra: ahí el negocio va junto al logo.",
       },
     },
   },
