@@ -1,4 +1,5 @@
 import { db } from "@/prisma/db";
+import { type DocumentType } from "./documents";
 
 /**
  * Tercero único: una persona o empresa existe UNA vez por negocio y cumple
@@ -8,7 +9,7 @@ import { db } from "@/prisma/db";
  */
 export const ROLES = ["CUSTOMER", "SUPPLIER", "EMPLOYEE", "CONTACT"] as const;
 export type PartyRoleName = (typeof ROLES)[number];
-export const DOCUMENT_TYPES = ["CC", "NIT", "CE", "PASAPORTE", "TI", "RC", "NIT_EXTRANJERO"] as const;
+export { DOCUMENT_TYPES } from "./documents";
 
 /** Solo letras y números en mayúscula; sin puntos, guiones ni espacios. Vacío = sin documento. */
 export function normalizeDocument(raw: string | null | undefined): string | null {
@@ -22,7 +23,7 @@ const normName = (raw: string) => raw.normalize("NFD").replace(/[̀-ͯ]/g, "").t
 
 export type PartyInput = {
   kind?: "PERSON" | "COMPANY";
-  documentType?: (typeof DOCUMENT_TYPES)[number] | null;
+  documentType?: DocumentType | null;
   documentNumber?: string | null;
   checkDigit?: string | null;
   legalName: string;

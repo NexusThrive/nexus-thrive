@@ -76,6 +76,7 @@ const MODULE_GROUP: Record<Exclude<ModuleValue, "dashboard">, "Clientes y operac
   quotes: "Clientes y operación",
   construction: "Clientes y operación",
   inventory: "Clientes y operación",
+  purchases: "Clientes y operación",
   finance: "Dinero",
   payments: "Dinero",
   billing: "Dinero",

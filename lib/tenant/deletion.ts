@@ -81,6 +81,8 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "ProductBarcode",
   "ProductVariant",
   "ProviderEvent",
+  "PurchaseOrder",
+  "PurchaseOrderLine",
   "PresenceScan",
   "Product",
   "Project",
@@ -94,6 +96,7 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "StockMovement",
   "StockLevel",
   "Subscription",
+  "SupplierInvoice",
   "SupportTicket",
   "TenantContact",
   "TenantInvite",
@@ -267,6 +270,9 @@ export async function deleteTenantCompletely(
   count("ProviderEvent", await tx.orm.public.ProviderEvent.where({ tenantId }).deleteAll());
   count("ExternalConnection", await tx.orm.public.ExternalConnection.where({ tenantId }).deleteAll());
   count("UsageCounter", await tx.orm.public.UsageCounter.where({ tenantId }).deleteAll());
+  count("SupplierInvoice", await tx.orm.public.SupplierInvoice.where({ tenantId }).deleteAll());
+  count("PurchaseOrderLine", await tx.orm.public.PurchaseOrderLine.where({ tenantId }).deleteAll());
+  count("PurchaseOrder", await tx.orm.public.PurchaseOrder.where({ tenantId }).deleteAll());
   count("WebhookDelivery", await tx.orm.public.WebhookDelivery.where({ tenantId }).deleteAll());
   count("WebhookEndpoint", await tx.orm.public.WebhookEndpoint.where({ tenantId }).deleteAll());
   count("OutboxEvent", await tx.orm.public.OutboxEvent.where({ tenantId }).deleteAll());

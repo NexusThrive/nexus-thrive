@@ -7,6 +7,8 @@ const config: StorybookConfig = {
   stories: [
     "../components/docs/**/*.mdx",
     "../components/**/*.stories.tsx",
+    // Piezas de una función con historia propia (p. ej. el tablero del CRM).
+    "../app/**/*.stories.tsx",
   ],
   addons: [
     {
@@ -26,6 +28,8 @@ const config: StorybookConfig = {
       // Clerk exige sesión real; en Storybook basta un avatar de muestra.
       "@clerk/nextjs": path.resolve(import.meta.dirname, "mocks/clerk.tsx"),
       "@nexus/brand": path.resolve(import.meta.dirname, "../packages/brand/src"),
+      // Acciones de compras: en Storybook hay datos de muestra.
+      "@/app/[tenant]/(app)/purchases/actions": path.resolve(import.meta.dirname, "mocks/purchases-actions.ts"),
       "@": path.resolve(import.meta.dirname, ".."),
     };
     return viteConfig;

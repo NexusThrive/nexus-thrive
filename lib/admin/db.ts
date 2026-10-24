@@ -308,6 +308,10 @@ export type AuditAction =
   | "BIZ_API_KEY_CREATE"
   | "BIZ_API_KEY_REVOKE"
   | "BIZ_API_OPERATION"
+  | "BIZ_PURCHASE_CREATE"
+  | "BIZ_PURCHASE_RECEIVE"
+  | "BIZ_PURCHASE_CANCEL"
+  | "BIZ_SUPPLIER_CREATE"
   | "BIZ_TENANT_DELETE";
 
 export type AuditLogInput = {
