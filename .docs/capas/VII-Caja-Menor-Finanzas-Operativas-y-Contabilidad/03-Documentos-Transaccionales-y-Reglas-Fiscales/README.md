@@ -47,8 +47,8 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [ ] Documento transaccional unificado
-- [ ] Impuestos y retenciones parametrizables con vigencia _(PR-13)_
-- [ ] Numeración y resoluciones _(PR-13)_
+- [x] Impuestos y retenciones parametrizables con vigencia _hecho: lib/tax + app/[tenant]/(app)/taxes (tarifas con vigencia y retenciones)_
+- [x] Numeración y resoluciones _hecho: NumberingResolution; el consecutivo sale del rango y avisa/bloquea_
 - [ ] Multi-moneda y tasas de cambio
 - [ ] Beneficiario _(PR-13)_
 - [ ] Tipo de comprobante _(PR-13)_

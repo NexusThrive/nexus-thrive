@@ -1,0 +1,605 @@
+[
+  {
+    "id": "table.NumberingResolution",
+    "label": "Create table \"NumberingResolution\"",
+    "summary": "Creates table \"NumberingResolution\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "NumberingResolution"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"NumberingResolution\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"NumberingResolution\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"NumberingResolution\"",
+        "sql": "CREATE TABLE \"public\".\"NumberingResolution\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"documentKind\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"nextNumber\" int4 NOT NULL,\n  \"prefix\" text DEFAULT '' NOT NULL,\n  \"rangeFrom\" int4 NOT NULL,\n  \"rangeTo\" int4 NOT NULL,\n  \"resolutionNumber\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"validFrom\" timestamptz NOT NULL,\n  \"validTo\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"NumberingResolution\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"NumberingResolution\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.TaxRate",
+    "label": "Create table \"TaxRate\"",
+    "summary": "Creates table \"TaxRate\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "TaxRate"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"TaxRate\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TaxRate\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"TaxRate\"",
+        "sql": "CREATE TABLE \"public\".\"TaxRate\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"code\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"kind\" text NOT NULL,\n  \"minBase\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"name\" text NOT NULL,\n  \"ratePct\" numeric NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"validFrom\" timestamptz NOT NULL,\n  \"validTo\" timestamptz,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"TaxRate\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TaxRate\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Invoice.prefix",
+    "label": "Add column \"prefix\" to \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "prefix",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"prefix\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "prefix"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"prefix\"",
+        "sql": "ALTER TABLE \"public\".\"Invoice\" ADD COLUMN \"prefix\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"prefix\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "prefix"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Invoice.resolutionId",
+    "label": "Add column \"resolutionId\" to \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "resolutionId",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"resolutionId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "resolutionId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"resolutionId\"",
+        "sql": "ALTER TABLE \"public\".\"Invoice\" ADD COLUMN \"resolutionId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"resolutionId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "resolutionId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Invoice.withholdingTotal",
+    "label": "Add column \"withholdingTotal\" to \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "withholdingTotal",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"withholdingTotal\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "withholdingTotal"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"withholdingTotal\"",
+        "sql": "ALTER TABLE \"public\".\"Invoice\" ADD COLUMN \"withholdingTotal\" numeric DEFAULT '0'::numeric NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"withholdingTotal\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "withholdingTotal"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Invoice.withholdings",
+    "label": "Add column \"withholdings\" to \"Invoice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "withholdings",
+        "table": "Invoice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"withholdings\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "withholdings"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"withholdings\"",
+        "sql": "ALTER TABLE \"public\".\"Invoice\" ADD COLUMN \"withholdings\" json"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"withholdings\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Invoice",
+          "withholdings"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.NumberingResolution.NumberingResolution_tenantId_documentKind_idx_c74e69cb",
+    "label": "Create index \"NumberingResolution_tenantId_documentKind_idx_c74e69cb\" on \"NumberingResolution\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "NumberingResolution_tenantId_documentKind_idx_c74e69cb",
+        "table": "NumberingResolution"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"NumberingResolution_tenantId_documentKind_idx_c74e69cb\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"NumberingResolution_tenantId_documentKind_idx_c74e69cb\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"NumberingResolution_tenantId_documentKind_idx_c74e69cb\"",
+        "sql": "CREATE INDEX \"NumberingResolution_tenantId_documentKind_idx_c74e69cb\" ON \"public\".\"NumberingResolution\" (\"tenantId\", \"documentKind\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"NumberingResolution_tenantId_documentKind_idx_c74e69cb\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"NumberingResolution_tenantId_documentKind_idx_c74e69cb\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.NumberingResolution.NumberingResolution_tenantId_idx_c93ed4f1",
+    "label": "Create index \"NumberingResolution_tenantId_idx_c93ed4f1\" on \"NumberingResolution\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "NumberingResolution_tenantId_idx_c93ed4f1",
+        "table": "NumberingResolution"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"NumberingResolution_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"NumberingResolution_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"NumberingResolution_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"NumberingResolution_tenantId_idx_c93ed4f1\" ON \"public\".\"NumberingResolution\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"NumberingResolution_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"NumberingResolution_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.TaxRate.TaxRate_tenantId_code_idx_84f464d7",
+    "label": "Create index \"TaxRate_tenantId_code_idx_84f464d7\" on \"TaxRate\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "TaxRate_tenantId_code_idx_84f464d7",
+        "table": "TaxRate"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"TaxRate_tenantId_code_idx_84f464d7\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TaxRate_tenantId_code_idx_84f464d7\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"TaxRate_tenantId_code_idx_84f464d7\"",
+        "sql": "CREATE INDEX \"TaxRate_tenantId_code_idx_84f464d7\" ON \"public\".\"TaxRate\" (\"tenantId\", \"code\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"TaxRate_tenantId_code_idx_84f464d7\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TaxRate_tenantId_code_idx_84f464d7\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.TaxRate.TaxRate_tenantId_idx_c93ed4f1",
+    "label": "Create index \"TaxRate_tenantId_idx_c93ed4f1\" on \"TaxRate\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "TaxRate_tenantId_idx_c93ed4f1",
+        "table": "TaxRate"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"TaxRate_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TaxRate_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"TaxRate_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"TaxRate_tenantId_idx_c93ed4f1\" ON \"public\".\"TaxRate\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"TaxRate_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TaxRate_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.TaxRate.TaxRate_tenantId_kind_idx_1e76dd5c",
+    "label": "Create index \"TaxRate_tenantId_kind_idx_1e76dd5c\" on \"TaxRate\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "TaxRate_tenantId_kind_idx_1e76dd5c",
+        "table": "TaxRate"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"TaxRate_tenantId_kind_idx_1e76dd5c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TaxRate_tenantId_kind_idx_1e76dd5c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"TaxRate_tenantId_kind_idx_1e76dd5c\"",
+        "sql": "CREATE INDEX \"TaxRate_tenantId_kind_idx_1e76dd5c\" ON \"public\".\"TaxRate\" (\"tenantId\", \"kind\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"TaxRate_tenantId_kind_idx_1e76dd5c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"TaxRate_tenantId_kind_idx_1e76dd5c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.NumberingResolution.NumberingResolution_tenantId_fkey",
+    "label": "Add foreign key \"NumberingResolution_tenantId_fkey\" on \"NumberingResolution\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "NumberingResolution_tenantId_fkey",
+        "table": "NumberingResolution"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"NumberingResolution_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "NumberingResolution_tenantId_fkey",
+          "public",
+          "\"public\".\"NumberingResolution\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"NumberingResolution_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"NumberingResolution\"\nADD CONSTRAINT \"NumberingResolution_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"NumberingResolution_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "NumberingResolution_tenantId_fkey",
+          "public",
+          "\"public\".\"NumberingResolution\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.TaxRate.TaxRate_tenantId_fkey",
+    "label": "Add foreign key \"TaxRate_tenantId_fkey\" on \"TaxRate\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "TaxRate_tenantId_fkey",
+        "table": "TaxRate"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"TaxRate_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "TaxRate_tenantId_fkey",
+          "public",
+          "\"public\".\"TaxRate\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"TaxRate_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"TaxRate\"\nADD CONSTRAINT \"TaxRate_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"TaxRate_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "TaxRate_tenantId_fkey",
+          "public",
+          "\"public\".\"TaxRate\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.NumberingResolution",
+    "label": "Enable row-level security on \"NumberingResolution\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "NumberingResolution"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"NumberingResolution\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "NumberingResolution"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"NumberingResolution\"",
+        "sql": "ALTER TABLE \"public\".\"NumberingResolution\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"NumberingResolution\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "NumberingResolution"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.TaxRate",
+    "label": "Enable row-level security on \"TaxRate\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "TaxRate"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"TaxRate\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "TaxRate"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"TaxRate\"",
+        "sql": "ALTER TABLE \"public\".\"TaxRate\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"TaxRate\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "TaxRate"
+        ]
+      }
+    ]
+  }
+]

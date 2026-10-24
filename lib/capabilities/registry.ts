@@ -13,6 +13,7 @@ import {
   LayoutDashboard,
   MessageCircle,
   Package,
+  Percent,
   Receipt,
   Repeat,
   ScanLine,
@@ -168,7 +169,10 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     included: true,
-    nav: [{ href: "/finance", icon: Wallet, label: () => "Finanzas" }],
+    nav: [
+      { href: "/finance", icon: Wallet, label: () => "Finanzas" },
+      { href: "/taxes", icon: Percent, label: () => "Impuestos y numeración" },
+    ],
   },
   {
     id: "dashboard",

@@ -117,18 +117,18 @@ solo si existe en el producto, con una nota de dónde (_hecho: …_).
 <!-- progreso:inicio -->
 | Capa | Nombre | Nivel N1 (lo básico) | Todas las funcionalidades | Integración (API · MCP · Webhooks) | |
 | --- | --- | --- | --- | --- | --- |
-| I | [FUNDACIÓN, NÚCLEO E INFRAESTRUCTURA](capas/I-Fundacion-Nucleo-e-Infraestructura/README.md) | 20/34 · 59 % | 24/138 · 17 % | 0/47 · 0 % | `██░░░░░░░░` |
+| I | [FUNDACIÓN, NÚCLEO E INFRAESTRUCTURA](capas/I-Fundacion-Nucleo-e-Infraestructura/README.md) | 22/34 · 65 % | 26/138 · 19 % | 0/47 · 0 % | `██░░░░░░░░` |
 | II | [VISIBILIDAD, CAPTACIÓN Y PRESENCIA DIGITAL](capas/II-Visibilidad-Captacion-y-Presencia-Digital/README.md) | 3/26 · 12 % | 4/170 · 2 % | 0/42 · 0 % | `░░░░░░░░░░` |
 | III | [ATENCIÓN Y COMUNICACIÓN](capas/III-Atencion-y-Comunicacion/README.md) | 1/9 · 11 % | 1/78 · 1 % | 0/30 · 0 % | `░░░░░░░░░░` |
 | IV | [GESTIÓN COMERCIAL Y RELACIÓN CON CLIENTES](capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/README.md) | 5/14 · 36 % | 5/92 · 5 % | 0/30 · 0 % | `█░░░░░░░░░` |
 | V | [VENTAS DIGITALES, COMERCIO Y PAGOS](capas/V-Ventas-Digitales-Comercio-y-Pagos/README.md) | 5/24 · 21 % | 8/162 · 5 % | 0/48 · 0 % | `░░░░░░░░░░` |
 | VI | [OPERACIÓN, PRODUCTIVIDAD Y LOGÍSTICA](capas/VI-Operacion-Productividad-y-Logistica/README.md) | 12/36 · 33 % | 14/247 · 6 % | 0/54 · 0 % | `█░░░░░░░░░` |
-| VII | [CAJA MENOR, FINANZAS OPERATIVAS Y CONTABILIDAD](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/README.md) | 9/31 · 29 % | 13/195 · 7 % | 0/48 · 0 % | `█░░░░░░░░░` |
+| VII | [CAJA MENOR, FINANZAS OPERATIVAS Y CONTABILIDAD](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/README.md) | 11/31 · 35 % | 15/195 · 8 % | 0/48 · 0 % | `█░░░░░░░░░` |
 | VIII | [TALENTO HUMANO Y ADMINISTRACIÓN DEL EQUIPO](capas/VIII-Talento-Humano-y-Administracion-del-Equipo/README.md) | 0/23 · 0 % | 0/173 · 0 % | 0/48 · 0 % | `░░░░░░░░░░` |
 | IX | [INTELIGENCIA DE NEGOCIO, ANALÍTICA E IA](capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/README.md) | 9/26 · 35 % | 9/128 · 7 % | 0/35 · 0 % | `█░░░░░░░░░` |
 | X | [PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/README.md) | 11/18 · 61 % | 20/127 · 16 % | 0/30 · 0 % | `██░░░░░░░░` |
 | XI | [ESPECIALIZACIÓN POR VERTICAL](capas/XI-Especializacion-por-Vertical/README.md) | 0/0 · — | 0/0 · — | 0/6 · 0 % | `` |
-| | **Total** | **75/241 · 31 %** | **98/1510 · 6 %** | **0/418 · 0 %** | |
+| | **Total** | **79/241 · 33 %** | **102/1510 · 7 %** | **0/418 · 0 %** | |
 
 _Generado con `node scripts/capas-progreso.mjs --write`. La capa XI (construcción) usa pestañas en lugar de casillas: su estado está en su README. «Integración» cuenta las casillas de la superficie API · MCP · Webhooks de cada subcapa (no suman al porcentaje de funcionalidades)._
 <!-- progreso:fin -->

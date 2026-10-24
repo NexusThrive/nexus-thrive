@@ -1,5 +1,7 @@
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
+import { allocateNumber, commitNumber, withholdingsFor } from "@/lib/tax/tax-db";
+import { todayCO } from "@/lib/tax/tax";
 import {
   canConvert,
   documentTotals,
@@ -36,6 +38,8 @@ export type NewDocument = {
   originType?: string | null;
   originId?: string | null;
   paymentId?: string | null;
+  /** Retenciones que practica quien paga (códigos de `TaxRate`); se calculan con las vigentes a la fecha. */
+  withholdingCodes?: readonly string[];
   lines: readonly DocumentLineInput[];
 };
 
@@ -46,9 +50,15 @@ export type NewDocument = {
  * transacción y quien la abrió la reintenta.
  */
 export async function insertDocument(tx: Writer, tenantId: string, doc: NewDocument, userId: string | null) {
+  const issueDate = doc.issueDate ?? now();
+  // Con resolución de numeración el número sale de su rango; sin ella, máximo + 1 como siempre.
+  const allocation = await allocateNumber(tx, tenantId, doc.kind, todayCO(issueDate.epochMilliseconds));
   const { top } = await tx.orm.public.Invoice.where({ tenantId, kind: doc.kind }).aggregate((a) => ({ top: a.max("number") }));
-  const number = (top ?? 0) + 1;
+  const number = allocation ? allocation.number : (top ?? 0) + 1;
   const totals = documentTotals(doc.lines);
+  const taxableTotal = Math.round((totals.subtotal - totals.discountTotal) * 100) / 100;
+  const withholdings = await withholdingsFor(tx, tenantId, doc.withholdingCodes ?? [], { taxable: taxableTotal, tax: totals.taxTotal }, todayCO(issueDate.epochMilliseconds));
+  const withheld = Math.round(withholdings.reduce((s, w) => s + w.amount, 0) * 100) / 100;
   const created = await tx.orm.public.Invoice.create({
     tenantId,
     kind: doc.kind,
@@ -56,7 +66,7 @@ export async function insertDocument(tx: Writer, tenantId: string, doc: NewDocum
     customerId: doc.customerId,
     customerName: doc.customerName.slice(0, 120),
     customerDoc: doc.customerDoc ?? null,
-    issueDate: doc.issueDate ?? now(),
+    issueDate,
     dueDate: doc.dueDate ?? null,
     status: doc.status ?? "ISSUED",
     notes: doc.notes ?? null,
@@ -70,7 +80,12 @@ export async function insertDocument(tx: Writer, tenantId: string, doc: NewDocum
     originType: doc.originType ?? null,
     originId: doc.originId ?? null,
     paymentId: doc.paymentId ?? null,
+    resolutionId: allocation?.resolutionId ?? null,
+    prefix: allocation?.prefix || null,
+    withholdingTotal: dec(withheld),
+    withholdings: withholdings.length ? (withholdings as never) : null,
   });
+  if (allocation) await commitNumber(tx, tenantId, allocation);
   for (const l of doc.lines) {
     await tx.orm.public.InvoiceLine.create({
       invoiceId: created.id,
