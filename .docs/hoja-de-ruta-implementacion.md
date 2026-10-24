@@ -162,7 +162,7 @@ de «hecho»). No se edita a mano.
 | **23** | Contabilidad | Estados financieros y exportación al contador | VII | N1, N2 | 4/4 | — | hecho |
 | **24** | Visible y vende en línea | Presencia v2: pilares, fases y tendencia | II | N2 | 0/1 | `PR-24-presencia-v2` | pendiente |
 | **25** | Visible y vende en línea | Mini-sitio con catálogo y SEO técnico | II | N1 | 4/6 | `PR-25-sitio-y-catalogo-publico` | pendiente |
-| **26** | Visible y vende en línea | Tienda en línea: carrito, pedido y pago | V | N1 | 0/5 | `PR-26-tienda-carrito-y-envios` | pendiente |
+| **26** | Visible y vende en línea | Tienda en línea: carrito, pedido y pago | V | N1 | 2/5 | `PR-26-tienda-carrito-y-envios` | pendiente |
 | **27** | Visible y vende en línea | SEO local y Google Business | II | N1 | 0/1 | — | pendiente |
 | **28** | Visible y vende en línea | Reputación y atribución de ventas | II, III | N1 | 0/5 | `PR-28-reputacion-y-atribucion` | pendiente |
 | **29** | Pulso del negocio | Calculadores de madurez (fase B) | IX | N2 | 0/1 | — | pendiente |
@@ -518,8 +518,8 @@ de «hecho»). No se edita a mano.
 - **Casillas que marca:**
   - [`V.04 · N1`](capas/V-Ventas-Digitales-Comercio-y-Pagos/04-Comercio-Electronico/README.md)
     - [ ] Catálogo con fotos, descripción, precio y categoría.
-    - [ ] Carrito y checkout con datos del cliente.
-    - [ ] Pago por link o por transferencia con confirmación manual.
+    - [x] Carrito y checkout con datos del cliente.
+    - [x] Pago por link o por transferencia con confirmación manual.
     - [ ] Pedido que llega por correo y WhatsApp al negocio.
   - [`V.05 · N1`](capas/V-Ventas-Digitales-Comercio-y-Pagos/05-Reservas-y-Control-de-Disponibilidad/README.md)
     - [ ] Formulario de solicitud de reserva

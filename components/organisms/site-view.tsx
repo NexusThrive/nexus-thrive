@@ -1,4 +1,5 @@
 import { MessageCircle } from "lucide-react";
+import { AddToCart, CartDock } from "@/components/organisms/store-cart";
 import { TEMPLATES, mapUrl, onAccent, whatsappUrl, type SiteData } from "@/lib/site/site";
 
 const peso = (n: number) => n.toLocaleString("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 });
@@ -8,7 +9,7 @@ const peso = (n: number) => n.toLocaleString("es-CO", { style: "currency", curre
  * editor. Celular primero (una columna que crece), botón flotante de WhatsApp, catálogo, contacto y mapa.
  * Los colores salen de la plantilla y el acento se valida (hex) antes de llegar aquí.
  */
-export function SiteView({ site, preview = false }: { site: SiteData; preview?: boolean }) {
+export function SiteView({ site, preview = false, store = false }: { site: SiteData; preview?: boolean; store?: boolean }) {
   const t = TEMPLATES[site.template];
   const wa = whatsappUrl(site.business.whatsapp, `Hola ${site.business.name}, vi su sitio y quiero más información.`);
   const map = site.showMap ? mapUrl(site.business) : null;
@@ -41,6 +42,7 @@ export function SiteView({ site, preview = false }: { site: SiteData; preview?: 
                   {p.category ? <small style={{ color: t.muted }}>{p.category}</small> : null}
                   {p.description ? <p style={{ color: t.muted }} className="line-clamp-2 text-[14px]">{p.description}</p> : null}
                   <b className="mt-1 font-mono">{peso(p.price)}</b>
+                  {store ? <AddToCart slug={site.slug} product={p} accent={site.accent} onAccent={accentText} /> : null}
                 </li>
               ))}
             </ul>
@@ -57,6 +59,7 @@ export function SiteView({ site, preview = false }: { site: SiteData; preview?: 
         </section>
       </main>
       <footer style={{ color: t.muted, borderColor: `${t.muted}33` }} className="mx-auto max-w-3xl border-t px-4 py-6 text-xs">© {site.business.name}. Sitio creado con NEXUS THRIVE.</footer>
+      {store ? <CartDock slug={site.slug} accent={site.accent} onAccent={accentText} /> : null}
       {wa ? (
         <a href={wa} aria-label="Escríbenos por WhatsApp" style={{ background: "#25D366", color: "#000" }} className={`${preview ? "absolute" : "fixed"} bottom-4 right-4 grid size-14 place-items-center rounded-full shadow-lg`}>
           <MessageCircle aria-hidden="true" className="size-7" />

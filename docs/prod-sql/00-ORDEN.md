@@ -43,6 +43,7 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 31 | `2026-10-24-contabilidad-asientos.sql` | Contabilidad II: `JournalEntry`, `JournalLine` y `Tenant.accountingEnabled` (aditivo; requiere el paso 30) | generado de la migración |
 | 32 | `2026-10-24-presencia-v2.sql` | Presencia v2: tabla `PresenceSnapshot` (foto diaria para la tendencia; aditivo) | generado de la migración |
 | 33 | `2026-10-24-mini-sitio.sql` | Mini-sitio: tabla `SiteConfig` (aditivo) | generado de la migración |
+| 34 | `2026-10-24-tienda-en-linea.sql` | Tienda en línea: `StoreOrder` y `StoreOrderLine` (aditivo; requiere los pasos 28 y 33) | generado de la migración |
 
 ## Estado: producción reconstruida desde las migraciones (camino A, 2026-10-23)
 

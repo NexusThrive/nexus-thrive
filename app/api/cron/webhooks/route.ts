@@ -1,4 +1,5 @@
 import { timingSafeEqual } from "node:crypto";
+import { markAbandonedOrders } from "@/lib/store/store-db";
 import { dispatchPending } from "@/lib/events/dispatcher";
 import { processPendingProviderEvents } from "@/lib/providers/inbound";
 
@@ -16,5 +17,6 @@ export async function GET(request: Request) {
   const expected = Buffer.from(`Bearer ${secret}`);
   if (given.length !== expected.length || !timingSafeEqual(given, expected)) return Response.json({ error: "No autorizado." }, { status: 401 });
   const reprocessed = await processPendingProviderEvents();
-  return Response.json({ ...(await dispatchPending()), providerEventsReprocessed: reprocessed });
+  const abandoned = await markAbandonedOrders();
+  return Response.json({ ...(await dispatchPending()), providerEventsReprocessed: reprocessed, abandonedCarts: abandoned });
 }

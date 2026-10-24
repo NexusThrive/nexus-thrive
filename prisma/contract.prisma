@@ -423,6 +423,8 @@ model Tenant {
   journalEntries     JournalEntry[]
   presenceSnapshots  PresenceSnapshot[]
   siteConfigs        SiteConfig[]
+  storeOrders        StoreOrder[]
+  storeOrderLines    StoreOrderLine[]
   journalLines       JournalLine[]
   paymentRefunds     PaymentRefund[]
   reconciliationRuns ReconciliationRun[]
@@ -3252,5 +3254,55 @@ model SiteConfig {
   createdAt    DateTime @default(now())
   updatedAt    temporal.updatedAt()
 
+  @@rls
+}
+
+
+/// Pedido de la tienda en línea (mini-sitio): el cliente deja sus datos y el pedido espera el pago por el enlace de cobro
+/// (o la confirmación manual de una transferencia). Al pagarse, descuenta existencias y deja su documento de venta.
+model StoreOrder {
+  id                 String    @id @default(uuid())
+  tenantId           String
+  tenant             Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Consecutivo por negocio (T-0001).
+  number             Int
+  /// PENDING_PAYMENT | PAID | CANCELED | ABANDONED
+  status             String    @default("PENDING_PAYMENT")
+  customerName       String
+  phone              String
+  email              String?
+  address            String?
+  city               String?
+  notes              String?
+  total              Decimal
+  /// Cobro en línea del pedido (su enlace y su estado oficial).
+  intentId           String?
+  /// Documento de venta que deja al pagarse.
+  documentId         String?
+  /// Aviso para revisar a mano (p. ej. se pagó sin existencias suficientes).
+  review             String?
+  paidAt             DateTime?
+  abandonedNotifiedAt DateTime?
+  createdAt          DateTime  @default(now())
+  lines              StoreOrderLine[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId, status])
+  @@rls
+}
+
+model StoreOrderLine {
+  id        String     @id @default(uuid())
+  tenantId  String
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orderId   String
+  order     StoreOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  name      String
+  quantity  Int
+  unitPrice Decimal
+  taxRatePct Decimal   @default(0)
+
+  @@index([orderId])
   @@rls
 }

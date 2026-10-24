@@ -21,7 +21,7 @@ export default async function PublicSitePage({ params }: { params: Promise<{ slu
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(site, base)).replace(/</g, "\\u003c") }} />
-      <SiteView site={site} />
+      <SiteView site={site} store />
     </>
   );
 }

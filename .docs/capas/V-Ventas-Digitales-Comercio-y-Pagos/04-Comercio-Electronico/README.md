@@ -47,8 +47,8 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [ ] Catálogo con fotos, descripción, precio y categoría. _(PR-26)_
-- [ ] Carrito y checkout con datos del cliente. _(PR-26)_
-- [ ] Pago por link o por transferencia con confirmación manual. _(PR-26)_
+- [x] Carrito y checkout con datos del cliente. _(PR-26)_
+- [x] Pago por link o por transferencia con confirmación manual. _(PR-26)_
 - [ ] Pedido que llega por correo y WhatsApp al negocio. _(PR-26)_
 
 #### Técnico

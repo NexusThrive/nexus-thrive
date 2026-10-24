@@ -4,6 +4,7 @@ import { balanceOf } from "@/lib/receivables/aging";
 import { todayCO } from "@/lib/tax/tax";
 import { decryptCredentials } from "@/lib/providers/connections";
 import { wompiCheckoutUrl } from "@/lib/providers/wompi";
+import { settleStoreOrder, storeOrderLines } from "@/lib/store/store-settle";
 import { db } from "@/prisma/db";
 import { effectiveStatus, newReference, reconcile, validateIntent, type IntentStatus, type Reconciliation, type ReportRow } from "./intents";
 
@@ -136,8 +137,11 @@ export async function confirmIntent(tenantId: string, reference: string, by: { k
         .build();
       if ((await tx.query(claim)).length === 0) return { ok: true as const, already: true };
       if (intent.invoiceId) await applyToInvoice(tx, tenantId, intent.invoiceId, amount);
-      const income = await recordIncome(tx, tenantId, { amount, method: by.kind === "PROVIDER" ? "WOMPI" : "TRANSFER", customerId: intent.customerId, invoiceId: intent.invoiceId, description: `Cobro en línea · ${intent.description}`, providerRefId: by.kind === "PROVIDER" ? by.externalId : null, sourceType: intent.invoiceId ? "INVOICE" : "ONLINE", sourceId: intent.invoiceId ?? intent.id }, by.kind === "MANUAL" ? by.userId : "proveedor");
+      // Un cobro de la tienda deja SU documento de venta con las líneas del pedido y descuenta existencias.
+      const store = await storeOrderLines(tx, tenantId, intent.id);
+      const income = await recordIncome(tx, tenantId, { documentLines: store?.lines, amount, method: by.kind === "PROVIDER" ? "WOMPI" : "TRANSFER", customerId: intent.customerId, invoiceId: intent.invoiceId, description: `Cobro en línea · ${intent.description}`, providerRefId: by.kind === "PROVIDER" ? by.externalId : null, sourceType: intent.invoiceId ? "INVOICE" : "ONLINE", sourceId: intent.invoiceId ?? intent.id }, by.kind === "MANUAL" ? by.userId : "proveedor");
       await tx.orm.public.PaymentIntent.where({ tenantId, id: intent.id }).update({ paymentId: income.paymentId });
+      if (store) await settleStoreOrder(tx, tenantId, store.orderId, income.documentId, by.kind === "MANUAL" ? by.userId : null);
       return { ok: true as const, already: false };
     });
   } catch (e) {

@@ -26,4 +26,5 @@ type Story = StoryObj<typeof meta>;
 export const Editor: Story = {};
 export const SinPublicar: Story = { args: { initial: { enabled: false, site: { ...site, template: "oscura" }, raw: { title: "", description: "", heroTitle: "", heroSubtitle: "", about: "" }, catalog: [] } } };
 export const SitioPublico: Story = { render: () => <SiteView site={site} />, parameters: { layout: "fullscreen" } };
+export const TiendaConCarrito: Story = { render: () => <SiteView site={site} store />, parameters: { layout: "fullscreen" } };
 export const SitioPublicoOscuro: Story = { render: () => <SiteView site={{ ...site, template: "oscura", accent: "#7C3AED" }} />, parameters: { layout: "fullscreen" } };

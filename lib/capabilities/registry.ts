@@ -17,6 +17,7 @@ import {
   FileCheck2,
   Globe,
   HandCoins,
+  PackageCheck,
   Link2,
   Percent,
   Receipt,
@@ -169,6 +170,7 @@ export const CAPABILITIES = [
       { href: "/inventory", icon: Package, label: () => "Catálogo" },
       { href: "/stock", icon: Warehouse, label: () => "Existencias" },
       { href: "/sitio", icon: Globe, label: () => "Mi sitio web" },
+      { href: "/pedidos-tienda", icon: PackageCheck, label: () => "Pedidos de la tienda" },
     ],
   },
   {
