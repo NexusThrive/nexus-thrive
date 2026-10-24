@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { withShell } from "../../.storybook/decorators";
 import { AppShellProvider } from "@/components/providers/shell-context";
 import { opsNavFor } from "@/lib/ops/nav";
+import { buildTenantNav } from "@/lib/navigation/tenant-nav";
 import { AppSidebar } from "./app-sidebar";
 
 const meta = {
@@ -52,6 +53,20 @@ export const OperationsCenter: Story = {
         }}
       >
         <div className="h-[720px]" style={sized("248px")}>
+          <AppSidebar />
+        </div>
+      </AppShellProvider>
+    );
+  },
+};
+
+/** Ingresos y Gastos se despliegan y se ocultan; con muchos grupos el menú tiene su propio desplazamiento. */
+export const IngresosYGastos: Story = {
+  render: () => {
+    const groups = buildTenantNav("gym", ["dashboard", "crm", "bookings", "memberships", "orders", "quotes", "inventory", "billing", "payments", "finance", "whatsapp"]);
+    return (
+      <AppShellProvider value={{ brandName: "Simplapp", brandSub: "simplapp", groups, activeKey: "/crm", title: "Clientes", hrefFor: (href) => href, quickActions: [], openSearch: () => {} }}>
+        <div className="h-[420px]" style={sized("248px")}>
           <AppSidebar />
         </div>
       </AppShellProvider>

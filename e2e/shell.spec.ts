@@ -132,3 +132,30 @@ test.describe("Barra lateral en riel", () => {
     await expect.poll(async () => (await side.boundingBox())!.width, { timeout: 3000 }).toBeGreaterThan(230);
   });
 });
+
+test.describe("Barra lateral: Ingresos y Gastos desplegables", () => {
+  test.skip(({ isMobile }) => isMobile, "La barra lateral es de tablet y PC");
+
+  test("Ingresos se oculta y se despliega; Gastos existe con Finanzas", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openStory(page, "organismos-appsidebar--ingresos-y-gastos");
+    const side = page.getByRole("complementary", { name: "Navegación principal" });
+    const toggle = side.getByRole("button", { name: "Ingresos" });
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await expect(side.getByRole("link", { name: "Facturación" })).toBeVisible();
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await expect(side.getByRole("link", { name: "Facturación" })).toBeHidden();
+    await toggle.click();
+    await expect(side.getByRole("link", { name: "Facturación" })).toBeVisible();
+    await expect(side.getByRole("button", { name: "Gastos" })).toBeVisible();
+  });
+
+  test("con poco alto el menú se desplaza dentro de la barra", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openStory(page, "organismos-appsidebar--ingresos-y-gastos");
+    const nav = page.getByRole("navigation").first();
+    const scrolls = await nav.evaluate((el) => el.scrollHeight > el.clientHeight && getComputedStyle(el).overflowY === "auto");
+    expect(scrolls).toBe(true);
+  });
+});
