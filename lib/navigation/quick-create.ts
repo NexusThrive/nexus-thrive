@@ -14,11 +14,14 @@ export type QuickCreateAction = {
 
 /**
  * Lo que se puede crear desde el botón central (móvil), la paleta de comandos
- * y el inicio: solo con los módulos activos del negocio, máximo cuatro.
+ * y el inicio: solo con los módulos activos del negocio. `limit` (4 por
+ * defecto, los que caben en la hoja móvil y el inicio) recorta; el botón
+ * «Crear» de la navbar pide todas.
  */
 export function quickCreateActions(
   vertical: VerticalValue,
   activeModules: readonly ModuleValue[],
+  limit = 4,
 ): QuickCreateAction[] {
   const terms = getVerticalTerms(vertical);
   const has = (m: ModuleValue) => activeModules.includes(m);
@@ -53,5 +56,5 @@ export function quickCreateActions(
   if (has("billing")) {
     actions.push({ key: "invoice", label: "Crear factura", hint: "Generar un documento", href: "/billing", icon: FileText });
   }
-  return actions.slice(0, 4);
+  return actions.slice(0, limit);
 }

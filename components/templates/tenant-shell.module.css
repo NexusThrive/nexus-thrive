@@ -23,13 +23,15 @@
 
 .main {
   min-width: 0;
+  /* La navbar es fija y cubre todo el ancho: el contenido empieza debajo. */
+  padding-top: calc(var(--topbar-height) + env(safe-area-inset-top, 0px));
   margin-left: var(--sw);
   transition: margin-left var(--d3) var(--nx-ease-out);
 }
 
 .view {
   max-width: var(--content-max);
-  min-height: calc(100vh - var(--topbar-height));
+  min-height: calc(100vh - var(--topbar-height) - env(safe-area-inset-top, 0px));
   margin: 0 auto;
   padding: 20px max(16px, env(safe-area-inset-right, 0px))
     calc(112px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));

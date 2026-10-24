@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { activeTenantWithModules, memberTheme } from "@/lib/tenant/membership";
+import { activeTenantWithModules, businessesOfMember, memberTheme } from "@/lib/tenant/membership";
 import { sortModules, isModule } from "@/lib/admin/catalogs";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import { TenantShell } from "@/components/templates/tenant-shell";
@@ -50,7 +50,9 @@ export default async function AppLayout({
   );
 
   const { userId } = await auth();
-  const savedTheme = userId ? await memberTheme(tenantRecord.id, userId) : null;
+  const [savedTheme, businesses] = userId
+    ? await Promise.all([memberTheme(tenantRecord.id, userId), businessesOfMember(userId)])
+    : [null, []];
 
   return (
     <VerticalTermsProvider terms={getVerticalTerms(tenantRecord.vertical)}>
@@ -59,6 +61,7 @@ export default async function AppLayout({
         tenantName={tenantRecord.name}
         vertical={tenantRecord.vertical}
         activeModules={activeModules}
+        businesses={businesses}
         topbarActions={<TenantNotifications tenantSlug={tenantRecord.slug} />}
       >
         <ThemeSync tenantSlug={tenantRecord.slug} saved={savedTheme} />
