@@ -37,7 +37,7 @@
   >
 </p>
 
-<p align="center"><sub><strong>NEXUS V2.</strong> El nuevo Inicio: barra lateral por categorías (Ventas y cobros, Compras y gastos, Finanzas y contabilidad, Presencia en línea…), métricas, ingresos y gastos, acciones rápidas y presencia verificada. Datos de demostración. La versión anterior está en la rama <a href="https://github.com/NexusThrive/nexus-thrive/tree/v1"><code>v1</code></a>.</sub></p>
+<p align="center"><sub><strong>NEXUS V2.</strong> El nuevo Inicio: barra lateral por categorías (Ventas y cobros, Compras y gastos, Finanzas y contabilidad, Presencia en línea…), métricas, ingresos y gastos, acciones rápidas y presencia verificada. Datos de demostración. La versión anterior está en la rama <a href="https://github.com/NexusThrive/nexus-thrive/tree/archive/v1"><code>archive/v1</code></a>.</sub></p>
 
 ## ¿Qué es NEXUS?
 
