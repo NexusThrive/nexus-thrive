@@ -5,7 +5,7 @@ import { expectNoAxeViolations, openStory } from "./helpers";
 test.describe("Presencia · pilares", () => {
   test("muestra los pilares, lo que no se mide y la tendencia", async ({ page }) => {
     await openStory(page, "páginas-presencia-pilares-fase-a--sube");
-    await expect(page.getByText("Cobertura 70 %")).toBeVisible();
+    await expect(page.getByText("Cobertura 75 %")).toBeVisible();
     await expect(page.getByText(/Sube \+18 pts en 30 días/)).toBeVisible();
     await expect(page.getByRole("progressbar", { name: "Sitio: 85 de 100" })).toBeVisible();
     await expect(page.getByText("Sin medir").first()).toBeVisible();

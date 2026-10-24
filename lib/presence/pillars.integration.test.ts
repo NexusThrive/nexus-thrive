@@ -30,11 +30,11 @@ describe.skipIf(!TEST_URL)("presencia v2 (integración)", () => {
     await db.close();
   });
 
-  test("sin nada conectado: venta en línea en cero, reputación y atribución sin medir, cobertura 70 %", async () => {
+  test("sin nada conectado: venta en línea en cero, Google, reputación y atribución sin medir, cobertura 60 %", async () => {
     const r = await presenceV2(a);
     const by = Object.fromEntries(r.pillars.map((p) => [p.key, p.score]));
-    expect(by).toMatchObject({ onlineSales: 0, reputation: null, attribution: null });
-    expect(r.phase).toMatchObject({ coverage: 70, phase: "A" });
+    expect(by).toMatchObject({ onlineSales: 0, google: null, reputation: null, attribution: null });
+    expect(r.phase).toMatchObject({ coverage: 60, phase: "A" });
     expect(r.trend).toMatchObject({ direction: "flat", days: 0 });
   });
 
@@ -76,7 +76,7 @@ describe.skipIf(!TEST_URL)("presencia v2 (integración)", () => {
     const op = OPERATIONS.find((o) => o.id === "presence.get")!;
     expect(op.risk).toBe("read");
     const out = (await runOperation(OPERATIONS, { tenantId: a, role: "OWNER", activeModules: ["inventory", "payments"], origin: "api", actorId: "k" } as never, "presence.get", {})) as { score: number; phase: string; pillars: { key: string }[] };
-    expect(out.pillars.map((p) => p.key)).toEqual(["site", "onlineSales", "reputation", "attribution", "basics"]);
+    expect(out.pillars.map((p) => p.key)).toEqual(["site", "onlineSales", "google", "reputation", "attribution", "basics"]);
     expect(out.score).toBeGreaterThan(0);
   });
 });

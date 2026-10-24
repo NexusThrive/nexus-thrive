@@ -424,6 +424,7 @@ model Tenant {
   presenceSnapshots  PresenceSnapshot[]
   siteConfigs        SiteConfig[]
   storeOrders        StoreOrder[]
+  googleListings     GoogleListing[]
   storeOrderLines    StoreOrderLine[]
   journalLines       JournalLine[]
   paymentRefunds     PaymentRefund[]
@@ -3304,5 +3305,29 @@ model StoreOrderLine {
   taxRatePct Decimal   @default(0)
 
   @@index([orderId])
+  @@rls
+}
+
+
+/// Ficha de Google Business (Maps) del negocio, leída por la API de Google Places con la llave del negocio: lo que
+/// Google muestra de él (nombre, dirección, teléfono, sitio, calificación y reseñas) para compararlo con lo que dice NEXUS.
+model GoogleListing {
+  id          String    @id @default(uuid())
+  tenantId    String    @unique
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// ID de lugar de Google (ChIJ…).
+  placeId     String
+  /// PENDING | OK | ERROR
+  status      String    @default("PENDING")
+  name        String?
+  address     String?
+  phone       String?
+  website     String?
+  rating      Decimal?
+  ratingCount Int?
+  syncedAt    DateTime?
+  lastError   String?
+  createdAt   DateTime  @default(now())
+
   @@rls
 }

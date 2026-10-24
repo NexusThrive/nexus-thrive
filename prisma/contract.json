@@ -168,6 +168,10 @@
       "model": "FiscalDocument",
       "namespace": "public"
     },
+    "GoogleListing": {
+      "model": "GoogleListing",
+      "namespace": "public"
+    },
     "IdempotencyRecord": {
       "model": "IdempotencyRecord",
       "namespace": "public"
@@ -7740,6 +7744,164 @@
               },
               "namespaceId": "public",
               "table": "FiscalDocument"
+            }
+          },
+          "GoogleListing": {
+            "fields": {
+              "address": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "lastError": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "phone": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "placeId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "rating": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "ratingCount": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "syncedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "website": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "address": {
+                  "column": "address"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "lastError": {
+                  "column": "lastError"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "phone": {
+                  "column": "phone"
+                },
+                "placeId": {
+                  "column": "placeId"
+                },
+                "rating": {
+                  "column": "rating"
+                },
+                "ratingCount": {
+                  "column": "ratingCount"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "syncedAt": {
+                  "column": "syncedAt"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "website": {
+                  "column": "website"
+                }
+              },
+              "namespaceId": "public",
+              "table": "GoogleListing"
             }
           },
           "IdempotencyRecord": {
@@ -18691,6 +18853,21 @@
                   "namespace": "public"
                 }
               },
+              "googleListings": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "GoogleListing",
+                  "namespace": "public"
+                }
+              },
               "idempotencyRecords": {
                 "cardinality": "1:N",
                 "on": {
@@ -21894,6 +22071,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "FiscalDocument"
+            },
+            "GoogleListing": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "GoogleListing"
             },
             "IdempotencyRecord": {
               "kind": "rls",
@@ -27481,6 +27663,115 @@
                   "columns": [
                     "tenantId",
                     "supplierInvoiceId"
+                  ]
+                }
+              ]
+            },
+            "GoogleListing": {
+              "columns": {
+                "address": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "lastError": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "phone": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "placeId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "rating": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": true
+                },
+                "ratingCount": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "PENDING"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "syncedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "website": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "GoogleListing"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId"
                   ]
                 }
               ]
@@ -38006,10 +38297,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "99ab49758be2e61baf770a595e3535f809c1457099c0e87d4d60c465b92a9664"
+    "storageHash": "0f930250d7eff114cdcf04bfbb46515d468e5b033f320743078fdfd7707b4193"
   },
   "execution": {
-    "executionHash": "dc0989db11806986a06007fbddc12ac7180f0f7bb7c682b3e919f5764f2856ab",
+    "executionHash": "2ccf48c046d829007599f09b42594f8255f40a4ce9a1275a183c1e274dd6210a",
     "mutations": {
       "defaults": [
         {
@@ -38738,6 +39029,17 @@
           "ref": {
             "entry": "FiscalDocument",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "GoogleListing",
+            "field": "id",
             "namespace": "public"
           }
         },

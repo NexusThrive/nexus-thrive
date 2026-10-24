@@ -17,6 +17,7 @@ import {
   FileCheck2,
   Globe,
   HandCoins,
+  MapPin,
   PackageCheck,
   Link2,
   Percent,
@@ -171,6 +172,7 @@ export const CAPABILITIES = [
       { href: "/stock", icon: Warehouse, label: () => "Existencias" },
       { href: "/sitio", icon: Globe, label: () => "Mi sitio web" },
       { href: "/pedidos-tienda", icon: PackageCheck, label: () => "Pedidos de la tienda" },
+      { href: "/google", icon: MapPin, label: () => "Ficha de Google" },
     ],
   },
   {

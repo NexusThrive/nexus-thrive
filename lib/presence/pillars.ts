@@ -6,11 +6,11 @@ import type { PresenceResult } from "./presence";
  * atribución llegan con PR-28) se muestran «sin medir» y NO se rellenan con un valor inventado: el puntaje
  * se promedia solo sobre lo medido y la cobertura dice cuánto falta por medir.
  */
-export type PillarKey = "site" | "onlineSales" | "reputation" | "attribution" | "basics";
+export type PillarKey = "site" | "onlineSales" | "google" | "reputation" | "attribution" | "basics";
 export type Pillar = { key: PillarKey; label: string; hint: string; weight: number; score: number | null; verified: boolean };
 
-export const PILLAR_WEIGHTS: Record<PillarKey, number> = { site: 30, onlineSales: 30, reputation: 15, attribution: 15, basics: 10 };
-const LABELS: Record<PillarKey, string> = { site: "Sitio", onlineSales: "Venta en línea", reputation: "Reputación", attribution: "Atribución", basics: "Datos básicos" };
+export const PILLAR_WEIGHTS: Record<PillarKey, number> = { site: 25, onlineSales: 25, google: 15, reputation: 10, attribution: 15, basics: 10 };
+const LABELS: Record<PillarKey, string> = { site: "Sitio", onlineSales: "Venta en línea", google: "Google", reputation: "Reputación", attribution: "Atribución", basics: "Datos básicos" };
 
 export type PillarInput = {
   /** Resultado del puntaje de presencia ya existente (sitio verificado y datos declarados). */
@@ -18,6 +18,8 @@ export type PillarInput = {
   onlineProducts: number;
   gatewayConnected: boolean;
   paidOnlineLast90d: number;
+  /** Ficha de Google: `null` = no conectada (sin medir). `napMatches`: de 4 datos, cuántos coinciden con NEXUS. */
+  google?: { status: "OK" | "ERROR" | "PENDING"; napMatches: number } | null;
   /** Reseñas y atribución: `null` = aún no se miden. */
   reputation?: { reviews: number; average: number } | null;
   attribution?: { withOrigin: number; total: number } | null;
@@ -32,11 +34,14 @@ export function computePillars(i: PillarInput): Pillar[] {
   const basicChecks = i.presence.checks.filter((c) => !["webActive", "webOptimized"].includes(c.key));
   const basics = clamp((basicChecks.reduce((s, c) => s + c.earned, 0) / basicChecks.reduce((s, c) => s + c.weight, 0)) * 100);
   const onlineSales = clamp((i.onlineProducts > 0 ? 40 : 0) + (i.gatewayConnected ? 30 : 0) + (i.paidOnlineLast90d > 0 ? 30 : 0));
+  const g = i.google ?? null;
+  const googleScore = g ? (g.status === "OK" ? clamp(60 + (g.napMatches / 4) * 40) : 0) : null;
   const rep = i.reputation;
   const att = i.attribution;
   return [
     { key: "site", label: LABELS.site, weight: PILLAR_WEIGHTS.site, score: site, verified: true, hint: site >= 70 ? "Tu sitio responde y está optimizado." : "Verifica y mejora tu sitio (HTTPS, título, descripción y móvil)." },
     { key: "onlineSales", label: LABELS.onlineSales, weight: PILLAR_WEIGHTS.onlineSales, score: onlineSales, verified: true, hint: onlineSales >= 70 ? "Vendes y cobras en línea." : "Publica productos, conecta una pasarela y recibe tu primer cobro en línea." },
+    { key: "google", label: LABELS.google, weight: PILLAR_WEIGHTS.google, score: googleScore, verified: true, hint: !g ? "Sin medir: conecta tu ficha de Google Business para verificarla." : g.status === "OK" ? (g.napMatches === 4 ? "Tu ficha de Google está sincronizada y coincide con tus datos." : `Tu ficha coincide en ${g.napMatches} de 4 datos: corrige el resto.`) : "No se pudo leer tu ficha: revisa la conexión." },
     { key: "reputation", label: LABELS.reputation, weight: PILLAR_WEIGHTS.reputation, score: rep ? clamp((rep.average / 5) * 100 * Math.min(1, rep.reviews / 10)) : null, verified: true, hint: rep ? `${rep.reviews} reseñas, promedio ${rep.average.toFixed(1)}.` : "Sin medir: se mide cuando conectes tus reseñas." },
     { key: "attribution", label: LABELS.attribution, weight: PILLAR_WEIGHTS.attribution, score: att && att.total > 0 ? clamp((att.withOrigin / att.total) * 100) : null, verified: true, hint: att && att.total > 0 ? `${att.withOrigin} de ${att.total} ventas con origen conocido.` : "Sin medir: se mide cuando registres de dónde llegan tus ventas." },
     { key: "basics", label: LABELS.basics, weight: PILLAR_WEIGHTS.basics, score: basics, verified: false, hint: basics >= 90 ? "Identidad, WhatsApp, ubicación y catálogo completos." : "Completa identidad, WhatsApp, ubicación, Google, Instagram y catálogo." },
