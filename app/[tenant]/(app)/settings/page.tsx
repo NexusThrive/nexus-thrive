@@ -1,3 +1,4 @@
+import { consumptionFor } from "@/lib/usage/consumption-db";
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { tenantWithModules } from "@/lib/tenant/membership";
@@ -102,6 +103,7 @@ export default async function SettingsPage({
     selectedAt: tenantRecord.planSelectedAt ? String(tenantRecord.planSelectedAt) : null,
     activeModules: modules.filter((m) => m.active).map((m) => m.moduleName),
     access: await getTenantAccess(tenantRecord.id),
+    usage: await consumptionFor(tenantRecord.id),
   };
 
   const ROLE_LABELS = { OWNER: "Propietario", STAFF: "Equipo", SUPERADMIN: "Administrador" } as const;
