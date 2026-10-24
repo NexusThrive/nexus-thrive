@@ -10,6 +10,7 @@ import { listOrders } from "@/lib/purchasing/purchases-db";
 import { tenantWithModules } from "@/lib/tenant/membership";
 import { requireTenantContext } from "@/lib/tenant/context";
 import PurchasesView from "./_components/purchases-view";
+import { routeCategory } from "@/lib/navigation/tenant-nav";
 
 /**
  * Compras a proveedores: órdenes, recepción de mercancía al inventario y
@@ -27,7 +28,7 @@ export default async function PurchasesPage({ params }: { params: Promise<{ tena
   if (!canManage(ctx.role)) {
     return (
       <div className="grid gap-5">
-        <PageHeader eyebrow="Clientes y operación" title={title} description="Órdenes de compra, proveedores y recepción de mercancía." />
+        <PageHeader eyebrow={routeCategory("/purchases")} title={title} description="Órdenes de compra, proveedores y recepción de mercancía." />
         <Alert tone="info">Solo el dueño o administración maneja las compras.</Alert>
       </div>
     );
@@ -35,7 +36,7 @@ export default async function PurchasesPage({ params }: { params: Promise<{ tena
   if (!inventoryActive) {
     return (
       <div className="grid gap-5">
-        <PageHeader eyebrow="Clientes y operación" title={title} description="Órdenes de compra, proveedores y recepción de mercancía." />
+        <PageHeader eyebrow={routeCategory("/purchases")} title={title} description="Órdenes de compra, proveedores y recepción de mercancía." />
         <Alert tone="warning" title="Falta el módulo «Catálogo e inventario»">
           La mercancía que recibes entra al inventario. Actívalo en Configuración → Módulos para empezar a comprar.
         </Alert>
@@ -51,7 +52,7 @@ export default async function PurchasesPage({ params }: { params: Promise<{ tena
   ]);
   return (
     <div className="grid gap-5">
-      <PageHeader eyebrow="Clientes y operación" title={title} description="Pide a tus proveedores y, al llegar la mercancía, entra al inventario con su costo." />
+      <PageHeader eyebrow={routeCategory("/purchases")} title={title} description="Pide a tus proveedores y, al llegar la mercancía, entra al inventario con su costo." />
       <PurchasesView
         slug={tenant}
         orders={orders}

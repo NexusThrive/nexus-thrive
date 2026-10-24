@@ -8,6 +8,7 @@ import { listCounts, listTransfers, reorderOverview, stockOverview } from "@/lib
 import { requireTenantContext } from "@/lib/tenant/context";
 import { tenantWithModules } from "@/lib/tenant/membership";
 import StockView from "./_components/stock-view";
+import { routeCategory } from "@/lib/navigation/tenant-nav";
 
 /**
  * Existencias: qué hay en cada bodega, traslados entre bodegas, conteos físicos
@@ -20,7 +21,7 @@ export default async function StockPage({ params }: { params: Promise<{ tenant: 
   if (!canManage(ctx.role)) {
     return (
       <div className="grid gap-5">
-        <PageHeader eyebrow="Clientes y operación" title="Existencias" description="Bodegas, traslados, conteos y reposición." />
+        <PageHeader eyebrow={routeCategory("/stock")} title="Existencias" description="Bodegas, traslados, conteos y reposición." />
         <Alert tone="info">Solo el dueño o administración maneja el inventario.</Alert>
       </div>
     );
@@ -37,7 +38,7 @@ export default async function StockPage({ params }: { params: Promise<{ tenant: 
   const purchasesActive = !!record?.modules.some((m) => m.active && String(m.moduleName) === "purchases");
   return (
     <div className="grid gap-5">
-      <PageHeader eyebrow="Clientes y operación" title="Existencias" description="Qué hay en cada bodega, cómo se mueve y qué conviene reponer." />
+      <PageHeader eyebrow={routeCategory("/stock")} title="Existencias" description="Qué hay en cada bodega, cómo se mueve y qué conviene reponer." />
       <StockView
         slug={tenant}
         warehouses={warehouses}

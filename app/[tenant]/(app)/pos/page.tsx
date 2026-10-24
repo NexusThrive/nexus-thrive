@@ -6,13 +6,14 @@ import { listProducts } from "@/lib/business/products-db";
 import { listTerminals, myTurn } from "@/lib/pos/pos-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import PosView from "./_components/pos-view";
+import { routeCategory } from "@/lib/navigation/tenant-nav";
 
 /** Punto de venta: turno por cajero en una terminal, venta de varias líneas, propina y pago mixto. */
 export default async function PosPage({ params }: { params: Promise<{ tenant: string }> }) {
   const { tenant } = await params;
   const ctx = await requireTenantContext(tenant, "/pos");
   if (!ctx) notFound();
-  const header = <PageHeader eyebrow="Dinero" title="Punto de venta" description="Abre tu turno, vende y cierra con arqueo." />;
+  const header = <PageHeader eyebrow={routeCategory("/pos")} title="Punto de venta" description="Abre tu turno, vende y cierra con arqueo." />;
   if (!can(ctx.role, "money.handle")) {
     return (
       <div className="grid gap-5">

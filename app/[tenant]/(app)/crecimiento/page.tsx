@@ -8,13 +8,14 @@ import { listingView } from "@/lib/google/google-db";
 import { siteForEditor } from "@/lib/site/site-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import GrowthView from "./_components/growth-view";
+import { routeCategory } from "@/lib/navigation/tenant-nav";
 
 /** Campañas con enlaces cortos y UTM, de dónde vienen tus ventas y tus reseñas. */
 export default async function GrowthPage({ params }: { params: Promise<{ tenant: string }> }) {
   const { tenant } = await params;
   const ctx = await requireTenantContext(tenant, "/crecimiento");
   if (!ctx) notFound();
-  const header = <PageHeader eyebrow="Visibilidad" title="Campañas y reseñas" description="De dónde llegan tus clientes, cuánto cuesta cada origen y qué dicen de ti." />;
+  const header = <PageHeader eyebrow={routeCategory("/crecimiento")} title="Campañas y reseñas" description="De dónde llegan tus clientes, cuánto cuesta cada origen y qué dicen de ti." />;
   if (!can(ctx.role, "business.manage")) {
     return (
       <div className="grid gap-5">

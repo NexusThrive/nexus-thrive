@@ -5,6 +5,7 @@ import { can } from "@/lib/business/permissions";
 import { listResolutions, listTaxRates } from "@/lib/tax/tax-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import TaxesView from "./_components/taxes-view";
+import { routeCategory } from "@/lib/navigation/tenant-nav";
 
 /**
  * Impuestos con vigencia (IVA, impoconsumo, retenciones) y resoluciones de
@@ -14,7 +15,7 @@ export default async function TaxesPage({ params }: { params: Promise<{ tenant: 
   const { tenant } = await params;
   const ctx = await requireTenantContext(tenant, "/taxes");
   if (!ctx) notFound();
-  const header = <PageHeader eyebrow="Dinero" title="Impuestos y numeración" description="Tarifas con vigencia, retenciones y las resoluciones con las que numeras tus documentos." />;
+  const header = <PageHeader eyebrow={routeCategory("/taxes")} title="Impuestos y numeración" description="Tarifas con vigencia, retenciones y las resoluciones con las que numeras tus documentos." />;
   if (!can(ctx.role, "business.manage")) {
     return (
       <div className="grid gap-5">

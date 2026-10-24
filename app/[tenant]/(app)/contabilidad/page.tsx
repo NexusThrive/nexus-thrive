@@ -8,13 +8,14 @@ import { todayCO } from "@/lib/tax/tax";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { tenantWithModules } from "@/lib/tenant/membership";
 import AccountingView from "./_components/accounting-view";
+import { routeCategory } from "@/lib/navigation/tenant-nav";
 
 /** Contabilidad: plan de cuentas, reglas de asientos, centros de costo y cierre de períodos. */
 export default async function AccountingPage({ params }: { params: Promise<{ tenant: string }> }) {
   const { tenant } = await params;
   const ctx = await requireTenantContext(tenant, "/contabilidad");
   if (!ctx) notFound();
-  const header = <PageHeader eyebrow="Dinero" title="Contabilidad" description="Tu plan de cuentas, las reglas que generan los asientos y el cierre de cada mes." />;
+  const header = <PageHeader eyebrow={routeCategory("/contabilidad")} title="Contabilidad" description="Tu plan de cuentas, las reglas que generan los asientos y el cierre de cada mes." />;
   if (!can(ctx.role, "business.manage")) {
     return (
       <div className="grid gap-5">

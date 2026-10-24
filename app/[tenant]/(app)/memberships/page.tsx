@@ -17,6 +17,7 @@ import {
 import { PageHeader } from "@/components/molecules/page-header";
 import { requirePageContext } from "@/lib/tenant/context";
 import { can } from "@/lib/business/permissions";
+import { routeCategory } from "@/lib/navigation/tenant-nav";
 
 const PAGE_SIZE = 10;
 
@@ -109,7 +110,7 @@ export default async function MembershipsPage({
     <div className="space-y-8">
       {/* Encabezado */}
       <PageHeader
-        eyebrow="Clientes y operación"
+        eyebrow={routeCategory("/memberships")}
         title="Membresías"
         description={<>Planes y renovaciones de{" "}
             <span className="font-medium text-foreground/80">

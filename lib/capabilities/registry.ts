@@ -70,8 +70,9 @@ export type CapabilityNav = {
 };
 
 /** Categoría de la función: la misma en la barra lateral y en la página Funciones. */
-export type CapabilityCategory = "Clientes y operación" | "Ingresos" | "Gastos" | "Dinero" | "Visibilidad" | "Canales";
-export const CAPABILITY_CATEGORIES: readonly CapabilityCategory[] = ["Clientes y operación", "Ingresos", "Gastos", "Dinero", "Visibilidad", "Canales"];
+export type CapabilityCategory = "Clientes y agenda" | "Productos y pedidos" | "Obras y proyectos" | "Ventas y cobros" | "Compras y gastos" | "Finanzas y contabilidad" | "Presencia en línea" | "Canales";
+/** Orden de la barra lateral y de «Funciones»: del trato con el cliente, a vender y cobrar, a gastar y contabilizar, a darse a conocer. */
+export const CAPABILITY_CATEGORIES: readonly CapabilityCategory[] = ["Clientes y agenda", "Productos y pedidos", "Obras y proyectos", "Ventas y cobros", "Compras y gastos", "Finanzas y contabilidad", "Presencia en línea", "Canales"];
 
 export type CapabilityDefinition = {
   id: string;
@@ -105,7 +106,7 @@ export type CapabilityDefinition = {
 export const CAPABILITIES = [
   {
     id: "crm",
-    category: "Clientes y operación",
+    category: "Clientes y agenda",
     kind: "base",
     label: "CRM",
     name: "Clientes",
@@ -119,7 +120,7 @@ export const CAPABILITIES = [
   },
   {
     id: "bookings",
-    category: "Clientes y operación",
+    category: "Clientes y agenda",
     kind: "base",
     label: "Reservas",
     name: "Reservas",
@@ -136,7 +137,7 @@ export const CAPABILITIES = [
   },
   {
     id: "payments",
-    category: "Ingresos",
+    category: "Ventas y cobros",
     kind: "base",
     label: "Pagos",
     name: "Pagos",
@@ -152,7 +153,7 @@ export const CAPABILITIES = [
   },
   {
     id: "billing",
-    category: "Ingresos",
+    category: "Ventas y cobros",
     kind: "base",
     label: "Facturación",
     name: "Facturación",
@@ -168,7 +169,7 @@ export const CAPABILITIES = [
   },
   {
     id: "inventory",
-    category: "Clientes y operación",
+    category: "Productos y pedidos",
     kind: "base",
     label: "Inventario",
     name: "Catálogo e inventario",
@@ -185,7 +186,7 @@ export const CAPABILITIES = [
   },
   {
     id: "finance",
-    category: "Dinero",
+    category: "Finanzas y contabilidad",
     kind: "base",
     label: "Finanzas",
     name: "Finanzas",
@@ -201,7 +202,7 @@ export const CAPABILITIES = [
   },
   {
     id: "dashboard",
-    category: "Clientes y operación",
+    category: "Clientes y agenda",
     kind: "base",
     label: "Dashboard",
     name: "Inicio",
@@ -229,7 +230,7 @@ export const CAPABILITIES = [
   },
   {
     id: "memberships",
-    category: "Clientes y operación",
+    category: "Clientes y agenda",
     kind: "specialized",
     label: "Membresías",
     name: "Membresías",
@@ -247,7 +248,7 @@ export const CAPABILITIES = [
     // Compras a proveedores con recepción de mercancía al inventario. Depende
     // de «Catálogo e inventario» (la mercancía entra por su servicio de stock).
     id: "purchases",
-    category: "Gastos",
+    category: "Compras y gastos",
     kind: "base",
     label: "Compras",
     name: "Compras y proveedores",
@@ -262,7 +263,7 @@ export const CAPABILITIES = [
   },
   {
     id: "orders",
-    category: "Clientes y operación",
+    category: "Productos y pedidos",
     kind: "specialized",
     label: "Pedidos",
     name: "Pedidos",
@@ -277,7 +278,7 @@ export const CAPABILITIES = [
     // Cotización comercial genérica: llega con el documento comercial
     // unificado (Bloque B, paso 2). Hasta entonces no tiene pantallas.
     id: "quotes",
-    category: "Clientes y operación",
+    category: "Obras y proyectos",
     kind: "specialized",
     label: "Cotizaciones",
     name: "Cotizaciones",
@@ -292,7 +293,7 @@ export const CAPABILITIES = [
     // Suite de construcción (ARCH-01): obras, presupuestos APU, Lean,
     // bitácora y actas. Solo constructoras y carpinterías.
     id: "construction",
-    category: "Clientes y operación",
+    category: "Obras y proyectos",
     kind: "specialized",
     label: "Construcción",
     name: "Obras y presupuestos",
@@ -313,7 +314,7 @@ export const CAPABILITIES = [
   },
   {
     id: "pos",
-    category: "Ingresos",
+    category: "Ventas y cobros",
     parent: "payments",
     kind: "base",
     label: "Punto de venta",
@@ -328,7 +329,7 @@ export const CAPABILITIES = [
   },
   {
     id: "online_payments",
-    category: "Ingresos",
+    category: "Ventas y cobros",
     parent: "payments",
     kind: "base",
     label: "Cobros en línea",
@@ -343,7 +344,7 @@ export const CAPABILITIES = [
   },
   {
     id: "einvoicing",
-    category: "Ingresos",
+    category: "Ventas y cobros",
     parent: "billing",
     kind: "base",
     label: "Factura electrónica",
@@ -358,7 +359,7 @@ export const CAPABILITIES = [
   },
   {
     id: "receivables",
-    category: "Dinero",
+    category: "Finanzas y contabilidad",
     parent: "finance",
     kind: "base",
     label: "Cartera",
@@ -373,7 +374,7 @@ export const CAPABILITIES = [
   },
   {
     id: "accounting",
-    category: "Dinero",
+    category: "Finanzas y contabilidad",
     parent: "finance",
     kind: "base",
     label: "Contabilidad",
@@ -388,7 +389,7 @@ export const CAPABILITIES = [
   },
   {
     id: "taxes",
-    category: "Dinero",
+    category: "Finanzas y contabilidad",
     parent: "finance",
     kind: "base",
     label: "Impuestos y numeración",
@@ -403,7 +404,7 @@ export const CAPABILITIES = [
   },
   {
     id: "website",
-    category: "Visibilidad",
+    category: "Presencia en línea",
     parent: "inventory",
     kind: "base",
     label: "Sitio y tienda",
@@ -421,7 +422,7 @@ export const CAPABILITIES = [
   },
   {
     id: "google",
-    category: "Visibilidad",
+    category: "Presencia en línea",
     parent: "inventory",
     kind: "base",
     label: "Ficha de Google",
@@ -436,7 +437,7 @@ export const CAPABILITIES = [
   },
   {
     id: "growth",
-    category: "Visibilidad",
+    category: "Presencia en línea",
     parent: "inventory",
     kind: "base",
     label: "Campañas y reseñas",

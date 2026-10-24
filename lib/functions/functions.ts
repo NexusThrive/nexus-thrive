@@ -18,9 +18,12 @@ export type FunctionItem = {
   needs: ModuleValue | null;
   /** Categoría (la misma de la barra lateral). */
   category: CapabilityCategory;
+  /** Si está encendida pero le falta configuración real (proveedor, ficha, publicación…): dónde terminarla. */
+  setup: { configured: boolean; hint: string; href: string } | null;
 };
 
-export type FunctionGroups = { inUse: FunctionItem[]; suggested: FunctionItem[]; more: FunctionItem[] };
+/** `planned`: funciones que aún no existen (se muestran como «Próximamente», sin interruptor). */
+export type FunctionGroups = { inUse: FunctionItem[]; suggested: FunctionItem[]; more: FunctionItem[]; planned: FunctionItem[] };
 
 /** Dependencias entre funciones: se explican en pantalla en vez de esconder la función. */
 export const NEEDS: Partial<Record<ModuleValue, ModuleValue>> = {
@@ -54,11 +57,30 @@ export function groupFunctions(sources: readonly FunctionSource[], active: Reado
       active: active.has(s.id),
       reason: usageReason.get(s.id) ?? (profileSuggested.has(s.id) ? `Va bien con un negocio de ${profileLabel}.` : null),
       needs: NEEDS[s.id] ?? null,
-      category: s.category ?? "Clientes y operación",
+      category: s.category ?? "Clientes y agenda",
+      setup: null,
     }));
   return {
     inUse: items.filter((i) => i.active),
     suggested: items.filter((i) => !i.active && !i.planned && i.reason),
     more: items.filter((i) => !i.active && !i.planned && !i.reason),
+    planned: items.filter((i) => !i.active && i.planned),
   };
 }
+
+/**
+ * ¿Se puede cambiar esta función sin dejar el sistema inconsistente? Encender exige que esté encendida la que necesita;
+ * apagar exige que ninguna encendida dependa de ella. Los datos nunca se borran: apagar solo la quita del menú y de las rutas.
+ */
+export function toggleProblem(id: ModuleValue, next: boolean, active: ReadonlySet<string>, label: (id: string) => string): string | null {
+  if (next) {
+    const need = NEEDS[id];
+    return need && !active.has(need) ? `«${label(id)}» funciona con «${label(need)}»: enciende «${label(need)}» primero.` : null;
+  }
+  const users = (Object.entries(NEEDS) as [ModuleValue, ModuleValue][]).filter(([fn, need]) => need === id && active.has(fn)).map(([fn]) => `«${label(fn)}»`);
+  return users.length ? `No se puede apagar «${label(id)}» porque ${users.join(", ")} ${users.length === 1 ? "la usa" : "la usan"}. Apágala${users.length === 1 ? "" : "s"} primero.` : null;
+}
+
+/** Texto que se busca en una función (nombre, descripción y categoría, sin tildes ni mayúsculas). */
+export const searchable = (i: Pick<FunctionItem, "label" | "pitch" | "category">) =>
+  `${i.label} ${i.pitch} ${i.category}`.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");

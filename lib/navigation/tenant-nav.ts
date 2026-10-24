@@ -91,7 +91,7 @@ export const SETTINGS_ITEM: NavItem = {
  */
 const GROUPS = CAPABILITY_CATEGORIES;
 type GroupName = CapabilityCategory;
-const COLLAPSIBLE: readonly GroupName[] = ["Ingresos", "Gastos"];
+const COLLAPSIBLE: readonly GroupName[] = ["Ventas y cobros", "Compras y gastos"];
 /** Grupo de cada función: su categoría en el registro (la misma que ve en «Funciones»). */
 const MODULE_GROUP: Partial<Record<string, GroupName>> = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.category]));
 
@@ -124,7 +124,7 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
     { label: "General", items: items("dashboard") },
     ...GROUPS.map((label) => ({
       label,
-      items: label === "Gastos" ? [...expenses, ...forGroup(label)] : forGroup(label),
+      items: label === "Compras y gastos" ? [...expenses, ...forGroup(label)] : forGroup(label),
       ...(COLLAPSIBLE.includes(label) ? { collapsible: true } : {}),
     })),
     { label: "Sistema", items: [FUNCTIONS_ITEM, DATA_ITEM, SETTINGS_ITEM] },
@@ -146,4 +146,16 @@ export function isNavActive(href: string, relativePath: string): boolean {
 /** El ítem activo (para el título de la barra superior). */
 export function activeNavItem(groups: NavGroup[], relativePath: string): NavItem | undefined {
   return groups.flatMap((g) => g.items).find((item) => isNavActive(item.href, relativePath));
+}
+
+/**
+ * Categoría de una pantalla del negocio ("/pos" → «Ventas y cobros»): la misma de la barra lateral y de «Funciones».
+ * Los encabezados de página la usan para que el menú y la página siempre digan lo mismo.
+ */
+export function routeCategory(route: string): CapabilityCategory {
+  const path = route.split("?")[0]!;
+  const exact = CAPABILITIES.find((c) => c.nav.some((n) => n.href === path));
+  if (exact) return exact.category;
+  const prefix = CAPABILITIES.find((c) => c.nav.some((n) => n.href && path.startsWith(`${n.href}/`)));
+  return prefix?.category ?? "Clientes y agenda";
 }
