@@ -33,6 +33,23 @@ done
 TARGET="$(printf '%s' "$URL" | sed -E 's#^[a-z]+://([^:@/]+)(:[^@]*)?@#\1@#; s#\?.*$##')"
 echo "Base de destino: $TARGET"
 
+# Comprobación de conexión: si falla, no tiene sentido seguir (y el mensaje explica las causas típicas).
+if ! psql "$URL" -v ON_ERROR_STOP=1 -t -A -c "select 1" >/dev/null 2>"${TMPDIR:-/tmp}/migrate-prod.err"; then
+  echo "No se pudo conectar a la base:" >&2
+  sed 's/^/  /' "${TMPDIR:-/tmp}/migrate-prod.err" >&2
+  cat >&2 <<'MSG'
+
+Causas típicas:
+  • «db.<proyecto>.supabase.co» (conexión directa) solo tiene IPv6. Si tu servidor no tiene IPv6, usa el
+    POOLER EN MODO SESIÓN (IPv4, puerto 5432):
+      postgresql://postgres.<proyecto>:<contraseña>@aws-1-<región>.pooler.supabase.com:5432/postgres
+    (Supabase → Connect → «Session pooler»). El modo transacción (puerto 6543) NO sirve para migrar.
+  • Contraseña incorrecta o con caracteres especiales sin codificar en la URL (@ : / # ? → %40 %3A %2F %23 %3F).
+  • El pooler a veces rechaza una conexión: vuelve a intentarlo.
+MSG
+  exit 1
+fi
+
 echo
 echo "── 1. Migraciones pendientes ──"
 pnpm exec prisma migration status --db "$URL" --json 2>/dev/null | node -e '
@@ -64,7 +81,18 @@ if [ "$BACKUP" = 1 ]; then
   FILE="backups/respaldo-$(date +%Y%m%d-%H%M%S).dump"
   echo
   echo "── 2. Respaldo → $FILE ──"
-  pg_dump "$URL" --format=custom --no-owner --file "$FILE"
+  # pg_dump debe ser de la misma versión mayor que el servidor (o más nueva). Si el local es más viejo,
+  # se usa la imagen oficial de postgres con Docker (con --network host para llegar a la misma base).
+  SERVER_MAJOR="$(psql "$URL" -t -A -c "show server_version_num" | cut -c1-2)"
+  LOCAL_MAJOR="$(pg_dump --version | grep -oE '[0-9]+' | head -1)"
+  if [ "${PG_DUMP_DOCKER:-0}" = 1 ] || [ "$LOCAL_MAJOR" -lt "$SERVER_MAJOR" ]; then
+    command -v docker >/dev/null || { echo "pg_dump $LOCAL_MAJOR es más viejo que el servidor ($SERVER_MAJOR) y no hay Docker. Instala postgresql-client-$SERVER_MAJOR." >&2; exit 1; }
+    echo "(pg_dump local $LOCAL_MAJOR < servidor $SERVER_MAJOR: se usa postgres:$SERVER_MAJOR con Docker)"
+    docker run --rm --network host "postgres:$SERVER_MAJOR" pg_dump "$URL" --format=custom --no-owner > "$FILE"
+  else
+    pg_dump "$URL" --format=custom --no-owner --file "$FILE"
+  fi
+  [ -s "$FILE" ] || { echo "El respaldo quedó vacío: no se aplica nada." >&2; exit 1; }
 fi
 
 echo
