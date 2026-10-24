@@ -23,6 +23,7 @@ import SettingsShell, {
   type SystemInfoItem,
 } from "./_components/settings-shell";
 import { requirePageContext } from "@/lib/tenant/context";
+import { roleLabel } from "@/lib/business/roles";
 
 /**
  * Módulo de Ajustes del negocio (Server Component).
@@ -125,6 +126,7 @@ export default async function SettingsPage({
       systemInfo={systemInfo}
       plan={plan}
       card={card}
+      me={(() => { const m = team.members.find((x) => x.isMe); return { name: m?.name ?? "", email: m?.email ?? "", roleLabel: roleLabel(m?.role ?? "STAFF"), title: m?.title ?? "", phone: m?.phone ?? "" }; })()}
       context={{ vertical: tenantRecord.vertical as VerticalValue, businessModels: (tenantRecord.businessModels ?? []) as BusinessModel[], activity: tenantRecord.activity ?? "" }}
     />
   );

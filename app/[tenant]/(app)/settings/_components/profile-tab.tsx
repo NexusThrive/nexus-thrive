@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Pencil } from "lucide-react";
-import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
 import { Alert } from "@/components/molecules/alert";
 import { Field } from "@/components/molecules/field";
+import { SettingsRow, SettingsSection } from "@/components/molecules/settings-section";
 import { PhoneInput } from "@/components/molecules/phone-input";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
@@ -18,35 +17,6 @@ import type { ProfileInitialValues, SystemInfoItem } from "./settings-shell";
 
 const IDLE: ProfileFormState = { status: "idle" };
 type Group = "identity" | "contact" | "tax";
-
-/** Un dato en modo lectura: etiqueta pequeña, valor legible; sin dato se dice «Sin completar». */
-function Row({ label, value }: { label: string; value: ReactNode }) {
-  return (
-    <div className="grid gap-0.5 py-3 sm:grid-cols-[200px_1fr] sm:gap-4">
-      <dt className="text-[13px] text-muted-foreground">{label}</dt>
-      <dd className="min-w-0 break-words text-[14px] text-foreground">{value || <span className="text-muted-foreground">Sin completar</span>}</dd>
-    </div>
-  );
-}
-
-function Section({ id, title, description, canManage, onEdit, children }: { id: string; title: string; description: string; canManage: boolean; onEdit: () => void; children: ReactNode }) {
-  return (
-    <section aria-labelledby={id} className="rounded-lg border border-border bg-card px-5 py-4">
-      <header className="flex items-start justify-between gap-3">
-        <div>
-          <h2 id={id} className="font-display text-[15px] font-semibold text-foreground">{title}</h2>
-          <p className="mt-0.5 text-[13px] text-muted-foreground">{description}</p>
-        </div>
-        {canManage ? (
-          <button type="button" onClick={onEdit} aria-label={`Modificar ${title.toLowerCase()}`} className={buttonVariants({ variant: "outline", size: "sm", className: "shrink-0" })}>
-            <Pencil aria-hidden="true" className="size-3.5" /> Modificar
-          </button>
-        ) : null}
-      </header>
-      <dl className="mt-2 divide-y divide-border">{children}</dl>
-    </section>
-  );
-}
 
 /**
  * Pestaña «Perfil del negocio»: los datos se leen como información, no como
@@ -103,20 +73,20 @@ export default function ProfileTab({
     <div className="space-y-4">
       {!canManage ? <Alert tone="info">Solo el dueño del negocio puede modificar esta información.</Alert> : null}
 
-      <Section id="profile-identity" title="Identidad" description="Cómo se llama tu negocio y cuál es la dirección de tu panel." canManage={canManage} onEdit={() => open("identity")}>
-        <Row label="Nombre comercial" value={values.name} />
-        <Row label="Dirección del panel" value={<span className="font-mono text-[13px]">/{values.slug}</span>} />
-      </Section>
+      <SettingsSection id="profile-identity" title="Identidad" description="Cómo se llama tu negocio y cuál es la dirección de tu panel." canManage={canManage} onEdit={() => open("identity")}>
+        <SettingsRow label="Nombre comercial" value={values.name} />
+        <SettingsRow label="Dirección del panel" value={<span className="font-mono text-[13px]">/{values.slug}</span>} />
+      </SettingsSection>
 
-      <Section id="profile-contact" title="Contacto y ubicación" description="Dónde y cómo te encuentran tus clientes." canManage={canManage} onEdit={() => open("contact")}>
-        <Row label="Ciudad" value={values.city} />
-        <Row label="Dirección" value={values.address} />
-        <Row label="Teléfono / WhatsApp" value={values.phone} />
-      </Section>
+      <SettingsSection id="profile-contact" title="Contacto y ubicación" description="Dónde y cómo te encuentran tus clientes." canManage={canManage} onEdit={() => open("contact")}>
+        <SettingsRow label="Ciudad" value={values.city} />
+        <SettingsRow label="Dirección" value={values.address} />
+        <SettingsRow label="Teléfono / WhatsApp" value={values.phone} />
+      </SettingsSection>
 
-      <Section id="profile-tax" title="Datos fiscales" description="Para tus documentos y facturas." canManage={canManage} onEdit={() => open("tax")}>
-        <Row label="NIT / RUT" value={values.taxId} />
-      </Section>
+      <SettingsSection id="profile-tax" title="Datos fiscales" description="Para tus documentos y facturas." canManage={canManage} onEdit={() => open("tax")}>
+        <SettingsRow label="NIT / RUT" value={values.taxId} />
+      </SettingsSection>
 
       <BusinessContextCard slug={tenantSlug} canManage={canManage} initial={context} />
 
@@ -124,7 +94,7 @@ export default function ProfileTab({
         <h2 id="profile-system" className="font-display text-[15px] font-semibold text-foreground">Información del sistema</h2>
         <dl className="mt-2 divide-y divide-border">
           {systemInfo.map((item) => (
-            <Row key={item.label} label={item.label} value={item.value} />
+            <SettingsRow key={item.label} label={item.label} value={item.value} />
           ))}
         </dl>
       </section>

@@ -13,8 +13,7 @@ import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { BUSINESS_ROLES, roleLabel } from "@/lib/business/roles";
 import type { PendingInvite, TeamMember } from "@/lib/business/team-db";
 import { cn } from "@/lib/utils";
-import { changeMemberRoleAction, inviteMemberAction, revokeInviteAction, setMemberActiveAction, updateMyProfileAction } from "../team-actions";
-import { PhoneInput } from "@/components/molecules/phone-input";
+import { changeMemberRoleAction, inviteMemberAction, revokeInviteAction, setMemberActiveAction } from "../team-actions";
 import { Select } from "@/components/atoms/select";
 
 export type Seats = { limit: number | null; used: number; planName: string };
@@ -33,8 +32,6 @@ export default function TeamTab({ slug, members, invites, seats, canManage, meRo
   const isOwner = meRole === "OWNER" || meRole === "SUPERADMIN";
   const full = seats.limit != null && seats.used >= seats.limit;
   const active = members.filter((m) => m.active);
-  const me = members.find((m) => m.isMe);
-  const [mine, setMine] = useState({ name: me?.name ?? "", title: me?.title ?? "", phone: me?.phone ?? "" });
   const removed = members.filter((m) => !m.active);
 
   const run = (fn: () => Promise<{ ok: boolean; message?: string }>, after?: () => void) =>
@@ -106,23 +103,6 @@ export default function TeamTab({ slug, members, invites, seats, canManage, meRo
         ) : null}
       </div>
       {full && canManage ? <p className="rounded-md bg-accent-subtle px-3.5 py-2.5 text-[13px]">Usaste todos los usuarios de tu plan. Mejora tu plan en la pestaña Plan para sumar más personas.</p> : null}
-
-      {me ? (
-        <section className="grid gap-3 rounded-lg border border-border bg-surface p-[18px]">
-          <div>
-            <h3 className="text-[13px] font-semibold">Tu perfil</h3>
-            <p className="text-xs text-muted-foreground">Así te saluda el Inicio y así te ve tu equipo.</p>
-          </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <Field label="Nombre">{(c) => <input {...c} value={mine.name} onChange={(e) => setMine({ ...mine, name: e.target.value })} className={inputClasses} />}</Field>
-            <Field label="Cargo">{(c) => <input {...c} value={mine.title} onChange={(e) => setMine({ ...mine, title: e.target.value })} className={inputClasses} placeholder="Administradora" />}</Field>
-            <Field label="Teléfono">{(c) => <PhoneInput id={c.id} value={mine.phone} onChange={(v) => setMine({ ...mine, phone: v })} />}</Field>
-          </div>
-          <button type="button" disabled={pending} onClick={() => run(() => updateMyProfileAction(slug, mine))} className={buttonVariants({ size: "sm", variant: "outline", className: "justify-self-start" })}>
-            Guardar mi perfil
-          </button>
-        </section>
-      ) : null}
 
       <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">{active.map(row)}</ul>
 

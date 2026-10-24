@@ -22,7 +22,15 @@ Hallazgos reales de la revisión de navegación, Funciones y Configuración, y q
 | Sugerencias en sección aparte que duplicaba funciones | Resuelto: marca «Sugerida» en su propia categoría; nada se restringe por rubro |
 
 ## Configuración
-Ver el PR de Configuración (pestañas por propósito; datos personales en «Mi cuenta» con lectura y edición explícita).
+| Hallazgo | Estado |
+|---|---|
+| Las pestañas mezclaban propósitos en una lista plana de 7 | Resuelto: grupos **Organización** (Perfil, Plan y consumo) · **Personas** (Equipo y permisos) · **Preferencias personales** (Mi cuenta, Apariencia, Tarjeta NFC) · **Conexiones** (Integraciones) · **Zona de peligro** |
+| «Tu perfil» (datos personales) vivía dentro de Equipo como formulario siempre abierto con «Guardar» | Resuelto: pestaña **Mi cuenta** en modo lectura; «Modificar» abre un diálogo con Guardar y Cancelar; ya no depende del permiso de administrar el negocio |
+| `Row`/`Section` de lectura eran locales de Perfil | Resuelto: componente compartido `SettingsSection`/`SettingsRow` |
+| Descripción de la página hablaba de «módulos» (la pestaña ya no existe) | Resuelto |
+| Cancelar con cambios pregunta «¿Guardar los cambios?» y dos e2e de Perfil no lo contemplaban (fallaban en `integracion/todo-junto`) | Resuelto: pruebas actualizadas; el comportamiento del producto es correcto |
+| Contraste de la pista (`small`) en elementos inactivos del menú de secciones (axe) | Resuelto |
+| Plan y Equipo ya son de lectura; Integraciones usa diálogos propios | Verificado, sin cambios |
 
 ## Límites de esta auditoría
 Probado con Storybook (acciones simuladas), Postgres local y pruebas unitarias; no con Clerk real ni en dispositivos físicos.

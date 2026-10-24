@@ -43,6 +43,8 @@ test.describe("Perfil del negocio", () => {
     let dialog = page.getByRole("dialog", { name: "Modificar datos fiscales" });
     await dialog.getByLabel(/NIT/).fill("111");
     await dialog.getByRole("button", { name: "Cancelar" }).click();
+    // Con cambios sin guardar, cancelar pregunta antes de descartar.
+    await page.getByRole("dialog", { name: "¿Guardar los cambios?" }).getByRole("button", { name: "Descartar" }).click();
     await expect(page.getByText("900123456-7")).toBeVisible();
     await page.getByRole("button", { name: "Modificar datos fiscales" }).click();
     dialog = page.getByRole("dialog", { name: "Modificar datos fiscales" });
