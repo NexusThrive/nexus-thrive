@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `campaigns`, `ad-accounts`, `attributions`, `conversions` |
+| Eventos (outbox → webhooks) | `campaign.created`, `conversion.recorded` |
+| MCP · lectura | `list_campaigns`, `get_campaign_results` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `propose_campaign_budget` |
+| Sistemas externos (puertos y adaptadores) | Meta Ads, Google Ads, TikTok Ads (API de conversiones) |
+
+#### Integración
+
+- [ ] API REST de lectura: campaigns, ad-accounts, attributions, conversions (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: campaign.created, conversion.recorded (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: list_campaigns, get_campaign_results (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: propose_campaign_budget (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de campañas, objetivos y atribución
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
@@ -24,8 +47,8 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [ ] Registro manual de campañas
-- [ ] UTM automáticos
-- [ ] Reporte simple: inversión vs. leads recibidos por origen.
+- [ ] UTM automáticos _(PR-28)_
+- [ ] Reporte simple: inversión vs. leads recibidos por origen. _(PR-28)_
 
 #### Técnico
 

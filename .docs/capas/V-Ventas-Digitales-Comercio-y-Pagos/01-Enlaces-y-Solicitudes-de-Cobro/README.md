@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `payment-links`, `payment-requests` |
+| Eventos (outbox → webhooks) | `payment_link.created`, `payment_link.paid`, `payment_link.expired` |
+| MCP · lectura | `list_payment_links`, `get_payment_link` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `create_payment_link`, `send_payment_request` |
+| Sistemas externos (puertos y adaptadores) | Pasarelas de V.00, WhatsApp / correo para enviar |
+
+#### Integración
+
+- [ ] API REST de lectura: payment-links, payment-requests (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: payment_link.created, payment_link.paid, payment_link.expired (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: list_payment_links, get_payment_link (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: create_payment_link, send_payment_request (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de solicitudes y conceptos de cobro
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
@@ -23,9 +46,9 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Link de pago
-- [ ] Botón de pago
-- [ ] Estado del link (pendiente, pagado, vencido).
+- [ ] Link de pago _(PR-17)_
+- [ ] Botón de pago _(PR-17)_
+- [ ] Estado del link (pendiente, pagado, vencido). _(PR-17)_
 
 #### Técnico
 

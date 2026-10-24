@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `payroll-runs`, `payroll-items`, `payslips`, `electronic-payroll-documents` |
+| Eventos (outbox → webhooks) | `payroll.calculated`, `payroll.approved`, `payroll_document.accepted`, `payroll_document.rejected` |
+| MCP · lectura | `get_payroll_run`, `list_payslips` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `calculate_payroll`, `submit_payroll_document` |
+| Sistemas externos (puertos y adaptadores) | Nómina electrónica DIAN por proveedor tecnológico; PILA / operadores de seguridad social |
+
+#### Integración
+
+- [ ] API REST de lectura: payroll-runs, payroll-items, payslips, electronic-payroll-documents (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: payroll.calculated, payroll.approved, payroll_document.accepted, payroll_document.rejected (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: get_payroll_run, list_payslips (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: calculate_payroll, submit_payroll_document (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento normativo y componentes de nómina
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).

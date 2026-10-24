@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `products`, `categories`, `price-lists`, `variants` |
+| Eventos (outbox → webhooks) | `product.created`, `product.updated`, `product.price_changed`, `product.archived` |
+| MCP · lectura | `list_products`, `get_product`, `get_price` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `create_product`, `update_price` |
+| Sistemas externos (puertos y adaptadores) | Importación Excel/CSV, Alegra (migración) |
+
+#### Integración
+
+- [ ] API REST de lectura: products, categories, price-lists, variants (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: product.created, product.updated, product.price_changed, product.archived (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: list_products, get_product, get_price (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: create_product, update_price (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de productos, servicios y datos maestros
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
@@ -24,8 +47,8 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [x] Productos y servicios — _hecho: Catálogo: productos, servicios, planes, entradas y tours_
-- [ ] Clientes y proveedores
-- [ ] Importación desde Excel con validación.
+- [ ] Clientes y proveedores _(PR-08)_
+- [ ] Importación desde Excel con validación. _(PR-12)_
 - [x] Activar y desactivar ítems sin borrarlos. — _hecho: `Product.active`_
 
 #### Técnico
@@ -37,12 +60,12 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Variantes
-- [ ] Listas de precios
+- [ ] Variantes _(PR-09)_
+- [ ] Listas de precios _(PR-09)_
 - [ ] Servicios y paquetes
-- [ ] Clasificación fiscal por ítem
-- [ ] Ficha de tercero completa
-- [ ] Detección de duplicados
+- [ ] Clasificación fiscal por ítem _(PR-09)_
+- [ ] Ficha de tercero completa _(PR-08)_
+- [ ] Detección de duplicados _(PR-08)_
 - [ ] Cuenta contable por defecto
 
 #### Técnico

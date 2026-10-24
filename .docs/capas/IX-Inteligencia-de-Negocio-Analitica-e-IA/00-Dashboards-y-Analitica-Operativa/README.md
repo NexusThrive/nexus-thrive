@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `dashboards`, `widgets`, `dashboard-layouts` |
+| Eventos (outbox → webhooks) | `dashboard.shared` |
+| MCP · lectura | `get_dashboard`, `list_widgets` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `save_dashboard_layout` |
+| Sistemas externos (puertos y adaptadores) | — |
+
+#### Integración
+
+- [ ] API REST de lectura: dashboards, widgets, dashboard-layouts (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: dashboard.shared (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: get_dashboard, list_widgets (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: save_dashboard_layout (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de indicadores y fuentes de datos
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
@@ -44,6 +67,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Comparativos
 - [ ] Vista consolidada de todos los módulos
 - [ ] Enlace de solo lectura
+- [ ] Pulso del negocio: señales de madurez con acción sugerida y avisos por WhatsApp/correo cuando una empeora _(objetivo 2026)_ _(PR-29)_ _(PR-30)_
 
 #### Técnico
 

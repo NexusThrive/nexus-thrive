@@ -18,7 +18,20 @@ function countSubcapa(path) {
   const levels = {};
   let level = null;
   let section = null;
+  let inIntegracion = false;
   for (const line of readFileSync(path, "utf8").split("\n")) {
+    // Superficie de integración (API · MCP · Webhooks): se cuenta aparte.
+    if (line.startsWith("<!-- integracion:inicio")) inIntegracion = true;
+    if (line.startsWith("<!-- integracion:fin")) inIntegracion = false;
+    if (inIntegracion) {
+      const ib = line.match(/^- \[( |x)\] /);
+      if (ib) {
+        levels.INT ??= { done: 0, total: 0 };
+        levels.INT.total++;
+        if (ib[1] === "x") levels.INT.done++;
+      }
+      continue;
+    }
     const lv = line.match(/^## (N\d)/);
     if (lv) level = lv[1];
     if (line.startsWith("#### ")) section = line.slice(5).trim();
@@ -39,10 +52,16 @@ const capas = readdirSync(capasDir, { withFileTypes: true })
     const title = readFileSync(join(capasDir, d.name, "README.md"), "utf8").match(/^titulo: "(.+)"$/m)?.[1] ?? d.name;
     const total = { done: 0, total: 0 };
     const n1 = { done: 0, total: 0 };
+    const integ = { done: 0, total: 0 };
     for (const sub of readdirSync(join(capasDir, d.name), { withFileTypes: true })) {
       const readme = join(capasDir, d.name, sub.name, "README.md");
       if (!sub.isDirectory() || !existsSync(readme)) continue;
       for (const [lv, c] of Object.entries(countSubcapa(readme))) {
+        if (lv === "INT") {
+          integ.done += c.done;
+          integ.total += c.total;
+          continue;
+        }
         total.done += c.done;
         total.total += c.total;
         if (lv === "N1") {
@@ -51,7 +70,7 @@ const capas = readdirSync(capasDir, { withFileTypes: true })
         }
       }
     }
-    return { id, dir: d.name, title, total, n1 };
+    return { id, dir: d.name, title, total, n1, integ };
   })
   .sort((a, b) => ROMAN.indexOf(a.id) - ROMAN.indexOf(b.id));
 
@@ -65,19 +84,26 @@ const bar = (c) => {
 function table(linkPrefix) {
   const rows = capas.map(
     (c) =>
-      `| ${c.id} | [${c.title}](${linkPrefix}${c.dir}/README.md) | ${c.n1.done}/${c.n1.total} · ${pct(c.n1)} | ${c.total.done}/${c.total.total} · ${pct(c.total)} | \`${bar(c.total)}\` |`,
+      `| ${c.id} | [${c.title}](${linkPrefix}${c.dir}/README.md) | ${c.n1.done}/${c.n1.total} · ${pct(c.n1)} | ${c.total.done}/${c.total.total} · ${pct(c.total)} | ${c.integ.done}/${c.integ.total} · ${pct(c.integ)} | \`${bar(c.total)}\` |`,
   );
   const all = capas.reduce(
-    (a, c) => ({ done: a.done + c.total.done, total: a.total + c.total.total, n1d: a.n1d + c.n1.done, n1t: a.n1t + c.n1.total }),
-    { done: 0, total: 0, n1d: 0, n1t: 0 },
+    (a, c) => ({
+      done: a.done + c.total.done,
+      total: a.total + c.total.total,
+      n1d: a.n1d + c.n1.done,
+      n1t: a.n1t + c.n1.total,
+      id: a.id + c.integ.done,
+      it: a.it + c.integ.total,
+    }),
+    { done: 0, total: 0, n1d: 0, n1t: 0, id: 0, it: 0 },
   );
   return [
-    "| Capa | Nombre | Nivel N1 (lo básico) | Todas las funcionalidades | |",
-    "| --- | --- | --- | --- | --- |",
+    "| Capa | Nombre | Nivel N1 (lo básico) | Todas las funcionalidades | Integración (API · MCP · Webhooks) | |",
+    "| --- | --- | --- | --- | --- | --- |",
     ...rows,
-    `| | **Total** | **${all.n1d}/${all.n1t} · ${pct({ done: all.n1d, total: all.n1t })}** | **${all.done}/${all.total} · ${pct(all)}** | |`,
+    `| | **Total** | **${all.n1d}/${all.n1t} · ${pct({ done: all.n1d, total: all.n1t })}** | **${all.done}/${all.total} · ${pct(all)}** | **${all.id}/${all.it} · ${pct({ done: all.id, total: all.it })}** | |`,
     "",
-    "_Generado con `node scripts/capas-progreso.mjs --write`. La capa XI (construcción) usa pestañas en lugar de casillas: su estado está en su README._",
+    "_Generado con `node scripts/capas-progreso.mjs --write`. La capa XI (construcción) usa pestañas en lugar de casillas: su estado está en su README. «Integración» cuenta las casillas de la superficie API · MCP · Webhooks de cada subcapa (no suman al porcentaje de funcionalidades)._",
   ].join("\n");
 }
 

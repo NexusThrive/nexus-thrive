@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `customers`, `customer-notes`, `customer-tags`, `customer-timeline` |
+| Eventos (outbox → webhooks) | `customer.created`, `customer.updated`, `customer.archived`, `customer.note_added` |
+| MCP · lectura | `search_customers`, `get_customer_360`, `get_customer_timeline` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `create_customer`, `update_customer`, `add_customer_note` |
+| Sistemas externos (puertos y adaptadores) | Importación Excel/CSV, Alegra |
+
+#### Integración
+
+- [ ] API REST de lectura: customers, customer-notes, customer-tags, customer-timeline (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: customer.created, customer.updated, customer.archived, customer.note_added (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: search_customers, get_customer_360, get_customer_timeline (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: create_customer, update_customer, add_customer_note (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento del modelo de cliente y relaciones
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
@@ -24,11 +47,11 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [x] Base de contactos
-- [ ] Empresas / clientes
+- [ ] Empresas / clientes _(PR-08)_
 - [x] Notas e historial
 - [x] Etiquetas y estados — _hecho: etiquetas, activo/archivado_
 - [x] Búsqueda y filtros.
-- [ ] Importar y exportar
+- [ ] Importar y exportar _(PR-12)_
 
 #### Técnico
 
