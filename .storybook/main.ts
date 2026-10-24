@@ -34,6 +34,7 @@ const config: StorybookConfig = {
       "@/app/[tenant]/(app)/taxes/actions": path.resolve(import.meta.dirname, "mocks/taxes-actions.ts"),
       "@/app/[tenant]/(app)/data/actions": path.resolve(import.meta.dirname, "mocks/data-actions.ts"),
       // Perfil del negocio: en Storybook responde sin servidor.
+      "@/app/[tenant]/(app)/settings/actions": path.resolve(import.meta.dirname, "mocks/settings-actions.ts"),
       "@/app/[tenant]/(app)/settings/context-actions": path.resolve(import.meta.dirname, "mocks/context-actions.ts"),
       // Acción de funciones: en Storybook responde sin servidor.
       "@/app/[tenant]/(app)/functions/actions": path.resolve(import.meta.dirname, "mocks/functions-actions.ts"),
