@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { ClerkProvider } from "@clerk/nextjs";
 import { clerkLocalization, clerkProviderAppearance } from "@/lib/auth/clerk-appearance";
 import { fontVariables } from "@/lib/fonts";
@@ -36,17 +37,11 @@ export default function RootLayout({
       className={`${fontVariables} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
-        {/* Tema y preferencias antes del primer pintado (sin parpadeo).
-            Script inline crudo: se ejecuta síncrono durante el parseo del
-            HTML, antes del primer paint. next/script no aplica aquí porque
-            React 19 no ejecuta <script> renderizados en el cliente.
-            Por eso `<html>` y `<head>` quedan FUERA de `ClerkProvider` (que es
-            un componente de cliente): así el script se renderiza solo en el
-            servidor y React no avisa de «script tag while rendering». */}
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript + prefsInitScript }} />
-      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        {/* Tema y preferencias antes del primer pintado (sin parpadeo). `beforeInteractive`
+            de next/script lo inserta en el HTML del servidor y se ejecuta al parsear,
+            sin que React renderice una etiqueta <script> en el cliente (su aviso). */}
+        <Script id="nexus-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: themeInitScript + prefsInitScript }} />
         <ClerkProvider localization={clerkLocalization} appearance={clerkProviderAppearance}>
           <PreferencesProvider>
             <MotionProvider />
