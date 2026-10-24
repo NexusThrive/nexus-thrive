@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
@@ -20,6 +20,19 @@ import { RouteBar } from "@/components/molecules/route-bar";
 import { useShell } from "@/components/providers/shell-context";
 import { cn } from "@/lib/utils";
 import styles from "./app-topbar.module.css";
+
+const noop = () => () => undefined;
+
+/**
+ * Menú de la cuenta de Clerk. Clerk lo monta solo en el navegador, así que el HTML
+ * del servidor no lo trae y React avisaba de «hydration mismatch». Se pinta tras
+ * hidratar y, mientras tanto, un hueco del mismo tamaño evita el salto de diseño.
+ */
+function AccountButton() {
+  const mounted = useSyncExternalStore(noop, () => true, () => false);
+  if (!mounted) return <span aria-hidden="true" className="inline-block size-[34px] rounded-[4px] bg-surface-muted" />;
+  return <UserButton appearance={{ elements: { userButtonAvatarBox: "size-[34px] rounded-[4px]" } }} />;
+}
 
 /**
  * Navbar global: fija, a todo el ancho, con fondo sólido y por encima de la
@@ -122,7 +135,7 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
           {switcher}
           {actions}
           <ThemeToggle />
-          <UserButton appearance={{ elements: { userButtonAvatarBox: "size-[34px] rounded-[4px]" } }} />
+          <AccountButton />
         </div>
 
         <RouteBar className="absolute inset-x-0 -bottom-px top-auto z-0" />
