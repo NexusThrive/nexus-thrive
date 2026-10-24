@@ -123,3 +123,33 @@ export async function sellCart(tenantId: string, input: SaleInput, userId: strin
     throw e;
   }
 }
+
+/** Datos del tiquete de una venta POS del negocio (o `null` si no es de este negocio). */
+export async function receiptOf(tenantId: string, documentId: string): Promise<import("./receipt").ReceiptData | null> {
+  const doc = await db.orm.public.Invoice.where({ tenantId, id: documentId, kind: "SALE" }).first();
+  if (!doc) return null;
+  const [lines, pays, shop] = await Promise.all([
+    db.orm.public.InvoiceLine.where({ invoiceId: doc.id }).all(),
+    db.orm.public.Payment.where({ tenantId, sourceType: "POS", sourceId: doc.id }).all(),
+    db.orm.public.Tenant.where({ id: tenantId }).select("name", "taxId").first(),
+  ]);
+  const subtotal = toNumber(doc.subtotal);
+  const discountTotal = toNumber(doc.discountTotal);
+  const paid = pays.reduce((s, p) => s + toNumber(p.amount), 0);
+  const total = toNumber(doc.total);
+  const tip = toNumber(doc.tipTotal);
+  return {
+    business: shop?.name ?? "Mi negocio",
+    taxId: shop?.taxId ?? null,
+    code: `V-${String(doc.number).padStart(6, "0")}`,
+    date: String(doc.issueDate).slice(0, 16).replace("T", " "),
+    lines: lines.map((l) => ({ description: l.description, quantity: toNumber(l.quantity), unitPrice: toNumber(l.unitPrice), discountPct: toNumber(l.discountPct) || undefined, total: toNumber(l.total) })),
+    subtotal,
+    discountTotal,
+    taxTotal: toNumber(doc.taxTotal),
+    total,
+    tip,
+    payments: pays.map((p) => ({ method: String(p.provider), amount: toNumber(p.amount) })),
+    change: Math.max(0, Math.round((paid - total - tip) * 100) / 100),
+  };
+}

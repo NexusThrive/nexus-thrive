@@ -49,3 +49,40 @@ test.describe("Punto de venta", () => {
     await expect(page.getByText(/Faltan 200/)).toBeVisible();
   });
 });
+
+test.describe("Punto de venta · código de barras, tiquete y devoluciones", () => {
+  test("escanear un código agrega la línea y uno desconocido avisa", async ({ page }) => {
+    await openStory(page, "páginas-dinero-punto-de-venta--vendiendo");
+    const box = page.getByLabel("Buscar producto o escanear código");
+    await box.fill("7701234567890");
+    await box.press("Enter");
+    await expect(page.getByRole("button", { name: /Más Barra de proteína/ })).toBeVisible();
+    await box.fill("1111111111");
+    await box.press("Enter");
+    await expect(page.getByText("No hay un producto con ese código.")).toBeVisible();
+  });
+
+  test("tras cobrar ofrece imprimir el tiquete", async ({ page }) => {
+    await openStory(page, "páginas-dinero-punto-de-venta--vendiendo");
+    await page.getByRole("button", { name: /^Barra de proteína/ }).click();
+    await page.getByLabel("Valor del pago 1").fill("5000");
+    await page.getByRole("button", { name: "Cobrar" }).click();
+    await expect(page.getByRole("link", { name: "Imprimir tiquete" })).toHaveAttribute("href", "/demo/pos/receipt/d1");
+  });
+
+  test("devolución: busca la venta, no deja devolver lo ya devuelto y registra", async ({ page }) => {
+    await openStory(page, "páginas-dinero-punto-de-venta--vendiendo");
+    await page.getByRole("button", { name: "Devolución" }).click();
+    const dialog = page.getByRole("dialog", { name: "Devolución" });
+    await dialog.getByLabel(/N\.º de la venta/).fill("7");
+    await dialog.getByRole("button", { name: "Buscar" }).click();
+    await expect(dialog.getByText("No se encontró esa venta.")).toBeVisible();
+    await dialog.getByLabel(/N\.º de la venta/).fill("42");
+    await dialog.getByRole("button", { name: "Buscar" }).click();
+    await expect(dialog.getByLabel("Devolver de Barra de proteína")).toBeDisabled();
+    await dialog.getByLabel("Devolver de Proteína whey 2 lb").fill("1");
+    await dialog.getByLabel(/Motivo/).fill("Sello roto");
+    await dialog.getByRole("button", { name: "Registrar devolución" }).click();
+    await expect(page.getByText(/nota crédito N\.º 5/)).toBeVisible();
+  });
+});

@@ -30,6 +30,15 @@
   outline: none;
   will-change: transform;
 }
+.full {
+  /* Modal avanzado: ocupa toda la pantalla (documentos, fichas largas). */
+  top: 0;
+  max-height: none;
+  height: 100dvh;
+  border: 0;
+  border-radius: 0;
+  background: var(--surface-muted);
+}
 .sheet[data-state="open"] {
   animation: sheet-up 520ms cubic-bezier(0.32, 1.25, 0.5, 1);
 }
@@ -100,6 +109,18 @@
   }
   .sheet[data-state="closed"] {
     animation: modal-out var(--motion-overlay-out) var(--nx-ease-in) forwards;
+  }
+  .full {
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100dvh;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+    transform: none;
   }
   .narrow {
     width: min(var(--dialog-w-sm), calc(100vw - 48px));

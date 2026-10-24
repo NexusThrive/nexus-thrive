@@ -10,7 +10,7 @@ const day = (v: unknown) => (v ? String(v).slice(0, 10) : null);
 
 export type InvoiceRow = {
   id: string;
-  kind: InvoiceKind;
+  kind: InvoiceKind | "CREDIT_NOTE" | "DEBIT_NOTE";
   number: number;
   customerId: string | null;
   customerName: string;
@@ -25,14 +25,14 @@ export type InvoiceRow = {
 };
 
 export async function listInvoices(tenantId: string): Promise<InvoiceRow[]> {
-  // Facturación muestra cuentas de cobro y recibos; las ventas al cobrar y
-  // las notas crédito salen en el informe de ventas (documents-db).
+  // Facturación muestra cuentas de cobro, recibos y sus notas crédito y débito;
+  // las ventas al cobrar salen en el informe de ventas (documents-db).
   const rows = await db.orm.public.Invoice.where({ tenantId })
-    .where((i) => i.kind.in(["BILL", "RECEIPT"]))
+    .where((i) => i.kind.in(["BILL", "RECEIPT", "CREDIT_NOTE", "DEBIT_NOTE"]))
     .include("lines").orderBy((i) => i.createdAt.desc()).limit(200).all();
   return rows.map((i) => ({
     id: i.id,
-    kind: i.kind as InvoiceKind,
+    kind: i.kind as InvoiceRow["kind"],
     number: i.number,
     customerId: i.customerId,
     customerName: i.customerName,

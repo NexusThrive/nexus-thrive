@@ -4,6 +4,7 @@ import { allocateNumber, commitNumber, withholdingsFor } from "@/lib/tax/tax-db"
 import { todayCO } from "@/lib/tax/tax";
 import {
   canConvert,
+  documentCode,
   documentTotals,
   lineAmounts,
   salesSummary,
@@ -216,4 +217,103 @@ export async function salesOfDay(tenantId: string, day: string) {
     .select("kind", "status", "total")
     .all();
   return salesSummary(rows.map((r) => ({ kind: r.kind as DocumentKind, status: String(r.status), total: toNumber(r.total) })));
+}
+
+/* -------------------- Notas crédito y débito sobre un documento -------------------- */
+
+export type AdjustmentInput = { documentId: string; kind: "CREDIT_NOTE" | "DEBIT_NOTE"; concept: string; amount: number; taxRatePct: number; reason: string };
+
+/**
+ * Nota crédito (baja lo cobrado: descuento posterior, error de precio) o nota débito
+ * (suma un cargo: intereses, ajuste a favor) sobre un documento emitido. La crédito no
+ * puede pasar de lo que queda del documento; ambas apuntan al original y llevan su consecutivo.
+ */
+export async function issueAdjustmentNote(tenantId: string, input: AdjustmentInput, userId: string): Promise<{ ok: true; id: string; number: number; total: number } | { ok: false; message: string }> {
+  const concept = input.concept.trim().slice(0, 120);
+  if (concept.length < 2) return { ok: false, message: "Escribe el concepto." };
+  if (input.reason.trim().length < 3) return { ok: false, message: "Escribe el motivo." };
+  if (!(input.amount > 0)) return { ok: false, message: "El valor debe ser mayor que cero." };
+  if (!(input.taxRatePct >= 0 && input.taxRatePct <= 100)) return { ok: false, message: "El impuesto va de 0 % a 100 %." };
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await db.transaction(async (tx) => {
+        const original = await tx.orm.public.Invoice.where({ tenantId, id: input.documentId }).first();
+        if (!original || original.status === "VOID") return { ok: false as const, message: "El documento no existe o está anulado." };
+        if (!canConvert(original.kind as DocumentKind, input.kind)) return { ok: false as const, message: "A ese documento no se le puede hacer una nota." };
+        const lines = [{ description: concept, quantity: 1, unitPrice: input.amount, taxRatePct: input.taxRatePct }];
+        const value = documentTotals(lines).total;
+        if (input.kind === "CREDIT_NOTE") {
+          const prior = await tx.orm.public.Invoice.where({ tenantId, sourceDocumentId: original.id }).all();
+          const credited = prior.filter((n) => n.kind === "CREDIT_NOTE" && n.status !== "VOID").reduce((s, n) => s + toNumber(n.total), 0);
+          const debited = prior.filter((n) => n.kind === "DEBIT_NOTE" && n.status !== "VOID").reduce((s, n) => s + toNumber(n.total), 0);
+          const left = Math.round((toNumber(original.total) + debited - credited) * 100) / 100;
+          if (value > left) return { ok: false as const, message: `La nota crédito no puede pasar de lo que queda del documento (${left.toLocaleString("es-CO")}).` };
+        }
+        const note = await insertDocument(tx, tenantId, { kind: input.kind, customerId: original.customerId, customerName: original.customerName, customerDoc: original.customerDoc, status: "ISSUED", notes: input.reason.trim().slice(0, 200), sourceDocumentId: original.id, originType: "ADJUSTMENT", originId: original.id, lines }, userId);
+        return { ok: true as const, id: note.id, number: note.number, total: note.total };
+      });
+    } catch (e) {
+      if (attempt >= 5 || !isNumberCollision(e)) throw e;
+    }
+  }
+}
+
+export type DocumentView = {
+  id: string;
+  kind: DocumentKind;
+  code: string;
+  status: "ISSUED" | "PAID" | "VOID";
+  issueDate: string;
+  dueDate: string | null;
+  customer: { name: string; doc: string | null };
+  issuer: { name: string; legalName: string | null; taxId: string | null; address: string | null; city: string | null; phone: string | null };
+  lines: { description: string; quantity: number; unitPrice: number; discountPct: number; taxRatePct: number; total: number }[];
+  subtotal: number;
+  discountTotal: number;
+  taxTotal: number;
+  total: number;
+  withholdings: { name: string; amount: number }[];
+  paid: number;
+  balance: number;
+  notes: string | null;
+  voidReason: string | null;
+  source: { id: string; code: string } | null;
+  related: { id: string; kind: DocumentKind; code: string; total: number; status: string }[];
+};
+
+/** Todo lo que muestra el documento en pantalla completa (emisor, adquirente, líneas, impuestos, notas relacionadas). */
+export async function documentView(tenantId: string, id: string): Promise<DocumentView | null> {
+  const inv = await db.orm.public.Invoice.where({ tenantId, id }).first();
+  if (!inv) return null;
+  const [lines, shop, related, source] = await Promise.all([
+    db.orm.public.InvoiceLine.where({ invoiceId: inv.id }).all(),
+    db.orm.public.Tenant.where({ id: tenantId }).select("name", "legalName", "taxId", "address", "city", "whatsappNumber").first(),
+    db.orm.public.Invoice.where({ tenantId, sourceDocumentId: inv.id }).all(),
+    inv.sourceDocumentId ? db.orm.public.Invoice.where({ tenantId, id: inv.sourceDocumentId }).select("id", "kind", "number").first() : Promise.resolve(null),
+  ]);
+  const total = toNumber(inv.total);
+  const paid = inv.status === "PAID" ? total : toNumber(inv.paidTotal);
+  const wh = (inv.withholdings ?? []) as { name: string; amount: number }[];
+  return {
+    id: inv.id,
+    kind: inv.kind as DocumentKind,
+    code: documentCode(inv.kind as DocumentKind, inv.number),
+    status: inv.status as DocumentView["status"],
+    issueDate: String(inv.issueDate).slice(0, 10),
+    dueDate: inv.dueDate ? String(inv.dueDate).slice(0, 10) : null,
+    customer: { name: inv.customerName, doc: inv.customerDoc },
+    issuer: { name: shop?.name ?? "", legalName: shop?.legalName ?? null, taxId: shop?.taxId ?? null, address: shop?.address ?? null, city: shop?.city ?? null, phone: shop?.whatsappNumber ?? null },
+    lines: lines.map((l) => ({ description: l.description, quantity: toNumber(l.quantity), unitPrice: toNumber(l.unitPrice), discountPct: toNumber(l.discountPct), taxRatePct: toNumber(l.taxRatePct), total: toNumber(l.total) })),
+    subtotal: toNumber(inv.subtotal),
+    discountTotal: toNumber(inv.discountTotal),
+    taxTotal: toNumber(inv.taxTotal),
+    total,
+    withholdings: wh.map((w) => ({ name: w.name, amount: w.amount })),
+    paid,
+    balance: inv.status === "ISSUED" && inv.kind === "BILL" ? Math.max(0, Math.round((total - paid) * 100) / 100) : 0,
+    notes: inv.notes,
+    voidReason: inv.voidReason,
+    source: source ? { id: source.id, code: documentCode(source.kind as DocumentKind, source.number) } : null,
+    related: related.map((r) => ({ id: r.id, kind: r.kind as DocumentKind, code: documentCode(r.kind as DocumentKind, r.number), total: toNumber(r.total), status: String(r.status) })),
+  };
 }

@@ -10,7 +10,8 @@ import { Select } from "@/components/atoms/select";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
-import { closeTurnAction, createTerminalAction, openTurnAction, sellAction } from "@/app/[tenant]/(app)/pos/actions";
+import ReturnDialog from "./return-dialog";
+import { closeTurnAction, createTerminalAction, openTurnAction, scanBarcodeAction, sellAction } from "@/app/[tenant]/(app)/pos/actions";
 import { cartTotals, settlePayments, tipFor } from "@/lib/pos/cart";
 import { formatCurrency } from "@/lib/format";
 import { PAYMENT_METHODS } from "@/lib/finance";
@@ -95,7 +96,8 @@ function Sale({ slug, turn, products }: { slug: string; turn: { sessionId: strin
   const [tipPct, setTipPct] = useState(0);
   const [pays, setPays] = useState<Pay[]>([{ method: "CASH", amount: "" }]);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState<{ number: number; total: number; tip: number; change: number } | null>(null);
+  const [done, setDone] = useState<{ id: string; number: number; total: number; tip: number; change: number } | null>(null);
+  const [returning, setReturning] = useState(false);
   const [closing, setClosing] = useState(false);
   const byId = useMemo(() => new Map(products.map((p) => [p.id, p])), [products]);
   const shown = useMemo(() => {
@@ -118,7 +120,7 @@ function Sale({ slug, turn, products }: { slug: string; turn: { sessionId: strin
       setError(null);
       const r = await sellAction(slug, { lines, tip: { pct: tipPct }, payments: payNums });
       if (!r.ok) return setError(r.message);
-      setDone({ number: r.number, total: r.total, tip: r.tip, change: r.change });
+      setDone({ id: r.documentId, number: r.number, total: r.total, tip: r.tip, change: r.change });
       setLines([]);
       setPays([{ method: "CASH", amount: "" }]);
       setTipPct(0);
@@ -131,18 +133,38 @@ function Sale({ slug, turn, products }: { slug: string; turn: { sessionId: strin
       <div className="flex flex-wrap items-center gap-2 text-[13px]">
         <span className="rounded-md bg-surface-muted px-2.5 py-1 font-medium">{turn.terminalName}</span>
         <span className="text-muted-foreground">Turno con {formatCurrency(turn.openingAmount)} de apertura</span>
-        <button type="button" onClick={() => setClosing(true)} className={buttonVariants({ variant: "outline", size: "sm", className: "ml-auto" })}>Cerrar turno</button>
+        <button type="button" onClick={() => setReturning(true)} className={buttonVariants({ variant: "outline", size: "sm", className: "ml-auto" })}>Devolución</button>
+        <button type="button" onClick={() => setClosing(true)} className={buttonVariants({ variant: "outline", size: "sm" })}>Cerrar turno</button>
       </div>
       {done ? (
         <Alert tone="success">
           Venta N.º {done.number} · {formatCurrency(done.total)}
           {done.tip ? ` + propina ${formatCurrency(done.tip)}` : ""}
           {done.change ? ` · Cambio ${formatCurrency(done.change)}` : ""}
+          {" · "}
+          <a href={`/${slug}/pos/receipt/${done.id}`} target="_blank" rel="noopener noreferrer" className="font-semibold underline underline-offset-2">Imprimir tiquete</a>
         </Alert>
       ) : null}
       <div className="grid gap-4 lg:grid-cols-[1fr_380px]">
         <section aria-label="Productos" className="grid content-start gap-3">
-          <input aria-label="Buscar producto o SKU" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar producto o escanear SKU" className={inputClasses} />
+          <input
+            aria-label="Buscar producto o escanear código"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={async (e) => {
+              // Un escáner teclea el código y manda Enter: se busca por código de barras.
+              if (e.key !== "Enter" || !/^\d{6,}$/.test(q.trim())) return;
+              e.preventDefault();
+              const r = await scanBarcodeAction(slug, q.trim());
+              if (r.ok) {
+                add(r.productId);
+                setQ("");
+                setError(null);
+              } else setError(r.message);
+            }}
+            placeholder="Buscar producto o escanear código de barras"
+            className={inputClasses}
+          />
           <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {shown.map((p) => (
               <li key={p.id}>
@@ -206,6 +228,7 @@ function Sale({ slug, turn, products }: { slug: string; turn: { sessionId: strin
           </button>
         </section>
       </div>
+      <ReturnDialog slug={slug} open={returning} onClose={() => setReturning(false)} />
       <FormDialog
         open={closing}
         onOpenChange={setClosing}

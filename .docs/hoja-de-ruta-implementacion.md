@@ -152,11 +152,11 @@ de «hecho»). No se edita a mano.
 | **13** | Vende y controla | Impuestos y numeración por resolución | VII | N1, N2 | 0/4 | `PR-13-impuestos-y-numeracion` | pendiente |
 | **14** | Vende y controla | Cartera: cuentas por cobrar y por pagar | — | — | base técnica | `PR-14-cartera` | pendiente |
 | **15** | Vende y controla | POS I: terminales, turnos y venta multilínea | V | N2 | 3/3 | `PR-15-pos-terminales-turnos` | hecho |
-| **16** | Vende y controla | POS II: impresión, código de barras y devoluciones | V | N2 | 0/3 | — | pendiente |
+| **16** | Vende y controla | POS II: impresión, código de barras y devoluciones | V | N2 | 3/3 | — | hecho |
 | **17** | Cobra y factura | Pagos: intención de cobro, Nequi y conciliación | V | N1, N2 | 0/8 | `PR-17-pagos-intenciones-conciliacion` | pendiente |
 | **18** | Cobra y factura | Facturación electrónica: puerto sin proveedor | VII | N1, N2 | 0/7 | `PR-18-facturacion-electronica` | pendiente |
 | **19** | Cobra y factura | Adaptador de pagos Wompi | V | N2 | 0/1 | — | pendiente |
-| **20** | Cobra y factura | Proveedor tecnológico DIAN | VII | N2 | 0/1 | — | pendiente |
+| **20** | Cobra y factura | Proveedor tecnológico DIAN | VII | N2 | 1/1 | — | hecho |
 | **21** | Contabilidad | Contabilidad I: plan de cuentas, períodos y reglas | I, VII | N1, N2 | 0/4 | `PR-21-contabilidad-plan-y-periodos` | pendiente |
 | **22** | Contabilidad | Contabilidad II: asientos automáticos y partida doble | I, VII | N1, N2 | 0/4 | `PR-22-contabilidad-asientos` | pendiente |
 | **23** | Contabilidad | Estados financieros y exportación al contador | VII | N1, N2 | 0/4 | — | pendiente |
@@ -370,10 +370,10 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Escanear agrega la línea; una devolución genera su nota crédito y reingresa el stock.
 - **Casillas que marca:**
   - [`V.03 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/03-Punto-de-Venta-Fisico-y-Movil-POS/README.md)
-    - [ ] Impresoras térmicas
+    - [x] Impresoras térmicas
   - [`V.06 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/06-Ventas-Pedidos-y-Entregas/README.md)
-    - [ ] Notas crédito y débito
-    - [ ] Devoluciones
+    - [x] Notas crédito y débito
+    - [x] Devoluciones
 
 ### PR-17 · Pagos: intención de cobro, Nequi y conciliación
 
@@ -433,7 +433,7 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Un documento del set de pruebas queda aceptado y los pendientes históricos se envían en orden sin duplicar. (Cuando se elija.)
 - **Casillas que marca:**
   - [`VII.04 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md)
-    - [ ] Notas crédito y débito electrónicas
+    - [x] Notas crédito y débito electrónicas
 
 ### PR-21 · Contabilidad I: plan de cuentas, períodos y reglas
 

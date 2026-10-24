@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { amountInWords, INVOICE_KIND_LABELS, invoiceCode } from "@/lib/business/invoice";
@@ -17,6 +17,8 @@ export default async function InvoicePage({ params }: { params: Promise<{ tenant
   if (!ctx) notFound();
   const [inv, biz] = await Promise.all([getInvoice(ctx.tenantId, id), tenantLetterhead(ctx.tenantId)]);
   if (!inv || !biz) notFound();
+  // Las notas crédito y débito (y la vista completa de cada documento) viven en el visor de pantalla completa.
+  if (inv.kind === "CREDIT_NOTE" || inv.kind === "DEBIT_NOTE") redirect(`/${tenant}/billing?doc=${inv.id}`);
   const fmt = (d: string) => new Intl.DateTimeFormat("es-CO", { dateStyle: "long", timeZone: "UTC" }).format(new Date(`${d}T12:00:00Z`));
   return (
     <div className="grid gap-4">

@@ -62,7 +62,7 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [ ] Factura automática _(PR-18)_
-- [ ] Notas crédito y débito electrónicas _(PR-20)_
+- [x] Notas crédito y débito electrónicas _(PR-20)_
 - [ ] Estado ante la DIAN _(PR-18)_
 - [ ] Impuestos por ítem y por tercero _(PR-13)_
 - [ ] Gestión de resoluciones y consecutivos _(PR-13)_

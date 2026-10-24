@@ -64,7 +64,7 @@ tags: [capas, estructura, subcapa]
 - [x] Turnos por cajero _(PR-15)_
 - [x] Descuento automático de inventario — _hecho: `sellProduct` en `money-service`_
 - [x] Funciona en celular y tablet. _(PR-15)_
-- [ ] Impresoras térmicas _(PR-16)_
+- [x] Impresoras térmicas _(PR-16)_
 - [x] Clientes asociados a la venta — _hecho: cliente opcional en la venta_
 
 #### Técnico

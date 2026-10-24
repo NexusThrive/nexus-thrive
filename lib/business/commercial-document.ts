@@ -7,7 +7,7 @@
  * con sus líneas en `InvoiceLine`. Sin base de datos: se prueba aparte.
  */
 
-export const DOCUMENT_KINDS = ["QUOTE", "ORDER", "BILL", "RECEIPT", "SALE", "CREDIT_NOTE"] as const;
+export const DOCUMENT_KINDS = ["QUOTE", "ORDER", "BILL", "RECEIPT", "SALE", "CREDIT_NOTE", "DEBIT_NOTE"] as const;
 export type DocumentKind = (typeof DOCUMENT_KINDS)[number];
 
 export const DOCUMENT_LABELS: Record<DocumentKind, string> = {
@@ -17,9 +17,10 @@ export const DOCUMENT_LABELS: Record<DocumentKind, string> = {
   RECEIPT: "Recibo",
   SALE: "Venta",
   CREDIT_NOTE: "Nota crédito",
+  DEBIT_NOTE: "Nota débito",
 };
 
-const PREFIX: Record<DocumentKind, string> = { QUOTE: "C", ORDER: "P", BILL: "CC", RECEIPT: "R", SALE: "V", CREDIT_NOTE: "NC" };
+const PREFIX: Record<DocumentKind, string> = { QUOTE: "C", ORDER: "P", BILL: "CC", RECEIPT: "R", SALE: "V", CREDIT_NOTE: "NC", DEBIT_NOTE: "ND" };
 
 /** Código legible: "V-000042", "NC-000003". Cada tipo lleva su consecutivo. */
 export function documentCode(kind: DocumentKind, n: number): string {
@@ -38,10 +39,11 @@ export function isDocumentKind(value: string): value is DocumentKind {
 const NEXT: Record<DocumentKind, readonly DocumentKind[]> = {
   QUOTE: ["ORDER", "BILL", "RECEIPT"],
   ORDER: ["BILL", "RECEIPT"],
-  BILL: ["CREDIT_NOTE"],
-  RECEIPT: ["CREDIT_NOTE"],
-  SALE: ["CREDIT_NOTE"],
+  BILL: ["CREDIT_NOTE", "DEBIT_NOTE"],
+  RECEIPT: ["CREDIT_NOTE", "DEBIT_NOTE"],
+  SALE: ["CREDIT_NOTE", "DEBIT_NOTE"],
   CREDIT_NOTE: [],
+  DEBIT_NOTE: [],
 };
 
 export function canConvert(from: DocumentKind, to: DocumentKind): boolean {
@@ -114,6 +116,7 @@ export function salesSummary(docs: readonly { kind: DocumentKind; status: string
   let count = 0;
   for (const d of docs) {
     if (d.kind === "CREDIT_NOTE") credits += d.total;
+    else if (d.kind === "DEBIT_NOTE") gross += d.total;
     else if (d.kind === "SALE" || ((d.kind === "BILL" || d.kind === "RECEIPT") && d.status === "PAID")) {
       gross += d.total;
       count += 1;

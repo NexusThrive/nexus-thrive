@@ -49,8 +49,8 @@ export function ResponsiveSheet({
   trigger?: ReactNode;
   /** Panel lateral derecho en PC (en móvil, hoja inferior casi a pantalla completa). */
   drawer?: boolean;
-  /** Ancho en PC. Modal: sm 440 · md 520 (por defecto) · lg 640 · xl 768. Panel: md 440 · lg 560. */
-  size?: "sm" | "md" | "lg" | "xl";
+  /** Ancho en PC. `full` = modal AVANZADO a pantalla completa (documentos). Modal: sm 440 · md 520 (por defecto) · lg 640 · xl 768. Panel: md 440 · lg 560. */
+  size?: "sm" | "md" | "lg" | "xl" | "full";
   /** @deprecated usar `size="lg"`. */
   wide?: boolean;
   /** @deprecated usar `size="xl"` (tablas y editores: APU, presupuesto). */
@@ -163,6 +163,7 @@ export function ResponsiveSheet({
             !drawer && resolvedSize === "sm" && styles.narrow,
             !drawer && resolvedSize === "lg" && styles.wide,
             !drawer && resolvedSize === "xl" && styles.extraWide,
+            !drawer && resolvedSize === "full" && styles.full,
             drawer && resolvedSize !== "md" && styles.drawerWide,
             className,
           )}

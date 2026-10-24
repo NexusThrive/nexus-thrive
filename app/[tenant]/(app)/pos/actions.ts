@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { can } from "@/lib/business/permissions";
 import { PAYMENT_METHODS } from "@/lib/finance";
+import { findByBarcode } from "@/lib/catalog/catalog-db";
+import { returnSale, saleForReturn, type ReturnInput, type SaleToReturn } from "@/lib/pos/returns-db";
 import { closeTurn, createTerminal, openTurn, sellCart, type SaleInput, type SaleResult } from "@/lib/pos/pos-db";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";
@@ -51,4 +53,32 @@ export async function sellAction(slug: string, input: SaleInput): Promise<SaleRe
   const r = await sellCart(ctx.tenantId, input, ctx.memberId, { canDiscountOver: can(ctx.role, "business.manage") });
   if (r.ok) revalidatePath(`/${slug}/inventory`);
   return r;
+}
+
+/** Escáner de código de barras: devuelve el producto para agregarlo al carrito. */
+export async function scanBarcodeAction(slug: string, code: string): Promise<{ ok: true; productId: string; name: string } | { ok: false; message: string }> {
+  const ctx = await cashier(slug);
+  if (!ctx) return { ok: false, message: "Tu rol no puede vender en el punto de venta." };
+  const hit = await findByBarcode(ctx.tenantId, code);
+  if (!hit || !hit.product.active) return { ok: false, message: "No hay un producto con ese código." };
+  return { ok: true, productId: hit.product.id, name: hit.product.name };
+}
+
+/** Busca una venta por su número para devolver parte o todo. */
+export async function findSaleAction(slug: string, number: number): Promise<{ ok: true; sale: SaleToReturn } | { ok: false; message: string }> {
+  const ctx = await cashier(slug);
+  if (!ctx) return { ok: false, message: "Tu rol no maneja devoluciones." };
+  const sale = Number.isInteger(number) && number > 0 ? await saleForReturn(ctx.tenantId, number) : null;
+  return sale ? { ok: true, sale } : { ok: false, message: "No se encontró esa venta." };
+}
+
+export async function returnSaleAction(slug: string, input: ReturnInput): Promise<PosResult> {
+  const ctx = await cashier(slug);
+  if (!ctx) return { ok: false, message: "Tu rol no maneja devoluciones." };
+  if (!PAYMENT_METHODS.some((m) => m.value === input.refundMethod)) return { ok: false, message: "Elige cómo se devuelve el dinero." };
+  const r = await returnSale(ctx.tenantId, input, ctx.memberId);
+  if (!r.ok) return r;
+  await logTenantAction(ctx, "BIZ_POS_TURN", { action: "return", documentId: input.documentId, noteNumber: r.noteNumber, refund: r.refund });
+  revalidatePath(`/${slug}/inventory`);
+  return { ok: true, message: `Devolución registrada · nota crédito N.º ${r.noteNumber} · ${r.refund.toLocaleString("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 })}` };
 }
