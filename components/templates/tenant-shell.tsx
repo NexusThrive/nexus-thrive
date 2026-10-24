@@ -25,6 +25,7 @@ export function TenantShell({
   vertical,
   activeModules,
   businesses,
+  onSwitchBusiness,
   topbarActions,
   children,
 }: {
@@ -35,6 +36,8 @@ export function TenantShell({
   activeModules: ModuleValue[];
   /** Negocios de la cuenta, para el selector de la navbar (el activo es `tenantSlug`). */
   businesses?: { slug: string; name: string }[];
+  /** Acción de servidor que recuerda la organización elegida como la última usada. */
+  onSwitchBusiness?: (slug: string) => void | Promise<void>;
   /** Botones extra de la barra superior (p. ej. la campana de notificaciones). */
   topbarActions?: ReactNode;
   children: ReactNode;
@@ -53,7 +56,7 @@ export function TenantShell({
             <AppTopbar
               actions={topbarActions}
               search={<NavbarSearch />}
-              switcher={<BusinessSwitcher currentSlug={tenantSlug} currentName={tenantName} businesses={businesses ?? []} />}
+              switcher={<BusinessSwitcher currentSlug={tenantSlug} currentName={tenantName} businesses={businesses ?? []} onSwitch={onSwitchBusiness} />}
             />
             <main id="contenido" tabIndex={-1} className={styles.view}>
               {children}

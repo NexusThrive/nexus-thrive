@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { rememberBusinessAction } from "./_actions/business";
 import { activeTenantWithModules, businessesOfMember, memberTheme } from "@/lib/tenant/membership";
 import { sortModules, isModule } from "@/lib/admin/catalogs";
 import { getVerticalTerms } from "@/lib/vertical-terms";
@@ -62,6 +63,7 @@ export default async function AppLayout({
         vertical={tenantRecord.vertical}
         activeModules={activeModules}
         businesses={businesses}
+        onSwitchBusiness={rememberBusinessAction}
         topbarActions={<TenantNotifications tenantSlug={tenantRecord.slug} />}
       >
         <ThemeSync tenantSlug={tenantRecord.slug} saved={savedTheme} />

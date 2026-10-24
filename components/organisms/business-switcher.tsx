@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Check, ChevronDown, Plus } from "lucide-react";
 import {
@@ -10,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/molecules/dropdown-menu";
-import { whatsappLink } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 
 export type SwitcherBusiness = { slug: string; name: string };
@@ -23,19 +23,22 @@ const initialOf = (name: string) => name.trim().charAt(0).toUpperCase() || "N";
  * dibuja con divs (no es un `<select>` nativo) sobre el menú de Radix, así
  * conserva flechas, Enter, Escape y el foco de vuelta al cuadro.
  *
- * En el piloto una cuenta tiene un negocio y el alta de otro se coordina con
- * NEXUS (el servidor lo rechaza al crearlo solo), por eso «Crear otro
- * negocio» abre WhatsApp con el mensaje listo en vez del asistente.
+ * Una cuenta puede tener varias organizaciones, cada una con sus datos, equipo
+ * y plan. Elegir otra conserva la sesión y la recuerda como la última usada;
+ * «Crear otro negocio» abre el asistente de alta de una organización nueva.
  */
 export function BusinessSwitcher({
   currentSlug,
   currentName,
   businesses,
+  onSwitch,
   className,
 }: {
   currentSlug: string;
   currentName: string;
   businesses: SwitcherBusiness[];
+  /** Se avisa al servidor del cambio (recordar la última organización usada). */
+  onSwitch?: (slug: string) => void | Promise<void>;
   className?: string;
 }) {
   const router = useRouter();
@@ -71,7 +74,9 @@ export function BusinessSwitcher({
             <DropdownMenuItem
               key={business.slug}
               onSelect={() => {
-                if (!current) router.push(`/${business.slug}`);
+                if (current) return;
+                void onSwitch?.(business.slug);
+                router.push(`/${business.slug}`);
               }}
               aria-current={current ? "true" : undefined}
               className="min-h-12 items-center gap-3 px-2.5"
@@ -89,19 +94,15 @@ export function BusinessSwitcher({
         })}
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild className="min-h-12 items-center gap-3 px-2.5">
-          <a
-            href={whatsappLink(`Hola, quiero crear otro negocio en NEXUS THRIVE. Mi negocio actual: ${currentName} (${currentSlug}).`)}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <Link href="/onboarding?nuevo=1">
             <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-[4px] border border-dashed border-border-strong">
               <Plus className="size-4" />
             </span>
             <span className="flex min-w-0 flex-col leading-tight">
               <span className="text-sm font-medium text-foreground">Crear otro negocio</span>
-              <span className="text-xs text-muted-foreground">Lo coordinamos por WhatsApp</span>
+              <span className="text-xs text-muted-foreground">Una organización nueva, con su propio equipo</span>
             </span>
-          </a>
+          </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

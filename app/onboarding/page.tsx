@@ -20,14 +20,15 @@ import { verifiedEmailOf } from "@/lib/auth/session-email";
  * en una *page* termina en not-found; en layout redirige bien):
  *
  * - Sin sesión → sign-in (Clerk), con retorno a /onboarding.
- * - Usuario con tenant ya completado → redirige a su espacio.
+ * - Usuario con tenant ya completado → redirige a su espacio (o, con
+ *   `?nuevo=1`, abre el asistente para crear otra organización).
  * - Usuario con tenant pendiente → reanuda la configuración (prefill).
  * - Usuario nuevo → crea su primer espacio desde cero.
  */
 export default async function OnboardingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tenant?: string }>;
+  searchParams: Promise<{ tenant?: string; nuevo?: string }>;
 }) {
   const { userId } = await auth();
 
@@ -36,8 +37,8 @@ export default async function OnboardingPage({
     redirect("/sign-in");
   }
 
-  const { tenant } = await searchParams;
-  const prefill = await getOnboardingPrefill(userId, tenant);
+  const { tenant, nuevo } = await searchParams;
+  const prefill = await getOnboardingPrefill(userId, tenant, nuevo === "1");
 
   if (prefill.mode === "done" && prefill.doneSlug) {
     redirect(`/${prefill.doneSlug}`);
