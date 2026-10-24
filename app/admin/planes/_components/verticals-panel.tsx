@@ -34,7 +34,7 @@ function VerticalEditor({ v, modules, canPrice, canStructure, onClose }: { v: Ve
       onOpenChange={(o) => !o && onClose()}
       wide
       title={`Rubro · ${v.label}`}
-      description="Qué módulos puede usar este rubro, cuáles se recomiendan y si aparece en el registro."
+      description="Qué módulos sugiere este rubro de entrada (cualquier negocio puede usar los demás) y si aparece en el registro."
       footer={
         <>
           <button type="button" onClick={onClose} className={buttonVariants({ variant: "outline" })}>
