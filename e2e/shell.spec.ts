@@ -21,6 +21,18 @@ test.describe("Paleta de comandos", () => {
   });
 });
 
+test.describe("Funciones apagadas en el buscador", () => {
+  test("una función que el negocio aún no usa se encuentra y lleva a Funciones", async ({ page }) => {
+    await openStory(page, "organismos-commandpalette--open");
+    await page.getByRole("combobox").fill("reservas");
+    const option = page.getByRole("option", { name: /Reservas.*Activar en Funciones/ });
+    await expect(option).toBeVisible();
+    // Lo que sí está encendido no se ofrece como «activar».
+    await page.getByRole("combobox").fill("finanzas");
+    await expect(page.getByRole("option", { name: /Finanzas.*Activar en Funciones/ })).toHaveCount(0);
+  });
+});
+
 test.describe("Buscador de la navbar (PC)", () => {
   test.skip(({ isMobile }) => isMobile, "En móvil la búsqueda es la hoja modal");
 

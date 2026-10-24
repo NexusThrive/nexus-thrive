@@ -23,7 +23,7 @@ describe.skipIf(!TEST_URL)("varias organizaciones por cuenta (integración)", ()
   const slugs = { a: `org-a-${suffix}`, b: `org-b-${suffix}`, c: `org-c-${suffix}` };
 
   const make = async (name: string, slug: string) => {
-    const t = await createAdminDb().createTenant({ name, slug, vertical: "general", modules: ["crm"], tenantType: "COMPANY", ownerEmail: `${slug}@ejemplo.com` });
+    const t = await createAdminDb().createTenant({ name, slug, vertical: "gym", modules: ["crm"], tenantType: "COMPANY", ownerEmail: `${slug}@ejemplo.com` });
     await db.orm.public.Tenant.where({ id: String(t.id) }).update({ onboardingCompleted: true });
     return String(t.id);
   };

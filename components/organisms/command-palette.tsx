@@ -4,12 +4,13 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import { useRouter } from "next/navigation";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Command } from "cmdk";
-import { Download, Moon, Package, Search, User } from "lucide-react";
+import { Blocks, Download, Moon, Package, Search, User } from "lucide-react";
 import { searchEntitiesAction, type SearchHit } from "@/app/[tenant]/(app)/_actions/search";
 import { Kbd } from "@/components/atoms/kbd";
 import { setTheme } from "@/components/atoms/theme-toggle";
 import { usePwa } from "@/components/providers/pwa";
 import { usePalette, useShell } from "@/components/providers/shell-context";
+import { CAPABILITIES } from "@/lib/capabilities/registry";
 import { cn } from "@/lib/utils";
 
 const DESKTOP_QUERY = "(min-width: 768px)";
@@ -85,10 +86,12 @@ export function PaletteList({
   run: (action: () => void) => void;
   className?: string;
 }) {
-  const { groups, createActions, quickActions, hrefFor } = useShell();
+  const { groups, activeModules, createActions, quickActions, hrefFor } = useShell();
   const router = useRouter();
   const { canInstall, install } = usePwa();
   const actions = createActions ?? quickActions;
+  // Lo que el negocio aún no usa también se encuentra: lleva a Funciones para encenderlo.
+  const off = activeModules ? CAPABILITIES.filter((c) => c.status !== "PLANNED" && c.id !== "dashboard" && !activeModules.includes(c.id)) : [];
 
   return (
     <>
@@ -127,6 +130,22 @@ export function PaletteList({
             </Command.Item>
           ))}
         </Command.Group>
+        {off.length > 0 ? (
+          <Command.Group heading="Funciones apagadas" className={groupClass}>
+            {off.map((c) => (
+              <Command.Item
+                key={c.id}
+                value={`funcion activar ${c.name} ${c.description}`}
+                onSelect={() => run(() => router.push(hrefFor("/functions")))}
+                className={itemClass}
+              >
+                <Blocks aria-hidden="true" />
+                <span>{c.name}</span>
+                <small className="ml-auto text-xs text-muted-foreground">Activar en Funciones</small>
+              </Command.Item>
+            ))}
+          </Command.Group>
+        ) : null}
         <Command.Group heading="Acciones" className={groupClass}>
           {actions.map((action) => (
             <Command.Item

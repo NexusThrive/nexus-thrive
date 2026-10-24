@@ -22,6 +22,8 @@ export type ShellContextValue = {
   brandName: string;
   brandSub: string;
   groups: NavGroup[];
+  /** Funciones encendidas del negocio (el buscador ofrece activar las demás). */
+  activeModules?: ModuleValue[];
   /** Clave del ítem activo (resalta la barra lateral y la inferior). */
   activeKey: string | undefined;
   /** Título de la barra superior. */
@@ -106,6 +108,7 @@ export function ShellProvider({
       brandName: tenantName,
       brandSub: tenantSlug,
       groups,
+      activeModules,
       activeKey: active?.key,
       title: active?.label ?? "Inicio",
       hrefFor: (href) => (href === "" ? `/${tenantSlug}` : `/${tenantSlug}${href}`),
@@ -113,7 +116,7 @@ export function ShellProvider({
       createActions,
       openSearch: () => setOpen(true),
     }),
-    [tenantSlug, tenantName, groups, active, quickActions, createActions],
+    [tenantSlug, tenantName, groups, activeModules, active, quickActions, createActions],
   );
   const palette = useMemo(() => ({ open, setOpen }), [open]);
 

@@ -113,7 +113,7 @@ export const CAPABILITIES = [
     priceUsd: 0,
     nav: [
       { href: "/bookings", icon: CalendarDays, label: (terms) => terms.bookings },
-      { href: "/tickets", icon: Ticket, label: () => "Taquilla", verticals: ["museum"] },
+      { href: "/tickets", icon: Ticket, label: () => "Taquilla" },
       // "Salidas" (turismo) vuelve cuando exista su pantalla: hoy solo hay tablas (ARCH-02).
     ],
   },
@@ -214,7 +214,7 @@ export const CAPABILITIES = [
     priceUsd: 0,
     nav: [
       { href: "/memberships", icon: CreditCard, label: () => "Membresías" },
-      { href: "/checkin", icon: ScanLine, label: () => "Control de acceso", verticals: ["gym"] },
+      { href: "/checkin", icon: ScanLine, label: () => "Control de acceso" },
     ],
   },
   {
