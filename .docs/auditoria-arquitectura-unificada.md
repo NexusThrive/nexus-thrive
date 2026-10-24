@@ -29,10 +29,10 @@ Visión: **NEXUS es el sistema; las funciones son opciones; el rubro es contexto
 | 3 | No había dónde **descubrir** funciones apagadas. | **Corregido**: página `Funciones` («En uso / Te sugerimos / Más funciones») con sugerencias por rubro y por uso. |
 | 4 | **El rubro es obligatorio y cerrado**: `Tenant.vertical` es un enum requerido de 17 valores, y el registro ofrece solo 6. No existe «general/otro», ni modelo comercial (B2B/B2C), ni actividades. | **Corregido en la Etapa B**: perfil «General / Otro», modelo comercial (B2B/B2C/B2B2C, combinables) y actividad, editables en Configuración sin apagar nada ni borrar datos. |
 | 5 | **Una cuenta = un negocio en la práctica**: el alta rechaza crear otro negocio (`completedTenantOf`), «Crear otro negocio» abre WhatsApp, y `homeTenantFor` toma «la primera» membresía. El esquema ya lo permite. | **Pendiente (Etapa C)**. |
-| 6 | `Taquilla` es una entrada del menú solo para el rubro museo (`nav.verticals`). | **Pendiente (Etapa D)**: convertirla en función propia. |
-| 7 | El buscador no encuentra funciones apagadas. | **Pendiente (Etapa D)**. |
-| 8 | El panel de NEXUS dice «Módulos que el rubro puede usar». | **Pendiente (Etapa D)**: texto → «Sugeridos». |
-| 9 | El **consumo y los límites no se muestran** al negocio (`UsageCounter` solo se aplica a la API). | **Pendiente (Etapa E)**. |
+| 6 | `Taquilla` es una entrada del menú solo para el rubro museo (`nav.verticals`). | **Resuelto (Etapa D, #85)**: sin candado de rubro. |
+| 7 | El buscador no encuentra funciones apagadas. | **Resuelto (Etapa D, #85)**. |
+| 8 | El panel de NEXUS dice «Módulos que el rubro puede usar». | **Resuelto (Etapa D, #85)**. |
+| 9 | El **consumo y los límites no se muestran** al negocio (`UsageCounter` solo se aplica a la API). | **Resuelto (Etapa E)**: sección «Consumo» en Configuración → Plan. |
 
 ## 3. Qué NO se toca (compatibilidad)
 
