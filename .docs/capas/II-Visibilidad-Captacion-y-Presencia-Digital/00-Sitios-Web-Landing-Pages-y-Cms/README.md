@@ -48,8 +48,8 @@ tags: [capas, estructura, subcapa]
 
 - [ ] Plantillas por vertical, con edición de textos, imágenes y colores. _(PR-25)_
 - [ ] Subdominio automático (`negocio.nexusthrive.co`). _(PR-25)_
-- [ ] Botón flotante de WhatsApp, mapa y datos de contacto. _(PR-25)_
-- [ ] Diseño responsive (celular primero). _(PR-25)_
+- [x] Botón flotante de WhatsApp, mapa y datos de contacto. _(PR-25)_
+- [x] Diseño responsive (celular primero). _(PR-25)_
 - [ ] Editor de entradas con título, imagen, texto y categoría.
 - [ ] Publicar, programar y guardar borrador.
 - [ ] Página de blog automática en el sitio del negocio.

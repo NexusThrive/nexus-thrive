@@ -1,0 +1,206 @@
+[
+  {
+    "id": "table.SiteConfig",
+    "label": "Create table \"SiteConfig\"",
+    "summary": "Creates table \"SiteConfig\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "SiteConfig"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"SiteConfig\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SiteConfig\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"SiteConfig\"",
+        "sql": "CREATE TABLE \"public\".\"SiteConfig\" (\n  \"about\" text,\n  \"accent\" text DEFAULT '#D4AF37' NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"description\" text,\n  \"enabled\" bool DEFAULT false NOT NULL,\n  \"heroSubtitle\" text,\n  \"heroTitle\" text,\n  \"id\" text NOT NULL,\n  \"showCatalog\" bool DEFAULT true NOT NULL,\n  \"showMap\" bool DEFAULT true NOT NULL,\n  \"siteSlug\" text NOT NULL,\n  \"template\" text DEFAULT 'clasica' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"title\" text,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"SiteConfig\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SiteConfig\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.SiteConfig.SiteConfig_tenantId_key",
+    "label": "Add unique constraint on \"SiteConfig\" (tenantId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "SiteConfig_tenantId_key",
+        "table": "SiteConfig"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"SiteConfig_tenantId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SiteConfig_tenantId_key",
+          "public",
+          "\"public\".\"SiteConfig\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"SiteConfig_tenantId_key\"",
+        "sql": "ALTER TABLE \"public\".\"SiteConfig\" ADD CONSTRAINT \"SiteConfig_tenantId_key\" UNIQUE (\"tenantId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"SiteConfig_tenantId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SiteConfig_tenantId_key",
+          "public",
+          "\"public\".\"SiteConfig\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.SiteConfig.SiteConfig_siteSlug_key",
+    "label": "Add unique constraint on \"SiteConfig\" (siteSlug)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "SiteConfig_siteSlug_key",
+        "table": "SiteConfig"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"SiteConfig_siteSlug_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SiteConfig_siteSlug_key",
+          "public",
+          "\"public\".\"SiteConfig\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"SiteConfig_siteSlug_key\"",
+        "sql": "ALTER TABLE \"public\".\"SiteConfig\" ADD CONSTRAINT \"SiteConfig_siteSlug_key\" UNIQUE (\"siteSlug\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"SiteConfig_siteSlug_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SiteConfig_siteSlug_key",
+          "public",
+          "\"public\".\"SiteConfig\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.SiteConfig.SiteConfig_tenantId_fkey",
+    "label": "Add foreign key \"SiteConfig_tenantId_fkey\" on \"SiteConfig\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "SiteConfig_tenantId_fkey",
+        "table": "SiteConfig"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"SiteConfig_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SiteConfig_tenantId_fkey",
+          "public",
+          "\"public\".\"SiteConfig\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"SiteConfig_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"SiteConfig\"\nADD CONSTRAINT \"SiteConfig_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"SiteConfig_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SiteConfig_tenantId_fkey",
+          "public",
+          "\"public\".\"SiteConfig\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.SiteConfig",
+    "label": "Enable row-level security on \"SiteConfig\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "SiteConfig"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"SiteConfig\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "SiteConfig"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"SiteConfig\"",
+        "sql": "ALTER TABLE \"public\".\"SiteConfig\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"SiteConfig\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "SiteConfig"
+        ]
+      }
+    ]
+  }
+]

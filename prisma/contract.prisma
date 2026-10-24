@@ -422,6 +422,7 @@ model Tenant {
   costCenters        CostCenter[]
   journalEntries     JournalEntry[]
   presenceSnapshots  PresenceSnapshot[]
+  siteConfigs        SiteConfig[]
   journalLines       JournalLine[]
   paymentRefunds     PaymentRefund[]
   reconciliationRuns ReconciliationRun[]
@@ -3225,5 +3226,31 @@ model PresenceSnapshot {
   updatedAt temporal.updatedAt()
 
   @@unique([tenantId, day])
+  @@rls
+}
+
+
+/// Mini-sitio público del negocio (`/s/<siteSlug>`): plantilla, textos, color y qué se muestra. Un negocio, un sitio.
+model SiteConfig {
+  id           String   @id @default(uuid())
+  tenantId     String   @unique
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  enabled      Boolean  @default(false)
+  /// Dirección pública del sitio, única en toda la plataforma (editable).
+  siteSlug     String   @unique
+  /// clasica | moderna | oscura | minimal
+  template     String   @default("clasica")
+  /// Título y descripción para buscadores (SEO).
+  title        String?
+  description  String?
+  heroTitle    String?
+  heroSubtitle String?
+  about        String?
+  accent       String   @default("#D4AF37")
+  showCatalog  Boolean  @default(true)
+  showMap      Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    temporal.updatedAt()
+
   @@rls
 }

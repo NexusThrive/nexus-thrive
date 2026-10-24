@@ -161,7 +161,7 @@ de «hecho»). No se edita a mano.
 | **22** | Contabilidad | Contabilidad II: asientos automáticos y partida doble | I, VII | N1, N2 | 3/4 | `PR-22-contabilidad-asientos` | pendiente |
 | **23** | Contabilidad | Estados financieros y exportación al contador | VII | N1, N2 | 4/4 | — | hecho |
 | **24** | Visible y vende en línea | Presencia v2: pilares, fases y tendencia | II | N2 | 0/1 | `PR-24-presencia-v2` | pendiente |
-| **25** | Visible y vende en línea | Mini-sitio con catálogo y SEO técnico | II | N1 | 0/6 | `PR-25-sitio-y-catalogo-publico` | pendiente |
+| **25** | Visible y vende en línea | Mini-sitio con catálogo y SEO técnico | II | N1 | 4/6 | `PR-25-sitio-y-catalogo-publico` | pendiente |
 | **26** | Visible y vende en línea | Tienda en línea: carrito, pedido y pago | V | N1 | 0/5 | `PR-26-tienda-carrito-y-envios` | pendiente |
 | **27** | Visible y vende en línea | SEO local y Google Business | II | N1 | 0/1 | — | pendiente |
 | **28** | Visible y vende en línea | Reputación y atribución de ventas | II, III | N1 | 0/5 | `PR-28-reputacion-y-atribucion` | pendiente |
@@ -502,11 +502,11 @@ de «hecho»). No se edita a mano.
   - [`II.00 · N1`](capas/II-Visibilidad-Captacion-y-Presencia-Digital/00-Sitios-Web-Landing-Pages-y-Cms/README.md)
     - [ ] Plantillas por vertical, con edición de textos, imágenes y colores.
     - [ ] Subdominio automático (`negocio.nexusthrive.co`).
-    - [ ] Botón flotante de WhatsApp, mapa y datos de contacto.
-    - [ ] Diseño responsive (celular primero).
+    - [x] Botón flotante de WhatsApp, mapa y datos de contacto.
+    - [x] Diseño responsive (celular primero).
   - [`II.01 · N1`](capas/II-Visibilidad-Captacion-y-Presencia-Digital/01-SEO-Tecnico-y-Posicionamiento-Local/README.md)
-    - [ ] Títulos, descripciones y URLs editables
-    - [ ] Sitemap, robots y etiquetas básicas automáticas.
+    - [x] Títulos, descripciones y URLs editables
+    - [x] Sitemap, robots y etiquetas básicas automáticas.
 
 ### PR-26 · Tienda en línea: carrito, pedido y pago
 

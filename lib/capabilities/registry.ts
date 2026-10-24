@@ -15,6 +15,7 @@ import {
   Package,
   BookOpenCheck,
   FileCheck2,
+  Globe,
   HandCoins,
   Link2,
   Percent,
@@ -167,6 +168,7 @@ export const CAPABILITIES = [
     nav: [
       { href: "/inventory", icon: Package, label: () => "Catálogo" },
       { href: "/stock", icon: Warehouse, label: () => "Existencias" },
+      { href: "/sitio", icon: Globe, label: () => "Mi sitio web" },
     ],
   },
   {

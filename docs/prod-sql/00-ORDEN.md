@@ -42,6 +42,7 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 30 | `2026-10-24-contabilidad-plan-y-periodos.sql` | Contabilidad I: `Account` (PUC), `AccountingPeriod`, `AccountingRule` y `CostCenter` (aditivo) | generado de la migración |
 | 31 | `2026-10-24-contabilidad-asientos.sql` | Contabilidad II: `JournalEntry`, `JournalLine` y `Tenant.accountingEnabled` (aditivo; requiere el paso 30) | generado de la migración |
 | 32 | `2026-10-24-presencia-v2.sql` | Presencia v2: tabla `PresenceSnapshot` (foto diaria para la tendencia; aditivo) | generado de la migración |
+| 33 | `2026-10-24-mini-sitio.sql` | Mini-sitio: tabla `SiteConfig` (aditivo) | generado de la migración |
 
 ## Estado: producción reconstruida desde las migraciones (camino A, 2026-10-23)
 

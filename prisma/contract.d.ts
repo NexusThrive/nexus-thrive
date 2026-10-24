@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'45c5cc2af8378c4ffe212ee6f3afa72956c4ef4b87820b7be018d2c1a5e19c12'>;
+  StorageHashBase<'cd0d051def5c53d32c876068f9b79bbfde10d2ca77e6d6f763a4df5c76f05af3'>;
 export type ExecutionHash =
-  ExecutionHashBase<'8786468134338fafe6f8b68d50dfc378652b24c3d9f81517bd3c33be0f5d141f'>;
+  ExecutionHashBase<'750e6f30d877ad35eb55a5edbd573026ca70384d1a61725f8e86569f5601e1ec'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -1395,6 +1395,23 @@ export type FieldOutputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['output'] | null;
       readonly ticketId: CodecTypes['pg/text@1']['output'];
       readonly token: CodecTypes['pg/text@1']['output'];
+    };
+    readonly SiteConfig: {
+      readonly about: CodecTypes['pg/text@1']['output'] | null;
+      readonly accent: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly description: CodecTypes['pg/text@1']['output'] | null;
+      readonly enabled: CodecTypes['pg/bool@1']['output'];
+      readonly heroSubtitle: CodecTypes['pg/text@1']['output'] | null;
+      readonly heroTitle: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly showCatalog: CodecTypes['pg/bool@1']['output'];
+      readonly showMap: CodecTypes['pg/bool@1']['output'];
+      readonly siteSlug: CodecTypes['pg/text@1']['output'];
+      readonly template: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly title: CodecTypes['pg/text@1']['output'] | null;
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly StaffInvite: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -2963,6 +2980,23 @@ export type FieldInputTypes = {
       readonly ticketId: CodecTypes['pg/text@1']['input'];
       readonly token: CodecTypes['pg/text@1']['input'];
     };
+    readonly SiteConfig: {
+      readonly about: CodecTypes['pg/text@1']['input'] | null;
+      readonly accent: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly description: CodecTypes['pg/text@1']['input'] | null;
+      readonly enabled: CodecTypes['pg/bool@1']['input'];
+      readonly heroSubtitle: CodecTypes['pg/text@1']['input'] | null;
+      readonly heroTitle: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly showCatalog: CodecTypes['pg/bool@1']['input'];
+      readonly showMap: CodecTypes['pg/bool@1']['input'];
+      readonly siteSlug: CodecTypes['pg/text@1']['input'];
+      readonly template: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly title: CodecTypes['pg/text@1']['input'] | null;
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly StaffInvite: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly createdById: CodecTypes['pg/text@1']['input'] | null;
@@ -4530,6 +4564,23 @@ export type StorageColumnTypes = {
       readonly ticketId: CodecTypes['pg/text@1']['output'];
       readonly token: CodecTypes['pg/text@1']['output'];
     };
+    readonly SiteConfig: {
+      readonly about: CodecTypes['pg/text@1']['output'] | null;
+      readonly accent: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly description: CodecTypes['pg/text@1']['output'] | null;
+      readonly enabled: CodecTypes['pg/bool@1']['output'];
+      readonly heroSubtitle: CodecTypes['pg/text@1']['output'] | null;
+      readonly heroTitle: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly showCatalog: CodecTypes['pg/bool@1']['output'];
+      readonly showMap: CodecTypes['pg/bool@1']['output'];
+      readonly siteSlug: CodecTypes['pg/text@1']['output'];
+      readonly template: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly title: CodecTypes['pg/text@1']['output'] | null;
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
     readonly StaffInvite: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly createdById: CodecTypes['pg/text@1']['output'] | null;
@@ -6096,6 +6147,23 @@ export type StorageColumnInputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['input'] | null;
       readonly ticketId: CodecTypes['pg/text@1']['input'];
       readonly token: CodecTypes['pg/text@1']['input'];
+    };
+    readonly SiteConfig: {
+      readonly about: CodecTypes['pg/text@1']['input'] | null;
+      readonly accent: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly description: CodecTypes['pg/text@1']['input'] | null;
+      readonly enabled: CodecTypes['pg/bool@1']['input'];
+      readonly heroSubtitle: CodecTypes['pg/text@1']['input'] | null;
+      readonly heroTitle: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly showCatalog: CodecTypes['pg/bool@1']['input'];
+      readonly showMap: CodecTypes['pg/bool@1']['input'];
+      readonly siteSlug: CodecTypes['pg/text@1']['input'];
+      readonly template: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly title: CodecTypes['pg/text@1']['input'] | null;
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly StaffInvite: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -7954,6 +8022,25 @@ export namespace Models {
     tenant: public_Tenant | null;
     readonly [RelationKeys]?: 'tenant';
   };
+  export type public_SiteConfig = {
+    about: CodecTypes['pg/text@1']['output'] | null;
+    accent: CodecTypes['pg/text@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    description: CodecTypes['pg/text@1']['output'] | null;
+    enabled: CodecTypes['pg/bool@1']['output'];
+    heroSubtitle: CodecTypes['pg/text@1']['output'] | null;
+    heroTitle: CodecTypes['pg/text@1']['output'] | null;
+    id: CodecTypes['pg/text@1']['output'];
+    showCatalog: CodecTypes['pg/bool@1']['output'];
+    showMap: CodecTypes['pg/bool@1']['output'];
+    siteSlug: CodecTypes['pg/text@1']['output'];
+    template: CodecTypes['pg/text@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    title: CodecTypes['pg/text@1']['output'] | null;
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
+  };
   export type public_StaffInvite = {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     createdById: CodecTypes['pg/text@1']['output'] | null;
@@ -8311,6 +8398,7 @@ export namespace Models {
     quotes: public_Quote[];
     reconciliationRuns: public_ReconciliationRun[];
     satisfactionSurveys: public_SatisfactionSurvey[];
+    siteConfigs: public_SiteConfig[];
     stockCountLines: public_StockCountLine[];
     stockCounts: public_StockCount[];
     stockLevels: public_StockLevel[];
@@ -8400,6 +8488,7 @@ export namespace Models {
       | 'quotes'
       | 'reconciliationRuns'
       | 'satisfactionSurveys'
+      | 'siteConfigs'
       | 'stockCountLines'
       | 'stockCounts'
       | 'stockLevels'
@@ -8727,6 +8816,7 @@ export declare const models: {
     QuoteItem: Models.public_QuoteItem;
     ReconciliationRun: Models.public_ReconciliationRun;
     SatisfactionSurvey: Models.public_SatisfactionSurvey;
+    SiteConfig: Models.public_SiteConfig;
     StaffInvite: Models.public_StaffInvite;
     StaffMember: Models.public_StaffMember;
     StaffRole: Models.public_StaffRole;
@@ -17693,6 +17783,126 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly SiteConfig: {
+              columns: {
+                readonly about: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly accent: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', '#D4AF37'>;
+                  };
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly description: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly enabled: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+                  };
+                };
+                readonly heroSubtitle: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly heroTitle: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly showCatalog: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+                  };
+                };
+                readonly showMap: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+                  };
+                };
+                readonly siteSlug: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly template: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'clasica'>;
+                  };
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly title: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [
+                { readonly columns: readonly ['tenantId'] },
+                { readonly columns: readonly ['siteSlug'] },
+              ];
+              indexes: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'SiteConfig';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly StaffInvite: {
               columns: {
                 readonly createdAt: {
@@ -21207,6 +21417,10 @@ type ContractBase = Omit<
     readonly SatisfactionSurvey: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'SatisfactionSurvey';
+    };
+    readonly SiteConfig: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'SiteConfig';
     };
     readonly StaffInvite: {
       readonly namespace: 'public' & NamespaceId;
@@ -29926,6 +30140,111 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly SiteConfig: {
+            readonly fields: {
+              readonly about: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly accent: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly description: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly enabled: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly heroSubtitle: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly heroTitle: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly showCatalog: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly showMap: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly siteSlug: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly template: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly title: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'SiteConfig';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly about: { readonly column: 'about' };
+                readonly accent: { readonly column: 'accent' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly description: { readonly column: 'description' };
+                readonly enabled: { readonly column: 'enabled' };
+                readonly heroSubtitle: { readonly column: 'heroSubtitle' };
+                readonly heroTitle: { readonly column: 'heroTitle' };
+                readonly id: { readonly column: 'id' };
+                readonly showCatalog: { readonly column: 'showCatalog' };
+                readonly showMap: { readonly column: 'showMap' };
+                readonly siteSlug: { readonly column: 'siteSlug' };
+                readonly template: { readonly column: 'template' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly title: { readonly column: 'title' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
           readonly StaffInvite: {
             readonly fields: {
               readonly createdAt: {
@@ -32280,6 +32599,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'SatisfactionSurvey';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly siteConfigs: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'SiteConfig';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -35123,6 +35453,23 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'SatisfactionSurvey';
             readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'SiteConfig';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'SiteConfig';
+            readonly field: 'updatedAt';
             readonly namespace: 'public';
           };
         },

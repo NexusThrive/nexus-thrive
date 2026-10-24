@@ -34,6 +34,7 @@ const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
   { file: "lib/onboarding/onboarding-db.ts", model: "User", why: "En el piloto, una cuenta = un negocio: se busca por la cuenta." },
   { file: "lib/api/keys.ts", model: "ApiKey", why: "Autenticar: se busca por el hash de la llave (única en la plataforma); de ahí sale el negocio." },
   { file: "lib/payments/intents-db.ts", model: "PaymentIntent", why: "Enlace público de cobro: se busca por su código aleatorio (único en la plataforma) y solo devuelve negocio, valor, descripción y estado." },
+  { file: "lib/site/site-db.ts", model: "SiteConfig", why: "Sitio público: se busca por su dirección (única en la plataforma) y la unicidad de la dirección al guardar; el negocio se resuelve de ahí." },
   { file: "lib/construction/shared.ts", model: "LookaheadTask", why: "Hijas de un plan leído con tenantId (la fila del plan no lo trae)." },
   { file: "lib/construction/shared.ts", model: "WeeklyCommitment", why: "Igual que LookaheadTask." },
   { file: "lib/construction/shared.ts", model: "BudgetChapter", why: "sumBudgetDirect recibe un presupuesto ya leído con tenantId." },

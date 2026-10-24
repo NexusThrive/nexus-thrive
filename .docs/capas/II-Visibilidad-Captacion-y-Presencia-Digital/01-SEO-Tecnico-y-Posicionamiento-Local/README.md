@@ -46,8 +46,8 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Títulos, descripciones y URLs editables _(PR-25)_
-- [ ] Sitemap, robots y etiquetas básicas automáticas. _(PR-25)_
+- [x] Títulos, descripciones y URLs editables _(PR-25)_
+- [x] Sitemap, robots y etiquetas básicas automáticas. _(PR-25)_
 - [ ] Ficha de Google Business _(PR-27)_
 
 #### Técnico
