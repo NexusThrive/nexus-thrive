@@ -1,0 +1,164 @@
+[
+  {
+    "id": "dropIndex.StockLevel.StockLevel_product_key_d6b3c447",
+    "label": "Drop index \"StockLevel_product_key_d6b3c447\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockLevel_product_key_d6b3c447",
+        "table": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockLevel_product_key_d6b3c447\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_product_key_d6b3c447\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop index \"StockLevel_product_key_d6b3c447\"",
+        "sql": "DROP INDEX \"public\".\"StockLevel_product_key_d6b3c447\"",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockLevel_product_key_d6b3c447\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_product_key_d6b3c447\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropIndex.StockLevel.StockLevel_variant_key_666fadbc",
+    "label": "Drop index \"StockLevel_variant_key_666fadbc\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockLevel_variant_key_666fadbc",
+        "table": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockLevel_variant_key_666fadbc\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_variant_key_666fadbc\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop index \"StockLevel_variant_key_666fadbc\"",
+        "sql": "DROP INDEX \"public\".\"StockLevel_variant_key_666fadbc\"",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockLevel_variant_key_666fadbc\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_variant_key_666fadbc\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.StockLevel.variantKey",
+    "label": "Add column \"variantKey\" to \"StockLevel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "variantKey",
+        "table": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"variantKey\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockLevel",
+          "variantKey"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"variantKey\"",
+        "sql": "ALTER TABLE \"public\".\"StockLevel\" ADD COLUMN \"variantKey\" text DEFAULT '' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"variantKey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockLevel",
+          "variantKey"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.StockLevel.StockLevel_warehouseId_productId_variantKey_key",
+    "label": "Add unique constraint on \"StockLevel\" (warehouseId, productId, variantKey)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "StockLevel_warehouseId_productId_variantKey_key",
+        "table": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"StockLevel_warehouseId_productId_variantKey_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockLevel_warehouseId_productId_variantKey_key",
+          "public",
+          "\"public\".\"StockLevel\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"StockLevel_warehouseId_productId_variantKey_key\"",
+        "sql": "ALTER TABLE \"public\".\"StockLevel\" ADD CONSTRAINT \"StockLevel_warehouseId_productId_variantKey_key\" UNIQUE (\"warehouseId\", \"productId\", \"variantKey\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"StockLevel_warehouseId_productId_variantKey_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockLevel_warehouseId_productId_variantKey_key",
+          "public",
+          "\"public\".\"StockLevel\""
+        ]
+      }
+    ]
+  }
+]

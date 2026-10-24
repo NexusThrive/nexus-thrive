@@ -2,7 +2,7 @@ import { emitEvent } from "@/lib/events/outbox";
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
 import type { PaymentStatusValue } from "@/lib/finance";
-import { applyStock, validateStockMove } from "./inventory";
+import { applyStockMovement, StockError } from "@/lib/inventory/stock-service";
 import { receiptCode } from "./invoice";
 import type { DocumentLineInput } from "./commercial-document";
 import { insertDocument, issueCreditNote, saleDocumentOfPayment } from "./documents-db";
@@ -202,22 +202,6 @@ async function claimTicketSale(tx: MoneyTx, tenantId: string, id: string): Promi
   return (await tx.query(plan)).length > 0;
 }
 
-/** Descuenta stock solo si nadie lo cambió desde la lectura (reintenta con la lectura nueva). */
-async function takeStock(tx: MoneyTx, tenantId: string, productId: string, quantity: number): Promise<void> {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const p = await tx.orm.public.Product.where({ tenantId, id: productId }).select("stock").first();
-    if (!p) throw new MoneyError("No se encontró.");
-    const err = validateStockMove(p.stock, "SALE", quantity);
-    if (err) throw new MoneyError(err);
-    const plan = tx.sql.public.Product.update({ stock: applyStock(p.stock, "SALE", quantity) })
-      .where((f, fns) => fns.and(fns.eq(f.id, productId), fns.eq(f.tenantId, tenantId), fns.eq(f.stock, p.stock)))
-      .returning("stock")
-      .build();
-    if ((await tx.query(plan)).length > 0) return;
-  }
-  throw new MoneyError("El inventario cambió mientras vendías. Intenta de nuevo.");
-}
-
 // --- Operaciones --------------------------------------------------------------
 
 /** Paga una factura o cuenta de cobro. `null` si ya no está emitida (pagada, anulada o en otro clic). */
@@ -296,7 +280,6 @@ export async function sellProduct(
   const total = Math.round(input.price * input.quantity * 100) / 100;
   try {
     return await moneyTransaction(async (tx) => {
-      if (input.trackStock) await takeStock(tx, tenantId, input.productId, input.quantity);
       const income = await recordIncome(
         tx,
         tenantId,
@@ -313,15 +296,13 @@ export async function sellProduct(
         userId,
       );
       if (input.trackStock) {
-        await tx.orm.public.StockMovement.create({
-          tenantId,
-          productId: input.productId,
-          kind: "SALE",
-          quantity: input.quantity,
-          note: `Venta ${income.receipt}`,
-          paymentId: income.paymentId,
-          createdById: userId,
-        });
+        // Descuenta de la bodega con su costo promedio y deja la línea del kardex (misma transacción que el cobro).
+        try {
+          await applyStockMovement(tx, tenantId, { productId: input.productId, kind: "SALE", quantity: input.quantity, note: `Venta ${income.receipt}`, paymentId: income.paymentId, userId, documentType: "SALE", documentId: income.paymentId });
+        } catch (e) {
+          if (e instanceof StockError) throw new MoneyError(e.message);
+          throw e;
+        }
       }
       return { ok: true as const, paymentId: income.paymentId, receipt: income.receipt };
     });

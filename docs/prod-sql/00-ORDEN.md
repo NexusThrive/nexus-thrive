@@ -28,6 +28,9 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 17 | `2026-10-24-tercero-unico.sql` | Tercero único: `Party`, `PartyRole` y `Customer.partyId` (aditivo) | generado de la migración |
 | 18 | `2026-10-24-tercero-unico-relleno.sql` | **Datos**: crea el tercero y el rol CLIENTE de cada cliente existente (idempotente; correr DESPUÉS del 17) | **PENDIENTE** |
 | 19 | `2026-10-24-catalogo-maestro.sql` | Catálogo maestro: variantes, códigos de barras, listas de precios y clasificación fiscal en `Product` (aditivo) | generado de la migración |
+| 20 | `2026-10-24-inventario-bodegas-kardex.sql` | Inventario: bodegas, existencias por bodega, kardex con costo y `Tenant.costingMethod` (aditivo) | generado de la migración |
+| 20b | `2026-10-24-existencias-llave-unica.sql` | Cambia los índices parciales de `StockLevel` por una llave única normal (`variantKey`); la tabla es nueva y está vacía (DESPUÉS del 20) | generado de la migración |
+| 21 | `2026-10-24-inventario-relleno.sql` | **Datos**: bodega «Principal» y existencias iniciales por producto (idempotente; DESPUÉS del 20) | **PENDIENTE** |
 
 ## Estado: producción reconstruida desde las migraciones (camino A, 2026-10-23)
 

@@ -1,5 +1,6 @@
 "use server";
 
+import { StockError } from "@/lib/inventory/stock-service";
 import { revalidatePath } from "next/cache";
 import { customerBelongs } from "@/lib/business/customers-db";
 import { kindsForVertical, validateProduct, type ProductDraft } from "@/lib/business/catalog-kinds";
@@ -62,7 +63,12 @@ export async function moveStockAction(slug: string, productId: string, kind: str
   const err = validateStockMove(p.stock, kind as StockKind, quantity);
   if (err) return { ok: false, message: err };
   if (kind !== "IN" && note.trim().length < 3) return { ok: false, message: "Explica el motivo (salida o ajuste)." };
-  await moveStock(ctx.tenantId, productId, kind as StockKind, quantity, note.trim().slice(0, 200) || null, ctx.memberId);
+  try {
+    await moveStock(ctx.tenantId, productId, kind as StockKind, quantity, note.trim().slice(0, 200) || null, ctx.memberId);
+  } catch (error) {
+    if (error instanceof StockError) return { ok: false, message: error.message };
+    throw error;
+  }
   refresh(slug);
   return { ok: true, message: "Inventario actualizado" };
 }

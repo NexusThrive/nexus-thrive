@@ -1,0 +1,1178 @@
+[
+  {
+    "id": "table.StockLevel",
+    "label": "Create table \"StockLevel\"",
+    "summary": "Creates table \"StockLevel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"StockLevel\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"StockLevel\"",
+        "sql": "CREATE TABLE \"public\".\"StockLevel\" (\n  \"avgCost\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"id\" text NOT NULL,\n  \"productId\" text NOT NULL,\n  \"quantity\" int4 DEFAULT 0 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"variantId\" text,\n  \"warehouseId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"StockLevel\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.Warehouse",
+    "label": "Create table \"Warehouse\"",
+    "summary": "Creates table \"Warehouse\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Warehouse"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Warehouse\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Warehouse\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Warehouse\"",
+        "sql": "CREATE TABLE \"public\".\"Warehouse\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"address\" text,\n  \"code\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"isDefault\" bool DEFAULT false NOT NULL,\n  \"name\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Warehouse\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Warehouse\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.StockMovement.balanceAfter",
+    "label": "Add column \"balanceAfter\" to \"StockMovement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "balanceAfter",
+        "table": "StockMovement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"balanceAfter\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockMovement",
+          "balanceAfter"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"balanceAfter\"",
+        "sql": "ALTER TABLE \"public\".\"StockMovement\" ADD COLUMN \"balanceAfter\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"balanceAfter\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockMovement",
+          "balanceAfter"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.StockMovement.documentId",
+    "label": "Add column \"documentId\" to \"StockMovement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "documentId",
+        "table": "StockMovement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"documentId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockMovement",
+          "documentId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"documentId\"",
+        "sql": "ALTER TABLE \"public\".\"StockMovement\" ADD COLUMN \"documentId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"documentId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockMovement",
+          "documentId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.StockMovement.documentType",
+    "label": "Add column \"documentType\" to \"StockMovement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "documentType",
+        "table": "StockMovement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"documentType\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockMovement",
+          "documentType"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"documentType\"",
+        "sql": "ALTER TABLE \"public\".\"StockMovement\" ADD COLUMN \"documentType\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"documentType\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockMovement",
+          "documentType"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.StockMovement.reason",
+    "label": "Add column \"reason\" to \"StockMovement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "reason",
+        "table": "StockMovement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"reason\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockMovement",
+          "reason"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"reason\"",
+        "sql": "ALTER TABLE \"public\".\"StockMovement\" ADD COLUMN \"reason\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"reason\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockMovement",
+          "reason"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.StockMovement.unitCost",
+    "label": "Add column \"unitCost\" to \"StockMovement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "unitCost",
+        "table": "StockMovement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"unitCost\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockMovement",
+          "unitCost"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"unitCost\"",
+        "sql": "ALTER TABLE \"public\".\"StockMovement\" ADD COLUMN \"unitCost\" numeric"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"unitCost\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockMovement",
+          "unitCost"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.StockMovement.variantId",
+    "label": "Add column \"variantId\" to \"StockMovement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "variantId",
+        "table": "StockMovement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"variantId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockMovement",
+          "variantId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"variantId\"",
+        "sql": "ALTER TABLE \"public\".\"StockMovement\" ADD COLUMN \"variantId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"variantId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockMovement",
+          "variantId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.StockMovement.warehouseId",
+    "label": "Add column \"warehouseId\" to \"StockMovement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "warehouseId",
+        "table": "StockMovement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"warehouseId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockMovement",
+          "warehouseId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"warehouseId\"",
+        "sql": "ALTER TABLE \"public\".\"StockMovement\" ADD COLUMN \"warehouseId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"warehouseId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StockMovement",
+          "warehouseId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.costingMethod",
+    "label": "Add column \"costingMethod\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "costingMethod",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"costingMethod\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "costingMethod"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"costingMethod\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"costingMethod\" text DEFAULT 'AVG' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"costingMethod\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "costingMethod"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Warehouse.Warehouse_tenantId_name_key",
+    "label": "Add unique constraint on \"Warehouse\" (tenantId, name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Warehouse_tenantId_name_key",
+        "table": "Warehouse"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Warehouse_tenantId_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Warehouse_tenantId_name_key",
+          "public",
+          "\"public\".\"Warehouse\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Warehouse_tenantId_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"Warehouse\" ADD CONSTRAINT \"Warehouse_tenantId_name_key\" UNIQUE (\"tenantId\", \"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Warehouse_tenantId_name_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Warehouse_tenantId_name_key",
+          "public",
+          "\"public\".\"Warehouse\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockLevel.StockLevel_productId_idx_5858600a",
+    "label": "Create index \"StockLevel_productId_idx_5858600a\" on \"StockLevel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockLevel_productId_idx_5858600a",
+        "table": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockLevel_productId_idx_5858600a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_productId_idx_5858600a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockLevel_productId_idx_5858600a\"",
+        "sql": "CREATE INDEX \"StockLevel_productId_idx_5858600a\" ON \"public\".\"StockLevel\" (\"productId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockLevel_productId_idx_5858600a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_productId_idx_5858600a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockLevel.StockLevel_product_key_d6b3c447",
+    "label": "Create index \"StockLevel_product_key_d6b3c447\" on \"StockLevel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockLevel_product_key_d6b3c447",
+        "table": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockLevel_product_key_d6b3c447\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_product_key_d6b3c447\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockLevel_product_key_d6b3c447\"",
+        "sql": "CREATE UNIQUE INDEX \"StockLevel_product_key_d6b3c447\" ON \"public\".\"StockLevel\" (\"warehouseId\", \"productId\") WHERE (\"variantId\" IS NULL)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockLevel_product_key_d6b3c447\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_product_key_d6b3c447\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockLevel.StockLevel_tenantId_idx_c93ed4f1",
+    "label": "Create index \"StockLevel_tenantId_idx_c93ed4f1\" on \"StockLevel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockLevel_tenantId_idx_c93ed4f1",
+        "table": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockLevel_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockLevel_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"StockLevel_tenantId_idx_c93ed4f1\" ON \"public\".\"StockLevel\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockLevel_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockLevel.StockLevel_tenantId_productId_idx_b55a019b",
+    "label": "Create index \"StockLevel_tenantId_productId_idx_b55a019b\" on \"StockLevel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockLevel_tenantId_productId_idx_b55a019b",
+        "table": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockLevel_tenantId_productId_idx_b55a019b\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_tenantId_productId_idx_b55a019b\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockLevel_tenantId_productId_idx_b55a019b\"",
+        "sql": "CREATE INDEX \"StockLevel_tenantId_productId_idx_b55a019b\" ON \"public\".\"StockLevel\" (\"tenantId\", \"productId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockLevel_tenantId_productId_idx_b55a019b\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_tenantId_productId_idx_b55a019b\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockLevel.StockLevel_variantId_idx_e16bb45d",
+    "label": "Create index \"StockLevel_variantId_idx_e16bb45d\" on \"StockLevel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockLevel_variantId_idx_e16bb45d",
+        "table": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockLevel_variantId_idx_e16bb45d\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_variantId_idx_e16bb45d\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockLevel_variantId_idx_e16bb45d\"",
+        "sql": "CREATE INDEX \"StockLevel_variantId_idx_e16bb45d\" ON \"public\".\"StockLevel\" (\"variantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockLevel_variantId_idx_e16bb45d\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_variantId_idx_e16bb45d\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockLevel.StockLevel_variant_key_666fadbc",
+    "label": "Create index \"StockLevel_variant_key_666fadbc\" on \"StockLevel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockLevel_variant_key_666fadbc",
+        "table": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockLevel_variant_key_666fadbc\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_variant_key_666fadbc\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockLevel_variant_key_666fadbc\"",
+        "sql": "CREATE UNIQUE INDEX \"StockLevel_variant_key_666fadbc\" ON \"public\".\"StockLevel\" (\"warehouseId\", \"productId\", \"variantId\") WHERE (\"variantId\" IS NOT NULL)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockLevel_variant_key_666fadbc\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_variant_key_666fadbc\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockLevel.StockLevel_warehouseId_idx_8ff93e70",
+    "label": "Create index \"StockLevel_warehouseId_idx_8ff93e70\" on \"StockLevel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockLevel_warehouseId_idx_8ff93e70",
+        "table": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockLevel_warehouseId_idx_8ff93e70\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_warehouseId_idx_8ff93e70\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockLevel_warehouseId_idx_8ff93e70\"",
+        "sql": "CREATE INDEX \"StockLevel_warehouseId_idx_8ff93e70\" ON \"public\".\"StockLevel\" (\"warehouseId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockLevel_warehouseId_idx_8ff93e70\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockLevel_warehouseId_idx_8ff93e70\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockMovement.StockMovement_documentType_documentId_idx_b8a84a62",
+    "label": "Create index \"StockMovement_documentType_documentId_idx_b8a84a62\" on \"StockMovement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockMovement_documentType_documentId_idx_b8a84a62",
+        "table": "StockMovement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockMovement_documentType_documentId_idx_b8a84a62\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockMovement_documentType_documentId_idx_b8a84a62\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockMovement_documentType_documentId_idx_b8a84a62\"",
+        "sql": "CREATE INDEX \"StockMovement_documentType_documentId_idx_b8a84a62\" ON \"public\".\"StockMovement\" (\"documentType\", \"documentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockMovement_documentType_documentId_idx_b8a84a62\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockMovement_documentType_documentId_idx_b8a84a62\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.StockMovement.StockMovement_warehouseId_idx_8ff93e70",
+    "label": "Create index \"StockMovement_warehouseId_idx_8ff93e70\" on \"StockMovement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "StockMovement_warehouseId_idx_8ff93e70",
+        "table": "StockMovement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"StockMovement_warehouseId_idx_8ff93e70\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockMovement_warehouseId_idx_8ff93e70\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"StockMovement_warehouseId_idx_8ff93e70\"",
+        "sql": "CREATE INDEX \"StockMovement_warehouseId_idx_8ff93e70\" ON \"public\".\"StockMovement\" (\"warehouseId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"StockMovement_warehouseId_idx_8ff93e70\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"StockMovement_warehouseId_idx_8ff93e70\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Warehouse.Warehouse_tenantId_idx_c93ed4f1",
+    "label": "Create index \"Warehouse_tenantId_idx_c93ed4f1\" on \"Warehouse\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Warehouse_tenantId_idx_c93ed4f1",
+        "table": "Warehouse"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Warehouse_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Warehouse_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Warehouse_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"Warehouse_tenantId_idx_c93ed4f1\" ON \"public\".\"Warehouse\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Warehouse_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Warehouse_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockLevel.StockLevel_tenantId_fkey",
+    "label": "Add foreign key \"StockLevel_tenantId_fkey\" on \"StockLevel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockLevel_tenantId_fkey",
+        "table": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockLevel_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockLevel_tenantId_fkey",
+          "public",
+          "\"public\".\"StockLevel\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockLevel_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockLevel\"\nADD CONSTRAINT \"StockLevel_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockLevel_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockLevel_tenantId_fkey",
+          "public",
+          "\"public\".\"StockLevel\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockLevel.StockLevel_warehouseId_fkey",
+    "label": "Add foreign key \"StockLevel_warehouseId_fkey\" on \"StockLevel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockLevel_warehouseId_fkey",
+        "table": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockLevel_warehouseId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockLevel_warehouseId_fkey",
+          "public",
+          "\"public\".\"StockLevel\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockLevel_warehouseId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockLevel\"\nADD CONSTRAINT \"StockLevel_warehouseId_fkey\"\nFOREIGN KEY (\"warehouseId\")\nREFERENCES \"public\".\"Warehouse\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockLevel_warehouseId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockLevel_warehouseId_fkey",
+          "public",
+          "\"public\".\"StockLevel\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockLevel.StockLevel_productId_fkey",
+    "label": "Add foreign key \"StockLevel_productId_fkey\" on \"StockLevel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockLevel_productId_fkey",
+        "table": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockLevel_productId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockLevel_productId_fkey",
+          "public",
+          "\"public\".\"StockLevel\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockLevel_productId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockLevel\"\nADD CONSTRAINT \"StockLevel_productId_fkey\"\nFOREIGN KEY (\"productId\")\nREFERENCES \"public\".\"Product\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockLevel_productId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockLevel_productId_fkey",
+          "public",
+          "\"public\".\"StockLevel\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockLevel.StockLevel_variantId_fkey",
+    "label": "Add foreign key \"StockLevel_variantId_fkey\" on \"StockLevel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockLevel_variantId_fkey",
+        "table": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockLevel_variantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockLevel_variantId_fkey",
+          "public",
+          "\"public\".\"StockLevel\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockLevel_variantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockLevel\"\nADD CONSTRAINT \"StockLevel_variantId_fkey\"\nFOREIGN KEY (\"variantId\")\nREFERENCES \"public\".\"ProductVariant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockLevel_variantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockLevel_variantId_fkey",
+          "public",
+          "\"public\".\"StockLevel\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Warehouse.Warehouse_tenantId_fkey",
+    "label": "Add foreign key \"Warehouse_tenantId_fkey\" on \"Warehouse\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Warehouse_tenantId_fkey",
+        "table": "Warehouse"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Warehouse_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Warehouse_tenantId_fkey",
+          "public",
+          "\"public\".\"Warehouse\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Warehouse_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Warehouse\"\nADD CONSTRAINT \"Warehouse_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Warehouse_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Warehouse_tenantId_fkey",
+          "public",
+          "\"public\".\"Warehouse\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.StockMovement.StockMovement_warehouseId_fkey",
+    "label": "Add foreign key \"StockMovement_warehouseId_fkey\" on \"StockMovement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "StockMovement_warehouseId_fkey",
+        "table": "StockMovement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"StockMovement_warehouseId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockMovement_warehouseId_fkey",
+          "public",
+          "\"public\".\"StockMovement\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"StockMovement_warehouseId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"StockMovement\"\nADD CONSTRAINT \"StockMovement_warehouseId_fkey\"\nFOREIGN KEY (\"warehouseId\")\nREFERENCES \"public\".\"Warehouse\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"StockMovement_warehouseId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StockMovement_warehouseId_fkey",
+          "public",
+          "\"public\".\"StockMovement\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.StockLevel",
+    "label": "Enable row-level security on \"StockLevel\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "StockLevel"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"StockLevel\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "StockLevel"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"StockLevel\"",
+        "sql": "ALTER TABLE \"public\".\"StockLevel\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"StockLevel\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "StockLevel"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.Warehouse",
+    "label": "Enable row-level security on \"Warehouse\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "Warehouse"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"Warehouse\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Warehouse"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"Warehouse\"",
+        "sql": "ALTER TABLE \"public\".\"Warehouse\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"Warehouse\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "Warehouse"
+        ]
+      }
+    ]
+  }
+]
