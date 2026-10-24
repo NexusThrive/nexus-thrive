@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Camera } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { inputClasses, selectClasses, textareaClasses } from "@/components/atoms/input";
+import { inputClasses, textareaClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
 import { PhoneInput } from "@/components/molecules/phone-input";
 import { useToast } from "@/components/molecules/toast";
@@ -14,6 +14,7 @@ import { PAYMENT_METHODS } from "@/lib/finance";
 import { formatCurrency } from "@/lib/format";
 import { useVerticalTerms } from "../../vertical-terms-context";
 import { customerFormDataAction, getCustomerForEditAction, saveCustomerAction, type CustomerEdit } from "../profile-actions";
+import { Select } from "@/components/atoms/select";
 
 const EMPTY: CustomerEdit = { id: "", name: "", email: "", phone: "", documentId: "", birthDate: "", city: "", tags: "", profile: {}, photoId: null };
 
@@ -88,12 +89,12 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
       return (
         <Field key={f.key} label={f.label} error={err}>
           {(c) => (
-            <select {...c} value={val} onChange={(e) => setP(f.key, e.target.value)} className={selectClasses}>
+            <Select {...c} value={val} onChange={(e) => setP(f.key, e.target.value)}>
               <option value="">Sin definir</option>
               {f.options.map((o) => (
                 <option key={o}>{o}</option>
               ))}
-            </select>
+            </Select>
           )}
         </Field>
       );
@@ -195,27 +196,27 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <Field label="Plan">
                     {(c) => (
-                      <select {...c} value={planId} onChange={(e) => setPlanId(e.target.value)} className={selectClasses}>
+                      <Select {...c} value={planId} onChange={(e) => setPlanId(e.target.value)}>
                         <option value="">Sin plan por ahora</option>
                         {meta.plans.map((p) => (
                           <option key={p.id} value={p.id}>
                             {p.name} · {formatCurrency(p.price)} · {p.days} días
                           </option>
                         ))}
-                      </select>
+                      </Select>
                     )}
                   </Field>
                   {planId ? (
                     <Field label="Cobro">
                       {(c) => (
-                        <select {...c} value={method} onChange={(e) => setMethod(e.target.value)} className={selectClasses}>
+                        <Select {...c} value={method} onChange={(e) => setMethod(e.target.value)}>
                           {PAYMENT_METHODS.map((m) => (
                             <option key={m.value} value={m.value}>
                               {m.label}
                             </option>
                           ))}
                           <option value="NONE">Aún no paga</option>
-                        </select>
+                        </Select>
                       )}
                     </Field>
                   ) : null}

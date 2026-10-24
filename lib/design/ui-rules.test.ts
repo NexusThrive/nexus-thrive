@@ -45,6 +45,10 @@ const FULLSCREEN_ALLOWED = [
   "components/organisms/command.tsx", // paleta del panel CEO (cmdk sobre Radix Dialog)
 ];
 
+/** Único lugar con `<select>` nativo: el que el `Select` propio mantiene oculto para formularios. */
+const NATIVE_SELECT_ALLOWED = ["components/atoms/select.tsx"];
+const NATIVE_SELECT = /<select[\s>]/;
+
 const WINDOW_CONFIRM = /window\.(confirm|alert)\(/;
 const RADIX_DIALOG = /from "@radix-ui\/react-dialog"/;
 const FULLSCREEN_OVERLAY = /fixed inset-0/;
@@ -56,6 +60,14 @@ function offenders(pattern: RegExp) {
 }
 
 describe("reglas del sistema de diseño", () => {
+  test("sin <select> nativo: se usa el Select propio (components/atoms/select)", () => {
+    // Los comentarios que mencionan `<select>` no cuentan: se ignoran las líneas de comentario.
+    const code = FILES.filter((f) => f.text.split("\n").some((l) => NATIVE_SELECT.test(l) && !/^\s*(\*|\/\/|\/\*)/.test(l)))
+      .map((f) => f.path)
+      .sort();
+    expect(code).toEqual([...NATIVE_SELECT_ALLOWED].sort());
+  });
+
   test("sin window.confirm/alert fuera de la lista de deuda", () => {
     expect(offenders(WINDOW_CONFIRM)).toEqual([...LEGACY_WINDOW_CONFIRM].sort());
   });

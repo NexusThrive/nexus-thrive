@@ -53,6 +53,40 @@ body {
 }
 
 /* ==========================================================================
+   Barra de scroll sutil y propia: pista transparente, trazo de 6 px
+   redondeado que se oscurece al pasar el puntero. Chrome, Edge y Safari usan
+   los pseudo-elementos; Firefox, las propiedades estándar (más finas, sin
+   hover). Quien oculta la barra a propósito (`[scrollbar-width:none]` y
+   `[&::-webkit-scrollbar]:hidden`) sigue ganando por especificidad.
+   Colores: --scrollbar-thumb(-hover) en tokens.css. En móviles con barras
+   superpuestas no cambia nada.
+   ========================================================================== */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+  }
+}
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  background-clip: padding-box;
+}
+
+/* ==========================================================================
    Tailwind v4: mapeo tokens → utilidades (complementa theme-v4.css con los
    alias que consumen los componentes de `components/ui`).
    ========================================================================== */

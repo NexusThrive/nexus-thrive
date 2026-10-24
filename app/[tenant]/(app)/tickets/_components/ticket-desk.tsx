@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Minus, Plus, Ticket } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { inputClasses, selectClasses } from "@/components/atoms/input";
+import { inputClasses } from "@/components/atoms/input";
 import { ProgressBar } from "@/components/atoms/progress-bar";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
@@ -18,6 +18,7 @@ import { PAYMENT_METHODS } from "@/lib/finance";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { payTicketsAction, sellTicketsAction, voidTicketsAction, type TicketResult } from "../actions";
+import { Select } from "@/components/atoms/select";
 
 type TicketType = { id: string; name: string; price: number };
 type Customer = { id: string; name: string };
@@ -145,21 +146,20 @@ function SellSheet({ slug, day, load, types, customers, onClose }: { slug: strin
       <div className="grid gap-5">
         <Field label="Modalidad">
           {(c) => (
-            <select
+            <Select
               {...c}
               value={kind}
               onChange={(e) => {
                 setKind(e.target.value);
                 if (e.target.value !== "TAQUILLA") setPayNow(false);
               }}
-              className={selectClasses}
             >
               {SALE_KINDS.map((k) => (
                 <option key={k.value} value={k.value}>
                   {k.label}
                 </option>
               ))}
-            </select>
+            </Select>
           )}
         </Field>
 
@@ -186,14 +186,14 @@ function SellSheet({ slug, day, load, types, customers, onClose }: { slug: strin
             <Field label={kind === "COLEGIO" ? "Colegio y curso" : "Nombre del grupo"}>{(c) => <input {...c} value={group} onChange={(e) => setGroup(e.target.value)} placeholder={kind === "COLEGIO" ? "Colegio San José · 5°B" : "Familia Pérez"} className={inputClasses} />}</Field>
             <Field label="Responsable" hint={kind === "GUIADA" || kind === "COLEGIO" ? "Queda agendada a su nombre." : undefined}>
               {(c) => (
-                <select {...c} value={customerId} onChange={(e) => setCustomerId(e.target.value)} className={selectClasses}>
+                <Select {...c} value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
                   <option value="">Elige un cliente</option>
                   {customers.map((x) => (
                     <option key={x.id} value={x.id}>
                       {x.name}
                     </option>
                   ))}
-                </select>
+                </Select>
               )}
             </Field>
           </div>
@@ -207,13 +207,13 @@ function SellSheet({ slug, day, load, types, customers, onClose }: { slug: strin
           {payNow ? (
             <Field label="Medio de pago">
               {(c) => (
-                <select {...c} value={method} onChange={(e) => setMethod(e.target.value)} className={selectClasses}>
+                <Select {...c} value={method} onChange={(e) => setMethod(e.target.value)}>
                   {PAYMENT_METHODS.map((m) => (
                     <option key={m.value} value={m.value}>
                       {m.label}
                     </option>
                   ))}
-                </select>
+                </Select>
               )}
             </Field>
           ) : null}
@@ -286,13 +286,13 @@ function SaleSheet({ slug, sale, canSell, canManage, onClose }: { slug: string; 
         {sale.status === "RESERVED" && canSell ? (
           <section className="grid gap-3 rounded-md bg-surface-muted p-3.5">
             <h3 className="text-[13px] font-semibold">Cobrar la reserva</h3>
-            <select aria-label="Medio de pago" value={method} onChange={(e) => setMethod(e.target.value)} className={selectClasses}>
+            <Select aria-label="Medio de pago" value={method} onChange={(e) => setMethod(e.target.value)}>
               {PAYMENT_METHODS.map((m) => (
                 <option key={m.value} value={m.value}>
                   {m.label}
                 </option>
               ))}
-            </select>
+            </Select>
             <button type="button" disabled={pending} onClick={() => run(() => payTicketsAction(slug, sale.id, method))} className={buttonVariants({ size: "sm" })}>
               Cobrar {formatCurrency(sale.total)}
             </button>

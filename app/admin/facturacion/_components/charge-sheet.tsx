@@ -5,7 +5,7 @@ import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { AlertTriangle, BellRing, Check, FileText, Paperclip, Undo2, XCircle } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { inputClasses, selectClasses, textareaClasses } from "@/components/atoms/input";
+import { inputClasses, textareaClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { CHARGE_STATUSES, dunningLabel, EVIDENCE_TYPES, PAYMENT_METHODS } from "@/lib/ops/billing-rules";
@@ -14,6 +14,7 @@ import { formatUsdCents } from "@/lib/plans/pricing";
 import { cn } from "@/lib/utils";
 import { confirmChargeAction, markNoticeAction, recordPaymentAction, refundChargeAction, suspendForNonPaymentAction, voidChargeAction } from "../actions";
 import { useBilling } from "./use-billing";
+import { Select } from "@/components/atoms/select";
 
 export type BillingPerms = { record: boolean; refund: boolean; suspend: boolean; pricing: boolean };
 
@@ -136,12 +137,12 @@ export default function ChargeSheet({ charge, onClose, perms, today }: { charge:
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <Field label="Método" required>
                 {(c) => (
-                  <select {...c} value={method} onChange={(e) => setMethod(e.target.value)} className={selectClasses}>
+                  <Select {...c} value={method} onChange={(e) => setMethod(e.target.value)}>
                     <option value="">Elige…</option>
                     {PAYMENT_METHODS.map((m) => (
                       <option key={m}>{m}</option>
                     ))}
-                  </select>
+                  </Select>
                 )}
               </Field>
               <Field label="Fecha del pago" required>

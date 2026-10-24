@@ -11,6 +11,23 @@
 }
 .scrim[data-state="closed"] {
   animation: fade-out 220ms var(--nx-ease-in) forwards;
+  pointer-events: none; /* cerrar no hace esperar: el clic ya llega a la página */
+}
+.sheet[data-state="closed"] {
+  pointer-events: none;
+}
+
+.scrimAlert {
+  /* Aviso sobre otro panel: el de abajo queda atenuado y difuminado. */
+  z-index: var(--z-alert-overlay);
+  background: var(--overlay-strong);
+  backdrop-filter: blur(3px);
+}
+.scrimAlert[data-state="open"] {
+  animation: fade-in 160ms var(--nx-ease-out);
+}
+.scrimAlert[data-state="closed"] {
+  animation: fade-out 120ms var(--nx-ease-in) forwards;
 }
 
 .sheet {
@@ -98,8 +115,24 @@
   .sheet[data-state="open"] {
     animation: modal-in var(--motion-overlay-in) var(--nx-ease-out);
   }
+  /* Con morfeo desde el botón, la entrada la maneja Web Animations (un solo dueño). */
+  .sheet[data-state="open"][data-morph] {
+    animation: none;
+  }
+  /* Salida con morfeo: Web Animations dibuja la reversa; esto solo mantiene
+     una animación de la misma duración para que Radix no desmonte antes. */
+  .sheet[data-state="closed"][data-morph] {
+    animation: modal-out-hold 380ms linear forwards;
+  }
   .sheet[data-state="closed"] {
     animation: modal-out var(--motion-overlay-out) var(--nx-ease-in) forwards;
+  }
+  /* Aviso rápido (sobre otro panel): aparece y se va en 160/120 ms, sin viaje largo. */
+  .alert[data-state="open"] {
+    animation: alert-in 160ms var(--nx-ease-out);
+  }
+  .alert[data-state="closed"] {
+    animation: alert-out 120ms var(--nx-ease-in) forwards;
   }
   .narrow {
     width: min(var(--dialog-w-sm), calc(100vw - 48px));
@@ -128,7 +161,8 @@
     animation: drawer-in var(--motion-overlay-in) var(--nx-ease-out);
   }
   .drawer[data-state="closed"] {
-    animation: drawer-out var(--motion-overlay-out) var(--nx-ease-in) forwards;
+    /* Misma duración que la entrada (espejo): entra y sale deslizándose por el mismo borde. */
+    animation: drawer-out var(--motion-overlay-in) var(--nx-ease-in) forwards;
   }
   .drawer .head {
     padding-top: calc(20px + env(safe-area-inset-top, 0px));
@@ -170,16 +204,37 @@
     transform: translateY(105%);
   }
 }
+/* El origen (transform-origin) lo fija el componente en el control que abrió el modal. */
 @keyframes modal-in {
   from {
     opacity: 0;
-    transform: translate(-50%, -48%) scale(0.97);
+    transform: translate(-50%, -50%) scale(0.9);
   }
 }
 @keyframes modal-out {
   to {
     opacity: 0;
-    transform: translate(-50%, -48%) scale(0.97);
+    transform: translate(-50%, -50%) scale(0.94);
+  }
+}
+@keyframes modal-out-hold {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes alert-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+}
+@keyframes alert-out {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
   }
 }
 @keyframes drawer-in {
@@ -198,4 +253,9 @@
   .sheet {
     animation-duration: 1ms !important;
   }
+}
+
+/* El aviso va por encima del panel que lo origina (y de su fondo). */
+.sheet.alert {
+  z-index: var(--z-alert);
 }

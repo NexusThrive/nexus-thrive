@@ -42,7 +42,7 @@ function Demo({ variant }: { variant: "dialog" | "drawer" }) {
         {({ fieldErrors }) => (
           <>
             <Field label="Nombre completo" required error={fieldErrors.name}>
-              {(p) => <Input {...p} name="name" autoComplete="name" />}
+              {(p) => <Input {...p} name="name" autoComplete="name" defaultValue={variant === "drawer" ? "Carlos Peña" : undefined} />}
             </Field>
             <Field
               label="Correo electrónico"
@@ -50,7 +50,7 @@ function Demo({ variant }: { variant: "dialog" | "drawer" }) {
               hint="Le llegan los recibos."
               help={<ContextHelp topic="el correo electrónico">Solo para recibos y avisos del negocio.</ContextHelp>}
             >
-              {(p) => <Input {...p} name="email" type="email" autoComplete="email" />}
+              {(p) => <Input {...p} name="email" type="email" autoComplete="email" defaultValue={variant === "drawer" ? "carlos@ejemplo.co" : undefined} />}
             </Field>
             {variant === "drawer" ? (
               <Field label="Nota" optional>

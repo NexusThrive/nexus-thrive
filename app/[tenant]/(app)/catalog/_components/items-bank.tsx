@@ -39,6 +39,7 @@ import { ApuCategoryBadge } from "@/components/molecules/quote-badges";
 import { fieldClasses, inputClasses, labelClasses } from "@/components/atoms/input";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { cn } from "@/lib/utils";
+import { Select } from "@/components/atoms/select";
 
 const EMPTY_ITEM: ApuItemFormValues = {
   code: "",
@@ -121,7 +122,7 @@ function ItemForm({
           <span className={labelClasses}>
             Unidad
           </span>
-          <select
+          <Select
             name="unit"
             defaultValue={defaults.unit}
             className={inputClass}
@@ -132,7 +133,7 @@ function ItemForm({
                 {formatApuUnit(unit)}
               </option>
             ))}
-          </select>
+          </Select>
           {fieldError(state.errors, "unit") ? (
             <span className="mt-1 block text-xs text-destructive">
               {fieldError(state.errors, "unit")}
@@ -163,7 +164,7 @@ function ItemForm({
           <span className={labelClasses}>
             Categoría
           </span>
-          <select
+          <Select
             name="category"
             defaultValue={defaults.category}
             className={inputClass}
@@ -174,7 +175,7 @@ function ItemForm({
                 {category.label}
               </option>
             ))}
-          </select>
+          </Select>
           {fieldError(state.errors, "category") ? (
             <span className="mt-1 block text-xs text-destructive">
               {fieldError(state.errors, "category")}

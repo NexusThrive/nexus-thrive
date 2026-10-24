@@ -83,7 +83,8 @@
   /* --- Layout de la app --- */
   --sidebar-width: 248px;
   --sidebar-width-collapsed: 76px;
-  --topbar-height: 60px;
+  --scrollbar-size: 10px; /* ancho de la barra de scroll (el trazo visible es 6 px) */
+  --topbar-height: 60px;  /* 72 px desde 768 px (ver abajo): cabe el logo con THRIVE */
   --content-max: 1280px;
   /* Ancho de lectura (texto corrido, ayuda, formularios de una columna). */
   --content-prose: 72ch;
@@ -99,11 +100,14 @@
 
   /* --- Capas (z-index). Nunca un número suelto en un componente. --- */
   --z-raised: 10;     /* elementos sobre su tarjeta (badges, adornos) */
-  --z-sticky: 40;     /* barra superior y encabezados fijos */
+  --z-sticky: 40;     /* encabezados fijos dentro del contenido */
   --z-tabbar: 45;     /* barra inferior móvil */
   --z-sidebar: 50;    /* barra lateral (cajón en móvil) */
+  --z-topbar: 55;     /* navbar global: por encima de la barra lateral */
   --z-overlay: 70;    /* fondo de diálogos y paneles */
   --z-modal: 71;      /* diálogo, panel lateral, hoja inferior */
+  --z-alert-overlay: 72; /* fondo del aviso que va ENCIMA de un panel (¿guardar cambios?) */
+  --z-alert: 73;      /* el aviso mismo */
   --z-popover: 80;    /* tooltip, menú, ayuda: SIEMPRE sobre el modal que los contiene */
   --z-banner: 85;     /* aviso de conexión */
   --z-toast: 90;      /* notificaciones */
@@ -131,6 +135,8 @@
   --surface-inverse: var(--nx-ink);
   --border: var(--nx-graphite-200);
   --border-strong: #d9d7d1;
+  --scrollbar-thumb: rgba(20, 20, 23, 0.22);
+  --scrollbar-thumb-hover: rgba(20, 20, 23, 0.42);
   /* Borde de controles editables (inputs, selects, casillas): gris suave en
      reposo; se marca más al pasar el cursor y toma el halo oro al enfocar. */
   --border-input: #d2d0ca;
@@ -162,7 +168,8 @@
   --nx-shadow-overlay: 0 12px 32px rgba(10, 10, 11, 0.14);
   /* Barras con desenfoque (topbar, tab bar) y fondo de modales. */
   --glass: rgba(247, 246, 243, 0.82);
-  --overlay: rgba(10, 10, 11, 0.42);
+  --overlay: rgba(10, 10, 11, 0.32);
+  --overlay-strong: rgba(10, 10, 11, 0.55); /* aviso sobre otro panel */
 
   /* --- Sidebar: navegación (blanca en claro, Ink en oscuro) --- */
   --sidebar-bg: var(--nx-white);
@@ -183,6 +190,8 @@
   --surface-inverse: var(--nx-ink);
   --border: var(--nx-graphite-700);
   --border-strong: #3a3a40;
+  --scrollbar-thumb: rgba(247, 246, 243, 0.2);
+  --scrollbar-thumb-hover: rgba(247, 246, 243, 0.4);
   --border-input: #3a3a40;
   --border-input-hover: #55555c;
   --surface-hover: #26262a;
@@ -211,7 +220,8 @@
   --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.6);
   --nx-shadow-overlay: 0 12px 32px rgba(0, 0, 0, 0.6);
   --glass: rgba(10, 10, 11, 0.78);
-  --overlay: rgba(0, 0, 0, 0.6);
+  --overlay: rgba(0, 0, 0, 0.5);
+  --overlay-strong: rgba(0, 0, 0, 0.72);
 
   --sidebar-bg: var(--nx-ink);
   --sidebar-fg: var(--nx-paper);
@@ -226,4 +236,10 @@
 [data-density="compact"] {
   --control-h: 34px;
   --row-h: 46px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --topbar-height: 72px;
+  }
 }

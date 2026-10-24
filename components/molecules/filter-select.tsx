@@ -3,8 +3,8 @@
 import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { NLoader } from "@/components/atoms/n-loader";
-import { selectClasses } from "@/components/atoms/input";
 import { cn } from "@/lib/utils";
+import { Select } from "@/components/atoms/select";
 
 /**
  * Select de filtro que mantiene la URL como única fuente de verdad.
@@ -48,12 +48,12 @@ export default function FilterSelect({
 
   return (
     <span className={cn("relative inline-flex", fullWidth && "w-full")}>
-      <select
+      <Select
         aria-label={allLabel}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         disabled={isPending}
-        className={cn(selectClasses, fullWidth ? "w-full" : "w-full sm:w-auto", isPending && "bg-none")}
+        className={cn(fullWidth ? "w-full" : "w-full sm:w-auto", isPending && "pr-9")}
       >
         <option value="">{allLabel}</option>
         {options.map((option) => (
@@ -61,7 +61,7 @@ export default function FilterSelect({
             {option.label}
           </option>
         ))}
-      </select>
+      </Select>
       {isPending ? (
         <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2">
           <NLoader size={14} className="text-current" />

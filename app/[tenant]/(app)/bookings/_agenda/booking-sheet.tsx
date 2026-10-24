@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { inputClasses, selectClasses, textareaClasses } from "@/components/atoms/input";
+import { inputClasses, textareaClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
 import { MoneyInput } from "@/components/molecules/money-input";
 import { useToast } from "@/components/molecules/toast";
@@ -12,6 +12,7 @@ import { bogotaParts } from "@/lib/business/calendar";
 import { formatCurrency } from "@/lib/format";
 import { saveBookingAction } from "../agenda-actions";
 import type { AgendaBooking, AgendaOption, AgendaService } from "./types";
+import { Select } from "@/components/atoms/select";
 
 /** Datos de la cita al tocar un día u hora del calendario (o al editarla). */
 export default function BookingSheet({ slug, day, time, booking, customers, services, staff, onClose }: { slug: string; day: string; time: string; booking: AgendaBooking | null; customers: AgendaOption[]; services: AgendaService[]; staff: AgendaOption[]; onClose: () => void }) {
@@ -83,26 +84,25 @@ export default function BookingSheet({ slug, day, time, booking, customers, serv
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Cliente" required error={err("customerId")} className="sm:col-span-2">
           {(c) => (
-            <select {...c} value={v.customerId} onChange={(e) => set("customerId", e.target.value)} className={selectClasses}>
+            <Select {...c} value={v.customerId} onChange={(e) => set("customerId", e.target.value)}>
               <option value="">Elige…</option>
               {customers.map((x) => (
                 <option key={x.id} value={x.id}>
                   {x.name}
                 </option>
               ))}
-            </select>
+            </Select>
           )}
         </Field>
         <Field label="Servicio" error={err("productId") ?? err("serviceName")} className="sm:col-span-2">
           {(c) => (
-            <select
+            <Select
               {...c}
               value={v.productId}
               onChange={(e) => {
                 const s = services.find((x) => x.id === e.target.value);
                 setV((x) => ({ ...x, productId: e.target.value, duration: s?.durationMinutes ?? x.duration, amount: s ? s.price * x.partySize : x.amount }));
               }}
-              className={selectClasses}
             >
               <option value="">Otro (escribir)</option>
               {services.map((s) => (
@@ -112,7 +112,7 @@ export default function BookingSheet({ slug, day, time, booking, customers, serv
                   {s.capacity ? ` · cupo ${s.capacity}` : ""}
                 </option>
               ))}
-            </select>
+            </Select>
           )}
         </Field>
         {!v.productId ? (
@@ -141,14 +141,14 @@ export default function BookingSheet({ slug, day, time, booking, customers, serv
         </Field>
         <Field label="Atiende" error={err("staffUserId")}>
           {(c) => (
-            <select {...c} value={v.staffUserId} onChange={(e) => set("staffUserId", e.target.value)} className={selectClasses}>
+            <Select {...c} value={v.staffUserId} onChange={(e) => set("staffUserId", e.target.value)}>
               <option value="">Sin asignar</option>
               {staff.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name}
                 </option>
               ))}
-            </select>
+            </Select>
           )}
         </Field>
         <Field label="Valor">{(c) => <MoneyInput id={c.id} value={v.amount} onValueChange={(x) => set("amount", x)} />}</Field>

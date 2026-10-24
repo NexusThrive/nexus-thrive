@@ -6,6 +6,7 @@ import { useVerticalTerms } from "../../vertical-terms-context";
 import { fieldClasses } from "@/components/atoms/input";
 import { cn } from "@/lib/utils";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
+import { Select } from "@/components/atoms/select";
 
 export type CustomerStatus = "active" | "archived";
 export type CustomerSort = "recent" | "name_asc" | "name_desc";
@@ -66,7 +67,7 @@ export default function CustomerFilters({
         <label className="sr-only" htmlFor="customer-sort">
           {`Ordenar ${terms.customers.toLowerCase()}`}
         </label>
-        <select
+        <Select
           id="customer-sort"
           value={sort}
           onChange={(event) => {
@@ -82,7 +83,7 @@ export default function CustomerFilters({
               {option.label}
             </option>
           ))}
-        </select>
+        </Select>
         {trailing}
       </div>
     </div>

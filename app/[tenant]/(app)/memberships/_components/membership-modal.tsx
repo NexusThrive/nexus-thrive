@@ -14,6 +14,7 @@ import type { MembershipViewRow } from "./membership-table";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { labelClasses } from "@/components/atoms/input";
+import { Select } from "@/components/atoms/select";
 
 const IDLE_STATE: RenewalFormState = { status: "idle" };
 
@@ -102,7 +103,7 @@ export default function MembershipModal({
             >
               Método de pago
             </label>
-            <select
+            <Select
               id="renewal-provider"
               name="provider"
               defaultValue="CASH"
@@ -119,7 +120,7 @@ export default function MembershipModal({
                   {method.label}
                 </option>
               ))}
-            </select>
+            </Select>
             {errors.provider ? (
               <p role="alert" className="mt-1 text-xs text-destructive">
                 {errors.provider}

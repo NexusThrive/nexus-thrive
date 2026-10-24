@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Lock, Send } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { selectClasses, textareaClasses } from "@/components/atoms/input";
+import { textareaClasses } from "@/components/atoms/input";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { formatDateTime } from "@/lib/format";
@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import Panel from "../../../_components/panel";
 import { addTicketMessageAction, setTicketStatusAction, updateTicketAction } from "../../actions";
 import SlaBadge from "../../_components/sla-badge";
+import { Select } from "@/components/atoms/select";
 
 type Option = { id: string; name: string };
 
@@ -108,11 +109,10 @@ export default function TicketDetail({ ticket, messages, staff, me, canReply, ca
           <div className="grid gap-3 p-[18px] text-[13px]">
             <label className="grid gap-1.5 font-medium">
               Responsable
-              <select
+              <Select
                 disabled={!canReply || pending}
                 value={ticket.assigneeId ?? ""}
                 onChange={(e) => run(() => updateTicketAction(ticket.id, { assigneeId: e.target.value || null }), "Responsable actualizado")}
-                className={selectClasses}
               >
                 <option value="">Sin asignar</option>
                 {staff
@@ -123,25 +123,25 @@ export default function TicketDetail({ ticket, messages, staff, me, canReply, ca
                       {s.id === me ? " (tú)" : ""}
                     </option>
                   ))}
-              </select>
+              </Select>
             </label>
             <label className="grid gap-1.5 font-medium">
               Prioridad
-              <select disabled={!canReply || pending} value={ticket.priority} onChange={(e) => run(() => updateTicketAction(ticket.id, { priority: e.target.value }), "Prioridad actualizada")} className={selectClasses}>
+              <Select disabled={!canReply || pending} value={ticket.priority} onChange={(e) => run(() => updateTicketAction(ticket.id, { priority: e.target.value }), "Prioridad actualizada")}>
                 {TICKET_PRIORITIES.map((p) => (
                   <option key={p.value} value={p.value}>
                     {p.label} · respuesta {p.firstResponseHours} h · resolución {p.resolutionHours} h
                   </option>
                 ))}
-              </select>
+              </Select>
             </label>
             <label className="grid gap-1.5 font-medium">
               Categoría
-              <select disabled={!canReply || pending} value={ticket.category} onChange={(e) => run(() => updateTicketAction(ticket.id, { category: e.target.value }), "Categoría actualizada")} className={selectClasses}>
+              <Select disabled={!canReply || pending} value={ticket.category} onChange={(e) => run(() => updateTicketAction(ticket.id, { category: e.target.value }), "Categoría actualizada")}>
                 {TICKET_CATEGORIES.map((c) => (
                   <option key={c}>{c}</option>
                 ))}
-              </select>
+              </Select>
             </label>
             <dl className="grid gap-1.5 text-muted-foreground">
               {[
