@@ -74,7 +74,7 @@ tags: [capas, estructura, subcapa]
 - [ ] SEO por entrada
 - [ ] Biblioteca de contenido reutilizable
 - [ ] Llamados a la acción
-- [ ] Barra de Presencia en dos fases: visibilidad **verificada** (venta en línea, reputación, atribución) y, cuando está llena, madurez NEXUS _(objetivo 2026)_ _(PR-24)_
+- [x] Barra de Presencia en dos fases: visibilidad **verificada** (venta en línea, reputación, atribución) y, cuando está llena, madurez NEXUS _(objetivo 2026)_ _(PR-24)_
 
 #### Técnico
 

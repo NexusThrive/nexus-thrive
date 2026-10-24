@@ -34,6 +34,7 @@ const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
   { file: "lib/onboarding/onboarding-db.ts", model: "User", why: "En el piloto, una cuenta = un negocio: se busca por la cuenta." },
   { file: "lib/api/keys.ts", model: "ApiKey", why: "Autenticar: se busca por el hash de la llave (única en la plataforma); de ahí sale el negocio." },
   { file: "lib/payments/intents-db.ts", model: "PaymentIntent", why: "Enlace público de cobro: se busca por su código aleatorio (único en la plataforma) y solo devuelve negocio, valor, descripción y estado." },
+  { file: "lib/presence/pillars-db.ts", model: "Tenant", why: "Cron semanal: recorre los negocios activos y trabaja cada uno con su propio tenantId." },
   { file: "lib/growth/growth-db.ts", model: "TrackedLink", why: "Enlace corto público: se resuelve por su código aleatorio (único en la plataforma) y solo da la dirección del sitio y los UTM." },
   { file: "lib/growth/growth-db.ts", model: "SiteConfig", why: "Formularios públicos: el negocio se resuelve por la dirección del sitio (única en la plataforma)." },
   { file: "lib/store/store-db.ts", model: "SiteConfig", why: "Tienda pública: se resuelve el negocio por la dirección del sitio (única en la plataforma); todo lo demás va por su tenantId." },

@@ -160,7 +160,7 @@ de «hecho»). No se edita a mano.
 | **21** | Contabilidad | Contabilidad I: plan de cuentas, períodos y reglas | I, VII | N1, N2 | 4/4 | `PR-21-contabilidad-plan-y-periodos` | hecho |
 | **22** | Contabilidad | Contabilidad II: asientos automáticos y partida doble | I, VII | N1, N2 | 3/4 | `PR-22-contabilidad-asientos` | pendiente |
 | **23** | Contabilidad | Estados financieros y exportación al contador | VII | N1, N2 | 4/4 | — | hecho |
-| **24** | Visible y vende en línea | Presencia v2: pilares, fases y tendencia | II | N2 | 0/1 | `PR-24-presencia-v2` | pendiente |
+| **24** | Visible y vende en línea | Presencia v2: pilares, fases y tendencia | II | N2 | 1/1 | `PR-24-presencia-v2` | hecho |
 | **25** | Visible y vende en línea | Mini-sitio con catálogo y SEO técnico | II | N1 | 4/6 | `PR-25-sitio-y-catalogo-publico` | pendiente |
 | **26** | Visible y vende en línea | Tienda en línea: carrito, pedido y pago | V | N1 | 2/5 | `PR-26-tienda-carrito-y-envios` | pendiente |
 | **27** | Visible y vende en línea | SEO local y Google Business | II | N1 | 0/1 | — | pendiente |
@@ -489,7 +489,7 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** La barra muestra la fase A con pilares nuevos y su tendencia; `get_presence` responde por MCP; se recalcula por eventos.
 - **Casillas que marca:**
   - [`II.00 · N2`](capas/II-Visibilidad-Captacion-y-Presencia-Digital/00-Sitios-Web-Landing-Pages-y-Cms/README.md)
-    - [ ] Barra de Presencia en dos fases: visibilidad **verificada** (venta en línea, reputación, atribución) y, cuando está llena, madurez NEXUS
+    - [x] Barra de Presencia en dos fases: visibilidad **verificada** (venta en línea, reputación, atribución) y, cuando está llena, madurez NEXUS
 
 ### PR-25 · Mini-sitio con catálogo y SEO técnico
 

@@ -8,7 +8,7 @@ import { OPERATIONS } from "@/lib/operations/registry";
 import { confirmIntent, createIntent } from "@/lib/payments/intents-db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { todayCO } from "@/lib/tax/tax";
-import { maturityInput, presenceV2, refreshPresence } from "./pillars-db";
+import { maturityInput, presenceV2, refreshPresence, sendWeeklyReport } from "./pillars-db";
 
 const suffixM = Date.now().toString(36);
 
@@ -88,6 +88,26 @@ describe.skipIf(!TEST_URL)("presencia v2 (integración)", () => {
       await db.orm.public.Product.create({ tenantId: id, name: "Uno", price: "1000.00" });
       expect(await maturityInput(id)).toMatchObject({ invoices30d: 0, productsActive: 1, customers: 0, expenses30d: 0, cashSessions30d: 0 });
       expect((await presenceV2(id)).maturity).toBeNull();
+    } finally {
+      await deleteTenantCompletely(id);
+    }
+  });
+  test("reporte semanal: una sola vez por semana y solo del propio negocio; el cambio de fase avisa una vez", async () => {
+    const t = await createAdminDb().createTenant({ name: "Avisos", slug: `avi-${suffixM}`, vertical: "retail", modules: ["inventory"], tenantType: "COMPANY", ownerEmail: `avi-${suffixM}@ejemplo.com` });
+    const id = String(t.id);
+    try {
+      expect(await sendWeeklyReport(id)).toBe(true);
+      expect(await sendWeeklyReport(id)).toBe(false);
+      const events = await db.orm.public.OutboxEvent.where({ tenantId: id, type: "presence.weekly_report" }).all();
+      expect(events).toHaveLength(1);
+      expect((events[0]!.payload as { text: string }).text).toContain("Presencia ");
+      // Cambio de fase: se simula una foto de hoy en fase B y al refrescar vuelve a A → un aviso, y refrescar otra vez no repite.
+      await db.orm.public.PresenceSnapshot.where({ tenantId: id }).update({ phase: "B_READY" });
+      await refreshPresence(id);
+      await refreshPresence(id);
+      const changes = await db.orm.public.OutboxEvent.where({ tenantId: id, type: "presence.phase_changed" }).all();
+      expect(changes).toHaveLength(1);
+      expect(changes[0]!.payload).toMatchObject({ from: "B_READY", to: "A" });
     } finally {
       await deleteTenantCompletely(id);
     }

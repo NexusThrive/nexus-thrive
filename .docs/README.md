@@ -118,7 +118,7 @@ solo si existe en el producto, con una nota de dónde (_hecho: …_).
 | Capa | Nombre | Nivel N1 (lo básico) | Todas las funcionalidades | Integración (API · MCP · Webhooks) | |
 | --- | --- | --- | --- | --- | --- |
 | I | [FUNDACIÓN, NÚCLEO E INFRAESTRUCTURA](capas/I-Fundacion-Nucleo-e-Infraestructura/README.md) | 26/34 · 76 % | 30/138 · 22 % | 0/47 · 0 % | `██░░░░░░░░` |
-| II | [VISIBILIDAD, CAPTACIÓN Y PRESENCIA DIGITAL](capas/II-Visibilidad-Captacion-y-Presencia-Digital/README.md) | 7/26 · 27 % | 8/170 · 5 % | 0/42 · 0 % | `░░░░░░░░░░` |
+| II | [VISIBILIDAD, CAPTACIÓN Y PRESENCIA DIGITAL](capas/II-Visibilidad-Captacion-y-Presencia-Digital/README.md) | 7/26 · 27 % | 9/170 · 5 % | 0/42 · 0 % | `█░░░░░░░░░` |
 | III | [ATENCIÓN Y COMUNICACIÓN](capas/III-Atencion-y-Comunicacion/README.md) | 1/9 · 11 % | 1/78 · 1 % | 0/30 · 0 % | `░░░░░░░░░░` |
 | IV | [GESTIÓN COMERCIAL Y RELACIÓN CON CLIENTES](capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/README.md) | 5/14 · 36 % | 5/92 · 5 % | 0/30 · 0 % | `█░░░░░░░░░` |
 | V | [VENTAS DIGITALES, COMERCIO Y PAGOS](capas/V-Ventas-Digitales-Comercio-y-Pagos/README.md) | 11/24 · 46 % | 23/162 · 14 % | 0/48 · 0 % | `█░░░░░░░░░` |
@@ -128,7 +128,7 @@ solo si existe en el producto, con una nota de dónde (_hecho: …_).
 | IX | [INTELIGENCIA DE NEGOCIO, ANALÍTICA E IA](capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/README.md) | 9/26 · 35 % | 9/128 · 7 % | 0/35 · 0 % | `█░░░░░░░░░` |
 | X | [PLATAFORMA SAAS, GOBERNANZA Y ESCALABILIDAD](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/README.md) | 11/18 · 61 % | 20/127 · 16 % | 0/30 · 0 % | `██░░░░░░░░` |
 | XI | [ESPECIALIZACIÓN POR VERTICAL](capas/XI-Especializacion-por-Vertical/README.md) | 0/0 · — | 0/0 · — | 0/6 · 0 % | `` |
-| | **Total** | **101/241 · 42 %** | **138/1510 · 9 %** | **0/418 · 0 %** | |
+| | **Total** | **101/241 · 42 %** | **139/1510 · 9 %** | **0/418 · 0 %** | |
 
 _Generado con `node scripts/capas-progreso.mjs --write`. La capa XI (construcción) usa pestañas en lugar de casillas: su estado está en su README. «Integración» cuenta las casillas de la superficie API · MCP · Webhooks de cada subcapa (no suman al porcentaje de funcionalidades)._
 <!-- progreso:fin -->
