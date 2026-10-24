@@ -1,0 +1,602 @@
+[
+  {
+    "id": "table.ExternalConnection",
+    "label": "Create table \"ExternalConnection\"",
+    "summary": "Creates table \"ExternalConnection\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ExternalConnection"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ExternalConnection\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ExternalConnection\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ExternalConnection\"",
+        "sql": "CREATE TABLE \"public\".\"ExternalConnection\" (\n  \"config\" json,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"credentialsEnc\" text,\n  \"credentialsKeyId\" text,\n  \"environment\" text DEFAULT 'sandbox' NOT NULL,\n  \"id\" text NOT NULL,\n  \"kind\" text NOT NULL,\n  \"lastCheckedAt\" timestamptz,\n  \"lastError\" text,\n  \"provider\" text NOT NULL,\n  \"status\" text DEFAULT 'DISCONNECTED' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ExternalConnection\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ExternalConnection\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ProviderEvent",
+    "label": "Create table \"ProviderEvent\"",
+    "summary": "Creates table \"ProviderEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ProviderEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ProviderEvent\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProviderEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ProviderEvent\"",
+        "sql": "CREATE TABLE \"public\".\"ProviderEvent\" (\n  \"connectionId\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"error\" text,\n  \"eventType\" text NOT NULL,\n  \"externalId\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"kind\" text NOT NULL,\n  \"processedAt\" timestamptz,\n  \"provider\" text NOT NULL,\n  \"rawBody\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ProviderEvent\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProviderEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ExternalConnection.ExternalConnection_tenantId_kind_provider_environment_key",
+    "label": "Add unique constraint on \"ExternalConnection\" (tenantId, kind, provider, environment)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ExternalConnection_tenantId_kind_provider_environment_key",
+        "table": "ExternalConnection"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ExternalConnection_tenantId_kind_provider_environment_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ExternalConnection_tenantId_kind_provider_environment_key",
+          "public",
+          "\"public\".\"ExternalConnection\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ExternalConnection_tenantId_kind_provider_environment_key\"",
+        "sql": "ALTER TABLE \"public\".\"ExternalConnection\" ADD CONSTRAINT \"ExternalConnection_tenantId_kind_provider_environment_key\" UNIQUE (\"tenantId\", \"kind\", \"provider\", \"environment\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ExternalConnection_tenantId_kind_provider_environment_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ExternalConnection_tenantId_kind_provider_environment_key",
+          "public",
+          "\"public\".\"ExternalConnection\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ProviderEvent.ProviderEvent_tenantId_provider_externalId_key",
+    "label": "Add unique constraint on \"ProviderEvent\" (tenantId, provider, externalId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ProviderEvent_tenantId_provider_externalId_key",
+        "table": "ProviderEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ProviderEvent_tenantId_provider_externalId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProviderEvent_tenantId_provider_externalId_key",
+          "public",
+          "\"public\".\"ProviderEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ProviderEvent_tenantId_provider_externalId_key\"",
+        "sql": "ALTER TABLE \"public\".\"ProviderEvent\" ADD CONSTRAINT \"ProviderEvent_tenantId_provider_externalId_key\" UNIQUE (\"tenantId\", \"provider\", \"externalId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ProviderEvent_tenantId_provider_externalId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProviderEvent_tenantId_provider_externalId_key",
+          "public",
+          "\"public\".\"ProviderEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ExternalConnection.ExternalConnection_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ExternalConnection_tenantId_idx_c93ed4f1\" on \"ExternalConnection\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ExternalConnection_tenantId_idx_c93ed4f1",
+        "table": "ExternalConnection"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ExternalConnection_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ExternalConnection_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ExternalConnection_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ExternalConnection_tenantId_idx_c93ed4f1\" ON \"public\".\"ExternalConnection\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ExternalConnection_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ExternalConnection_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ExternalConnection.ExternalConnection_tenantId_kind_idx_1e76dd5c",
+    "label": "Create index \"ExternalConnection_tenantId_kind_idx_1e76dd5c\" on \"ExternalConnection\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ExternalConnection_tenantId_kind_idx_1e76dd5c",
+        "table": "ExternalConnection"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ExternalConnection_tenantId_kind_idx_1e76dd5c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ExternalConnection_tenantId_kind_idx_1e76dd5c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ExternalConnection_tenantId_kind_idx_1e76dd5c\"",
+        "sql": "CREATE INDEX \"ExternalConnection_tenantId_kind_idx_1e76dd5c\" ON \"public\".\"ExternalConnection\" (\"tenantId\", \"kind\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ExternalConnection_tenantId_kind_idx_1e76dd5c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ExternalConnection_tenantId_kind_idx_1e76dd5c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProviderEvent.ProviderEvent_connectionId_idx_b3eeb6ac",
+    "label": "Create index \"ProviderEvent_connectionId_idx_b3eeb6ac\" on \"ProviderEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProviderEvent_connectionId_idx_b3eeb6ac",
+        "table": "ProviderEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProviderEvent_connectionId_idx_b3eeb6ac\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProviderEvent_connectionId_idx_b3eeb6ac\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProviderEvent_connectionId_idx_b3eeb6ac\"",
+        "sql": "CREATE INDEX \"ProviderEvent_connectionId_idx_b3eeb6ac\" ON \"public\".\"ProviderEvent\" (\"connectionId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProviderEvent_connectionId_idx_b3eeb6ac\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProviderEvent_connectionId_idx_b3eeb6ac\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProviderEvent.ProviderEvent_processedAt_idx_e83f4a54",
+    "label": "Create index \"ProviderEvent_processedAt_idx_e83f4a54\" on \"ProviderEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProviderEvent_processedAt_idx_e83f4a54",
+        "table": "ProviderEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProviderEvent_processedAt_idx_e83f4a54\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProviderEvent_processedAt_idx_e83f4a54\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProviderEvent_processedAt_idx_e83f4a54\"",
+        "sql": "CREATE INDEX \"ProviderEvent_processedAt_idx_e83f4a54\" ON \"public\".\"ProviderEvent\" (\"processedAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProviderEvent_processedAt_idx_e83f4a54\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProviderEvent_processedAt_idx_e83f4a54\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProviderEvent.ProviderEvent_tenantId_createdAt_idx_88162366",
+    "label": "Create index \"ProviderEvent_tenantId_createdAt_idx_88162366\" on \"ProviderEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProviderEvent_tenantId_createdAt_idx_88162366",
+        "table": "ProviderEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProviderEvent_tenantId_createdAt_idx_88162366\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProviderEvent_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProviderEvent_tenantId_createdAt_idx_88162366\"",
+        "sql": "CREATE INDEX \"ProviderEvent_tenantId_createdAt_idx_88162366\" ON \"public\".\"ProviderEvent\" (\"tenantId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProviderEvent_tenantId_createdAt_idx_88162366\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProviderEvent_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProviderEvent.ProviderEvent_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ProviderEvent_tenantId_idx_c93ed4f1\" on \"ProviderEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProviderEvent_tenantId_idx_c93ed4f1",
+        "table": "ProviderEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProviderEvent_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProviderEvent_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProviderEvent_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ProviderEvent_tenantId_idx_c93ed4f1\" ON \"public\".\"ProviderEvent\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProviderEvent_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProviderEvent_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ExternalConnection.ExternalConnection_tenantId_fkey",
+    "label": "Add foreign key \"ExternalConnection_tenantId_fkey\" on \"ExternalConnection\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ExternalConnection_tenantId_fkey",
+        "table": "ExternalConnection"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ExternalConnection_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ExternalConnection_tenantId_fkey",
+          "public",
+          "\"public\".\"ExternalConnection\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ExternalConnection_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ExternalConnection\"\nADD CONSTRAINT \"ExternalConnection_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ExternalConnection_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ExternalConnection_tenantId_fkey",
+          "public",
+          "\"public\".\"ExternalConnection\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProviderEvent.ProviderEvent_tenantId_fkey",
+    "label": "Add foreign key \"ProviderEvent_tenantId_fkey\" on \"ProviderEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProviderEvent_tenantId_fkey",
+        "table": "ProviderEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProviderEvent_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProviderEvent_tenantId_fkey",
+          "public",
+          "\"public\".\"ProviderEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProviderEvent_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProviderEvent\"\nADD CONSTRAINT \"ProviderEvent_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProviderEvent_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProviderEvent_tenantId_fkey",
+          "public",
+          "\"public\".\"ProviderEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProviderEvent.ProviderEvent_connectionId_fkey",
+    "label": "Add foreign key \"ProviderEvent_connectionId_fkey\" on \"ProviderEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProviderEvent_connectionId_fkey",
+        "table": "ProviderEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProviderEvent_connectionId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProviderEvent_connectionId_fkey",
+          "public",
+          "\"public\".\"ProviderEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProviderEvent_connectionId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProviderEvent\"\nADD CONSTRAINT \"ProviderEvent_connectionId_fkey\"\nFOREIGN KEY (\"connectionId\")\nREFERENCES \"public\".\"ExternalConnection\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProviderEvent_connectionId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProviderEvent_connectionId_fkey",
+          "public",
+          "\"public\".\"ProviderEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.ExternalConnection",
+    "label": "Enable row-level security on \"ExternalConnection\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "ExternalConnection"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"ExternalConnection\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ExternalConnection"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"ExternalConnection\"",
+        "sql": "ALTER TABLE \"public\".\"ExternalConnection\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"ExternalConnection\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "ExternalConnection"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.ProviderEvent",
+    "label": "Enable row-level security on \"ProviderEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "ProviderEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"ProviderEvent\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ProviderEvent"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"ProviderEvent\"",
+        "sql": "ALTER TABLE \"public\".\"ProviderEvent\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"ProviderEvent\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "ProviderEvent"
+        ]
+      }
+    ]
+  }
+]

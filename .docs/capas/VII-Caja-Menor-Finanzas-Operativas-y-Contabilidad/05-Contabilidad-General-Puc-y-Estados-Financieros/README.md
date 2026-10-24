@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `chart-of-accounts`, `journal-entries`, `ledgers`, `financial-statements`, `accounting-exports` |
+| Eventos (outbox → webhooks) | `journal_entry.posted`, `period.closed`, `export.ready` |
+| MCP · lectura | `get_trial_balance`, `get_financial_statement` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `post_journal_entry`, `close_period` |
+| Sistemas externos (puertos y adaptadores) | Exportación al contador (Siigo, World Office, Alegra, archivos planos) |
+
+#### Integración
+
+- [ ] API REST de lectura: chart-of-accounts, journal-entries, ledgers, financial-statements, accounting-exports (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: journal_entry.posted, period.closed, export.ready (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: get_trial_balance, get_financial_statement (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: post_journal_entry, close_period (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento contable, plan de cuentas y periodos
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
@@ -23,8 +46,8 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Reportes simples
-- [ ] Exportación
+- [ ] Reportes simples _(PR-23)_
+- [ ] Exportación _(PR-23)_
 - [ ] Categorías de ingresos y gastos.
 
 #### Técnico
@@ -36,12 +59,12 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Plan de cuentas (PUC)
-- [ ] Asientos automáticos
+- [ ] Plan de cuentas (PUC) _(PR-21)_
+- [ ] Asientos automáticos _(PR-22)_
 - [ ] Comprobantes contables manuales
-- [ ] Libros auxiliares, libro diario, libro mayor y balance de prueba.
-- [ ] Terceros y centros de costo en cada asiento
-- [ ] Reportes para el contador
+- [ ] Libros auxiliares, libro diario, libro mayor y balance de prueba. _(PR-23)_
+- [ ] Terceros y centros de costo en cada asiento _(PR-22)_
+- [ ] Reportes para el contador _(PR-23)_
 
 #### Técnico
 

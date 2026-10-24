@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `reports`, `report-schedules`, `report-runs` |
+| Eventos (outbox → webhooks) | `report.generated`, `report.delivered` |
+| MCP · lectura | `list_reports`, `get_report` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `schedule_report` |
+| Sistemas externos (puertos y adaptadores) | Correo / WhatsApp de entrega |
+
+#### Integración
+
+- [ ] API REST de lectura: reports, report-schedules, report-runs (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: report.generated, report.delivered (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: list_reports, get_report (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: schedule_report (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de reportes, destinatarios y periodicidad
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).

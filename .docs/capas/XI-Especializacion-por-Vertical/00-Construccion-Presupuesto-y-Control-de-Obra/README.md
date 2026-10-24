@@ -22,6 +22,29 @@ tags: [capas, estructura, subcapa, construccion, apu]
 
 ---
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `projects`, `budgets`, `budget-items`, `apu-items`, `field-logs`, `lean-tasks`, `progress-reports`, `material-explosions` |
+| Eventos (outbox → webhooks) | `project.created`, `budget.baseline_approved`, `field_log.created`, `progress.certified`, `lean_task.missed` |
+| MCP · lectura | `get_project`, `get_budget`, `get_progress`, `get_material_explosion` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `create_field_log`, `propose_progress_report` |
+| Sistemas externos (puertos y adaptadores) | Importación de catálogos APU (Excel), exportación de informes (PDF / Excel) |
+
+#### Integración
+
+- [ ] API REST de lectura: projects, budgets, budget-items, apu-items, field-logs, lean-tasks, progress-reports, material-explosions (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: project.created, budget.baseline_approved, field_log.created, progress.certified, lean_task.missed (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: get_project, get_budget, get_progress, get_material_explosion (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: create_field_log, propose_progress_report (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## Modelo de madurez N0–N4
 
 Los niveles representan **madurez funcional**, no etapas cronológicas de la obra.

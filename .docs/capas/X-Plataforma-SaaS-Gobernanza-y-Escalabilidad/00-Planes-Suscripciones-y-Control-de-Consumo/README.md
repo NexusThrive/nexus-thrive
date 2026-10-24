@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `plans`, `activation-codes`, `entitlements`, `usage-meters`, `usage-events` |
+| Eventos (outbox → webhooks) | `plan.changed`, `entitlement.changed`, `usage.threshold_reached`, `usage.limit_exceeded`, `activation_code.redeemed` |
+| MCP · lectura | `get_entitlements`, `get_usage`, `list_plans` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `redeem_code`, `request_plan_change` |
+| Sistemas externos (puertos y adaptadores) | Cobro del plan por pasarela (V.00, V.02) |
+
+#### Integración
+
+- [ ] API REST de lectura: plans, activation-codes, entitlements, usage-meters, usage-events (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: plan.changed, entitlement.changed, usage.threshold_reached, usage.limit_exceeded, activation_code.redeemed (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: get_entitlements, get_usage, list_plans (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: redeem_code, request_plan_change (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de planes, límites y unidades de consumo
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).

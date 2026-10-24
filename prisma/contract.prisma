@@ -376,6 +376,15 @@ model Tenant {
   bookings           Booking[]
   contacts           TenantContact[]
   leads              Lead[]
+  apiKeys            ApiKey[]
+  apiRequestLogs     ApiRequestLog[]
+  idempotencyRecords IdempotencyRecord[]
+  outboxEvents       OutboxEvent[]
+  webhookEndpoints   WebhookEndpoint[]
+  webhookDeliveries  WebhookDelivery[]
+  usageCounters      UsageCounter[]
+  externalConnections ExternalConnection[]
+  providerEvents     ProviderEvent[]
   supportTickets     SupportTicket[]
   charges            Charge[]
   benefitRedemptions BenefitRedemption[]
@@ -898,10 +907,17 @@ model AuditLog {
   ipAddress  String?
   userAgent  String?
   createdAt  DateTime @default(now())
+  /// Quién actuó: USER | API_KEY | AGENT | AUTOMATION | SYSTEM.
+  actorType  String   @default("USER")
+  /// Llave de API que ejecutó la acción (si fue por API/MCP).
+  apiKeyId   String?
+  /// Identificador de la petición (el mismo de `X-Request-Id`).
+  requestId  String?
 
   @@index([createdAt])
   @@index([targetTenantId])
   @@index([actorId])
+  @@index([apiKeyId])
   @@rls
 }
 
@@ -2222,5 +2238,222 @@ model PresenceScan {
   createdAt DateTime @default(now())
 
   @@index([tenantId, createdAt])
+  @@rls
+}
+
+/// Llave de API de un negocio (X.02, PR-02). Solo se guarda el hash; la llave
+/// completa se muestra una vez al crearla. Su rol efectivo nunca supera el de
+/// quien la creó (`createdByRole`) y sus alcances recortan lo que ve.
+model ApiKey {
+  id            String    @id @default(uuid())
+  tenantId      String
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name          String
+  /// Primeros caracteres visibles (nx_live_ab12…) para reconocerla en la lista.
+  keyPrefix     String
+  /// SHA-256 de la llave completa.
+  keyHash       String    @unique
+  /// live | test
+  environment   String    @default("live")
+  /// Alcances: `*`, `read`, `<recurso>.*` o un id de operación.
+  scopes        String[]
+  ipAllowlist   String[]
+  createdById   String?
+  createdByRole String?
+  expiresAt     DateTime?
+  lastUsedAt    DateTime?
+  revokedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     temporal.updatedAt()
+  requestLogs   ApiRequestLog[]
+  idempotencyRecords IdempotencyRecord[]
+
+  @@index([tenantId])
+  @@rls
+}
+
+/// Registro de cada llamada a la API (sin cuerpos ni secretos).
+model ApiRequestLog {
+  id             String   @id @default(uuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  apiKeyId       String?
+  apiKey         ApiKey?  @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+  requestId      String
+  method         String
+  path           String
+  operationId    String?
+  status         Int
+  durationMs     Int
+  idempotencyKey String?
+  ip             String?
+  createdAt      DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([apiKeyId, createdAt])
+  @@rls
+}
+
+/// Respuesta guardada para la misma `Idempotency-Key` (24 h).
+model IdempotencyRecord {
+  id             String   @id @default(uuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  apiKeyId       String
+  apiKey         ApiKey   @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+  key            String
+  requestHash    String
+  responseStatus Int
+  responseBody   Json
+  createdAt      DateTime @default(now())
+  expiresAt      DateTime
+
+  @@unique([apiKeyId, key])
+  @@index([expiresAt])
+  @@rls
+}
+
+/// Hecho de negocio ya ocurrido (`sale.completed`…), escrito en la MISMA
+/// transacción que el hecho. Un despachador lo reparte a los webhooks del negocio.
+model OutboxEvent {
+  id            String    @id @default(uuid())
+  tenantId      String
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  type          String
+  version       Int       @default(1)
+  resourceType  String?
+  resourceId    String?
+  payload       Json
+  createdAt     DateTime  @default(now())
+  /// Cuándo se repartió a las suscripciones (null = pendiente).
+  processedAt   DateTime?
+  deliveries    WebhookDelivery[]
+
+  @@index([tenantId, createdAt])
+  @@index([processedAt, createdAt])
+  @@rls
+}
+
+/// URL HTTPS del cliente que recibe eventos firmados. El secreto se guarda cifrado.
+model WebhookEndpoint {
+  id                   String    @id @default(uuid())
+  tenantId             String
+  tenant               Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  url                  String
+  description          String?
+  secretEnc            String
+  previousSecretEnc    String?
+  previousSecretUntil  DateTime?
+  /// Vacío = todos los eventos.
+  eventTypes           String[]
+  active               Boolean   @default(true)
+  consecutiveFailures  Int       @default(0)
+  disabledAt           DateTime?
+  disabledReason       String?
+  createdById          String?
+  createdAt            DateTime  @default(now())
+  updatedAt            temporal.updatedAt()
+  deliveries           WebhookDelivery[]
+
+  @@index([tenantId, active])
+  @@rls
+}
+
+/// Entrega de un evento a un endpoint: una fila por par, con su contador de
+/// intentos (reintentos exponenciales; FAILED = bandeja de fallidos, reenviable).
+model WebhookDelivery {
+  id              String    @id @default(uuid())
+  tenantId        String
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  endpointId      String
+  endpoint        WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+  eventId         String
+  event           OutboxEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  /// Intentos ya hechos.
+  attempt         Int       @default(0)
+  /// PENDING | SUCCESS | FAILED
+  status          String    @default("PENDING")
+  responseStatus  Int?
+  responseExcerpt String?
+  durationMs      Int?
+  nextAttemptAt   DateTime?
+  createdAt       DateTime  @default(now())
+  deliveredAt     DateTime?
+
+  @@unique([endpointId, eventId])
+  @@index([tenantId, status, nextAttemptAt])
+  @@index([endpointId, createdAt])
+  @@rls
+}
+
+/// Consumo medido por negocio, medidor y periodo (`YYYY-MM`). Base de los cupos
+/// (`limitQuantity` null = el predeterminado del medidor) y del cobro por uso.
+model UsageCounter {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// api.requests | events.delivered | ai.tokens | messages.sent | automations.runs
+  meter         String
+  period        String
+  quantity      Int      @default(0)
+  limitQuantity Int?
+  updatedAt     temporal.updatedAt()
+
+  @@unique([tenantId, meter, period])
+  @@index([tenantId, period])
+  @@rls
+}
+
+/// Conexión de un negocio con un proveedor externo (pasarela de pago,
+/// facturación electrónica, mensajería…) detrás de un «puerto». Las credenciales
+/// se guardan cifradas; nunca salen por la API ni la pantalla.
+model ExternalConnection {
+  id               String   @id @default(uuid())
+  tenantId         String
+  tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// PAYMENT | EINVOICE | MESSAGING | SHIPPING
+  kind             String
+  /// sandbox | wompi | nequi | whatsapp | <proveedor DIAN>…
+  provider         String
+  /// sandbox | production
+  environment      String   @default("sandbox")
+  /// DISCONNECTED | CONNECTED | ERROR
+  status           String   @default("DISCONNECTED")
+  credentialsEnc   String?
+  /// Clave con la que se cifró (permite rotarla).
+  credentialsKeyId String?
+  config           Json?
+  lastCheckedAt    DateTime?
+  lastError        String?
+  createdAt        DateTime @default(now())
+  updatedAt        temporal.updatedAt()
+  events           ProviderEvent[]
+
+  @@unique([tenantId, kind, provider, environment])
+  @@index([tenantId, kind])
+  @@rls
+}
+
+/// Evento que un proveedor envía a NEXUS (webhook entrante). Solo se guarda con
+/// firma válida y una sola vez por (negocio, proveedor, id externo).
+model ProviderEvent {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  connectionId  String
+  connection    ExternalConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  provider      String
+  kind          String
+  /// Tipo normalizado (`payment.succeeded`…).
+  eventType     String
+  externalId    String
+  rawBody       String
+  processedAt   DateTime?
+  error         String?
+  createdAt     DateTime @default(now())
+
+  @@unique([tenantId, provider, externalId])
+  @@index([tenantId, createdAt])
+  @@index([processedAt])
   @@rls
 }

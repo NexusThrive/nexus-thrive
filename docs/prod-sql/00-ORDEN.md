@@ -21,6 +21,10 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 10 | `2026-10-23-codigos-a-medida.sql` | Códigos a medida: precio, módulos y límites en `BenefitCode`; límites en `Tenant`; precio en `BenefitRedemption` (aditivo) | **PENDIENTE** |
 | 11 | `2026-10-23-registro-de-capacidades.sql` | Módulos como texto validado (sin el CHECK del enum) y suite de construcción de `quotes` a `construction` (datos) | **PENDIENTE** |
 | 12 | `2026-10-23-documento-comercial.sql` | Documento comercial unificado: totales, origen y cobro en `Invoice`; descuento e impuesto en `InvoiceLine` (aditivo) | **PENDIENTE** |
+| 13 | `2026-10-24-api-llaves.sql` | API: llaves por negocio, registro de uso e idempotencia (`ApiKey`, `ApiRequestLog`, `IdempotencyRecord`) | generado de la migración |
+| 14 | `2026-10-24-webhooks-outbox.sql` | Eventos: outbox transaccional y webhooks firmados (`OutboxEvent`, `WebhookEndpoint`, `WebhookDelivery`) | generado de la migración |
+| 15 | `2026-10-24-uso-y-origen.sql` | Bitácora con origen (`actorType`, `apiKeyId`, `requestId` en `AuditLog`) y medidores de uso (`UsageCounter`) | generado de la migración |
+| 16 | `2026-10-24-conexiones-externas.sql` | Conexiones con proveedores y webhooks entrantes (`ExternalConnection`, `ProviderEvent`) | generado de la migración |
 
 ## Estado: producción reconstruida desde las migraciones (camino A, 2026-10-23)
 

@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `electronic-invoices`, `electronic-credit-notes`, `pos-electronic-documents`, `radian-events`, `provider-accounts` |
+| Eventos (outbox → webhooks) | `einvoice.submitted`, `einvoice.accepted`, `einvoice.rejected`, `radian.event_received` |
+| MCP · lectura | `get_einvoice_status`, `list_rejected_einvoices` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `submit_einvoice`, `retry_einvoice` |
+| Sistemas externos (puertos y adaptadores) | DIAN por proveedor tecnológico (Alegra, Siigo, Factus, Carvajal, etc.) detrás de un puerto de facturación; certificado y resolución por negocio; webhook de estado entrante |
+
+#### Integración
+
+- [ ] API REST de lectura: electronic-invoices, electronic-credit-notes, pos-electronic-documents, radian-events, provider-accounts (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: einvoice.submitted, einvoice.accepted, einvoice.rejected, radian.event_received (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: get_einvoice_status, list_rejected_einvoices (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: submit_einvoice, retry_einvoice (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento normativo y ciclo de documentos electrónicos
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
@@ -23,11 +46,11 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Factura electrónica
-- [ ] Datos del emisor y del adquirente
-- [ ] PDF y XML
-- [ ] Documento soporte
-- [ ] Factura electrónica por proveedor tecnológico detrás de un puerto (`EInvoicePort`); no firmar XML propio _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
+- [ ] Factura electrónica _(PR-18)_
+- [ ] Datos del emisor y del adquirente _(PR-18)_
+- [ ] PDF y XML _(PR-18)_
+- [ ] Documento soporte _(PR-18)_
+- [ ] Factura electrónica por proveedor tecnológico detrás de un puerto (`EInvoicePort`); no firmar XML propio _(objetivo 2026 · ver `docs/PENDIENTES.md`)_ _(PR-18)_
 
 #### Técnico
 
@@ -38,11 +61,11 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Factura automática
-- [ ] Notas crédito y débito electrónicas
-- [ ] Estado ante la DIAN
-- [ ] Impuestos por ítem y por tercero
-- [ ] Gestión de resoluciones y consecutivos
+- [ ] Factura automática _(PR-18)_
+- [ ] Notas crédito y débito electrónicas _(PR-20)_
+- [ ] Estado ante la DIAN _(PR-18)_
+- [ ] Impuestos por ítem y por tercero _(PR-13)_
+- [ ] Gestión de resoluciones y consecutivos _(PR-13)_
 - [ ] Factura de venta en POS
 
 #### Técnico

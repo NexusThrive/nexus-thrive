@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import type { ModuleValue } from "@/lib/admin/catalogs";
 import ProfileTab from "./profile-tab";
@@ -11,9 +11,12 @@ import type { PendingInvite, TeamMember as BusinessMember } from "@/lib/business
 import PlanTab, { type PlanInfo } from "./plan-tab";
 import NfcTab, { type CardOwner } from "./nfc-tab";
 import DangerTab from "./danger-tab";
-import { Blocks, CreditCard, Nfc, Palette, Store, TriangleAlert, Users } from "lucide-react";
+import { Blocks, CreditCard, Plug, Nfc, Palette, Store, TriangleAlert, Users } from "lucide-react";
 import { SectionNav } from "@/components/molecules/section-nav";
 import { PageHeader } from "@/components/molecules/page-header";
+import { ApiKeysPanel } from "@/components/organisms/api-keys-panel";
+import type { ApiKeyRow } from "@/lib/api/keys";
+import { createApiKeyAction, revokeApiKeyAction } from "../api-keys-actions";
 import { AppearanceSettings } from "@/components/organisms/appearance-settings";
 
 
@@ -35,13 +38,14 @@ export type ModuleState = {
 export type SystemInfoItem = { label: string; value: string };
 export type { CardOwner, PlanInfo };
 
-type Tab = "profile" | "plan" | "modules" | "team" | "card" | "appearance" | "danger";
+type Tab = "profile" | "plan" | "modules" | "team" | "integrations" | "card" | "appearance" | "danger";
 
 const TABS = [
   { id: "profile", label: "Perfil del negocio", icon: Store, hint: "Nombre, enlace y contacto" },
   { id: "plan", label: "Plan", icon: CreditCard, hint: "Thrive y lo que incluye" },
   { id: "modules", label: "Módulos", icon: Blocks, hint: "Activa lo que usas" },
   { id: "team", label: "Equipo", icon: Users, hint: "Quién entra al negocio" },
+  { id: "integrations", label: "Integraciones", icon: Plug, hint: "Llaves de API para n8n y agentes" },
   { id: "card", label: "Tarjeta NFC", icon: Nfc, hint: "Tu tarjeta de contacto" },
   { id: "appearance", label: "Apariencia", icon: Palette, hint: "Tema, densidad y movimiento" },
   { id: "danger", label: "Zona de peligro", icon: TriangleAlert, hint: "Eliminar el negocio" },
@@ -57,6 +61,7 @@ export default function SettingsShell({
   profile,
   modules,
   team,
+  apiKeys,
   systemInfo,
   plan,
   card,
@@ -66,6 +71,7 @@ export default function SettingsShell({
   profile: ProfileInitialValues;
   modules: ModuleState[];
   team: { members: BusinessMember[]; invites: PendingInvite[]; seats: Seats; canManage: boolean; meRole: string };
+  apiKeys: ApiKeyRow[];
   systemInfo: SystemInfoItem[];
   plan: PlanInfo;
   card: CardOwner;
@@ -75,6 +81,7 @@ export default function SettingsShell({
     ? params.tenant[0]
     : (params?.tenant ?? initialTenantSlug);
 
+  const router = useRouter();
   const [tab, setTab] = useState<Tab>("profile");
 
   return (
@@ -105,6 +112,15 @@ export default function SettingsShell({
         )}
         {tab === "plan" && <PlanTab info={plan} />}
         {tab === "team" && <TeamTab slug={initialTenantSlug} {...team} />}
+        {tab === "integrations" && (
+          <ApiKeysPanel
+            keys={apiKeys}
+            canManage={team.canManage}
+            onCreate={(input) => createApiKeyAction(currentSlug, input)}
+            onRevoke={(id) => revokeApiKeyAction(currentSlug, id)}
+            onChanged={() => router.refresh()}
+          />
+        )}
         {tab === "card" && <NfcTab owner={card} />}
         {tab === "appearance" && <AppearanceSettings />}
         {tab === "danger" && <DangerTab slug={initialTenantSlug} canManage={canManage} />}

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { tenantWithModules } from "@/lib/tenant/membership";
 import { createTenantDb } from "@/lib/tenant/db";
 import { listTeam, seatLimit } from "@/lib/business/team-db";
+import { listApiKeys } from "@/lib/api/keys";
 import { canManageTeam } from "@/lib/business/roles";
 import { paymentMethodLabel } from "@/lib/finance";
 import { getTenantAccess } from "@/lib/benefits/benefits-db";
@@ -108,6 +109,8 @@ export default async function SettingsPage({
     code: `NT-${tenantRecord.id.replace(/-/g, "").slice(0, 4).toUpperCase()}`,
   };
 
+  const apiKeys = team.canManage ? await listApiKeys(tenantRecord.id) : [];
+
   return (
     <SettingsShell
       tenantSlug={tenantRecord.slug}
@@ -115,6 +118,7 @@ export default async function SettingsPage({
       profile={profile}
       modules={modules}
       team={team}
+      apiKeys={apiKeys}
       systemInfo={systemInfo}
       plan={plan}
       card={card}

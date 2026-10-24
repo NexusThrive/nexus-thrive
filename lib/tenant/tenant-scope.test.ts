@@ -18,6 +18,12 @@ import { describe, expect, test } from "vitest";
 const ROOT = process.cwd();
 const PLATFORM_DIRS = ["lib/ops/", "lib/admin/"];
 
+/**
+ * Procesos de plataforma que por diseño cruzan negocios: el despachador del
+ * outbox lee eventos y entregas de todos y luego opera por id de filas ya leídas.
+ */
+const PLATFORM_FILES = ["lib/events/dispatcher.ts", "lib/providers/inbound.ts"];
+
 const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
   { file: "lib/files/stored-files.ts", model: "Attachment", why: "Se pide por id desde una URL; después se exige membresía del negocio del archivo." },
   { file: "lib/files/stored-files.ts", model: "ApuImage", why: "Igual que Attachment." },
@@ -26,6 +32,7 @@ const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
   { file: "lib/tenant/membership.ts", model: "User", why: "Resuelve el negocio de una cuenta de la sesión (clerkUserId)." },
   { file: "lib/onboarding/prefill.ts", model: "User", why: "Membresías de la cuenta de la sesión para reanudar el alta." },
   { file: "lib/onboarding/onboarding-db.ts", model: "User", why: "En el piloto, una cuenta = un negocio: se busca por la cuenta." },
+  { file: "lib/api/keys.ts", model: "ApiKey", why: "Autenticar: se busca por el hash de la llave (única en la plataforma); de ahí sale el negocio." },
   { file: "lib/construction/shared.ts", model: "LookaheadTask", why: "Hijas de un plan leído con tenantId (la fila del plan no lo trae)." },
   { file: "lib/construction/shared.ts", model: "WeeklyCommitment", why: "Igual que LookaheadTask." },
   { file: "lib/construction/shared.ts", model: "BudgetChapter", why: "sumBudgetDirect recibe un presupuesto ya leído con tenantId." },
@@ -59,7 +66,7 @@ describe("aislamiento por negocio en los repositorios", () => {
   test("cada consulta a una tabla de negocio filtra por tenantId", () => {
     const offenders: string[] = [];
     for (const file of sources("lib")) {
-      if (PLATFORM_DIRS.some((dir) => file.startsWith(dir))) continue;
+      if (PLATFORM_DIRS.some((dir) => file.startsWith(dir)) || PLATFORM_FILES.includes(file)) continue;
       const text = readFileSync(join(ROOT, file), "utf8");
       for (const m of text.matchAll(/\.orm\.public\.(\w+)\s*\.where\(\s*\{([^{}]*)\}/g)) {
         const [, model, filter] = m;

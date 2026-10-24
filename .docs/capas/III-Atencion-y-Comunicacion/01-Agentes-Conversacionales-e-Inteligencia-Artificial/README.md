@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `agents`, `agent-runs`, `knowledge-sources`, `handoffs` |
+| Eventos (outbox → webhooks) | `agent.replied`, `agent.handoff_requested`, `agent.run_failed` |
+| MCP · lectura | `list_agent_runs`, `get_agent_config` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `update_agent_instructions`, `request_handoff` |
+| Sistemas externos (puertos y adaptadores) | Proveedores de modelos de IA (Claude, etc.), vía puerto |
+
+#### Integración
+
+- [ ] API REST de lectura: agents, agent-runs, knowledge-sources, handoffs (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: agent.replied, agent.handoff_requested, agent.run_failed (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: list_agent_runs, get_agent_config (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: update_agent_instructions, request_handoff (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de agentes, instrucciones y límites operativos
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).

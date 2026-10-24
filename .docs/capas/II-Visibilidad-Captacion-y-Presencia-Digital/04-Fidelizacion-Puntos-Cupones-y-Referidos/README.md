@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `loyalty-programs`, `points-ledger`, `coupons`, `referrals` |
+| Eventos (outbox → webhooks) | `points.earned`, `points.redeemed`, `coupon.redeemed`, `referral.converted` |
+| MCP · lectura | `get_customer_points`, `list_coupons` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `grant_points`, `create_coupon` |
+| Sistemas externos (puertos y adaptadores) | — |
+
+#### Integración
+
+- [ ] API REST de lectura: loyalty-programs, points-ledger, coupons, referrals (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: points.earned, points.redeemed, coupon.redeemed, referral.converted (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: get_customer_points, list_coupons (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: grant_points, create_coupon (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de fidelización y reglas de recompensa
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).

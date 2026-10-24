@@ -106,6 +106,11 @@ El negocio sigue pudiendo operar a mano; lo manual pasa a ser supervisión y
 control. No hace falta automatizar todo antes de lanzar: hace falta una
 arquitectura donde agregar una automatización no obligue a reconstruir nada.
 
+> **Regla transversal (2026-10-24):** todo lo de este capítulo se generaliza a
+> *toda* subcapa: API + MCP + webhooks para todo, con puertos para pagos, DIAN
+> y demás proveedores. El estándar completo está en
+> [`.docs/integracion-api-mcp-webhooks.md`](../.docs/integracion-api-mcp-webhooks.md).
+
 ### 5.2 Arquitectura
 
 ```mermaid

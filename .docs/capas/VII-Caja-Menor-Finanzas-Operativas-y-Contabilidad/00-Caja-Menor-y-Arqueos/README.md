@@ -14,6 +14,29 @@ tags: [capas, estructura, subcapa]
 
 > **Checks**: `- [x]` = funcionalidad ya implementada en la rama actual; `- [ ]` = pendiente. Técnico va separado del conceptual.
 
+<!-- integracion:inicio -->
+## 🔌 Superficie de integración (API · MCP · Webhooks)
+
+> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../integracion-api-mcp-webhooks.md).
+
+| Superficie | Detalle |
+| --- | --- |
+| API REST (`/api/v1`) | `cash-boxes`, `cash-shifts`, `cash-counts`, `cash-expenses` |
+| Eventos (outbox → webhooks) | `cash_shift.opened`, `cash_shift.closed`, `cash_count.difference_found`, `cash_expense.recorded` |
+| MCP · lectura | `get_cash_status`, `list_cash_expenses` |
+| MCP · escritura (proponen; aprueba una persona o una llave con permiso explícito) | `record_cash_expense`, `close_cash_shift` |
+| Sistemas externos (puertos y adaptadores) | OCR de soportes |
+
+#### Integración
+
+- [ ] API REST de lectura: cash-boxes, cash-shifts, cash-counts, cash-expenses (N1–N2) <!-- api-lectura -->
+- [ ] API de escritura con idempotencia y permisos (N2) <!-- api-escritura -->
+- [ ] Eventos de dominio al outbox y webhooks firmados: cash_shift.opened, cash_shift.closed, cash_count.difference_found, cash_expense.recorded (N3) <!-- eventos -->
+- [ ] Herramientas MCP de lectura: get_cash_status, list_cash_expenses (N2) <!-- mcp-lectura -->
+- [ ] Herramientas MCP de escritura con aprobación: record_cash_expense, close_cash_shift (N3–N4) <!-- mcp-escritura -->
+- [ ] Documentada: OpenAPI, ejemplo de flujo en n8n y pruebas de contrato (N3) <!-- docs -->
+<!-- integracion:fin -->
+
 ## N0 — Fundamento de fondos, movimientos y reglas de caja
 
 > Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).

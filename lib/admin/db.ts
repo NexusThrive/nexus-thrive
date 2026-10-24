@@ -305,6 +305,9 @@ export type AuditAction =
   | "BIZ_MEMBER_ROLE"
   | "BIZ_MEMBER_ACTIVE"
   | "BIZ_MODULE_TOGGLE"
+  | "BIZ_API_KEY_CREATE"
+  | "BIZ_API_KEY_REVOKE"
+  | "BIZ_API_OPERATION"
   | "BIZ_TENANT_DELETE";
 
 export type AuditLogInput = {

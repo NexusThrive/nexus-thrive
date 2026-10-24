@@ -30,6 +30,8 @@ import { db } from "@/prisma/db";
  * aquí.
  */
 export const TENANT_DELETION_TABLES: readonly string[] = [
+  "ApiKey",
+  "ApiRequestLog",
   "ApuActivity",
   "ApuActivityComposition",
   "ApuChapter",
@@ -57,18 +59,22 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "Departure",
   "DismissedNotification",
   "Expense",
+  "ExternalConnection",
   "FieldLog",
   "FieldLogEntry",
   "InboxConversation",
   "InboxMessage",
   "Invoice",
   "InvoiceLine",
+  "IdempotencyRecord",
   "Lead",
   "LeadActivity",
   "LookaheadTask",
   "Membership",
+  "OutboxEvent",
   "Payment",
   "PresenceRequest",
+  "ProviderEvent",
   "PresenceScan",
   "Product",
   "Project",
@@ -88,7 +94,10 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "TicketMessage",
   "TicketSale",
   "TourBooking",
+  "UsageCounter",
   "User",
+  "WebhookDelivery",
+  "WebhookEndpoint",
   "WeeklyCommitment",
 ];
 
@@ -242,6 +251,15 @@ export async function deleteTenantCompletely(
   count("ApuChapter", await tx.orm.public.ApuChapter.where({ tenantId }).deleteAll());
   count("ApuImage", await tx.orm.public.ApuImage.where({ tenantId }).deleteAll());
   count("ApuImportRun", await tx.orm.public.ApuImportRun.where({ tenantId }).deleteAll());
+  count("ProviderEvent", await tx.orm.public.ProviderEvent.where({ tenantId }).deleteAll());
+  count("ExternalConnection", await tx.orm.public.ExternalConnection.where({ tenantId }).deleteAll());
+  count("UsageCounter", await tx.orm.public.UsageCounter.where({ tenantId }).deleteAll());
+  count("WebhookDelivery", await tx.orm.public.WebhookDelivery.where({ tenantId }).deleteAll());
+  count("WebhookEndpoint", await tx.orm.public.WebhookEndpoint.where({ tenantId }).deleteAll());
+  count("OutboxEvent", await tx.orm.public.OutboxEvent.where({ tenantId }).deleteAll());
+  count("ApiRequestLog", await tx.orm.public.ApiRequestLog.where({ tenantId }).deleteAll());
+  count("IdempotencyRecord", await tx.orm.public.IdempotencyRecord.where({ tenantId }).deleteAll());
+  count("ApiKey", await tx.orm.public.ApiKey.where({ tenantId }).deleteAll());
   count("Attachment", await tx.orm.public.Attachment.where({ tenantId }).deleteAll());
   count("Attendance", await tx.orm.public.Attendance.where({ tenantId }).deleteAll());
   count("BenefitRedemption", await tx.orm.public.BenefitRedemption.where({ tenantId }).deleteAll());
