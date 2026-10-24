@@ -74,6 +74,14 @@ export default function ModulesTab({
         {isPending && <NLoader size={16} className="text-muted-foreground" />}
       </div>
 
+      <p className="rounded-lg border border-border bg-surface-muted px-3 py-2 text-sm text-muted-foreground">
+        Ahora todo está incluido en tu plan y se administra desde{" "}
+        <a href={`/${tenantSlug}/functions`} className="font-medium text-foreground underline underline-offset-4">
+          Funciones
+        </a>
+        , con sugerencias según lo que haces.
+      </p>
+
       {!canManage && (
         <p className="rounded-lg bg-warning/10 px-3 py-2 text-sm text-warning-foreground">
           Solo el administrador del negocio puede activar o desactivar módulos.

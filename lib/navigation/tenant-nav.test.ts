@@ -11,10 +11,10 @@ describe("buildTenantNav", () => {
     expect(groups[0].items.map((i) => i.label)).toEqual(["Inicio"]);
   });
 
-  it("solo muestra módulos activos y siempre Configuración", () => {
+  it("solo muestra funciones activas y siempre Funciones y Configuración", () => {
     const groups = buildTenantNav("gym", ["dashboard", "crm"]);
     expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y operación", "Sistema"]);
-    expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["", "/crm", "/settings"]);
+    expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["", "/crm", "/functions", "/settings"]);
   });
 
   it("agrupa por trabajo y omite los grupos vacíos", () => {
@@ -28,7 +28,7 @@ describe("buildTenantNav", () => {
     const labels = buildTenantNav("construction", ["construction"])
       .flatMap((g) => g.items)
       .map((i) => i.label);
-    expect(labels).toEqual(["Inicio", "Obras", "Cotizaciones", "Catálogo APU", "Configuración"]);
+    expect(labels).toEqual(["Inicio", "Obras", "Cotizaciones", "Catálogo APU", "Funciones", "Configuración"]);
   });
 });
 

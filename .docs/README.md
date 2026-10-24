@@ -21,7 +21,7 @@ Esta carpeta es **la guía de qué construimos y en qué orden**. Las capas
 | [hoja-de-ruta-implementacion.md](hoja-de-ruta-implementacion.md) | **Cómo empezamos:** 30 PR en orden de dependencia, cómo se migra y por dónde arrancar |
 | [sql/](sql/README.md) | Borradores de esquema (SQL) de cada PR, validados contra Postgres |
 | [integracion-api-mcp-webhooks.md](integracion-api-mcp-webhooks.md) | **Regla transversal:** todo tiene API, MCP y webhooks; pagos, DIAN y n8n por puertos; cómo ordenar el trabajo |
-| [distribucion-por-rubro.md](distribucion-por-rubro.md) | **Cómo se reparte el sistema por rubro:** módulo = capacidad, receta = lo que viene encendido y cómo se llama, rol = quién puede; qué rubro enciende qué; checklist para módulos nuevos |
+| [distribucion-por-rubro.md](distribucion-por-rubro.md) | **Un solo sistema:** núcleo compartido, el rubro como perfil (no frontera), funciones incluidas en todos los planes, planes por uso; revisión del estado contra esta visión |
 | [mapa-de-capacidades.md](mapa-de-capacidades.md) | Las 447 capacidades que usa una empresa contra las capas y el código: qué hay, qué falta y **qué sigue** |
 | [fuentes/](fuentes/) | Material de origen de las capas (no se edita; se consulta) |
 | [`docs/PENDIENTES.md`](../docs/PENDIENTES.md) | Lista viva de tareas, decisiones abiertas y la ruta de automatizaciones y agentes de IA |

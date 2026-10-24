@@ -39,6 +39,16 @@ import type { VerticalTerms, VerticalValue } from "@/lib/admin/catalogs";
  * como texto y se valida contra este registro (`isModule`).
  */
 
+/**
+ * Un solo sistema (regla de plataforma): TODAS las capacidades están incluidas
+ * en todos los planes y cualquier negocio puede encenderlas. Lo que limita al
+ * plan es el USO (usuarios, clientes y consumo), nunca una función ni un rubro.
+ * El rubro es un perfil: da el vocabulario y sugiere cuáles empiezan
+ * encendidas (`VERTICAL_RECIPES`), pero no oculta ni bloquea nada.
+ * `kind: "specialized"` solo agrupa las especialidades de un oficio (obras con
+ * APU, control de acceso del gimnasio, pedidos del restaurante…): vienen en el
+ * sistema, integradas con el resto.
+ */
 export type CapabilityStatus = "READY" | "BETA" | "PLANNED";
 
 export type CapabilityNav = {
@@ -97,7 +107,7 @@ export const CAPABILITIES = [
     pitch: "Reservas, citas y agenda.",
     icon: CalendarDays,
     status: "READY",
-    priceUsd: 6,
+    priceUsd: 0,
     nav: [
       { href: "/bookings", icon: CalendarDays, label: (terms) => terms.bookings },
       { href: "/tickets", icon: Ticket, label: () => "Taquilla", verticals: ["museum"] },
@@ -113,7 +123,7 @@ export const CAPABILITIES = [
     pitch: "Cobros y control de pagos.",
     icon: CreditCard,
     status: "READY",
-    priceUsd: 6,
+    priceUsd: 0,
     general: true,
     nav: [{ href: "/finance?tab=cobros", icon: Banknote, label: () => "Pagos" }],
   },
@@ -126,7 +136,7 @@ export const CAPABILITIES = [
     pitch: "Facturas para tus clientes.",
     icon: FileText,
     status: "READY",
-    priceUsd: 8,
+    priceUsd: 0,
     general: true,
     nav: [{ href: "/billing", icon: Receipt, label: () => "Facturación" }],
   },
@@ -139,7 +149,7 @@ export const CAPABILITIES = [
     pitch: "Productos, stock y reposiciones.",
     icon: Package,
     status: "READY",
-    priceUsd: 6,
+    priceUsd: 0,
     general: true,
     nav: [{ href: "/inventory", icon: Package, label: () => "Catálogo" }],
   },
@@ -178,7 +188,7 @@ export const CAPABILITIES = [
     pitch: "Atiende y responde desde WhatsApp.",
     icon: MessageCircle,
     status: "READY",
-    priceUsd: 9,
+    priceUsd: 0,
     general: true,
     nav: [{ href: "/whatsapp", icon: MessageCircle, label: () => "WhatsApp" }],
   },
@@ -191,7 +201,7 @@ export const CAPABILITIES = [
     pitch: "Planes y membresías recurrentes.",
     icon: Repeat,
     status: "READY",
-    priceUsd: 8,
+    priceUsd: 0,
     nav: [
       { href: "/memberships", icon: CreditCard, label: () => "Membresías" },
       { href: "/checkin", icon: ScanLine, label: () => "Control de acceso", verticals: ["gym"] },
@@ -201,7 +211,7 @@ export const CAPABILITIES = [
     // Compras a proveedores con recepción de mercancía al inventario. Depende
     // de «Catálogo e inventario» (la mercancía entra por su servicio de stock).
     id: "purchases",
-    kind: "specialized",
+    kind: "base",
     label: "Compras",
     name: "Compras y proveedores",
     description: "Órdenes de compra, proveedores y recepción de mercancía.",
@@ -222,7 +232,7 @@ export const CAPABILITIES = [
     pitch: "Pedidos y ventas.",
     icon: ShoppingCart,
     status: "PLANNED",
-    priceUsd: 7,
+    priceUsd: 0,
     nav: [{ href: "/orders", icon: ShoppingCart, label: () => "Pedidos" }],
   },
   {
@@ -236,7 +246,7 @@ export const CAPABILITIES = [
     pitch: "Cotizaciones para tus clientes.",
     icon: BadgeCheck,
     status: "PLANNED",
-    priceUsd: 14,
+    priceUsd: 0,
     nav: [],
   },
   {
@@ -250,7 +260,7 @@ export const CAPABILITIES = [
     pitch: "Obras, presupuestos APU y control de obra.",
     icon: HardHat,
     status: "READY",
-    priceUsd: 14,
+    priceUsd: 0,
     nav: [
       {
         href: "/projects",

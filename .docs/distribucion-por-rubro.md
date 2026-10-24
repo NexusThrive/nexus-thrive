@@ -1,32 +1,42 @@
 ---
-title: Cómo se distribuye el sistema por rubro
-tags: [rubros, modulos, navegacion, arquitectura]
+title: Un solo sistema: núcleo, perfil y funciones
+tags: [rubros, funciones, navegacion, arquitectura, planes]
 ---
 
-# Cómo se distribuye el sistema por rubro
+# Un solo sistema: núcleo, perfil y funciones
 
-> **Regla corta:** el **módulo** es lo que el negocio tiene encendido; el **rubro**
-> decide cuáles vienen encendidos por defecto y cómo se llaman las cosas. Nada
-> se oculta con condiciones sueltas en las pantallas: se oculta porque el módulo
-> está apagado, y eso lo aplican el menú **y** el servidor.
+> NEXUS es **un único sistema operativo para negocios**. No hay aplicaciones
+> separadas por rubro ni paquetes de funciones vendidos por sector. El rubro es
+> un **perfil**; las funciones son del mismo producto.
 
 ## 1. Las tres capas
 
-| Capa | Qué decide | Dónde vive |
+| Capa | Qué es | Dónde vive |
 |---|---|---|
-| **Capacidad (módulo)** | Qué pantallas, rutas, operaciones de API y herramientas MCP existen para ese negocio. Se enciende o apaga en Configuración → Módulos y se cobra por plan. | `lib/capabilities/registry.ts` (ADR-0003) |
-| **Receta del rubro** | Qué módulos se activan al crear el negocio y el **vocabulario** (Socios, Pacientes, Obras; «Compras de insumos» en restaurante…). | `VERTICAL_RECIPES` en `lib/admin/catalogs.ts` |
-| **Permisos del rol** | Quién, dentro del negocio, ve y hace qué (dinero, equipo, gestión). | `lib/business/permissions.ts` |
+| **1. Núcleo** | Lo que hace que todo sea un solo sistema: usuarios, permisos, clientes y terceros, catálogo, ventas y cobros, inventario, documentos, integraciones (API, MCP, webhooks), reportes. Se comparte; no se duplica por rubro. | `lib/` (tercero único, catálogo maestro, servicio de inventario, `money-service`, registro de operaciones) |
+| **2. Perfil del negocio** | El rubro dice qué hace el negocio: vocabulario (Socios, Pacientes, Obras…), qué funciones **empiezan encendidas**, plantillas y el tablero inicial. **Recomienda; no bloquea.** | `VERTICAL_RECIPES` en `lib/admin/catalogs.ts` |
+| **3. Funciones y experiencia** | Cada negocio enciende las funciones que necesita, sea cual sea su rubro. El menú muestra lo encendido; el resto se descubre en **Funciones**. | `lib/capabilities/registry.ts` + página `/functions` |
 
-Cada pantalla pertenece a **un** módulo (su ruta sale del registro), y cada
-operación de la API y herramienta MCP declara su `module` y su `permission`. Un
-módulo apagado no aparece en el menú, y el servidor responde `module_inactive`
-si alguien llama a su ruta o a su API igual.
+## 2. Reglas definitivas
 
-## 2. Qué rubro enciende qué (por defecto)
+1. Todos los negocios usan el mismo núcleo y la misma plataforma.
+2. El rubro es un perfil de configuración. **No es una frontera**: un gimnasio puede usar obras o inventario y un restaurante, membresías.
+3. Las funciones generales y las especializadas (membresías, obras con APU, pedidos de restaurante, taquilla de museo) son del mismo ecosistema y reutilizan el núcleo.
+4. **Nada se vende por separado**: ni paquetes por sector ni cobro por desbloquear una función. Todo está incluido en todos los planes.
+5. Los planes se diferencian por **uso**: usuarios (1 / 3 / sin límite), clientes (tramos) y, más adelante, consumo (peticiones, almacenamiento). El rubro no cambia el precio.
+6. El menú y el inicio son **contextuales**: muestran lo encendido; no una lista infinita. Una función apagada no se oculta del sistema, se descubre en Funciones y en el buscador.
+7. Una función que necesita otra **lo explica** («funciona junto con Catálogo e inventario»), no desaparece.
+8. Lo común comparte datos: un cliente, un producto, una venta, un documento existen una vez (tercero único, catálogo maestro, servicio de inventario).
 
-Cualquier rubro puede encender cualquier módulo `general` desde Módulos; esto es
-solo lo que viene prendido.
+## 3. Cómo se siente al usarlo
+
+1. Te registras y dices que eres un gimnasio.
+2. NEXUS pone tu vocabulario, tu inicio y **enciende lo que suele servir a un gimnasio**.
+3. Clientes, cobros, finanzas y documentos están en el mismo entorno.
+4. Si también vendes productos, enciendes Inventario y Compras en **Funciones** (con un clic), sin cambiar de sistema.
+5. Sus ventas, existencias, costos y reportes se relacionan solos.
+
+## 4. Qué rubro enciende qué al empezar (sugerencia, no límite)
 
 | Rubro | crm | bookings | memberships | orders | inventory | purchases | finance | payments | billing | whatsapp | construction |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -48,38 +58,41 @@ solo lo que viene prendido.
 | Eventos | ● | ● |  |  |  |  | ● |  | ● |  |  |
 | Museo | ● | ● |  |  | ● |  | ● | ● | ● | ● |  |
 
-`orders` (Pedidos) sigue en estado planeado. `construction` agrupa la suite de
-obras (presupuestos APU, bitácora). `payments` vive dentro de Finanzas cuando
-Finanzas está activa.
+`orders` (Pedidos) sigue planeado. `construction` agrupa la suite de obras (presupuestos APU, bitácora). `payments` vive dentro de Finanzas cuando Finanzas está activa.
 
-## 3. Cuándo usar cada mecanismo
+## 5. Cuándo usar cada mecanismo
 
 | Quiero que… | Uso |
 |---|---|
-| Una función exista solo para ciertos rubros desde el inicio | Módulo propio y recetas de esos rubros (ej. `purchases`). |
-| Una entrada del menú solo aparezca en un rubro | `nav.verticals` de la capacidad (ej. «Taquilla» solo en museo). |
-| El mismo módulo diga otra palabra según el rubro | La función `label` del menú o `VerticalTerms` (ej. «Compras de insumos»). |
-| Un módulo dependa de otro | Se avisa en su pantalla con una `Alert` y un camino para activarlo (Compras pide «Catálogo e inventario»). No se oculta en silencio. |
-| Una opción solo la use quien gestiona | El permiso del rol, no el rubro. |
-| Mostrar tipos de ítem distintos (planes, entradas, tours…) | `kindsForVertical` (`lib/business/catalog-kinds.ts`). |
+| Una función nueva exista para todos | Una entrada en el registro; nada más. |
+| Un rubro la tenga encendida al empezar | Su receta en `VERTICAL_RECIPES` (sugerencia). |
+| Cambiar una palabra por rubro | `VerticalTerms` o la función `label` del menú (ej. «Compras de insumos»). |
+| Sugerir una función por lo que el negocio ya hace | Una regla en `lib/functions/suggestions.ts` (ej. compras si hay productos con inventario). |
+| Que una función avise que depende de otra | `NEEDS` en `lib/functions/functions.ts` y una `Alert` en su pantalla. |
+| Limitar el uso | El plan: usuarios, clientes, consumo. Nunca una función ni un rubro. |
+| Que solo gestione quien tiene permiso | El permiso del rol (`permissions.ts`), también en la API y el MCP. |
 
-**No** se agregan condiciones `if (vertical === "x")` dentro de componentes para
-ocultar cosas: si algo es de un rubro, es de un módulo, un `verticals` del menú
-o un término del vocabulario.
+**No** se agregan condiciones `if (vertical === "x")` dentro de los componentes para ocultar cosas.
 
-## 4. Checklist para un módulo o pantalla nueva
+## 6. Revisión del estado actual contra esta visión
 
-1. ¿A qué módulo pertenece? Si es nuevo, una entrada en el registro (nada más).
-2. ¿Qué rubros lo traen encendido? Receta en `catalogs.ts`; el resto lo activa a mano.
-3. ¿Qué palabras cambian por rubro? `label`/`VerticalTerms`, no textos duplicados.
-4. ¿De qué módulos depende? Avisar y guiar en la pantalla.
-5. ¿Quién puede usarlo? Un permiso de `permissions.ts`, también en la API.
-6. ¿Perfil individual (sin equipo)? Si es de equipo, `TEAM_HEAVY_MODULES` en `lib/onboarding/presets.ts`.
-7. API, MCP y webhooks: la operación declara `module` y `permission` (el motor ya aplica ambos).
-8. Una historia de Storybook por estado (vacío, con datos, error) y prueba de accesibilidad.
+| Pieza | Estado | Qué se hizo / falta |
+|---|---|---|
+| Núcleo compartido (tercero único, catálogo maestro, inventario con costo, cobros, API/MCP/webhooks) | **Cumple** | Es el plan de los 30 PR; ya hay 11. |
+| Módulos como organización interna del código y del menú | **Cumple** | Se conservan; para la persona son «funciones». |
+| `nav` del menú derivado del registro y exigido en el servidor | **Cumple** | Una función apagada no sirve ni su pantalla ni su API. |
+| Receta del rubro | **Ajustado** | Era «módulos permitidos»; ahora son «módulos sugeridos». |
+| Compatibilidad rubro↔módulo al encender (`checkModuleToggle`) | **Contradecía → corregido** | Ya no bloquea por rubro. |
+| Precios por función y factor por rubro | **Contradecía → corregido** | Todas las funciones valen 0 y el factor por rubro es ×1 por defecto. Los precios que ya estén guardados en el panel de planes no se tocan. |
+| Planes (Essential/Elite/Signature) | **Ajustado** | Se diferencian por usuarios y clientes; textos actualizados. |
+| Descubrir funciones | **Faltaba → hecho** | Página Funciones con «En uso / Te sugerimos / Más funciones». |
+| Entrada «Taquilla» que solo ve el museo (`nav.verticals`) | **Contradice (pendiente)** | Plan mínimo: convertirla en la función «Taquilla» (propia), sugerida al museo y encendible por cualquiera; hay que migrar los museos que hoy la ven por tener Reservas. |
+| Buscador (Ctrl K) con funciones apagadas | **Pendiente** | Que encuentre también lo apagado y ofrezca encenderlo. |
+| Selección de funciones al registrarse (onboarding) | **Funciona, mejorable** | Muestra todas con «Incluido»; las del rubro vienen preseleccionadas. |
+| Panel de NEXUS: «Módulos del rubro» | **Pendiente** | Pasar el texto a «Sugeridos por rubro». |
 
-## 5. Decisiones abiertas
+## 7. Secuencia que se sigue
 
-- **Precio de «Compras»**: hoy `priceUsd: 0` y estado `BETA` (decisión comercial).
-- **Rubros con tienda anexa** (gimnasio, museo, belleza) no traen Compras por defecto; se activa a mano.
-- **Perfil individual** no incluye Compras (se considera de equipo).
+1. **Esta etapa:** regla + Funciones + planes por uso (sin migraciones de datos).
+2. PR-11b (traslados y conteos) y PR-12 (importar/exportar) ya con la regla.
+3. Después: Taquilla como función propia, buscador con funciones apagadas y panel de NEXUS.
