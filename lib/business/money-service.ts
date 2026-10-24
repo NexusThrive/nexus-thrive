@@ -1,3 +1,4 @@
+import { emitEvent } from "@/lib/events/outbox";
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
 import type { PaymentStatusValue } from "@/lib/finance";
@@ -156,6 +157,22 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
       userId,
     );
     documentId = doc.id;
+    await emitEvent(tx, tenantId, {
+      type: "sale.completed",
+      resourceType: "payment",
+      resourceId: payment.id,
+      payload: {
+        payment_id: payment.id,
+        receipt: receipt,
+        amount,
+        currency: "COP",
+        method: input.method,
+        customer_id: input.customerId ?? null,
+        document_id: documentId,
+        source_type: input.sourceType ?? null,
+        source_id: input.sourceId ?? null,
+      },
+    });
   }
   return { paymentId: payment.id, receiptNumber, receipt, createdAt: String(payment.createdAt), documentId };
 }

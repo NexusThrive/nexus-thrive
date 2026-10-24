@@ -70,6 +70,7 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "LeadActivity",
   "LookaheadTask",
   "Membership",
+  "OutboxEvent",
   "Payment",
   "PresenceRequest",
   "PresenceScan",
@@ -92,6 +93,8 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "TicketSale",
   "TourBooking",
   "User",
+  "WebhookDelivery",
+  "WebhookEndpoint",
   "WeeklyCommitment",
 ];
 
@@ -245,6 +248,9 @@ export async function deleteTenantCompletely(
   count("ApuChapter", await tx.orm.public.ApuChapter.where({ tenantId }).deleteAll());
   count("ApuImage", await tx.orm.public.ApuImage.where({ tenantId }).deleteAll());
   count("ApuImportRun", await tx.orm.public.ApuImportRun.where({ tenantId }).deleteAll());
+  count("WebhookDelivery", await tx.orm.public.WebhookDelivery.where({ tenantId }).deleteAll());
+  count("WebhookEndpoint", await tx.orm.public.WebhookEndpoint.where({ tenantId }).deleteAll());
+  count("OutboxEvent", await tx.orm.public.OutboxEvent.where({ tenantId }).deleteAll());
   count("ApiRequestLog", await tx.orm.public.ApiRequestLog.where({ tenantId }).deleteAll());
   count("IdempotencyRecord", await tx.orm.public.IdempotencyRecord.where({ tenantId }).deleteAll());
   count("ApiKey", await tx.orm.public.ApiKey.where({ tenantId }).deleteAll());

@@ -18,6 +18,12 @@ import { describe, expect, test } from "vitest";
 const ROOT = process.cwd();
 const PLATFORM_DIRS = ["lib/ops/", "lib/admin/"];
 
+/**
+ * Procesos de plataforma que por diseño cruzan negocios: el despachador del
+ * outbox lee eventos y entregas de todos y luego opera por id de filas ya leídas.
+ */
+const PLATFORM_FILES = ["lib/events/dispatcher.ts"];
+
 const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
   { file: "lib/files/stored-files.ts", model: "Attachment", why: "Se pide por id desde una URL; después se exige membresía del negocio del archivo." },
   { file: "lib/files/stored-files.ts", model: "ApuImage", why: "Igual que Attachment." },
@@ -60,7 +66,7 @@ describe("aislamiento por negocio en los repositorios", () => {
   test("cada consulta a una tabla de negocio filtra por tenantId", () => {
     const offenders: string[] = [];
     for (const file of sources("lib")) {
-      if (PLATFORM_DIRS.some((dir) => file.startsWith(dir))) continue;
+      if (PLATFORM_DIRS.some((dir) => file.startsWith(dir)) || PLATFORM_FILES.includes(file)) continue;
       const text = readFileSync(join(ROOT, file), "utf8");
       for (const m of text.matchAll(/\.orm\.public\.(\w+)\s*\.where\(\s*\{([^{}]*)\}/g)) {
         const [, model, filter] = m;

@@ -379,6 +379,9 @@ model Tenant {
   apiKeys            ApiKey[]
   apiRequestLogs     ApiRequestLog[]
   idempotencyRecords IdempotencyRecord[]
+  outboxEvents       OutboxEvent[]
+  webhookEndpoints   WebhookEndpoint[]
+  webhookDeliveries  WebhookDelivery[]
   supportTickets     SupportTicket[]
   charges            Charge[]
   benefitRedemptions BenefitRedemption[]
@@ -2297,5 +2300,78 @@ model IdempotencyRecord {
 
   @@unique([apiKeyId, key])
   @@index([expiresAt])
+  @@rls
+}
+
+/// Hecho de negocio ya ocurrido (`sale.completed`…), escrito en la MISMA
+/// transacción que el hecho. Un despachador lo reparte a los webhooks del negocio.
+model OutboxEvent {
+  id            String    @id @default(uuid())
+  tenantId      String
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  type          String
+  version       Int       @default(1)
+  resourceType  String?
+  resourceId    String?
+  payload       Json
+  createdAt     DateTime  @default(now())
+  /// Cuándo se repartió a las suscripciones (null = pendiente).
+  processedAt   DateTime?
+  deliveries    WebhookDelivery[]
+
+  @@index([tenantId, createdAt])
+  @@index([processedAt, createdAt])
+  @@rls
+}
+
+/// URL HTTPS del cliente que recibe eventos firmados. El secreto se guarda cifrado.
+model WebhookEndpoint {
+  id                   String    @id @default(uuid())
+  tenantId             String
+  tenant               Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  url                  String
+  description          String?
+  secretEnc            String
+  previousSecretEnc    String?
+  previousSecretUntil  DateTime?
+  /// Vacío = todos los eventos.
+  eventTypes           String[]
+  active               Boolean   @default(true)
+  consecutiveFailures  Int       @default(0)
+  disabledAt           DateTime?
+  disabledReason       String?
+  createdById          String?
+  createdAt            DateTime  @default(now())
+  updatedAt            temporal.updatedAt()
+  deliveries           WebhookDelivery[]
+
+  @@index([tenantId, active])
+  @@rls
+}
+
+/// Entrega de un evento a un endpoint: una fila por par, con su contador de
+/// intentos (reintentos exponenciales; FAILED = bandeja de fallidos, reenviable).
+model WebhookDelivery {
+  id              String    @id @default(uuid())
+  tenantId        String
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  endpointId      String
+  endpoint        WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+  eventId         String
+  event           OutboxEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  /// Intentos ya hechos.
+  attempt         Int       @default(0)
+  /// PENDING | SUCCESS | FAILED
+  status          String    @default("PENDING")
+  responseStatus  Int?
+  responseExcerpt String?
+  durationMs      Int?
+  nextAttemptAt   DateTime?
+  createdAt       DateTime  @default(now())
+  deliveredAt     DateTime?
+
+  @@unique([endpointId, eventId])
+  @@index([tenantId, status, nextAttemptAt])
+  @@index([endpointId, createdAt])
   @@rls
 }
