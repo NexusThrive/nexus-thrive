@@ -155,7 +155,7 @@ de «hecho»). No se edita a mano.
 | **16** | Vende y controla | POS II: impresión, código de barras y devoluciones | V | N2 | 3/3 | — | hecho |
 | **17** | Cobra y factura | Pagos: intención de cobro, Nequi y conciliación | V | N1, N2 | 6/8 | `PR-17-pagos-intenciones-conciliacion` | pendiente |
 | **18** | Cobra y factura | Facturación electrónica: puerto sin proveedor | VII | N1, N2 | 3/6 | `PR-18-facturacion-electronica` | pendiente |
-| **19** | Cobra y factura | Adaptador de pagos Wompi | V | N2 | 0/1 | — | pendiente |
+| **19** | Cobra y factura | Adaptador de pagos Wompi | V | N2 | 1/1 | — | hecho |
 | **20** | Cobra y factura | Proveedor tecnológico DIAN | VII | N2 | 1/1 | — | hecho |
 | **21** | Contabilidad | Contabilidad I: plan de cuentas, períodos y reglas | I, VII | N1, N2 | 0/4 | `PR-21-contabilidad-plan-y-periodos` | pendiente |
 | **22** | Contabilidad | Contabilidad II: asientos automáticos y partida doble | I, VII | N1, N2 | 0/4 | `PR-22-contabilidad-asientos` | pendiente |
@@ -421,7 +421,7 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Pago de prueba de punta a punta; la conciliación contra el reporte del proveedor cuadra. (Cuando se decida.)
 - **Casillas que marca:**
   - [`V.00 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md)
-    - [ ] Varias pasarelas
+    - [x] Varias pasarelas
 
 ### PR-20 · Proveedor tecnológico DIAN
 

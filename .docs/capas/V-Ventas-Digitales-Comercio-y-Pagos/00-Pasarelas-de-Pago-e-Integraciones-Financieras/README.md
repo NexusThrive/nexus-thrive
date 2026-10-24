@@ -60,7 +60,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Varias pasarelas _(PR-19)_
+- [x] Varias pasarelas _(PR-19)_
 - [ ] Métodos locales completos
 - [x] Reembolsos totales y parciales _(PR-17)_
 - [ ] Pagos parciales y depósitos

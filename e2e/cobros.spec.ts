@@ -55,4 +55,12 @@ test.describe("Cobros en línea", () => {
     await expect(table.getByRole("row", { name: /evt_extra.*NEXUS no lo tiene/ })).toBeVisible();
     await expectNoAxeViolations(page);
   });
+
+  test("con varias pasarelas conectadas se elige con cuál cobrar", async ({ page }) => {
+    await openStory(page, "páginas-dinero-cobros-en-línea--dos-pasarelas");
+    await page.getByRole("button", { name: "Nuevo cobro" }).click();
+    const dialog = page.getByRole("dialog", { name: "Nuevo cobro" });
+    await expect(dialog.getByLabel(/Pasarela/)).toHaveValue("wompi");
+    await expect(dialog.getByRole("option", { name: "Pasarela de prueba" })).toBeAttached();
+  });
 });

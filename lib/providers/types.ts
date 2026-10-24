@@ -15,6 +15,8 @@ export type NormalizedEvent = {
   /** Referencia nuestra (id de cobro) si el proveedor la devuelve. */
   reference?: string | null;
   amount?: string | null;
+  /** Id estable del pago en el proveedor (si `externalId` lleva el estado para deduplicar). Por omisión, `externalId`. */
+  paymentRef?: string | null;
 };
 
 export type ProviderCredentials = Record<string, string>;

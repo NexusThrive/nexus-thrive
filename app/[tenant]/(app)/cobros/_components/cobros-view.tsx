@@ -7,6 +7,7 @@ import { Alert } from "@/components/molecules/alert";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
+import { Select } from "@/components/atoms/select";
 import { QrCode } from "@/components/atoms/qr-code";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { Field } from "@/components/molecules/field";
@@ -24,7 +25,7 @@ type Small = { kind: "confirm" | "refund" | "share"; row: IntentRow } | null;
 const TONE = { PENDING: "warning", PAID: "success", EXPIRED: "secondary", FAILED: "destructive", CANCELED: "secondary" } as const;
 const KIND_TEXT = { missing_in_nexus: "El proveedor lo reporta y NEXUS no lo tiene", missing_in_provider: "NEXUS lo confirmó y el proveedor no lo reporta", amount_mismatch: "El monto no coincide" } as const;
 
-export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, today }: { slug: string; baseUrl: string; intents: IntentRow[]; runs: Run[]; canAdmin: boolean; today: string }) {
+export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, today, gateways = [] }: { slug: string; baseUrl: string; intents: IntentRow[]; runs: Run[]; canAdmin: boolean; today: string; gateways?: { value: string; label: string }[] }) {
   const [tab, setTab] = useState<Tab>("links");
   const [creating, setCreating] = useState(false);
   const [small, setSmall] = useState<Small>(null);
@@ -102,7 +103,7 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
         pendingLabel="Creando…"
         onSubmit={async (d) => {
           const amount = Number(String(d.get("amount") ?? "").replace(/[^\d,]/g, "").replace(",", "."));
-          const r = await createIntentAction(slug, { amount, description: String(d.get("description") ?? ""), expiresInHours: Number(d.get("hours") ?? 48) });
+          const r = await createIntentAction(slug, { amount, description: String(d.get("description") ?? ""), expiresInHours: Number(d.get("hours") ?? 48), provider: String(d.get("provider") ?? "") });
           return r.ok ? { ok: true, message: r.message } : { ok: false, message: r.message, fieldErrors: { amount: r.message } };
         }}
         onSuccess={({ message }) => done(message)}
@@ -111,6 +112,15 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
           <div className="grid gap-3">
             <Field label="Valor (COP)" required error={fieldErrors.amount}>{(c) => <input {...c} name="amount" inputMode="numeric" autoComplete="off" className={inputClasses} placeholder="150000" />}</Field>
             <Field label="Qué se cobra" required>{(c) => <input {...c} name="description" autoComplete="off" maxLength={160} className={inputClasses} placeholder="Matrícula anual" />}</Field>
+            {gateways.length > 1 ? (
+              <Field label="Pasarela" required>
+                {(c) => (
+                  <Select {...c} name="provider" defaultValue={gateways[0]?.value}>
+                    {gateways.map((g) => <option key={g.value} value={g.value}>{g.label}</option>)}
+                  </Select>
+                )}
+              </Field>
+            ) : null}
             <Field label="Vigencia (horas)" required>{(c) => <input {...c} name="hours" inputMode="numeric" defaultValue="48" className={inputClasses} />}</Field>
           </div>
         )}

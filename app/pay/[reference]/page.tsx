@@ -22,6 +22,11 @@ export default async function PayPage({ params }: { params: Promise<{ reference:
         <h1 id="pay-title" className="font-display text-3xl font-bold tabular-nums">{formatCurrency(intent.amount)}</h1>
         <p className="text-[14px]">{intent.description}</p>
         <p role="status" className={`text-[14px] font-semibold ${tone}`}>{STATUS_LABELS[intent.status]}</p>
+        {intent.payUrl ? (
+          <a href={intent.payUrl} className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-5 text-[15px] font-semibold text-primary-foreground">
+            Pagar con tarjeta, PSE o Nequi
+          </a>
+        ) : null}
         {intent.status === "PENDING" ? (
           <p className="text-[13px] text-muted-foreground">Este cobro está pendiente. El pago se confirma con el estado oficial de la pasarela o de la transferencia; no necesitas enviar comprobantes por aquí.</p>
         ) : null}

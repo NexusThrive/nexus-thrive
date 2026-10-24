@@ -2,6 +2,8 @@ import { MoneyError, moneyTransaction, recordIncome, type MoneyTx } from "@/lib/
 import { toNumber } from "@/lib/format";
 import { balanceOf } from "@/lib/receivables/aging";
 import { todayCO } from "@/lib/tax/tax";
+import { decryptCredentials } from "@/lib/providers/connections";
+import { wompiCheckoutUrl } from "@/lib/providers/wompi";
 import { db } from "@/prisma/db";
 import { effectiveStatus, newReference, reconcile, validateIntent, type IntentStatus, type Reconciliation, type ReportRow } from "./intents";
 
@@ -67,13 +69,32 @@ export async function listIntents(tenantId: string, limit = 100): Promise<Intent
 }
 
 /** Lo que ve quien abre el enlace público: el negocio, el valor, la descripción y el estado; nada más. */
-export async function publicIntent(reference: string): Promise<{ business: string; amount: number; description: string; status: IntentStatus; expiresAt: string } | null> {
+export async function publicIntent(reference: string): Promise<{ business: string; amount: number; description: string; status: IntentStatus; expiresAt: string; payUrl: string | null } | null> {
   if (!/^[a-z0-9]{10,30}$/.test(reference)) return null;
   const i = await db.orm.public.PaymentIntent.where({ reference }).first();
   if (!i) return null;
   const shop = await db.orm.public.Tenant.where({ id: i.tenantId }).select("name").first();
   const row = toRow(i as unknown as Record<string, unknown>);
-  return { business: shop?.name ?? "", amount: row.amount, description: row.description, status: row.status, expiresAt: row.expiresAt };
+  return { business: shop?.name ?? "", amount: row.amount, description: row.description, status: row.status, expiresAt: row.expiresAt, payUrl: row.status === "PENDING" ? await checkoutUrlOf(i.tenantId, row) : null };
+}
+
+/** Enlace del checkout alojado de la pasarela (hoy Wompi) para un cobro pendiente; `null` si no hay pasarela conectada. */
+async function checkoutUrlOf(tenantId: string, row: IntentRow): Promise<string | null> {
+  if (row.provider !== "wompi") return null;
+  const conn = await db.orm.public.ExternalConnection.where({ tenantId, kind: "PAYMENT", provider: "wompi", status: "CONNECTED" }).first();
+  if (!conn?.credentialsEnc) return null;
+  try {
+    const c = decryptCredentials(conn.credentialsEnc);
+    return wompiCheckoutUrl({ publicKey: c.publicKey ?? "", integritySecret: c.integritySecret ?? "", reference: row.reference, amount: row.amount });
+  } catch {
+    return null;
+  }
+}
+
+/** Pasarelas de cobro que el negocio tiene conectadas (para elegir al crear un cobro). */
+export async function connectedGateways(tenantId: string): Promise<{ value: string; label: string }[]> {
+  const rows = await db.orm.public.ExternalConnection.where({ tenantId, kind: "PAYMENT", status: "CONNECTED" }).all();
+  return rows.map((r) => ({ value: r.provider, label: r.provider === "wompi" ? "Wompi" : r.provider === "sandbox" ? "Pasarela de prueba" : r.provider }));
 }
 
 /** Baja el saldo de una cuenta de cobro dentro de la transacción del cobro. */
@@ -166,10 +187,10 @@ export async function refundIntent(tenantId: string, id: string, amount: number,
 }
 
 /** Reacciona al evento ya verificado de un proveedor de pagos. Devuelve un aviso (o `null`) si algo no cuadró. */
-export async function handlePaymentEvent(tenantId: string, event: { type: string; externalId: string; reference?: string | null; amount?: string | null }): Promise<string | null> {
+export async function handlePaymentEvent(tenantId: string, event: { type: string; externalId: string; paymentRef?: string | null; reference?: string | null; amount?: string | null }): Promise<string | null> {
   if (!event.reference) return null;
   if (event.type === "payment.succeeded") {
-    const r = await confirmIntent(tenantId, event.reference, { kind: "PROVIDER", externalId: event.externalId, amount: Number(event.amount ?? NaN) });
+    const r = await confirmIntent(tenantId, event.reference, { kind: "PROVIDER", externalId: event.paymentRef ?? event.externalId, amount: Number(event.amount ?? NaN) });
     return r.ok ? null : r.message;
   }
   if (event.type === "payment.failed") {

@@ -3,7 +3,7 @@ import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getAppBaseUrl } from "@/lib/app-url";
 import { can } from "@/lib/business/permissions";
-import { listIntents, listReconciliations } from "@/lib/payments/intents-db";
+import { connectedGateways, listIntents, listReconciliations } from "@/lib/payments/intents-db";
 import { todayCO } from "@/lib/tax/tax";
 import { requireTenantContext } from "@/lib/tenant/context";
 import CobrosView from "./_components/cobros-view";
@@ -23,11 +23,11 @@ export default async function CobrosPage({ params }: { params: Promise<{ tenant:
     );
   }
   const admin = can(ctx.role, "business.manage");
-  const [intents, runs, base] = await Promise.all([listIntents(ctx.tenantId), admin ? listReconciliations(ctx.tenantId) : Promise.resolve([]), getAppBaseUrl()]);
+  const [intents, runs, base, gateways] = await Promise.all([listIntents(ctx.tenantId), admin ? listReconciliations(ctx.tenantId) : Promise.resolve([]), getAppBaseUrl(), connectedGateways(ctx.tenantId)]);
   return (
     <div className="grid gap-5">
       {header}
-      <CobrosView slug={tenant} baseUrl={base} intents={intents} runs={runs} canAdmin={admin} today={todayCO()} />
+      <CobrosView slug={tenant} baseUrl={base} intents={intents} runs={runs} canAdmin={admin} today={todayCO()} gateways={gateways} />
     </div>
   );
 }

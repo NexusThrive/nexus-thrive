@@ -19,3 +19,4 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 export const SinCobros: Story = { args: { intents: [] } };
 export const SoloCrear: Story = { args: { canAdmin: false } };
+export const DosPasarelas: Story = { args: { gateways: [{ value: "wompi", label: "Wompi" }, { value: "sandbox", label: "Pasarela de prueba" }] } };
