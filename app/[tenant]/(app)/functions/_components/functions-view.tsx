@@ -68,7 +68,7 @@ export default function FunctionsView({ slug, groups, canManage, profile }: { sl
 
   const section = (title: string, hint: string, items: FunctionItem[]) =>
     items.length ? (
-      <section aria-labelledby={`fn-${title.replace(/\s+/g, "-")}`} className="grid gap-2.5">
+      <section key={title} aria-labelledby={`fn-${title.replace(/\s+/g, "-")}`} className="grid gap-2.5">
         <div>
           <h2 id={`fn-${title.replace(/\s+/g, "-")}`} className="font-display text-[15px] font-semibold">{title}</h2>
           <p className="text-[13px] text-muted-foreground">{hint}</p>
