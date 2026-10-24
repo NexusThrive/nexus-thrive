@@ -47,8 +47,8 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [ ] Registro manual de campañas
-- [ ] UTM automáticos _(PR-28)_
-- [ ] Reporte simple: inversión vs. leads recibidos por origen. _(PR-28)_
+- [x] UTM automáticos _(PR-28)_
+- [x] Reporte simple: inversión vs. leads recibidos por origen. _(PR-28)_
 
 #### Técnico
 

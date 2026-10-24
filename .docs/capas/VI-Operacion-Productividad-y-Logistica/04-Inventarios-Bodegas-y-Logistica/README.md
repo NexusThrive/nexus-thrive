@@ -49,7 +49,7 @@ tags: [capas, estructura, subcapa]
 - [x] Entradas, salidas y existencias — _hecho: movimientos de stock_
 - [x] Ajustes manuales con motivo. — _hecho: salida o ajuste exige motivo_
 - [x] Stock actual — _hecho: Catálogo_
-- [ ] Descuento automático al facturar y suma al recibir compras. _(PR-10)_
+- [x] Descuento automático al facturar y suma al recibir compras. _(PR-10)_
 
 #### Técnico
 
@@ -60,12 +60,12 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Múltiples bodegas _(PR-10)_
-- [ ] Kardex _(PR-10)_
+- [x] Múltiples bodegas _(PR-10)_
+- [x] Kardex _(PR-10)_
 - [ ] Lotes, fechas de vencimiento y series.
 - [x] Stock mínimo, máximo y punto de reorden _hecho: lib/inventory/stock-docs-db.ts (reorderOverview) + pestaña Reposición_
 - [x] Conteos físicos y ajustes por inventario _hecho: StockCount; cerrar aplica la diferencia con motivo_
-- [ ] Método de costeo _(PR-10)_
+- [x] Método de costeo _(PR-10)_
 - [ ] Inventario por obra o por sede
 
 #### Técnico

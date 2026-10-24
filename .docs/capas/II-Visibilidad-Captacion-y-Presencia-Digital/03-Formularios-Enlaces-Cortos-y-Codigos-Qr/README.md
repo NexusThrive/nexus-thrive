@@ -47,8 +47,8 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [x] QR — _hecho: recibos con QR, carné de socio, códigos de acceso_
-- [ ] Enlaces cortos _(PR-28)_
-- [ ] Formulario simple _(PR-28)_
+- [x] Enlaces cortos _(PR-28)_
+- [x] Formulario simple _(PR-28)_
 
 #### Técnico
 

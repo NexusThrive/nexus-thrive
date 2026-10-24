@@ -46,7 +46,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Enlace a Google Reviews _(PR-28)_
+- [x] Enlace a Google Reviews _(PR-28)_
 
 #### Técnico
 

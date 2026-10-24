@@ -59,7 +59,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Catálogo con búsqueda, categorías y código de barras. _(PR-09)_
+- [x] Catálogo con búsqueda, categorías y código de barras. _(PR-09)_
 - [x] Descuentos, propinas y pago mixto _(PR-15)_
 - [x] Turnos por cajero _(PR-15)_
 - [x] Descuento automático de inventario — _hecho: `sellProduct` en `money-service`_

@@ -144,12 +144,12 @@ de «hecho»). No se edita a mano.
 | **05** | Integrable | Origen en la bitácora y cupos de uso | I | N1 | 1/1 | `PR-05-uso-y-origen` | hecho |
 | **06** | Integrable | Conexiones externas y puertos | V | N1 | 0/1 | `PR-06-conexiones-externas` | pendiente |
 | **07** | Integrable | n8n en casa: túnel, nodo y plantillas | VI | N1 | 0/1 | — | pendiente |
-| **08** | Vende y controla | Tercero único mínimo | I, IV | N1, N2 | 1/5 | `PR-08-terceros` | pendiente |
-| **09** | Vende y controla | Catálogo maestro: variantes, códigos de barras y precios | I, V | N2 | 0/4 | `PR-09-catalogo-maestro` | pendiente |
-| **10** | Vende y controla | Inventario I: bodegas y kardex con costo | VI | N1, N2 | 0/4 | `PR-10-inventario-bodegas-kardex` | pendiente |
+| **08** | Vende y controla | Tercero único mínimo | I, IV | N1, N2 | 3/5 | `PR-08-terceros` | pendiente |
+| **09** | Vende y controla | Catálogo maestro: variantes, códigos de barras y precios | I, V | N2 | 4/4 | `PR-09-catalogo-maestro` | hecho |
+| **10** | Vende y controla | Inventario I: bodegas y kardex con costo | VI | N1, N2 | 4/4 | `PR-10-inventario-bodegas-kardex` | hecho |
 | **11** | Vende y controla | Inventario II: traslados, conteos y compras | VI | N1 | 5/5 | `PR-11-traslados-conteos-compras` | hecho |
 | **12** | Vende y controla | Importar y exportar clientes y catálogo | — | — | base técnica | — | pendiente |
-| **13** | Vende y controla | Impuestos y numeración por resolución | VII | N1, N2 | 0/4 | `PR-13-impuestos-y-numeracion` | pendiente |
+| **13** | Vende y controla | Impuestos y numeración por resolución | VII | N1, N2 | 1/4 | `PR-13-impuestos-y-numeracion` | pendiente |
 | **14** | Vende y controla | Cartera: cuentas por cobrar y por pagar | — | — | base técnica | `PR-14-cartera` | pendiente |
 | **15** | Vende y controla | POS I: terminales, turnos y venta multilínea | V | N2 | 3/3 | `PR-15-pos-terminales-turnos` | hecho |
 | **16** | Vende y controla | POS II: impresión, código de barras y devoluciones | V | N2 | 3/3 | — | hecho |
@@ -164,7 +164,7 @@ de «hecho»). No se edita a mano.
 | **25** | Visible y vende en línea | Mini-sitio con catálogo y SEO técnico | II | N1 | 4/6 | `PR-25-sitio-y-catalogo-publico` | pendiente |
 | **26** | Visible y vende en línea | Tienda en línea: carrito, pedido y pago | V | N1 | 2/5 | `PR-26-tienda-carrito-y-envios` | pendiente |
 | **27** | Visible y vende en línea | SEO local y Google Business | II | N1 | 0/1 | — | pendiente |
-| **28** | Visible y vende en línea | Reputación y atribución de ventas | II, III | N1 | 0/5 | `PR-28-reputacion-y-atribucion` | pendiente |
+| **28** | Visible y vende en línea | Reputación y atribución de ventas | II, III | N1 | 5/5 | `PR-28-reputacion-y-atribucion` | hecho |
 | **29** | Pulso del negocio | Calculadores de madurez (fase B) | IX | N2 | 0/1 | — | pendiente |
 | **30** | Pulso del negocio | Transición de fase y avisos | IX | N2 | 0/1 | — | pendiente |
 
@@ -265,10 +265,10 @@ de «hecho»). No se edita a mano.
   - [`I.00 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/00-Nucleo-Transversal-y-Modelo-de-Tercero-Unico/README.md)
     - [x] Tercero único con roles _hecho: lib/parties/parties-db.ts (Party, PartyRole; cada cliente guardado tiene su tercero)_
   - [`I.01 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/01-Catalogo-Maestro-de-Productos-y-Servicios/README.md)
-    - [ ] Clientes y proveedores
+    - [x] Clientes y proveedores
   - [`I.01 · N2`](capas/I-Fundacion-Nucleo-e-Infraestructura/01-Catalogo-Maestro-de-Productos-y-Servicios/README.md)
     - [ ] Ficha de tercero completa
-    - [ ] Detección de duplicados
+    - [x] Detección de duplicados
   - [`IV.00 · N1`](capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/00-Perfil-Integral-del-Cliente-CRM-360/README.md)
     - [ ] Empresas / clientes
 
@@ -281,11 +281,11 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Un producto con tallas y dos listas de precios se busca por código de barras.
 - **Casillas que marca:**
   - [`I.01 · N2`](capas/I-Fundacion-Nucleo-e-Infraestructura/01-Catalogo-Maestro-de-Productos-y-Servicios/README.md)
-    - [ ] Variantes
-    - [ ] Listas de precios
-    - [ ] Clasificación fiscal por ítem
+    - [x] Variantes
+    - [x] Listas de precios
+    - [x] Clasificación fiscal por ítem
   - [`V.03 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/03-Punto-de-Venta-Fisico-y-Movil-POS/README.md)
-    - [ ] Catálogo con búsqueda, categorías y código de barras.
+    - [x] Catálogo con búsqueda, categorías y código de barras.
 
 ### PR-10 · Inventario I: bodegas y kardex con costo
 
@@ -296,11 +296,11 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Una venta descuenta con costo; el kardex cuadra con el stock; dos ventas simultáneas no dejan stock negativo.
 - **Casillas que marca:**
   - [`VI.04 · N1`](capas/VI-Operacion-Productividad-y-Logistica/04-Inventarios-Bodegas-y-Logistica/README.md)
-    - [ ] Descuento automático al facturar y suma al recibir compras.
+    - [x] Descuento automático al facturar y suma al recibir compras.
   - [`VI.04 · N2`](capas/VI-Operacion-Productividad-y-Logistica/04-Inventarios-Bodegas-y-Logistica/README.md)
-    - [ ] Múltiples bodegas
-    - [ ] Kardex
-    - [ ] Método de costeo
+    - [x] Múltiples bodegas
+    - [x] Kardex
+    - [x] Método de costeo
 
 ### PR-11 · Inventario II: traslados, conteos y compras
 
@@ -338,7 +338,7 @@ de «hecho»). No se edita a mano.
     - [ ] Tipo de comprobante
   - [`VII.04 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md)
     - [ ] Impuestos por ítem y por tercero
-    - [ ] Gestión de resoluciones y consecutivos
+    - [x] Gestión de resoluciones y consecutivos
 
 ### PR-14 · Cartera: cuentas por cobrar y por pagar
 
@@ -544,13 +544,13 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** El tablero dice de dónde vino cada venta; una reseña de 1–2 estrellas dispara una alerta.
 - **Casillas que marca:**
   - [`II.02 · N1`](capas/II-Visibilidad-Captacion-y-Presencia-Digital/02-Publicidad-Digital-y-Atribucion-Multicanal/README.md)
-    - [ ] UTM automáticos
-    - [ ] Reporte simple: inversión vs. leads recibidos por origen.
+    - [x] UTM automáticos
+    - [x] Reporte simple: inversión vs. leads recibidos por origen.
   - [`II.03 · N1`](capas/II-Visibilidad-Captacion-y-Presencia-Digital/03-Formularios-Enlaces-Cortos-y-Codigos-Qr/README.md)
-    - [ ] Enlaces cortos
-    - [ ] Formulario simple
+    - [x] Enlaces cortos
+    - [x] Formulario simple
   - [`III.04 · N1`](capas/III-Atencion-y-Comunicacion/04-Encuestas-de-Satisfaccion-y-Reputacion/README.md)
-    - [ ] Enlace a Google Reviews
+    - [x] Enlace a Google Reviews
 
 ### PR-29 · Calculadores de madurez (fase B)
 

@@ -47,7 +47,7 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [x] Productos y servicios — _hecho: Catálogo: productos, servicios, planes, entradas y tours_
-- [ ] Clientes y proveedores _(PR-08)_
+- [x] Clientes y proveedores _(PR-08)_
 - [x] Importación desde Excel con validación. _hecho: app/[tenant]/(app)/data + lib/data-exchange (vista previa, error por fila, idempotente)_
 - [x] Activar y desactivar ítems sin borrarlos. — _hecho: `Product.active`_
 
@@ -60,12 +60,12 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Variantes _(PR-09)_
-- [ ] Listas de precios _(PR-09)_
+- [x] Variantes _(PR-09)_
+- [x] Listas de precios _(PR-09)_
 - [ ] Servicios y paquetes
-- [ ] Clasificación fiscal por ítem _(PR-09)_
+- [x] Clasificación fiscal por ítem _(PR-09)_
 - [ ] Ficha de tercero completa _(PR-08)_
-- [ ] Detección de duplicados _(PR-08)_
+- [x] Detección de duplicados _(PR-08)_
 - [ ] Cuenta contable por defecto
 
 #### Técnico
