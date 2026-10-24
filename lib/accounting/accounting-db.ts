@@ -1,3 +1,4 @@
+import { MoneyError } from "@/lib/business/money-error";
 import { db } from "@/prisma/db";
 import { todayCO } from "@/lib/tax/tax";
 import { DEFAULT_RULES, PUC_TEMPLATE, natureOf, periodOfDate, typeOf, validateAccount, validateRule, type AccountType, type RuleLine } from "./puc";
@@ -110,7 +111,7 @@ export async function assertPeriodOpen(tenantId: string, date: string, tx: Write
     throw new PeriodClosedError(`El período ${String(month).padStart(2, "0")}/${year} está cerrado: no admite cambios.`);
   }
 }
-export class PeriodClosedError extends Error {}
+export class PeriodClosedError extends MoneyError {}
 
 /**
  * Cierra un mes. Solo se cierra un mes que ya terminó (no el actual ni uno futuro) y si el anterior con

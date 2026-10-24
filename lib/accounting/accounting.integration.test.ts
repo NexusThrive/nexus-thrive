@@ -27,7 +27,7 @@ describe.skipIf(!TEST_URL)("contabilidad I (integración)", () => {
 
   test("un negocio nuevo ya trae su PUC y sus reglas; sembrar de nuevo no duplica", async () => {
     expect((await listAccounts(a)).length).toBe(PUC_TEMPLATE.length);
-    expect((await listRules(a)).map((r) => r.event)).toEqual(["SALE", "SALE_COST", "PAYMENT_RECEIVED", "CREDIT_NOTE", "DEBIT_NOTE", "PURCHASE_RECEIVED", "SUPPLIER_PAID", "EXPENSE_PAID"]);
+    expect((await listRules(a)).map((r) => r.event)).toEqual(["SALE", "SALE_COST", "SALE_COST_RETURN", "PAYMENT_RECEIVED", "CREDIT_NOTE", "DEBIT_NOTE", "PURCHASE_RECEIVED", "SUPPLIER_PAID", "EXPENSE_PAID"]);
     expect(await seedAccounting(a)).toEqual({ accounts: 0, rules: 0 });
     // Un negocio antiguo (sin plan) lo recibe completo, y solo lo que le falta.
     await db.orm.public.Account.where({ tenantId: b, code: "1105" }).deleteAll();

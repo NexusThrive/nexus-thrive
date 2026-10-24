@@ -1,5 +1,7 @@
 import type { MoneyTx } from "@/lib/business/money-service";
+import { postByRule } from "@/lib/accounting/ledger-db";
 import { toNumber } from "@/lib/format";
+import { todayCO } from "@/lib/tax/tax";
 
 /**
  * Servicio de inventario: el ÚNICO camino que cambia existencias. Mantiene, en
@@ -127,7 +129,7 @@ export async function applyStockMovement(tx: MoneyTx, tenantId: string, input: M
 
     const delta = next - q;
     const productStock = await addToProductStock(tx, tenantId, product.id, delta);
-    await tx.orm.public.StockMovement.create({
+    const movement = await tx.orm.public.StockMovement.create({
       tenantId,
       productId: product.id,
       variantId,
@@ -143,6 +145,10 @@ export async function applyStockMovement(tx: MoneyTx, tenantId: string, input: M
       documentId: input.documentId ?? null,
       reason: input.reason ?? null,
     });
+    // Contabilidad: lo que sale al vender cuesta; una devolución de venta devuelve ese costo al inventario.
+    const costValue = Math.round(movementCost * input.quantity * 100) / 100;
+    if (kind === "SALE" && costValue > 0) await postByRule(tx, tenantId, "SALE_COST", { cost: costValue }, { date: todayCO(), description: `Costo de venta · ${product.name}`, sourceType: "STOCK", sourceId: movement.id }, input.userId ?? null);
+    if (kind === "IN" && input.documentType === "CREDIT_NOTE" && costValue > 0) await postByRule(tx, tenantId, "SALE_COST_RETURN", { cost: costValue }, { date: todayCO(), description: `Costo devuelto · ${product.name}`, sourceType: "STOCK", sourceId: movement.id }, input.userId ?? null);
     return { warehouseId, balance: next, productStock, unitCost: nextAvg, delta };
   }
   throw new StockError("El inventario cambió mientras se registraba. Intenta de nuevo.");

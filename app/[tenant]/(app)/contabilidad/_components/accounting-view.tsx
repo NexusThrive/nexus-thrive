@@ -12,15 +12,18 @@ import { Field } from "@/components/molecules/field";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
-import { closePeriodAction, createAccountAction, createCostCenterAction, loadPucAction, reopenPeriodAction, toggleAccountAction, toggleCostCenterAction, toggleRuleAction, type AccResult } from "@/app/[tenant]/(app)/contabilidad/actions";
+import { Switch } from "@/components/atoms/switch";
+import { setEnabledAction, verifyLedgerAction, closePeriodAction, createAccountAction, createCostCenterAction, loadPucAction, reopenPeriodAction, toggleAccountAction, toggleCostCenterAction, toggleRuleAction, type AccResult } from "@/app/[tenant]/(app)/contabilidad/actions";
 import { TYPE_LABELS, periodLabel } from "@/lib/accounting/puc";
 import type { AccountRow, CostCenterRow, PeriodRow, RuleRow } from "@/lib/accounting/accounting-db";
+import type { EntryRow } from "@/lib/accounting/ledger-db";
+import { formatCurrency } from "@/lib/format";
 
-type Tab = "puc" | "rules" | "centers" | "periods";
+type Tab = "entries" | "puc" | "rules" | "centers" | "periods";
 const AMOUNT_TEXT = { total: "total", subtotal: "subtotal", tax: "IVA", cost: "costo", payment: "valor cobrado/pagado", withholding: "retención", tip: "propina" } as const;
 
-export default function AccountingView({ slug, accounts, rules, centers, periods, today, canReopen }: { slug: string; accounts: AccountRow[]; rules: RuleRow[]; centers: CostCenterRow[]; periods: PeriodRow[]; today: string; canReopen: boolean }) {
-  const [tab, setTab] = useState<Tab>("puc");
+export default function AccountingView({ slug, accounts, rules, centers, periods, entries = [], auto = false, today, canReopen }: { slug: string; accounts: AccountRow[]; rules: RuleRow[]; centers: CostCenterRow[]; periods: PeriodRow[]; entries?: EntryRow[]; auto?: boolean; today: string; canReopen: boolean }) {
+  const [tab, setTab] = useState<Tab>("entries");
   const router = useRouter();
   const { toast } = useToast();
   const [dialog, setDialog] = useState<"account" | "center" | null>(null);
@@ -51,8 +54,44 @@ export default function AccountingView({ slug, accounts, rules, centers, periods
   return (
     <div className="grid gap-4">
       <div className="max-w-full overflow-x-auto pb-1">
-        <SegmentedControl ariaLabel="Sección" value={tab} onChange={setTab} options={[{ value: "puc", label: "Plan de cuentas", count: accounts.length }, { value: "rules", label: "Reglas de asientos", count: rules.length }, { value: "centers", label: "Centros de costo" }, { value: "periods", label: "Períodos" }]} />
+        <SegmentedControl ariaLabel="Sección" value={tab} onChange={setTab} options={[{ value: "entries", label: "Libro de asientos" }, { value: "puc", label: "Plan de cuentas", count: accounts.length }, { value: "rules", label: "Reglas de asientos", count: rules.length }, { value: "centers", label: "Centros de costo" }, { value: "periods", label: "Períodos" }]} />
       </div>
+
+      {tab === "entries" ? (
+        <div className="grid gap-3">
+          <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-surface p-4">
+            <label className="flex items-center gap-2 text-[13px]">
+              <Switch checked={auto} onCheckedChange={(v) => run(() => setEnabledAction(slug, v))} aria-label="Contabilizar automáticamente" />
+              Contabilizar automáticamente ventas, cobros, notas y compras
+            </label>
+            <button type="button" onClick={() => run(() => verifyLedgerAction(slug))} className={buttonVariants({ variant: "outline", size: "sm", className: "ml-auto" })}>Verificar integridad del libro</button>
+          </div>
+          <p className="text-[12.5px] text-muted-foreground">El libro solo se agrega: un asiento no se edita ni se borra, se corrige con otro que lo reversa. Cada asiento lleva el sello del anterior para detectar cualquier cambio.</p>
+          {entries.length === 0 ? <EmptyState title="Aún no hay asientos" description={auto ? "El próximo hecho (venta, cobro, nota o compra) dejará su asiento aquí." : "Activa la contabilización automática para que cada hecho deje su asiento."} /> : (
+            <ul className="grid gap-2">
+              {entries.map((e) => (
+                <li key={e.id} className="rounded-lg border border-border bg-surface p-3">
+                  <div className="flex flex-wrap items-center gap-2 text-[13px]">
+                    <b className="font-mono">N.º {e.number}</b>
+                    <span className="text-muted-foreground">{e.date}</span>
+                    <span className="min-w-0 flex-1 truncate">{e.description}</span>
+                    {e.event === "REVERSAL" ? <Badge variant="destructive">Reverso</Badge> : e.reversed ? <Badge variant="secondary">Reversado</Badge> : null}
+                  </div>
+                  <table className="mt-2 w-full text-[12.5px]">
+                    <caption className="sr-only">Líneas del asiento {e.number}</caption>
+                    <thead className="text-left text-xs text-muted-foreground"><tr><th scope="col" className="py-1 font-medium">Cuenta</th><th scope="col" className="py-1 text-right font-medium">Débito</th><th scope="col" className="py-1 text-right font-medium">Crédito</th></tr></thead>
+                    <tbody>
+                      {e.lines.map((l, i) => (
+                        <tr key={i}><th scope="row" className="py-0.5 text-left font-normal"><span className="font-mono">{l.account}</span> <span className="text-muted-foreground">{l.label}</span></th><td className="py-0.5 text-right font-mono tabular-nums">{l.debit ? formatCurrency(l.debit) : ""}</td><td className="py-0.5 text-right font-mono tabular-nums">{l.credit ? formatCurrency(l.credit) : ""}</td></tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ) : null}
 
       {tab === "puc" ? (
         accounts.length === 0 ? (

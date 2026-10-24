@@ -158,7 +158,7 @@ de «hecho»). No se edita a mano.
 | **19** | Cobra y factura | Adaptador de pagos Wompi | V | N2 | 1/1 | — | hecho |
 | **20** | Cobra y factura | Proveedor tecnológico DIAN | VII | N2 | 1/1 | — | hecho |
 | **21** | Contabilidad | Contabilidad I: plan de cuentas, períodos y reglas | I, VII | N1, N2 | 4/4 | `PR-21-contabilidad-plan-y-periodos` | hecho |
-| **22** | Contabilidad | Contabilidad II: asientos automáticos y partida doble | I, VII | N1, N2 | 0/4 | `PR-22-contabilidad-asientos` | pendiente |
+| **22** | Contabilidad | Contabilidad II: asientos automáticos y partida doble | I, VII | N1, N2 | 3/4 | `PR-22-contabilidad-asientos` | pendiente |
 | **23** | Contabilidad | Estados financieros y exportación al contador | VII | N1, N2 | 0/4 | — | pendiente |
 | **24** | Visible y vende en línea | Presencia v2: pilares, fases y tendencia | II | N2 | 0/1 | `PR-24-presencia-v2` | pendiente |
 | **25** | Visible y vende en línea | Mini-sitio con catálogo y SEO técnico | II | N1 | 0/6 | `PR-25-sitio-y-catalogo-publico` | pendiente |
@@ -459,10 +459,10 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Una venta con IVA, costo y cobro genera un asiento cuadrado y trazable; anular lo reversa; cerrar el mes bloquea cambios.
 - **Casillas que marca:**
   - [`I.00 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/00-Nucleo-Transversal-y-Modelo-de-Tercero-Unico/README.md)
-    - [ ] Motor contable
-    - [ ] Libro mayor inalterable
+    - [x] Motor contable
+    - [x] Libro mayor inalterable
   - [`VII.05 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md)
-    - [ ] Asientos automáticos
+    - [x] Asientos automáticos
     - [ ] Terceros y centros de costo en cada asiento
 
 ### PR-23 · Estados financieros y exportación al contador

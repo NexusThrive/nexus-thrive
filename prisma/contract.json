@@ -188,6 +188,14 @@
       "model": "InvoiceLine",
       "namespace": "public"
     },
+    "JournalEntry": {
+      "model": "JournalEntry",
+      "namespace": "public"
+    },
+    "JournalLine": {
+      "model": "JournalLine",
+      "namespace": "public"
+    },
     "Lead": {
       "model": "Lead",
       "namespace": "public"
@@ -8642,6 +8650,303 @@
               "table": "InvoiceLine"
             }
           },
+          "JournalEntry": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdById": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "date": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "description": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "event": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "hash": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "number": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "reversalOfId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sourceId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sourceType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "lines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "entryId"
+                  ]
+                },
+                "to": {
+                  "model": "JournalLine",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "createdById": {
+                  "column": "createdById"
+                },
+                "date": {
+                  "column": "date"
+                },
+                "description": {
+                  "column": "description"
+                },
+                "event": {
+                  "column": "event"
+                },
+                "hash": {
+                  "column": "hash"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "number": {
+                  "column": "number"
+                },
+                "reversalOfId": {
+                  "column": "reversalOfId"
+                },
+                "sourceId": {
+                  "column": "sourceId"
+                },
+                "sourceType": {
+                  "column": "sourceType"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "JournalEntry"
+            }
+          },
+          "JournalLine": {
+            "fields": {
+              "accountCode": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "costCenterId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "credit": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "debit": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "entryId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "label": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "partyId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "entry": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "entryId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "JournalEntry",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "accountCode": {
+                  "column": "accountCode"
+                },
+                "costCenterId": {
+                  "column": "costCenterId"
+                },
+                "credit": {
+                  "column": "credit"
+                },
+                "debit": {
+                  "column": "debit"
+                },
+                "entryId": {
+                  "column": "entryId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "label": {
+                  "column": "label"
+                },
+                "partyId": {
+                  "column": "partyId"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "JournalLine"
+            }
+          },
           "Lead": {
             "fields": {
               "city": {
@@ -16950,6 +17255,13 @@
                   "plane": "domain"
                 }
               },
+              "accountingEnabled": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "active": {
                 "nullable": false,
                 "type": {
@@ -17800,6 +18112,36 @@
                   "namespace": "public"
                 }
               },
+              "journalEntries": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "JournalEntry",
+                  "namespace": "public"
+                }
+              },
+              "journalLines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "JournalLine",
+                  "namespace": "public"
+                }
+              },
               "leads": {
                 "cardinality": "1:N",
                 "on": {
@@ -18529,6 +18871,9 @@
                 },
                 "accountStage": {
                   "column": "accountStage"
+                },
+                "accountingEnabled": {
+                  "column": "accountingEnabled"
                 },
                 "active": {
                   "column": "active"
@@ -20875,6 +21220,16 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "InvoiceLine"
+            },
+            "JournalEntry": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "JournalEntry"
+            },
+            "JournalLine": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "JournalLine"
             },
             "Lead": {
               "kind": "rls",
@@ -27143,6 +27498,261 @@
                   ],
                   "name": "InvoiceLine_invoiceId_idx_d5c4f70e",
                   "prefix": "InvoiceLine_invoiceId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "JournalEntry": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "createdById": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "date": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "description": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "event": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "hash": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "number": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "reversalOfId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "sourceId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "sourceType": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "JournalEntry"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "date"
+                  ],
+                  "name": "JournalEntry_tenantId_date_idx_3ef944c7",
+                  "prefix": "JournalEntry_tenantId_date_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "JournalEntry_tenantId_idx_c93ed4f1",
+                  "prefix": "JournalEntry_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "sourceType",
+                    "sourceId"
+                  ],
+                  "name": "JournalEntry_tenantId_sourceType_sourceId_idx_7db9b1c3",
+                  "prefix": "JournalEntry_tenantId_sourceType_sourceId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "number"
+                  ]
+                }
+              ]
+            },
+            "JournalLine": {
+              "columns": {
+                "accountCode": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "costCenterId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "credit": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "debit": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "entryId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "label": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "partyId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "JournalLine"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "entryId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "JournalLine"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "JournalEntry"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "entryId"
+                  ],
+                  "name": "JournalLine_entryId_idx_8b42d1db",
+                  "prefix": "JournalLine_entryId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "accountCode"
+                  ],
+                  "name": "JournalLine_tenantId_accountCode_idx_d8899099",
+                  "prefix": "JournalLine_tenantId_accountCode_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "JournalLine_tenantId_idx_c93ed4f1",
+                  "prefix": "JournalLine_tenantId_idx",
                   "unique": false
                 }
               ],
@@ -33986,6 +34596,15 @@
                     "plane": "storage"
                   }
                 },
+                "accountingEnabled": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
                 "active": {
                   "codecId": "pg/bool@1",
                   "default": {
@@ -36186,10 +36805,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "e327c70d8bf1838fec907ec41a06d0064552fddb7ffd2adddaae24705bfcb13a"
+    "storageHash": "83f21004c2a7e93bc0f80dd61a41375c9949309808334ed8f281eca35699ea26"
   },
   "execution": {
-    "executionHash": "d67f245ebf071dfbea987de1882929cdf2a994a09ff904a22d9b9159eaae0c2d",
+    "executionHash": "c94ba508fe10847f0a1c720f8ce2d69bcb9b3a01557c8c0f5bee29ce75d81f4a",
     "mutations": {
       "defaults": [
         {
@@ -37002,6 +37621,28 @@
           },
           "ref": {
             "entry": "InvoiceLine",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "JournalEntry",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "JournalLine",
             "field": "id",
             "namespace": "public"
           }

@@ -5,6 +5,7 @@ import { customerNameIn } from "@/lib/business/customers-db";
 import { validateLines, type InvoiceKind, type LineInput } from "@/lib/business/invoice";
 import { documentView, issueAdjustmentNote, type DocumentView } from "@/lib/business/documents-db";
 import { createInvoice, payInvoice, voidInvoice, invoiceStatus } from "@/lib/business/invoices-db";
+import { MoneyError } from "@/lib/business/money-error";
 import { canHandleCash, canManage } from "@/lib/business/roles";
 import { receiptCode } from "@/lib/business/invoice";
 import { PAYMENT_METHODS } from "@/lib/finance";
@@ -59,7 +60,13 @@ export async function voidInvoiceAction(slug: string, id: string, reason: string
   if (!ctx || !canManage(ctx.role)) return DENIED;
   if (reason.trim().length < 3) return { ok: false, message: "Escribe el motivo." };
   if ((await invoiceStatus(ctx.tenantId, id)) !== "ISSUED") return { ok: false, message: "Solo se anulan documentos emitidos y sin pagar." };
-  await voidInvoice(ctx.tenantId, id, reason.trim().slice(0, 300));
+  try {
+    await voidInvoice(ctx.tenantId, id, reason.trim().slice(0, 300));
+  } catch (error) {
+    // Un mes contable cerrado (o una cuenta apagada) impide anular: se explica en vez de fallar.
+    if (error instanceof MoneyError) return { ok: false, message: error.message };
+    throw error;
+  }
   await logTenantAction(ctx, "BIZ_INVOICE_VOID", { invoiceId: id, reason: reason.trim().slice(0, 300) });
   refresh(slug);
   return { ok: true, message: "Anulada" };

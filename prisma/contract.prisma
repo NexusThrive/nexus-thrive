@@ -335,6 +335,8 @@ model Tenant {
   costingMethod     String   @default("AVG")
   /// Genera el documento fiscal de cada venta para enviarlo a un proveedor tecnológico autorizado.
   einvoiceEnabled    Boolean  @default(false)
+  /// Contabiliza automáticamente cada venta, cobro, nota y compra con las reglas del plan de cuentas.
+  accountingEnabled  Boolean  @default(false)
   /// Modelo comercial (contexto, no restricción): B2B | B2C | B2B2C. Vacío = sin definir.
   businessModels    String[]?
   /// Qué hace el negocio, en sus palabras (contexto para recomendaciones).
@@ -418,6 +420,8 @@ model Tenant {
   accountingPeriods  AccountingPeriod[]
   accountingRules    AccountingRule[]
   costCenters        CostCenter[]
+  journalEntries     JournalEntry[]
+  journalLines       JournalLine[]
   paymentRefunds     PaymentRefund[]
   reconciliationRuns ReconciliationRun[]
   supplierPayments   SupplierPayment[]
@@ -3148,5 +3152,55 @@ model CostCenter {
   createdAt DateTime @default(now())
 
   @@unique([tenantId, code])
+  @@rls
+}
+
+
+/// Asiento contable de partida doble. El libro mayor es de solo agregar: un asiento NO se edita ni se borra; se corrige
+/// con otro asiento que lo reversa. Cada asiento encadena el sello (hash) del anterior para detectar cualquier alteración.
+model JournalEntry {
+  id           String   @id @default(uuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Consecutivo por negocio.
+  number       Int
+  /// Fecha contable AAAA-MM-DD (define el período).
+  date         String
+  description  String
+  /// Regla o hecho que lo generó (SALE, PAYMENT_RECEIVED, MANUAL, REVERSAL…).
+  event        String
+  /// DOCUMENT | PAYMENT | STOCK | MANUAL: de qué sale, para trazarlo y reversarlo.
+  sourceType   String
+  sourceId     String?
+  /// Si este asiento reversa a otro.
+  reversalOfId String?
+  /// Sello: SHA-256 de (sello anterior + contenido). Cadena que hace evidente cualquier cambio.
+  hash         String
+  createdById  String?
+  createdAt    DateTime @default(now())
+  lines        JournalLine[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId, date])
+  @@index([tenantId, sourceType, sourceId])
+  @@rls
+}
+
+model JournalLine {
+  id           String       @id @default(uuid())
+  tenantId     String
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  entryId      String
+  entry        JournalEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  accountCode  String
+  debit        Decimal      @default(0)
+  credit       Decimal      @default(0)
+  label        String?
+  /// Dimensiones analíticas: tercero y centro de costo de cada línea.
+  partyId      String?
+  costCenterId String?
+
+  @@index([tenantId, accountCode])
+  @@index([entryId])
   @@rls
 }

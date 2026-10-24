@@ -3,8 +3,26 @@ import { expectNoAxeViolations, openStory } from "./helpers";
 
 /** Contabilidad I: plan de cuentas, reglas, centros de costo y períodos. */
 test.describe("Contabilidad", () => {
+  test("libro de asientos: cuadrados, con sus cuentas, y se verifica su integridad", async ({ page }) => {
+    await openStory(page, "páginas-finanzas-contabilidad--default");
+    const venta = page.getByRole("table", { name: "Líneas del asiento 1" });
+    await expect(venta.getByRole("row", { name: /1305.*238\.000/ })).toBeVisible();
+    await expect(venta.getByRole("row", { name: /4135.*200\.000/ })).toBeVisible();
+    await expect(venta.getByRole("row", { name: /2408.*38\.000/ })).toBeVisible();
+    await page.getByRole("button", { name: "Verificar integridad del libro" }).click();
+    await expect(page.getByText(/Libro íntegro: 6 asientos/)).toBeVisible();
+    await expectNoAxeViolations(page);
+  });
+
+  test("sin asientos explica cómo activar la contabilización", async ({ page }) => {
+    await openStory(page, "páginas-finanzas-contabilidad--sin-asientos");
+    await expect(page.getByText("Aún no hay asientos")).toBeVisible();
+    await expect(page.getByText(/Activa la contabilización automática/)).toBeVisible();
+  });
+
   test("plan de cuentas con búsqueda, naturaleza y cuentas que agrupan", async ({ page }) => {
     await openStory(page, "páginas-finanzas-contabilidad--default");
+    await page.getByRole("button", { name: "Plan de cuentas" }).click();
     const table = page.getByRole("table", { name: "Plan de cuentas" });
     await expect(table.getByRole("row", { name: /1105.*Caja.*Activo.*Débito/ })).toBeVisible();
     await expect(table.getByRole("row", { name: /2408.*IVA.*Pasivo.*Crédito/ })).toBeVisible();
@@ -16,6 +34,7 @@ test.describe("Contabilidad", () => {
 
   test("nueva cuenta: explica cuando no cuelga de una existente", async ({ page }) => {
     await openStory(page, "páginas-finanzas-contabilidad--default");
+    await page.getByRole("button", { name: "Plan de cuentas" }).click();
     await page.getByRole("button", { name: "Nueva cuenta" }).click();
     const dialog = page.getByRole("dialog", { name: "Nueva cuenta" });
     await dialog.getByLabel(/Código/).fill("199999");
@@ -51,6 +70,7 @@ test.describe("Contabilidad", () => {
 
   test("sin plan ofrece cargar el PUC", async ({ page }) => {
     await openStory(page, "páginas-finanzas-contabilidad--sin-plan");
+    await page.getByRole("button", { name: "Plan de cuentas" }).click();
     await page.getByRole("button", { name: "Cargar el PUC" }).click();
     await expect(page.getByText(/cuentas y 8 reglas cargadas/)).toBeVisible();
   });

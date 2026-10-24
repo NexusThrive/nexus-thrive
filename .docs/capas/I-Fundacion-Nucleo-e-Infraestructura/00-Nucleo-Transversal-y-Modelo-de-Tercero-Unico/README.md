@@ -48,8 +48,8 @@ tags: [capas, estructura, subcapa]
 
 - [x] Tercero único con roles _(PR-08)_ _hecho: lib/parties/parties-db.ts (Party, PartyRole; cada cliente guardado tiene su tercero)_
 - [ ] Documento transaccional unificado
-- [ ] Motor contable _(PR-22)_
-- [ ] Libro mayor inalterable _(PR-22)_
+- [x] Motor contable _(PR-22)_
+- [x] Libro mayor inalterable _(PR-22)_
 - [x] Impuestos y retenciones parametrizables con vigencia _hecho: lib/tax + app/[tenant]/(app)/taxes (tarifas con vigencia y retenciones)_
 - [x] Dimensiones analíticas _(PR-21)_
 - [x] Periodos y cierres _(PR-21)_

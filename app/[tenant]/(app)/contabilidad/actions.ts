@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { closePeriod, createAccount, createCostCenter, reopenPeriod, seedAccounting, setAccountActive, setCostCenterActive, setRuleActive } from "@/lib/accounting/accounting-db";
+import { listEntries, setAccountingEnabled, verifyLedger } from "@/lib/accounting/ledger-db";
 import { can } from "@/lib/business/permissions";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";
@@ -88,3 +89,23 @@ export async function reopenPeriodAction(slug: string, year: number, month: numb
   refresh(slug);
   return { ok: true, message: `Mes ${String(month).padStart(2, "0")}/${year} reabierto` };
 }
+
+export async function setEnabledAction(slug: string, enabled: boolean): Promise<AccResult> {
+  const ctx = await manager(slug);
+  if (!ctx) return DENIED;
+  const r = await setAccountingEnabled(ctx.tenantId, enabled);
+  if (!r.ok) return r;
+  await logTenantAction(ctx, "BIZ_ACCOUNTING", { action: enabled ? "auto.enable" : "auto.disable" });
+  refresh(slug);
+  return { ok: true, message: enabled ? "Contabilización automática activada: cada venta, cobro, nota y compra deja su asiento" : "Contabilización automática desactivada" };
+}
+
+export async function verifyLedgerAction(slug: string): Promise<AccResult> {
+  const ctx = await manager(slug);
+  if (!ctx) return DENIED;
+  const r = await verifyLedger(ctx.tenantId);
+  return r.ok ? { ok: true, message: `Libro íntegro: ${r.checked} asientos revisados, todos cuadran y el encadenado está intacto` } : { ok: false, message: `Asiento ${r.brokenAt}: ${r.reason}` };
+}
+
+export type { EntryRow } from "@/lib/accounting/ledger-db";
+void listEntries;
