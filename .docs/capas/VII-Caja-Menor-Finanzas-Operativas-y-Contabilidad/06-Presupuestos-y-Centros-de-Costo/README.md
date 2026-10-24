@@ -46,7 +46,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Centros de costo y sucursales _(PR-21)_
+- [x] Centros de costo y sucursales _(PR-21)_
 - [ ] Reporte de gasto e ingreso por centro de costo.
 - [x] Lista de categorías — _hecho: categorías de gasto_
 - [x] Filtro y total por categoría. — _hecho: filtro por categoría en Finanzas_

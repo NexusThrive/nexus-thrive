@@ -13,6 +13,7 @@ import {
   LayoutDashboard,
   MessageCircle,
   Package,
+  BookOpenCheck,
   FileCheck2,
   HandCoins,
   Link2,
@@ -182,6 +183,7 @@ export const CAPABILITIES = [
     nav: [
       { href: "/finance", icon: Wallet, label: () => "Finanzas" },
       { href: "/cartera", icon: HandCoins, label: () => "Cartera" },
+      { href: "/contabilidad", icon: BookOpenCheck, label: () => "Contabilidad" },
       { href: "/taxes", icon: Percent, label: () => "Impuestos y numeración" },
     ],
   },

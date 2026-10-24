@@ -414,6 +414,10 @@ model Tenant {
   posTerminals       PosTerminal[]
   paymentIntents     PaymentIntent[]
   fiscalDocuments    FiscalDocument[]
+  accounts           Account[]
+  accountingPeriods  AccountingPeriod[]
+  accountingRules    AccountingRule[]
+  costCenters        CostCenter[]
   paymentRefunds     PaymentRefund[]
   reconciliationRuns ReconciliationRun[]
   supplierPayments   SupplierPayment[]
@@ -3070,5 +3074,79 @@ model FiscalDocument {
   @@unique([tenantId, invoiceId])
   @@unique([tenantId, supplierInvoiceId])
   @@index([tenantId, status])
+  @@rls
+}
+
+
+/// Cuenta del plan único de cuentas (PUC) del negocio. Se siembra con la plantilla colombiana y se ajusta con el contador.
+model Account {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Código numérico (1105, 110505…). Un código identifica UNA cuenta por negocio.
+  code       String
+  name       String
+  /// ASSET | LIABILITY | EQUITY | INCOME | EXPENSE | COST
+  type       String
+  /// D (débito) | C (crédito): el lado en que normalmente aumenta.
+  nature     String
+  /// Solo las cuentas de movimiento (auxiliares) reciben asientos; las demás agrupan.
+  postable   Boolean  @default(true)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  @@unique([tenantId, code])
+  @@rls
+}
+
+/// Mes contable. Un mes cerrado no admite asientos nuevos ni cambios (se aplica en el motor contable).
+model AccountingPeriod {
+  id          String    @id @default(uuid())
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  year        Int
+  month       Int
+  /// OPEN | CLOSED
+  status      String    @default("OPEN")
+  closedAt    DateTime?
+  closedById  String?
+  reopenedAt  DateTime?
+  note        String?
+  createdAt   DateTime  @default(now())
+
+  @@unique([tenantId, year, month])
+  @@rls
+}
+
+/// Regla que dice qué asiento genera cada hecho del negocio (venta, costo, compra, cobro…). Se pueden ver y desactivar.
+model AccountingRule {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Hecho que la dispara: SALE | SALE_COST | CREDIT_NOTE | PURCHASE_RECEIVED | PAYMENT_RECEIVED | EXPENSE_PAID …
+  event     String
+  name      String
+  /// [{ side: "D"|"C", account: "1105", amount: "total"|"subtotal"|"tax"|"cost"|"payment"|"withholding", label }]
+  lines     Json
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([tenantId, event])
+  @@rls
+}
+
+/// Centro de costo o sucursal: dimensión analítica de cada asiento.
+model CostCenter {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  code      String
+  name      String
+  /// CENTER | BRANCH
+  kind      String   @default("CENTER")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([tenantId, code])
   @@rls
 }

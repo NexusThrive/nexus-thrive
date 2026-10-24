@@ -1,3 +1,4 @@
+import { seedAccounting } from "@/lib/accounting/accounting-db";
 import { db } from "@/prisma/db";
 import type { ModuleValue } from "@/lib/onboarding/types";
 
@@ -80,6 +81,8 @@ export async function createTenantWithOwner(
     const tenant = await tx.orm.public.Tenant.create(fields);
     await tx.orm.public.User.create({ ...owner, role: "OWNER", tenantId: tenant.id });
     await syncModules(tx, tenant.id, modules);
+    // Un negocio nuevo trae su plan de cuentas y sus reglas contables de partida.
+    await seedAccounting(tenant.id, tx);
     return tenant.id;
   });
 }

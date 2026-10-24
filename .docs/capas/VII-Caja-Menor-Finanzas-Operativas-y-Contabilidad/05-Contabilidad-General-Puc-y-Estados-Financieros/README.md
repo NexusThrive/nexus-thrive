@@ -59,7 +59,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Plan de cuentas (PUC) _(PR-21)_
+- [x] Plan de cuentas (PUC) _(PR-21)_
 - [ ] Asientos automáticos _(PR-22)_
 - [ ] Comprobantes contables manuales
 - [ ] Libros auxiliares, libro diario, libro mayor y balance de prueba. _(PR-23)_

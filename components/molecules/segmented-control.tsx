@@ -91,7 +91,7 @@ export function SegmentedControl<T extends string>({
           >
             {option.label}
             {option.count != null ? (
-              <span className="font-mono text-[11px] tabular-nums opacity-60">{option.count}</span>
+              <span className="font-mono text-[11px] tabular-nums">{option.count}</span>
             ) : null}
           </button>
         );

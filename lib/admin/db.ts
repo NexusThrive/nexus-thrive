@@ -1,4 +1,5 @@
 import { and, or } from "@prisma/orm-postgres/orm-client";
+import { seedAccounting } from "@/lib/accounting/accounting-db";
 import { db } from "@/prisma/db";
 import {
   formatCurrency,
@@ -309,6 +310,7 @@ export type AuditAction =
   | "BIZ_API_KEY_REVOKE"
   | "BIZ_API_OPERATION"
   | "BIZ_PROFILE_UPDATE"
+  | "BIZ_ACCOUNTING"
   | "BIZ_EINVOICE"
   | "BIZ_ONLINE_PAYMENT"
   | "BIZ_INVOICE_NOTE"
@@ -835,6 +837,9 @@ export function createAdminDb() {
           invitedById: null,
           expiresAt: instantFromMs(Date.now() + OWNER_INVITE_DAYS * 86_400_000),
         });
+
+        // Un negocio nuevo trae su plan de cuentas y sus reglas contables de partida.
+        await seedAccounting(tenant.id, tx);
 
         return tenant;
       }),

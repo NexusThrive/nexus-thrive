@@ -157,7 +157,7 @@ de «hecho»). No se edita a mano.
 | **18** | Cobra y factura | Facturación electrónica: puerto sin proveedor | VII | N1, N2 | 3/6 | `PR-18-facturacion-electronica` | pendiente |
 | **19** | Cobra y factura | Adaptador de pagos Wompi | V | N2 | 1/1 | — | hecho |
 | **20** | Cobra y factura | Proveedor tecnológico DIAN | VII | N2 | 1/1 | — | hecho |
-| **21** | Contabilidad | Contabilidad I: plan de cuentas, períodos y reglas | I, VII | N1, N2 | 0/4 | `PR-21-contabilidad-plan-y-periodos` | pendiente |
+| **21** | Contabilidad | Contabilidad I: plan de cuentas, períodos y reglas | I, VII | N1, N2 | 4/4 | `PR-21-contabilidad-plan-y-periodos` | hecho |
 | **22** | Contabilidad | Contabilidad II: asientos automáticos y partida doble | I, VII | N1, N2 | 0/4 | `PR-22-contabilidad-asientos` | pendiente |
 | **23** | Contabilidad | Estados financieros y exportación al contador | VII | N1, N2 | 0/4 | — | pendiente |
 | **24** | Visible y vende en línea | Presencia v2: pilares, fases y tendencia | II | N2 | 0/1 | `PR-24-presencia-v2` | pendiente |
@@ -443,12 +443,12 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Un negocio nuevo trae su PUC; las reglas iniciales se pueden ver y desactivar.
 - **Casillas que marca:**
   - [`I.00 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/00-Nucleo-Transversal-y-Modelo-de-Tercero-Unico/README.md)
-    - [ ] Dimensiones analíticas
-    - [ ] Periodos y cierres
+    - [x] Dimensiones analíticas
+    - [x] Periodos y cierres
   - [`VII.05 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md)
-    - [ ] Plan de cuentas (PUC)
+    - [x] Plan de cuentas (PUC)
   - [`VII.06 · N1`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/06-Presupuestos-y-Centros-de-Costo/README.md)
-    - [ ] Centros de costo y sucursales
+    - [x] Centros de costo y sucursales
 
 ### PR-22 · Contabilidad II: asientos automáticos y partida doble
 

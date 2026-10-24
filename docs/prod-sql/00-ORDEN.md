@@ -39,6 +39,7 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 27 | `2026-10-24-pos-terminales.sql` | Punto de venta: tabla `PosTerminal`, `CashSession.terminalId` e `Invoice.tipTotal` (aditivo; requiere los pasos 25 y 26) | generado de la migración |
 | 28 | `2026-10-24-pagos-cobros-en-linea.sql` | Cobros en línea: `PaymentIntent`, `PaymentRefund` y `ReconciliationRun` (aditivo; requiere los pasos 26 y 27) | generado de la migración |
 | 29 | `2026-10-24-facturacion-electronica.sql` | Facturación electrónica: tabla `FiscalDocument` y `Tenant.einvoiceEnabled` (aditivo; requiere el paso 28) | generado de la migración |
+| 30 | `2026-10-24-contabilidad-plan-y-periodos.sql` | Contabilidad I: `Account` (PUC), `AccountingPeriod`, `AccountingRule` y `CostCenter` (aditivo) | generado de la migración |
 
 ## Estado: producción reconstruida desde las migraciones (camino A, 2026-10-23)
 

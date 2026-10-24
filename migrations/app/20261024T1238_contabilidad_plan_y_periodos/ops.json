@@ -1,0 +1,806 @@
+[
+  {
+    "id": "table.Account",
+    "label": "Create table \"Account\"",
+    "summary": "Creates table \"Account\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Account"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Account\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Account\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Account\"",
+        "sql": "CREATE TABLE \"public\".\"Account\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"code\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"nature\" text NOT NULL,\n  \"postable\" bool DEFAULT true NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"type\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Account\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Account\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.AccountingPeriod",
+    "label": "Create table \"AccountingPeriod\"",
+    "summary": "Creates table \"AccountingPeriod\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "AccountingPeriod"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"AccountingPeriod\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AccountingPeriod\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"AccountingPeriod\"",
+        "sql": "CREATE TABLE \"public\".\"AccountingPeriod\" (\n  \"closedAt\" timestamptz,\n  \"closedById\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"month\" int4 NOT NULL,\n  \"note\" text,\n  \"reopenedAt\" timestamptz,\n  \"status\" text DEFAULT 'OPEN' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"year\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"AccountingPeriod\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AccountingPeriod\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.AccountingRule",
+    "label": "Create table \"AccountingRule\"",
+    "summary": "Creates table \"AccountingRule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "AccountingRule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"AccountingRule\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AccountingRule\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"AccountingRule\"",
+        "sql": "CREATE TABLE \"public\".\"AccountingRule\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"event\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"lines\" json NOT NULL,\n  \"name\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"AccountingRule\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AccountingRule\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.CostCenter",
+    "label": "Create table \"CostCenter\"",
+    "summary": "Creates table \"CostCenter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "CostCenter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"CostCenter\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CostCenter\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"CostCenter\"",
+        "sql": "CREATE TABLE \"public\".\"CostCenter\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"code\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"kind\" text DEFAULT 'CENTER' NOT NULL,\n  \"name\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"CostCenter\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CostCenter\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Account.Account_tenantId_code_key",
+    "label": "Add unique constraint on \"Account\" (tenantId, code)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Account_tenantId_code_key",
+        "table": "Account"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Account_tenantId_code_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Account_tenantId_code_key",
+          "public",
+          "\"public\".\"Account\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Account_tenantId_code_key\"",
+        "sql": "ALTER TABLE \"public\".\"Account\" ADD CONSTRAINT \"Account_tenantId_code_key\" UNIQUE (\"tenantId\", \"code\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Account_tenantId_code_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Account_tenantId_code_key",
+          "public",
+          "\"public\".\"Account\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.AccountingPeriod.AccountingPeriod_tenantId_year_month_key",
+    "label": "Add unique constraint on \"AccountingPeriod\" (tenantId, year, month)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "AccountingPeriod_tenantId_year_month_key",
+        "table": "AccountingPeriod"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"AccountingPeriod_tenantId_year_month_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "AccountingPeriod_tenantId_year_month_key",
+          "public",
+          "\"public\".\"AccountingPeriod\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"AccountingPeriod_tenantId_year_month_key\"",
+        "sql": "ALTER TABLE \"public\".\"AccountingPeriod\" ADD CONSTRAINT \"AccountingPeriod_tenantId_year_month_key\" UNIQUE (\"tenantId\", \"year\", \"month\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"AccountingPeriod_tenantId_year_month_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "AccountingPeriod_tenantId_year_month_key",
+          "public",
+          "\"public\".\"AccountingPeriod\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.AccountingRule.AccountingRule_tenantId_event_key",
+    "label": "Add unique constraint on \"AccountingRule\" (tenantId, event)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "AccountingRule_tenantId_event_key",
+        "table": "AccountingRule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"AccountingRule_tenantId_event_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "AccountingRule_tenantId_event_key",
+          "public",
+          "\"public\".\"AccountingRule\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"AccountingRule_tenantId_event_key\"",
+        "sql": "ALTER TABLE \"public\".\"AccountingRule\" ADD CONSTRAINT \"AccountingRule_tenantId_event_key\" UNIQUE (\"tenantId\", \"event\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"AccountingRule_tenantId_event_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "AccountingRule_tenantId_event_key",
+          "public",
+          "\"public\".\"AccountingRule\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.CostCenter.CostCenter_tenantId_code_key",
+    "label": "Add unique constraint on \"CostCenter\" (tenantId, code)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "CostCenter_tenantId_code_key",
+        "table": "CostCenter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"CostCenter_tenantId_code_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CostCenter_tenantId_code_key",
+          "public",
+          "\"public\".\"CostCenter\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"CostCenter_tenantId_code_key\"",
+        "sql": "ALTER TABLE \"public\".\"CostCenter\" ADD CONSTRAINT \"CostCenter_tenantId_code_key\" UNIQUE (\"tenantId\", \"code\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"CostCenter_tenantId_code_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CostCenter_tenantId_code_key",
+          "public",
+          "\"public\".\"CostCenter\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Account.Account_tenantId_idx_c93ed4f1",
+    "label": "Create index \"Account_tenantId_idx_c93ed4f1\" on \"Account\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Account_tenantId_idx_c93ed4f1",
+        "table": "Account"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Account_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Account_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Account_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"Account_tenantId_idx_c93ed4f1\" ON \"public\".\"Account\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Account_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Account_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.AccountingPeriod.AccountingPeriod_tenantId_idx_c93ed4f1",
+    "label": "Create index \"AccountingPeriod_tenantId_idx_c93ed4f1\" on \"AccountingPeriod\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "AccountingPeriod_tenantId_idx_c93ed4f1",
+        "table": "AccountingPeriod"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"AccountingPeriod_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AccountingPeriod_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"AccountingPeriod_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"AccountingPeriod_tenantId_idx_c93ed4f1\" ON \"public\".\"AccountingPeriod\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"AccountingPeriod_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AccountingPeriod_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.AccountingRule.AccountingRule_tenantId_idx_c93ed4f1",
+    "label": "Create index \"AccountingRule_tenantId_idx_c93ed4f1\" on \"AccountingRule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "AccountingRule_tenantId_idx_c93ed4f1",
+        "table": "AccountingRule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"AccountingRule_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AccountingRule_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"AccountingRule_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"AccountingRule_tenantId_idx_c93ed4f1\" ON \"public\".\"AccountingRule\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"AccountingRule_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AccountingRule_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.CostCenter.CostCenter_tenantId_idx_c93ed4f1",
+    "label": "Create index \"CostCenter_tenantId_idx_c93ed4f1\" on \"CostCenter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "CostCenter_tenantId_idx_c93ed4f1",
+        "table": "CostCenter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"CostCenter_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CostCenter_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"CostCenter_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"CostCenter_tenantId_idx_c93ed4f1\" ON \"public\".\"CostCenter\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"CostCenter_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CostCenter_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Account.Account_tenantId_fkey",
+    "label": "Add foreign key \"Account_tenantId_fkey\" on \"Account\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Account_tenantId_fkey",
+        "table": "Account"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Account_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Account_tenantId_fkey",
+          "public",
+          "\"public\".\"Account\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Account_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Account\"\nADD CONSTRAINT \"Account_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Account_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Account_tenantId_fkey",
+          "public",
+          "\"public\".\"Account\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.AccountingPeriod.AccountingPeriod_tenantId_fkey",
+    "label": "Add foreign key \"AccountingPeriod_tenantId_fkey\" on \"AccountingPeriod\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "AccountingPeriod_tenantId_fkey",
+        "table": "AccountingPeriod"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"AccountingPeriod_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "AccountingPeriod_tenantId_fkey",
+          "public",
+          "\"public\".\"AccountingPeriod\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"AccountingPeriod_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"AccountingPeriod\"\nADD CONSTRAINT \"AccountingPeriod_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"AccountingPeriod_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "AccountingPeriod_tenantId_fkey",
+          "public",
+          "\"public\".\"AccountingPeriod\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.AccountingRule.AccountingRule_tenantId_fkey",
+    "label": "Add foreign key \"AccountingRule_tenantId_fkey\" on \"AccountingRule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "AccountingRule_tenantId_fkey",
+        "table": "AccountingRule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"AccountingRule_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "AccountingRule_tenantId_fkey",
+          "public",
+          "\"public\".\"AccountingRule\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"AccountingRule_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"AccountingRule\"\nADD CONSTRAINT \"AccountingRule_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"AccountingRule_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "AccountingRule_tenantId_fkey",
+          "public",
+          "\"public\".\"AccountingRule\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.CostCenter.CostCenter_tenantId_fkey",
+    "label": "Add foreign key \"CostCenter_tenantId_fkey\" on \"CostCenter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "CostCenter_tenantId_fkey",
+        "table": "CostCenter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"CostCenter_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CostCenter_tenantId_fkey",
+          "public",
+          "\"public\".\"CostCenter\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"CostCenter_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"CostCenter\"\nADD CONSTRAINT \"CostCenter_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"CostCenter_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CostCenter_tenantId_fkey",
+          "public",
+          "\"public\".\"CostCenter\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.Account",
+    "label": "Enable row-level security on \"Account\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "Account"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"Account\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Account"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"Account\"",
+        "sql": "ALTER TABLE \"public\".\"Account\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"Account\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "Account"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.AccountingPeriod",
+    "label": "Enable row-level security on \"AccountingPeriod\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "AccountingPeriod"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"AccountingPeriod\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "AccountingPeriod"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"AccountingPeriod\"",
+        "sql": "ALTER TABLE \"public\".\"AccountingPeriod\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"AccountingPeriod\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "AccountingPeriod"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.AccountingRule",
+    "label": "Enable row-level security on \"AccountingRule\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "AccountingRule"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"AccountingRule\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "AccountingRule"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"AccountingRule\"",
+        "sql": "ALTER TABLE \"public\".\"AccountingRule\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"AccountingRule\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "AccountingRule"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.CostCenter",
+    "label": "Enable row-level security on \"CostCenter\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "CostCenter"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"CostCenter\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "CostCenter"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"CostCenter\"",
+        "sql": "ALTER TABLE \"public\".\"CostCenter\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"CostCenter\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "CostCenter"
+        ]
+      }
+    ]
+  }
+]
