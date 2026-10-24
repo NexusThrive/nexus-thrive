@@ -48,7 +48,7 @@ tags: [capas, estructura, subcapa]
 
 - [x] Productos y servicios — _hecho: Catálogo: productos, servicios, planes, entradas y tours_
 - [ ] Clientes y proveedores _(PR-08)_
-- [ ] Importación desde Excel con validación. _(PR-12)_
+- [x] Importación desde Excel con validación. _hecho: app/[tenant]/(app)/data + lib/data-exchange (vista previa, error por fila, idempotente)_
 - [x] Activar y desactivar ítems sin borrarlos. — _hecho: `Product.active`_
 
 #### Técnico

@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Blocks, Settings } from "lucide-react";
+import { Blocks, FileSpreadsheet, Settings } from "lucide-react";
 import { MODULES, type ModuleValue, type VerticalValue } from "@/lib/admin/catalogs";
 import { CAPABILITIES, type CapabilityNav } from "@/lib/capabilities/registry";
 import { getVerticalTerms } from "@/lib/vertical-terms";
@@ -64,6 +64,15 @@ export const FUNCTIONS_ITEM: NavItem = {
   icon: Blocks,
 };
 
+/** Subir clientes y catálogo desde Excel/CSV y bajar copias (no depende de un módulo). */
+export const DATA_ITEM: NavItem = {
+  key: "data",
+  module: "settings",
+  label: "Importar y exportar",
+  href: "/data",
+  icon: FileSpreadsheet,
+};
+
 export const SETTINGS_ITEM: NavItem = {
   key: "settings",
   module: "settings",
@@ -119,7 +128,7 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
       label,
       items: enabled.filter((m) => m !== "dashboard" && MODULE_GROUP[m] === label).flatMap(items),
     })),
-    { label: "Sistema", items: [FUNCTIONS_ITEM, SETTINGS_ITEM] },
+    { label: "Sistema", items: [FUNCTIONS_ITEM, DATA_ITEM, SETTINGS_ITEM] },
   ].filter((group) => group.items.length > 0);
 }
 

@@ -24,6 +24,8 @@ export const BUSINESS_PERMISSIONS = {
   "business.setup": ["SUPERADMIN", "OWNER"],
   /** Cobrar (incluye vender y renovar membresías), gastos y turnos de caja. */
   "money.handle": ["SUPERADMIN", "OWNER", "ADMIN", "RECEPTION", "STAFF"],
+  /** Importar y exportar clientes y catálogo (los datos del negocio entran y salen en masa). */
+  "data.exchange": GOVERN,
   /** Borrar o archivar clientes. */
   "customers.delete": GOVERN,
 

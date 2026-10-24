@@ -51,7 +51,7 @@ tags: [capas, estructura, subcapa]
 - [x] Notas e historial
 - [x] Etiquetas y estados — _hecho: etiquetas, activo/archivado_
 - [x] Búsqueda y filtros.
-- [ ] Importar y exportar _(PR-12)_
+- [x] Importar y exportar _hecho: clientes en /data (plantilla, exportar CSV, importar con revisión)_
 
 #### Técnico
 
