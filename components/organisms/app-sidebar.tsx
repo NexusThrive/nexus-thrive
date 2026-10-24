@@ -3,13 +3,14 @@
 import { Fragment, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { PanelLeft } from "lucide-react";
-import { BrandLogo } from "@nexus/brand/BrandLogo";
 import { usePreferences } from "@/components/providers/preferences";
 import { useShell } from "@/components/providers/shell-context";
 import styles from "./app-sidebar.module.css";
 
 /**
- * Barra lateral del negocio (oculta en móvil, donde manda la barra inferior):
+ * Barra lateral del negocio (oculta en móvil, donde manda la barra inferior).
+ * Arranca debajo de la navbar global, que lleva el logo, la búsqueda, «Crear» y
+ * el selector de negocio:
  *
  * - Tablet o contraída: riel de 76 px solo con iconos y tooltip al pasar.
  * - PC ≥ 1200 px: 248 px con el logo completo, el negocio y los grupos.
@@ -18,12 +19,14 @@ import styles from "./app-sidebar.module.css";
  * enlaces con un corte oro a la izquierda; contraer la barra se recuerda.
  */
 export function AppSidebar() {
-  const { groups, activeKey, hrefFor, brandName, brandSub, onNavigate } = useShell();
+  const { groups, activeKey, hrefFor, onNavigate } = useShell();
   const { rail, setPreference } = usePreferences();
   const sideRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLElement>(null);
   const indicatorRef = useRef<HTMLSpanElement>(null);
   const [tip, setTip] = useState<{ text: string; top: number; left: number } | null>(null);
+  const [peek, setPeek] = useState(false);
+  const peekTimer = useRef<number | undefined>(undefined);
 
   useLayoutEffect(() => {
     const nav = navRef.current;
@@ -48,7 +51,7 @@ export function AppSidebar() {
   function showTip(event: React.PointerEvent) {
     const link = (event.target as Element).closest<HTMLElement>("a[aria-label]");
     const side = sideRef.current;
-    if (!link || !side || side.offsetWidth > 120) {
+    if (!link || !side || side.hasAttribute("data-peek") || side.offsetWidth > 120) {
       setTip(null);
       return;
     }
@@ -57,16 +60,31 @@ export function AppSidebar() {
   }
 
   return (
-    <aside ref={sideRef} className={styles.side} aria-label="Navegación principal">
-      <div className={styles.head}>
-        <BrandLogo variant="mark" size={30} className={styles.mark} />
-        <BrandLogo variant="lockup" size={78} className={styles.lockup} title="NEXUS THRIVE" />
-         {/* <div className={styles.workspace}>
-          <b>{brandName}</b>
-          <small>{brandSub}</small>
-        </div>*/}
-      </div>
-
+    <aside
+      ref={sideRef}
+      className={styles.side}
+      aria-label="Navegación principal"
+      data-peek={peek ? "" : undefined}
+      onPointerEnter={(event) => {
+        // Solo con mouse y con 90 ms de intención: pasar de largo no la abre.
+        if (event.pointerType !== "mouse") return;
+        window.clearTimeout(peekTimer.current);
+        peekTimer.current = window.setTimeout(() => setPeek(true), 90);
+      }}
+      onPointerLeave={() => {
+        window.clearTimeout(peekTimer.current);
+        setPeek(false);
+      }}
+      onFocus={(event) => {
+        if (event.target.matches(":focus-visible")) setPeek(true);
+      }}
+      onBlur={(event) => {
+        if (!sideRef.current?.contains(event.relatedTarget as Node | null)) setPeek(false);
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") setPeek(false);
+      }}
+    >
       <nav ref={navRef} className={styles.nav} onPointerOver={showTip} onPointerLeave={() => setTip(null)}>
         <span ref={indicatorRef} className={styles.indicator} aria-hidden="true" />
         {groups.map((group, g) => (
@@ -82,7 +100,10 @@ export function AppSidebar() {
                   href={hrefFor(item.href)}
                   aria-label={item.label}
                   aria-current={active ? "page" : undefined}
-                  onClick={onNavigate ? (event) => onNavigate(item, event) : undefined}
+                  onClick={(event) => {
+                    setPeek(false); // al elegir, el riel vuelve a su tamaño
+                    onNavigate?.(item, event);
+                  }}
                   className={styles.link}
                 >
                   <Icon aria-hidden="true" strokeWidth={1.6} />

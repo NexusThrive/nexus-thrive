@@ -5,7 +5,7 @@ import { Camera, CheckCircle2, ImageUp, RefreshCcw } from "lucide-react";
 import { AmountDisplay } from "@/components/atoms/amount-display";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { Chip, ChipRow } from "@/components/atoms/chip";
-import { inputClasses, selectClasses } from "@/components/atoms/input";
+import { inputClasses } from "@/components/atoms/input";
 import { NMark } from "@/components/atoms/n-mark";
 import { Alert } from "@/components/molecules/alert";
 import { Field } from "@/components/molecules/field";
@@ -19,6 +19,7 @@ import { receiptQrDataUrl, receiptQrPayload } from "@/lib/business/receipt-qr";
 import { bestCopAmount, guessPaymentMethod, parseQrPaymentPayload } from "@/lib/finance/payment-scan";
 import { cn } from "@/lib/utils";
 import { registerScannedPaymentAction } from "../actions";
+import { Select } from "@/components/atoms/select";
 
 const cop = (n: number) => `$ ${n.toLocaleString("es-CO")}`;
 
@@ -333,7 +334,7 @@ export function ScanPaymentSheet({
           <Keypad onKey={press} />
           <Field label="Cliente">
             {(control) => (
-              <select {...control} value={customerId} onChange={(event) => setCustomerId(event.target.value)} className={selectClasses}>
+              <Select {...control} value={customerId} onChange={(event) => setCustomerId(event.target.value)}>
                 <option value="">Venta sin cliente</option>
                 {customers.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -341,7 +342,7 @@ export function ScanPaymentSheet({
                     {c.hint ? ` · ${c.hint}` : ""}
                   </option>
                 ))}
-              </select>
+              </Select>
             )}
           </Field>
           <div>

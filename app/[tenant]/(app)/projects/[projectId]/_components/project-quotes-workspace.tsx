@@ -24,6 +24,7 @@ import {
 import { fieldClasses, inputClasses, labelClasses } from "@/components/atoms/input";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { EmptyState } from "@/components/molecules/empty-state";
+import { Select } from "@/components/atoms/select";
 
 const FOLLOW_UP_TYPES: { value: FollowUpTypeValue; label: string; icon: typeof Phone }[] = [
   { value: "CALL", label: "Llamada", icon: Phone },
@@ -316,13 +317,13 @@ function FollowUpsPanel({
         <div className="grid grid-cols-2 gap-2">
           <label htmlFor="follow-up-type" className="block">
             <span className={labelClasses}>Tipo</span>
-            <select id="follow-up-type" name="type" defaultValue="CALL" className={inputClass}>
+            <Select id="follow-up-type" name="type" defaultValue="CALL">
               {FOLLOW_UP_TYPES.map((type) => (
                 <option key={type.value} value={type.value}>
                   {type.label}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
           <label htmlFor="follow-up-date" className="block">
             <span className={labelClasses}>Programar para</span>
@@ -332,14 +333,14 @@ function FollowUpsPanel({
         {quotes.length > 0 ? (
           <label htmlFor="follow-up-quote" className="block">
             <span className={labelClasses}>Sobre la versión</span>
-            <select id="follow-up-quote" name="quoteId" defaultValue={quotes[0].id} className={inputClass}>
+            <Select id="follow-up-quote" name="quoteId" defaultValue={quotes[0].id}>
               <option value="">General de la obra</option>
               {quotes.map((quote) => (
                 <option key={quote.id} value={quote.id}>
                   Versión {quote.version}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
         ) : null}
         <label htmlFor="follow-up-note" className="block">

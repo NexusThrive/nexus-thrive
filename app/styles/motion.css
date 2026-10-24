@@ -156,3 +156,76 @@ html[data-motion="off"] *::after {
     animation: none;
   }
 }
+
+/* --- Contenido que cambia en su sitio (detalle de un paso): 200 ms --- */
+@keyframes nx-swap {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+.nx-swap {
+  animation: nx-swap var(--d2) var(--nx-ease-out) backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nx-swap {
+    animation: none;
+  }
+}
+
+/* --- Panel que cuelga de su campo (buscador de la navbar): 160 ms --- */
+@keyframes nx-drop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -6px);
+  }
+}
+.nx-drop {
+  animation: nx-drop var(--motion-popover) var(--nx-ease-out) backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nx-drop {
+    animation: none;
+  }
+}
+
+/* --- Panel que crece desde el borde inferior de su campo (buscador): se
+   revela de arriba hacia abajo con clip-path + opacidad, 160 ms --- */
+@keyframes nx-drop-down {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0 round 8px);
+    transform: translateY(-4px);
+  }
+}
+.nx-drop-down {
+  animation: nx-drop-down var(--motion-popover) var(--nx-ease-out) backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nx-drop-down {
+    animation: none;
+  }
+}
+
+/* --- Tarjeta que se eleva al pasar el puntero (solo punteros finos) --- */
+@media (hover: hover) and (pointer: fine) {
+  .nx-lift {
+    transition:
+      transform var(--d2) var(--nx-ease-out),
+      border-color var(--d2);
+  }
+  .nx-lift:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-input);
+  }
+  .nx-lift:active {
+    transform: translateY(0);
+    transition-duration: var(--d1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-lift:hover {
+    transform: none;
+  }
+}

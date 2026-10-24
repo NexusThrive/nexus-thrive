@@ -4,10 +4,11 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Printer } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { inputClasses, selectClasses } from "@/components/atoms/input";
+import { inputClasses } from "@/components/atoms/input";
 import { useToast } from "@/components/molecules/toast";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import { payInvoiceAction, voidInvoiceAction } from "../actions";
+import { Select } from "@/components/atoms/select";
 
 export default function InvoiceActions({ slug, id, status, canManage }: { slug: string; id: string; status: string; canManage: boolean }) {
   const [method, setMethod] = useState("TRANSFER");
@@ -31,13 +32,13 @@ export default function InvoiceActions({ slug, id, status, canManage }: { slug: 
       </button>
       {status === "ISSUED" ? (
         <>
-          <select aria-label="Medio de pago" value={method} onChange={(e) => setMethod(e.target.value)} className={`${selectClasses} h-8 w-auto text-[13px]`}>
+          <Select aria-label="Medio de pago" value={method} onChange={(e) => setMethod(e.target.value)} className="h-8 w-auto text-[13px]">
             {PAYMENT_METHODS.map((m) => (
               <option key={m.value} value={m.value}>
                 {m.label}
               </option>
             ))}
-          </select>
+          </Select>
           <button type="button" disabled={pending} onClick={() => run(() => payInvoiceAction(slug, id, method))} className={buttonVariants({ size: "sm" })}>
             Marcar como pagada
           </button>

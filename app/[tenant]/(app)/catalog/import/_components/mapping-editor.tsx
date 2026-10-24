@@ -2,6 +2,7 @@
 
 import { AlertTriangle, CheckCircle2, Columns3 } from "lucide-react";
 import type { ColumnMapping, ImportTargetField } from "@/lib/construction/apu-importer/types";
+import { Select } from "@/components/atoms/select";
 
 const TARGET_LABELS: Record<ImportTargetField, string> = {
   code: "Código",
@@ -121,7 +122,7 @@ export default function MappingEditor({
                   </span>
                 )}
               </span>
-              <select
+              <Select
                 value={entry.sourceColumn}
                 onChange={(event) => updateField(field, Number(event.target.value))}
                 className="mt-1.5 w-full rounded-md border border-border bg-card px-2 py-1.5 text-sm text-foreground/80 focus:border-gold-500 focus:outline-none"
@@ -133,7 +134,7 @@ export default function MappingEditor({
                     {column.index + 1}. {column.header || `Columna ${column.index + 1}`}
                   </option>
                 ))}
-              </select>
+              </Select>
               <span className="mt-1 block text-right text-[10px] text-muted-foreground">
                 confianza {entry.confidence}
               </span>

@@ -32,6 +32,8 @@ import { ApuCategoryBadge } from "@/components/molecules/quote-badges";
 import { fieldClasses, inputClasses, labelClasses } from "@/components/atoms/input";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { cn } from "@/lib/utils";
+import { Select } from "@/components/atoms/select";
+import { SkeletonRows } from "@/components/molecules/skeleton-rows";
 
 type P99Thresholds = {
   activityUnitCost: Record<string, string>;
@@ -116,7 +118,7 @@ function ItemPicker({
         disabled={disabled}
         className={inputClass}
       />
-      <select
+      <Select
         name={name}
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -133,7 +135,7 @@ function ItemPicker({
             {item.name} ({formatApuUnit(item.unit)})
           </option>
         ))}
-      </select>
+      </Select>
     </div>
   );
 }
@@ -333,14 +335,14 @@ function ActivityForm({
           <span className={labelClasses}>
             Unidad
           </span>
-          <select name="unit" defaultValue={defaults.unit} className={inputClass}>
+          <Select name="unit" defaultValue={defaults.unit}>
             <option value="">Selecciona…</option>
             {APU_UNITS.map((unit) => (
               <option key={unit} value={unit}>
                 {formatApuUnit(unit)}
               </option>
             ))}
-          </select>
+          </Select>
           {fieldError(state.errors, "unit") ? (
             <span className="mt-1 block text-xs text-destructive">
               {fieldError(state.errors, "unit")}
@@ -384,10 +386,7 @@ function ActivityForm({
       </label>
 
       {loadingComps ? (
-        <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
-          <NLoader size={16} className="text-current" />
-          Cargando composición…
-        </div>
+        <SkeletonRows rows={4} label="Cargando composición" className="py-3" />
       ) : (
         <>
           <CompositionEditor items={items} comps={comps} onChange={setComps} />
@@ -448,10 +447,7 @@ function ActivityDetail({
 
   if (!detail) {
     return (
-      <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted-foreground">
-        <NLoader size={16} className="text-current" />
-        Cargando…
-      </div>
+      <SkeletonRows variant="form" rows={3} label="Cargando ficha" className="py-4" />
     );
   }
 

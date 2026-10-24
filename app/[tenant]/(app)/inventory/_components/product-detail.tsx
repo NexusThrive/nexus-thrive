@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Minus, Pencil, Plus, Scale, ShoppingCart } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { inputClasses, selectClasses } from "@/components/atoms/input";
+import { inputClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
@@ -15,6 +15,7 @@ import type { ProductRow } from "@/lib/business/products-db";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { moveStockAction, sellProductAction, stockHistoryAction } from "../actions";
+import { Select } from "@/components/atoms/select";
 
 type Customer = { id: string; name: string };
 
@@ -98,13 +99,13 @@ export default function ProductDetail({ slug, product, customers, canManage, onE
               {mode === "sell" ? (
                 <Field label="Medio de pago">
                   {(c) => (
-                    <select {...c} value={method} onChange={(e) => setMethod(e.target.value)} className={selectClasses}>
+                    <Select {...c} value={method} onChange={(e) => setMethod(e.target.value)}>
                       {PAYMENT_METHODS.map((m) => (
                         <option key={m.value} value={m.value}>
                           {m.label}
                         </option>
                       ))}
-                    </select>
+                    </Select>
                   )}
                 </Field>
               ) : (
@@ -115,14 +116,14 @@ export default function ProductDetail({ slug, product, customers, canManage, onE
               {mode === "sell" ? (
                 <Field label="Cliente" className="sm:col-span-2">
                   {(c) => (
-                    <select {...c} value={customerId} onChange={(e) => setCustomerId(e.target.value)} className={selectClasses}>
+                    <Select {...c} value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
                       <option value="">Venta de mostrador</option>
                       {customers.map((x) => (
                         <option key={x.id} value={x.id}>
                           {x.name}
                         </option>
                       ))}
-                    </select>
+                    </Select>
                   )}
                 </Field>
               ) : null}

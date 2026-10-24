@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { inputClasses, selectClasses, textareaClasses } from "@/components/atoms/input";
+import { inputClasses, textareaClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
 import { MoneyInput } from "@/components/molecules/money-input";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
@@ -13,6 +13,7 @@ import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { amountInWords, invoiceTotal, type InvoiceKind } from "@/lib/business/invoice";
 import { formatCurrency } from "@/lib/format";
 import { createInvoiceAction } from "../actions";
+import { Select } from "@/components/atoms/select";
 
 type Line = { key: number; productId: string; description: string; quantity: string; unitPrice: number | null };
 type Opt = { id: string; name: string; price?: number };
@@ -68,14 +69,14 @@ export default function InvoiceSheet({ slug, customers, products, today, onClose
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <Field label="Cliente" className="sm:col-span-1">
             {(c) => (
-              <select {...c} value={customerId} onChange={(e) => { setCustomerId(e.target.value); setCustomerName(customers.find((x) => x.id === e.target.value)?.name ?? ""); }} className={selectClasses}>
+              <Select {...c} value={customerId} onChange={(e) => { setCustomerId(e.target.value); setCustomerName(customers.find((x) => x.id === e.target.value)?.name ?? ""); }}>
                 <option value="">Escribir a mano</option>
                 {customers.map((x) => (
                   <option key={x.id} value={x.id}>
                     {x.name}
                   </option>
                 ))}
-              </select>
+              </Select>
             )}
           </Field>
           <Field label="A nombre de" required>{(c) => <input {...c} value={customerName} onChange={(e) => setCustomerName(e.target.value)} className={inputClasses} />}</Field>
@@ -90,13 +91,12 @@ export default function InvoiceSheet({ slug, customers, products, today, onClose
             <div key={l.key} className="grid grid-cols-[minmax(0,1fr)_auto] gap-2 rounded-md border border-border p-2.5 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,2fr)_80px_150px_auto] sm:items-end">
               <label className="grid gap-1 text-xs font-medium max-sm:col-span-2">
                 Del catálogo
-                <select
+                <Select
                   value={l.productId}
                   onChange={(e) => {
                     const p = products.find((x) => x.id === e.target.value);
                     setLine(l.key, { productId: e.target.value, description: p?.name ?? l.description, unitPrice: p?.price ?? l.unitPrice });
                   }}
-                  className={selectClasses}
                 >
                   <option value="">Concepto libre</option>
                   {products.map((p) => (
@@ -104,7 +104,7 @@ export default function InvoiceSheet({ slug, customers, products, today, onClose
                       {p.name}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               <label className="grid gap-1 text-xs font-medium max-sm:col-span-2">
                 Descripción

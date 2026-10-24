@@ -10,6 +10,7 @@ import { formatCurrency, formatDateShort } from "@/lib/format";
 import type { QuoteStatusValue } from "@/lib/construction/apu-engine";
 import { migrateLegacyQuoteAction, type MigrateLegacyResult } from "../actions";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { Select } from "@/components/atoms/select";
 
 type LegacyQuote = {
   id: string;
@@ -106,7 +107,7 @@ export default function LegacyQuotes({
                     }}
                   >
                     {!quote.customerId ? (
-                      <select
+                      <Select
                         name="customerId"
                         required
                         aria-label={`Cliente de la obra para ${quote.title}`}
@@ -119,7 +120,7 @@ export default function LegacyQuotes({
                             {customer.name}
                           </option>
                         ))}
-                      </select>
+                      </Select>
                     ) : null}
                     <button
                       type="submit"

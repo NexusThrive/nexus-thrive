@@ -57,6 +57,20 @@ export async function homeTenantFor(
   return { tenantId: user.tenantId, slug: user.tenant.slug, name: user.tenant.name, onboardingCompleted: user.tenant.onboardingCompleted };
 }
 
+/**
+ * Negocios en los que la cuenta es miembro activo (activos y con el alta
+ * completa), por nombre. Solo lee las membresías de esa cuenta: es lo que
+ * muestra el selector de negocio de la navbar.
+ */
+export async function businessesOfMember(clerkUserId: string): Promise<{ slug: string; name: string }[]> {
+  const rows = await db.orm.public.User.where({ clerkUserId, active: true })
+    .include("tenant", (t) => t.select("slug", "name", "active", "onboardingCompleted"))
+    .all();
+  return rows
+    .flatMap((row) => (row.tenant && row.tenant.active && row.tenant.onboardingCompleted ? [{ slug: row.tenant.slug, name: row.tenant.name }] : []))
+    .sort((a, b) => a.name.localeCompare(b.name, "es"));
+}
+
 /** Registro completo del negocio por id, con sus módulos (Configuración). */
 export async function tenantWithModules(tenantId: string) {
   return db.orm.public.Tenant.where({ id: tenantId })

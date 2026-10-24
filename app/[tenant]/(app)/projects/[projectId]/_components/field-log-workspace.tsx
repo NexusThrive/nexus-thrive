@@ -16,6 +16,7 @@ import { createFieldLogEntryAction, deleteFieldLogEntryAction } from "../field-l
 import ProgressPanel from "./progress-panel";
 import { fieldClasses, inputClasses, labelClasses } from "@/components/atoms/input";
 import { cn } from "@/lib/utils";
+import { Select } from "@/components/atoms/select";
 
 const TYPE_STYLES: Record<FieldLogEntryData["type"], { label: string; className: string }> = {
   ADVANCE: { label: "Avance", className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" },
@@ -258,13 +259,13 @@ function NewEntryForm({
       <div className="grid gap-4 sm:grid-cols-2">
         <label htmlFor="fl-type" className="block">
           <span className={labelClasses}>Tipo</span>
-          <select id="fl-type" name="type" defaultValue="ADVANCE" className={inputClass}>
+          <Select id="fl-type" name="type" defaultValue="ADVANCE">
             {Object.entries(TYPE_STYLES).map(([value, style]) => (
               <option key={value} value={value}>
                 {style.label}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <label htmlFor="fl-date" className="block">
           <span className={labelClasses}>Fecha</span>
@@ -290,13 +291,13 @@ function NewEntryForm({
         </label>
         <label htmlFor="fl-weather" className="block">
           <span className={labelClasses}>Clima</span>
-          <select id="fl-weather" name="weather" defaultValue="SUNNY" className={inputClass}>
+          <Select id="fl-weather" name="weather" defaultValue="SUNNY">
             {Object.entries(WEATHER_LABELS).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <label htmlFor="fl-labor" className="block">
           <span className={labelClasses}>Personal en obra</span>
@@ -306,14 +307,14 @@ function NewEntryForm({
         {items.length > 0 ? (
           <label htmlFor="fl-item" className="block sm:col-span-2">
             <span className={labelClasses}>Partida del presupuesto (opcional)</span>
-            <select id="fl-item" name="budgetItemId" defaultValue="" className={inputClass}>
+            <Select id="fl-item" name="budgetItemId" defaultValue="">
               <option value="">Sin partida</option>
               {items.map((item) => (
                 <option key={item.itemId} value={item.itemId}>
                   {item.code} · {item.description}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
         ) : null}
         <div className="sm:col-span-2">

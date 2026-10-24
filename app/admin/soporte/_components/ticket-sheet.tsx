@@ -3,12 +3,13 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { inputClasses, selectClasses, textareaClasses } from "@/components/atoms/input";
+import { inputClasses, textareaClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { TICKET_CATEGORIES, TICKET_CHANNELS, TICKET_PRIORITIES, type TicketInput } from "@/lib/ops/support-rules";
 import { createTicketAction } from "../actions";
+import { Select } from "@/components/atoms/select";
 
 export type Option = { id: string; name: string };
 
@@ -56,14 +57,14 @@ export default function TicketSheet({ open, onOpenChange, tenants, staff, me, de
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Negocio" className="sm:col-span-2">
           {(c) => (
-            <select {...c} value={v.tenantId ?? ""} onChange={(e) => set("tenantId", e.target.value)} className={selectClasses}>
+            <Select {...c} value={v.tenantId ?? ""} onChange={(e) => set("tenantId", e.target.value)}>
               <option value="">Sin negocio (prospecto o interno)</option>
               {tenants.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name}
                 </option>
               ))}
-            </select>
+            </Select>
           )}
         </Field>
         <Field label="Asunto" required error={errors.subject} className="sm:col-span-2">
@@ -74,36 +75,36 @@ export default function TicketSheet({ open, onOpenChange, tenants, staff, me, de
         </Field>
         <Field label="Categoría" error={errors.category}>
           {(c) => (
-            <select {...c} value={v.category} onChange={(e) => set("category", e.target.value)} className={selectClasses}>
+            <Select {...c} value={v.category} onChange={(e) => set("category", e.target.value)}>
               {TICKET_CATEGORIES.map((x) => (
                 <option key={x}>{x}</option>
               ))}
-            </select>
+            </Select>
           )}
         </Field>
         <Field label="Prioridad" error={errors.priority}>
           {(c) => (
-            <select {...c} value={v.priority} onChange={(e) => set("priority", e.target.value)} className={selectClasses}>
+            <Select {...c} value={v.priority} onChange={(e) => set("priority", e.target.value)}>
               {TICKET_PRIORITIES.map((p) => (
                 <option key={p.value} value={p.value}>
                   {p.label} · responder en {p.firstResponseHours} h
                 </option>
               ))}
-            </select>
+            </Select>
           )}
         </Field>
         <Field label="Canal" error={errors.channel}>
           {(c) => (
-            <select {...c} value={v.channel} onChange={(e) => set("channel", e.target.value)} className={selectClasses}>
+            <Select {...c} value={v.channel} onChange={(e) => set("channel", e.target.value)}>
               {TICKET_CHANNELS.map((x) => (
                 <option key={x}>{x}</option>
               ))}
-            </select>
+            </Select>
           )}
         </Field>
         <Field label="Responsable">
           {(c) => (
-            <select {...c} value={v.assigneeId ?? ""} onChange={(e) => set("assigneeId", e.target.value)} className={selectClasses}>
+            <Select {...c} value={v.assigneeId ?? ""} onChange={(e) => set("assigneeId", e.target.value)}>
               <option value="">Sin asignar</option>
               {staff.map((s) => (
                 <option key={s.id} value={s.id}>
@@ -111,7 +112,7 @@ export default function TicketSheet({ open, onOpenChange, tenants, staff, me, de
                   {s.id === me ? " (tú)" : ""}
                 </option>
               ))}
-            </select>
+            </Select>
           )}
         </Field>
         <Field label="Quién reporta">{(c) => <input {...c} value={v.requesterName ?? ""} onChange={(e) => set("requesterName", e.target.value)} className={inputClasses} />}</Field>

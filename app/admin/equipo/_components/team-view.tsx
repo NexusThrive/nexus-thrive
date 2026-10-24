@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Copy, KeyRound, Link2, Plus, ShieldCheck, Trash2, UserPlus } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { inputClasses, selectClasses } from "@/components/atoms/input";
+import { inputClasses } from "@/components/atoms/input";
 import { Alert } from "@/components/molecules/alert";
 import { Field } from "@/components/molecules/field";
 import { PageHeader } from "@/components/molecules/page-header";
@@ -18,6 +18,7 @@ import type { PermissionKey } from "@/lib/ops/permissions";
 import type { RoleRow, StaffRow } from "@/lib/ops/team";
 import { changeStaffRoleAction, createStaffInviteAction, deleteRoleAction, inviteStaffAction, setStaffActiveAction, unlinkStaffAccountAction } from "../actions";
 import RoleBuilder from "./role-builder";
+import { Select } from "@/components/atoms/select";
 
 const rel = new Intl.RelativeTimeFormat("es-CO", { numeric: "auto" });
 function seen(iso: string | null): string {
@@ -143,19 +144,19 @@ export default function TeamView({
                 </div>
                 {can("team.roles") && !isMe ? (
                   <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
-                    <select
+                    <Select
                       aria-label={`Rol de ${m.name ?? m.email}`}
                       value={m.roleId}
                       disabled={pending}
                       onChange={(e) => run(() => changeStaffRoleAction(m.id, e.target.value), "Rol actualizado")}
-                      className={`${selectClasses} h-8 w-auto flex-1 text-[13px]`}
+                      className="h-8 w-auto flex-1 text-[13px]"
                     >
                       {roles.map((r) => (
                         <option key={r.id} value={r.id}>
                           {r.name}
                         </option>
                       ))}
-                    </select>
+                    </Select>
                     <button
                       type="button"
                       disabled={pending}
@@ -312,13 +313,13 @@ export default function TeamView({
           </div>
           <Field label="Rol" hint="El cargo es solo un nombre; lo que puede hacer lo define el rol." error={inviteErrors.roleId}>
             {(c) => (
-              <select {...c} value={invite.roleId} onChange={(e) => setInvite({ ...invite, roleId: e.target.value })} className={selectClasses}>
+              <Select {...c} value={invite.roleId} onChange={(e) => setInvite({ ...invite, roleId: e.target.value })}>
                 {roles.map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.name} · {r.permissions.length} permisos
                   </option>
                 ))}
-              </select>
+              </Select>
             )}
           </Field>
           {inviteMsg ? <Alert tone="danger">{inviteMsg}</Alert> : null}

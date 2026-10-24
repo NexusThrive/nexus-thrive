@@ -23,6 +23,19 @@ const nextConfig: NextConfig = {
     "localhost:3001",
     ...devOriginsFromEnv(process.env.DEV_ALLOWED_ORIGINS),
   ],
+  // El service worker nunca se sirve desde caché HTTP: si no, una versión
+  // nueva tardaría hasta 24 h en detectarse.
+  async headers() {
+    return [
+      {
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
+    ];
+  },
   // Rutas anteriores a la reorganización de construcción (obras, carpetas de
   // cotizaciones y catálogo APU separados).
   async redirects() {

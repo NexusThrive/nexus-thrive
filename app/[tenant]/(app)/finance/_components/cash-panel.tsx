@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowDownLeft, ArrowUpRight, Lock, LockOpen, Plus, RefreshCcw, Scale, Ticket } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { inputClasses, selectClasses } from "@/components/atoms/input";
+import { inputClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
 import { MoneyInput } from "@/components/molecules/money-input";
 import { useToast } from "@/components/molecules/toast";
@@ -14,6 +14,7 @@ import { arqueo, CASH_KIND_LABELS, CASH_SIGN, replenishNeeded, type CashKind } f
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { cashMovementAction, closeCashAction, openCashAction, saveCashBoxAction } from "../money-actions";
+import { Select } from "@/components/atoms/select";
 
 type Box = { id: string; name: string; fundAmount: number; responsibleUserId: string | null; openSession: { id: string; openedAt: string; openingAmount: number; expected: number } | null };
 type Move = { id: string; kind: CashKind; amount: number; description: string; beneficiary: string | null; createdAt: string };
@@ -73,14 +74,14 @@ export default function CashPanel({ slug, boxes, moves, history, members, canMan
             </div>
             <Field label="Responsable">
               {(c) => (
-                <select {...c} value={boxForm?.responsibleUserId ?? ""} onChange={(e) => setBoxForm({ ...boxForm!, responsibleUserId: e.target.value })} className={selectClasses}>
+                <Select {...c} value={boxForm?.responsibleUserId ?? ""} onChange={(e) => setBoxForm({ ...boxForm!, responsibleUserId: e.target.value })}>
                   <option value="">Sin responsable fijo</option>
                   {members.map((m) => (
                     <option key={m.id} value={m.id}>
                       {m.name}
                     </option>
                   ))}
-                </select>
+                </Select>
               )}
             </Field>
             <div className="flex gap-2">

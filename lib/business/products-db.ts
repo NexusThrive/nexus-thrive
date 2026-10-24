@@ -48,7 +48,7 @@ function toRow(p: NonNullable<Awaited<ReturnType<typeof db.orm.public.Product.fi
   };
 }
 
-export async function listProducts(tenantId: string, filter: { kind?: ProductKindValue | ProductKindValue[]; activeOnly?: boolean; q?: string } = {}): Promise<ProductRow[]> {
+export async function listProducts(tenantId: string, filter: { kind?: ProductKindValue | ProductKindValue[]; activeOnly?: boolean; q?: string; limit?: number } = {}): Promise<ProductRow[]> {
   let q = db.orm.public.Product.where({ tenantId });
   if (filter.kind) {
     const kinds = [filter.kind].flat();
@@ -59,7 +59,9 @@ export async function listProducts(tenantId: string, filter: { kind?: ProductKin
     const pattern = `%${filter.q.trim().replace(/[%_\\]/g, (m) => `\\${m}`)}%`;
     q = q.where((p) => p.name.ilike(pattern));
   }
-  return (await q.orderBy((p) => p.name.asc()).all()).map(toRow);
+  const ordered = q.orderBy((p) => p.name.asc());
+  const rows = await (filter.limit ? ordered.limit(filter.limit) : ordered).all();
+  return rows.map(toRow);
 }
 
 export async function getProduct(tenantId: string, id: string) {

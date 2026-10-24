@@ -20,6 +20,9 @@ import { IncomeChart, type ChartPoint } from "@/components/organisms/income-char
 import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
 import { PullToRefresh } from "@/components/molecules/pull-to-refresh";
 import RecentActivity from "@/components/organisms/recent-activity";
+import { CustomizableDashboard, type DashboardWidget } from "@/components/organisms/customizable-dashboard";
+import { WelcomeChecklist, type WelcomeStep } from "@/components/organisms/welcome-checklist";
+import { listProducts } from "@/lib/business/products-db";
 import { loadPresence } from "@/lib/presence/load";
 import PresenceSummary from "./_components/presence-summary";
 import MembershipSummary from "./memberships/_components/membership-summary";
@@ -110,10 +113,14 @@ export default async function TenantDashboard({
   const [series, growth, recentActivity, membershipMetrics] = await Promise.all([
     tenantDb.finance.getSeries(days),
     tenantDb.customers.activeGrowth(days === 1 ? 7 : days),
-    tenantDb.finance.getRecentActivity(6),
+    tenantDb.finance.getRecentActivity(20),
     tenantDb.memberships.getMetrics(),
   ]);
   const presence = await loadPresence(tenantRecord);
+  const hasCatalog =
+    tenantRecord.modules.some((m) => m.active && m.moduleName === "inventory")
+      ? (await listProducts(tenantRecord.id, { limit: 1 })).length > 0
+      : true;
   const { current, previous } = series;
   const activeCustomers = growth.series.at(-1) ?? 0;
   const incomeTrend = period === "hoy" && series.hours ? series.hours.map((h) => h.income) : series.days.map((d) => d.income);
@@ -139,7 +146,7 @@ export default async function TenantDashboard({
     return change == null ? undefined : <Delta value={change} inverse={inverse} />;
   };
 
-  const activityItems: RecentActivityItem[] = recentActivity.map((item) => ({
+  const activityItems: RecentActivityItem[] = recentActivity.slice(0, 6).map((item) => ({
     id: item.id,
     type: item.type,
     title: item.title,
@@ -148,33 +155,46 @@ export default async function TenantDashboard({
     time: formatRelativeTime(item.date),
   }));
 
-  return (
-    <PullToRefresh>
-    <div className="flex flex-col">
-      <PageHeader
-        eyebrow={formattedDate}
-        title={<RevealText parts={[`${greetingFor()}, `, { text: greetingName, gold: true }]} />}
-        description={`Así va ${tenantRecord.name} ${periodText}. ${current.count} ${current.count === 1 ? "cobro registrado" : "cobros registrados"}.`}
-        actions={
-          <UrlSegmentedControl
-            param="p"
-            ariaLabel="Periodo"
-            value={period}
-            defaultValue="7d"
-            className="w-full [&>button]:flex-1 sm:w-auto sm:[&>button]:flex-none"
-            options={[
-              { value: "hoy", label: "Hoy" },
-              { value: "7d", label: "7 días" },
-              { value: "30d", label: "30 días" },
-            ]}
-          />
-        }
-      />
+  // Primeros pasos: solo de los módulos activos; los marca hecho lo que ya hay
+  // en los datos (las últimas 20 operaciones bastan para detectar el primer
+  // cobro y el primer gasto de una cuenta nueva).
+  const customerWord = terms.customer.toLowerCase();
+  const welcomeSteps: WelcomeStep[] = [
+    has("crm") && {
+      id: "customer", icon: "customer", done: activeCustomers > 0,
+      title: `Registra tu primer ${customerWord}`,
+      description: `Agrega a tus contactos para llevar su historial, sus cobros y su seguimiento.`,
+      cta: `Nuevo ${customerWord}`, href: `${base}/crm`,
+    },
+    has("finance") && {
+      id: "payment", icon: "payment", done: recentActivity.some((a) => a.type === "payment"),
+      title: "Registra tu primer cobro",
+      description: "Cobra y genera el comprobante para que tus ingresos queden al día.",
+      cta: "Registrar pago", href: `${base}/finance?nuevo=pago`,
+    },
+    has("finance") && {
+      id: "expense", icon: "expense", done: recentActivity.some((a) => a.type === "expense"),
+      title: "Agrega tus gastos",
+      description: "Anota los egresos de caja para conocer tu balance real.",
+      cta: "Registrar gasto", href: `${base}/finance?nuevo=gasto`,
+    },
+    has("inventory") && {
+      id: "catalog", icon: "catalog", done: hasCatalog,
+      title: "Arma tu catálogo",
+      description: "Define lo que vendes: precios, inventario y planes, para cobrar en un toque.",
+      cta: "Agregar al catálogo", href: `${base}/inventory?nuevo=1`,
+    },
+  ].filter((step): step is WelcomeStep => Boolean(step));
+  const showWelcome = welcomeSteps.length >= 2 && welcomeSteps.some((step) => !step.done);
 
-      <div className="mb-3.5">
-        <PresenceSummary presence={presence} href={`${base}/presence`} />
-      </div>
-
+  const widgets: DashboardWidget[] = [
+    ...(showWelcome
+      ? [{ id: "welcome", label: "Primeros pasos", node: <WelcomeChecklist scope={tenantSlug} name={greetingName} steps={welcomeSteps} /> }]
+      : []),
+    { id: "presence", label: "Presencia en línea", node: (
+      <PresenceSummary presence={presence} href={`${base}/presence`} />
+    ) },
+    { id: "kpis", label: "Métricas", node: (
       <section aria-label="Métricas del negocio" className="grid grid-cols-2 gap-3.5 lg:grid-cols-4">
         <KpiCard
           index={0}
@@ -223,8 +243,9 @@ export default async function TenantDashboard({
           href={has("finance") ? `${base}/finance` : undefined}
         />
       </section>
-
-      <section className="mt-3.5 grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
+    ) },
+    { id: "chart", label: "Ingresos y gastos", node: (
+      <section className="grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
         <div className="overflow-hidden rounded-lg border border-border bg-surface">
           <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-border px-[18px] py-4">
             <div>
@@ -244,9 +265,10 @@ export default async function TenantDashboard({
         </div>
         <QuickActions tenantSlug={tenantRecord.slug} actions={quickActions} />
       </section>
-
-      {has("memberships") ? (
-        <>
+    ) },
+    ...(has("memberships")
+      ? [{ id: "memberships", label: "Membresías", node: (
+          <>
           <SectionTitle
             title="Membresías"
             action={
@@ -256,13 +278,39 @@ export default async function TenantDashboard({
             }
           />
           <MembershipSummary metrics={membershipMetrics} />
-        </>
-      ) : null}
+          </>
+        ) }]
+      : []),
+    { id: "activity", label: "Actividad reciente", node: <RecentActivity items={activityItems} /> },
+  ];
 
-      <div className="mt-7">
-        <RecentActivity items={activityItems} />
-      </div>
-    </div>
+  return (
+    <PullToRefresh>
+      <CustomizableDashboard
+        scope={tenantSlug}
+        widgets={widgets}
+        header={
+      <PageHeader
+        eyebrow={formattedDate}
+        title={<RevealText parts={[`${greetingFor()}, `, { text: greetingName, gold: true }]} />}
+        description={`Así va ${tenantRecord.name} ${periodText}. ${current.count} ${current.count === 1 ? "cobro registrado" : "cobros registrados"}.`}
+        actions={
+          <UrlSegmentedControl
+            param="p"
+            ariaLabel="Periodo"
+            value={period}
+            defaultValue="7d"
+            className="w-full [&>button]:flex-1 sm:w-auto sm:[&>button]:flex-none"
+            options={[
+              { value: "hoy", label: "Hoy" },
+              { value: "7d", label: "7 días" },
+              { value: "30d", label: "30 días" },
+            ]}
+          />
+        }
+      />
+        }
+      />
     </PullToRefresh>
   );
 }

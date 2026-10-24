@@ -1,0 +1,72 @@
+/* Celda de marca de la navbar: mismo fondo y borde que la barra lateral, así
+   las dos se leen como una sola pieza. Ancho = ancho de la barra (--sw). */
+.brand {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-fg);
+  border-bottom: 1px solid var(--sidebar-border);
+}
+.mark {
+  flex: none;
+  transition: transform var(--d3) var(--nx-ease-out);
+}
+.brand:hover .mark {
+  transform: translateX(2px);
+}
+@media (min-width: 768px) {
+  .brand {
+    width: var(--sw);
+    justify-content: center;
+    padding: 0 12px;
+    border-right: 1px solid var(--sidebar-border);
+    transition: width var(--d3) var(--nx-ease-out);
+  }
+}
+
+/* Logo de la navbar: con la barra lateral completa se ve la N con THRIVE
+   debajo; con el riel, THRIVE se desvanece y el recuadro se recorta a la N,
+   que además se achica. El ancho (--w) manda; la altura sale de su proporción
+   (lockup 1.047, solo la N 0.814 del ancho). Debajo de 768 px: logo completo. */
+.logo {
+  --w: 44px;
+  position: relative;
+  flex: none;
+  width: var(--w);
+  height: calc(var(--w) * 1.0472);
+  overflow: hidden;
+  transition:
+    width var(--d3) var(--nx-ease-out),
+    height var(--d3) var(--nx-ease-out);
+}
+.logo svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.letters {
+  transition: opacity var(--d2) var(--nx-ease-out) 120ms;
+}
+@media (min-width: 768px) {
+  .logo {
+    --w: 34px;
+    height: calc(var(--w) * 0.8137);
+  }
+  .letters {
+    opacity: 0;
+    transition-delay: 0ms;
+  }
+}
+@media (min-width: 1200px) {
+  :global(html:not([data-rail])) .logo {
+    --w: 56px;
+    height: calc(var(--w) * 1.0472);
+  }
+  :global(html:not([data-rail])) .letters {
+    opacity: 1;
+    transition-delay: 160ms;
+  }
+}

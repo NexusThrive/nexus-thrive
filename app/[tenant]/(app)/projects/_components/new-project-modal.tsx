@@ -10,6 +10,7 @@ import { createProjectAction, type CreateProjectFormState } from "../actions";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { fieldClasses, labelClasses } from "@/components/atoms/input";
 import { cn } from "@/lib/utils";
+import { Select } from "@/components/atoms/select";
 
 const IDLE_STATE: CreateProjectFormState = { status: "idle" };
 
@@ -92,7 +93,7 @@ export default function NewProjectModal({
               >
                 Cliente <span className="text-destructive">*</span>
               </label>
-              <select
+              <Select
                 id="project-customer"
                 name="customerId"
                 defaultValue={state.values?.customerId ?? ""}
@@ -105,7 +106,7 @@ export default function NewProjectModal({
                     {customer.name}
                   </option>
                 ))}
-              </select>
+              </Select>
               {errors.customerId ? (
                 <p role="alert" className="mt-1 text-xs text-destructive">
                   {errors.customerId}

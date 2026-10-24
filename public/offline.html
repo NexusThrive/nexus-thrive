@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Sin conexión · NEXUS THRIVE</title>
+<style>
+  :root { --bg:#f7f6f3; --fg:#141417; --muted:#5d5d66; --gold:#8f6f12; color-scheme: light dark; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0b0b0d; --fg:#f7f6f3; --muted:#a0a0a8; --gold:#e0b83c; } }
+  * { box-sizing: border-box; }
+  body { margin:0; min-height:100dvh; display:grid; place-items:center; padding:24px; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
+  main { max-width:420px; }
+  i { display:block; width:28px; height:6px; margin-bottom:20px; background:var(--gold); transform:skewX(-24deg); }
+  h1 { margin:0 0 8px; font-size:24px; font-weight:600; }
+  p { margin:0 0 20px; color:var(--muted); }
+  button { min-height:44px; padding:0 20px; border:0; border-radius:4px; background:var(--fg); color:var(--bg); font:inherit; font-weight:600; cursor:pointer; }
+  button:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+</style>
+</head>
+<body>
+<main>
+  <i aria-hidden="true"></i>
+  <h1>Sin conexión</h1>
+  <p>NEXUS necesita internet para mostrar los datos de tu negocio. Cuando vuelva la conexión, reintenta.</p>
+  <button type="button" onclick="location.reload()">Reintentar</button>
+</main>
+</body>
+</html>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Mail, MoreHorizontal, UserMinus, UserPlus, UserRoundCheck, X } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { inputClasses, selectClasses } from "@/components/atoms/input";
+import { inputClasses } from "@/components/atoms/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/molecules/dropdown-menu";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
@@ -15,6 +15,7 @@ import type { PendingInvite, TeamMember } from "@/lib/business/team-db";
 import { cn } from "@/lib/utils";
 import { changeMemberRoleAction, inviteMemberAction, revokeInviteAction, setMemberActiveAction, updateMyProfileAction } from "../team-actions";
 import { PhoneInput } from "@/components/molecules/phone-input";
+import { Select } from "@/components/atoms/select";
 
 export type Seats = { limit: number | null; used: number; planName: string };
 
@@ -189,13 +190,13 @@ export default function TeamTab({ slug, members, invites, seats, canManage, meRo
             <Field label="Nombre">{(c) => <input {...c} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputClasses} />}</Field>
             <Field label="Rol" hint={BUSINESS_ROLES.find((r) => r.value === form.role)?.hint}>
               {(c) => (
-                <select {...c} value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} className={selectClasses}>
+                <Select {...c} value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
                   {BUSINESS_ROLES.filter((r) => isOwner || r.value !== "OWNER").map((r) => (
                     <option key={r.value} value={r.value}>
                       {r.label}
                     </option>
                   ))}
-                </select>
+                </Select>
               )}
             </Field>
           </div>

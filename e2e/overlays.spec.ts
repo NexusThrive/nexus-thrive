@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { openStory } from "./helpers";
+import { expectNoAxeViolations, openStory } from "./helpers";
 
 const isMobile = (name: string) => name === "movil";
 
@@ -194,5 +194,288 @@ test.describe("Confirmación sobre un panel", () => {
     await expect(sheet).toBeVisible();
     await expect(anular).toBeFocused();
     await expect(page.getByTestId("result")).toHaveText("Sin cambios");
+  });
+});
+
+test.describe("Modal conectado al botón", () => {
+  test.skip(({ isMobile }) => isMobile, "En móvil es una hoja inferior");
+
+  test("el origen de la escala es el botón que lo abrió", async ({ page }) => {
+    await openStory(page, "organismos-formsheet--dialog");
+    await page.getByRole("button", { name: "Nuevo cliente" }).click();
+    const dialog = page.getByRole("dialog");
+    await dialog.waitFor();
+    const origin = await dialog.evaluate((el) => (el as HTMLElement).style.transformOrigin);
+    expect(origin).toMatch(/^-?[\d.]+px -?[\d.]+px$/);
+    // Entra con un morfeo (Web Animations) que parte del rectángulo del botón.
+    await page.keyboard.press("Escape");
+    await expect(dialog).toHaveCount(0);
+    await page.getByRole("button", { name: "Nuevo cliente" }).click();
+    const morph = await page.getByRole("dialog").evaluate((el) => ({
+      animating: el.getAnimations().some((a) => a instanceof Animation && !(a as CSSAnimation).animationName),
+      attr: el.hasAttribute("data-morph"),
+    }));
+    expect(morph.animating || morph.attr).toBe(true);
+    // Se cierra igual (el origen no afecta a la interacción) y devuelve el foco.
+    await page.keyboard.press("Escape");
+    await expect(dialog).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Nuevo cliente" })).toBeFocused();
+  });
+});
+
+test.describe("Select propio", () => {
+  test("se abre con teclado, elige con Enter, escribe para saltar y devuelve el foco", async ({ page }) => {
+    await openStory(page, "átomos-select--default");
+    const trigger = page.getByRole("combobox", { name: "Medio de pago" });
+    await trigger.focus();
+    await page.keyboard.press("ArrowDown");
+    const list = page.getByRole("listbox");
+    await expect(list).toBeVisible();
+    await expect(trigger).toBeFocused();
+    await expect(page.getByRole("option", { name: "Nequi" })).toHaveAttribute("aria-selected", "true");
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+    await expect(list).toHaveCount(0);
+    await expect(trigger).toContainText("Efectivo");
+    await expect(trigger).toBeFocused();
+    // Escribir salta a la opción que empieza con esas letras.
+    await page.keyboard.press("Enter");
+    await page.keyboard.type("tr");
+    await page.keyboard.press("Enter");
+    await expect(trigger).toContainText("Transferencia");
+  });
+
+  test("con mouse elige, Escape cierra sin cambiar y el valor llega al formulario", async ({ page }) => {
+    await openStory(page, "átomos-select--default");
+    const trigger = page.getByRole("combobox", { name: "Medio de pago" });
+    await trigger.click();
+    await page.getByRole("option", { name: "Tarjeta" }).click();
+    await expect(trigger).toContainText("Tarjeta");
+    await trigger.click();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("listbox")).toHaveCount(0);
+    await expect(trigger).toContainText("Tarjeta");
+    // El <select> real oculto es el que viaja en el formulario.
+    const native = await page.locator("select[aria-hidden=true]").inputValue();
+    expect(native).toBe("Tarjeta");
+  });
+
+  test("axe con la lista abierta, en claro y oscuro", async ({ page }) => {
+    await openStory(page, "átomos-select--default");
+    await page.getByRole("combobox", { name: "Medio de pago" }).click();
+    await page.getByRole("listbox").waitFor();
+    await expectNoAxeViolations(page);
+    await page.evaluate(() => document.documentElement.classList.add("dark"));
+    await expectNoAxeViolations(page);
+  });
+
+  test("dentro de un diálogo: elegir no lo cierra y Escape cierra solo la lista", async ({ page }) => {
+    await openStory(page, "átomos-select--inside-dialog");
+    const dialog = page.getByRole("dialog");
+    const trigger = dialog.getByRole("combobox", { name: "Medio de pago" });
+    await trigger.click();
+    await page.getByRole("option", { name: "Efectivo" }).click();
+    await expect(dialog).toBeVisible();
+    await expect(trigger).toContainText("Efectivo");
+    await trigger.click();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("listbox")).toHaveCount(0);
+    await expect(dialog).toBeVisible();
+  });
+});
+
+test.describe("Panel lateral: entra y sale deslizándose por su borde", () => {
+  test.skip(({ isMobile }) => isMobile, "En móvil es una hoja inferior");
+
+  test("sin morfeo desde el botón; se desliza al abrir y al cerrar", async ({ page }) => {
+    await page.setViewportSize({ width: 1100, height: 600 });
+    await openStory(page, "organismos-formsheet--drawer");
+    await page.evaluate(() => {
+      const xs: number[] = ((window as unknown as { __x: number[] }).__x = []);
+      const t0 = performance.now();
+      const tick = () => {
+        const d = document.querySelector('[role="dialog"]');
+        xs.push(d ? Math.round(d.getBoundingClientRect().x) : -1);
+        if (performance.now() - t0 < 2600) requestAnimationFrame(tick);
+      };
+      tick();
+    });
+    await page.getByRole("button", { name: "Editar cliente" }).click();
+    const dialog = page.getByRole("dialog");
+    await dialog.waitFor();
+    expect(await dialog.evaluate((el) => el.hasAttribute("data-morph"))).toBe(false);
+    await page.waitForTimeout(700);
+    await page.keyboard.press("Escape");
+    await expect(dialog).toHaveCount(0);
+    await page.waitForTimeout(300);
+    const xs = (await page.evaluate(() => (window as unknown as { __x: number[] }).__x)).filter((x) => x >= 0);
+    // El borde izquierdo del panel parte a la derecha de su sitio final (660) y vuelve a salir hacia la derecha.
+    const final = Math.min(...xs);
+    const firstFrame = xs[0];
+    const lastFrame = xs[xs.length - 1];
+    expect(firstFrame, "al abrir parte desde fuera, por la derecha").toBeGreaterThan(final + 100);
+    expect(lastFrame, "al cerrar termina fuera, por la derecha").toBeGreaterThan(final + 100);
+    // Nunca pasa por la zona del botón (a la izquierda): no es un morfeo.
+    expect(Math.min(...xs)).toBeGreaterThanOrEqual(600);
+  });
+});
+
+test.describe("Salida animada aunque el padre desmonte el panel", () => {
+  test.skip(({ isMobile }) => isMobile, "La hoja móvil se cubre en el CSS; aquí se mide PC");
+
+  async function closeFrames(page: import("@playwright/test").Page, story: string, button: string) {
+    await page.setViewportSize({ width: 1100, height: 600 });
+    await openStory(page, story);
+    await page.getByRole("button", { name: button }).click();
+    await page.getByRole("dialog").waitFor();
+    await page.waitForTimeout(900);
+    await page.evaluate(() => {
+      const f: { t: number; x: number; y: number; w: number; op: number; ghost: boolean; any: boolean }[] = ((window as unknown as { __g: unknown[] }).__g = []) as never;
+      const t0 = performance.now();
+      const tick = () => {
+        const el = document.querySelector('[data-ghost][role="dialog"]') ?? document.querySelector('[role="dialog"]');
+        const r = el?.getBoundingClientRect();
+        f.push({ t: Math.round(performance.now() - t0), x: r ? Math.round(r.x + r.width / 2) : -1, y: r ? Math.round(r.y + r.height / 2) : -1, w: r ? Math.round(r.width) : -1, op: el ? +getComputedStyle(el).opacity : -1, ghost: !!el?.hasAttribute("data-ghost"), any: !!el });
+        if (performance.now() - t0 < 1400) requestAnimationFrame(tick);
+      };
+      tick();
+    });
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(1500);
+    return page.evaluate(() => (window as unknown as { __g: { t: number; x: number; y: number; w: number; op: number; ghost: boolean; any: boolean }[] }).__g);
+  }
+
+  test("modal: se queda una copia que vuelve al botón y luego desaparece", async ({ page }) => {
+    const frames = await closeFrames(page, "organismos-responsivesheet--mounted-only-while-open-dialog", "Abrir modal");
+    const ghost = frames.filter((f) => f.ghost);
+    expect(ghost.length, "debe haber copia animada tras desmontar").toBeGreaterThan(8);
+    expect(ghost[0].x).toBeGreaterThan(400); // arranca en su sitio (centro)
+    expect(ghost.at(-1)!.x, "termina cerca del botón (arriba a la izquierda)").toBeLessThan(250);
+    expect(frames.at(-1)!.any, "la copia se borra sola").toBe(false);
+  });
+
+  test("panel lateral: la copia se desliza hacia la derecha y desaparece", async ({ page }) => {
+    const frames = await closeFrames(page, "organismos-responsivesheet--mounted-only-while-open-drawer", "Abrir panel");
+    const ghost = frames.filter((f) => f.ghost);
+    expect(ghost.length).toBeGreaterThan(8);
+    expect(ghost.at(-1)!.x, "sale por la derecha").toBeGreaterThan(ghost[0].x + 150);
+    expect(frames.at(-1)!.any).toBe(false);
+  });
+});
+
+test.describe("Cambios sin guardar", () => {
+  const open = async (page: import("@playwright/test").Page, story = "organismos-formsheet--dialog", button = "Nuevo cliente") => {
+    await openStory(page, story);
+    await page.getByRole("button", { name: button }).click();
+    await page.getByRole("dialog", { name: button === "Nuevo cliente" ? "Nuevo cliente" : /./ }).first().waitFor();
+  };
+
+  test("sin datos escritos se cierra sin preguntar", async ({ page }) => {
+    await open(page);
+    await page.waitForTimeout(500);
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  });
+
+  test("con datos pregunta; «Seguir editando» conserva lo escrito y «Descartar» cierra", async ({ page }) => {
+    await open(page);
+    await page.getByLabel(/Nombre completo/).fill("María Torres");
+    await page.keyboard.press("Escape");
+    const ask = page.getByRole("dialog", { name: "¿Guardar los cambios?" });
+    await expect(ask).toBeVisible();
+
+    await ask.getByRole("button", { name: "Seguir editando" }).click();
+    await expect(ask).toHaveCount(0);
+    await expect(page.getByLabel(/Nombre completo/)).toHaveValue("María Torres");
+
+    // También con el botón Cancelar y con la X.
+    await page.getByRole("button", { name: "Cancelar" }).click();
+    await expect(page.getByRole("dialog", { name: "¿Guardar los cambios?" })).toBeVisible();
+    await page.getByRole("button", { name: "Descartar" }).click();
+    await expect(page.getByRole("dialog")).toHaveCount(0, { timeout: 3000 });
+  });
+
+  test("«Guardar» envía el formulario y cierra", async ({ page }) => {
+    await open(page);
+    await page.getByLabel(/Nombre completo/).fill("María Torres");
+    await page.getByRole("button", { name: "Cerrar" }).click();
+    await page.getByRole("dialog", { name: "¿Guardar los cambios?" }).getByRole("button", { name: "Guardar" }).click();
+    await expect(page.getByRole("dialog")).toHaveCount(0, { timeout: 4000 });
+  });
+
+  test("si el formulario es inválido, «Guardar» deja el panel abierto con el error", async ({ page }) => {
+    await open(page);
+    // Solo el correo: falta el nombre obligatorio.
+    await page.getByLabel(/Correo electrónico/).fill("a@b.co");
+    await page.keyboard.press("Escape");
+    await page.getByRole("dialog", { name: "¿Guardar los cambios?" }).getByRole("button", { name: "Guardar" }).click();
+    await expect(page.getByRole("dialog", { name: "Nuevo cliente" })).toBeVisible();
+  });
+
+  test("axe con la pregunta abierta", async ({ page }) => {
+    await open(page);
+    await page.getByLabel(/Nombre completo/).fill("María Torres");
+    await page.keyboard.press("Escape");
+    await page.getByRole("dialog", { name: "¿Guardar los cambios?" }).waitFor();
+    await expectNoAxeViolations(page);
+  });
+});
+
+test.describe("Pregunta de cambios sin guardar: edición, fondo y animación", () => {
+  test.skip(({ isMobile }) => isMobile, "Se mide la capa de PC");
+
+  test("también en edición: cambiar un dato pregunta; dejarlo igual o revertirlo no", async ({ page }) => {
+    await openStory(page, "organismos-formsheet--drawer");
+    await page.getByRole("button", { name: "Editar cliente" }).click();
+    await page.getByRole("dialog", { name: "Carlos Peña" }).waitFor();
+    await page.waitForTimeout(500);
+    // Sin tocar nada: cierra sin preguntar.
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+
+    await page.getByRole("button", { name: "Editar cliente" }).click();
+    const name = page.getByLabel(/Nombre completo/);
+    await name.fill("Carlos Peña Ruiz");
+    await name.fill("Carlos Peña"); // vuelve a como estaba
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+
+    await page.getByRole("button", { name: "Editar cliente" }).click();
+    await page.getByLabel(/Nombre completo/).fill("Carlos Peña Ruiz");
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog", { name: "¿Guardar los cambios?" })).toBeVisible();
+  });
+
+  test("sin <form>: pregunta y «Guardar» pulsa el botón principal del pie", async ({ page }) => {
+    await openStory(page, "organismos-responsivesheet--edit-without-form");
+    await page.getByRole("button", { name: "Editar sin formulario" }).click();
+    await page.getByLabel("Nombre").fill("Carlos Peña Ruiz");
+    await page.keyboard.press("Escape");
+    await page.getByRole("dialog", { name: "¿Guardar los cambios?" }).getByRole("button", { name: "Guardar" }).click();
+    await expect(page.getByRole("status").filter({ hasText: "Guardado: Carlos Peña Ruiz" })).toBeVisible();
+    await expect(page.getByRole("dialog")).toHaveCount(0, { timeout: 3000 });
+  });
+
+  test("la pregunta tiene fondo oscuro y difuminado propio, y se va rápido", async ({ page }) => {
+    await openStory(page, "organismos-formsheet--dialog");
+    await page.getByRole("button", { name: "Nuevo cliente" }).click();
+    await page.getByLabel(/Nombre completo/).fill("María");
+    await page.keyboard.press("Escape");
+    const ask = page.getByRole("dialog", { name: "¿Guardar los cambios?" });
+    await ask.waitFor();
+    await page.waitForTimeout(300);
+    const scrims = await page.evaluate(() =>
+      [...document.querySelectorAll("[data-state=open]")]
+        .filter((el) => getComputedStyle(el).position === "fixed" && el.getAttribute("role") !== "dialog" && getComputedStyle(el).backgroundColor !== "rgba(0, 0, 0, 0)")
+        .map((el) => ({ bg: getComputedStyle(el).backgroundColor, blur: getComputedStyle(el).backdropFilter })),
+    );
+    expect(scrims.some((s) => s.blur.includes("blur"))).toBe(true);
+
+    // «Descartar»: el aviso desaparece en un instante y el panel sale después con su animación.
+    const t0 = Date.now();
+    await ask.getByRole("button", { name: "Descartar" }).click();
+    await expect(ask).toHaveCount(0, { timeout: 1000 });
+    expect(Date.now() - t0, "el aviso se va rápido").toBeLessThan(700);
+    await expect(page.getByRole("dialog")).toHaveCount(0, { timeout: 2500 });
   });
 });

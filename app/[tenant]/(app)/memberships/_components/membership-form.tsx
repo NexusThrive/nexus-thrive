@@ -22,6 +22,7 @@ import {
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { labelClasses } from "@/components/atoms/input";
+import { Select } from "@/components/atoms/select";
 
 export type MembershipCustomerOption = {
   id: string;
@@ -144,7 +145,7 @@ function MembershipForm({
             >
               Cliente <span className="text-destructive">*</span>
             </label>
-            <select
+            <Select
               id="membership-customer"
               name="customerId"
               defaultValue=""
@@ -161,7 +162,7 @@ function MembershipForm({
                   {customer.email ? ` · ${customer.email}` : ""}
                 </option>
               ))}
-            </select>
+            </Select>
             {errors.customerId ? (
               <p role="alert" className="mt-1 text-xs text-destructive">
                 {errors.customerId}
@@ -177,7 +178,7 @@ function MembershipForm({
               >
                 Plan <span className="text-destructive">*</span>
               </label>
-              <select
+              <Select
                 id="membership-type"
                 value={type}
                 onChange={(event) =>
@@ -190,7 +191,7 @@ function MembershipForm({
                     {option.label}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
 
             <div>
@@ -267,7 +268,7 @@ function MembershipForm({
               >
                 Método de pago <span className="text-destructive">*</span>
               </label>
-              <select
+              <Select
                 id="membership-provider"
                 name="provider"
                 defaultValue={state.values?.provider ?? "CASH"}
@@ -279,7 +280,7 @@ function MembershipForm({
                     {method.label}
                   </option>
                 ))}
-              </select>
+              </Select>
               {errors.provider ? (
                 <p role="alert" className="mt-1 text-xs text-destructive">
                   {errors.provider}

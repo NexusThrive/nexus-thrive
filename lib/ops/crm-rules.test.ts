@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { followUpState, pipelineSummary, validateLead } from "./crm-rules";
+import { dropRule, followUpState, pipelineSummary, validateLead } from "./crm-rules";
 
 const base = { company: "Gym Andes", phone: "3001234567", source: "Referido", stage: "NEW" as const, ownerId: "s1", nextStep: "Llamar", nextStepDate: "2026-10-20" };
 
@@ -33,5 +33,19 @@ describe("CRM comercial", () => {
     expect(s.weightedCents).toBe(6000 + 2000);
     expect(s.winRatePct).toBe(50);
     expect(s.activeCount).toBe(2);
+  });
+});
+
+describe("dropRule (soltar en el tablero)", () => {
+  it("permite mover entre etapas activas", () => {
+    expect(dropRule("NEW", "QUALIFIED")).toEqual({ ok: true });
+    expect(dropRule("NEGOTIATION", "CONTACTED")).toEqual({ ok: true });
+  });
+  it("rechaza la misma etapa y ganar o perder (hay que abrir el lead)", () => {
+    expect(dropRule("NEW", "NEW").ok).toBe(false);
+    const won = dropRule("NEGOTIATION", "WON");
+    expect(won.ok).toBe(false);
+    expect(!won.ok && won.reason).toMatch(/ábrelo/);
+    expect(dropRule("DEMO", "LOST").ok).toBe(false);
   });
 });

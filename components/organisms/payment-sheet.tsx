@@ -5,7 +5,7 @@ import { Banknote, Check, Send } from "lucide-react";
 import { AmountDisplay } from "@/components/atoms/amount-display";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { Chip, ChipRow } from "@/components/atoms/chip";
-import { inputClasses, selectClasses } from "@/components/atoms/input";
+import { inputClasses } from "@/components/atoms/input";
 import { NMark } from "@/components/atoms/n-mark";
 import { Alert } from "@/components/molecules/alert";
 import { Field } from "@/components/molecules/field";
@@ -16,6 +16,7 @@ import { drawReceiptPng, shareReceiptOnWhatsapp } from "@/lib/business/receipt-s
 import { receiptQrDataUrl, receiptQrPayload } from "@/lib/business/receipt-qr";
 import { useToast } from "@/components/molecules/toast";
 import { cn } from "@/lib/utils";
+import { Select } from "@/components/atoms/select";
 
 export type PaymentChargeInput = {
   amount: number;
@@ -220,11 +221,10 @@ export function PaymentSheet({
           <Keypad onKey={press} />
           <Field label="Cliente">
             {(control) => (
-              <select
+              <Select
                 {...control}
                 value={customerId}
                 onChange={(event) => setCustomerId(event.target.value)}
-                className={selectClasses}
               >
                 <option value="">Venta sin cliente</option>
                 {customers.map((c) => (
@@ -233,7 +233,7 @@ export function PaymentSheet({
                     {c.hint ? ` · ${c.hint}` : ""}
                   </option>
                 ))}
-              </select>
+              </Select>
             )}
           </Field>
           <div>

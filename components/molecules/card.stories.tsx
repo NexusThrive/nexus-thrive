@@ -51,3 +51,14 @@ export const Simple: Story = {
     </Card>
   ),
 };
+
+/** `interactive`: toda la tarjeta es accionable; se eleva 2 px con puntero fino y se hunde al presionar. */
+export const Interactive: Story = {
+  args: { interactive: true },
+  render: (args) => (
+    <Card {...args}>
+      <CardTitle>Torre Calle 80</CardTitle>
+      <CardDescription>Pasa el puntero por encima</CardDescription>
+    </Card>
+  ),
+};
