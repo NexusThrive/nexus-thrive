@@ -310,6 +310,7 @@ export type AuditAction =
   | "BIZ_API_KEY_REVOKE"
   | "BIZ_API_OPERATION"
   | "BIZ_PROFILE_UPDATE"
+  | "BIZ_GROWTH"
   | "BIZ_GOOGLE"
   | "BIZ_STORE_ORDER"
   | "BIZ_SITE"

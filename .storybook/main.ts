@@ -31,6 +31,7 @@ const config: StorybookConfig = {
       // Acciones de compras: en Storybook hay datos de muestra.
       // Existencias: en Storybook hay datos de muestra.
       "@/app/[tenant]/(app)/stock/actions": path.resolve(import.meta.dirname, "mocks/stock-actions.ts"),
+      "@/app/[tenant]/(app)/crecimiento/actions": path.resolve(import.meta.dirname, "mocks/growth-actions.ts"),
       "@/app/[tenant]/(app)/google/actions": path.resolve(import.meta.dirname, "mocks/google-actions.ts"),
       "@/app/s/[slug]/actions": path.resolve(import.meta.dirname, "mocks/store-actions.ts"),
       "@/app/[tenant]/(app)/pedidos-tienda/actions": path.resolve(import.meta.dirname, "mocks/store-actions.ts"),

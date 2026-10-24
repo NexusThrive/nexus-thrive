@@ -1,6 +1,7 @@
 import { todayCO } from "@/lib/tax/tax";
 import { db } from "@/prisma/db";
 import { listingView } from "@/lib/google/google-db";
+import { attributionStats, reputationOf } from "@/lib/growth/growth-db";
 import { loadPresence } from "./load";
 import { computePillars, phaseA, trendOf, type Pillar, type PhaseA, type Trend } from "./pillars";
 
@@ -11,14 +12,16 @@ async function pillarsFor(tenantId: string): Promise<{ pillars: Pillar[]; phase:
   const tenant = await db.orm.public.Tenant.where({ id: tenantId }).first();
   if (!tenant) throw new Error("Negocio no encontrado");
   const since = Temporal.Instant.fromEpochMilliseconds(Date.now() - 90 * 86_400_000);
-  const [presence, online, gateway, paid, listing] = await Promise.all([
+  const [presence, online, gateway, paid, listing, rep, attribution] = await Promise.all([
     loadPresence({ id: tenant.id, name: tenant.name, address: tenant.address, whatsappNumber: tenant.whatsappNumber, latitude: tenant.latitude, longitude: tenant.longitude, googleBusinessUrl: tenant.googleBusinessUrl, instagramHandle: tenant.instagramHandle, websiteUrl: tenant.websiteUrl }),
     db.orm.public.Product.where({ tenantId, active: true, publishedOnline: true }).aggregate((a) => ({ n: a.count() })),
     db.orm.public.ExternalConnection.where({ tenantId, kind: "PAYMENT", status: "CONNECTED" }).select("id").first(),
     db.orm.public.PaymentIntent.where({ tenantId, status: "PAID" }).where((i) => i.paidAt.gte(since)).aggregate((a) => ({ n: a.count() })),
     listingView(tenantId),
+    reputationOf(tenantId),
+    attributionStats(tenantId),
   ]);
-  const pillars = computePillars({ presence, onlineProducts: Number(online.n), gatewayConnected: gateway !== null, paidOnlineLast90d: Number(paid.n), google: listing.connected && listing.status ? { status: listing.status, napMatches: listing.napMatches } : null });
+  const pillars = computePillars({ presence, onlineProducts: Number(online.n), gatewayConnected: gateway !== null, paidOnlineLast90d: Number(paid.n), google: listing.connected && listing.status ? { status: listing.status, napMatches: listing.napMatches } : null, reputation: rep ? { reviews: rep.count, average: rep.average } : null, attribution });
   return { pillars, phase: phaseA(pillars) };
 }
 

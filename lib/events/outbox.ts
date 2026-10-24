@@ -7,7 +7,7 @@ type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
  * `payload` solo gana campos (nunca cambia el significado de uno existente);
  * un cambio incompatible sube `version`.
  */
-export const EVENT_TYPES = ["sale.completed", "sale.returned", "order.created", "order.paid", "cart.abandoned", "provider.event_received"] as const;
+export const EVENT_TYPES = ["sale.completed", "sale.returned", "order.created", "order.paid", "cart.abandoned", "review.low", "lead.created", "provider.event_received"] as const;
 export type EventType = (typeof EVENT_TYPES)[number];
 
 export type DomainEvent = {

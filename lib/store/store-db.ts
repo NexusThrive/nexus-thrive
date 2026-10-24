@@ -2,6 +2,7 @@ import { emitEvent } from "@/lib/events/outbox";
 import { toNumber } from "@/lib/format";
 import { connectedGateways, createIntent } from "@/lib/payments/intents-db";
 import { db } from "@/prisma/db";
+import { sanitizeOrigin } from "@/lib/growth/growth";
 import { ABANDON_AFTER_MINUTES, isAbandoned, normalizeCart, orderCode, orderMessage, orderTotals, validateCustomer, type CartLine, type CustomerData } from "./cart";
 
 /** Tienda en línea (servidor). El sitio público se resuelve por su dirección; todo lo demás va por `tenantId` del negocio dueño. */
@@ -9,7 +10,7 @@ export type PlaceResult =
   | { ok: true; code: string; reference: string; total: number; whatsappText: string; whatsapp: string | null; business: string }
   | { ok: false; message: string; fields?: Partial<Record<keyof CustomerData, string>> };
 
-export async function placeOrder(siteSlug: string, input: { customer: CustomerData; lines: CartLine[] }): Promise<PlaceResult> {
+export async function placeOrder(siteSlug: string, input: { customer: CustomerData; lines: CartLine[]; origin?: unknown }): Promise<PlaceResult> {
   const cfg = await db.orm.public.SiteConfig.where({ siteSlug, enabled: true }).first();
   if (!cfg || !cfg.showCatalog) return { ok: false, message: "Esta tienda no está disponible." };
   const tenant = await db.orm.public.Tenant.where({ id: cfg.tenantId, active: true }).first();
@@ -38,7 +39,7 @@ export async function placeOrder(siteSlug: string, input: { customer: CustomerDa
       const order = await db.transaction(async (tx) => {
         const last = await tx.orm.public.StoreOrder.where({ tenantId }).orderBy((o) => o.number.desc()).first();
         const number = (last?.number ?? 0) + 1;
-        const created = await tx.orm.public.StoreOrder.create({ tenantId, number, customerName: c.name.trim().slice(0, 120), phone: c.phone.trim().slice(0, 30), email: c.email.trim().toLowerCase().slice(0, 120) || null, address: c.address.trim().slice(0, 200) || null, city: c.city.trim().slice(0, 80) || null, notes: c.notes.trim().slice(0, 300) || null, total: total.toFixed(2) });
+        const created = await tx.orm.public.StoreOrder.create({ tenantId, number, customerName: c.name.trim().slice(0, 120), phone: c.phone.trim().slice(0, 30), email: c.email.trim().toLowerCase().slice(0, 120) || null, address: c.address.trim().slice(0, 200) || null, city: c.city.trim().slice(0, 80) || null, notes: c.notes.trim().slice(0, 300) || null, total: total.toFixed(2), origin: sanitizeOrigin(input.origin) as never });
         await tx.orm.public.StoreOrderLine.createAll(lines.map((l) => ({ tenantId, orderId: created.id, productId: l.productId, name: l.name.slice(0, 160), quantity: l.quantity, unitPrice: l.unitPrice.toFixed(2), taxRatePct: l.taxRatePct.toFixed(2) }))).toArray();
         return created;
       });

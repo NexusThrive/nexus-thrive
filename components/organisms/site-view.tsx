@@ -1,4 +1,5 @@
 import { MessageCircle } from "lucide-react";
+import { AttributionCapture, ContactForm } from "@/components/organisms/site-extras";
 import { AddToCart, CartDock } from "@/components/organisms/store-cart";
 import { TEMPLATES, mapUrl, onAccent, whatsappUrl, type SiteData } from "@/lib/site/site";
 
@@ -48,6 +49,12 @@ export function SiteView({ site, preview = false, store = false }: { site: SiteD
             </ul>
           </section>
         ) : null}
+        {store ? (
+          <section aria-labelledby="write" className="grid gap-3">
+            <h2 id="write" className="font-display text-xl font-semibold">Escríbenos</h2>
+            <ContactForm slug={site.slug} accent={site.accent} onAccent={accentText} />
+          </section>
+        ) : null}
         <section aria-labelledby="contact" className="grid gap-2">
           <h2 id="contact" className="font-display text-xl font-semibold">Contacto</h2>
           <ul style={{ color: t.muted }} className="grid gap-1">
@@ -59,6 +66,7 @@ export function SiteView({ site, preview = false, store = false }: { site: SiteD
         </section>
       </main>
       <footer style={{ color: t.muted, borderColor: `${t.muted}33` }} className="mx-auto max-w-3xl border-t px-4 py-6 text-xs">© {site.business.name}. Sitio creado con NEXUS THRIVE.</footer>
+      {store ? <AttributionCapture slug={site.slug} /> : null}
       {store ? <CartDock slug={site.slug} accent={site.accent} onAccent={accentText} /> : null}
       {wa ? (
         <a href={wa} aria-label="Escríbenos por WhatsApp" style={{ background: "#25D366", color: "#000" }} className={`${preview ? "absolute" : "fixed"} bottom-4 right-4 grid size-14 place-items-center rounded-full shadow-lg`}>

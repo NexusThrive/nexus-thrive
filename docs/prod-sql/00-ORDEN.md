@@ -45,6 +45,7 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 33 | `2026-10-24-mini-sitio.sql` | Mini-sitio: tabla `SiteConfig` (aditivo) | generado de la migración |
 | 34 | `2026-10-24-tienda-en-linea.sql` | Tienda en línea: `StoreOrder` y `StoreOrderLine` (aditivo; requiere los pasos 28 y 33) | generado de la migración |
 | 35 | `2026-10-24-google-business.sql` | Ficha de Google Business: tabla `GoogleListing` (aditivo) | generado de la migración |
+| 36 | `2026-10-24-reputacion-y-atribucion.sql` | Reputación y atribución: `TrackedLink`, `ContactLead`, `Review` y `StoreOrder.origin` (aditivo; requiere el paso 34) | generado de la migración |
 
 ## Estado: producción reconstruida desde las migraciones (camino A, 2026-10-23)
 

@@ -18,6 +18,7 @@ import {
   Globe,
   HandCoins,
   MapPin,
+  Megaphone,
   PackageCheck,
   Link2,
   Percent,
@@ -173,6 +174,7 @@ export const CAPABILITIES = [
       { href: "/sitio", icon: Globe, label: () => "Mi sitio web" },
       { href: "/pedidos-tienda", icon: PackageCheck, label: () => "Pedidos de la tienda" },
       { href: "/google", icon: MapPin, label: () => "Ficha de Google" },
+      { href: "/crecimiento", icon: Megaphone, label: () => "Campañas y reseñas" },
     ],
   },
   {

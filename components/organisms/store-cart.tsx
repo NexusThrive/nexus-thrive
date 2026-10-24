@@ -2,6 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { MessageCircle, ShoppingBag } from "lucide-react";
+import { readOrigin } from "@/components/organisms/site-extras";
 import { placeOrderAction } from "@/app/s/[slug]/actions";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { MAX_QTY, type CustomerData } from "@/lib/store/cart";
@@ -86,7 +87,7 @@ export function CartDock({ slug, accent, onAccent }: { slug: string; accent: str
 
   const send = async () => {
     setBusy(true);
-    const r = await placeOrderAction(slug, c, items.map((i) => ({ productId: i.productId, quantity: i.quantity })));
+    const r = await placeOrderAction(slug, c, items.map((i) => ({ productId: i.productId, quantity: i.quantity })), readOrigin(slug));
     setBusy(false);
     setResult(r);
     if (r.ok) write(slug, []);
