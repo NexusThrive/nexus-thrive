@@ -188,6 +188,10 @@
       "model": "ModuleSetting",
       "namespace": "public"
     },
+    "NumberingResolution": {
+      "model": "NumberingResolution",
+      "namespace": "public"
+    },
     "OutboxEvent": {
       "model": "OutboxEvent",
       "namespace": "public"
@@ -326,6 +330,10 @@
     },
     "SupportTicket": {
       "model": "SupportTicket",
+      "namespace": "public"
+    },
+    "TaxRate": {
+      "model": "TaxRate",
       "namespace": "public"
     },
     "Tenant": {
@@ -7604,7 +7612,21 @@
                   "kind": "scalar"
                 }
               },
+              "prefix": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "projectId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "resolutionId": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
@@ -7670,6 +7692,20 @@
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "withholdingTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "withholdings": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/json@1",
                   "kind": "scalar"
                 }
               }
@@ -7754,8 +7790,14 @@
                 "paymentId": {
                   "column": "paymentId"
                 },
+                "prefix": {
+                  "column": "prefix"
+                },
                 "projectId": {
                   "column": "projectId"
+                },
+                "resolutionId": {
+                  "column": "resolutionId"
                 },
                 "sourceDocumentId": {
                   "column": "sourceDocumentId"
@@ -7780,6 +7822,12 @@
                 },
                 "voidReason": {
                   "column": "voidReason"
+                },
+                "withholdingTotal": {
+                  "column": "withholdingTotal"
+                },
+                "withholdings": {
+                  "column": "withholdings"
                 }
               },
               "namespaceId": "public",
@@ -8761,6 +8809,154 @@
               },
               "namespaceId": "public",
               "table": "ModuleSetting"
+            }
+          },
+          "NumberingResolution": {
+            "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "documentKind": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "nextNumber": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "prefix": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "rangeFrom": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "rangeTo": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "resolutionNumber": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "validFrom": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "validTo": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "active": {
+                  "column": "active"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "documentKind": {
+                  "column": "documentKind"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "nextNumber": {
+                  "column": "nextNumber"
+                },
+                "prefix": {
+                  "column": "prefix"
+                },
+                "rangeFrom": {
+                  "column": "rangeFrom"
+                },
+                "rangeTo": {
+                  "column": "rangeTo"
+                },
+                "resolutionNumber": {
+                  "column": "resolutionNumber"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "validFrom": {
+                  "column": "validFrom"
+                },
+                "validTo": {
+                  "column": "validTo"
+                }
+              },
+              "namespaceId": "public",
+              "table": "NumberingResolution"
             }
           },
           "OutboxEvent": {
@@ -15182,6 +15378,144 @@
               "table": "SupportTicket"
             }
           },
+          "TaxRate": {
+            "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "code": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "kind": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "minBase": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "ratePct": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "validFrom": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "validTo": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "active": {
+                  "column": "active"
+                },
+                "code": {
+                  "column": "code"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "kind": {
+                  "column": "kind"
+                },
+                "minBase": {
+                  "column": "minBase"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "ratePct": {
+                  "column": "ratePct"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "validFrom": {
+                  "column": "validFrom"
+                },
+                "validTo": {
+                  "column": "validTo"
+                }
+              },
+              "namespaceId": "public",
+              "table": "TaxRate"
+            }
+          },
           "Tenant": {
             "fields": {
               "accountManagerId": {
@@ -16032,6 +16366,21 @@
                   "namespace": "public"
                 }
               },
+              "numberingResolutions": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "NumberingResolution",
+                  "namespace": "public"
+                }
+              },
               "outboxEvents": {
                 "cardinality": "1:N",
                 "on": {
@@ -16465,6 +16814,21 @@
                 },
                 "to": {
                   "model": "SupportTicket",
+                  "namespace": "public"
+                }
+              },
+              "taxRates": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "TaxRate",
                   "namespace": "public"
                 }
               },
@@ -18940,6 +19304,11 @@
               "namespaceId": "public",
               "tableName": "ModuleSetting"
             },
+            "NumberingResolution": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "NumberingResolution"
+            },
             "OutboxEvent": {
               "kind": "rls",
               "namespaceId": "public",
@@ -19114,6 +19483,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "SupportTicket"
+            },
+            "TaxRate": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "TaxRate"
             },
             "Tenant": {
               "kind": "rls",
@@ -24355,7 +24729,17 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "prefix": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "projectId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "resolutionId": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
@@ -24416,6 +24800,20 @@
                 "voidReason": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
+                  "nullable": true
+                },
+                "withholdingTotal": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "withholdings": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
                   "nullable": true
                 }
               },
@@ -25238,6 +25636,126 @@
               "primaryKey": {
                 "columns": [
                   "module"
+                ]
+              },
+              "uniques": []
+            },
+            "NumberingResolution": {
+              "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "documentKind": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "nextNumber": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "prefix": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": ""
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "rangeFrom": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "rangeTo": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "resolutionNumber": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "validFrom": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "validTo": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "NumberingResolution"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "documentKind"
+                  ],
+                  "name": "NumberingResolution_tenantId_documentKind_idx_c74e69cb",
+                  "prefix": "NumberingResolution_tenantId_documentKind_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "NumberingResolution_tenantId_idx_c93ed4f1",
+                  "prefix": "NumberingResolution_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
                 ]
               },
               "uniques": []
@@ -30492,6 +31010,130 @@
                 }
               ]
             },
+            "TaxRate": {
+              "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "code": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "kind": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "minBase": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "ratePct": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "validFrom": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "validTo": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "TaxRate"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "code"
+                  ],
+                  "name": "TaxRate_tenantId_code_idx_84f464d7",
+                  "prefix": "TaxRate_tenantId_code_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "TaxRate_tenantId_idx_c93ed4f1",
+                  "prefix": "TaxRate_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "kind"
+                  ],
+                  "name": "TaxRate_tenantId_kind_idx_1e76dd5c",
+                  "prefix": "TaxRate_tenantId_kind_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "Tenant": {
               "checks": [
                 {
@@ -32752,10 +33394,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "ce8102383574e467af1bd700279b74f5c2e184c88398de66b05b7273b722cee0"
+    "storageHash": "f64f52cd3e517b822dd8cae378a5000d223f0dd188d7c3e52deac8c31a8ebff4"
   },
   "execution": {
-    "executionHash": "45278fcd5a74cc7ed0d60f7af17390c316b5de6a50b9cfd02d4314dfb2a8885e",
+    "executionHash": "8626695fcb32fec2d6d0e1d527b5a028fdaeee996c457728b86937ab97485f18",
     "mutations": {
       "defaults": [
         {
@@ -33612,6 +34254,17 @@
             "kind": "generator"
           },
           "ref": {
+            "entry": "NumberingResolution",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
             "entry": "OutboxEvent",
             "field": "id",
             "namespace": "public"
@@ -34292,6 +34945,17 @@
           "ref": {
             "entry": "SupportTicket",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "TaxRate",
+            "field": "id",
             "namespace": "public"
           }
         },

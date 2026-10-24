@@ -50,10 +50,10 @@ tags: [capas, estructura, subcapa]
 - [ ] Documento transaccional unificado
 - [ ] Motor contable _(PR-22)_
 - [ ] Libro mayor inalterable _(PR-22)_
-- [ ] Impuestos y retenciones parametrizables con vigencia _(PR-13)_
+- [x] Impuestos y retenciones parametrizables con vigencia _hecho: lib/tax + app/[tenant]/(app)/taxes (tarifas con vigencia y retenciones)_
 - [ ] Dimensiones analíticas _(PR-21)_
 - [ ] Periodos y cierres _(PR-21)_
-- [ ] Numeración y resoluciones _(PR-13)_
+- [x] Numeración y resoluciones _hecho: NumberingResolution; el consecutivo sale del rango y avisa/bloquea_
 - [ ] Multi-moneda y tasas de cambio
 - [ ] Motor de aprobaciones, bitácora global y permisos
 

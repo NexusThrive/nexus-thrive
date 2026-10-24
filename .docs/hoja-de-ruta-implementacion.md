@@ -149,7 +149,7 @@ de «hecho»). No se edita a mano.
 | **10** | Vende y controla | Inventario I: bodegas y kardex con costo | VI | N1, N2 | 0/4 | `PR-10-inventario-bodegas-kardex` | pendiente |
 | **11** | Vende y controla | Inventario II: traslados, conteos y compras | VI | N1 | 5/5 | `PR-11-traslados-conteos-compras` | hecho |
 | **12** | Vende y controla | Importar y exportar clientes y catálogo | — | — | base técnica | — | pendiente |
-| **13** | Vende y controla | Impuestos y numeración por resolución | I, VII | N1, N2 | 0/8 | `PR-13-impuestos-y-numeracion` | pendiente |
+| **13** | Vende y controla | Impuestos y numeración por resolución | VII | N1, N2 | 0/4 | `PR-13-impuestos-y-numeracion` | pendiente |
 | **14** | Vende y controla | Cartera: cuentas por cobrar y por pagar | VII | N1 | 0/2 | `PR-14-cartera` | pendiente |
 | **15** | Vende y controla | POS I: terminales, turnos y venta multilínea | V | N2 | 0/3 | `PR-15-pos-terminales-turnos` | pendiente |
 | **16** | Vende y controla | POS II: impresión, código de barras y devoluciones | V | N2 | 0/3 | — | pendiente |
@@ -328,17 +328,12 @@ de «hecho»). No se edita a mano.
 ### PR-13 · Impuestos y numeración por resolución
 
 - **Rama:** `cobro/impuestos-y-numeracion` · **Hito:** 2 · Vende y controla
-- **Etiquetas:** `capa-I` `capa-VII` `N1` `N2` `tipo:migracion` `hito-2-vende-y-controla`
+- **Etiquetas:** `capa-VII` `N1` `N2` `tipo:migracion` `hito-2-vende-y-controla`
 - **Depende de:** PR-08, PR-09
 - **Esquema:** [`sql/PR-13-impuestos-y-numeracion.sql`](sql/PR-13-impuestos-y-numeracion.sql)
 - **Hecho cuando:** Una venta con IVA 19 % y 5 % y retefuente calcula bien (casos de un contador); la numeración respeta el rango y avisa.
 - **Casillas que marca:**
-  - [`I.00 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/00-Nucleo-Transversal-y-Modelo-de-Tercero-Unico/README.md)
-    - [ ] Impuestos y retenciones parametrizables con vigencia
-    - [ ] Numeración y resoluciones
   - [`VII.03 · N1`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/03-Documentos-Transaccionales-y-Reglas-Fiscales/README.md)
-    - [ ] Impuestos y retenciones parametrizables con vigencia
-    - [ ] Numeración y resoluciones
     - [ ] Beneficiario
     - [ ] Tipo de comprobante
   - [`VII.04 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md)

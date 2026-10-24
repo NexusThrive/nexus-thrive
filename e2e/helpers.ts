@@ -24,7 +24,14 @@ export async function expectNoAxeViolations(page: Page) {
         .map((a) => a.finished.catch(() => undefined)),
     ),
   );
-  const results = await new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
+  // El complemento de accesibilidad de Storybook también corre axe al pintar la historia:
+  // si coincide con este escaneo, se espera un instante y se repite una vez.
+  const scan = () => new AxeBuilder({ page }).withTags(WCAG_AA).analyze();
+  const results = await scan().catch(async (error: Error) => {
+    if (!/already running/i.test(error.message)) throw error;
+    await page.waitForTimeout(500);
+    return scan();
+  });
   const summary = results.violations.map(
     (v) => `${v.id} (${v.impact}): ${v.help} → ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`,
   );

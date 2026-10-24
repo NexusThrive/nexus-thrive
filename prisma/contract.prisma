@@ -408,6 +408,8 @@ model Tenant {
   stockTransferLines StockTransferLine[]
   stockCounts        StockCount[]
   stockCountLines    StockCountLine[]
+  taxRates           TaxRate[]
+  numberingResolutions NumberingResolution[]
   supportTickets     SupportTicket[]
   charges            Charge[]
   benefitRedemptions BenefitRedemption[]
@@ -2161,6 +2163,12 @@ model Invoice {
   originId     String?
   /// Cobro que lo generó (ventas registradas al cobrar).
   paymentId    String?
+  /// Resolución de numeración con la que se numeró y su prefijo (vacío = consecutivo simple).
+  resolutionId String?
+  prefix       String?
+  /// Retenciones que practica quien paga (retefuente, reteIVA…): total y detalle por concepto.
+  withholdingTotal Decimal    @default(0)
+  withholdings Json?
   createdAt    DateTime      @default(now())
   updatedAt    temporal.updatedAt()
   lines        InvoiceLine[]
@@ -2855,5 +2863,54 @@ model StockCountLine {
   adjustment Int?
 
   @@index([countId])
+  @@rls
+}
+
+
+/// Impuesto o retención parametrizable del negocio, con vigencia: el que aplica en una
+/// fecha es el vigente ese día (IVA 19 %, IVA 5 %, impoconsumo, retefuente, reteIVA, reteICA).
+model TaxRate {
+  id        String    @id @default(uuid())
+  tenantId  String
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Clave estable del concepto (IVA_19, RETEFUENTE_SERVICIOS…): varias vigencias comparten código.
+  code      String
+  name      String
+  /// IVA | IMPOCONSUMO | RETEFUENTE | RETEIVA | RETEICA
+  kind      String
+  ratePct   Decimal
+  /// Retenciones: solo se practican si la base llega a este valor (0 = siempre).
+  minBase   Decimal   @default(0)
+  validFrom DateTime
+  validTo   DateTime?
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+
+  @@index([tenantId, code])
+  @@index([tenantId, kind])
+  @@rls
+}
+
+/// Resolución de numeración autorizada (DIAN u otra): rango con prefijo y vigencia para un
+/// tipo de documento. El consecutivo sale de aquí mientras esté activa; al agotarse avisa.
+model NumberingResolution {
+  id               String    @id @default(uuid())
+  tenantId         String
+  tenant           Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Tipo de documento comercial al que aplica (SALE, BILL, RECEIPT, CREDIT_NOTE…).
+  documentKind     String
+  prefix           String    @default("")
+  /// Número de la resolución (ej. 18760000001) y su fecha de expedición.
+  resolutionNumber String
+  rangeFrom        Int
+  rangeTo          Int
+  /// Próximo número por entregar (rangeFrom al crearla, o el siguiente al último ya usado).
+  nextNumber       Int
+  validFrom        DateTime
+  validTo          DateTime
+  active           Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+
+  @@index([tenantId, documentKind])
   @@rls
 }
