@@ -105,7 +105,7 @@ y el plan técnico por etapas en
 | Versión | Dónde | Qué es |
 | --- | --- | --- |
 | **V2** (`main`, etiqueta `v2.0.0`) | Esta rama | Un solo sistema por funciones y categorías: POS, cobros en línea, facturación electrónica por proveedor, cartera, contabilidad, tienda y sitio, presencia verificada, varias organizaciones por persona y panel de Usuarios en el Operations Center |
-| **V1** (rama [`v1`](https://github.com/NexusThrive/nexus-thrive/tree/v1), etiqueta [`v1.0`](https://github.com/NexusThrive/nexus-thrive/releases/tag/v1.0)) | Rama archivada | El piloto interno original: CRM, finanzas, inventario básico, agenda, membresías, taquilla y construcción |
+| **V1** (rama [`archive/v1`](https://github.com/NexusThrive/nexus-thrive/tree/archive/v1), etiqueta [`v1.0`](https://github.com/NexusThrive/nexus-thrive/releases/tag/v1.0)) | Rama archivada | El piloto interno original: CRM, finanzas, inventario básico, agenda, membresías, taquilla y construcción |
 
 ## Estado actual (V2)
 
