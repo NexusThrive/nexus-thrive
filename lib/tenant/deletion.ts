@@ -72,6 +72,8 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "LookaheadTask",
   "Membership",
   "OutboxEvent",
+  "Party",
+  "PartyRole",
   "Payment",
   "PresenceRequest",
   "ProviderEvent",
@@ -251,6 +253,7 @@ export async function deleteTenantCompletely(
   count("ApuChapter", await tx.orm.public.ApuChapter.where({ tenantId }).deleteAll());
   count("ApuImage", await tx.orm.public.ApuImage.where({ tenantId }).deleteAll());
   count("ApuImportRun", await tx.orm.public.ApuImportRun.where({ tenantId }).deleteAll());
+  count("PartyRole", await tx.orm.public.PartyRole.where({ tenantId }).deleteAll());
   count("ProviderEvent", await tx.orm.public.ProviderEvent.where({ tenantId }).deleteAll());
   count("ExternalConnection", await tx.orm.public.ExternalConnection.where({ tenantId }).deleteAll());
   count("UsageCounter", await tx.orm.public.UsageCounter.where({ tenantId }).deleteAll());
@@ -287,6 +290,7 @@ export async function deleteTenantCompletely(
   count("Quote", await tx.orm.public.Quote.where({ tenantId }).deleteAll());
   count("Project", await tx.orm.public.Project.where({ tenantId }).deleteAll());
   count("Customer", await tx.orm.public.Customer.where({ tenantId }).deleteAll());
+  count("Party", await tx.orm.public.Party.where({ tenantId }).deleteAll());
   count("Departure", await tx.orm.public.Departure.where({ tenantId }).deleteAll());
   count("Expense", await tx.orm.public.Expense.where({ tenantId }).deleteAll());
   count("InboxConversation", await tx.orm.public.InboxConversation.where({ tenantId }).deleteAll());

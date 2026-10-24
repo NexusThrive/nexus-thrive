@@ -144,7 +144,7 @@ de «hecho»). No se edita a mano.
 | **05** | Integrable | Origen en la bitácora y cupos de uso | I | N1 | 1/1 | `PR-05-uso-y-origen` | hecho |
 | **06** | Integrable | Conexiones externas y puertos | V | N1 | 0/1 | `PR-06-conexiones-externas` | pendiente |
 | **07** | Integrable | n8n en casa: túnel, nodo y plantillas | VI | N1 | 0/1 | — | pendiente |
-| **08** | Vende y controla | Tercero único mínimo | I, IV | N1, N2 | 0/5 | `PR-08-terceros` | pendiente |
+| **08** | Vende y controla | Tercero único mínimo | I, IV | N1, N2 | 1/5 | `PR-08-terceros` | pendiente |
 | **09** | Vende y controla | Catálogo maestro: variantes, códigos de barras y precios | I, V | N2 | 0/4 | `PR-09-catalogo-maestro` | pendiente |
 | **10** | Vende y controla | Inventario I: bodegas y kardex con costo | VI | N1, N2 | 0/4 | `PR-10-inventario-bodegas-kardex` | pendiente |
 | **11** | Vende y controla | Inventario II: traslados, conteos y compras | VI | N1, N2 | 0/7 | `PR-11-traslados-conteos-compras` | pendiente |
@@ -263,7 +263,7 @@ de «hecho»). No se edita a mano.
 - **Hecho cuando:** Cada cliente tiene su tercero; un NIT repetido en el mismo negocio es imposible; un proveedor se crea sin ser cliente.
 - **Casillas que marca:**
   - [`I.00 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/00-Nucleo-Transversal-y-Modelo-de-Tercero-Unico/README.md)
-    - [ ] Tercero único con roles
+    - [x] Tercero único con roles _hecho: lib/parties/parties-db.ts (Party, PartyRole; cada cliente guardado tiene su tercero)_
   - [`I.01 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/01-Catalogo-Maestro-de-Productos-y-Servicios/README.md)
     - [ ] Clientes y proveedores
   - [`I.01 · N2`](capas/I-Fundacion-Nucleo-e-Infraestructura/01-Catalogo-Maestro-de-Productos-y-Servicios/README.md)
