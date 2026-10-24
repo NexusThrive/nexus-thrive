@@ -216,8 +216,24 @@
       "model": "PresenceScan",
       "namespace": "public"
     },
+    "PriceList": {
+      "model": "PriceList",
+      "namespace": "public"
+    },
+    "PriceListItem": {
+      "model": "PriceListItem",
+      "namespace": "public"
+    },
     "Product": {
       "model": "Product",
+      "namespace": "public"
+    },
+    "ProductBarcode": {
+      "model": "ProductBarcode",
+      "namespace": "public"
+    },
+    "ProductVariant": {
+      "model": "ProductVariant",
       "namespace": "public"
     },
     "Project": {
@@ -9913,12 +9929,288 @@
               "table": "PresenceScan"
             }
           },
+          "PriceList": {
+            "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "currency": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "isDefault": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "items": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "priceListId"
+                  ]
+                },
+                "to": {
+                  "model": "PriceListItem",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "active": {
+                  "column": "active"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "currency": {
+                  "column": "currency"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "isDefault": {
+                  "column": "isDefault"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "PriceList"
+            }
+          },
+          "PriceListItem": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "price": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "priceListId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "productId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "variantId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "priceList": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "priceListId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "PriceList",
+                  "namespace": "public"
+                }
+              },
+              "product": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "productId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Product",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              },
+              "variant": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "variantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ProductVariant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "price": {
+                  "column": "price"
+                },
+                "priceListId": {
+                  "column": "priceListId"
+                },
+                "productId": {
+                  "column": "productId"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "variantId": {
+                  "column": "variantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "PriceListItem"
+            }
+          },
           "Product": {
             "fields": {
               "active": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "brand": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -9978,6 +10270,13 @@
                   "kind": "scalar"
                 }
               },
+              "imageUrl": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "kind": {
                 "nullable": false,
                 "type": {
@@ -10012,6 +10311,13 @@
                   "kind": "scalar"
                 }
               },
+              "publishedOnline": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "sku": {
                 "nullable": true,
                 "type": {
@@ -10023,6 +10329,20 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "taxCategory": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "taxRatePct": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
                   "kind": "scalar"
                 }
               },
@@ -10047,6 +10367,13 @@
                   "kind": "scalar"
                 }
               },
+              "unitCode": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
@@ -10056,6 +10383,21 @@
               }
             },
             "relations": {
+              "barcodes": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "productId"
+                  ]
+                },
+                "to": {
+                  "model": "ProductBarcode",
+                  "namespace": "public"
+                }
+              },
               "movements": {
                 "cardinality": "1:N",
                 "on": {
@@ -10068,6 +10410,21 @@
                 },
                 "to": {
                   "model": "StockMovement",
+                  "namespace": "public"
+                }
+              },
+              "priceItems": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "productId"
+                  ]
+                },
+                "to": {
+                  "model": "PriceListItem",
                   "namespace": "public"
                 }
               },
@@ -10086,12 +10443,30 @@
                   "model": "Tenant",
                   "namespace": "public"
                 }
+              },
+              "variants": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "productId"
+                  ]
+                },
+                "to": {
+                  "model": "ProductVariant",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
               "fields": {
                 "active": {
                   "column": "active"
+                },
+                "brand": {
+                  "column": "brand"
                 },
                 "capacity": {
                   "column": "capacity"
@@ -10117,6 +10492,9 @@
                 "id": {
                   "column": "id"
                 },
+                "imageUrl": {
+                  "column": "imageUrl"
+                },
                 "kind": {
                   "column": "kind"
                 },
@@ -10129,11 +10507,20 @@
                 "price": {
                   "column": "price"
                 },
+                "publishedOnline": {
+                  "column": "publishedOnline"
+                },
                 "sku": {
                   "column": "sku"
                 },
                 "stock": {
                   "column": "stock"
+                },
+                "taxCategory": {
+                  "column": "taxCategory"
+                },
+                "taxRatePct": {
+                  "column": "taxRatePct"
                 },
                 "tenantId": {
                   "column": "tenantId"
@@ -10144,12 +10531,329 @@
                 "unit": {
                   "column": "unit"
                 },
+                "unitCode": {
+                  "column": "unitCode"
+                },
                 "updatedAt": {
                   "column": "updatedAt"
                 }
               },
               "namespaceId": "public",
               "table": "Product"
+            }
+          },
+          "ProductBarcode": {
+            "fields": {
+              "code": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "productId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "symbology": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "variantId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "product": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "productId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Product",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              },
+              "variant": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "variantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "ProductVariant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "code": {
+                  "column": "code"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "productId": {
+                  "column": "productId"
+                },
+                "symbology": {
+                  "column": "symbology"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "variantId": {
+                  "column": "variantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "ProductBarcode"
+            }
+          },
+          "ProductVariant": {
+            "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "attributes": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
+              "cost": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "price": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "productId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sku": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "barcodes": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "variantId"
+                  ]
+                },
+                "to": {
+                  "model": "ProductBarcode",
+                  "namespace": "public"
+                }
+              },
+              "priceItems": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "variantId"
+                  ]
+                },
+                "to": {
+                  "model": "PriceListItem",
+                  "namespace": "public"
+                }
+              },
+              "product": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "productId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Product",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "active": {
+                  "column": "active"
+                },
+                "attributes": {
+                  "column": "attributes"
+                },
+                "cost": {
+                  "column": "cost"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "price": {
+                  "column": "price"
+                },
+                "productId": {
+                  "column": "productId"
+                },
+                "sku": {
+                  "column": "sku"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "ProductVariant"
             }
           },
           "Project": {
@@ -13845,6 +14549,66 @@
                   "namespace": "public"
                 }
               },
+              "priceListItems": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "PriceListItem",
+                  "namespace": "public"
+                }
+              },
+              "priceLists": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "PriceList",
+                  "namespace": "public"
+                }
+              },
+              "productBarcodes": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "ProductBarcode",
+                  "namespace": "public"
+                }
+              },
+              "productVariants": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "ProductVariant",
+                  "namespace": "public"
+                }
+              },
               "products": {
                 "cardinality": "1:N",
                 "on": {
@@ -16286,10 +17050,30 @@
               "namespaceId": "public",
               "tableName": "PresenceScan"
             },
+            "PriceList": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "PriceList"
+            },
+            "PriceListItem": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "PriceListItem"
+            },
             "Product": {
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "Product"
+            },
+            "ProductBarcode": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ProductBarcode"
+            },
+            "ProductVariant": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ProductVariant"
             },
             "Project": {
               "kind": "rls",
@@ -23463,6 +24247,278 @@
               },
               "uniques": []
             },
+            "PriceList": {
+              "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "currency": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "COP"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "isDefault": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PriceList"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "PriceList_tenantId_idx_c93ed4f1",
+                  "prefix": "PriceList_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "name"
+                  ]
+                }
+              ]
+            },
+            "PriceListItem": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "price": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "priceListId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "productId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "variantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PriceListItem"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "priceListId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PriceListItem"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PriceList"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "productId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PriceListItem"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Product"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "variantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PriceListItem"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProductVariant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "priceListId"
+                  ],
+                  "name": "PriceListItem_priceListId_idx_43057e0f",
+                  "prefix": "PriceListItem_priceListId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "productId"
+                  ],
+                  "name": "PriceListItem_productId_idx_5858600a",
+                  "prefix": "PriceListItem_productId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "priceListId",
+                    "productId"
+                  ],
+                  "name": "PriceListItem_product_key_9ae0454b",
+                  "prefix": "PriceListItem_product_key",
+                  "unique": true,
+                  "where": "\"variantId\" IS NULL"
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "PriceListItem_tenantId_idx_c93ed4f1",
+                  "prefix": "PriceListItem_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "variantId"
+                  ],
+                  "name": "PriceListItem_variantId_idx_e16bb45d",
+                  "prefix": "PriceListItem_variantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "priceListId",
+                    "productId",
+                    "variantId"
+                  ],
+                  "name": "PriceListItem_variant_key_100c36cc",
+                  "prefix": "PriceListItem_variant_key",
+                  "unique": true,
+                  "where": "\"variantId\" IS NOT NULL"
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "Product": {
               "checks": [
                 {
@@ -23480,6 +24536,11 @@
                   },
                   "nativeType": "bool",
                   "nullable": false
+                },
+                "brand": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "capacity": {
                   "codecId": "pg/int4@1",
@@ -23525,6 +24586,11 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "imageUrl": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "kind": {
                   "codecId": "pg/text@1",
                   "default": {
@@ -23559,6 +24625,15 @@
                   "nativeType": "numeric",
                   "nullable": false
                 },
+                "publishedOnline": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
                 "sku": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -23571,6 +24646,24 @@
                     "value": 0
                   },
                   "nativeType": "int4",
+                  "nullable": false
+                },
+                "taxCategory": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "GRAVADO"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "taxRatePct": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
                   "nullable": false
                 },
                 "tenantId": {
@@ -23591,6 +24684,15 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
+                },
+                "unitCode": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "EA"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
                 },
                 "updatedAt": {
                   "codecId": "pg/timestamptz-temporal@1",
@@ -23634,6 +24736,291 @@
                   "name": "Product_tenantId_kind_idx_1e76dd5c",
                   "prefix": "Product_tenantId_kind_idx",
                   "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "ProductBarcode": {
+              "columns": {
+                "code": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "productId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "symbology": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "EAN13"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "variantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProductBarcode"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "productId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProductBarcode"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Product"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "variantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProductBarcode"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProductVariant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "productId"
+                  ],
+                  "name": "ProductBarcode_productId_idx_5858600a",
+                  "prefix": "ProductBarcode_productId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "ProductBarcode_tenantId_idx_c93ed4f1",
+                  "prefix": "ProductBarcode_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "variantId"
+                  ],
+                  "name": "ProductBarcode_variantId_idx_e16bb45d",
+                  "prefix": "ProductBarcode_variantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "code"
+                  ]
+                }
+              ]
+            },
+            "ProductVariant": {
+              "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "attributes": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
+                  "nullable": true
+                },
+                "cost": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "price": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": true
+                },
+                "productId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "sku": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProductVariant"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "productId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProductVariant"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Product"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "productId"
+                  ],
+                  "name": "ProductVariant_productId_idx_5858600a",
+                  "prefix": "ProductVariant_productId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "ProductVariant_tenantId_idx_c93ed4f1",
+                  "prefix": "ProductVariant_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "productId"
+                  ],
+                  "name": "ProductVariant_tenantId_productId_idx_b55a019b",
+                  "prefix": "ProductVariant_tenantId_productId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "sku"
+                  ],
+                  "name": "ProductVariant_tenantId_sku_key_dd4acb28",
+                  "prefix": "ProductVariant_tenantId_sku_key",
+                  "unique": true,
+                  "where": "\"sku\" IS NOT NULL"
                 }
               ],
               "primaryKey": {
@@ -27949,10 +29336,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "57532c555df6e2c38add9f15c1aaecfb523127a1ad3fae7aaa825876b940797b"
+    "storageHash": "e637309ac408074848369fc3aec9650f621a188d2ce07176dbbdef00453130af"
   },
   "execution": {
-    "executionHash": "88290d656a7da269305a7a55fb4aa0d6b5be7914e51be01ffe15927581d7f243",
+    "executionHash": "b83ca57dc90acd2b1c9e12d0d1ac0acdf5a818affcd261aa8f95a4e3fed03cc1",
     "mutations": {
       "defaults": [
         {
@@ -28935,6 +30322,58 @@
             "kind": "generator"
           },
           "ref": {
+            "entry": "PriceList",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PriceList",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PriceListItem",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PriceListItem",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
             "entry": "Product",
             "field": "id",
             "namespace": "public"
@@ -28951,6 +30390,43 @@
           },
           "ref": {
             "entry": "Product",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "ProductBarcode",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "ProductVariant",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "ProductVariant",
             "field": "updatedAt",
             "namespace": "public"
           }

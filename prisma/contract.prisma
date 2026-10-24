@@ -387,6 +387,10 @@ model Tenant {
   providerEvents     ProviderEvent[]
   parties            Party[]
   partyRoles         PartyRole[]
+  productVariants    ProductVariant[]
+  productBarcodes    ProductBarcode[]
+  priceLists         PriceList[]
+  priceListItems     PriceListItem[]
   supportTickets     SupportTicket[]
   charges            Charge[]
   benefitRedemptions BenefitRedemption[]
@@ -1965,8 +1969,101 @@ model Product {
   createdAt       DateTime    @default(now())
   updatedAt       temporal.updatedAt()
   movements       StockMovement[]
+  /// Unidad de medida UN/CEFACT (la que usa la DIAN): EA unidad, KGM, LTR, MTR, HUR…
+  unitCode        String      @default("EA")
+  /// GRAVADO | EXCLUIDO | EXENTO
+  taxCategory     String      @default("GRAVADO")
+  taxRatePct      Decimal     @default(0)
+  brand           String?
+  imageUrl        String?
+  /// Decide qué sale en el sitio y la tienda en línea.
+  publishedOnline Boolean     @default(false)
+  variants        ProductVariant[]
+  barcodes        ProductBarcode[]
+  priceItems      PriceListItem[]
 
   @@index([tenantId, kind])
+  @@rls
+}
+
+/// Variante de un producto (talla, color…). El precio vacío hereda el del producto.
+model ProductVariant {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku        String?
+  name       String
+  /// Atributos libres: { "talla": "M", "color": "negro" }.
+  attributes Json?
+  price      Decimal?
+  cost       Decimal?
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  temporal.updatedAt()
+  barcodes   ProductBarcode[]
+  priceItems PriceListItem[]
+
+  @@index([tenantId, productId])
+  @@index([tenantId, sku], unique: true, where: "\"sku\" IS NOT NULL", name: "ProductVariant_tenantId_sku_key")
+  @@rls
+}
+
+/// Código de barras de un producto o de una variante. Único por negocio.
+model ProductBarcode {
+  id         String          @id @default(uuid())
+  tenantId   String
+  tenant     Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId  String?
+  variant    ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  code       String
+  /// EAN13 | EAN8 | UPCA | CODE128 | INTERNO
+  symbology  String          @default("EAN13")
+  createdAt  DateTime        @default(now())
+
+  @@unique([tenantId, code])
+  @@index([productId])
+  @@rls
+}
+
+/// Lista de precios (público, mayorista, convenio…). Una por negocio es la predeterminada.
+model PriceList {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  currency  String   @default("COP")
+  isDefault Boolean  @default(false)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+  items     PriceListItem[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@rls
+}
+
+model PriceListItem {
+  id          String          @id @default(uuid())
+  tenantId    String
+  tenant      Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  priceListId String
+  priceList   PriceList       @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId   String?
+  variant     ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  price       Decimal
+  updatedAt   temporal.updatedAt()
+
+  /// Un precio por (lista, producto) y otro por (lista, producto, variante).
+  @@index([priceListId, productId], unique: true, where: "\"variantId\" IS NULL", name: "PriceListItem_product_key")
+  @@index([priceListId, productId, variantId], unique: true, where: "\"variantId\" IS NOT NULL", name: "PriceListItem_variant_key")
+  @@index([productId])
   @@rls
 }
 

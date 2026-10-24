@@ -27,6 +27,7 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 16 | `2026-10-24-conexiones-externas.sql` | Conexiones con proveedores y webhooks entrantes (`ExternalConnection`, `ProviderEvent`) | generado de la migración |
 | 17 | `2026-10-24-tercero-unico.sql` | Tercero único: `Party`, `PartyRole` y `Customer.partyId` (aditivo) | generado de la migración |
 | 18 | `2026-10-24-tercero-unico-relleno.sql` | **Datos**: crea el tercero y el rol CLIENTE de cada cliente existente (idempotente; correr DESPUÉS del 17) | **PENDIENTE** |
+| 19 | `2026-10-24-catalogo-maestro.sql` | Catálogo maestro: variantes, códigos de barras, listas de precios y clasificación fiscal en `Product` (aditivo) | generado de la migración |
 
 ## Estado: producción reconstruida desde las migraciones (camino A, 2026-10-23)
 
