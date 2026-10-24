@@ -385,6 +385,8 @@ model Tenant {
   usageCounters      UsageCounter[]
   externalConnections ExternalConnection[]
   providerEvents     ProviderEvent[]
+  parties            Party[]
+  partyRoles         PartyRole[]
   supportTickets     SupportTicket[]
   charges            Charge[]
   benefitRedemptions BenefitRedemption[]
@@ -477,8 +479,12 @@ model Customer {
   notes CustomerNote[]
   quotes Quote[]
   projects Project[]
+  /// Tercero único al que pertenece este cliente (la misma persona o empresa, con sus roles).
+  partyId  String?
+  party    Party?   @relation(fields: [partyId], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
+  @@index([partyId])
   /// Un código o una tarjeta identifica a UN socio del negocio (DATA-04).
   @@index([tenantId, accessCode], unique: true, where: "\"accessCode\" IS NOT NULL", name: "Customer_tenantId_accessCode_key")
   @@index([tenantId, nfcUid], unique: true, where: "\"nfcUid\" IS NOT NULL", name: "Customer_tenantId_nfcUid_key")
@@ -2455,5 +2461,53 @@ model ProviderEvent {
   @@unique([tenantId, provider, externalId])
   @@index([tenantId, createdAt])
   @@index([processedAt])
+  @@rls
+}
+
+/// Tercero único: una persona o empresa del negocio, una sola vez, con los roles
+/// que cumple (cliente, proveedor, empleado, contacto). Los documentos
+/// comerciales, la cartera y la contabilidad cuelgan de aquí.
+model Party {
+  id             String   @id @default(uuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// PERSON | COMPANY
+  kind           String   @default("PERSON")
+  /// CC | NIT | CE | PASAPORTE | TI | RC | NIT_EXTRANJERO (opcional: puede ser desconocido).
+  documentType   String?
+  /// Solo letras y números, sin puntos ni guiones ni dígito de verificación.
+  documentNumber String?
+  checkDigit     String?
+  legalName      String
+  tradeName      String?
+  email          String?
+  phone          String?
+  addressLine    String?
+  city           String?
+  countryCode    String   @default("CO")
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      temporal.updatedAt()
+  roles          PartyRole[]
+  customers      Customer[]
+
+  @@index([tenantId, legalName])
+  /// Un documento identifica a UN tercero por negocio.
+  @@index([tenantId, documentNumber], unique: true, where: "\"documentNumber\" IS NOT NULL", name: "Party_tenantId_documentNumber_key")
+  @@rls
+}
+
+model PartyRole {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  partyId   String
+  party     Party    @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  /// CUSTOMER | SUPPLIER | EMPLOYEE | CONTACT
+  role      String
+  createdAt DateTime @default(now())
+
+  @@unique([partyId, role])
+  @@index([tenantId, role])
   @@rls
 }

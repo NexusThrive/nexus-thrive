@@ -3,6 +3,7 @@ import { customerOperations } from "./definitions/customers";
 import { eventOperations } from "./definitions/events";
 import { financeOperations } from "./definitions/finance";
 import { inventoryOperations } from "./definitions/inventory";
+import { partyOperations } from "./definitions/parties";
 import { isAvailable, runOperation } from "./engine";
 import type { OperationContext, OperationDefinition } from "./types";
 
@@ -17,6 +18,7 @@ export const OPERATIONS: readonly OperationDefinition[] = Object.freeze([
   ...inventoryOperations,
   ...financeOperations,
   ...eventOperations,
+  ...partyOperations,
 ]);
 
 export const getOperation = (id: string) => OPERATIONS.find((op) => op.id === id);

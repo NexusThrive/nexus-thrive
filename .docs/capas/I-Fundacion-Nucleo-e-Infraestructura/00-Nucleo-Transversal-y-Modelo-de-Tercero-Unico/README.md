@@ -46,7 +46,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [ ] Tercero único con roles _(PR-08)_
+- [x] Tercero único con roles _(PR-08)_ _hecho: lib/parties/parties-db.ts (Party, PartyRole; cada cliente guardado tiene su tercero)_
 - [ ] Documento transaccional unificado
 - [ ] Motor contable _(PR-22)_
 - [ ] Libro mayor inalterable _(PR-22)_

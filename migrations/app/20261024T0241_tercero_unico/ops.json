@@ -1,0 +1,683 @@
+[
+  {
+    "id": "table.Party",
+    "label": "Create table \"Party\"",
+    "summary": "Creates table \"Party\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Party"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Party\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Party\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Party\"",
+        "sql": "CREATE TABLE \"public\".\"Party\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"addressLine\" text,\n  \"checkDigit\" text,\n  \"city\" text,\n  \"countryCode\" text DEFAULT 'CO' NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"documentNumber\" text,\n  \"documentType\" text,\n  \"email\" text,\n  \"id\" text NOT NULL,\n  \"kind\" text DEFAULT 'PERSON' NOT NULL,\n  \"legalName\" text NOT NULL,\n  \"phone\" text,\n  \"tenantId\" text NOT NULL,\n  \"tradeName\" text,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Party\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Party\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.PartyRole",
+    "label": "Create table \"PartyRole\"",
+    "summary": "Creates table \"PartyRole\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "PartyRole"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"PartyRole\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PartyRole\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"PartyRole\"",
+        "sql": "CREATE TABLE \"public\".\"PartyRole\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"partyId\" text NOT NULL,\n  \"role\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"PartyRole\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PartyRole\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Customer.partyId",
+    "label": "Add column \"partyId\" to \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "partyId",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"partyId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "partyId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"partyId\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD COLUMN \"partyId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"partyId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "partyId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.PartyRole.PartyRole_partyId_role_key",
+    "label": "Add unique constraint on \"PartyRole\" (partyId, role)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "PartyRole_partyId_role_key",
+        "table": "PartyRole"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"PartyRole_partyId_role_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PartyRole_partyId_role_key",
+          "public",
+          "\"public\".\"PartyRole\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"PartyRole_partyId_role_key\"",
+        "sql": "ALTER TABLE \"public\".\"PartyRole\" ADD CONSTRAINT \"PartyRole_partyId_role_key\" UNIQUE (\"partyId\", \"role\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"PartyRole_partyId_role_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PartyRole_partyId_role_key",
+          "public",
+          "\"public\".\"PartyRole\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Customer.Customer_partyId_idx_e302b09d",
+    "label": "Create index \"Customer_partyId_idx_e302b09d\" on \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Customer_partyId_idx_e302b09d",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Customer_partyId_idx_e302b09d\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Customer_partyId_idx_e302b09d\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Customer_partyId_idx_e302b09d\"",
+        "sql": "CREATE INDEX \"Customer_partyId_idx_e302b09d\" ON \"public\".\"Customer\" (\"partyId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Customer_partyId_idx_e302b09d\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Customer_partyId_idx_e302b09d\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Party.Party_tenantId_documentNumber_key_d762dd04",
+    "label": "Create index \"Party_tenantId_documentNumber_key_d762dd04\" on \"Party\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Party_tenantId_documentNumber_key_d762dd04",
+        "table": "Party"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Party_tenantId_documentNumber_key_d762dd04\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Party_tenantId_documentNumber_key_d762dd04\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Party_tenantId_documentNumber_key_d762dd04\"",
+        "sql": "CREATE UNIQUE INDEX \"Party_tenantId_documentNumber_key_d762dd04\" ON \"public\".\"Party\" (\"tenantId\", \"documentNumber\") WHERE (\"documentNumber\" IS NOT NULL)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Party_tenantId_documentNumber_key_d762dd04\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Party_tenantId_documentNumber_key_d762dd04\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Party.Party_tenantId_idx_c93ed4f1",
+    "label": "Create index \"Party_tenantId_idx_c93ed4f1\" on \"Party\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Party_tenantId_idx_c93ed4f1",
+        "table": "Party"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Party_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Party_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Party_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"Party_tenantId_idx_c93ed4f1\" ON \"public\".\"Party\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Party_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Party_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Party.Party_tenantId_legalName_idx_d26d9111",
+    "label": "Create index \"Party_tenantId_legalName_idx_d26d9111\" on \"Party\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Party_tenantId_legalName_idx_d26d9111",
+        "table": "Party"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Party_tenantId_legalName_idx_d26d9111\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Party_tenantId_legalName_idx_d26d9111\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Party_tenantId_legalName_idx_d26d9111\"",
+        "sql": "CREATE INDEX \"Party_tenantId_legalName_idx_d26d9111\" ON \"public\".\"Party\" (\"tenantId\", \"legalName\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Party_tenantId_legalName_idx_d26d9111\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Party_tenantId_legalName_idx_d26d9111\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PartyRole.PartyRole_partyId_idx_e302b09d",
+    "label": "Create index \"PartyRole_partyId_idx_e302b09d\" on \"PartyRole\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PartyRole_partyId_idx_e302b09d",
+        "table": "PartyRole"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PartyRole_partyId_idx_e302b09d\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PartyRole_partyId_idx_e302b09d\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PartyRole_partyId_idx_e302b09d\"",
+        "sql": "CREATE INDEX \"PartyRole_partyId_idx_e302b09d\" ON \"public\".\"PartyRole\" (\"partyId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PartyRole_partyId_idx_e302b09d\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PartyRole_partyId_idx_e302b09d\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PartyRole.PartyRole_tenantId_idx_c93ed4f1",
+    "label": "Create index \"PartyRole_tenantId_idx_c93ed4f1\" on \"PartyRole\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PartyRole_tenantId_idx_c93ed4f1",
+        "table": "PartyRole"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PartyRole_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PartyRole_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PartyRole_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"PartyRole_tenantId_idx_c93ed4f1\" ON \"public\".\"PartyRole\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PartyRole_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PartyRole_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PartyRole.PartyRole_tenantId_role_idx_c3ec5d48",
+    "label": "Create index \"PartyRole_tenantId_role_idx_c3ec5d48\" on \"PartyRole\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PartyRole_tenantId_role_idx_c3ec5d48",
+        "table": "PartyRole"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PartyRole_tenantId_role_idx_c3ec5d48\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PartyRole_tenantId_role_idx_c3ec5d48\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PartyRole_tenantId_role_idx_c3ec5d48\"",
+        "sql": "CREATE INDEX \"PartyRole_tenantId_role_idx_c3ec5d48\" ON \"public\".\"PartyRole\" (\"tenantId\", \"role\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PartyRole_tenantId_role_idx_c3ec5d48\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PartyRole_tenantId_role_idx_c3ec5d48\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Party.Party_tenantId_fkey",
+    "label": "Add foreign key \"Party_tenantId_fkey\" on \"Party\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Party_tenantId_fkey",
+        "table": "Party"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Party_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Party_tenantId_fkey",
+          "public",
+          "\"public\".\"Party\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Party_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Party\"\nADD CONSTRAINT \"Party_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Party_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Party_tenantId_fkey",
+          "public",
+          "\"public\".\"Party\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Customer.Customer_partyId_fkey",
+    "label": "Add foreign key \"Customer_partyId_fkey\" on \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Customer_partyId_fkey",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Customer_partyId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Customer_partyId_fkey",
+          "public",
+          "\"public\".\"Customer\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Customer_partyId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\"\nADD CONSTRAINT \"Customer_partyId_fkey\"\nFOREIGN KEY (\"partyId\")\nREFERENCES \"public\".\"Party\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Customer_partyId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Customer_partyId_fkey",
+          "public",
+          "\"public\".\"Customer\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PartyRole.PartyRole_tenantId_fkey",
+    "label": "Add foreign key \"PartyRole_tenantId_fkey\" on \"PartyRole\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PartyRole_tenantId_fkey",
+        "table": "PartyRole"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PartyRole_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PartyRole_tenantId_fkey",
+          "public",
+          "\"public\".\"PartyRole\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PartyRole_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PartyRole\"\nADD CONSTRAINT \"PartyRole_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PartyRole_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PartyRole_tenantId_fkey",
+          "public",
+          "\"public\".\"PartyRole\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PartyRole.PartyRole_partyId_fkey",
+    "label": "Add foreign key \"PartyRole_partyId_fkey\" on \"PartyRole\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PartyRole_partyId_fkey",
+        "table": "PartyRole"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PartyRole_partyId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PartyRole_partyId_fkey",
+          "public",
+          "\"public\".\"PartyRole\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PartyRole_partyId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PartyRole\"\nADD CONSTRAINT \"PartyRole_partyId_fkey\"\nFOREIGN KEY (\"partyId\")\nREFERENCES \"public\".\"Party\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PartyRole_partyId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PartyRole_partyId_fkey",
+          "public",
+          "\"public\".\"PartyRole\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.Party",
+    "label": "Enable row-level security on \"Party\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "Party"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"Party\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Party"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"Party\"",
+        "sql": "ALTER TABLE \"public\".\"Party\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"Party\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "Party"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.PartyRole",
+    "label": "Enable row-level security on \"PartyRole\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "PartyRole"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"PartyRole\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "PartyRole"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"PartyRole\"",
+        "sql": "ALTER TABLE \"public\".\"PartyRole\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"PartyRole\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "PartyRole"
+        ]
+      }
+    ]
+  }
+]

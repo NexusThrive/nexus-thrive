@@ -25,6 +25,8 @@ Cada archivo trae su propia transacción (`BEGIN`/`COMMIT`).
 | 14 | `2026-10-24-webhooks-outbox.sql` | Eventos: outbox transaccional y webhooks firmados (`OutboxEvent`, `WebhookEndpoint`, `WebhookDelivery`) | generado de la migración |
 | 15 | `2026-10-24-uso-y-origen.sql` | Bitácora con origen (`actorType`, `apiKeyId`, `requestId` en `AuditLog`) y medidores de uso (`UsageCounter`) | generado de la migración |
 | 16 | `2026-10-24-conexiones-externas.sql` | Conexiones con proveedores y webhooks entrantes (`ExternalConnection`, `ProviderEvent`) | generado de la migración |
+| 17 | `2026-10-24-tercero-unico.sql` | Tercero único: `Party`, `PartyRole` y `Customer.partyId` (aditivo) | generado de la migración |
+| 18 | `2026-10-24-tercero-unico-relleno.sql` | **Datos**: crea el tercero y el rol CLIENTE de cada cliente existente (idempotente; correr DESPUÉS del 17) | **PENDIENTE** |
 
 ## Estado: producción reconstruida desde las migraciones (camino A, 2026-10-23)
 
