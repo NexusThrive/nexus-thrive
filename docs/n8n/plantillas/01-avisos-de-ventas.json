@@ -1,0 +1,142 @@
+{
+  "name": "NEXUS · Avisos de ventas (respaldo por consulta)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "name": "Cada minuto",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const NEXUS_URL = \"https://TU-DOMINIO.com\"; // sin barra final\nconst state = $getWorkflowStaticData(\"global\");\n// Primera vez: solo se avisa de lo que pase DESDE ahora (no se inunda con el historial).\nif (!state.since && !state.after) state.since = new Date().toISOString();\nconst params = { limit: 100 };\nif (state.after) params.after = state.after;\nelse params.since = state.since;\nreturn [{ json: { url: NEXUS_URL + \"/api/v1/events\", params } }];"
+      },
+      "name": "Leer cursor",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={{ JSON.stringify($json.params) }}",
+        "options": {}
+      },
+      "name": "Pedir eventos a NEXUS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        680,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": null,
+          "name": "NEXUS llave de API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const state = $getWorkflowStaticData(\"global\");\nconst body = $input.first().json;\nconst events = (body && body.data && body.data.events) || [];\nif (!events.length) return [];\n// El cursor avanza al último evento recibido: si n8n estuvo apagado, la próxima consulta trae todo lo pendiente.\nstate.after = body.data.next;\ndelete state.since;\nconst money = (v) => \"$\" + Number(v).toLocaleString(\"es-CO\");\nconst lines = events.filter((e) => e.type === \"sale.completed\").map((e) => {\n  const d = e.data || {};\n  return \"💰 Venta \" + (d.receipt || \"\") + \": \" + money(d.amount) + \" (\" + (d.method || \"\") + \")\";\n});\nif (!lines.length) return [];\nreturn [{ json: { text: lines.join(\"\\n\") } }];"
+      },
+      "name": "Armar avisos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        910,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "TU_CHAT_ID",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "name": "Avisarme por Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1140,
+        300
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": null,
+          "name": "Telegram"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Cada minuto": {
+      "main": [
+        [
+          {
+            "node": "Leer cursor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer cursor": {
+      "main": [
+        [
+          {
+            "node": "Pedir eventos a NEXUS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pedir eventos a NEXUS": {
+      "main": [
+        [
+          {
+            "node": "Armar avisos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armar avisos": {
+      "main": [
+        [
+          {
+            "node": "Avisarme por Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}

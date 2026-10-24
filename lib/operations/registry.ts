@@ -1,5 +1,6 @@
 import { businessOperations } from "./definitions/business";
 import { customerOperations } from "./definitions/customers";
+import { eventOperations } from "./definitions/events";
 import { financeOperations } from "./definitions/finance";
 import { inventoryOperations } from "./definitions/inventory";
 import { isAvailable, runOperation } from "./engine";
@@ -15,6 +16,7 @@ export const OPERATIONS: readonly OperationDefinition[] = Object.freeze([
   ...customerOperations,
   ...inventoryOperations,
   ...financeOperations,
+  ...eventOperations,
 ]);
 
 export const getOperation = (id: string) => OPERATIONS.find((op) => op.id === id);

@@ -108,14 +108,14 @@ describe.skipIf(!TEST_URL)("conexiones y webhooks entrantes (integración)", () 
   test("un evento guardado sin procesar se reintenta y llega por webhook de salida", async () => {
     const ev = await db.orm.public.ProviderEvent.create({ tenantId: b, connectionId: connB.id, provider: "sandbox", kind: "PAYMENT", eventType: "payment.failed", externalId: "evt_stuck", rawBody: evt("evt_stuck", "payment.failed") });
     expect(ev.processedAt).toBeNull();
-    expect(await processPendingProviderEvents()).toBeGreaterThanOrEqual(1);
+    expect(await processPendingProviderEvents(50, [a, b])).toBeGreaterThanOrEqual(1);
     expect((await db.orm.public.ProviderEvent.where({ id: ev.id }).first())?.processedAt).toBeTruthy();
 
     const hook = await createEndpoint(b, { url: "https://receptor.example.com/h", eventTypes: ["provider.event_received"] });
     if (!hook.ok) throw new Error("endpoint");
     const hits: string[] = [];
     await send(connB, evt("evt_to_n8n"));
-    const result = await dispatchPending({ resolveHost: async () => true, fetchImpl: (async (_u: unknown, init: RequestInit) => (hits.push(String(init.body)), new Response("ok"))) as unknown as typeof fetch });
+    const result = await dispatchPending({ tenantIds: [a, b], resolveHost: async () => true, fetchImpl: (async (_u: unknown, init: RequestInit) => (hits.push(String(init.body)), new Response("ok"))) as unknown as typeof fetch });
     expect(result.succeeded).toBeGreaterThanOrEqual(1);
     expect(hits.some((h) => h.includes("evt_to_n8n"))).toBe(true);
   });

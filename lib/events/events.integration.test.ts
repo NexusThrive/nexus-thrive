@@ -24,7 +24,7 @@ describe.skipIf(!TEST_URL)("outbox y webhooks (integración)", () => {
       hits.push({ url: String(url), headers: init.headers as Record<string, string>, body: String(init.body) });
       return new Response("ok", { status: statuses[Math.min(hits.length, statuses.length) - 1] });
     }) as unknown as typeof fetch;
-  const run = (fetchImpl: typeof fetch) => dispatchPending({ fetchImpl, now: () => clock, resolveHost });
+  const run = (fetchImpl: typeof fetch) => dispatchPending({ fetchImpl, now: () => clock, resolveHost, tenantIds: [a, b] });
 
   beforeAll(async () => {
     process.env.WEBHOOK_ENCRYPTION_KEY = "b".repeat(64);

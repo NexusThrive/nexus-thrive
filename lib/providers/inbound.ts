@@ -82,8 +82,9 @@ export async function processProviderEvent(eventId: string): Promise<boolean> {
 }
 
 /** Reintenta los eventos guardados que no se llegaron a procesar. */
-export async function processPendingProviderEvents(limit = 50): Promise<number> {
-  const pending = await db.orm.public.ProviderEvent.where((e) => e.processedAt.isNull()).orderBy((e) => e.createdAt.asc()).limit(limit).all();
+export async function processPendingProviderEvents(limit = 50, tenantIds?: readonly string[]): Promise<number> {
+  const only = tenantIds ? [...tenantIds] : null;
+  const pending = await db.orm.public.ProviderEvent.where((e) => e.processedAt.isNull()).where((e) => (only ? e.tenantId.in(only) : e.processedAt.isNull())).orderBy((e) => e.createdAt.asc()).limit(limit).all();
   let done = 0;
   for (const event of pending) if (await processProviderEvent(event.id)) done++;
   return done;

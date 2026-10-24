@@ -28,6 +28,8 @@ export type DispatchDeps = {
   now?: () => number;
   resolveHost?: (host: string) => Promise<boolean>;
   batch?: number;
+  /** Solo estos negocios (para pruebas en paralelo sobre la misma base). Sin él, todos. */
+  tenantIds?: readonly string[];
 };
 
 export type DispatchResult = { fannedOut: number; sent: number; succeeded: number; failed: number; deadLettered: number };
@@ -44,7 +46,8 @@ export async function dispatchPending(deps: DispatchDeps = {}): Promise<Dispatch
   const result: DispatchResult = { fannedOut: 0, sent: 0, succeeded: 0, failed: 0, deadLettered: 0 };
 
   // 1) Repartir eventos nuevos.
-  const events = await db.orm.public.OutboxEvent.where((e) => e.processedAt.isNull()).orderBy((e) => e.createdAt.asc()).limit(100).all();
+  const only = deps.tenantIds ? [...deps.tenantIds] : null;
+  const events = await db.orm.public.OutboxEvent.where((e) => e.processedAt.isNull()).where((e) => (only ? e.tenantId.in(only) : e.processedAt.isNull())).orderBy((e) => e.createdAt.asc()).limit(100).all();
   for (const event of events) {
     const endpoints = await db.orm.public.WebhookEndpoint.where({ tenantId: event.tenantId, active: true }).all();
     for (const endpoint of endpoints) {
@@ -64,6 +67,7 @@ export async function dispatchPending(deps: DispatchDeps = {}): Promise<Dispatch
   const due = await db.orm.public.WebhookDelivery
     .where({ status: "PENDING" })
     .where((d) => d.nextAttemptAt.lte(toInstant(nowMs())))
+    .where((d) => (only ? d.tenantId.in(only) : d.status.eq("PENDING")))
     .orderBy((d) => d.createdAt.asc())
     .limit(batch)
     .all();
