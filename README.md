@@ -31,13 +31,13 @@
 
 <p align="center">
   <img
-    src="https://raw.githubusercontent.com/NexusThrive/nexus-thrive-web/main/src/assets/product/inicio-light.webp"
-    alt="Inicio de un negocio en NEXUS: ingresos, socios activos, gastos, balance y gráfico de ingresos y gastos de la semana."
+    src="docs/design/capturas/v2/dashboard-claro.png"
+    alt="Inicio de NEXUS V2: barra lateral por categorías, métricas de ingresos, socios, gastos y balance, gráfico de ingresos y gastos, acciones rápidas y visibilidad verificada."
     width="100%"
   >
 </p>
 
-<p align="center"><sub>Captura real del Inicio de NEXUS en modo claro, con datos de demostración.</sub></p>
+<p align="center"><sub><strong>NEXUS V2.</strong> El nuevo Inicio: barra lateral por categorías (Ventas y cobros, Compras y gastos, Finanzas y contabilidad, Presencia en línea…), métricas, ingresos y gastos, acciones rápidas y presencia verificada. Datos de demostración. La versión anterior está en la rama <a href="https://github.com/NexusThrive/nexus-thrive/tree/v1"><code>v1</code></a>.</sub></p>
 
 ## ¿Qué es NEXUS?
 
@@ -100,26 +100,41 @@ El detalle completo está en
 y el plan técnico por etapas en
 [`docs/nexus-architecture/roadmap.md`](docs/nexus-architecture/roadmap.md).
 
-## Estado actual
+## Versiones
 
-La V1 está en **piloto interno**: se entra con un código de acceso, sin cobro
-automático, y el equipo NEXUS administra a mano los planes y la vigencia de cada
-negocio.
+| Versión | Dónde | Qué es |
+| --- | --- | --- |
+| **V2** (`main`, etiqueta `v2.0.0`) | Esta rama | Un solo sistema por funciones y categorías: POS, cobros en línea, facturación electrónica por proveedor, cartera, contabilidad, tienda y sitio, presencia verificada, varias organizaciones por persona y panel de Usuarios en el Operations Center |
+| **V1** (rama [`v1`](https://github.com/NexusThrive/nexus-thrive/tree/v1), etiqueta [`v1.0`](https://github.com/NexusThrive/nexus-thrive/releases/tag/v1.0)) | Rama archivada | El piloto interno original: CRM, finanzas, inventario básico, agenda, membresías, taquilla y construcción |
 
-**Funciona hoy de punta a punta:** CRM con ficha 360°, finanzas y caja menor,
-cobros con recibo y anulación auditada, gastos con soporte, inventario con
-movimientos y venta directa, facturación interna (recibos y cuentas de cobro),
-agenda, membresías con control de acceso QR/NFC, taquilla de museo, equipo con
-roles e invitaciones, la vertical de construcción completa y el Operations
-Center.
+## Estado actual (V2)
 
-**En desarrollo o pendiente:** POS con carrito multi-línea, compras y
-proveedores, factura electrónica DIAN, pagos en línea, WhatsApp Business API por
-negocio, automatizaciones programadas y selector de varios negocios por persona.
+NEXUS es **una sola plataforma**: todas las funciones pertenecen al mismo
+sistema, el rubro es contexto y no una barrera, y los límites comerciales son de
+uso (usuarios, clientes), no de paquetes de funciones. Cada función se enciende
+o se apaga desde **Funciones** sin borrar datos, con su categoría, sus
+dependencias y su estado de configuración.
 
-El inventario funcional, con lo que existe y lo que falta, está en
-[`docs/nexus-architecture/product-inventory.md`](docs/nexus-architecture/product-inventory.md);
-el avance del piloto, en [`docs/V1-PROGRESO.md`](docs/V1-PROGRESO.md).
+**Construido y probado con datos locales:** punto de venta con turnos y
+devoluciones, cobros en línea con conciliación, facturación con notas crédito y
+débito, factura electrónica (puerto, proveedor de prueba y adaptador HTTP),
+cartera, contabilidad (plan de cuentas, asientos con libro inalterable,
+estados financieros y exportación para el contador), impuestos con vigencia y
+numeración, inventario con bodegas, kardex, traslados y conteos, compras y
+proveedores, importar y exportar, mini-sitio y tienda en línea, ficha de Google,
+campañas con UTM y reseñas, presencia verificada con madurez y avisos, varias
+organizaciones por persona con límites fijados desde el Operations Center.
+
+**Aún no probado contra servicios reales:** Wompi, DIAN (proveedor tecnológico),
+Google Places, Nequi, envío de WhatsApp y correo, subdominios con DNS. La
+contabilidad y las tarifas fiscales de ejemplo deben confirmarse con un
+contador antes de usarse en producción.
+
+El estado por capa está en [`.docs/capas/README.md`](.docs/capas/README.md) y
+[`.docs/capas-estado-2026-10-25.md`](.docs/capas-estado-2026-10-25.md); el
+seguimiento de la ejecución, en
+[`.docs/ejecucion-nocturna.md`](.docs/ejecucion-nocturna.md); las migraciones,
+en [`docs/prod-sql/00-ORDEN.md`](docs/prod-sql/00-ORDEN.md).
 
 ## Módulos
 
@@ -134,9 +149,13 @@ el avance del piloto, en [`docs/V1-PROGRESO.md`](docs/V1-PROGRESO.md).
 | **Taquilla** | Franjas, aforo, grupos y venta de entradas para museos | Disponible |
 | **Construcción** | Catálogo APU, presupuesto, cotización, Lean, bitácora, avance e informes | Disponible |
 | **Equipo y permisos** | Invitaciones, roles y acceso por negocio | Disponible |
-| **Pagos en línea y DIAN** | Cobro automático y factura electrónica | Planificado |
-| **POS multi-línea** | Carrito, descuentos y cierre de turno | Planificado |
-| **Presencia digital** | Mini-sitio, catálogo público y SEO local | En desarrollo |
+| **Punto de venta** | Turnos, venta multilínea, código de barras, tiquete y devoluciones | Disponible |
+| **Cobros en línea** | Enlaces de pago, conciliación y Wompi (sin probar con credenciales reales) | Beta |
+| **Factura electrónica** | Puerto con proveedor de prueba y adaptador HTTP; falta un proveedor real | Beta |
+| **Cartera y contabilidad** | Cuentas por cobrar y pagar, plan de cuentas, asientos, estados y exportación | Disponible / Beta |
+| **Impuestos y numeración** | Tarifas con vigencia, retenciones y consecutivos con resolución | Disponible |
+| **Compras y proveedores** | Órdenes, recepción al inventario y facturas de proveedor | Beta |
+| **Presencia en línea** | Mini-sitio, tienda, ficha de Google, campañas y reseñas, presencia verificada | Disponible / Beta |
 
 ## Vertical de construcción
 
