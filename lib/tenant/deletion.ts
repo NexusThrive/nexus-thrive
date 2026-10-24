@@ -30,6 +30,8 @@ import { db } from "@/prisma/db";
  * aquí.
  */
 export const TENANT_DELETION_TABLES: readonly string[] = [
+  "ApiKey",
+  "ApiRequestLog",
   "ApuActivity",
   "ApuActivityComposition",
   "ApuChapter",
@@ -63,6 +65,7 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "InboxMessage",
   "Invoice",
   "InvoiceLine",
+  "IdempotencyRecord",
   "Lead",
   "LeadActivity",
   "LookaheadTask",
@@ -242,6 +245,9 @@ export async function deleteTenantCompletely(
   count("ApuChapter", await tx.orm.public.ApuChapter.where({ tenantId }).deleteAll());
   count("ApuImage", await tx.orm.public.ApuImage.where({ tenantId }).deleteAll());
   count("ApuImportRun", await tx.orm.public.ApuImportRun.where({ tenantId }).deleteAll());
+  count("ApiRequestLog", await tx.orm.public.ApiRequestLog.where({ tenantId }).deleteAll());
+  count("IdempotencyRecord", await tx.orm.public.IdempotencyRecord.where({ tenantId }).deleteAll());
+  count("ApiKey", await tx.orm.public.ApiKey.where({ tenantId }).deleteAll());
   count("Attachment", await tx.orm.public.Attachment.where({ tenantId }).deleteAll());
   count("Attendance", await tx.orm.public.Attendance.where({ tenantId }).deleteAll());
   count("BenefitRedemption", await tx.orm.public.BenefitRedemption.where({ tenantId }).deleteAll());
