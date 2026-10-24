@@ -34,4 +34,17 @@ test.describe("Factura electrónica", () => {
     await expect(page.getByText("Sin documentos fiscales")).toBeVisible();
     await expect(page.getByText(/Activa la factura electrónica/)).toBeVisible();
   });
+
+  test("conectar el proveedor real pide HTTPS y llave", async ({ page }) => {
+    await openStory(page, "páginas-finanzas-factura-electrónica--sin-proveedor");
+    await page.getByRole("button", { name: "Conectar mi proveedor" }).click();
+    const dialog = page.getByRole("dialog", { name: "Conectar mi proveedor tecnológico" });
+    await dialog.getByLabel(/Dirección/).fill("http://inseguro.com");
+    await dialog.getByLabel(/Llave/).fill("llave-larga-123");
+    await dialog.getByRole("button", { name: "Conectar" }).click();
+    await expect(dialog.getByText("La dirección debe ser HTTPS.").first()).toBeVisible();
+    await dialog.getByLabel(/Dirección/).fill("https://proveedor.com/api");
+    await dialog.getByRole("button", { name: "Conectar" }).click();
+    await expect(page.getByText("Proveedor conectado")).toBeVisible();
+  });
 });

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { can } from "@/lib/business/permissions";
-import { connectSandboxProvider, createSupportDocument, retryFiscal, setFiscalEnabled, submitPending } from "@/lib/einvoice/einvoice-db";
+import { connectHttpProvider, connectSandboxProvider, createSupportDocument, retryFiscal, setFiscalEnabled, submitPending } from "@/lib/einvoice/einvoice-db";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";
 
@@ -59,4 +59,15 @@ export async function supportDocAction(slug: string, supplierInvoiceId: string):
   await logTenantAction(ctx, "BIZ_EINVOICE", { action: "support_document", supplierInvoiceId });
   refresh(slug);
   return { ok: true, message: "Documento soporte en cola" };
+}
+
+/** Conecta el proveedor tecnológico real (URL y llave). La llave se guarda cifrada y no se vuelve a mostrar. */
+export async function connectHttpAction(slug: string, url: string, token: string): Promise<FiscalResult> {
+  const ctx = await manager(slug);
+  if (!ctx) return DENIED;
+  const r = await connectHttpProvider(ctx.tenantId, { url, token });
+  if (!r.ok) return r;
+  await logTenantAction(ctx, "BIZ_EINVOICE", { action: "connect", provider: "http" });
+  refresh(slug);
+  return { ok: true, message: "Proveedor conectado" };
 }

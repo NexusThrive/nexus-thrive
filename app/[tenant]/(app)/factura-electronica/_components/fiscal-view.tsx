@@ -6,9 +6,12 @@ import { Alert } from "@/components/molecules/alert";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { Switch } from "@/components/atoms/switch";
+import { inputClasses } from "@/components/atoms/input";
+import { Field } from "@/components/molecules/field";
+import { FormDialog } from "@/components/organisms/form-sheet";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { useToast } from "@/components/molecules/toast";
-import { connectSandboxAction, retryAction, setEnabledAction, submitAction, type FiscalResult } from "@/app/[tenant]/(app)/factura-electronica/actions";
+import { connectHttpAction, connectSandboxAction, retryAction, setEnabledAction, submitAction, type FiscalResult } from "@/app/[tenant]/(app)/factura-electronica/actions";
 import { FISCAL_LABELS } from "@/lib/einvoice/port";
 import type { FiscalRow } from "@/lib/einvoice/einvoice-db";
 import { formatCurrency } from "@/lib/format";
@@ -19,6 +22,7 @@ export default function FiscalView({ slug, settings, docs }: { slug: string; set
   const router = useRouter();
   const { toast } = useToast();
   const [pending, start] = useTransition();
+  const [connecting, setConnecting] = useState(false);
   const [filter, setFilter] = useState<"all" | keyof typeof STATUS>("all");
   const run = (fn: () => Promise<FiscalResult>) =>
     start(async () => {
@@ -42,11 +46,36 @@ export default function FiscalView({ slug, settings, docs }: { slug: string; set
           <Alert tone="warning">
             Aún no hay proveedor conectado: los documentos esperan en cola.
             <button type="button" disabled={pending} onClick={() => run(() => connectSandboxAction(slug))} className={buttonVariants({ variant: "outline", size: "sm", className: "ml-3" })}>Conectar proveedor de prueba</button>
+            <button type="button" onClick={() => setConnecting(true)} className={buttonVariants({ size: "sm", className: "ml-2" })}>Conectar mi proveedor</button>
           </Alert>
         ) : null}
         {settings.connected ? <p className="text-[13px]">Proveedor: <b>{settings.provider === "sandbox" ? "Proveedor de prueba (no es ante la DIAN)" : settings.provider}</b> · {settings.pending} en cola</p> : null}
         {settings.connected ? <button type="button" disabled={pending || settings.pending === 0} onClick={() => run(() => submitAction(slug))} className={buttonVariants({ className: "justify-self-start" })}>{pending ? "Enviando…" : "Enviar los pendientes"}</button> : null}
       </section>
+
+      <FormDialog
+        open={connecting}
+        onOpenChange={setConnecting}
+        title="Conectar mi proveedor tecnológico"
+        description="La dirección y la llave que te dio tu proveedor autorizado por la DIAN (o tu flujo de n8n). La llave se guarda cifrada."
+        submitLabel="Conectar"
+        pendingLabel="Conectando…"
+        onSubmit={async (d) => {
+          const r = await connectHttpAction(slug, String(d.get("url") ?? ""), String(d.get("token") ?? ""));
+          return r.ok ? { ok: true, message: r.message } : { ok: false, message: r.message, fieldErrors: { url: r.message } };
+        }}
+        onSuccess={({ message }) => {
+          if (message) toast(message, "success");
+          router.refresh();
+        }}
+      >
+        {({ fieldErrors }) => (
+          <div className="grid gap-3">
+            <Field label="Dirección (https)" required error={fieldErrors.url} hint="Recibe el documento fiscal por POST y responde con su estado.">{(c) => <input {...c} name="url" autoComplete="off" className={inputClasses} placeholder="https://proveedor.com/api/documentos" />}</Field>
+            <Field label="Llave" required>{(c) => <input {...c} name="token" type="password" autoComplete="off" className={inputClasses} />}</Field>
+          </div>
+        )}
+      </FormDialog>
 
       <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por estado">
         {(["all", "PENDING_PROVIDER", "ACCEPTED", "REJECTED"] as const).map((f) => (

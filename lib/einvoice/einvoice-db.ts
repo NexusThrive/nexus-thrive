@@ -3,6 +3,9 @@ import { toNumber } from "@/lib/format";
 import { db } from "@/prisma/db";
 import { buildFiscalPayload, fiscalKindOf } from "./payload";
 import type { FiscalKind, FiscalPayload } from "./port";
+import { checkWebhookUrl } from "@/lib/events/ssrf";
+import { decryptCredentials, encryptCredentials } from "@/lib/providers/connections";
+import { httpEInvoice } from "./http-provider";
 import { einvoicePort } from "./registry";
 
 /**
@@ -78,6 +81,18 @@ export async function setFiscalEnabled(tenantId: string, enabled: boolean): Prom
   await db.orm.public.Tenant.where({ id: tenantId }).update({ einvoiceEnabled: enabled });
 }
 
+/** Puerto de una conexión: los fijos (prueba) o el HTTP, con su URL y su llave cifrada. */
+function portOf(conn: { provider: string; config: unknown; credentialsEnc: string | null }) {
+  if (conn.provider !== "http") return einvoicePort(conn.provider);
+  const url = (conn.config as { url?: string } | null)?.url;
+  if (!url || !conn.credentialsEnc) return undefined;
+  try {
+    return httpEInvoice({ url, token: decryptCredentials(conn.credentialsEnc).token ?? "" });
+  } catch {
+    return undefined;
+  }
+}
+
 /** Conecta el proveedor de PRUEBA (sin credenciales). El real se conecta con sus credenciales cuando exista. */
 export async function connectSandboxProvider(tenantId: string): Promise<void> {
   await db.orm.public.ExternalConnection.upsert({ create: { tenantId, kind: "EINVOICE", provider: "sandbox", environment: "sandbox", status: "CONNECTED" }, update: { status: "CONNECTED", lastError: null }, conflictOn: { tenantId, kind: "EINVOICE", provider: "sandbox", environment: "sandbox" } });
@@ -90,7 +105,7 @@ export async function connectSandboxProvider(tenantId: string): Promise<void> {
  */
 export async function submitPending(tenantId: string, limit = 50): Promise<{ sent: number; accepted: number; rejected: number }> {
   const conn = await db.orm.public.ExternalConnection.where({ tenantId, kind: "EINVOICE", status: "CONNECTED" }).first();
-  const port = conn ? einvoicePort(conn.provider) : undefined;
+  const port = conn ? portOf(conn) : undefined;
   if (!conn || !port) return { sent: 0, accepted: 0, rejected: 0 };
   const queue = await db.orm.public.FiscalDocument.where({ tenantId, status: "PENDING_PROVIDER" }).orderBy((d) => d.createdAt.asc()).limit(limit).all();
   const out = { sent: 0, accepted: 0, rejected: 0 };
@@ -157,4 +172,18 @@ export async function createSupportDocument(tenantId: string, supplierInvoiceId:
   });
   const created = await db.orm.public.FiscalDocument.create({ tenantId, supplierInvoiceId, kind: "SUPPORT_DOCUMENT", payload: payload as never });
   return { ok: true, id: created.id };
+}
+
+/** Conecta el proveedor tecnológico real por HTTP (su URL y la llave que te dio). La llave se guarda cifrada. */
+export async function connectHttpProvider(tenantId: string, input: { url: string; token: string }): Promise<{ ok: true } | { ok: false; message: string }> {
+  const checked = checkWebhookUrl(input.url);
+  if (!checked.ok) return { ok: false, message: checked.reason };
+  if (input.token.trim().length < 8) return { ok: false, message: "Escribe la llave que te dio el proveedor." };
+  const enc = encryptCredentials({ token: input.token.trim() });
+  await db.orm.public.ExternalConnection.upsert({
+    create: { tenantId, kind: "EINVOICE", provider: "http", environment: "production", status: "CONNECTED", credentialsEnc: enc, credentialsKeyId: "v1", config: { url: checked.url.toString() } as never },
+    update: { status: "CONNECTED", credentialsEnc: enc, config: { url: checked.url.toString() } as never, lastError: null },
+    conflictOn: { tenantId, kind: "EINVOICE", provider: "http", environment: "production" },
+  });
+  return { ok: true };
 }
