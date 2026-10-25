@@ -39,7 +39,18 @@ tags: [capas, estructura, subcapa]
 
 ## N0 — Fundamento de copias, retención y restauración
 
-> Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
+> Propuesta de tareas (2026-10-25, por aprobar): derivadas del contrato y de la superficie de integración de la subcapa. Ninguna está hecha: marcar solo con evidencia.
+
+#### Funcionalidad
+
+- [ ] Contrato de datos de «Respaldo, versionado y recuperación»: entidades, estados y transiciones válidas, todas con `tenantId` y aisladas por organización _(propuesta)_
+- [ ] Permisos de «Respaldo, versionado y recuperación»: acciones (ver, crear, editar, aprobar, exportar) asignables por rol y aplicadas igual en pantalla, API y MCP _(propuesta)_
+- [ ] Operaciones que ofrece a otras funciones: `backups`, `restore-requests`, `exports`, declaradas una sola vez en el registro de capacidades (de ahí salen la ruta REST, la herramienta MCP y la documentación) _(propuesta)_
+- [ ] Eventos que emite y consume: `backup.completed`, `backup.failed`, `export.ready`, con carga versionada y sin importar la lógica interna de otras funciones _(propuesta)_
+- [ ] Dependencias hacia abajo declaradas: qué capacidades compartidas necesita y qué muestra si faltan (aviso que explica, no error) _(propuesta)_
+- [ ] Apagar la función conserva sus datos: la pantalla y la API responden «función apagada» y no se borra nada _(propuesta)_
+- [ ] Exportar e importar: declara qué recursos salen y entran, y en qué formatos (CSV, Excel, PDF, JSON), a través del motor de reportes y de datos _(propuesta)_
+- [ ] Compuerta de estabilidad: las pruebas de aislamiento entre organizaciones y de contrato pasan antes de abrir el siguiente nivel _(propuesta)_
 
 
 ## N1 — Copias de seguridad automáticas diarias
@@ -65,6 +76,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Copias cifradas
 - [ ] Exportación de datos
 - [ ] Prueba de restauración periódica
+- [ ] Migración de producción automatizada con respaldo y verificación _(scripts/migrate-prod.sh · docs/prod-sql/AUTOMATIZACION.md · PR #111 y #112; implementada, aún sin ejecutar en producción)_
 
 #### Técnico
 
@@ -107,10 +119,23 @@ tags: [capas, estructura, subcapa]
 
 ## N5 — Multi-región activa y recuperación ante ransomware
 
-> Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
+> Propuesta de tareas (2026-10-25, por aprobar): derivadas de la plantilla del arquetipo «Motor de plataforma». Ninguna está hecha: marcar solo con evidencia.
+
+#### Funcionalidad
+
+- [ ] Asistente de «Respaldo, versionado y recuperación» sobre el servicio de IA de la plataforma (IX.04): propone con su explicación y una persona aprueba; no ejecuta solo sin permiso explícito _(propuesta)_
+- [ ] Detección de patrones anómalos (accesos, eventos, volúmenes) con aviso al responsable _(propuesta)_
+- [ ] Resumen en lenguaje natural de lo ocurrido (auditoría, eventos, entregas) para quien no es técnico _(propuesta)_
+- [ ] Sugerencia de reglas y límites según el uso real de la organización _(propuesta)_
 
 
 ## N6 — Portabilidad total, SLA contractuales y página de estado
 
-> Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
+> Propuesta de tareas (2026-10-25, por aprobar): derivadas de la plantilla del arquetipo «Motor de plataforma». Ninguna está hecha: marcar solo con evidencia.
+
+#### Funcionalidad
+
+- [ ] Operación de miles de organizaciones: aislamiento comprobado, límites por organización y degradación controlada _(propuesta)_
+- [ ] Gobierno: quién puede qué, quién lo hizo y cuándo, exportable para una auditoría externa _(propuesta)_
+- [ ] Observabilidad: métricas, alertas y plan de recuperación con tiempos definidos y probados _(propuesta)_
 

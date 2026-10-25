@@ -39,7 +39,18 @@ tags: [capas, estructura, subcapa]
 
 ## N0 — Fundamento de incidencias, prioridades y acuerdos de servicio
 
-> Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
+> Propuesta de tareas (2026-10-25, por aprobar): derivadas del contrato y de la superficie de integración de la subcapa. Ninguna está hecha: marcar solo con evidencia.
+
+#### Funcionalidad
+
+- [ ] Contrato de datos de «Helpdesk, tickets y SLA»: entidades, estados y transiciones válidas, todas con `tenantId` y aisladas por organización _(propuesta)_
+- [ ] Permisos de «Helpdesk, tickets y SLA»: acciones (ver, crear, editar, aprobar, exportar) asignables por rol y aplicadas igual en pantalla, API y MCP _(propuesta)_
+- [ ] Operaciones que ofrece a otras funciones: `tickets`, `ticket-comments`, `sla-policies`, declaradas una sola vez en el registro de capacidades (de ahí salen la ruta REST, la herramienta MCP y la documentación) _(propuesta)_
+- [ ] Eventos que emite y consume: `ticket.created`, `ticket.updated`, `ticket.sla_breached`, `ticket.resolved`, con carga versionada y sin importar la lógica interna de otras funciones _(propuesta)_
+- [ ] Dependencias hacia abajo declaradas: qué capacidades compartidas necesita y qué muestra si faltan (aviso que explica, no error) _(propuesta)_
+- [ ] Apagar la función conserva sus datos: la pantalla y la API responden «función apagada» y no se borra nada _(propuesta)_
+- [ ] Exportar e importar: declara qué recursos salen y entran, y en qué formatos (CSV, Excel, PDF, JSON), a través del motor de reportes y de datos _(propuesta)_
+- [ ] Compuerta de estabilidad: las pruebas de aislamiento entre organizaciones y de contrato pasan antes de abrir el siguiente nivel _(propuesta)_
 
 
 ## N1 — Creación y seguimiento básico de tickets
@@ -98,10 +109,23 @@ tags: [capas, estructura, subcapa]
 
 ## N5 — Análisis de resolución y predicción de incumplimientos
 
-> Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
+> Propuesta de tareas (2026-10-25, por aprobar): derivadas de la plantilla del arquetipo «Canal y atención». Ninguna está hecha: marcar solo con evidencia.
+
+#### Funcionalidad
+
+- [ ] Asistente de «Helpdesk, tickets y SLA» sobre el servicio de IA de la plataforma (IX.04): propone con su explicación y una persona aprueba; no ejecuta solo sin permiso explícito _(propuesta)_
+- [ ] Respuestas sugeridas, resumen de la conversación y clasificación por intención _(propuesta)_
+- [ ] Prioridad y enrutamiento sugeridos según urgencia, valor del cliente y carga del equipo _(propuesta)_
+- [ ] Detección de temas repetidos para proponer plantillas o respuestas rápidas _(propuesta)_
 
 
 ## N6 — Gestión empresarial de servicios y SLA multinivel
 
-> Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
+> Propuesta de tareas (2026-10-25, por aprobar): derivadas de la plantilla del arquetipo «Canal y atención». Ninguna está hecha: marcar solo con evidencia.
+
+#### Funcionalidad
+
+- [ ] Operación de varias líneas, sedes y equipos con colas, horarios y escalamiento _(propuesta)_
+- [ ] Cumplimiento: consentimiento, bajas y límites de cada proveedor respetados y registrados _(propuesta)_
+- [ ] Límites por plan y consumo medido (mensajes, conversaciones) _(propuesta)_
 
