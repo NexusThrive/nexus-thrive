@@ -39,7 +39,18 @@ tags: [capas, estructura, subcapa]
 
 ## N0 — Fundamento de perfiles, calendario y biblioteca
 
-> Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
+> Propuesta de tareas (2026-10-25, por aprobar): derivadas del contrato y de la superficie de integración de la subcapa. Ninguna está hecha: marcar solo con evidencia.
+
+#### Funcionalidad
+
+- [ ] Contrato de datos de «Redes sociales y contenido»: entidades, estados y transiciones válidas, todas con `tenantId` y aisladas por organización _(propuesta)_
+- [ ] Permisos de «Redes sociales y contenido»: acciones (ver, crear, editar, aprobar, exportar) asignables por rol y aplicadas igual en pantalla, API y MCP _(propuesta)_
+- [ ] Operaciones que ofrece a otras funciones: `social-accounts`, `posts`, `content-calendar`, declaradas una sola vez en el registro de capacidades (de ahí salen la ruta REST, la herramienta MCP y la documentación) _(propuesta)_
+- [ ] Eventos que emite y consume: `post.scheduled`, `post.published`, con carga versionada y sin importar la lógica interna de otras funciones _(propuesta)_
+- [ ] Dependencias hacia abajo declaradas: qué capacidades compartidas necesita y qué muestra si faltan (aviso que explica, no error) _(propuesta)_
+- [ ] Apagar la función conserva sus datos: la pantalla y la API responden «función apagada» y no se borra nada _(propuesta)_
+- [ ] Exportar e importar: declara qué recursos salen y entran, y en qué formatos (CSV, Excel, PDF, JSON), a través del motor de reportes y de datos _(propuesta)_
+- [ ] Compuerta de estabilidad: las pruebas de aislamiento entre organizaciones y de contrato pasan antes de abrir el siguiente nivel _(propuesta)_
 
 
 ## N1 — Calendario editorial y enlaces a perfiles
@@ -104,10 +115,23 @@ tags: [capas, estructura, subcapa]
 
 ## N5 — IA generativa y análisis de competencia
 
-> Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
+> Propuesta de tareas (2026-10-25, por aprobar): derivadas de la plantilla del arquetipo «Captación y alcance». Ninguna está hecha: marcar solo con evidencia.
+
+#### Funcionalidad
+
+- [ ] Asistente de «Redes sociales y contenido» sobre el servicio de IA de la plataforma (IX.04): propone con su explicación y una persona aprueba; no ejecuta solo sin permiso explícito _(propuesta)_
+- [ ] Recomendación de canal, horario y presupuesto a partir de resultados ya medidos (no de supuestos) _(propuesta)_
+- [ ] Borradores de contenido y respuestas con revisión humana antes de publicar _(propuesta)_
+- [ ] Atribución asistida: qué acción trajo qué cliente, con la regla de atribución visible _(propuesta)_
 
 
 ## N6 — Social commerce, UGC e influencers con atribución
 
-> Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
+> Propuesta de tareas (2026-10-25, por aprobar): derivadas de la plantilla del arquetipo «Captación y alcance». Ninguna está hecha: marcar solo con evidencia.
+
+#### Funcionalidad
+
+- [ ] Operación con muchas marcas, sedes o cuentas desde un mismo panel, con permisos por marca _(propuesta)_
+- [ ] Cumplimiento: consentimiento, preferencias y bajas respetadas en todos los canales _(propuesta)_
+- [ ] Límites por plan y consumo medido (envíos, consultas, almacenamiento) _(propuesta)_
 

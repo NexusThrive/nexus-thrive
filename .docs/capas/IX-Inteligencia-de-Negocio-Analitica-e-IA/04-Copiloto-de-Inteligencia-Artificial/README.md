@@ -39,7 +39,18 @@ tags: [capas, estructura, subcapa]
 
 ## N0 — Fundamento de casos de uso, datos y límites de IA
 
-> Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
+> Propuesta de tareas (2026-10-25, por aprobar): derivadas del contrato y de la superficie de integración de la subcapa. Ninguna está hecha: marcar solo con evidencia.
+
+#### Funcionalidad
+
+- [ ] Contrato de datos de «Copiloto de inteligencia artificial»: entidades, estados y transiciones válidas, todas con `tenantId` y aisladas por organización _(propuesta)_
+- [ ] Permisos de «Copiloto de inteligencia artificial»: acciones (ver, crear, editar, aprobar, exportar) asignables por rol y aplicadas igual en pantalla, API y MCP _(propuesta)_
+- [ ] Operaciones que ofrece a otras funciones: `copilot-sessions`, `copilot-actions (aprobaciones)`, `tools (catálogo)`, declaradas una sola vez en el registro de capacidades (de ahí salen la ruta REST, la herramienta MCP y la documentación) _(propuesta)_
+- [ ] Eventos que emite y consume: `copilot.action_proposed`, `copilot.action_approved`, `copilot.action_rejected`, con carga versionada y sin importar la lógica interna de otras funciones _(propuesta)_
+- [ ] Dependencias hacia abajo declaradas: qué capacidades compartidas necesita y qué muestra si faltan (aviso que explica, no error) _(propuesta)_
+- [ ] Apagar la función conserva sus datos: la pantalla y la API responden «función apagada» y no se borra nada _(propuesta)_
+- [ ] Exportar e importar: declara qué recursos salen y entran, y en qué formatos (CSV, Excel, PDF, JSON), a través del motor de reportes y de datos _(propuesta)_
+- [ ] Compuerta de estabilidad: las pruebas de aislamiento entre organizaciones y de contrato pasan antes de abrir el siguiente nivel _(propuesta)_
 
 
 ## N1 — Asistente de consultas y respuestas básicas
@@ -84,6 +95,8 @@ tags: [capas, estructura, subcapa]
 - [ ] Registro de cada consulta y acción
 - [ ] Retroalimentación
 - [ ] El agente prepara acciones (recordatorios, mensajes, tareas) y una persona las aprueba _(objetivo 2026 · ver `docs/PENDIENTES.md`)_
+- [ ] Cada función se puede consultar y operar por la API y por el MCP con permiso explícito, para que un agente o un flujo de n8n controle lo que una persona haría en pantalla _(propuesta)_
+- [ ] Ejemplos de flujos de n8n publicados para las operaciones más usadas, con pruebas de contrato _(propuesta)_
 
 #### Técnico
 
@@ -110,10 +123,23 @@ tags: [capas, estructura, subcapa]
 
 ## N5 — Razonamiento sobre métricas y recomendaciones contextualizadas
 
-> Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
+> Propuesta de tareas (2026-10-25, por aprobar): derivadas de la plantilla del arquetipo «Analítico e inteligente». Ninguna está hecha: marcar solo con evidencia.
+
+#### Funcionalidad
+
+- [ ] Asistente de «Copiloto de inteligencia artificial» sobre el servicio de IA de la plataforma (IX.04): propone con su explicación y una persona aprueba; no ejecuta solo sin permiso explícito _(propuesta)_
+- [ ] Consulta en lenguaje natural sobre las métricas definidas, mostrando la definición usada _(propuesta)_
+- [ ] Explicación de variaciones (qué cambió y por qué) citando las fuentes _(propuesta)_
+- [ ] Pronóstico con intervalo de confianza y comparación contra lo ocurrido _(propuesta)_
 
 
 ## N6 — Plataforma empresarial de IA gobernada y auditable
 
-> Nivel de escalera — contenido por desarrollar (la fuente no lo desglosa).
+> Propuesta de tareas (2026-10-25, por aprobar): derivadas de la plantilla del arquetipo «Analítico e inteligente». Ninguna está hecha: marcar solo con evidencia.
+
+#### Funcionalidad
+
+- [ ] Métricas consolidadas entre sedes y empresas con permisos por dato _(propuesta)_
+- [ ] Gobierno del dato: propietario, definición única y registro de cambios de cada métrica _(propuesta)_
+- [ ] Rendimiento: caché y precálculo para que las consultas grandes no frenen la operación _(propuesta)_
 
