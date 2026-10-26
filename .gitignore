@@ -68,3 +68,17 @@ graphify-out/
 /playwright-report
 /blob-report
 backups/
+
+# Equipo de ingeniería: estado operable (se versionan tasks/sprints/checkpoints;
+# no los bloqueos, copias de seguridad ni artefactos regenerables)
+.product-team/state/.lock
+.product-team/state/backups/
+.product-team/state/knowledge/snapshots/
+.product-team/state/knowledge/documents/
+
+# Python del núcleo de ingeniería
+__pycache__/
+*.py[cod]
+
+# Herramientas locales del repositorio (entornos aislados)
+.tools/

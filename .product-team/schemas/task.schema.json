@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nexus.local/schemas/task.schema.json",
+  "title": "EngineeringTask",
+  "type": "object",
+  "required": ["id", "title", "status", "attempts", "max_attempts", "depends_on", "agent"],
+  "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "title": {"type": "string", "minLength": 1},
+    "story": {"type": "string"},
+    "sprint": {"type": "string"},
+    "discipline": {
+      "enum": ["engineering", "design", "documentation", "marketing", "growth", "research"]
+    },
+    "status": {
+      "enum": ["pending", "ready", "in_progress", "blocked", "failed", "review", "verified", "merged", "cancelled"]
+    },
+    "priority": {"type": "integer", "minimum": 0, "maximum": 3},
+    "depends_on": {"type": "array", "items": {"type": "string"}},
+    "agent": {"type": "string"},
+    "implementer": {"type": "string"},
+    "attempts": {"type": "integer", "minimum": 0},
+    "max_attempts": {"type": "integer", "minimum": 1, "maximum": 3},
+    "tags": {"type": "array", "items": {"type": "string"}},
+    "paths": {"type": "array", "items": {"type": "string"}},
+    "acceptance": {"type": "array", "items": {"type": "string"}},
+    "branch": {"type": "string"},
+    "base_commit": {"type": "string"},
+    "files_touched": {"type": "array", "items": {"type": "string"}},
+    "stage": {"type": "string"},
+    "verification": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "reviews": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "next_action": {"type": "string"},
+    "blocked_reason": {"type": "string"},
+    "origin": {"type": "string"},
+    "created_at": {"type": "string"},
+    "updated_at": {"type": "string"}
+  },
+  "$defs": {
+    "finding": {
+      "type": "object",
+      "required": ["kind", "verdict", "reviewer", "summary"],
+      "properties": {
+        "kind": {"enum": ["local_gate", "qa", "senior_review", "ci", "security"]},
+        "verdict": {"enum": ["passed", "failed", "approved", "changes_requested", "blocked"]},
+        "reviewer": {"type": "string"},
+        "summary": {"type": "string"},
+        "evidence": {"type": "array", "items": {"type": "string"}},
+        "created_at": {"type": "string"}
+      }
+    }
+  }
+}

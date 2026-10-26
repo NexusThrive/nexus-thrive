@@ -5,7 +5,14 @@ import { expectNoAxeViolations, openStory } from "./helpers";
 test.describe("Punto de venta", () => {
   test("sin turno: elige terminal libre y abre", async ({ page }) => {
     await openStory(page, "páginas-dinero-punto-de-venta--sin-turno");
-    await expect(page.getByRole("option", { name: /Sede norte \(en uso\)/ })).toBeDisabled();
+    const terminal = page.getByRole("combobox", { name: "Terminal" });
+    await terminal.click();
+    await expect(page.getByRole("option", { name: "Sede norte (en uso)" })).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    await page.getByRole("option", { name: "Mostrador 1" }).click();
+    await expect(terminal).toContainText("Mostrador 1");
     await page.getByRole("button", { name: "Abrir turno" }).click();
     await expect(page.getByText("Turno abierto")).toBeVisible();
     await expectNoAxeViolations(page);
@@ -31,7 +38,8 @@ test.describe("Punto de venta", () => {
     await expect(page.getByRole("button", { name: "Cobrar" })).toBeDisabled();
     await page.getByRole("button", { name: "Agregar otro pago" }).click();
     await page.getByLabel("Valor del pago 2").fill("30000");
-    await page.getByLabel("Medio de pago 2").selectOption("CASH");
+    await page.getByLabel("Medio de pago 2").click();
+    await page.getByRole("option", { name: "Efectivo" }).click();
     await expect(page.getByText(/Cambio: .*2\.900/)).toBeVisible();
     await expectNoAxeViolations(page);
     await page.getByRole("button", { name: "Cobrar" }).click();

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Wrapper del núcleo de ingeniería. Funciona igual desde OpenCode, Claude Code,
+# n8n (vía SSH/runner), CI o terminal humana.
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export PYTHONPATH="$ROOT/packages/nexus-engineering-core/src${PYTHONPATH:+:$PYTHONPATH}"
+exec python3 -m nexus_engineering "$@"

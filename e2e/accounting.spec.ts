@@ -83,7 +83,8 @@ test.describe("Contabilidad", () => {
     await expect(page.getByText("El balance de prueba cuadra")).toBeVisible();
     await expect(page.getByRole("table", { name: "Balance de prueba" }).getByRole("row", { name: /Totales/ })).toBeVisible();
     await expectNoAxeViolations(page);
-    await page.getByRole("combobox", { name: "Informe" }).selectOption("income");
+    await page.getByRole("combobox", { name: "Informe" }).click();
+    await page.getByRole("option", { name: "Estado de resultados" }).click();
     await page.getByRole("button", { name: "Ver informe" }).click();
     await expect(page.getByRole("region", { name: "Estado de resultados" }).getByText("Resultado del período")).toBeVisible();
     await expect(page.getByRole("link", { name: /Descargar CSV/ })).toHaveAttribute("href", /export\/income/);

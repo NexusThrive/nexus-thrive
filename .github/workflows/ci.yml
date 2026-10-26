@@ -52,6 +52,12 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # Núcleo de ingeniería: independiente de Node, sin servicios externos.
+      - name: Núcleo de ingeniería (Python)
+        run: |
+          python3 -m unittest discover -s packages/nexus-engineering-core/tests
+          bash ./scripts/nexus-eng validate
+
       # Si cambió prisma/contract.prisma, el PR trae su SQL en docs/prod-sql/.
       - name: SQL de producción si cambió el modelo
         if: github.event_name == 'pull_request'

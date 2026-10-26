@@ -1,0 +1,35 @@
+stateDiagram-v2
+    direction LR
+    [*] --> pending: add-task
+    pending --> ready: dependencias resueltas
+    ready --> in_progress: start (sin pausa, sin árbol sucio, intentos < 3)
+    in_progress --> review: compuerta local aprobada
+    review --> verified: QA + revisión senior (otros agentes)
+    verified --> merged: CI verde registrado
+    review --> in_progress: changes_requested / retry
+    in_progress --> failed: fallo de implementación
+    in_progress --> blocked: bloqueo
+    review --> blocked: bloqueo
+    review --> failed: revisión rechazada sin intentos
+    failed --> ready: retry (intentos < 3)
+    blocked --> ready: unblock explícito
+    pending --> cancelled: decisión humana
+    ready --> cancelled: decisión humana
+    in_progress --> cancelled: decisión humana
+    review --> cancelled: decisión humana
+    verified --> cancelled: decisión humana
+    blocked --> cancelled: decisión humana
+    failed --> cancelled: decisión humana
+    merged --> [*]
+    cancelled --> [*]
+
+    note right of in_progress
+        in_progress → merged NO existe.
+        El núcleo lanza TransitionError.
+    end note
+
+    note right of verified
+        Exige stage = ci_green.
+        QA y senior no pueden ser
+        el implementador.
+    end note

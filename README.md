@@ -266,6 +266,53 @@ pack APU real si se le pasa `MASTER_PACK_FILE=/ruta/al/archivo.xlsx`.
 - Cómo agregar una funcionalidad: [`docs/guias/nueva-funcionalidad.md`](docs/guias/nueva-funcionalidad.md).
 - Ramas, CI, secretos y despliegue: [`docs/guias/devops.md`](docs/guias/devops.md).
 
+## Equipo de ingeniería
+
+El repositorio incluye una plataforma de ingeniería con equipo multiagente,
+orquestador y estado canónico compartido por **OpenCode** y **Claude Code**. No es
+un conjunto de prompts sueltos: las reglas se aplican en código.
+
+```text
+objetivo → HU con criterios → tarea en el núcleo → especialista
+→ implementación + pruebas → compuerta local → QA independiente
+→ revisión senior → CI verde → integración en sprint → reporte
+```
+
+| Pieza | Dónde |
+| --- | --- |
+| Núcleo (Python 3.12, sin dependencias) | `packages/nexus-engineering-core/` |
+| 38 perfiles de agente: 18 ingeniería + 20 Studio (fuente única) | `.product-team/agent-registry.json` |
+| Compuertas, routing y límites | `.product-team/workflow-policy.json` |
+| Estado: tareas, checkpoints, auditoría | `.product-team/state/` |
+| Adaptadores generados | `.opencode/`, `.claude/` |
+| Skills, comandos y registro de herramientas | `skills/`, `commands/`, `.product-team/skills-registry.json` |
+| Automatización n8n (A–K) | `integrations/n8n/` |
+| Arquitectura y decisiones | [`docs/ingenieria/arquitectura/`](docs/ingenieria/arquitectura/overview.md) |
+| Diagramas Mermaid | [`docs/diagrams/`](docs/diagrams/README.md) |
+| Conocimiento y fuentes | [`docs/knowledge/`](docs/knowledge/README.md) |
+
+Reglas que el núcleo **impone** (no solo sugiere):
+
+- no existe `in_progress → merged`;
+- `review` exige compuerta local aprobada;
+- `verified` exige QA **y** revisión senior de otro agente;
+- `merged` exige CI verde registrado;
+- tres intentos por historia y luego decisión humana;
+- `docs/ingenieria/PAUSA` detiene el inicio de trabajo nuevo;
+- la recuperación entre clientes compara rama, commit y hashes (detecta deriva);
+- push a `main`/`sprint/*`, `--force` y `--no-verify` se rechazan.
+
+```bash
+pnpm engineering:generate     # regenera agentes, skills, comandos y workflows
+pnpm engineering:test         # 54 pruebas del núcleo
+pnpm engineering:validate     # estado + configuración + ausencia de secretos
+scripts/nexus-eng status      # estado real del equipo
+```
+
+Integraciones externas con estado honesto: n8n tiene workflows versionados y un
+puente HTTP autenticado probado, pero **no** está importado ni ejecutado aquí;
+Graphify y NotebookLM están **no disponibles** y el sistema opera sin ellos.
+
 ## Versiones
 
 `main` es la única rama que se despliega (Vercel la toma sola) y cada versión
@@ -292,6 +339,9 @@ historial en [`CHANGELOG.md`](CHANGELOG.md).
 | [`docs/nexus-architecture/`](docs/nexus-architecture/README.md) | Auditoría, arquitectura actual y objetivo, seguridad, deuda y roadmap |
 | [`docs/design/`](docs/design/interaction-patterns.md) | Patrones de interacción, accesibilidad y calidad |
 | [`docs/guias/`](docs/guias/README.md) | Pruebas, nueva funcionalidad y DevOps |
+| [`docs/ingenieria/arquitectura/`](docs/ingenieria/arquitectura/overview.md) | Equipo de ingeniería: agentes, loops, conocimiento, automatización, seguridad y operación |
+| [`docs/diagrams/`](docs/diagrams/README.md) | Diagramas Mermaid de arquitectura, agentes, loops, conocimiento, n8n y despliegue |
+| [`docs/knowledge/`](docs/knowledge/README.md) | Catálogo de fuentes, políticas, investigación y sincronización |
 | [`docs/prod-sql/`](docs/prod-sql/00-ORDEN.md) | Orden del SQL manual de producción |
 
 ---

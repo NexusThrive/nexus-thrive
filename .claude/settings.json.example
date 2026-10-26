@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(scripts/nexus-eng:*)",
+      "Bash(python3 -m nexus_engineering:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm exec tsc:*)",
+      "Read(docs/**)",
+      "Read(.product-team/**)",
+      "Read(skills/**)",
+      "Read(commands/**)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git push origin main:*)",
+      "Bash(git push origin sprint/*)",
+      "Bash(git commit --no-verify:*)",
+      "Bash(git merge main:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(rm -rf /:*)",
+      "Read(.env)",
+      "Read(.env.produccion)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/scripts/guard_git.py\""
+          }
+        ]
+      }
+    ]
+  }
+}

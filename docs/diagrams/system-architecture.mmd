@@ -1,0 +1,69 @@
+flowchart TB
+    subgraph Clients["Clientes y automatización"]
+        OC["OpenCode<br/>agentes · comandos · skills"]
+        CC["Claude Code<br/>agentes · comandos · skills"]
+        N8N["n8n (no instalado)<br/>workflows A–H"]
+        HUMAN["Humano<br/>terminal / PR"]
+    end
+
+    subgraph Core["Núcleo Python — packages/nexus-engineering-core"]
+        CLI["CLI nexus-eng"]
+        ORCH["Orchestrator<br/>cola · intentos · checkpoints"]
+        DOMAIN["Domain<br/>estados · transiciones"]
+        POLICY["Policy<br/>compuertas · routing"]
+        SERVER["HTTP bridge<br/>Bearer · idempotencia"]
+        KNOW["Knowledge Hub<br/>catálogo · adaptadores"]
+        WF["WorkflowLedger<br/>idempotencia"]
+        HEALTH["Health / validate"]
+    end
+
+    subgraph State["Estado canónico — .product-team/state"]
+        TASKS[("tasks.json")]
+        SPRINTS[("sprints.json")]
+        CKPT[("checkpoints/*.json")]
+        CATALOG[("knowledge/catalog.json")]
+        EXEC[("workflows/executions.json")]
+        AUDIT[("audit/events.jsonl<br/>runs.jsonl")]
+    end
+
+    subgraph Canon["Fuentes canónicas"]
+        REG[".product-team/agent-registry.json"]
+        POL[".product-team/workflow-policy.json"]
+        SKILLS["skills/ · commands/"]
+        DOCS["docs/knowledge/ · ADR"]
+    end
+
+    subgraph Product["Producto NEXUS (Next.js)"]
+        APP["app/ · components/ · lib/"]
+        DB[("PostgreSQL<br/>RLS multiempresa")]
+    end
+
+    OC --> CLI
+    CC --> CLI
+    HUMAN --> CLI
+    N8N -->|"HTTP + token"| SERVER
+
+    CLI --> ORCH
+    SERVER --> ORCH
+    SERVER --> WF
+    ORCH --> DOMAIN
+    ORCH --> POLICY
+    CLI --> KNOW
+    CLI --> HEALTH
+
+    ORCH --> TASKS
+    ORCH --> SPRINTS
+    ORCH --> CKPT
+    ORCH --> AUDIT
+    KNOW --> CATALOG
+    WF --> EXEC
+
+    REG -->|"generate-agents.py"| OC
+    REG -->|"generate-agents.py"| CC
+    SKILLS -->|"sync-client-adapters.py"| OC
+    SKILLS -->|"sync-client-adapters.py"| CC
+    POL --> ORCH
+    DOCS --> KNOW
+
+    POLICY -->|"pnpm lint · tsc · test"| APP
+    APP --> DB

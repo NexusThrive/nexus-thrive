@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nexus.local/schemas/n8n/I.json",
+  "title": "NEXUS · I · Preparación de brief",
+  "type": "object",
+  "required": [
+    "event",
+    "idempotency_key",
+    "title"
+  ],
+  "properties": {
+    "event": {
+      "type": "string",
+      "const": "content.brief"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]{8,128}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    }
+  },
+  "additionalProperties": false
+}

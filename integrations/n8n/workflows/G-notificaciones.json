@@ -1,0 +1,147 @@
+{
+  "name": "NEXUS · G · Notificaciones",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Flujo G: Notificaciones\n\nCanal de notificaciones de bloqueos y fallos; no decide calidad.\n\n**Requisitos**\n- Credencial `NEXUS n8n webhook` (Header Auth) para la entrada.\n- Credencial `NEXUS ingeniería API` (Header Auth) para el puente.\n- `NEXUS_ENGINEERING_URL` apuntando al núcleo (sin barra final).\n- Idempotencia: la clave se reenvía; el núcleo responde `duplicate` sin repetir la operación.\n- Sin secretos en este JSON.\n\n**Estado**\nGenerado y validado como JSON; importación n8n no verificada en este entorno.",
+        "height": 300,
+        "width": 420
+      },
+      "name": "Nota operativa",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "nexus/g",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook autenticado",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        220,
+        300
+      ],
+      "webhookId": "00f49373-68d7-52e3-bc91-98ed979dd19a",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": null,
+          "name": "NEXUS n8n webhook"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body ?? $json;\nconst event = body.event;\nconst key = body.idempotency_key;\nconst title = body.title;\nif (!event || !key || !title) {\n  throw new Error('payload inválido: event, idempotency_key y title son obligatorios');\n}\nif (!/^[A-Za-z0-9._:-]{8,128}$/.test(key)) {\n  throw new Error('idempotency_key inválida');\n}\nreturn [{ json: {\n  event,\n  idempotency_key: key,\n  title,\n  task: body.task ?? null,\n} }];\n"
+      },
+      "name": "Normalizar evento",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.NEXUS_ENGINEERING_URL }}/webhooks/n8n/G",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "name": "Entregar al núcleo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        300
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": null,
+          "name": "NEXUS ingeniería API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}"
+      },
+      "name": "Responder",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        940,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook autenticado": {
+      "main": [
+        [
+          {
+            "node": "Normalizar evento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar evento": {
+      "main": [
+        [
+          {
+            "node": "Entregar al núcleo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Entregar al núcleo": {
+      "main": [
+        [
+          {
+            "node": "Responder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 60,
+    "saveExecutionProgress": true,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true
+  },
+  "pinData": {},
+  "versionId": "8924d381-3993-50ef-a1fb-c3f4de864176",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

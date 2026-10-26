@@ -1,0 +1,140 @@
+{
+  "name": "NEXUS · H · Investigación periódica",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Flujo H: Investigación periódica\n\nSemanalmente propone revisar fuentes técnicas; nunca incorpora cambios sin validación de procedencia.\n\n**Requisitos**\n- Credencial `NEXUS n8n webhook` (Header Auth) para la entrada.\n- Credencial `NEXUS ingeniería API` (Header Auth) para el puente.\n- `NEXUS_ENGINEERING_URL` apuntando al núcleo (sin barra final).\n- Idempotencia: la clave se reenvía; el núcleo responde `duplicate` sin repetir la operación.\n- Sin secretos en este JSON.\n\n**Estado**\nGenerado y validado como JSON; importación n8n no verificada en este entorno.",
+        "height": 300,
+        "width": 420
+      },
+      "name": "Nota operativa",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 1
+            }
+          ]
+        }
+      },
+      "name": "Disparador programado",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const week = new Date().toISOString().slice(0, 10);\nreturn [{ json: {\n  event: 'knowledge.update',\n  idempotency_key: `research-${week}`,\n  title: 'Revisión semanal de fuentes técnicas',\n  task: null,\n} }];\n"
+      },
+      "name": "Construir evento",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.NEXUS_ENGINEERING_URL }}/webhooks/n8n/H",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "name": "Entregar al núcleo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        300
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": null,
+          "name": "NEXUS ingeniería API"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "name": "Registrar resultado",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        940,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Disparador programado": {
+      "main": [
+        [
+          {
+            "node": "Construir evento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construir evento": {
+      "main": [
+        [
+          {
+            "node": "Entregar al núcleo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Entregar al núcleo": {
+      "main": [
+        [
+          {
+            "node": "Registrar resultado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 60,
+    "saveExecutionProgress": true,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true
+  },
+  "pinData": {},
+  "versionId": "114555ab-9636-56a4-b5fa-edf99406a6ea",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

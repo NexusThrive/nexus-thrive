@@ -15,7 +15,11 @@
     "release": "bash ./scripts/release.sh",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -o storybook-static",
-    "docs:progreso": "node scripts/capas-progreso.mjs --write"
+    "docs:progreso": "node scripts/capas-progreso.mjs --write",
+    "engineering": "bash ./scripts/nexus-eng",
+    "engineering:test": "PYTHONPATH=packages/nexus-engineering-core/src python3 -m unittest discover -s packages/nexus-engineering-core/tests",
+    "engineering:generate": "python3 scripts/generate-agents.py && python3 scripts/sync-client-adapters.py && python3 scripts/build-n8n-workflows.py",
+    "engineering:validate": "bash ./scripts/nexus-eng validate"
   },
   "dependencies": {
     "@clerk/localizations": "^4.23.0",

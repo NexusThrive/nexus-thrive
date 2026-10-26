@@ -1,0 +1,8 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "engineering-manager",
+  "instructions": [
+    "AGENTS.md",
+    "docs/ingenieria/arquitectura/cross-client.md"
+  ]
+}

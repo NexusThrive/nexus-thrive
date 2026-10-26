@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nexus.local/schemas/knowledge-source.schema.json",
+  "title": "KnowledgeSource",
+  "type": "object",
+  "required": ["id", "title", "kind", "provenance", "added_at", "status", "confidence", "content_hash"],
+  "properties": {
+    "id": {"type": "string"},
+    "title": {"type": "string", "minLength": 1},
+    "kind": {
+      "enum": ["official_docs", "project_docs", "code", "incident", "research", "internal", "user_story"]
+    },
+    "location": {"type": "string"},
+    "url": {"type": "string"},
+    "provenance": {"type": "string", "minLength": 1},
+    "added_at": {"type": "string"},
+    "last_verified": {"type": "string"},
+    "status": {"enum": ["active", "stale", "unavailable", "rejected"]},
+    "project": {"type": "string"},
+    "module": {"type": "string"},
+    "tags": {"type": "array", "items": {"type": "string"}},
+    "confidence": {"enum": ["high", "medium", "low"]},
+    "origin_refs": {"type": "array", "items": {"type": "string"}},
+    "sync_targets": {"type": "array", "items": {"type": "string"}},
+    "content_hash": {"type": "string", "minLength": 16},
+    "trust": {"enum": ["untrusted", "internal"]},
+    "notes": {"type": "string"}
+  }
+}

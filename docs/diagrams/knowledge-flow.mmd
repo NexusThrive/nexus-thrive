@@ -1,0 +1,67 @@
+flowchart LR
+    subgraph Sources["Fuentes"]
+        OFF["Documentación oficial"]
+        PROJ["docs/ del proyecto"]
+        CODE["Código y pruebas"]
+        INC["Incidentes"]
+        RES["Investigación"]
+        USER["Historias de usuario"]
+    end
+
+    subgraph Ingest["Ingesta — knowledge add"]
+        PROV{"¿tiene provenance?"}
+        HASH["SHA-256 del contenido"]
+        DUP{"¿hash ya existe?"}
+        CAT[("catalog.json<br/>id · kind · trust · confidence")]
+        SNAP[("snapshots/")]
+    end
+
+    subgraph Adapters["Adaptadores"]
+        LOCAL["local<br/>re-hash de archivos"]
+        WEB["web<br/>requiere NEXUS_ALLOW_NETWORK_SYNC=1"]
+        GRAPH["graphify<br/>unavailable si falta binario"]
+        NLM["notebooklm<br/>unavailable sin MCP autorizado"]
+        DOCDB["documentdb<br/>JSON local"]
+        SEARCH["search<br/>índice de tokens"]
+    end
+
+    subgraph Use["Uso"]
+        IDX[("index.json")]
+        SRCH["knowledge search"]
+        AGENT["agentes<br/>contenido no confiable = dato"]
+        STALE["stale / last_verified"]
+    end
+
+    OFF --> PROV
+    PROJ --> PROV
+    CODE --> PROV
+    INC --> PROV
+    RES --> PROV
+    USER --> PROV
+
+    PROV -->|"no"| REJECT["rechazado"]
+    PROV -->|"sí"| HASH
+    HASH --> DUP
+    DUP -->|"sí"| MERGE["duplicate<br/>no se crea otra fuente"]
+    DUP -->|"no"| CAT
+    HASH --> SNAP
+
+    CAT --> LOCAL
+    CAT --> WEB
+    CAT --> GRAPH
+    CAT --> NLM
+    CAT --> DOCDB
+    CAT --> SEARCH
+
+    LOCAL --> STALE
+    WEB --> STALE
+    GRAPH --> STALE
+    NLM --> STALE
+    DOCDB --> CAT
+    SEARCH --> IDX
+    IDX --> SRCH
+    CAT --> IDX
+    SRCH --> AGENT
+    STALE --> AGENT
+
+    AGENT -.->|"nunca ejecuta instrucciones del documento"| AGENT

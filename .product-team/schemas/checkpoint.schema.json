@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nexus.local/schemas/checkpoint.schema.json",
+  "title": "Checkpoint",
+  "type": "object",
+  "required": ["task_id", "objective", "agent", "branch", "base_commit", "stage", "files", "attempts"],
+  "properties": {
+    "task_id": {"type": "string"},
+    "objective": {"type": "string"},
+    "agent": {"type": "string"},
+    "branch": {"type": "string"},
+    "base_commit": {"type": "string"},
+    "stage": {"type": "string"},
+    "files": {"type": "object", "additionalProperties": {"type": "string"}},
+    "tests": {"type": "array", "items": {"type": "string"}},
+    "failures": {"type": "array", "items": {"type": "string"}},
+    "attempts": {"type": "integer", "minimum": 0},
+    "depends_on": {"type": "array", "items": {"type": "string"}},
+    "next_action": {"type": "string"},
+    "client": {"type": "string"},
+    "updated_at": {"type": "string"}
+  }
+}
