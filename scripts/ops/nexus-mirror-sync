@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+# Sincroniza el espejo de GitHub cuando cambian los refs de GitLab.
+#
+# Un merge hecho en la web de GitLab NO dispara el push mirror: GitLab solo
+# sincroniza en el PostReceive de un `git push` o con el botón "Update now".
+# Este script compara los refs de GitLab con el último estado conocido y, si
+# cambiaron (o si el espejo quedó en error), pide la sincronización por API.
+#
+# No espera a que el espejo termine: GitLab retrasa hasta 5 minutos las
+# sincronizaciones pedidas poco después de otra (backoff de RemoteMirror). Cada
+# pasada comprueba si ya se completó y lo deja anotado.
+#
+# Lo ejecuta nexus-mirror-sync.timer (systemd de usuario, cada minuto).
+# Documentación: docs/flujo-gitlab-github.md §5
+set -uo pipefail
+export LC_ALL=C
+
+GITLAB_URL="${GITLAB_URL:-http://100.116.222.50:8929}"
+REPO_URL="${REPO_URL:-$GITLAB_URL/nexusthrive/nexus-thrive.git}"
+PROJECT_ID="${PROJECT_ID:-1}"
+MIRROR_ID="${MIRROR_ID:-1}"
+TOKEN_FILE="${TOKEN_FILE:-$HOME/.secrets/gitlab-mirror-sync-token}"
+STATE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/nexus-mirror-sync"
+STATE_FILE="$STATE_DIR/state"
+RETRY_AFTER="${RETRY_AFTER:-600}" # segundos sin confirmar antes de volver a pedir
+
+log() { printf '%s %s\n' "$(date -u +%FT%TZ)" "$*"; }
+now_iso() { date -u +%Y-%m-%dT%H:%M:%S.%3NZ; }
+
+if [ ! -r "$TOKEN_FILE" ]; then
+  log "ERROR: no se puede leer $TOKEN_FILE"
+  exit 1
+fi
+TOKEN="$(cat "$TOKEN_FILE")"
+
+mkdir -p "$STATE_DIR"
+exec 9>"$STATE_DIR/lock"
+if ! flock -n 9; then
+  exit 0 # otra pasada en curso
+fi
+
+api() { curl -fsS --max-time 20 -H "PRIVATE-TOKEN: $TOKEN" "$@"; }
+
+# Imprime "estado<TAB>inicio<TAB>último_éxito<TAB>error" del espejo.
+mirror_state() {
+  api "$GITLAB_URL/api/v4/projects/$PROJECT_ID/remote_mirrors" | python3 -c '
+import json, sys
+
+mirror_id = int(sys.argv[1])
+try:
+    mirrors = json.load(sys.stdin)
+except Exception:
+    sys.exit(2)
+
+mirror = next((m for m in mirrors if m.get("id") == mirror_id), None)
+if mirror is None:
+    sys.exit(3)
+
+print("\t".join([
+    mirror.get("update_status") or "",
+    mirror.get("last_update_started_at") or "",
+    mirror.get("last_successful_update_at") or "",
+    (mirror.get("last_error") or "").replace("\t", " ").replace("\n", " "),
+]))
+' "$MIRROR_ID"
+}
+
+# Estado local: hash de refs ya espejados y, si hay una petición en vuelo,
+# el momento en que se pidió.
+S_HASH=""
+S_REQ=""
+if [ -f "$STATE_FILE" ]; then
+  S_HASH="$(sed -n 's/^hash=//p' "$STATE_FILE")"
+  S_REQ="$(sed -n 's/^requested_at=//p' "$STATE_FILE")"
+fi
+
+save_state() {
+  printf 'hash=%s\nrequested_at=%s\n' "$1" "$2" >"$STATE_FILE.tmp"
+  mv -f "$STATE_FILE.tmp" "$STATE_FILE"
+}
+
+request_sync() {
+  local motivo="$1"
+  if api -X POST -o /dev/null -w '%{http_code}' \
+      "$GITLAB_URL/api/v4/projects/$PROJECT_ID/remote_mirrors/$MIRROR_ID/sync" |
+      grep -qx '204'; then
+    save_state "$hash" "$(now_iso)"
+    log "sync pedido ($motivo)"
+  else
+    log "ERROR: la API rechazó la sincronización ($motivo)"
+    exit 1
+  fi
+}
+
+# 1. Qué hay ahora en GitLab.
+refs="$(GIT_TERMINAL_PROMPT=0 git ls-remote --heads --tags "$REPO_URL" 2>/dev/null | sort -k2 || true)"
+if [ -z "$refs" ]; then
+  log "ERROR: no se pudieron leer los refs de $REPO_URL"
+  exit 1
+fi
+hash="$(printf '%s\n' "$refs" | sha256sum | cut -d' ' -f1)"
+
+# 2. Estado del espejo.
+if ! state="$(mirror_state)"; then
+  log "ERROR: no se pudo consultar el espejo en la API"
+  exit 1
+fi
+IFS=$'\t' read -r status started success last_error <<<"$state"
+
+# 3. Decidir.
+if [ "$hash" != "$S_HASH" ]; then
+  request_sync "cambiaron los refs desde el último sync confirmado"
+  exit 0
+fi
+
+if [ "$status" = "failed" ] || [ "$status" = "not_attempted" ] || [ "$status" = "none" ]; then
+  request_sync "el espejo quedó en estado '$status'${last_error:+: $last_error}"
+  exit 0
+fi
+
+if [ -z "$S_REQ" ]; then
+  exit 0 # refs sin cambios y último sync correcto: nada que hacer
+fi
+
+# Hay una petición en vuelo. ¿Ya la cubrió un sync que empezó después?
+if [[ "$started" > "$S_REQ" ]] && [ "$status" = "finished" ] && [[ "$success" > "$S_REQ" ]]; then
+  save_state "$hash" ""
+  log "espejo confirmado ($(printf '%s\n' "$refs" | wc -l) refs, sync de $started)"
+  exit 0
+fi
+
+# Petición vieja sin confirmar: puede haberse perdido; volver a pedir.
+if [ $(( $(date -u +%s) - $(date -u -d "$S_REQ" +%s) )) -gt "$RETRY_AFTER" ]; then
+  request_sync "sin confirmar desde $S_REQ"
+  exit 0
+fi
+
+exit 0

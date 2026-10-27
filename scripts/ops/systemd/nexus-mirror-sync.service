@@ -1,0 +1,7 @@
+[Unit]
+Description=Sincroniza el espejo de GitHub con los refs de GitLab
+
+[Service]
+Type=oneshot
+ExecStart=/home/craxker/.local/bin/nexus-mirror-sync
+Nice=10

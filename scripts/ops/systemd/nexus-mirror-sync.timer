@@ -1,0 +1,11 @@
+[Unit]
+Description=Comprueba cada minuto si GitLab tiene cambios sin espejar
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=60s
+AccuracySec=10s
+Unit=nexus-mirror-sync.service
+
+[Install]
+WantedBy=timers.target

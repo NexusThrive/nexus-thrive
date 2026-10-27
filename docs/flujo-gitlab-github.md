@@ -49,8 +49,8 @@ El push imprime el enlace del merge request:
 http://100.116.222.50:8929/nexusthrive/nexus-thrive/-/merge_requests/new?merge_request[source_branch]=docs/mi-cambio
 ```
 
-Se abre contra `main`, se revisa y se fusiona **en GitLab**. En menos de un
-minuto GitHub tiene el merge.
+Se abre contra `main`, se revisa y se fusiona **en GitLab**. GitHub tiene el
+merge en uno o dos minutos: lo empuja el timer del [§5](#5-operar-el-espejo).
 
 ```bash
 git switch main && git pull
@@ -106,6 +106,63 @@ El espejo es un *push mirror* del proyecto de GitLab:
   El botón *Update now* fuerza una sincronización.
 - Última sincronización correcta: se puede consultar en esa misma pantalla.
 - El espejo empuja todas las ramas y tags, no solo `main`.
+
+**Los merges web no disparan el espejo.** GitLab solo sincroniza en el
+`PostReceive` de un `git push` o con *Update now*. Un merge hecho en la web no
+es un push, así que GitHub se quedaría atrás. Para eso hay un timer de systemd
+de usuario que corre cada minuto:
+
+| Pieza | Ruta |
+|---|---|
+| Script | `~/.local/bin/nexus-mirror-sync` (copia en `scripts/ops/nexus-mirror-sync`) |
+| Servicio | `~/.config/systemd/user/nexus-mirror-sync.service` |
+| Timer | `~/.config/systemd/user/nexus-mirror-sync.timer` |
+| Estado | `~/.cache/nexus-mirror-sync/state` |
+| Token | `~/.secrets/gitlab-mirror-sync-token` (project access token, scope `api`) |
+
+Qué hace en cada pasada:
+
+1. Lee los refs de GitLab (`git ls-remote --heads --tags`) y los resume en un
+   hash.
+2. Si el hash cambió desde el último sync confirmado, pide la sincronización por
+   API (`POST /projects/1/remote_mirrors/1/sync`) y anota el momento.
+3. En la pasada siguiente comprueba que el espejo terminó en `finished` y da el
+   cambio por confirmado. Si quedó en `failed`, vuelve a pedirlo.
+4. Si no hay nada que hacer, no escribe en el journal.
+
+Latencia medida en este equipo: el cambio aparece en GitHub entre 15 segundos y
+2 minutos, y el estado queda confirmado en la pasada siguiente.
+
+**Backoff de GitLab.** `RemoteMirror` retrasa 5 minutos cualquier sincronización
+pedida poco después de otra (`backoff_delay`, issue 580289). Eso hacía que,
+después de un push, el siguiente cambio tardara hasta 6 minutos. En este
+proyecto está desactivado con el feature flag de ops `remote_mirror_no_delay`,
+activo **solo para `nexusthrive/nexus-thrive`**, no global. Si una actualización
+de GitLab retira el flag, el timer sigue funcionando pero vuelve el retardo;
+el flag está definido en
+`config/feature_flags/ops/remote_mirror_no_delay.yml` del código de GitLab.
+
+Comandos útiles:
+
+```bash
+systemctl --user list-timers nexus-mirror-sync.timer   # cuándo corre
+systemctl --user start nexus-mirror-sync.service       # forzar una pasada
+journalctl --user -u nexus-mirror-sync -n 20           # qué hizo
+systemctl --user disable --now nexus-mirror-sync.timer # detenerlo
+```
+
+**Instalarlo en otra máquina.** Hace falta el token de proyecto (GitLab →
+*Settings → Access tokens* → rol Maintainer, scope `api`), guardado en
+`~/.secrets/gitlab-mirror-sync-token` con permisos `600`:
+
+```bash
+install -m 755 scripts/ops/nexus-mirror-sync ~/.local/bin/
+mkdir -p ~/.config/systemd/user
+cp scripts/ops/systemd/nexus-mirror-sync.* ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now nexus-mirror-sync.timer
+loginctl enable-linger "$USER"   # que arranque sin sesión abierta
+```
 
 **Credencial.** GitHub es privado, así que el espejo se autentica con un token
 fine-grained limitado a `NexusThrive/nexus-thrive` con `Contents: Read and
