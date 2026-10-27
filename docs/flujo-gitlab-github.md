@@ -50,7 +50,7 @@ http://100.116.222.50:8929/nexusthrive/nexus-thrive/-/merge_requests/new?merge_r
 ```
 
 Se abre contra `main`, se revisa y se fusiona **en GitLab**. GitHub tiene el
-merge en uno o dos minutos: lo empuja el timer del [§5](#5-operar-el-espejo).
+merge en segundos: el espejo reacciona al propio merge.
 
 ```bash
 git switch main && git pull
@@ -107,47 +107,38 @@ El espejo es un *push mirror* del proyecto de GitLab:
 - Última sincronización correcta: se puede consultar en esa misma pantalla.
 - El espejo empuja todas las ramas y tags, no solo `main`.
 
-**Los merges web no disparan el espejo.** GitLab solo sincroniza en el
-`PostReceive` de un `git push` o con *Update now*. Un merge hecho en la web no
-es un push, así que GitHub se quedaría atrás. Para eso hay un timer de systemd
-de usuario que corre cada minuto:
+**Los merges también se espejan.** El espejo se dispara en el `PostReceive` de
+cada push, y un merge pasa por el mismo hook: no hay que pulsar *Update now* ni
+nada parecido. Un cambio puede tardar varios minutos, pero no por falta de
+disparo: es el *backoff* de GitLab, que retrasa 5 minutos cualquier
+sincronización pedida poco después de otra (`backoff_delay`, issue 580289). En
+este proyecto está desactivado con el feature flag de ops
+`remote_mirror_no_delay`, activo **solo para `nexusthrive/nexus-thrive`**, no
+global. Medido en este equipo: un merge aparece en GitHub en 12 segundos.
+
+Si una actualización de GitLab retira el flag, el espejo sigue funcionando pero
+puede tardar hasta 5 minutos por cambio. El flag está definido en
+`config/feature_flags/ops/remote_mirror_no_delay.yml` del código de GitLab.
+
+**Vigilante de fallos.** El espejo es el único camino a GitHub, así que si queda
+en `failed` (token caducado, error de red, push rechazado) GitHub se congela
+hasta que alguien lo mira. Un timer de systemd de usuario revisa el estado cada
+minuto y vuelve a pedir la sincronización cuando hace falta, como mucho una vez
+cada 5 minutos. No sincroniza por cambios de refs: de eso ya se encarga GitLab.
 
 | Pieza | Ruta |
 |---|---|
 | Script | `~/.local/bin/nexus-mirror-sync` (copia en `scripts/ops/nexus-mirror-sync`) |
 | Servicio | `~/.config/systemd/user/nexus-mirror-sync.service` |
 | Timer | `~/.config/systemd/user/nexus-mirror-sync.timer` |
-| Estado | `~/.cache/nexus-mirror-sync/state` |
 | Token | `~/.secrets/gitlab-mirror-sync-token` (project access token, scope `api`) |
-
-Qué hace en cada pasada:
-
-1. Lee los refs de GitLab (`git ls-remote --heads --tags`) y los resume en un
-   hash.
-2. Si el hash cambió desde el último sync confirmado, pide la sincronización por
-   API (`POST /projects/1/remote_mirrors/1/sync`) y anota el momento.
-3. En la pasada siguiente comprueba que el espejo terminó en `finished` y da el
-   cambio por confirmado. Si quedó en `failed`, vuelve a pedirlo.
-4. Si no hay nada que hacer, no escribe en el journal.
-
-Latencia medida en este equipo: el cambio aparece en GitHub entre 15 segundos y
-2 minutos, y el estado queda confirmado en la pasada siguiente.
-
-**Backoff de GitLab.** `RemoteMirror` retrasa 5 minutos cualquier sincronización
-pedida poco después de otra (`backoff_delay`, issue 580289). Eso hacía que,
-después de un push, el siguiente cambio tardara hasta 6 minutos. En este
-proyecto está desactivado con el feature flag de ops `remote_mirror_no_delay`,
-activo **solo para `nexusthrive/nexus-thrive`**, no global. Si una actualización
-de GitLab retira el flag, el timer sigue funcionando pero vuelve el retardo;
-el flag está definido en
-`config/feature_flags/ops/remote_mirror_no_delay.yml` del código de GitLab.
 
 Comandos útiles:
 
 ```bash
 systemctl --user list-timers nexus-mirror-sync.timer   # cuándo corre
-systemctl --user start nexus-mirror-sync.service       # forzar una pasada
 journalctl --user -u nexus-mirror-sync -n 20           # qué hizo
+FORCE=1 ~/.local/bin/nexus-mirror-sync                 # reintentar ahora
 systemctl --user disable --now nexus-mirror-sync.timer # detenerlo
 ```
 
@@ -178,8 +169,8 @@ write`. GitLab lo guarda cifrado (`encrypted_credentials`); en el equipo vive en
    editar usuario y contraseña: usuario `x-access-token`, contraseña el token).
 4. *Update now* y comprobar que el estado queda en `finished`.
 
-Si el espejo lleva tiempo en error, GitHub se queda atrás: revisa la credencial
-antes de asumir que el problema está en el código.
+Si el espejo lleva tiempo en error, GitHub se queda atrás. El vigilante
+reintenta cada 5 minutos, pero si el fallo es la credencial hay que rotarla.
 
 **Dependabot.** En GitHub está desactivado a propósito: creaba ramas y PRs en el
 espejo que no se pueden fusionar allí ni se pueden devolver a GitLab. Las alertas

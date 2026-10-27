@@ -1,5 +1,5 @@
 [Unit]
-Description=Sincroniza el espejo de GitHub con los refs de GitLab
+Description=Vigila el espejo de GitHub y reintenta si quedó en error
 
 [Service]
 Type=oneshot

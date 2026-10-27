@@ -64,8 +64,7 @@ git switch main && git pull
 git branch -d fix/mi-cambio
 ```
 
-GitHub recibe el merge en uno o dos minutos: lo empuja el timer del espejo. No
-hay que hacer nada más.
+GitHub recibe el merge en segundos. No hay que hacer nada más.
 
 ## 6. Reglas que no se negocian
 
