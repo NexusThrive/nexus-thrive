@@ -124,6 +124,11 @@ write`. GitLab lo guarda cifrado (`encrypted_credentials`); en el equipo vive en
 Si el espejo lleva tiempo en error, GitHub se queda atrás: revisa la credencial
 antes de asumir que el problema está en el código.
 
+**Dependabot.** En GitHub está desactivado a propósito: creaba ramas y PRs en el
+espejo que no se pueden fusionar allí ni se pueden devolver a GitLab. Las alertas
+de vulnerabilidad siguen activas; las actualizaciones de dependencias se hacen
+desde GitLab (a mano hoy; Renovate cuando se monte).
+
 ---
 
 ## 6. Resumen
