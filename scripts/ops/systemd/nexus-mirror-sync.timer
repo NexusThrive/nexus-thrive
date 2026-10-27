@@ -1,0 +1,11 @@
+[Unit]
+Description=Comprueba cada minuto que el espejo de GitHub no esté en error
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=60s
+AccuracySec=10s
+Unit=nexus-mirror-sync.service
+
+[Install]
+WantedBy=timers.target
