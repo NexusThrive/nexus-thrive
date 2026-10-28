@@ -1,6 +1,7 @@
 stages:
   - check
   - test
+  - deploy
 
 variables:
   PNPM_VERSION: "9.15.9"
@@ -46,3 +47,20 @@ test:unit:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null
   timeout: 30m
+
+# Despliegue automático solo en main tras pasar los checks
+deploy:vercel:
+  stage: deploy
+  image: curlimages/curl:latest
+  needs: ["lint", "typecheck"]
+  script:
+    - echo "Desplegando a producción via Vercel Deploy Hook..."
+    - curl -X POST "$VERCEL_DEPLOY_HOOK"
+    - echo -e "\nDespliegue solicitado correctamente"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE != "merge_request_event"
+  environment:
+    name: production
+    url: https://app.nexusthrive.com.co
+  only:
+    - main
