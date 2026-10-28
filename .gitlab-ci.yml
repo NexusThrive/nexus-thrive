@@ -62,5 +62,3 @@ deploy:vercel:
   environment:
     name: production
     url: https://app.nexusthrive.com.co
-  only:
-    - main
