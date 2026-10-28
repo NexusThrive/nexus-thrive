@@ -48,15 +48,17 @@ test:unit:
     - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null
   timeout: 30m
 
-# Despliegue automático solo en main tras pasar los checks
 deploy:vercel:
   stage: deploy
-  image: curlimages/curl:latest
+  image: alpine:latest
   needs: ["lint", "typecheck"]
+  before_script:
+    - apk add --no-cache curl
   script:
-    - echo "Desplegando a producción via Vercel Deploy Hook..."
-    - curl -X POST "$VERCEL_DEPLOY_HOOK"
-    - echo -e "\nDespliegue solicitado correctamente"
+    - echo "Triggering Vercel deployment..."
+    - curl -s -X POST "${VERCEL_DEPLOY_HOOK}"
+    - echo ""
+    - echo "Done"
   rules:
     - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE != "merge_request_event"
   environment:
