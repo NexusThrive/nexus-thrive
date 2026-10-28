@@ -1,7 +1,6 @@
 stages:
   - check
   - test
-  - deploy
 
 variables:
   PNPM_VERSION: "9.15.9"
@@ -47,24 +46,3 @@ test:unit:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null
   timeout: 30m
-
-deploy:vercel:
-  stage: deploy
-  image: node:20-bullseye
-  needs: ["lint", "typecheck"]
-  before_script:
-    - corepack enable
-    - corepack prepare pnpm@${PNPM_VERSION} --activate
-    - pnpm install --frozen-lockfile
-    - npm install -g vercel@latest
-  script:
-    - echo "Deploying to Vercel (build on Vercel)..."
-    - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-    - vercel deploy --prod --yes --token=$VERCEL_TOKEN
-    - echo "Deployed successfully"
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE != "merge_request_event"
-  environment:
-    name: production
-    url: https://app.nexusthrive.com.co
-  timeout: 60m
