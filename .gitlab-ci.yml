@@ -1,0 +1,38 @@
+stages:
+  - check
+
+variables:
+  PNPM_VERSION: "9"
+  NODE_VERSION: "20"
+
+cache:
+  key:
+    files:
+      - pnpm-lock.yaml
+  paths:
+    - .pnpm-store
+    - node_modules/.cache
+
+before_script:
+  - corepack enable
+  - corepack prepare pnpm@9.15.9 --activate
+  - pnpm config set store-dir .pnpm-store
+  - pnpm install --frozen-lockfile
+
+lint:
+  stage: check
+  image: node:20-bullseye
+  script:
+    - pnpm lint
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null
+
+typecheck:
+  stage: check
+  image: node:20-bullseye
+  script:
+    - pnpm exec tsc --noEmit
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null
