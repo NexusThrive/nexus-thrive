@@ -1,0 +1,92 @@
+stages:
+  - install
+  - check
+  - test
+
+variables:
+  PNPM_VERSION: "9.15.9"
+  NODE_VERSION: "20"
+  # Reduce noise y acelera
+  CI_NODE_TOTAL: "1"
+  # Evitar telemetría innecesaria
+  NEXT_TELEMETRY_DISABLED: "1"
+
+cache:
+  key:
+    files:
+      - pnpm-lock.yaml
+  paths:
+    - .pnpm-store
+  policy: pull-push
+
+# Instalar dependencias una vez reutilizable
+.install_deps:
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@${PNPM_VERSION} --activate
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install --frozen-lockfile --prefer-offline
+
+# Solo en MRs y en pushes a ramas que NO tengan MR abierto
+default:
+  image: node:20-bullseye
+  interruptible: true
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@${PNPM_VERSION} --activate
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install --frozen-lockfile --prefer-offline
+
+# Lint - rápido y falla temprano
+lint:
+  stage: check
+  extends: .install_deps
+  script:
+    - pnpm lint
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null && $CI_COMMIT_BRANCH != "main"
+  cache:
+    key:
+      files:
+        - pnpm-lock.yaml
+    paths:
+      - .pnpm-store
+    policy: pull-push
+
+# Typecheck - TypeScript estricto
+typecheck:
+  stage: check
+  extends: .install_deps
+  script:
+    - pnpm exec tsc --noEmit
+  needs: ["lint"]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null && $CI_COMMIT_BRANCH != "main"
+  cache:
+    key:
+      files:
+        - pnpm-lock.yaml
+    paths:
+      - .pnpm-store
+    policy: pull-push
+
+# Tests unitarios - solo si existen y son rápidos
+test:unit:
+  stage: test
+  extends: .install_deps
+  script:
+    - pnpm test -- --run
+  needs: ["typecheck"]
+  allow_failure: true  # Permitir mientras estabilizamos
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null && $CI_COMMIT_BRANCH != "main"
+  cache:
+    key:
+      files:
+        - pnpm-lock.yaml
+    paths:
+      - .pnpm-store
+    policy: pull-push
