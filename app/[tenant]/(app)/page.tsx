@@ -149,7 +149,7 @@ export default async function TenantDashboard({
     tenantRecord.modules.filter((m) => m.active).map((m) => m.moduleName).filter(isModule),
   );
   const has = (m: (typeof activeModules)[number]) => activeModules.includes(m);
-  const quickActions = quickCreateActions(tenantRecord.vertical, activeModules);
+  const quickActions = quickCreateActions(tenantRecord.vertical, activeModules, 4, localUser?.role);
   // La variación solo se muestra si hay mes anterior con qué comparar.
   const deltaFor = (current: number, before: number, inverse = false) => {
     const change = percentChange(current, before);

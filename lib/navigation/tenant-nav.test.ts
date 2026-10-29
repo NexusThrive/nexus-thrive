@@ -132,3 +132,23 @@ describe("modulesForRoute", () => {
     expect(modulesForRoute("/presence")).toBeNull();
   });
 });
+
+describe("quickCreateActions por permisos", () => {
+  const mods = ["construction", "crm", "finance"] as const;
+  it("sin rol ofrece todo (compatibilidad)", () => {
+    expect(quickCreateActions("construction", [...mods], Infinity).map((a) => a.key)).toContain("payment");
+  });
+  it("un asesor no registra pagos ni gastos", () => {
+    const keys = quickCreateActions("construction", [...mods], Infinity, "ADVISOR").map((a) => a.key);
+    expect(keys).not.toContain("payment");
+    expect(keys).not.toContain("expense");
+    expect(keys).toContain("new-customer");
+  });
+  it("solo el propietario crea obras; recepción cobra pero no crea obras", () => {
+    expect(quickCreateActions("construction", [...mods], Infinity, "OWNER").map((a) => a.key)).toContain("new-project");
+    const reception = quickCreateActions("construction", [...mods], Infinity, "RECEPTION").map((a) => a.key);
+    expect(reception).not.toContain("new-project");
+    expect(reception).toContain("payment");
+  });
+});
+

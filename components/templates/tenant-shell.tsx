@@ -8,6 +8,7 @@ import { BusinessSwitcher } from "@/components/organisms/business-switcher";
 import { NavbarSearch } from "@/components/organisms/navbar-search";
 import { MobileTabBar } from "@/components/organisms/mobile-tab-bar";
 import { NetworkBanner } from "@/components/molecules/network-banner";
+import { RouteBreadcrumbs } from "@/components/organisms/route-breadcrumbs";
 import { ShellProvider } from "@/components/providers/shell-context";
 import styles from "./tenant-shell.module.css";
 
@@ -24,6 +25,7 @@ export function TenantShell({
   tenantName,
   vertical,
   activeModules,
+  role,
   businesses,
   onSwitchBusiness,
   topbarActions,
@@ -34,6 +36,8 @@ export function TenantShell({
   vertical: VerticalValue;
   /** Módulos activos, ya filtrados y ordenados. */
   activeModules: ModuleValue[];
+  /** Rol de la persona en el negocio (filtra «Crear» por permisos). */
+  role?: string;
   /** Negocios de la cuenta, para el selector de la navbar (el activo es `tenantSlug`). */
   businesses?: { slug: string; name: string }[];
   /** Acción de servidor que recuerda la organización elegida como la última usada. */
@@ -48,6 +52,7 @@ export function TenantShell({
       tenantName={tenantName}
       vertical={vertical}
       activeModules={activeModules}
+      role={role}
     >
       <ToastProvider>
         <div className={styles.root}>
@@ -59,6 +64,7 @@ export function TenantShell({
               switcher={<BusinessSwitcher currentSlug={tenantSlug} currentName={tenantName} businesses={businesses ?? []} onSwitch={onSwitchBusiness} />}
             />
             <main id="contenido" tabIndex={-1} className={styles.view}>
+              <RouteBreadcrumbs />
               {children}
             </main>
           </div>

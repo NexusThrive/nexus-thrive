@@ -73,12 +73,15 @@ export function ShellProvider({
   tenantName,
   vertical,
   activeModules,
+  role,
   children,
 }: {
   tenantSlug: string;
   tenantName: string;
   vertical: VerticalValue;
   activeModules: ModuleValue[];
+  /** Rol de la persona en el negocio: «Crear» ofrece solo lo que puede hacer. */
+  role?: string;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -91,14 +94,14 @@ export function ShellProvider({
     [vertical, modulesKey],
   );
   const quickActions = useMemo(
-    () => quickCreateActions(vertical, activeModules),
+    () => quickCreateActions(vertical, activeModules, 4, role),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [vertical, modulesKey],
+    [vertical, modulesKey, role],
   );
   const createActions = useMemo(
-    () => quickCreateActions(vertical, activeModules, Infinity),
+    () => quickCreateActions(vertical, activeModules, Infinity, role),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [vertical, modulesKey],
+    [vertical, modulesKey, role],
   );
   const relativePath = tenantRelativePath(pathname, tenantSlug);
   const active = groups.flatMap((g) => g.items).find((item) => isNavActive(item.href, relativePath));
