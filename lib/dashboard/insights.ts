@@ -33,3 +33,8 @@ const updatedFormat = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogo
 export function updatedLabel(at: Date = new Date()): string {
   return `Actualizado a las ${updatedFormat.format(at).replace(/\s/g, " ")}`;
 }
+
+/** Días que faltan para una fecha (0 = hoy o ya pasó; redondea hacia arriba). */
+export function daysUntil(iso: string, now: Date = new Date()): number {
+  return Math.max(0, Math.ceil((new Date(iso).getTime() - now.getTime()) / 86_400_000));
+}

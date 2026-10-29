@@ -501,6 +501,18 @@ export function createTenantDb(tenantId: string) {
         return affectedRows;
       },
 
+      /** Los últimos clientes activos dados de alta (para la actividad del inicio). */
+      recent: async (limit = 5): Promise<{ id: string; name: string; createdAt: string }[]> => {
+        const rows = await db.orm.public.Customer
+          .where({ tenantId })
+          .where((customer) => customer.active.eq(true))
+          .orderBy((customer) => customer.createdAt.desc())
+          .limit(Math.min(20, Math.max(1, Math.trunc(limit))))
+          .select("id", "name", "createdAt")
+          .all();
+        return rows.map((c) => ({ id: c.id, name: c.name, createdAt: String(c.createdAt) }));
+      },
+
       /** Cantidad de clientes activos (para el dashboard). */
       countActive: () =>
         db.orm.public.Customer

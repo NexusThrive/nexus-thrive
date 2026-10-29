@@ -50,3 +50,13 @@ describe("insights del inicio", () => {
     expect(updatedLabel(new Date("2026-10-16T20:42:00Z"))).toMatch(/^Actualizado a las 3:42/);
   });
 });
+
+describe("daysUntil", () => {
+  it("redondea hacia arriba y no baja de 0", async () => {
+    const { daysUntil } = await import("./insights");
+    const now = new Date("2026-10-16T12:00:00Z");
+    expect(daysUntil("2026-10-18T10:00:00Z", now)).toBe(2);
+    expect(daysUntil("2026-10-16T18:00:00Z", now)).toBe(1);
+    expect(daysUntil("2026-10-10T00:00:00Z", now)).toBe(0);
+  });
+});

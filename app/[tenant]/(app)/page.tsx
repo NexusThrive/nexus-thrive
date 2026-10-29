@@ -11,8 +11,9 @@ import { GRANULARITIES, HISTORY_DAYS, bogotaDayKey, chartBuckets, runningBalance
 import { sortModules, isModule } from "@/lib/admin/catalogs";
 import { quickCreateActions } from "@/lib/navigation/quick-create";
 import { CHART_CATALOG } from "@/lib/dashboard/chart-catalog";
-import { cashFlow, comparison, countLabel, updatedLabel } from "@/lib/dashboard/insights";
+import { cashFlow, comparison, countLabel, daysUntil, updatedLabel } from "@/lib/dashboard/insights";
 import { receivables } from "@/lib/receivables/receivables-db";
+import { typeLabel } from "@/lib/business/memberships";
 import { paymentMethodLabel } from "@/lib/finance";
 import { Delta } from "@/components/atoms/delta";
 import { RevealText } from "@/components/atoms/reveal-text";
@@ -115,9 +116,14 @@ export default async function TenantDashboard({
   const firstDay = tenantRecord.createdAt ? bogotaDayKey(String(tenantRecord.createdAt)) : null;
   const presence = await loadPresence(tenantRecord);
   // Por cobrar: solo con el módulo de Cartera encendido (la misma regla de su pantalla).
-  const pending = tenantRecord.modules.some((m) => m.active && m.moduleName === "receivables")
-    ? (await receivables(tenantRecord.id)).aging
-    : null;
+  const moduleOn = (name: string) => tenantRecord.modules.some((m) => m.active && m.moduleName === name);
+  const cartera = moduleOn("receivables") ? await receivables(tenantRecord.id) : null;
+  const pending = cartera?.aging ?? null;
+  // Fuentes de la actividad que no son movimientos: socios nuevos, membresías por vencer y cartera.
+  const [newCustomers, expiring] = await Promise.all([
+    moduleOn("crm") ? tenantDb.customers.recent(5) : [],
+    moduleOn("memberships") ? tenantDb.memberships.list({ status: "expiring", limit: 5 }).then((r) => r.rows) : [],
+  ]);
   const hasCatalog =
     tenantRecord.modules.some((m) => m.active && m.moduleName === "inventory")
       ? (await listProducts(tenantRecord.id, { limit: 1 })).length > 0
@@ -150,14 +156,74 @@ export default async function TenantDashboard({
     return change == null ? undefined : <Delta value={change} inverse={inverse} />;
   };
 
-  const activityItems: RecentActivityItem[] = recentActivity.slice(0, 6).map((item) => ({
-    id: item.id,
-    type: item.type,
-    title: item.title,
-    description: item.description,
-    amount: formatCurrency(Math.abs(item.amount)),
-    time: formatRelativeTime(item.date),
-  }));
+  // Actividad: lo que pide atención (cartera y vencimientos) va primero; después, lo reciente por fecha.
+  const recentItems = [
+    ...recentActivity.map((item) => ({
+      at: String(item.date),
+      item: {
+        id: item.id,
+        type: item.type,
+        title: item.title,
+        description: item.description,
+        amount: formatCurrency(Math.abs(item.amount)),
+        time: formatRelativeTime(item.date),
+        href: `${base}/finance`,
+      } satisfies RecentActivityItem,
+    })),
+    ...newCustomers.map((c) => ({
+      at: c.createdAt,
+      item: {
+        id: `customer-${c.id}`,
+        type: "customer" as const,
+        title: c.name,
+        description: `Nuevo ${terms.customer.toLowerCase()}`,
+        amount: "",
+        time: formatRelativeTime(c.createdAt),
+        href: `${base}/crm/${c.id}`,
+      } satisfies RecentActivityItem,
+    })),
+  ]
+    .sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0))
+    .slice(0, 8)
+    .map((entry) => entry.item);
+  const attentionItems: RecentActivityItem[] = [
+    ...(cartera?.rows ?? []).slice(0, 3).map((row) => ({
+      id: `pending-${row.id}`,
+      type: "pending" as const,
+      title: row.party,
+      description: row.daysOverdue > 0 ? `${row.number} · ${row.daysOverdue} ${row.daysOverdue === 1 ? "día" : "días"} de mora` : `${row.number} · por cobrar`,
+      amount: formatCurrency(row.balance),
+      time: row.dueDate ? `Vence ${row.dueDate}` : "Sin vencimiento",
+      href: `${base}/cartera`,
+    })),
+    ...expiring.slice(0, 3).map((m) => {
+      const left = daysUntil(m.endDate);
+      return {
+        id: `expiry-${m.id}`,
+        type: "expiry" as const,
+        title: m.customerName,
+        description: `Membresía ${typeLabel(m.type).toLowerCase()} por vencer`,
+        amount: "",
+        time: left === 0 ? "Vence hoy" : `En ${left} ${left === 1 ? "día" : "días"}`,
+        href: `${base}/memberships`,
+      };
+    }),
+  ];
+  const activityItems: RecentActivityItem[] = [...attentionItems, ...recentItems];
+  const activityFilters = [
+    ...(moduleOn("finance") ? [{ type: "payment" as const, label: "Pagos" }, { type: "expense" as const, label: "Gastos" }] : []),
+    ...(moduleOn("crm") ? [{ type: "customer" as const, label: terms.customers }] : []),
+    ...(moduleOn("memberships") ? [{ type: "expiry" as const, label: "Vencimientos" }] : []),
+    ...(cartera ? [{ type: "pending" as const, label: "Pendientes" }] : []),
+  ];
+  const activityRegistry = {
+    all: { href: `${base}/finance`, label: "Ver registro completo" },
+    payment: { href: `${base}/finance`, label: "Ver todos los pagos" },
+    expense: { href: `${base}/finance`, label: "Ver todos los gastos" },
+    customer: { href: `${base}/crm`, label: `Ver ${terms.customers.toLowerCase()}` },
+    expiry: { href: `${base}/memberships`, label: "Ver membresías" },
+    pending: { href: `${base}/cartera`, label: "Ver la cartera" },
+  };
 
   // Primeros pasos: solo de los módulos activos; los marca hecho lo que ya hay
   // en los datos (las últimas 20 operaciones bastan para detectar el primer
@@ -324,7 +390,7 @@ export default async function TenantDashboard({
           { id: "mem-renewals", label: "Renovaciones del mes", span: 3 as const, half: true, node: <StatTile index={3} label="Renovaciones" value={formatCurrency(membershipMetrics.renewalRevenueProjection)} note="Valor por cobrar este mes" href={`${base}/memberships`} className="h-full" /> },
         ]
       : []),
-    { id: "activity", label: "Actividad reciente", node: <RecentActivity items={activityItems} /> },
+    { id: "activity", label: "Actividad reciente", node: <RecentActivity items={activityItems} filters={activityFilters} registry={activityRegistry} /> },
   ];
 
   return (

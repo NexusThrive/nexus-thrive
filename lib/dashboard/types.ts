@@ -15,7 +15,8 @@ export type DashboardMetric = {
   alert?: boolean;
 };
 
-export type ActivityType = "payment" | "expense";
+/** Pago y gasto (movimientos), socio nuevo, vencimiento de membresía y cuenta por cobrar pendiente. */
+export type ActivityType = "payment" | "expense" | "customer" | "expiry" | "pending";
 
 /** Movimiento del negocio: pago aprobado o gasto. */
 export type RecentActivityItem = {
@@ -23,7 +24,9 @@ export type RecentActivityItem = {
   type: ActivityType;
   title: string;
   description: string;
-  /** Monto ya formateado (COP). */
+  /** Monto ya formateado (COP); vacío si el tipo no lleva monto (socio nuevo, vencimiento). */
   amount: string;
   time: string;
+  /** Ruta completa a la que lleva la fila (el registro de ese dato). */
+  href?: string;
 };
