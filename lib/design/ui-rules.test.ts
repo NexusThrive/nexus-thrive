@@ -36,8 +36,11 @@ const RADIX_DIALOG_ALLOWED = [
   "components/organisms/responsive-sheet.tsx", // la base de diálogos y paneles
   "components/organisms/command.tsx", // paleta del panel CEO (cmdk)
   "components/organisms/command-palette.tsx", // paleta del negocio (cmdk)
-  "components/labs/pretty-modal/pretty-modal.tsx", // laboratorio de referencia (no se envía)
+  "components/labs/pretty-modal/pretty-modal.tsx", // laboratorio de referencia (no se envía; puede no existir en el checkout)
 ];
+
+/** Las excepciones que existen en este checkout (el laboratorio local no está en el repositorio). */
+const present = (allowed: readonly string[]) => allowed.filter((path) => FILES.some((file) => file.path === path));
 
 /** Superposiciones a pantalla completa propias que no son diálogos de formulario. */
 const FULLSCREEN_ALLOWED = [
@@ -74,7 +77,7 @@ describe("reglas del sistema de diseño", () => {
   });
 
   test("diálogos sobre la base compartida, no sobre Radix directo", () => {
-    expect(offenders(RADIX_DIALOG)).toEqual([...RADIX_DIALOG_ALLOWED].sort());
+    expect(offenders(RADIX_DIALOG)).toEqual(present(RADIX_DIALOG_ALLOWED).sort());
   });
 
   test("sin modales hechos a mano (fixed inset-0)", () => {
