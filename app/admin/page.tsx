@@ -12,7 +12,7 @@ import ActivityFeed from "./_components/activity-feed";
 import AuditLog from "./_components/audit-log";
 import { executiveKpiWidgets } from "./_components/executive-kpis";
 import { PriorityBoard } from "./_components/priority-board";
-import { CustomizableDashboard, type DashboardWidget } from "@/components/organisms/customizable-dashboard";
+import { CustomizableDashboard, DashboardMenu, type DashboardWidget } from "@/components/organisms/customizable-dashboard";
 
 export const metadata: Metadata = { title: "Inicio · NEXUS Operations Center" };
 
@@ -89,6 +89,7 @@ export default async function OpsHome() {
         eyebrow={date.charAt(0).toUpperCase() + date.slice(1)}
         title={<RevealText parts={[`${greetingFor()}, `, { text: first, gold: true }]} />}
         description={`NEXUS Operations Center · ${staff?.roleName ?? ""}`}
+        actions={<DashboardMenu />}
       />
       }
     />

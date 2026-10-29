@@ -3,7 +3,7 @@ import { KpiCard } from "@/components/molecules/kpi-card";
 import { PageHeader } from "@/components/molecules/page-header";
 import { Wallet, Users, TrendingUp } from "lucide-react";
 import { CHART_CATALOG } from "@/lib/dashboard/chart-catalog";
-import { CustomizableDashboard, type DashboardWidget } from "./customizable-dashboard";
+import { CustomizableDashboard, DashboardMenu, type DashboardWidget } from "./customizable-dashboard";
 
 const widgets: DashboardWidget[] = [
   {
@@ -54,13 +54,13 @@ const meta = {
   args: {
     scope: "storybook",
     widgets,
-    header: <PageHeader eyebrow="Viernes, 23 de octubre" title="Buenas tardes, Camila" description="Así va tu negocio esta semana." />,
+    header: <PageHeader eyebrow="Viernes, 23 de octubre" title="Buenas tardes, Camila" description="Así va tu negocio esta semana." actions={<DashboardMenu />} />,
   },
   parameters: {
     docs: {
       description: {
         component:
-          "Inicio personalizable de 12 columnas. Sin botón de «Personalizar»: mantener presionado un bloque entra al modo de edición y lo toma (el icono «Editar diseño» es la alternativa sin arrastrar). En edición (barra de edición, bloques con borde discontinuo y esquinas): cada bloque se arrastra (también con teclado o botones ↑ ↓), cambia de ancho arrastrando una esquina (continuo, al píxel; el selector ofrece ¼, ⅓, ½, ⅔ y todo; desde lg) y se muestra u oculta. «Agregar» abre un panel lateral con gráficos nuevos (barras, líneas, área, dona, medidor, clientes) que también cambian de alto por las esquinas y se pueden quitar. Se ve en vivo y solo se guarda con «Guardar»; «Cancelar» descarta y «Restablecer» vuelve al diseño por defecto. La preferencia está versionada y hoy se guarda por persona en este navegador (`localStorage`). Los bloques se resuelven en el servidor: mover u ocultar no cambia datos ni permisos.",
+          "Inicio personalizable. Sin botón de «Personalizar»: mantener presionado un bloque entra al modo de edición y lo toma; el menú de tres puntos del encabezado (`DashboardMenu`, junto al selector de periodo) ofrece «Agregar gráfico» y «Editar diseño» (la alternativa sin arrastrar). En edición (barra de edición, bloques con borde discontinuo y esquinas): cada bloque se arrastra (también con teclado o botones ↑ ↓), cambia de ancho arrastrando una esquina (continuo, al píxel; el selector ofrece ¼, ⅓, ½, ⅔ y todo; desde lg) y se muestra u oculta. «Agregar» abre un panel lateral con gráficos nuevos (barras, líneas, área, dona, medidor, clientes) que también cambian de alto por las esquinas y se pueden quitar. Se ve en vivo y solo se guarda con «Guardar»; «Cancelar» descarta y «Restablecer» vuelve al diseño por defecto. La preferencia está versionada y hoy se guarda por persona en este navegador (`localStorage`). Los bloques se resuelven en el servidor: mover u ocultar no cambia datos ni permisos.",
       },
     },
   },

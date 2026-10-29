@@ -241,7 +241,7 @@ icono: la animación nunca es la única señal.
 `CustomizableDashboard` (12 columnas). **No hay botón «Personalizar»:** mantener
 presionado un bloque (350 ms con el cursor, 220 ms con el dedo, 6 px de
 tolerancia) entra al modo de edición y lo toma; un clic o un desplazamiento no.
-La alternativa sin arrastrar es el icono «Editar diseño». En edición (barra,
+La alternativa sin arrastrar es el menú de tres puntos del encabezado (`DashboardMenu`, junto al selector de periodo): «Agregar gráfico» y «Editar diseño». En edición (barra,
 bloques con borde discontinuo y **esquinas**): arrastrar el bloque, cambiar su
 ancho arrastrando una esquina (**continuo**: sigue al puntero al píxel, sobre
 una cuadrícula de 96 columnas, y al soltar se asienta en la columna más cercana

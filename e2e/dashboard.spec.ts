@@ -4,6 +4,11 @@ import { expectNoAxeViolations, openStory } from "./helpers";
 /** Inicio personalizable (modo de edición) y primeros pasos de una cuenta nueva. */
 test.describe("Dashboard personalizable", () => {
   const KEY = "nx:dashboard:storybook";
+  /** Menú de tres puntos del encabezado → «Editar diseño». */
+  const openEditor = async (page: import("@playwright/test").Page) => {
+    await page.getByRole("button", { name: "Opciones del inicio" }).click();
+    await page.getByRole("menuitem", { name: "Editar diseño" }).click();
+  };
   /** En edición, un clic en el componente lo selecciona y muestra su barra y sus esquinas. */
   const select = (page: import("@playwright/test").Page, id: string) => page.locator(`[data-widget="${id}"]`).click({ position: { x: 8, y: 8 } });
   const metricas = (page: import("@playwright/test").Page) => page.locator('[data-widget="kpi-income"]');
@@ -14,7 +19,7 @@ test.describe("Dashboard personalizable", () => {
     await page.reload();
 
     await expect(metricas(page)).toBeVisible();
-    await page.getByRole("button", { name: "Editar diseño del inicio" }).click();
+    await openEditor(page);
     const bar = page.getByRole("region", { name: "Modo de edición del inicio" });
     await expect(bar).toBeVisible();
 
@@ -35,7 +40,7 @@ test.describe("Dashboard personalizable", () => {
     expect(await page.evaluate((k) => window.localStorage.getItem(k), KEY)).toBeNull();
 
     // Editar otra vez y guardar.
-    await page.getByRole("button", { name: "Editar diseño del inicio" }).click();
+    await openEditor(page);
     await select(page, "kpi-income");
     await page.getByRole("switch", { name: "Mostrar Ingresos", exact: true }).click();
     await select(page, "chart");
@@ -50,7 +55,7 @@ test.describe("Dashboard personalizable", () => {
     await expect(metricas(page)).toHaveCount(0);
 
     // Restablecer y guardar devuelve el diseño por defecto.
-    await page.getByRole("button", { name: "Editar diseño del inicio" }).click();
+    await openEditor(page);
     await page.getByRole("button", { name: "Restablecer" }).click();
     await page.getByRole("button", { name: "Guardar" }).click();
     await expect(metricas(page)).toBeVisible();
@@ -61,7 +66,7 @@ test.describe("Dashboard personalizable", () => {
     await openStory(page, "organismos-customizabledashboard--default");
     await page.evaluate((k) => window.localStorage.removeItem(k), KEY);
     await page.reload();
-    await page.getByRole("button", { name: "Editar diseño del inicio" }).click();
+    await openEditor(page);
     await page.getByRole("button", { name: "Arrastrar Ingresos", exact: true }).focus();
     await page.keyboard.press("Space");
     // dnd-kit engancha las flechas un instante después de tomar el bloque.
@@ -120,7 +125,8 @@ test.describe("Dashboard personalizable", () => {
     await page.reload();
     await expect(page.getByRole("button", { name: "Personalizar" })).toHaveCount(0);
 
-    await page.getByRole("button", { name: "Agregar", exact: true }).click();
+    await page.getByRole("button", { name: "Opciones del inicio" }).click();
+    await page.getByRole("menuitem", { name: "Agregar gráfico" }).click();
     const panel = page.getByRole("dialog", { name: "Agregar al inicio" });
     await expect(panel).toBeVisible();
     await expect(panel.getByText("Lista de tareas")).toBeVisible();
@@ -138,7 +144,7 @@ test.describe("Dashboard personalizable", () => {
     await openStory(page, "organismos-customizabledashboard--default");
     await page.evaluate((k) => window.localStorage.removeItem(k), KEY);
     await page.reload();
-    await page.getByRole("button", { name: "Editar diseño del inicio" }).click();
+    await openEditor(page);
     await page.getByRole("region", { name: "Modo de edición del inicio" }).waitFor();
     await expectNoAxeViolations(page);
   });

@@ -21,7 +21,7 @@ import { IncomeChart, type ChartPoint } from "@/components/organisms/income-char
 import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
 import { PullToRefresh } from "@/components/molecules/pull-to-refresh";
 import RecentActivity from "@/components/organisms/recent-activity";
-import { CustomizableDashboard, type DashboardWidget } from "@/components/organisms/customizable-dashboard";
+import { CustomizableDashboard, DashboardMenu, type DashboardWidget } from "@/components/organisms/customizable-dashboard";
 import { WelcomeChecklist, type WelcomeStep } from "@/components/organisms/welcome-checklist";
 import { listProducts } from "@/lib/business/products-db";
 import { loadPresence } from "@/lib/presence/load";
@@ -304,18 +304,21 @@ export default async function TenantDashboard({
         title={<RevealText parts={[`${greetingFor()}, `, { text: greetingName, gold: true }]} />}
         description={`Así va ${tenantRecord.name} ${periodText}. ${current.count} ${current.count === 1 ? "cobro registrado" : "cobros registrados"}.`}
         actions={
-          <UrlSegmentedControl
-            param="p"
-            ariaLabel="Periodo"
-            value={period}
-            defaultValue="7d"
-            className="w-full [&>button]:flex-1 sm:w-auto sm:[&>button]:flex-none"
-            options={[
-              { value: "hoy", label: "Hoy" },
-              { value: "7d", label: "7 días" },
-              { value: "30d", label: "30 días" },
-            ]}
-          />
+          <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
+            <UrlSegmentedControl
+              param="p"
+              ariaLabel="Periodo"
+              value={period}
+              defaultValue="7d"
+              className="min-w-0 flex-1 [&>button]:flex-1 sm:flex-none sm:[&>button]:flex-none"
+              options={[
+                { value: "hoy", label: "Hoy" },
+                { value: "7d", label: "7 días" },
+                { value: "30d", label: "30 días" },
+              ]}
+            />
+            <DashboardMenu />
+          </div>
         }
       />
         }

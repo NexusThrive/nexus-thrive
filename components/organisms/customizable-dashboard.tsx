@@ -2,7 +2,7 @@
 
 /* eslint-disable react-hooks/refs -- useDraggable/useDroppable de dnd-kit devuelven refs de callback y listeners, no valores de ref; el lint los confunde. */
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -22,10 +22,11 @@ import {
   type DragStartEvent,
   type KeyboardCoordinateGetter,
 } from "@dnd-kit/core";
-import { ArrowDown, ArrowUp, Check, Eye, GripVertical, LayoutDashboard, Pencil, Plus, RotateCcw, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Eye, GripVertical, LayoutDashboard, MoreHorizontal, Pencil, Plus, RotateCcw, Trash2, X } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { Select } from "@/components/atoms/select";
 import { Switch } from "@/components/atoms/switch";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/molecules/dropdown-menu";
 import { ChartWidget } from "@/components/molecules/charts/chart-widget";
 import { AddWidgetPanel } from "@/components/organisms/add-widget-panel";
 import { entryOf, type ChartData, type ChartEntry, type ChartType } from "@/lib/dashboard/chart-catalog";
@@ -357,6 +358,39 @@ function Item({
   );
 }
 
+type DashboardActions = { editing: boolean; canAdd: boolean; onAdd: () => void; onEdit: () => void };
+const DashboardActionsContext = createContext<DashboardActions | null>(null);
+
+/**
+ * Botón de tres puntos del inicio («Agregar» y «Editar diseño»). Va en el
+ * encabezado de la página, junto al selector de periodo; lee las acciones del
+ * `CustomizableDashboard` que lo contiene (por contexto, así el encabezado sigue
+ * siendo del servidor). Fuera de un tablero no pinta nada.
+ */
+export function DashboardMenu({ className }: { className?: string }) {
+  const actions = useContext(DashboardActionsContext);
+  if (!actions) return null;
+  return (
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon" aria-label="Opciones del inicio" data-press="" className={className}>
+          <MoreHorizontal aria-hidden="true" className="size-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" sideOffset={8} className="w-56 p-1.5">
+        {actions.canAdd ? (
+          <DropdownMenuItem onSelect={actions.onAdd} className="min-h-10 gap-2.5">
+            <Plus aria-hidden="true" className="size-4" /> Agregar gráfico
+          </DropdownMenuItem>
+        ) : null}
+        <DropdownMenuItem onSelect={actions.onEdit} disabled={actions.editing} className="min-h-10 gap-2.5">
+          <Pencil aria-hidden="true" className="size-4" /> {actions.editing ? "Editando el diseño" : "Editar diseño"}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 /**
  * Inicio personalizable de 12 columnas. No hay botón de «Personalizar»: **mantener
  * presionado** un bloque (350 ms con el cursor, 220 ms con el dedo) entra al modo
@@ -571,6 +605,7 @@ export function CustomizableDashboard({
   ) : null;
 
   return (
+    <DashboardActionsContext.Provider value={{ editing, canAdd: Boolean(charts), onAdd: () => setAdding(true), onEdit: start }}>
     <div className="flex flex-col">
       {header}
 
@@ -605,14 +640,7 @@ export function CustomizableDashboard({
             </div>
           ) : null}
         </section>
-      ) : (
-        <div className="mb-3.5 flex items-center justify-end gap-1.5">
-          {addButton}
-          <Button variant="ghost" size="icon-sm" onClick={start} aria-label="Editar diseño del inicio" title="Editar diseño (o mantén presionado un bloque)" data-press="">
-            <Pencil aria-hidden="true" className="size-4" />
-          </Button>
-        </div>
-      )}
+      ) : null}
 
       {!editing && visibleCount === 0 ? (
         <p className="rounded-lg border border-dashed border-border-strong px-4 py-10 text-center text-sm text-muted-foreground">
@@ -690,5 +718,6 @@ export function CustomizableDashboard({
 
       <p role="status" className="sr-only">{announce}</p>
     </div>
+    </DashboardActionsContext.Provider>
   );
 }
