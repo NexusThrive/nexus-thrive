@@ -159,7 +159,7 @@ function Item({
 }) {
   const drag = useDraggable({ id: widget.id });
   const drop = useDroppable({ id: widget.id });
-  const rootRef = useRef<HTMLDivElement>(null);
+  const cellRef = useRef<HTMLDivElement>(null);
   const { label } = widget;
   // Con el cursor o el dedo se toma el bloque entero tras mantenerlo presionado; el teclado
   // solo desde el asa (que Enter o Espacio en un enlace de dentro no inicien un arrastre).
@@ -168,21 +168,21 @@ function Item({
 
   /** Esquinas: arrastrar cambia el ancho (se ajusta a las columnas) y, si admite alto, la altura. */
   function startResize(event: ReactPointerEvent<HTMLElement>, corner: Corner) {
-    const el = rootRef.current;
+    const el = cellRef.current;
     const grid = el?.parentElement;
     if (!el || !grid || event.button > 0) return;
     event.preventDefault();
     event.stopPropagation();
     const pointerId = event.pointerId;
-    const gap = Number.parseFloat(getComputedStyle(grid).columnGap) || 14;
-    const unit = (grid.clientWidth + gap) / COLS;
+    // Sin huecos entre columnas (96 huecos de 14 px no caben): cada celda lleva medio hueco de relleno.
+    const unit = grid.clientWidth / COLS;
     const startX = event.clientX;
     const startY = event.clientY;
     const startWidth = el.offsetWidth;
     const startHeight = height;
     let lastSpan: Span | null = null;
     let lastHeight: number | null = null;
-    const minPx = unit * MIN_SPAN - gap;
+    const minPx = unit * MIN_SPAN;
     let livePx = startWidth;
     const move = (ev: PointerEvent) => {
       if (ev.pointerId !== pointerId) return;
@@ -191,7 +191,7 @@ function Item({
       livePx = Math.min(grid.clientWidth, Math.max(minPx, startWidth + dx));
       el.style.justifySelf = "start";
       el.style.width = `${livePx}px`;
-      const reserve = Math.min(COLS, Math.max(MIN_SPAN, Math.ceil((livePx + gap) / unit)));
+      const reserve = Math.min(COLS, Math.max(MIN_SPAN, Math.ceil(livePx / unit)));
       if (reserve !== lastSpan) {
         lastSpan = reserve;
         onSpan(reserve);
@@ -211,7 +211,7 @@ function Item({
       window.removeEventListener("pointerup", end);
       window.removeEventListener("pointercancel", end);
       // Al soltar se asienta en la columna más cercana, con un deslizamiento corto en vez de un salto.
-      const snapped = spanFromWidth(livePx + gap, unit);
+      const snapped = spanFromWidth(livePx, unit);
       if (snapped !== lastSpan) onSpan(snapped);
       el.style.width = "";
       el.style.justifySelf = "";
@@ -238,13 +238,20 @@ function Item({
 
   return (
     <div
+      ref={cellRef}
+      style={{ ["--span" as string]: span }}
+      className={cn(
+        "min-w-0 has-[[data-widget]:empty]:hidden lg:px-[7px]",
+        widget.half ? "col-span-1" : "col-span-2",
+        "lg:[grid-column:span_var(--span)]",
+      )}
+    >
+    <div
       ref={(node) => {
-        rootRef.current = node;
         drag.setNodeRef(node);
         drop.setNodeRef(node);
       }}
       data-widget={widget.id}
-      style={{ ["--span" as string]: span }}
       // Sin arrastre nativo (enlaces e imágenes lo roban a dnd-kit y el bloque no se podía tomar).
       onDragStart={(event) => event.preventDefault()}
       {...pointerListeners}
@@ -253,9 +260,7 @@ function Item({
         (pointerListeners.onPointerDown as ((e: ReactPointerEvent<HTMLElement>) => void) | undefined)?.(event);
       }}
       className={cn(
-        "group/widget relative min-w-0 transition-[opacity,outline-color] duration-200",
-        widget.half ? "col-span-1" : "col-span-2",
-        "lg:[grid-column:span_var(--span)]",
+        "group/widget relative h-full min-w-0 transition-[opacity,outline-color] duration-200",
         !editing && "nx-rise empty:hidden",
         // El marco abraza al componente (no a su hueco): se toma desde cualquier punto.
         editing && "cursor-grab rounded-lg outline-2 outline-offset-2 outline-dashed outline-border-strong hover:z-(--z-sticky) hover:outline-border-input active:cursor-grabbing",
@@ -354,6 +359,7 @@ function Item({
             );
           })
         : null}
+    </div>
     </div>
   );
 }
@@ -662,7 +668,7 @@ export function CustomizableDashboard({
           <div
             ref={gridRef}
             // `dense`: un bloque más pequeño sube a rellenar el hueco que dejó otro (sin espacios en blanco).
-            className="grid grid-cols-2 gap-3.5 [grid-auto-flow:dense] lg:[grid-template-columns:repeat(96,minmax(0,1fr))]"
+            className="grid grid-cols-2 gap-3.5 [grid-auto-flow:dense] lg:-mx-[7px] lg:gap-x-0 lg:[grid-template-columns:repeat(96,minmax(0,1fr))]"
             onPointerDown={(e) => e.target === e.currentTarget && setSelectedId(null)}
             onClickCapture={(e) => {
               if (!suppressClick.current) return;
