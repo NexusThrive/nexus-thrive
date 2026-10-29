@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Check, ChevronDown, Plus } from "lucide-react";
@@ -11,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/molecules/dropdown-menu";
+import { armPopoverMorph, type PopoverMorph } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 export type SwitcherBusiness = { slug: string; name: string };
@@ -42,6 +44,13 @@ export function BusinessSwitcher({
   className?: string;
 }) {
   const router = useRouter();
+  // El panel viaja desde el cuadro del negocio y vuelve a él (mismo efecto de los modales Pretty).
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const morph = useRef<PopoverMorph | null>(null);
+  const contentRef = useCallback((node: HTMLDivElement | null) => {
+    morph.current?.cancel();
+    morph.current = node ? armPopoverMorph(node, triggerRef.current, { watchClose: true }) : null;
+  }, []);
   // Si la lista no trae el actual (p. ej. staff entrando a un negocio), se agrega.
   const list = businesses.some((b) => b.slug === currentSlug)
     ? businesses
@@ -51,6 +60,7 @@ export function BusinessSwitcher({
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <button
+          ref={triggerRef}
           type="button"
           data-press=""
           className={cn(
@@ -64,7 +74,7 @@ export function BusinessSwitcher({
           <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" sideOffset={8} className="w-[min(300px,calc(100vw-24px))] p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <DropdownMenuContent ref={contentRef} align="end" sideOffset={8} className="w-[min(300px,calc(100vw-24px))] p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <DropdownMenuLabel className="px-2.5 pb-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
           Tus negocios
         </DropdownMenuLabel>
