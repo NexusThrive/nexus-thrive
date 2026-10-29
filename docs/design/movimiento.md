@@ -12,8 +12,10 @@ catálogo vivo en Storybook (*Fundamentos → Movimiento*).
 2. Nada retrasa una acción: el control responde al instante y el foco no espera
    a la animación.
 3. Solo `transform`, `opacity`, `filter` y `clip-path`. Nunca animar `width`,
-   `height`, `top/left` ni sombras en bucle (excepciones puntuales y de una
-   sola vez, documentadas en el componente: el logo del riel).
+   `height`, `top/left` ni sombras en bucle. Excepciones puntuales, de una sola
+   vez y documentadas: el logo del riel y el **viaje del modal de escritorio**
+   (§4), que anima `width`, `height`, `border-radius` y `background-color` con
+   `data-morph` como único dueño (sin CSS compitiendo).
 4. **Un dueño por transición.** Nunca CSS y JavaScript animando la misma
    propiedad del mismo elemento (ver §2).
 5. Movimiento reducido es una variante de primera clase (§7).
@@ -23,7 +25,7 @@ catálogo vivo en Storybook (*Fundamentos → Movimiento*).
 | Superficie | Dueño | Dónde |
 |---|---|---|
 | Entrada de una vista al navegar | CSS `nx-view-in` | `app/[tenant]/(app)/template.tsx` |
-| Modal flotante que abre un botón (PC): entrada y salida | Web Animations (morfeo y su reversa) | `responsive-sheet.tsx` → `connectToActivator` |
+| Modal flotante que abre un botón (PC): entrada y salida | GSAP (viaje desde el botón y su reversa) | `responsive-sheet.tsx` → `armModalMorph` (`lib/motion/modal-morph.ts`) |
 | Panel lateral: entra y sale deslizándose por la derecha (misma duración, en espejo) | CSS `drawer-in` / `drawer-out` | `responsive-sheet.module.css` |
 | Sostén de la salida del modal (para que Radix espere) y fallbacks sin botón | CSS | `responsive-sheet.module.css` |
 | Hoja inferior móvil | CSS (sube y baja; se arrastra) | `responsive-sheet.module.css` |
@@ -35,7 +37,8 @@ catálogo vivo en Storybook (*Fundamentos → Movimiento*).
 | Arrastrar y soltar | dnd-kit (transform) | `lead-board.tsx` |
 | Cifras, barras, trazos | Web Animations (`lib/motion`) | `CountUp`, `Sparkline` |
 
-**Librerías:** CSS + Web Animations API + `@dnd-kit/core` (solo arrastre).
+**Librerías:** CSS + Web Animations API + GSAP (solo el viaje del modal de
+escritorio) + `@dnd-kit/core` (solo arrastre).
 No se usan Motion for React, AutoAnimate, Vaul ni React Grid Layout (§9).
 
 ## 3. Tokens
@@ -50,21 +53,26 @@ No se usan Motion for React, AutoAnimate, Vaul ni React Grid Layout (§9).
 | `--motion-overlay-out` | 200 ms | Modal y panel salen |
 | `--d4` | 600 ms | Entradas de bloques y cifras |
 
+El **viaje del modal de escritorio** (§4) usa **600 ms** en la apertura y otros
+**600 ms** en el cierre (`MORPH_SECONDS` en `lib/motion/modal-morph.ts`); el
+`modal-out-hold` del CSS lo sostiene 620 ms (20 ms de margen). El resto de
+tokens no cambia.
+
 Curvas: `--nx-ease-out` (entradas), `--nx-ease-in` (salidas),
 `--nx-ease-in-out` (barridos), `--nx-ease-spring` (indicadores que se
-deslizan). El morfeo del modal usa `cubic-bezier(0.22, 1, 0.36, 1)`.
+deslizan). El viaje del modal usa `expo.out` en la tarjeta, `power4.out` en el
+eje Y al abrir, y `expo.inOut` / `power3.inOut` al cerrar.
 
 ## 4. Modales que nacen del botón («view transition» propia)
 
 **Qué se ve (PC, modal flotante):** al pulsar «Crear», «Editar»…
-el modal sale del propio botón: arranca con su tamaño y posición,
-crece hasta su sitio en 380 ms y «se enfoca» (de 4 px de desenfoque a nítido)
-mientras la opacidad sube rápido para que la deformación del contenido casi no
-se note. **Al cerrar hace exactamente lo mismo en reversa:** se encoge de
-vuelta al mismo botón (misma duración, curva espejo) y se «guarda» en él; si el
-botón se movió, vuelve a donde está ahora.
+el modal sale del propio botón: arranca con su tamaño, posición, radio y color,
+crece hasta su sitio en 600 ms y el contenido aparece escalonado al final.
+**Al cerrar hace exactamente lo mismo en reversa:** el contenido se va primero,
+la tarjeta se encoge de vuelta al mismo botón (otros 600 ms) y se «guarda» en
+él; si el botón se movió, vuelve a donde está ahora.
 
-**Panel lateral:** NO hace morfeo. Siempre entra deslizándose (`translateX`)
+**Panel lateral:** NO hace viaje. Siempre entra deslizándose (`translateX`)
 desde el borde derecho, de donde sale, y al cerrar se desliza de vuelta por el
 mismo borde, con la misma duración (360 ms) y curva espejo. **En móvil** la hoja
 inferior sube y baja y se cierra arrastrándola.
@@ -73,25 +81,24 @@ inferior sube y baja y se cierra arrastrándola.
 
 1. Un solo oyente global recuerda el último botón o enlace pulsado (clic,
    toque o Enter/Espacio).
-2. Al montar el modal (`ref` de callback, antes del primer pintado) se mide ese
-   botón y el modal; se lanza una animación Web Animations con
-   `translate + scale` desde el rectángulo del botón.
-3. `data-morph` apaga la entrada CSS mientras dure (un dueño). Se mantiene
-   mientras esté abierto, porque quitarlo haría que la entrada CSS arrancara
-   de nuevo. Al cerrar (incluso a mitad del morfeo) se cancela la entrada y se
-   juega la reversa; el CSS (`modal-out-hold`, 380 ms) solo sostiene una
-   animación para que Radix no desmonte antes, y la superficie deja de capturar
-   el puntero al instante (cerrar no bloquea el clic).
-   Importante: entrada y salida usan **la misma lista de funciones de
-   transform y `transform-origin` al centro**; si no, el navegador interpola por
-   matrices y la salida se pasa de largo del botón.
+2. Al montar el modal (`ref` de callback, antes del primer pintado)
+   `armModalMorph` mide ese botón y el panel y fija el estado inicial con GSAP:
+   el panel **es** el botón (mismo ancho, alto, radio y color) y el botón de
+   origen se oculta mientras dura el viaje.
+3. `data-morph` apaga la entrada y la salida CSS (un dueño). La apertura es una
+   línea de tiempo GSAP; el cierre se dispara al observar `data-state="closed"`
+   y arranca desde el estado actual, también si se cierra a mitad de apertura.
+   El CSS (`modal-out-hold`, 620 ms) solo sostiene el nodo para que Radix no
+   desmonte antes de que termine la reversa (600 ms) y, al acabar, el nodo se
+   oculta en el sitio para que no reaparezca en el centro.
 4. El foco, el atrapado de Tab, Escape, el scroll y la devolución del foco los
-   sigue gestionando Radix: el morfeo es solo visual y **no bloquea nada**.
+   sigue gestionando Radix: el viaje es solo visual y **no bloquea nada**.
 
-**Cuándo NO hay morfeo (entra la animación CSS centrada de 360 ms):**
+**Cuándo NO hay viaje (entra la animación CSS centrada de 360 ms):**
 el botón ya no existe (p. ej. un ítem de menú que se cierra al elegirlo), está
-fuera de pantalla, el movimiento está reducido, o la forma es panel lateral
-(entra deslizándose desde la derecha) u hoja móvil (sube desde abajo).
+fuera de pantalla, el movimiento está reducido, la forma es panel lateral
+(entra deslizándose desde la derecha), hoja móvil (sube desde abajo),
+`alert` (aviso sobre otro panel) o `size="full"` (visor de documentos).
 
 **Uso:** no hay que hacer nada. Todo diálogo creado con `ResponsiveSheet`,
 `FormDialog`, `FormDrawer` o `ConfirmDialog` lo hereda. **No reimplementar**
@@ -103,7 +110,7 @@ React (el proyecto usa 19.2 estable); la API nativa exige envolver el cambio de
 estado de React en el callback de la transición y toma una captura de toda la
 página (sin interacción mientras dura), lo que choca con «no bloquear
 controles» y con el foco gestionado por Radix; y la entrada de vistas ya tiene
-dueño. El morfeo FLIP da el mismo resultado visual para esta superficie sin
+dueño. El viaje con GSAP da el mismo resultado visual para esta superficie sin
 esos costos. Se reevalúa con React estable y un caso real de elemento
 compartido entre rutas (tarjeta → ficha de una obra), con `prefers-reduced-motion`
 y fallback sin la API.
@@ -117,7 +124,7 @@ resuelve solo: si se desmonta estando abierto, deja una **copia** del panel y
 del fondo con `data-state="closed"` y anima la salida sobre la copia (reversa al
 botón en el modal flotante, deslizamiento a la derecha en el lateral, bajada en
 la hoja móvil). La copia no recibe clics, no repite ids y se borra sola a los
-~500 ms. No hay que cambiar ninguna pantalla; las dos formas de montar
+~720 ms. No hay que cambiar ninguna pantalla; las dos formas de montar
 (siempre montado con `open`, o montado solo si está abierto) animan igual.
 Pruebas: `Salida animada aunque el padre desmonte el panel` en
 `e2e/overlays.spec.ts` y las historias `MountedOnlyWhileOpen*`.
@@ -149,7 +156,7 @@ el camino del padre). `unsavedGuard={false}` lo apaga (las confirmaciones).
 **Capa propia del aviso (`alert`):** va por encima del panel que lo origina
 (`--z-alert-overlay` 72 / `--z-alert` 73) con un fondo más oscuro y difuminado
 (`--overlay-strong` + `blur(3px)`) que atenúa también el panel de abajo; entra y
-sale rápido (160/120 ms) y no hace morfeo desde un botón. Cualquier aviso que
+sale rápido (160/120 ms) y no viaja desde un botón. Cualquier aviso que
 vaya sobre otro panel usa `<ResponsiveSheet alert …>`.
 
 ### Estados de carga
@@ -163,7 +170,7 @@ marca). Página entera: `PageSkeleton` en `loading.tsx`.
 
 | Contenido | Superficie | Movimiento |
 |---|---|---|
-| Acción breve, confirmación, formulario corto | Diálogo (`FormDialog`, `ConfirmDialog`) | Morfeo desde el botón |
+| Acción breve, confirmación, formulario corto | Diálogo (`FormDialog`, `ConfirmDialog`) | Viaje desde el botón |
 | Ficha o formulario largo que conserva el contexto | Panel lateral (`FormDrawer`) | Desliza desde la derecha |
 | Control pequeño asociado a un elemento | `Popover` / `DropdownMenu` | Escala 95 % → 100 % desde su disparador |
 | Proceso extenso o con URL propia | Página | `nx-view-in` |
@@ -198,7 +205,7 @@ cualquier uso nuevo:
 
 `prefers-reduced-motion: reduce` o *Ajustes → Reducir movimiento*
 (`<html data-motion="off">`) llevan toda animación a 1 ms y el JavaScript
-consulta `motionOff()`. El morfeo del modal se omite (el modal aparece sin
+consulta `motionOff()`. El viaje del modal se omite (el modal aparece sin
 viaje); el arrastre usa `dropAnimation` de 0 ms; los contadores muestran el
 valor final. Todo cambio de estado se sigue entendiendo por texto, color o
 icono: la animación nunca es la única señal.

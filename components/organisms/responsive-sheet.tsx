@@ -93,12 +93,13 @@ function ghostOut(content: HTMLElement, scrim: HTMLElement | null) {
  *   panel lateral derecho (`drawer`, 440 px; `size="lg"` 560 px) para fichas,
  *   registros con varias secciones y detalle que conserva el contexto.
  *
- * En PC el modal viaja desde el control que lo abrió y vuelve a él (ver
- * `armModalMorph` y docs/design/movimiento.md).
+ * En PC el modal viaja desde el control que lo abrió y vuelve a él en 600 ms
+ * por sentido (GSAP, `armModalMorph`); no aplica a móvil, `drawer`, `alert`,
+ * `size="full"` ni movimiento reducido (ver docs/design/movimiento.md §4).
  *
  * Radix Dialog aporta el foco atrapado, Escape, el fondo que cierra, la
- * devolución del foco al control que lo abrió y los roles ARIA; las
- * animaciones viven en el CSS Module (sin JS por cuadro).
+ * devolución del foco al control que lo abrió y los roles ARIA; la hoja móvil,
+ * el panel lateral y el sostén de la salida viven en el CSS Module.
  *
  * Cuándo usar cada forma: docs/design/interaction-patterns.md. Para
  * formularios, preferir `FormDialog` / `FormDrawer` (form-sheet.tsx), que ya

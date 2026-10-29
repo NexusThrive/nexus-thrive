@@ -36,6 +36,7 @@ const RADIX_DIALOG_ALLOWED = [
   "components/organisms/responsive-sheet.tsx", // la base de diálogos y paneles
   "components/organisms/command.tsx", // paleta del panel CEO (cmdk)
   "components/organisms/command-palette.tsx", // paleta del negocio (cmdk)
+  "components/labs/pretty-modal/pretty-modal.tsx", // laboratorio de referencia (no se envía)
 ];
 
 /** Superposiciones a pantalla completa propias que no son diálogos de formulario. */
