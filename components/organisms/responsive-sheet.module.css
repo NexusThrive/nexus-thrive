@@ -132,7 +132,7 @@
      de la misma duración (con un margen de 20 ms) para que Radix no desmonte
      antes de tiempo. */
   .sheet[data-state="closed"][data-morph] {
-    animation: modal-out-hold 420ms linear forwards;
+    animation: modal-out-hold 620ms linear forwards;
   }
   .sheet[data-state="closed"] {
     animation: modal-out var(--motion-overlay-out) var(--nx-ease-in) forwards;

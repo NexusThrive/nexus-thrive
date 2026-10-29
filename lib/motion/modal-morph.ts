@@ -19,7 +19,7 @@ import { motionOff } from "./reduced";
  */
 
 /** Duración del viaje en cada sentido. Debe coincidir con `modal-out-hold` del CSS. */
-export const MORPH_SECONDS = 0.4;
+export const MORPH_SECONDS = 0.6;
 
 /** Base del ZIP: abre en 0,75 s y cierra en 0,55 s (más 0,12 s de espera). */
 const ZIP_OPEN = 0.75;

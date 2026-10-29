@@ -238,7 +238,7 @@ test.describe("Modal conectado al botón", () => {
   const escapeAt = (page: import("@playwright/test").Page) =>
     page.evaluate(() => (window as unknown as { __esc: number | null }).__esc);
 
-  test("nace del botón y vuelve a él (viaje del ZIP a 0,4 s)", async ({ page }) => {
+  test("nace del botón y vuelve a él (viaje del ZIP a 0,6 s)", async ({ page }) => {
     await page.setViewportSize({ width: 1100, height: 600 });
     await openStory(page, "organismos-formsheet--dialog");
     const boton = page.getByRole("button", { name: "Nuevo cliente" });
@@ -275,7 +275,7 @@ test.describe("Modal conectado al botón", () => {
     await boton.click();
     const dialogo = page.getByRole("dialog");
     await dialogo.waitFor();
-    await page.waitForTimeout(50); // a mitad del viaje de 400 ms
+    await page.waitForTimeout(80); // a mitad del viaje de 600 ms
     const antes = await dialogo.evaluate((el) => {
       const r = el.getBoundingClientRect();
       return { ow: (el as HTMLElement).offsetWidth, cx: Math.round(r.left + r.width / 2) };
@@ -311,6 +311,29 @@ test.describe("Modal conectado al botón", () => {
       expect(m.at(-1)!.ow, `${cerrar}: termina en el ancho del botón`).toBeLessThan(260);
       expect(Math.abs(m.at(-1)!.cx - (caja.x + caja.width / 2)), `${cerrar}: termina en el botón`).toBeLessThan(24);
     }
+  });
+});
+
+test.describe("Variantes sin viaje", () => {
+  test.skip(({ isMobile }) => isMobile, "El panel lateral y el modal solo se comparan en escritorio");
+
+  test("el panel lateral no se arma", async ({ page }) => {
+    await openStory(page, "organismos-formsheet--drawer");
+    await page.getByRole("button", { name: "Editar cliente" }).click();
+    const dialogo = page.getByRole("dialog");
+    await dialogo.waitFor();
+    expect(await dialogo.evaluate((el) => el.hasAttribute("data-morph"))).toBe(false);
+  });
+
+  test("movimiento reducido: sin data-morph y sin viaje", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await openStory(page, "organismos-formsheet--dialog");
+    await page.getByRole("button", { name: "Nuevo cliente" }).click();
+    const dialogo = page.getByRole("dialog");
+    await dialogo.waitFor();
+    expect(await dialogo.evaluate((el) => el.hasAttribute("data-morph"))).toBe(false);
+    const ancho = await dialogo.evaluate((el) => Math.round(el.getBoundingClientRect().width));
+    expect(ancho).toBeGreaterThan(400);
   });
 });
 
