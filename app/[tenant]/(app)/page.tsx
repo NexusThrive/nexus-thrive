@@ -1,6 +1,6 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
-import { MinusCircle, TrendingUp, Users, Wallet } from "lucide-react";
+import { HandCoins, MinusCircle, TrendingUp, Users, Wallet } from "lucide-react";
 import { tenantWithModules } from "@/lib/tenant/membership";
 import { createTenantDb } from "@/lib/tenant/db";
 import { getVerticalTerms } from "@/lib/vertical-terms";
@@ -11,6 +11,8 @@ import { runningBalance, type FinanceSeries } from "@/lib/finance/series";
 import { sortModules, isModule } from "@/lib/admin/catalogs";
 import { quickCreateActions } from "@/lib/navigation/quick-create";
 import { CHART_CATALOG } from "@/lib/dashboard/chart-catalog";
+import { cashFlow, comparison, countLabel, updatedLabel } from "@/lib/dashboard/insights";
+import { receivables } from "@/lib/receivables/receivables-db";
 import { paymentMethodLabel } from "@/lib/finance";
 import { Delta } from "@/components/atoms/delta";
 import { RevealText } from "@/components/atoms/reveal-text";
@@ -119,6 +121,10 @@ export default async function TenantDashboard({
     tenantDb.finance.getMetrics(),
   ]);
   const presence = await loadPresence(tenantRecord);
+  // Por cobrar: solo con el módulo de Cartera encendido (la misma regla de su pantalla).
+  const pending = tenantRecord.modules.some((m) => m.active && m.moduleName === "receivables")
+    ? (await receivables(tenantRecord.id)).aging
+    : null;
   const hasCatalog =
     tenantRecord.modules.some((m) => m.active && m.moduleName === "inventory")
       ? (await listProducts(tenantRecord.id, { limit: 1 })).length > 0
@@ -132,6 +138,9 @@ export default async function TenantDashboard({
       ? series.hours.map((h) => h.income - h.expenses).map((_, i, a) => a.slice(0, i + 1).reduce((x, y) => x + y, 0))
       : runningBalance(series.days);
   const versus = period === "hoy" ? "vs. ayer" : "vs. periodo anterior";
+  const incomeVs = comparison(current.income, previous.income, versus);
+  const expenseVs = comparison(current.expenses, previous.expenses, versus);
+  const flow = cashFlow(current.income, current.expenses);
   const periodText = period === "hoy" ? "hoy" : period === "7d" ? "esta semana" : "este mes";
 
   // Vocabulario adaptativo de la vertical (Socios / Pacientes / Turistas…).
@@ -204,50 +213,74 @@ export default async function TenantDashboard({
         format="cop"
         icon={TrendingUp}
         delta={deltaFor(current.income, previous.income)}
-        hint={percentChange(current.income, previous.income) == null ? "Cobros del periodo" : versus}
+        hint={`${countLabel(current.count, "cobro registrado", "cobros registrados", "Sin cobros")} · ${incomeVs.note}`}
+        info="Suma de los pagos aprobados del periodo. La variación compara con el periodo anterior del mismo largo."
+        action={{ label: "Ver cobros" }}
         trend={incomeTrend}
         href={has("finance") ? `${base}/finance` : undefined}
       />
     ) },
-    { id: "kpi-customers", label: "Clientes activos", span: 3, half: true, node: (
-      <KpiCard
-        index={1}
-        label={`${terms.customers} activos`}
-        value={activeCustomers}
-        icon={Users}
-        delta={growth.added > 0 ? <Delta value={growth.added} format="count" /> : undefined}
-        hint={activeCustomers > 0 ? (growth.added > 0 ? "nuevos" : "en tu cartera") : `Sin ${terms.customers.toLowerCase()} aún`}
-        trend={growth.series}
-        href={has("crm") ? `${base}/crm` : undefined}
-      />
-    ) },
     { id: "kpi-expenses", label: "Gastos", span: 3, half: true, node: (
       <KpiCard
-        index={2}
+        index={1}
         label="Gastos"
         value={current.expenses}
         format="cop"
         icon={MinusCircle}
         delta={deltaFor(current.expenses, previous.expenses, true)}
-        hint="caja menor y fijos"
+        hint={`${expenseVs.note} · caja menor y fijos`}
+        info="Suma de los gastos registrados en el periodo, sin los anulados. Más gasto que antes se marca en rojo."
+        action={{ label: "Ver gastos" }}
         trend={expenseTrend}
         trendColor="var(--danger)"
         href={has("finance") ? `${base}/finance` : undefined}
       />
     ) },
-    { id: "kpi-balance", label: "Balance", span: 3, half: true, node: (
+    { id: "kpi-balance", label: "Balance neto", span: 3, half: true, node: (
       <KpiCard
-        index={3}
-        label="Balance"
-        value={current.balance}
+        index={2}
+        label="Balance neto"
+        value={flow}
         format="cop"
         icon={Wallet}
-        alert={current.balance < 0}
-        delta={deltaFor(current.balance, previous.balance)}
-        hint="ingresos menos gastos"
+        alert={flow < 0}
+        delta={deltaFor(flow, previous.balance)}
+        hint="Ingresos − gastos del periodo"
+        info="Flujo de caja del periodo: lo que entró menos lo que salió. No incluye lo que aún te deben (ver «Por cobrar»)."
+        action={{ label: "Ver balance" }}
         trend={balanceTrend}
         trendColor="var(--nx-gold-600)"
         href={has("finance") ? `${base}/finance` : undefined}
+      />
+    ) },
+    ...(pending
+      ? [{ id: "kpi-pending", label: "Por cobrar", span: 3 as const, half: true, node: (
+          <KpiCard
+            index={3}
+            label="Por cobrar"
+            value={pending.total}
+            format="cop"
+            icon={HandCoins}
+            alert={pending.buckets.d1_30.count + pending.buckets.d31_60.count + pending.buckets.d61_90.count + pending.buckets.d90.count > 0}
+            hint={pending.count === 0 ? "Nada pendiente" : `${countLabel(pending.count, "cuenta pendiente", "cuentas pendientes")}`}
+            info="Saldo de las cuentas por cobrar emitidas y aún no pagadas, con o sin vencimiento. Es dinero que todavía no entra a caja."
+            action={{ label: "Ver cartera" }}
+            href={`${base}/cartera`}
+          />
+        ) }]
+      : []),
+    { id: "kpi-customers", label: "Clientes activos", span: 3, half: true, node: (
+      <KpiCard
+        index={4}
+        label={`${terms.customers} activos`}
+        value={activeCustomers}
+        icon={Users}
+        delta={growth.added > 0 ? <Delta value={growth.added} format="count" /> : undefined}
+        hint={activeCustomers > 0 ? (growth.added > 0 ? "nuevos en el periodo" : "en tu cartera") : `Sin ${terms.customers.toLowerCase()} aún`}
+        info={`${terms.customers} con registro activo hoy. La variación cuenta los nuevos del periodo.`}
+        action={{ label: `Ver ${terms.customers.toLowerCase()}` }}
+        trend={growth.series}
+        href={has("crm") ? `${base}/crm` : undefined}
       />
     ) },
     { id: "chart", label: "Ingresos y gastos", node: (
@@ -302,7 +335,7 @@ export default async function TenantDashboard({
       <PageHeader
         eyebrow={formattedDate}
         title={<RevealText parts={[`${greetingFor()}, `, { text: greetingName, gold: true }]} />}
-        description={`Así va ${tenantRecord.name} ${periodText}. ${current.count} ${current.count === 1 ? "cobro registrado" : "cobros registrados"}.`}
+        description={`Así va ${tenantRecord.name} ${periodText}. ${countLabel(current.count, "cobro registrado", "cobros registrados", "Sin cobros registrados")}. ${updatedLabel()}.`}
         actions={
           <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
             <UrlSegmentedControl

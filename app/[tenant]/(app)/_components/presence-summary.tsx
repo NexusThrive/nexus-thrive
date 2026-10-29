@@ -37,20 +37,20 @@ export function PresenceSummary({
               {meta.label}
             </Badge>
           </div>
-          <p className="truncate text-xs text-muted-foreground">
+          <p className={cn("text-xs text-muted-foreground", presence.scannedAt && "truncate")}>
             {presence.scannedAt
               ? `Último análisis ${formatRelativeTime(presence.scannedAt).toLowerCase()}.`
-              : "Aún sin analizar."}
+              : "Aún sin analizar: este porcentaje mide qué tan completa está tu presencia en línea. Analiza tu negocio para calcularlo."}
           </p>
         </div>
         <span className="shrink-0 font-display text-3xl font-semibold leading-none tabular-nums">
-          {presence.score}%
+          {presence.scannedAt ? `${presence.score}%` : "—"}
         </span>
       </div>
 
       <div className="mt-3 flex items-center gap-3">
         <ProgressBar
-          value={presence.score / 100}
+          value={presence.scannedAt ? presence.score / 100 : 0}
           tone={meta.bar}
           label="Presencia digital"
           className="h-1.5 flex-1"
@@ -59,7 +59,7 @@ export function PresenceSummary({
           href={href}
           className={cn(buttonVariants({ variant: "outline", size: "sm" }), "shrink-0")}
         >
-          Administrar
+          {presence.scannedAt ? "Administrar" : "Analizar ahora"}
           <ArrowRight className="size-3.5" aria-hidden="true" />
         </Link>
       </div>

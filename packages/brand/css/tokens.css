@@ -238,6 +238,13 @@
   --row-h: 46px;
 }
 
+/* En pantallas muy anchas el contenido crece para no dejar el centro angosto. */
+@media (min-width: 1536px) {
+  :root {
+    --content-max: 1480px;
+  }
+}
+
 @media (min-width: 768px) {
   :root {
     --topbar-height: 72px;

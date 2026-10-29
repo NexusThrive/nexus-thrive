@@ -24,3 +24,29 @@ describe("greetingFor", () => {
     expect(greetingFor(new Date("2026-10-17T02:00:00Z"))).toBe("Buenas noches"); // 21:00
   });
 });
+
+describe("insights del inicio", () => {
+  it("comparison: con base devuelve la variación y su nota", async () => {
+    const { comparison } = await import("./insights");
+    expect(comparison(112, 100, "vs. periodo anterior")).toEqual({ change: 12, note: "vs. periodo anterior" });
+  });
+  it("comparison: sin base no inventa un 0 %", async () => {
+    const { comparison } = await import("./insights");
+    expect(comparison(50, 0, "vs. ayer")).toEqual({ change: null, note: "Sin variación disponible" });
+  });
+  it("cashFlow resta gastos de ingresos", async () => {
+    const { cashFlow } = await import("./insights");
+    expect(cashFlow(1000, 250)).toBe(750);
+    expect(cashFlow(0, 60)).toBe(-60);
+  });
+  it("countLabel singular, plural y vacío", async () => {
+    const { countLabel } = await import("./insights");
+    expect(countLabel(1, "cobro registrado", "cobros registrados")).toBe("1 cobro registrado");
+    expect(countLabel(6, "cobro registrado", "cobros registrados")).toBe("6 cobros registrados");
+    expect(countLabel(0, "cobro", "cobros")).toBe("Sin movimientos");
+  });
+  it("updatedLabel usa la hora de Bogotá", async () => {
+    const { updatedLabel } = await import("./insights");
+    expect(updatedLabel(new Date("2026-10-16T20:42:00Z"))).toMatch(/^Actualizado a las 3:42/);
+  });
+});

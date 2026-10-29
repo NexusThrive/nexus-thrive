@@ -95,7 +95,7 @@ interruptor de la barra). Densidad compacta con `data-density="compact"`
 | Espacio (base 4 px) | `--space-1`…`--space-20` (4–80 px) |
 | Radios | `--radius-sm` 2 · `md` 4 · `lg` 6 · `xl` 8 px |
 | Controles | `--control-h` 40 px · `--row-h` 56 px |
-| Layout | `--sidebar-width` 248 · colapsada 76 · `--topbar-height` 60 (72 desde 768 px) · `--content-max` 1280 · `--content-prose` 72 ch |
+| Layout | `--sidebar-width` 248 · colapsada 76 · `--topbar-height` 60 (72 desde 768 px) · `--content-max` 1280 (1480 desde 1536 px) · `--content-prose` 72 ch |
 | Superficies | `--dialog-w-sm` 440 · `md` 520 · `lg` 640 · `xl` 768 · `--drawer-w` 440 · `--drawer-w-lg` 560 · `--popover-w` 320 |
 
 ### Elevación y capas
