@@ -7,7 +7,6 @@ import { prefsInitScript, themeInitScript } from "@/lib/init-scripts";
 import { MotionProvider } from "@/components/providers/motion-provider";
 import { PreferencesProvider } from "@/components/providers/preferences";
 import { PwaProvider } from "@/components/providers/pwa";
-import { SplashIntro } from "@/components/organisms/splash-intro";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -45,7 +44,6 @@ export default function RootLayout({
         <ClerkProvider localization={clerkLocalization} appearance={clerkProviderAppearance}>
           <PreferencesProvider>
             <MotionProvider />
-            <SplashIntro />
             <PwaProvider>{children}</PwaProvider>
           </PreferencesProvider>
         </ClerkProvider>

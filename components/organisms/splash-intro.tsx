@@ -10,7 +10,7 @@ import { N_PATH, THRIVE_LETTERS } from "@nexus/brand/BrandLogo";
    fotograma se actualiza el atributo `transform` del grupo y de la ruta del
    hueco: nunca se escala un SVG con CSS ni se le aplica blur (perdería
    calidad). El contorno usa `vector-effect: non-scaling-stroke` (3 px).
-   Se muestra en CADA carga/recarga (sin gate de sesión) y tiene tres
+   Solo se muestra al entrar a la app tras iniciar sesión (`AppEntrySplash`: una vez por sesión, cookie `nx-splash`) y tiene tres
    seguros para no quedarse pegado: tope de espera de fuentes, tope de
    carga y `TIMING.failsafe` + la animación CSS de respaldo.
    ========================================================================== */
