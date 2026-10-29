@@ -1,7 +1,0 @@
-[Unit]
-Description=Vigila el espejo de GitHub y reintenta si quedó en error
-
-[Service]
-Type=oneshot
-ExecStart=/home/craxker/.local/bin/nexus-mirror-sync
-Nice=10
