@@ -128,10 +128,11 @@
   .sheet[data-state="open"][data-morph] {
     animation: none;
   }
-  /* Salida con morfeo: Web Animations dibuja la reversa; esto solo mantiene
-     una animación de la misma duración para que Radix no desmonte antes. */
+  /* Salida con viaje: GSAP dibuja la reversa; esto solo mantiene una animación
+     de la misma duración (con un margen de 20 ms) para que Radix no desmonte
+     antes de tiempo. */
   .sheet[data-state="closed"][data-morph] {
-    animation: modal-out-hold 380ms linear forwards;
+    animation: modal-out-hold 420ms linear forwards;
   }
   .sheet[data-state="closed"] {
     animation: modal-out var(--motion-overlay-out) var(--nx-ease-in) forwards;
