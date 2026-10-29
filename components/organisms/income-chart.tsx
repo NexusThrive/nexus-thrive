@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motionOff } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 export type ChartPoint = {
   /** Etiqueta corta del eje ("Lun", "14"). */
@@ -10,6 +11,13 @@ export type ChartPoint = {
   full: string;
   income: number;
   expenses: number;
+  /** Primer y último día que cubre (YYYY-MM-DD, Bogotá); sin ellos el punto no se puede abrir. */
+  from?: string;
+  to?: string;
+  /** Movimientos del punto (`0` = sin movimientos). */
+  count?: number;
+  /** `empty`: el negocio ya existía y no hubo movimientos; `nodata`: aún no existía (no es un cero). */
+  state?: "data" | "empty" | "nodata";
 };
 
 const DEFAULT_H = 220;
@@ -33,7 +41,19 @@ function niceMax(max: number): number {
  * Las barras crecen escalonadas al aparecer, el último día va en oro y la
  * información sigue al cursor o al dedo con un tooltip que rebota.
  */
-export function IncomeChart({ data, label = "Gráfico de ingresos y gastos", height = DEFAULT_H }: { data: ChartPoint[]; label?: string; /** Alto del gráfico (px); por defecto 220. */ height?: number }) {
+export function IncomeChart({
+  data,
+  label = "Gráfico de ingresos y gastos",
+  height = DEFAULT_H,
+  onSelect,
+}: {
+  data: ChartPoint[];
+  label?: string;
+  /** Alto del gráfico (px); por defecto 220. */
+  height?: number;
+  /** Clic (o Enter) en una barra con movimientos: abre sus transacciones. */
+  onSelect?: (point: ChartPoint) => void;
+}) {
   const H = height;
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -83,6 +103,7 @@ export function IncomeChart({ data, label = "Gráfico de ingresos y gastos", hei
     setActive(Math.max(0, Math.min(n - 1, Math.floor((x - PAD_LEFT) / gw))));
   };
 
+  const selectable = (p: ChartPoint) => Boolean(p.from && p.to && (p.count ?? 1) > 0 && p.state !== "nodata");
   const point = active != null ? data[active] : null;
   const tipX = active != null ? PAD_LEFT + gw * active + gw / 2 : 0;
   const tipY = point ? Math.max(0, y(Math.max(point.income, point.expenses)) - 58) : 0;
@@ -91,14 +112,31 @@ export function IncomeChart({ data, label = "Gráfico de ingresos y gastos", hei
     <div ref={wrapRef} className="relative">
       <svg
         ref={svgRef}
-        role="img"
         aria-label={label}
         viewBox={`0 0 ${width} ${H}`}
         style={{ height: H }}
-        className="block w-full touch-pan-y overflow-visible"
+        className={cn("block w-full touch-pan-y overflow-visible outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring", onSelect && point && selectable(point) && "cursor-pointer")}
         onPointerMove={(e) => pick(e.clientX)}
         onPointerDown={(e) => pick(e.clientX)}
         onPointerLeave={() => setActive(null)}
+        onClick={() => {
+          const at = active != null ? data[active] : null;
+          if (at && onSelect && selectable(at)) onSelect(at);
+        }}
+        onFocus={() => setActive((a) => a ?? n - 1)}
+        onBlur={() => setActive(null)}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+            e.preventDefault();
+            setActive((a) => Math.max(0, Math.min(n - 1, (a ?? n - 1) + (e.key === "ArrowRight" ? 1 : -1))));
+          } else if ((e.key === "Enter" || e.key === " ") && active != null && data[active] && onSelect && selectable(data[active]!)) {
+            e.preventDefault();
+            onSelect(data[active]!);
+          }
+        }}
+        tabIndex={onSelect ? 0 : undefined}
+        role={onSelect ? "group" : "img"}
+        aria-roledescription={onSelect ? "gráfico interactivo" : undefined}
       >
         {[0, 1, 2, 3, 4].map((i) => {
           const v = (max * i) / 4;
@@ -118,6 +156,12 @@ export function IncomeChart({ data, label = "Gráfico de ingresos y gastos", hei
           const showLabel = (i % every === 0 || i === n - 1) && (n <= 14 || i < n - 2 || i === n - 1);
           return (
             <g key={`${d.label}-${i}`}>
+              {d.state === "nodata" ? (
+                <rect x={cx - bw - gap / 2} y={PAD_TOP} width={bw * 2 + gap} height={innerH} className="fill-surface-muted" opacity={on ? 0.9 : 0.5} />
+              ) : null}
+              {d.state === "empty" ? (
+                <line x1={cx - bw - gap / 2} x2={cx + bw + gap / 2} y1={PAD_TOP + innerH - 1} y2={PAD_TOP + innerH - 1} className="stroke-border-strong" strokeWidth={2} strokeDasharray="2 3" />
+              ) : null}
               <rect
                 data-bar=""
                 x={cx - bw - gap / 2}
@@ -125,7 +169,7 @@ export function IncomeChart({ data, label = "Gráfico de ingresos y gastos", hei
                 width={bw}
                 height={Math.max(0, PAD_TOP + innerH - y(d.income))}
                 style={{ transformBox: "fill-box", transformOrigin: "50% 100%" }}
-                className={on ? "fill-accent transition-colors" : "fill-foreground transition-colors"}
+                className={cn(on ? "fill-accent transition-colors" : "fill-foreground transition-colors", d.state === "nodata" && "hidden")}
               />
               <rect
                 data-bar=""
@@ -134,7 +178,7 @@ export function IncomeChart({ data, label = "Gráfico de ingresos y gastos", hei
                 width={bw}
                 height={Math.max(0, PAD_TOP + innerH - y(d.expenses))}
                 style={{ transformBox: "fill-box", transformOrigin: "50% 100%" }}
-                className="fill-border-strong"
+                className={cn("fill-border-strong", d.state === "nodata" && "hidden")}
               />
               {showLabel ? (
                 <text x={cx} y={H - 6} textAnchor="middle" className="fill-muted-foreground text-[11px] font-medium">
@@ -145,6 +189,9 @@ export function IncomeChart({ data, label = "Gráfico de ingresos y gastos", hei
           );
         })}
       </svg>
+      <p className="sr-only" role="status">
+        {point ? `${point.full}: ${point.state === "nodata" ? "sin datos" : point.state === "empty" ? "sin movimientos" : `ingresos ${cop(point.income)}, gastos ${cop(point.expenses)}`}` : ""}
+      </p>
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-0 top-0 whitespace-nowrap rounded-md bg-foreground px-2.5 py-2 text-xs leading-[1.35] text-background transition-[opacity,transform] duration-[260ms] ease-[cubic-bezier(.34,1.3,.64,1)]"
@@ -157,8 +204,17 @@ export function IncomeChart({ data, label = "Gráfico de ingresos y gastos", hei
         {point ? (
           <>
             <span>{point.full}</span>
-            <b className="block font-display text-[13px] font-semibold tabular-nums">{cop(point.income)}</b>
-            <span className="opacity-75">Gastos {cop(point.expenses)}</span>
+            {point.state === "nodata" ? (
+              <span className="block opacity-75">Sin datos: el negocio aún no existía</span>
+            ) : point.state === "empty" ? (
+              <span className="block opacity-75">Sin movimientos</span>
+            ) : (
+              <>
+                <b className="block font-display text-[13px] font-semibold tabular-nums">{cop(point.income)}</b>
+                <span className="opacity-75">Gastos {cop(point.expenses)}</span>
+                {onSelect && selectable(point) ? <span className="mt-0.5 block text-[11px] opacity-75">Clic para ver los movimientos</span> : null}
+              </>
+            )}
           </>
         ) : null}
       </div>
