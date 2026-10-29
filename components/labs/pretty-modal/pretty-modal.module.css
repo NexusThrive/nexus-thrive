@@ -1,0 +1,121 @@
+/* Banco de pruebas aislado (rama PrettyModal).
+   Copia visual del modal centrado de la app + la animación del ZIP.
+   Ninguna pantalla importa este módulo. */
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  background: var(--pm-backdrop, var(--overlay));
+  opacity: 0;
+  -webkit-backdrop-filter: blur(0px);
+  backdrop-filter: blur(0px);
+  transition:
+    opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    -webkit-backdrop-filter 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    backdrop-filter 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.scrim[data-visible] {
+  opacity: 1;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* Capa que centra la tarjeta: hace de "posición natural" del <dialog> nativo.
+   No recibe clics (los recibe el fondo), así Radix sigue cerrando al pulsar fuera. */
+.content {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  outline: none;
+}
+
+/* La superficie que viaja. Mismas medidas y superficie que `.sheet` en PC. */
+.card {
+  --pm-origin: var(--primary);
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  /* Como ítem de la capa grid, sin esto el tamaño mínimo automático (el
+     contenido) impide encogerse hasta el origen durante la animación. */
+  min-width: 0;
+  min-height: 0;
+  width: min(var(--dialog-w-md), calc(100vw - 48px));
+  max-height: min(84vh, 720px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--nx-shadow-overlay);
+  outline: none;
+  will-change: transform, width, height;
+}
+.sm {
+  width: min(var(--dialog-w-sm), calc(100vw - 48px));
+}
+.lg {
+  width: min(var(--dialog-w-lg), calc(100vw - 48px));
+}
+.xl {
+  width: min(var(--dialog-w-xl), calc(100vw - 48px));
+}
+
+/* Escenario del demo: ocho botones en bordes y esquinas + clic libre. */
+.stage {
+  position: fixed;
+  inset: 0;
+}
+.hint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 34ch;
+  margin: 0;
+  text-align: center;
+  color: var(--muted-foreground);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  text-wrap: balance;
+  pointer-events: none;
+}
+.row {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.rowTop {
+  top: 16px;
+}
+.rowBottom {
+  bottom: 16px;
+}
+.rowMid {
+  top: 0;
+  bottom: 0;
+}
+.row > * {
+  pointer-events: auto;
+}
+
+.playground {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 16px;
+  padding: 24px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrim {
+    transition-duration: 0.01s;
+  }
+}
