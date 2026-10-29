@@ -166,7 +166,7 @@ export default async function FinancePage({
   }));
 
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-6" suppressHydrationWarning>
       <PageHeader
         eyebrow={routeCategory("/finance")}
         title="Finanzas"

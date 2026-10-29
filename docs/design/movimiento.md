@@ -69,8 +69,9 @@ eje Y al abrir, y `expo.inOut` / `power3.inOut` al cerrar.
 el modal sale del propio botón: arranca con su tamaño, posición, radio y color,
 crece hasta su sitio en 600 ms y el contenido aparece escalonado al final.
 **Al cerrar hace exactamente lo mismo en reversa:** el contenido se va primero,
-la tarjeta se encoge de vuelta al mismo botón (otros 600 ms) y se «guarda» en
-él; si el botón se movió, vuelve a donde está ahora.
+la tarjeta se encoge de vuelta al mismo botón (otros 600 ms) con el contenido
+de ancho fijo (el texto no se reacomoda) y, al llegar, se disuelve mientras el
+contenido del botón aparece con un fundido; si el botón se movió, vuelve a donde está ahora.
 
 **Panel lateral:** NO hace viaje. Siempre entra deslizándose (`translateX`)
 desde el borde derecho, de donde sale, y al cerrar se desliza de vuelta por el
@@ -237,14 +238,26 @@ icono: la animación nunca es la única señal.
 
 ## 10. Inicio personalizable (modo de edición)
 
-`CustomizableDashboard` (12 columnas): «Personalizar» entra al modo de edición
-(barra de edición, bloques con borde discontinuo). Por bloque: arrastrar (asa,
-teclado o ↑ ↓), ancho (¼, ⅓, ½, ⅔, todo; desde `lg`, en pantallas chicas una
-columna) y mostrar/ocultar. Vista previa en vivo, **Guardar / Cancelar /
-Restablecer**. Preferencia versionada (`lib/dashboard/layout.ts`, v2; la v1 se
-lee y se completa) y por persona en el navegador; pasarla a la base de datos
-solo cambia dónde se guarda ese objeto (requiere un campo nuevo: decisión de
-producto pendiente).
+`CustomizableDashboard` (12 columnas). **No hay botón «Personalizar»:** mantener
+presionado un bloque (350 ms con el cursor, 220 ms con el dedo, 6 px de
+tolerancia) entra al modo de edición y lo toma; un clic o un desplazamiento no.
+La alternativa sin arrastrar es el icono «Editar diseño». En edición (barra,
+bloques con borde discontinuo y **esquinas**): arrastrar el bloque, cambiar su
+ancho arrastrando una esquina (se ajusta a ¼, ⅓, ½, ⅔ o todo; desde `lg`; con
+teclado, flechas sobre la esquina inferior derecha), ocultar, y en los gráficos
+agregados también el alto (filas de 40 px) y quitar. **Cada tarjeta es su propio
+bloque** (cada KPI, el gráfico, los accesos rápidos…), no una fila entera. Los
+huecos se rellenan solos (`grid-auto-flow: dense`): un bloque más pequeño sube a
+ocupar el espacio que dejó otro. Al tomar un bloque queda su hueco y los demás
+se deslizan para mostrar dónde caerá.
+
+«Agregar» abre un panel lateral (`AddWidgetPanel`) con el catálogo de gráficos;
+lo que aún no existe (lista de tareas) se muestra con borde de línea,
+desactivado y «Pronto». Vista previa en vivo, **Guardar / Cancelar /
+Restablecer**. Preferencia versionada (`lib/dashboard/layout.ts`, v3; v1 y v2 se
+leen y se completan; un bloque nuevo o dividido entra tras el que lo precede) y
+por persona en el navegador; pasarla a la base de datos solo cambia dónde se
+guarda ese objeto (requiere un campo nuevo: decisión de producto pendiente).
 
 ## 11. Select propio
 

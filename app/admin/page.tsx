@@ -10,7 +10,7 @@ import { billingPriorities, healthPriorities, inboxPriorities, leadPriorities, t
 import { getStaffContext } from "@/lib/ops/access";
 import ActivityFeed from "./_components/activity-feed";
 import AuditLog from "./_components/audit-log";
-import ExecutiveKpis from "./_components/executive-kpis";
+import { executiveKpiWidgets } from "./_components/executive-kpis";
 import { PriorityBoard } from "./_components/priority-board";
 import { CustomizableDashboard, type DashboardWidget } from "@/components/organisms/customizable-dashboard";
 
@@ -39,7 +39,7 @@ export default async function OpsHome() {
   const first = staff?.name?.split(" ")[0] ?? staff?.email.split("@")[0] ?? "equipo";
   const date = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", weekday: "long", day: "numeric", month: "long" }).format(new Date());
 
-  // Cada bloque se puede ocultar y reordenar desde «Personalizar»; la
+  // Cada bloque se puede ocultar y reordenar desde «Editar diseño»; la
   // preferencia es de cada persona del equipo (clave con su id) en este navegador.
   const widgets: DashboardWidget[] = [
     { id: "priorities", label: "Prioridades de hoy", node: (
@@ -57,31 +57,27 @@ export default async function OpsHome() {
         ]}
       />
     ) },
-    { id: "kpis", label: "Métricas de la plataforma", node: (
-      <section aria-label="Métricas de la plataforma">
-        <ExecutiveKpis metrics={metrics} />
+    ...executiveKpiWidgets(metrics),
+    { id: "activity", label: "Actividad de los negocios", span: 6, node: (
+      <section className="h-full rounded-lg border border-border bg-surface p-5">
+        <h2 className="font-display text-[15px] font-semibold">Actividad de los negocios</h2>
+        <p className="text-xs text-muted-foreground">Últimos movimientos reales en la plataforma.</p>
+        <div className="mt-4">
+          <ActivityFeed items={activity} />
+        </div>
       </section>
     ) },
-    { id: "activity", label: "Actividad", node: (
-      <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
-        <section className="rounded-lg border border-border bg-surface p-5">
-          <h2 className="font-display text-[15px] font-semibold">Actividad de los negocios</h2>
-          <p className="text-xs text-muted-foreground">Últimos movimientos reales en la plataforma.</p>
-          <div className="mt-4">
-            <ActivityFeed items={activity} />
-          </div>
-        </section>
-        {staff?.permissions.includes("audit.view") ? (
-          <section className="rounded-lg border border-border bg-surface p-5">
+    ...(staff?.permissions.includes("audit.view")
+      ? [{ id: "audit", label: "Actividad del equipo", span: 6 as const, node: (
+          <section className="h-full rounded-lg border border-border bg-surface p-5">
             <h2 className="font-display text-[15px] font-semibold">Actividad del equipo</h2>
             <p className="text-xs text-muted-foreground">Últimas acciones del equipo NEXUS.</p>
             <div className="mt-4">
               <AuditLog rows={audit} />
             </div>
           </section>
-        ) : null}
-      </div>
-    ) },
+        ) }]
+      : []),
   ];
 
   return (

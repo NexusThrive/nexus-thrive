@@ -18,7 +18,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Primeros pasos de una cuenta nueva en el inicio. A la izquierda la lista con el avance; a la derecha el detalle del paso elegido con un botón que lleva directo. Los pasos se marcan solos según los datos reales del negocio y solo aparecen los de los módulos activos (mínimo 2). «Ocultar» lo guarda en este navegador por negocio; con todos los pasos hechos el servidor deja de mostrarlo. Se puede mover u ocultar también desde «Personalizar».",
+          "Primeros pasos de una cuenta nueva en el inicio. A la izquierda la lista con el avance; a la derecha el detalle del paso elegido con un botón que lleva directo. Los pasos se marcan solos según los datos reales del negocio y solo aparecen los de los módulos activos (mínimo 2). «Ocultar» lo guarda en este navegador por negocio; con todos los pasos hechos el servidor deja de mostrarlo. Se puede mover u ocultar también desde «Editar diseño».",
       },
     },
   },

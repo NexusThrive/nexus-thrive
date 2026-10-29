@@ -1,5 +1,4 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MinusCircle, TrendingUp, Users, Wallet } from "lucide-react";
 import { tenantWithModules } from "@/lib/tenant/membership";
@@ -11,10 +10,12 @@ import { greetingFor, percentChange } from "@/lib/dashboard";
 import { runningBalance, type FinanceSeries } from "@/lib/finance/series";
 import { sortModules, isModule } from "@/lib/admin/catalogs";
 import { quickCreateActions } from "@/lib/navigation/quick-create";
+import { CHART_CATALOG } from "@/lib/dashboard/chart-catalog";
+import { paymentMethodLabel } from "@/lib/finance";
 import { Delta } from "@/components/atoms/delta";
 import { RevealText } from "@/components/atoms/reveal-text";
 import { KpiCard } from "@/components/molecules/kpi-card";
-import { PageHeader, SectionTitle } from "@/components/molecules/page-header";
+import { PageHeader } from "@/components/molecules/page-header";
 import QuickActions from "@/components/organisms/quick-actions";
 import { IncomeChart, type ChartPoint } from "@/components/organisms/income-chart";
 import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
@@ -25,7 +26,7 @@ import { WelcomeChecklist, type WelcomeStep } from "@/components/organisms/welco
 import { listProducts } from "@/lib/business/products-db";
 import { loadPresence } from "@/lib/presence/load";
 import PresenceSummary from "./_components/presence-summary";
-import MembershipSummary from "./memberships/_components/membership-summary";
+import { StatTile } from "@/components/molecules/stat-tile";
 import { requirePageContext } from "@/lib/tenant/context";
 
 /**
@@ -110,11 +111,12 @@ export default async function TenantDashboard({
 
   // Datos reales (mismo mes Bogotá que usa Finanzas) y el mes anterior para
   // la variación de cada KPI.
-  const [series, growth, recentActivity, membershipMetrics] = await Promise.all([
+  const [series, growth, recentActivity, membershipMetrics, monthMetrics] = await Promise.all([
     tenantDb.finance.getSeries(days),
     tenantDb.customers.activeGrowth(days === 1 ? 7 : days),
     tenantDb.finance.getRecentActivity(20),
     tenantDb.memberships.getMetrics(),
+    tenantDb.finance.getMetrics(),
   ]);
   const presence = await loadPresence(tenantRecord);
   const hasCatalog =
@@ -194,59 +196,62 @@ export default async function TenantDashboard({
     { id: "presence", label: "Presencia en línea", node: (
       <PresenceSummary presence={presence} href={`${base}/presence`} />
     ) },
-    { id: "kpis", label: "Métricas", node: (
-      <section aria-label="Métricas del negocio" className="grid grid-cols-2 gap-3.5 lg:grid-cols-4">
-        <KpiCard
-          index={0}
-          label="Ingresos"
-          value={current.income}
-          format="cop"
-          icon={TrendingUp}
-          delta={deltaFor(current.income, previous.income)}
-          hint={percentChange(current.income, previous.income) == null ? "Cobros del periodo" : versus}
-          trend={incomeTrend}
-          href={has("finance") ? `${base}/finance` : undefined}
-        />
-        <KpiCard
-          index={1}
-          label={`${terms.customers} activos`}
-          value={activeCustomers}
-          icon={Users}
-          delta={growth.added > 0 ? <Delta value={growth.added} format="count" /> : undefined}
-          hint={activeCustomers > 0 ? (growth.added > 0 ? "nuevos" : "en tu cartera") : `Sin ${terms.customers.toLowerCase()} aún`}
-          trend={growth.series}
-          href={has("crm") ? `${base}/crm` : undefined}
-        />
-        <KpiCard
-          index={2}
-          label="Gastos"
-          value={current.expenses}
-          format="cop"
-          icon={MinusCircle}
-          delta={deltaFor(current.expenses, previous.expenses, true)}
-          hint="caja menor y fijos"
-          trend={expenseTrend}
-          trendColor="var(--danger)"
-          href={has("finance") ? `${base}/finance` : undefined}
-        />
-        <KpiCard
-          index={3}
-          label="Balance"
-          value={current.balance}
-          format="cop"
-          icon={Wallet}
-          alert={current.balance < 0}
-          delta={deltaFor(current.balance, previous.balance)}
-          hint="ingresos menos gastos"
-          trend={balanceTrend}
-          trendColor="var(--nx-gold-600)"
-          href={has("finance") ? `${base}/finance` : undefined}
-        />
-      </section>
+    { id: "kpi-income", label: "Ingresos", span: 3, half: true, node: (
+      <KpiCard
+        index={0}
+        label="Ingresos"
+        value={current.income}
+        format="cop"
+        icon={TrendingUp}
+        delta={deltaFor(current.income, previous.income)}
+        hint={percentChange(current.income, previous.income) == null ? "Cobros del periodo" : versus}
+        trend={incomeTrend}
+        href={has("finance") ? `${base}/finance` : undefined}
+      />
+    ) },
+    { id: "kpi-customers", label: "Clientes activos", span: 3, half: true, node: (
+      <KpiCard
+        index={1}
+        label={`${terms.customers} activos`}
+        value={activeCustomers}
+        icon={Users}
+        delta={growth.added > 0 ? <Delta value={growth.added} format="count" /> : undefined}
+        hint={activeCustomers > 0 ? (growth.added > 0 ? "nuevos" : "en tu cartera") : `Sin ${terms.customers.toLowerCase()} aún`}
+        trend={growth.series}
+        href={has("crm") ? `${base}/crm` : undefined}
+      />
+    ) },
+    { id: "kpi-expenses", label: "Gastos", span: 3, half: true, node: (
+      <KpiCard
+        index={2}
+        label="Gastos"
+        value={current.expenses}
+        format="cop"
+        icon={MinusCircle}
+        delta={deltaFor(current.expenses, previous.expenses, true)}
+        hint="caja menor y fijos"
+        trend={expenseTrend}
+        trendColor="var(--danger)"
+        href={has("finance") ? `${base}/finance` : undefined}
+      />
+    ) },
+    { id: "kpi-balance", label: "Balance", span: 3, half: true, node: (
+      <KpiCard
+        index={3}
+        label="Balance"
+        value={current.balance}
+        format="cop"
+        icon={Wallet}
+        alert={current.balance < 0}
+        delta={deltaFor(current.balance, previous.balance)}
+        hint="ingresos menos gastos"
+        trend={balanceTrend}
+        trendColor="var(--nx-gold-600)"
+        href={has("finance") ? `${base}/finance` : undefined}
+      />
     ) },
     { id: "chart", label: "Ingresos y gastos", node: (
-      <section className="grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
-        <div className="overflow-hidden rounded-lg border border-border bg-surface">
+      <div className="h-full overflow-hidden rounded-lg border border-border bg-surface">
           <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-border px-[18px] py-4">
             <div>
               <h2 className="font-display text-[15px] font-semibold">Ingresos y gastos</h2>
@@ -262,24 +267,16 @@ export default async function TenantDashboard({
           <div className="px-[18px] pb-3.5 pt-2">
             <IncomeChart data={chartPoints(series, period)} />
           </div>
-        </div>
-        <QuickActions tenantSlug={tenantRecord.slug} actions={quickActions} />
-      </section>
-    ) },
+      </div>
+    ), span: 8 },
+    { id: "quick-actions", label: "Accesos rápidos", span: 4, node: <QuickActions tenantSlug={tenantRecord.slug} actions={quickActions} /> },
     ...(has("memberships")
-      ? [{ id: "memberships", label: "Membresías", node: (
-          <>
-          <SectionTitle
-            title="Membresías"
-            action={
-              <Link href={`${base}/memberships`} className="text-[13px] font-semibold text-accent-text">
-                Ver membresías →
-              </Link>
-            }
-          />
-          <MembershipSummary metrics={membershipMetrics} />
-          </>
-        ) }]
+      ? [
+          { id: "mem-active", label: "Membresías activas", span: 3 as const, half: true, node: <StatTile index={0} label="Activas" value={membershipMetrics.activeCount} tone="success" note="Con más de 3 días de vigencia" href={`${base}/memberships`} className="h-full" /> },
+          { id: "mem-expiring", label: "Membresías por vencer", span: 3 as const, half: true, node: <StatTile index={1} label="Por vencer" value={membershipMetrics.expiringCount} tone="warning" pulse={membershipMetrics.expiringCount > 0} note="En los próximos 3 días" href={`${base}/memberships`} className="h-full" /> },
+          { id: "mem-expired", label: "Membresías vencidas", span: 3 as const, half: true, node: <StatTile index={2} label="Vencidas" value={membershipMetrics.expiredCount} tone="danger" note="Pendientes de renovación" href={`${base}/memberships`} className="h-full" /> },
+          { id: "mem-renewals", label: "Renovaciones del mes", span: 3 as const, half: true, node: <StatTile index={3} label="Renovaciones" value={formatCurrency(membershipMetrics.renewalRevenueProjection)} note="Valor por cobrar este mes" href={`${base}/memberships`} className="h-full" /> },
+        ]
       : []),
     { id: "activity", label: "Actividad reciente", node: <RecentActivity items={activityItems} /> },
   ];
@@ -289,6 +286,18 @@ export default async function TenantDashboard({
       <CustomizableDashboard
         scope={tenantSlug}
         widgets={widgets}
+        charts={{
+          entries: CHART_CATALOG.filter((entry) => has(entry.needs)),
+          subtitle: periodText.charAt(0).toUpperCase() + periodText.slice(1),
+          data: {
+            points: chartPoints(series, period),
+            methods: monthMetrics.byMethod.map((m) => ({ label: paymentMethodLabel(m.method), total: m.total })),
+            customers: growth.series,
+            income: current.income,
+            expenses: current.expenses,
+            balance: current.balance,
+          },
+        }}
         header={
       <PageHeader
         eyebrow={formattedDate}
