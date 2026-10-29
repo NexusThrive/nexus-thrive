@@ -92,7 +92,7 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
                 className="group hidden h-10 w-full items-center gap-2.5 rounded-md border border-border bg-surface-muted pl-3.5 pr-2.5 text-[13px] text-muted-foreground transition-[border-color,color,background-color] duration-200 hover:border-border-input hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:flex"
               >
                 <Search aria-hidden="true" className="size-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
-                <span className="truncate">Buscar clientes, secciones o acciones…</span>
+                <span className="truncate">Buscar clientes, pagos, gastos o secciones…</span>
                 <Kbd className="ml-auto shrink-0">Ctrl K</Kbd>
               </button>
             )}

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import { useRouter } from "next/navigation";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Command } from "cmdk";
-import { Blocks, Download, Moon, Package, Search, User } from "lucide-react";
+import { Blocks, Download, HandCoins, Moon, Package, Receipt, Search, User } from "lucide-react";
 import { searchEntitiesAction, type SearchHit } from "@/app/[tenant]/(app)/_actions/search";
 import { Kbd } from "@/components/atoms/kbd";
 import { setTheme } from "@/components/atoms/theme-toggle";
@@ -109,7 +109,7 @@ export function PaletteList({
                 onSelect={() => run(() => router.push(hrefFor(hit.href)))}
                 className={itemClass}
               >
-                {hit.kind === "customer" ? <User aria-hidden="true" /> : <Package aria-hidden="true" />}
+                {hit.kind === "customer" ? <User aria-hidden="true" /> : hit.kind === "payment" ? <HandCoins aria-hidden="true" /> : hit.kind === "expense" ? <Receipt aria-hidden="true" /> : <Package aria-hidden="true" />}
                 <span className="truncate">{hit.title}</span>
                 <small className="ml-auto truncate text-xs text-muted-foreground">{hit.subtitle}</small>
               </Command.Item>
@@ -247,7 +247,7 @@ export function CommandPalette({ inlineOnDesktop = false }: { inlineOnDesktop?: 
                 autoFocus
                 value={search.query}
                 onValueChange={search.setQuery}
-                placeholder="Busca clientes, catálogo, secciones o acciones"
+                placeholder="Busca clientes, pagos, gastos, catálogo o acciones"
                 className="h-[54px] w-full bg-transparent pl-[46px] pr-4 text-[15px] outline-none placeholder:text-muted-foreground"
               />
             </div>
