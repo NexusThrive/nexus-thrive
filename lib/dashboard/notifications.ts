@@ -76,3 +76,13 @@ export function unreadCount(items: AppNotification[], lastSeen: string | null): 
   if (!lastSeen) return items.length;
   return items.filter((n) => n.at > lastSeen).length;
 }
+
+/**
+ * Notificaciones que llegaron desde la última carga y siguen sin leerse: no
+ * estaban en `known` y son posteriores a la última vista. Con `known` nulo (la
+ * primera carga) no hay llegadas: no se avisa de lo que ya estaba.
+ */
+export function newArrivals(known: ReadonlySet<string> | null, items: readonly AppNotification[], lastSeen: string | null): AppNotification[] {
+  if (!known) return [];
+  return items.filter((n) => !known.has(n.id) && (!lastSeen || n.at > lastSeen));
+}

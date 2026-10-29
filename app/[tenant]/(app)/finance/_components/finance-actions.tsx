@@ -6,7 +6,9 @@ import { Banknote, Camera, MinusCircle } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ExpenseSheet } from "@/components/organisms/expense-sheet";
 import { PaymentSheet } from "@/components/organisms/payment-sheet";
+import { requestNotificationsRefresh } from "@/lib/dashboard/notifications-client";
 import { EXPENSE_CATEGORIES, PAYMENT_METHODS } from "@/lib/finance";
+import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { createExpenseAction, createPaymentAction } from "../actions";
 import { ScanPaymentSheet } from "./scan-payment-sheet";
@@ -123,7 +125,16 @@ export default function FinanceActions({
           form.set("providerRefId", "");
           form.set("description", description);
           const state = await createPaymentAction({ status: "idle" }, form);
-          if (state.status === "ok" && state.receipt) return { ok: true, ...state.receipt };
+          if (state.status === "ok" && state.receipt) {
+            // La campana avisa en el acto (el servidor confirma por detrás).
+            requestNotificationsRefresh({
+              kind: "payment",
+              title: `Pago recibido · ${formatCurrency(amount)}`,
+              detail: customers.find((c) => c.id === customerId)?.name ?? "Venta de mostrador",
+              href: "/finance",
+            });
+            return { ok: true, ...state.receipt };
+          }
           const fieldError = state.errors ? Object.values(state.errors).find(Boolean) : undefined;
           return { ok: false, message: state.message ?? fieldError ?? "No se pudo registrar el pago." };
         }}
@@ -144,7 +155,10 @@ export default function FinanceActions({
           form.set("paidFrom", paidFrom ?? "BANK");
           if (file) form.set("receipt", file);
           const state = await createExpenseAction({ status: "idle" }, form);
-          if (state.status === "ok") return { ok: true };
+          if (state.status === "ok") {
+            requestNotificationsRefresh({ kind: "expense", title: `Gasto · ${formatCurrency(amount)}`, detail: description, href: "/finance" });
+            return { ok: true };
+          }
           const field = state.errors?.amount ? "amount" : state.errors?.description ? "description" : state.errors?.category ? "category" : undefined;
           return {
             ok: false,

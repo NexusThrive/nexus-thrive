@@ -33,3 +33,19 @@ describe("unreadCount", () => {
     expect(unreadCount(list, "2026-10-16T15:30:00Z")).toBe(2);
   });
 });
+
+describe("newArrivals", () => {
+  const n = (id: string, at: string) => ({ id, kind: "payment" as const, title: id, detail: "", at, href: "/finance" });
+  it("en la primera carga no avisa de lo que ya estaba", async () => {
+    const { newArrivals } = await import("./notifications");
+    expect(newArrivals(null, [n("a", "2026-10-16T10:00:00Z")], null)).toEqual([]);
+  });
+  it("avisa solo de lo nuevo y sin leer", async () => {
+    const { newArrivals } = await import("./notifications");
+    const known = new Set(["a"]);
+    const items = [n("a", "2026-10-16T10:00:00Z"), n("b", "2026-10-16T11:00:00Z"), n("c", "2026-10-16T08:00:00Z")];
+    expect(newArrivals(known, items, "2026-10-16T09:00:00Z").map((x) => x.id)).toEqual(["b"]);
+    expect(newArrivals(known, items, null).map((x) => x.id)).toEqual(["b", "c"]);
+  });
+});
+

@@ -3,6 +3,7 @@
 import * as React from "react";
 import { AlertTriangle, Bell, Check, WifiOff, X } from "lucide-react";
 import { IconTile } from "@/components/atoms/icon-tile";
+import { requestNotificationsRefresh } from "@/lib/dashboard/notifications-client";
 import { EASE_IN, motionOff, spring } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -55,6 +56,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   const toast = React.useCallback<ToastContextValue["toast"]>((input, variant) => {
     const options: ToastOptions = typeof input === "string" ? { title: input, variant } : input;
+    // Un éxito suele ser un cobro, un gasto o un alta: la campana se actualiza al instante.
+    if (options.variant === "success") window.setTimeout(requestNotificationsRefresh, 0);
     const id = ++counter.current;
     setItems((prev) => [
       ...prev.slice(-(MAX_VISIBLE - 1)),

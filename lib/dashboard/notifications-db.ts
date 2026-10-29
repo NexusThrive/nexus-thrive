@@ -13,6 +13,8 @@ import { activeModuleNames } from "@/lib/tenant/settings-db";
  */
 export async function loadNotifications(tenantId: string, memberId: string): Promise<AppNotification[]> {
   const tenantDb = createTenantDb(tenantId);
+  // Las descartadas se piden desde ya, en paralelo con los módulos (antes iban al final, una tras otra).
+  const dismissedRows = db.orm.public.DismissedNotification.where({ userId: memberId }).select("key").all();
   const active = new Set(await activeModuleNames(tenantId));
   const modules = {
     finance: active.has("finance") || active.has("payments"),
@@ -43,9 +45,7 @@ export async function loadNotifications(tenantId: string, memberId: string): Pro
     : [];
   const names = new Map(customers.map((c) => [c.id, c.name]));
 
-  const dismissed = new Set(
-    (await db.orm.public.DismissedNotification.where({ userId: memberId }).select("key").all()).map((d) => d.key),
-  );
+  const dismissed = new Set((await dismissedRows).map((d) => d.key));
   const all = buildNotifications({
     movements: movements.filter((m) => bogotaDayKey(m.at) === today),
     bookings: bookings
