@@ -115,21 +115,38 @@
   background: var(--nx-gold-500);
 }
 
+/* Pie fijo: Sistema (funciones, datos, configuración) y contraer, siempre a la vista. */
 .foot {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex: none;
+  flex-direction: column;
+  gap: 2px;
   margin-top: 8px;
-  padding: 12px 4px 0;
+  padding-top: 8px;
   border-top: 1px solid var(--sidebar-border);
 }
+.pinned {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 .collapse {
-  margin-left: auto;
-  width: 40px;
-  height: 40px;
-  place-items: center;
+  height: 42px;
+  padding: 0 13px;
+  align-items: center;
+  gap: 12px;
   border-radius: 4px;
   color: var(--sidebar-fg-muted);
+  font: 500 13px var(--font-sans);
+  white-space: nowrap;
+}
+.collapse svg {
+  flex: none;
+}
+.collapse:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
 }
 .collapse:hover {
   color: var(--sidebar-fg);
@@ -159,7 +176,7 @@
 
 @media (min-width: 1200px) {
   .collapse {
-    display: grid;
+    display: flex;
   }
   :global(html:not([data-rail])) .side {
     padding-left: max(14px, env(safe-area-inset-left, 0px));
@@ -226,5 +243,31 @@
 @media (prefers-reduced-motion: reduce) {
   .chevron {
     transition: none;
+  }
+}
+
+/* Los textos aparecen con un fundido al desplegar (expandir o vistazo), no de golpe. */
+@keyframes label-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+}
+@media (min-width: 768px) {
+  .side[data-peek] .label,
+  .side[data-peek] .groupLabel {
+    animation: label-in var(--d3) var(--nx-ease-out) 90ms both;
+  }
+}
+@media (min-width: 1200px) {
+  :global(html:not([data-rail])) .label,
+  :global(html:not([data-rail])) .groupLabel {
+    animation: label-in var(--d3) var(--nx-ease-out) 120ms both;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .label,
+  .groupLabel {
+    animation: none !important;
   }
 }

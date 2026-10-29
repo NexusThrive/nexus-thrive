@@ -132,7 +132,8 @@ bandeja, satisfacción, salud, precios y catálogo, auditoría y Accesos.
 ### Cambiado
 - Sin el aviso de "hydration mismatch" cuando un gestor de contraseñas
   (Proton Pass, 1Password, Bitwarden) inyecta atributos en el DOM: se silencia
-  en los contenedores de la ficha 360 y del control de acceso.
+  en los contenedores de la ficha 360, del control de acceso y de la barra
+  superior (`AppTopbar`).
 - El botón **"Leer tarjeta con este teléfono"** (NFC) solo aparece donde
   existe Web NFC (Chrome con Android). En iPhone y Firefox no se muestra, y
   el panel explica que el camino universal es el QR con la cámara.

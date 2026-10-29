@@ -235,9 +235,10 @@ body {
 }
 
 /* --- Barra de ruta: borde delantero con el corte de la N --- */
+/* La posición la decide quien la usa (fija, o anclada bajo la navbar): una
+   posición aquí le ganaba a las clases y la metía dentro del flujo de la barra. */
 .nx-strip {
-  position: relative;
-  height: 4px;
+  height: 3px;
   width: 100%;
   background: var(--border);
   overflow: hidden;

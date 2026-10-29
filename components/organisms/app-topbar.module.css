@@ -12,18 +12,56 @@
 }
 .mark {
   flex: none;
-  transition: transform var(--d3) var(--nx-ease-out);
-}
-.brand:hover .mark {
-  transform: translateX(2px);
+  transform-origin: left center;
+  transition: opacity var(--d2) var(--nx-ease-out);
 }
 @media (min-width: 768px) {
+  /* Alineada a la izquierda, en la misma columna que los iconos de la barra:
+     al contraer o expandir, el logo no salta de un lado a otro, solo crece. */
   .brand {
     width: var(--sw);
-    justify-content: center;
-    padding: 0 12px;
+    justify-content: flex-start;
+    padding-left: 22px;
+    padding-right: 12px;
     border-right: 1px solid var(--sidebar-border);
     transition: width var(--d3) var(--nx-ease-out);
+  }
+}
+/* Negocio y sección junto al logo: solo con la barra completa (en móvil siempre).
+   Entra con un fundido, sin mover el ancho de nada. */
+.ident {
+  display: flex;
+}
+@media (min-width: 768px) {
+  .ident {
+    display: none;
+  }
+}
+@media (min-width: 1200px) {
+  :global(html:not([data-rail])) .ident {
+    display: flex;
+    padding-left: 4px;
+    animation: ident-in var(--d3) var(--nx-ease-out) 160ms both;
+  }
+}
+@keyframes ident-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ident {
+    animation: none !important;
+  }
+}
+@media (hover: hover) {
+  .brand .mark {
+    opacity: 0.85;
+  }
+  .brand:hover .mark,
+  .brand:focus-visible .mark {
+    opacity: 1;
   }
 }
 
@@ -61,8 +99,11 @@
   }
 }
 @media (min-width: 1200px) {
+  :global(html:not([data-rail])) .brand {
+    padding-left: 24px;
+  }
   :global(html:not([data-rail])) .logo {
-    --w: 56px;
+    --w: 46px;
     height: calc(var(--w) * 1.0472);
   }
   :global(html:not([data-rail])) .letters {

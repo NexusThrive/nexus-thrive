@@ -67,7 +67,7 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
             </g>
           </svg>
         </span>
-        <span className="flex min-w-0 flex-col leading-tight md:hidden">
+        <span className={cn(styles.ident, "flex min-w-0 flex-col leading-tight")}>
           <b className="truncate font-display text-sm font-semibold">{brandName}</b>
           <small className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <i aria-hidden="true" className="inline-block size-1.5 -skew-x-[24deg] bg-accent" />
@@ -76,29 +76,40 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
         </span>
       </Link>
 
-      <div className="relative flex min-w-0 flex-1 items-center justify-end gap-2 border-b border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3 text-[var(--sidebar-fg)] md:grid md:grid-cols-[minmax(0,1fr)_auto] md:px-6 xl:px-8">
-        <div className="flex min-w-0 items-center gap-2.5 md:justify-center">
-          {search ?? (
+      <div className="relative flex min-w-0 flex-1 items-center justify-end gap-2 border-b border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3 text-[var(--sidebar-fg)] md:gap-4 md:px-6 xl:px-8">
+        {/* Izquierda: contexto (negocio) y búsqueda. `suppressHydrationWarning`:
+            Proton Pass marca con `data-protonpass-form` los contenedores con
+            botones/inputs antes de que React hidrate y dispara el aviso de
+            "hydration mismatch"; no es nuestro HTML (ver `CheckinStation`). */}
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-3 md:justify-start" suppressHydrationWarning>
+          {switcher ? <div className="hidden shrink-0 md:block" suppressHydrationWarning>{switcher}</div> : null}
+          {switcher ? <span aria-hidden="true" className="hidden h-6 w-px shrink-0 bg-[var(--sidebar-border)] md:block" /> : null}
+          <div className="min-w-0 md:w-full md:max-w-[520px]" suppressHydrationWarning>
+            {search ?? (
+              <button
+                type="button"
+                onClick={openSearch}
+                className="group hidden h-10 w-full items-center gap-2.5 rounded-md border border-border bg-surface-muted pl-3.5 pr-2.5 text-[13px] text-muted-foreground transition-[border-color,color,background-color] duration-200 hover:border-border-input hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:flex"
+              >
+                <Search aria-hidden="true" className="size-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
+                <span className="truncate">Buscar clientes, secciones o acciones…</span>
+                <Kbd className="ml-auto shrink-0">Ctrl K</Kbd>
+              </button>
+            )}
             <button
               type="button"
               onClick={openSearch}
-              className="group hidden h-10 w-[min(380px,34vw)] items-center gap-2.5 rounded-md border border-border bg-surface-muted pl-3.5 pr-2.5 text-[13px] text-muted-foreground transition-[border-color,color,background-color] duration-200 hover:border-border-input hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:flex"
+              aria-label="Buscar"
+              data-press=""
+              className="grid size-10 place-items-center rounded-md hover:bg-surface-muted md:hidden"
             >
-              <Search aria-hidden="true" className="size-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
-              <span className="truncate">Buscar clientes, secciones o acciones…</span>
-              <Kbd className="ml-auto shrink-0">Ctrl K</Kbd>
+              <Search aria-hidden="true" className="size-[18px]" />
             </button>
-          )}
-          <button
-            type="button"
-            onClick={openSearch}
-            aria-label="Buscar"
-            data-press=""
-            className="grid size-10 place-items-center rounded-md hover:bg-surface-muted md:hidden"
-          >
-            <Search aria-hidden="true" className="size-[18px]" />
-          </button>
+          </div>
+        </div>
 
+        {/* Derecha: acción principal, avisos y preferencias, y la cuenta al final. */}
+        <div className="flex shrink-0 items-center justify-end gap-2">
           {createActions.length > 0 ? (
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
@@ -107,7 +118,7 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
                   Crear
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" sideOffset={8} className="w-[min(340px,calc(100vw-24px))] p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <DropdownMenuContent align="end" sideOffset={8} className="w-[min(340px,calc(100vw-24px))] p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 <DropdownMenuLabel className="px-2.5 pb-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                   Crear nuevo
                 </DropdownMenuLabel>
@@ -129,17 +140,17 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
               </DropdownMenuContent>
             </DropdownMenu>
           ) : null}
-        </div>
-
-        <div className="flex items-center justify-end gap-2">
-          {switcher}
+          <span aria-hidden="true" className="mx-1 hidden h-6 w-px bg-[var(--sidebar-border)] md:block" />
           {actions}
           <ThemeToggle />
+          <span aria-hidden="true" className="mx-1 hidden h-6 w-px bg-[var(--sidebar-border)] md:block" />
           <AccountButton />
         </div>
 
-        <RouteBar className="absolute inset-x-0 -bottom-px top-auto z-0" />
       </div>
+
+      {/* Debajo de la navbar, fuera de su fila y desde el borde de la barra lateral (`--sw`): no se mete en ella ni deforma la navbar. */}
+      <RouteBar className="absolute inset-x-auto left-[var(--sw)] right-0 top-full" />
     </header>
   );
 }
