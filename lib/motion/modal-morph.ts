@@ -113,6 +113,9 @@ export function armModalMorph(node: HTMLElement): () => void {
   const to = boxOf(node);
   const from = boxOf(originEl);
   const items = Array.from(node.children) as HTMLElement[];
+  // Ancho fijo del contenido mientras la tarjeta cambia de tamaño: así el texto
+  // no se reacomoda (ni se parte en líneas) al crecer desde el botón.
+  const widths = items.map((item) => item.offsetWidth);
 
   // Estado inicial: el modal «es» el control. `xPercent/yPercent` mantienen el
   // centrado del CSS (`translate(-50%, -50%)`) mientras cambia el ancho.
@@ -128,7 +131,9 @@ export function armModalMorph(node: HTMLElement): () => void {
     overflow: "hidden",
     opacity: 1,
   });
-  gsap.set(items, { opacity: 0, y: 14 });
+  // `overflow: hidden` en el contenido mientras la tarjeta cambia de alto: el cuerpo con
+  // scroll se comprime y mostraba una barra de desplazamiento aunque no la necesite.
+  gsap.set(items, { opacity: 0, y: 14, width: (i: number) => widths[i], flexShrink: 0, overflow: "hidden" });
   gsap.set(originEl, { opacity: 0 });
 
   // Fuerza un frame con el estado inicial antes de arrancar.
@@ -142,7 +147,7 @@ export function armModalMorph(node: HTMLElement): () => void {
     paused: true,
     onComplete: () => {
       gsap.set(node, { clearProps: CLEAR });
-      gsap.set(items, { clearProps: "opacity,y" });
+      gsap.set(items, { clearProps: "opacity,y,width,flexShrink,overflow" });
     },
   });
   open
@@ -193,6 +198,10 @@ export function armModalMorph(node: HTMLElement): () => void {
     }
 
     const current = boxOf(el);
+    // Contenido de ESTE panel (en la copia fantasma no es el del original).
+    const content = Array.from(el.children) as HTMLElement[];
+    const frozen = content.map((item) => item.offsetWidth);
+    gsap.set(content, { width: (i: number) => frozen[i], flexShrink: 0, overflow: "hidden" });
     const vw = window.innerWidth;
     const vh = window.innerHeight;
 
@@ -225,7 +234,7 @@ export function armModalMorph(node: HTMLElement): () => void {
       },
     });
     exit
-      .to(items, {
+      .to(content, {
         opacity: 0,
         y: 8,
         duration: 0.16 * scale,
@@ -246,8 +255,15 @@ export function armModalMorph(node: HTMLElement): () => void {
         delay,
       )
       .to(el, { y: from.cy - vh / 2, duration: travel * 0.95, ease: "power3.inOut" }, delay)
-      // El control reaparece justo debajo del modal, sin salto visible.
-      .set(originNow, { opacity: 1 }, delay + travel - 0.03);
+      // Fundido cruzado al llegar: la tarjeta se disuelve y el contenido del
+      // botón (texto, icono) aparece con un fade, sin quedarse el color del modal.
+      .to(el, { opacity: 0, duration: travel * 0.35, ease: "power1.in" }, delay + travel * 0.65)
+      .fromTo(
+        originNow,
+        { opacity: 0 },
+        { opacity: 1, duration: travel * 0.4, ease: "power1.out", immediateRender: false },
+        delay + travel * 0.6,
+      );
   };
   players.set(node, playExit);
 
