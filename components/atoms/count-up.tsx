@@ -11,6 +11,11 @@ const NAMED_FORMATS = {
 
 export type CountFormat = keyof typeof NAMED_FORMATS;
 
+/** Da formato a un número con un formato con nombre (para valores que no cuentan). */
+export function formatCount(format: CountFormat, n: number): string {
+  return NAMED_FORMATS[format](n);
+}
+
 /**
  * Número que cuenta hasta `value` (y desde el valor anterior cuando cambia).
  * Escribe en el DOM con requestAnimationFrame: no re-renderiza React en cada
