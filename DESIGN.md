@@ -77,7 +77,7 @@ z-index o una duración sueltos: usa el token, y si falta, se agrega aquí.
 | `--surface-muted` | grafito 100 | grafito 800 | Campos, zonas secundarias |
 | `--border` / `--border-strong` | grafito 200 / `#D9D7D1` | grafito 700 / `#3A3A40` | Separadores |
 | `--border-input` | `#D2D0CA` | `#3A3A40` | Controles editables |
-| `--foreground` / `--foreground-muted` | grafito 950 / 500 | papel / grafito 400 | Texto |
+| `--foreground` / `--foreground-muted` | grafito 950 / 550 (5,9:1) | papel / grafito 350 (8,5:1) | Texto |
 | `--primary` | tinta | oro 500 | Botón principal |
 | `--accent` / `--accent-text` | oro 500 / oro 700 | oro 500 | Acento; texto dorado legible |
 | `--ring` | `#8F6F12` | oro 500 | Foco visible |
