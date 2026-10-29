@@ -243,9 +243,11 @@ presionado un bloque (350 ms con el cursor, 220 ms con el dedo, 6 px de
 tolerancia) entra al modo de edición y lo toma; un clic o un desplazamiento no.
 La alternativa sin arrastrar es el icono «Editar diseño». En edición (barra,
 bloques con borde discontinuo y **esquinas**): arrastrar el bloque, cambiar su
-ancho arrastrando una esquina (se ajusta a ¼, ⅓, ½, ⅔ o todo; desde `lg`; con
-teclado, flechas sobre la esquina inferior derecha), ocultar, y en los gráficos
-agregados también el alto (filas de 40 px) y quitar. **Cada tarjeta es su propio
+ancho arrastrando una esquina (**continuo**: sigue al puntero al píxel, sobre
+una cuadrícula de 96 columnas, y al soltar se asienta en la columna más cercana
+con un deslizamiento de 140 ms; el selector ofrece ¼, ⅓, ½, ⅔ y todo; desde
+`lg`; con teclado, flechas sobre la esquina inferior derecha), ocultar, y en los gráficos
+agregados también el alto (continuo, 200–640 px) y quitar. **Cada tarjeta es su propio
 bloque** (cada KPI, el gráfico, los accesos rápidos…), no una fila entera. Los
 huecos se rellenan solos (`grid-auto-flow: dense`): un bloque más pequeño sube a
 ocupar el espacio que dejó otro. Al tomar un bloque queda su hueco y los demás
@@ -254,8 +256,8 @@ se deslizan para mostrar dónde caerá.
 «Agregar» abre un panel lateral (`AddWidgetPanel`) con el catálogo de gráficos;
 lo que aún no existe (lista de tareas) se muestra con borde de línea,
 desactivado y «Pronto». Vista previa en vivo, **Guardar / Cancelar /
-Restablecer**. Preferencia versionada (`lib/dashboard/layout.ts`, v3; v1 y v2 se
-leen y se completan; un bloque nuevo o dividido entra tras el que lo precede) y
+Restablecer**. Preferencia versionada (`lib/dashboard/layout.ts`, v4; v1, v2 y v3
+se leen y se convierten; un bloque nuevo o dividido entra tras el que lo precede) y
 por persona en el navegador; pasarla a la base de datos solo cambia dónde se
 guarda ese objeto (requiere un campo nuevo: decisión de producto pendiente).
 

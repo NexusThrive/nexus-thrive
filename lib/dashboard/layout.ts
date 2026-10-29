@@ -1,29 +1,39 @@
 /**
  * Diseño personalizable del dashboard: qué bloques se ven, en qué orden y
- * cuántas columnas (de 12) ocupa cada uno en pantallas grandes. Lógica pura
+ * cuántas columnas (de 96, así el ancho cambia de forma continua) ocupa cada
+ * uno en pantallas grandes. Lógica pura
  * (sin React ni almacenamiento) para poder probarla; `CustomizableDashboard`
  * la usa y guarda el resultado.
  *
- * Versionado: lo guardado lleva `v`. La v1 (sin tamaños) y la v2 (sin altos ni
- * gráficos agregados) se leen y se completan con los valores por defecto; un dato desconocido o corrupto se ignora.
+ * Versionado: lo guardado lleva `v`. La v1 (sin tamaños), la v2 (sin altos ni
+ * gráficos agregados) y la v3 (anchos en 12 columnas y altos en filas de 40 px)
+ * se leen y se convierten; un dato desconocido o corrupto se ignora.
  * Cuando el diseño pase a la base de datos (por persona), este mismo objeto
  * es el que se serializa: solo cambia dónde se guarda.
  */
-export const LAYOUT_VERSION = 3;
+export const LAYOUT_VERSION = 4;
 
-/** Columnas (de 12) que puede ocupar un bloque desde `lg`. */
-import { MAX_ROWS, MIN_ROWS, isChartType, type ChartType } from "./chart-catalog";
+import { MAX_HEIGHT, MIN_HEIGHT, isChartType, type ChartType } from "./chart-catalog";
 
-export const SPANS = [3, 4, 6, 8, 12] as const;
-export type Span = (typeof SPANS)[number];
+/** Columnas de la cuadrícula en `lg`: muchas, para que el ancho cambie de forma continua. */
+export const COLS = 96;
+export const MIN_SPAN = 24;
+export type Span = number;
 
-export const SPAN_LABEL: Record<Span, string> = {
-  3: "Un cuarto",
-  4: "Un tercio",
-  6: "La mitad",
-  8: "Dos tercios",
-  12: "Todo el ancho",
+/** Anchos con nombre (el selector de ancho); cualquier valor entre medias también es válido. */
+export const SPANS = [24, 32, 48, 64, 96] as const;
+export const SPAN_LABEL: Record<number, string> = {
+  24: "Un cuarto",
+  32: "Un tercio",
+  48: "La mitad",
+  64: "Dos tercios",
+  96: "Todo el ancho",
 };
+/** «La mitad», o el porcentaje cuando el ancho es uno intermedio. */
+export const spanLabel = (span: number): string => SPAN_LABEL[span] ?? `${Math.round((span / COLS) * 100)} % del ancho`;
+
+/** Los bloques declaran su ancho en 12 columnas (3, 4, 6, 8, 12): se pasa a la cuadrícula de 96. */
+export const fromTwelfths = (span: number): Span => span * (COLS / 12);
 
 export type DashboardLayout = {
   v: typeof LAYOUT_VERSION;
@@ -33,13 +43,13 @@ export type DashboardLayout = {
   hidden: string[];
   /** Ancho elegido por bloque (los que no aparecen usan el de por defecto). */
   spans: Record<string, Span>;
-  /** Alto elegido por bloque de gráfico, en filas (`ROW_PX`). */
+  /** Alto elegido por bloque de gráfico (px). */
   heights: Record<string, number>;
   /** Gráficos que la persona agregó desde «Agregar» (el id lleva el tipo y un número). */
   added: { id: string; type: ChartType }[];
 };
 
-export const isSpan = (value: unknown): value is Span => SPANS.includes(value as Span);
+export const isSpan = (value: unknown): value is Span => Number.isInteger(value) && (value as number) >= MIN_SPAN && (value as number) <= COLS;
 
 export const defaultLayout = (ids: readonly string[]): DashboardLayout => ({ v: LAYOUT_VERSION, order: [...ids], hidden: [], spans: {}, heights: {}, added: [] });
 
@@ -72,18 +82,25 @@ export function normalizeLayout(stored: unknown, ids: readonly string[]): Dashbo
     order.splice(before ? order.indexOf(before) + 1 : 0, 0, id);
   });
   const hidden = [...new Set(strings(raw.hidden))].filter((id) => known.has(id));
+  // Antes de la v4 los anchos iban en 12 columnas y los altos en filas de 40 px.
+  const legacy = typeof raw.v !== "number" || raw.v < 4;
   const spans: Record<string, Span> = {};
   if (raw.spans && typeof raw.spans === "object") {
-    for (const [id, span] of Object.entries(raw.spans)) if (known.has(id) && isSpan(span)) spans[id] = span;
+    for (const [id, span] of Object.entries(raw.spans)) {
+      const value = legacy ? ([3, 4, 6, 8, 12].includes(span as number) ? fromTwelfths(span as number) : null) : span;
+      if (known.has(id) && isSpan(value)) spans[id] = value;
+    }
   }
   const heights: Record<string, number> = {};
   if (raw.heights && typeof raw.heights === "object") {
-    for (const [id, rows] of Object.entries(raw.heights)) if (known.has(id) && Number.isFinite(rows)) heights[id] = clampRows(rows as number);
+    for (const [id, h] of Object.entries(raw.heights)) {
+      if (known.has(id) && Number.isFinite(h)) heights[id] = clampHeight(legacy ? (h as number) * 40 : (h as number));
+    }
   }
   return { v: LAYOUT_VERSION, order, hidden, spans, heights, added };
 }
 
-export const clampRows = (rows: number): number => Math.min(MAX_ROWS, Math.max(MIN_ROWS, Math.round(rows)));
+export const clampHeight = (px: number): number => Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, Math.round(px)));
 
 /** Mueve un bloque una posición (−1 arriba, +1 abajo); en el borde no hace nada. */
 export function moveWidget(layout: DashboardLayout, id: string, delta: -1 | 1): DashboardLayout {
@@ -117,24 +134,22 @@ export function isCustomized(layout: DashboardLayout, ids: readonly string[]): b
   return layout.added.length > 0 || layout.hidden.length > 0 || Object.keys(layout.spans).length > 0 || Object.keys(layout.heights).length > 0 || layout.order.some((id, i) => id !== ids[i]);
 }
 
-export function setHeight(layout: DashboardLayout, id: string, rows: number): DashboardLayout {
-  return { ...layout, heights: { ...layout.heights, [id]: clampRows(rows) } };
+export function setHeight(layout: DashboardLayout, id: string, px: number): DashboardLayout {
+  return { ...layout, heights: { ...layout.heights, [id]: clampHeight(px) } };
 }
 
-/** Pasa al ancho siguiente (+1) o anterior (−1) de `SPANS`; en el borde no cambia nada. */
+/** Cambia el ancho en un paso fino (4 de 96 columnas) con el teclado; en los bordes no cambia nada. */
 export function stepSpan(current: Span, delta: -1 | 1): Span {
-  const at = SPANS.indexOf(current);
-  return SPANS[Math.min(SPANS.length - 1, Math.max(0, at + delta))]!;
+  return Math.min(COLS, Math.max(MIN_SPAN, current + delta * 4));
 }
 
-/** El ancho de `SPANS` más cercano a `px`, dado el ancho de una columna (de 12) en px. */
+/** Columnas que ocupa un ancho en px, dado el ancho de una columna: continuo, sin saltos entre medidas fijas. */
 export function spanFromWidth(px: number, columnPx: number): Span {
-  const columns = px / Math.max(1, columnPx);
-  return SPANS.reduce((best, s) => (Math.abs(s - columns) < Math.abs(best - columns) ? s : best), SPANS[0]);
+  return Math.min(COLS, Math.max(MIN_SPAN, Math.round(px / Math.max(1, columnPx))));
 }
 
 /** Agrega un gráfico del catálogo al final con su tamaño de nacimiento; devuelve el nuevo diseño y su id. */
-export function addWidget(layout: DashboardLayout, type: ChartType, span: Span, rows: number): { layout: DashboardLayout; id: string } {
+export function addWidget(layout: DashboardLayout, type: ChartType, span: Span, height: number): { layout: DashboardLayout; id: string } {
   let n = 1;
   while (layout.added.some((a) => a.id === `${type}-${n}`)) n++;
   const id = `${type}-${n}`;
@@ -145,7 +160,7 @@ export function addWidget(layout: DashboardLayout, type: ChartType, span: Span, 
       order: [...layout.order, id],
       added: [...layout.added, { id, type }],
       spans: { ...layout.spans, [id]: span },
-      heights: { ...layout.heights, [id]: clampRows(rows) },
+      heights: { ...layout.heights, [id]: clampHeight(height) },
     },
   };
 }

@@ -43,7 +43,7 @@ test.describe("Dashboard personalizable", () => {
     await page.getByRole("button", { name: "Guardar" }).click();
     await expect(metricas(page)).toHaveCount(0);
     const stored = JSON.parse((await page.evaluate((k) => window.localStorage.getItem(k), KEY))!);
-    expect(stored.v).toBe(3);
+    expect(stored.v).toBe(4);
     expect(stored.hidden).toEqual(["kpi-income"]);
 
     await page.reload();

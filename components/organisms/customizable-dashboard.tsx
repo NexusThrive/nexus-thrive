@@ -28,14 +28,17 @@ import { Select } from "@/components/atoms/select";
 import { Switch } from "@/components/atoms/switch";
 import { ChartWidget } from "@/components/molecules/charts/chart-widget";
 import { AddWidgetPanel } from "@/components/organisms/add-widget-panel";
-import { ROW_PX, entryOf, type ChartData, type ChartEntry, type ChartType } from "@/lib/dashboard/chart-catalog";
+import { entryOf, type ChartData, type ChartEntry, type ChartType } from "@/lib/dashboard/chart-catalog";
 import {
+  MIN_SPAN,
   SPANS,
-  SPAN_LABEL,
+  spanLabel,
   addWidget,
-  clampRows,
+  COLS,
+  clampHeight,
   defaultLayout,
   isCustomized,
+  fromTwelfths,
   isSpan,
   moveWidget,
   normalizeLayout,
@@ -65,15 +68,6 @@ export type DashboardWidget = {
 };
 
 const storageKey = (scope: string) => `nx:dashboard:${scope}`;
-
-/** Clases estáticas (Tailwind no ve nombres armados con variables). */
-const SPAN_CLASS: Record<Span, string> = {
-  3: "lg:col-span-3",
-  4: "lg:col-span-4",
-  6: "lg:col-span-6",
-  8: "lg:col-span-8",
-  12: "lg:col-span-12",
-};
 
 function readLayout(scope: string, ids: string[]): DashboardLayout {
   try {
@@ -129,7 +123,7 @@ const CORNERS: { id: Corner; className: string; label: string }[] = [
 function Item({
   widget,
   span,
-  rows,
+  height,
   removable,
   hidden,
   editing,
@@ -141,13 +135,13 @@ function Item({
   onMove,
   onToggle,
   onSpan,
-  onRows,
+  onHeight,
   onRemove,
 }: {
   widget: DashboardWidget;
   span: Span;
-  /** Alto en filas si el bloque lo admite (gráficos agregados); `null` = alto natural. */
-  rows: number | null;
+  /** Alto en px si el bloque lo admite (gráficos agregados); `null` = alto natural. */
+  height: number | null;
   removable: boolean;
   hidden: boolean;
   editing: boolean;
@@ -159,7 +153,7 @@ function Item({
   onMove: (delta: -1 | 1) => void;
   onToggle: () => void;
   onSpan: (span: Span) => void;
-  onRows: (rows: number) => void;
+  onHeight: (px: number) => void;
   onRemove: () => void;
 }) {
   const drag = useDraggable({ id: widget.id });
@@ -180,27 +174,33 @@ function Item({
     event.stopPropagation();
     const pointerId = event.pointerId;
     const gap = Number.parseFloat(getComputedStyle(grid).columnGap) || 14;
-    const unit = (grid.clientWidth + gap) / 12;
+    const unit = (grid.clientWidth + gap) / COLS;
     const startX = event.clientX;
     const startY = event.clientY;
     const startWidth = el.offsetWidth;
-    const startRows = rows;
+    const startHeight = height;
     let lastSpan: Span | null = null;
-    let lastRows: number | null = null;
+    let lastHeight: number | null = null;
+    const minPx = unit * MIN_SPAN - gap;
+    let livePx = startWidth;
     const move = (ev: PointerEvent) => {
       if (ev.pointerId !== pointerId) return;
+      // El ancho sigue al puntero al píxel (fluido); la cuadrícula solo reserva las columnas que hacen falta.
       const dx = (corner[1] === "l" ? -1 : 1) * (ev.clientX - startX);
-      const next = spanFromWidth(startWidth + dx + gap, unit);
-      if (next !== lastSpan) {
-        lastSpan = next;
-        onSpan(next);
+      livePx = Math.min(grid.clientWidth, Math.max(minPx, startWidth + dx));
+      el.style.justifySelf = "start";
+      el.style.width = `${livePx}px`;
+      const reserve = Math.min(COLS, Math.max(MIN_SPAN, Math.ceil((livePx + gap) / unit)));
+      if (reserve !== lastSpan) {
+        lastSpan = reserve;
+        onSpan(reserve);
       }
-      if (startRows != null) {
+      if (startHeight != null) {
         const dy = (corner[0] === "t" ? -1 : 1) * (ev.clientY - startY);
-        const nextRows = clampRows(startRows + dy / ROW_PX);
-        if (nextRows !== lastRows) {
-          lastRows = nextRows;
-          onRows(nextRows);
+        const next = clampHeight(startHeight + dy);
+        if (next !== lastHeight) {
+          lastHeight = next;
+          onHeight(next);
         }
       }
     };
@@ -209,6 +209,17 @@ function Item({
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", end);
       window.removeEventListener("pointercancel", end);
+      // Al soltar se asienta en la columna más cercana, con un deslizamiento corto en vez de un salto.
+      const snapped = spanFromWidth(livePx + gap, unit);
+      if (snapped !== lastSpan) onSpan(snapped);
+      el.style.width = "";
+      el.style.justifySelf = "";
+      requestAnimationFrame(() => {
+        const finalPx = el.offsetWidth;
+        if (!motionOff() && Math.abs(finalPx - livePx) > 1) {
+          el.animate([{ width: `${livePx}px` }, { width: `${finalPx}px` }], { duration: 140, easing: EASE_OUT });
+        }
+      });
     };
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", end);
@@ -218,10 +229,10 @@ function Item({
   function resizeKeys(event: React.KeyboardEvent) {
     const horizontal = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
     const vertical = event.key === "ArrowDown" ? 1 : event.key === "ArrowUp" ? -1 : 0;
-    if (!horizontal && !(vertical && rows != null)) return;
+    if (!horizontal && !(vertical && height != null)) return;
     event.preventDefault();
     if (horizontal) onSpan(stepSpan(span, horizontal as -1 | 1));
-    if (vertical && rows != null) onRows(clampRows(rows + vertical));
+    if (vertical && height != null) onHeight(clampHeight(height + vertical * 24));
   }
 
   return (
@@ -232,6 +243,7 @@ function Item({
         drop.setNodeRef(node);
       }}
       data-widget={widget.id}
+      style={{ ["--span" as string]: span }}
       // Sin arrastre nativo (enlaces e imágenes lo roban a dnd-kit y el bloque no se podía tomar).
       onDragStart={(event) => event.preventDefault()}
       {...pointerListeners}
@@ -242,7 +254,7 @@ function Item({
       className={cn(
         "group/widget relative min-w-0 transition-[opacity,outline-color] duration-200",
         widget.half ? "col-span-1" : "col-span-2",
-        SPAN_CLASS[span],
+        "lg:[grid-column:span_var(--span)]",
         !editing && "nx-rise empty:hidden",
         // El marco abraza al componente (no a su hueco): se toma desde cualquier punto.
         editing && "cursor-grab rounded-lg outline-2 outline-offset-2 outline-dashed outline-border-strong hover:z-(--z-sticky) hover:outline-border-input active:cursor-grabbing",
@@ -255,7 +267,7 @@ function Item({
       {hidden ? null : (
         <div
           inert={editing || undefined}
-          style={rows != null ? { height: rows * ROW_PX } : undefined}
+          style={height != null ? { height } : undefined}
           className={cn("h-full [&>*]:h-full", editing && "pointer-events-none select-none", drag.isDragging && "invisible")}
         >
           {widget.node}
@@ -286,17 +298,17 @@ function Item({
             <GripVertical aria-hidden="true" className="size-4" />
           </button>
           <span className={cn("max-w-40 truncate px-1 text-[13px] font-semibold", span <= 4 && "sr-only")}>{label}</span>
-          {span >= 6 ? (
-          <Select
-            aria-label={`Ancho de ${label}`}
-            value={String(span)}
-            onChange={(e) => isSpan(Number(e.target.value)) && onSpan(Number(e.target.value) as Span)}
-            className="hidden h-8 w-36 text-[12.5px] lg:flex"
-          >
-            {SPANS.map((s) => (
-              <option key={s} value={s}>{SPAN_LABEL[s]}</option>
-            ))}
-          </Select>
+          {span >= 48 ? (
+            <Select
+              aria-label={`Ancho de ${label}`}
+              value={String(span)}
+              onChange={(e) => isSpan(Number(e.target.value)) && onSpan(Number(e.target.value))}
+              className="hidden h-8 w-36 text-[12.5px] lg:flex"
+            >
+              {(SPANS.includes(span as (typeof SPANS)[number]) ? SPANS : [...SPANS, span].sort((a, b) => a - b)).map((s) => (
+                <option key={s} value={s}>{spanLabel(s)}</option>
+              ))}
+            </Select>
           ) : null}
           <Button variant="ghost" size="icon-sm" aria-label={`Subir ${label}`} disabled={index === 0} onClick={() => onMove(-1)}>
             <ArrowUp aria-hidden="true" className="size-4" />
@@ -324,10 +336,10 @@ function Item({
                 tabIndex={main ? 0 : undefined}
                 aria-hidden={main ? undefined : true}
                 aria-label={main ? `Tamaño de ${label}` : undefined}
-                aria-valuemin={main ? SPANS[0] : undefined}
-                aria-valuemax={main ? 12 : undefined}
+                aria-valuemin={main ? MIN_SPAN : undefined}
+                aria-valuemax={main ? COLS : undefined}
                 aria-valuenow={main ? span : undefined}
-                aria-valuetext={main ? `${SPAN_LABEL[span]}. Usa las flechas para cambiar el tamaño.` : undefined}
+                aria-valuetext={main ? `${spanLabel(span)}. Usa las flechas para cambiar el tamaño.` : undefined}
                 onPointerDown={(event) => startResize(event, corner.id)}
                 // Ningún sensor de arrastre (ratón, dedo, teclado) debe ver estos gestos.
                 onTouchStart={(event) => event.stopPropagation()}
@@ -454,7 +466,7 @@ export function CustomizableDashboard({
   }
   function add(type: ChartType) {
     const entry = entryOf(type);
-    const { layout: next, id } = addWidget(layout, type, entry.span, entry.rows);
+    const { layout: next, id } = addWidget(layout, type, entry.span, entry.height);
     setDraft(next);
     setAdding(false);
     setFreshId(id);
@@ -520,7 +532,8 @@ export function CustomizableDashboard({
   }
 
   // Los bloques se deslizan a su nuevo sitio (técnica FLIP: se mide antes y después y se anima la diferencia).
-  const orderKey = `${layout.order.join(",")}|${layout.hidden.join(",")}|${JSON.stringify(layout.spans)}|${editing}`;
+  // (Sin anchos ni altos: al ajustar el tamaño los vecinos fluyen con el puntero, sin animación aparte.)
+  const orderKey = `${layout.order.join(",")}|${layout.hidden.join(",")}|${editing}`;
   useLayoutEffect(() => {
     const grid = gridRef.current;
     if (!grid) return;
@@ -621,7 +634,7 @@ export function CustomizableDashboard({
           <div
             ref={gridRef}
             // `dense`: un bloque más pequeño sube a rellenar el hueco que dejó otro (sin espacios en blanco).
-            className="grid grid-cols-2 gap-3.5 [grid-auto-flow:dense] lg:grid-cols-12"
+            className="grid grid-cols-2 gap-3.5 [grid-auto-flow:dense] lg:[grid-template-columns:repeat(96,minmax(0,1fr))]"
             onPointerDown={(e) => e.target === e.currentTarget && setSelectedId(null)}
             onClickCapture={(e) => {
               if (!suppressClick.current) return;
@@ -639,8 +652,8 @@ export function CustomizableDashboard({
                   <Item
                     key={id}
                     widget={widget}
-                    span={layout.spans[id] ?? widget.span ?? 12}
-                    rows={addedType ? (layout.heights[id] ?? entryOf(addedType).rows) : null}
+                    span={layout.spans[id] ?? fromTwelfths(widget.span ?? 12)}
+                    height={addedType ? (layout.heights[id] ?? entryOf(addedType).height) : null}
                     removable={removable}
                     hidden={layout.hidden.includes(id)}
                     editing={editing}
@@ -651,8 +664,8 @@ export function CustomizableDashboard({
                     onSelect={() => setSelectedId(id)}
                     onMove={(delta) => edit((l) => moveWidget(l, id, delta), `${widget.label}: posición ${index + 1 + delta} de ${all.length}`)}
                     onToggle={() => edit((l) => toggleWidget(l, id), `${widget.label}: ${layout.hidden.includes(id) ? "visible" : "oculto"}`)}
-                    onSpan={(s) => edit((l) => setSpan(l, id, s), `${widget.label}: ${SPAN_LABEL[s]}`)}
-                    onRows={(r) => edit((l) => setHeight(l, id, r))}
+                    onSpan={(s) => edit((l) => setSpan(l, id, s), `${widget.label}: ${spanLabel(s)}`)}
+                    onHeight={(h) => edit((l) => setHeight(l, id, h))}
                     onRemove={() => edit((l) => removeWidget(l, id), `${widget.label} quitado`)}
                   />
                 );

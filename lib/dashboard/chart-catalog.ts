@@ -15,26 +15,25 @@ export type ChartEntry = {
   type: ChartType;
   label: string;
   description: string;
-  /** Columnas (de 12) con las que nace. */
+  /** Columnas (de 96) con las que nace. */
   span: Span;
-  /** Alto con el que nace, en filas de `ROW_PX`. */
-  rows: number;
+  /** Alto con el que nace (px). */
+  height: number;
   /** Módulo que debe estar activo para ofrecerlo. */
   needs: ModuleValue;
 };
 
-/** Alto de una fila de la cuadrícula de gráficos (px). */
-export const ROW_PX = 40;
-export const MIN_ROWS = 5;
-export const MAX_ROWS = 14;
+/** Alto mínimo y máximo de un gráfico (px); entre ambos cambia de forma continua. */
+export const MIN_HEIGHT = 200;
+export const MAX_HEIGHT = 640;
 
 export const CHART_CATALOG: readonly ChartEntry[] = [
-  { type: "bars", label: "Ingresos y gastos · barras", description: "Compara lo que entra y lo que sale en cada día u hora.", span: 6, rows: 8, needs: "finance" },
-  { type: "line", label: "Ingresos y gastos · líneas", description: "Dos líneas para ver la tendencia del periodo.", span: 6, rows: 8, needs: "finance" },
-  { type: "area", label: "Balance acumulado · área", description: "Cómo crece o cae tu balance a lo largo del periodo.", span: 6, rows: 8, needs: "finance" },
-  { type: "donut", label: "Ingresos por método de pago", description: "Reparto del mes entre efectivo, transferencia, tarjeta…", span: 4, rows: 8, needs: "finance" },
-  { type: "gauge", label: "Medidor del balance", description: "Qué parte de los ingresos del periodo te queda después de gastos.", span: 4, rows: 6, needs: "finance" },
-  { type: "customers", label: "Tendencia de clientes", description: "Cómo crece tu cartera de clientes activos.", span: 4, rows: 6, needs: "crm" },
+  { type: "bars", label: "Ingresos y gastos · barras", description: "Compara lo que entra y lo que sale en cada día u hora.", span: 48, height: 320, needs: "finance" },
+  { type: "line", label: "Ingresos y gastos · líneas", description: "Dos líneas para ver la tendencia del periodo.", span: 48, height: 320, needs: "finance" },
+  { type: "area", label: "Balance acumulado · área", description: "Cómo crece o cae tu balance a lo largo del periodo.", span: 48, height: 320, needs: "finance" },
+  { type: "donut", label: "Ingresos por método de pago", description: "Reparto del mes entre efectivo, transferencia, tarjeta…", span: 32, height: 320, needs: "finance" },
+  { type: "gauge", label: "Medidor del balance", description: "Qué parte de los ingresos del periodo te queda después de gastos.", span: 32, height: 240, needs: "finance" },
+  { type: "customers", label: "Tendencia de clientes", description: "Cómo crece tu cartera de clientes activos.", span: 32, height: 240, needs: "crm" },
 ];
 
 /** Lo que todavía no existe: se muestra desactivado en el panel («Pronto»). */

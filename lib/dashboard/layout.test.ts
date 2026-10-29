@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addWidget, defaultLayout, isCustomized, moveWidget, normalizeLayout, placeWidget, removeWidget, setHeight, setSpan, spanFromWidth, stepSpan, toggleWidget } from "./layout";
+import { COLS, addWidget, defaultLayout, isCustomized, moveWidget, normalizeLayout, placeWidget, removeWidget, setHeight, setSpan, spanFromWidth, stepSpan, toggleWidget } from "./layout";
 
 const IDS = ["kpis", "chart", "activity"] as const;
 
@@ -14,14 +14,20 @@ describe("normalizeLayout", () => {
   });
   it("lee la v1 (sin tamaños) y la completa", () => {
     const l = normalizeLayout({ order: ["chart", "kpis", "activity"], hidden: [] }, IDS);
-    expect(l.v).toBe(3);
+    expect(l.v).toBe(4);
     expect(l.spans).toEqual({});
     expect(l.heights).toEqual({});
     expect(l.added).toEqual([]);
   });
-  it("conserva tamaños válidos y descarta los inválidos o de bloques que ya no existen", () => {
-    const l = normalizeLayout({ spans: { kpis: 6, chart: 5, viejo: 4, activity: "12" } }, IDS);
-    expect(l.spans).toEqual({ kpis: 6 });
+  it("pasa los anchos de la v3 (12 columnas) a la cuadrícula de 96 y descarta los inválidos", () => {
+    const l = normalizeLayout({ v: 3, spans: { kpis: 6, chart: 5, viejo: 4, activity: "12" }, heights: { chart: 8 } }, IDS);
+    expect(l.spans).toEqual({ kpis: 48 });
+    expect(l.heights).toEqual({ chart: 320 });
+  });
+  it("conserva los anchos continuos de la v4 (cualquier columna entre el mínimo y el máximo)", () => {
+    const l = normalizeLayout({ v: 4, spans: { kpis: 57, chart: 10, activity: 200 }, heights: { chart: 333, kpis: 5000 } }, IDS);
+    expect(l.spans).toEqual({ kpis: 57 });
+    expect(l.heights).toEqual({ chart: 333, kpis: 640 });
   });
   it("tolera datos corruptos", () => {
     expect(normalizeLayout({ order: 5, hidden: [1, null], spans: 3 }, IDS)).toEqual(defaultLayout(IDS));
@@ -69,41 +75,40 @@ describe("bloques que se dividen", () => {
 
 describe("gráficos agregados y redimensionado por esquinas", () => {
   it("addWidget agrega al final con su tamaño y numera sin repetir", () => {
-    const a = addWidget(defaultLayout(IDS), "bars", 6, 8);
+    const a = addWidget(defaultLayout(IDS), "bars", 48, 320);
     expect(a.id).toBe("bars-1");
     expect(a.layout.order).toEqual([...IDS, "bars-1"]);
-    expect(a.layout.spans["bars-1"]).toBe(6);
-    expect(a.layout.heights["bars-1"]).toBe(8);
-    expect(addWidget(a.layout, "bars", 6, 8).id).toBe("bars-2");
+    expect(a.layout.spans["bars-1"]).toBe(48);
+    expect(a.layout.heights["bars-1"]).toBe(320);
+    expect(addWidget(a.layout, "bars", 48, 320).id).toBe("bars-2");
   });
   it("lo agregado sobrevive a normalizeLayout y lo inválido se descarta", () => {
-    const { layout } = addWidget(defaultLayout(IDS), "donut", 4, 8);
+    const { layout } = addWidget(defaultLayout(IDS), "donut", 32, 320);
     expect(normalizeLayout(JSON.parse(JSON.stringify(layout)), IDS)).toEqual(layout);
-    const l = normalizeLayout({ added: [{ id: "donut-1", type: "donut" }, { id: "x-1", type: "x" }, { id: "bars-2", type: "line" }, { id: "kpis", type: "bars" }] }, IDS);
+    const l = normalizeLayout({ v: 4, added: [{ id: "donut-1", type: "donut" }, { id: "x-1", type: "x" }, { id: "bars-2", type: "line" }, { id: "kpis", type: "bars" }] }, IDS);
     expect(l.added).toEqual([{ id: "donut-1", type: "donut" }]);
   });
   it("removeWidget quita solo los agregados y limpia su tamaño", () => {
-    const { layout, id } = addWidget(defaultLayout(IDS), "gauge", 4, 6);
-    const back = removeWidget(layout, id);
-    expect(back).toEqual(defaultLayout(IDS));
+    const { layout, id } = addWidget(defaultLayout(IDS), "gauge", 32, 240);
+    expect(removeWidget(layout, id)).toEqual(defaultLayout(IDS));
     expect(removeWidget(layout, "kpis")).toBe(layout);
   });
-  it("setHeight limita el alto entre el mínimo y el máximo", () => {
-    expect(setHeight(defaultLayout(IDS), "kpis", 1).heights.kpis).toBe(5);
-    expect(setHeight(defaultLayout(IDS), "kpis", 99).heights.kpis).toBe(14);
-    expect(setHeight(defaultLayout(IDS), "kpis", 7.4).heights.kpis).toBe(7);
+  it("setHeight es continuo entre el mínimo y el máximo", () => {
+    expect(setHeight(defaultLayout(IDS), "kpis", 10).heights.kpis).toBe(200);
+    expect(setHeight(defaultLayout(IDS), "kpis", 9999).heights.kpis).toBe(640);
+    expect(setHeight(defaultLayout(IDS), "kpis", 337.4).heights.kpis).toBe(337);
   });
-  it("stepSpan avanza por los anchos permitidos y se detiene en los bordes", () => {
-    expect(stepSpan(6, 1)).toBe(8);
-    expect(stepSpan(6, -1)).toBe(4);
-    expect(stepSpan(12, 1)).toBe(12);
-    expect(stepSpan(3, -1)).toBe(3);
+  it("stepSpan avanza en pasos finos y se detiene en los bordes", () => {
+    expect(stepSpan(48, 1)).toBe(52);
+    expect(stepSpan(48, -1)).toBe(44);
+    expect(stepSpan(COLS, 1)).toBe(COLS);
+    expect(stepSpan(24, -1)).toBe(24);
   });
-  it("spanFromWidth se ajusta a la columna más cercana", () => {
-    expect(spanFromWidth(600, 100)).toBe(6);
-    expect(spanFromWidth(710, 100)).toBe(8);
-    expect(spanFromWidth(100, 100)).toBe(3);
-    expect(spanFromWidth(5000, 100)).toBe(12);
+  it("spanFromWidth sigue al puntero columna a columna (sin saltar entre medidas fijas)", () => {
+    expect(spanFromWidth(600, 12.5)).toBe(48);
+    expect(spanFromWidth(613, 12.5)).toBe(49);
+    expect(spanFromWidth(10, 12.5)).toBe(24);
+    expect(spanFromWidth(5000, 12.5)).toBe(COLS);
   });
   it("agregar un gráfico cuenta como personalizado", () => {
     expect(isCustomized(addWidget(defaultLayout(IDS), "line", 6, 8).layout, IDS)).toBe(true);
