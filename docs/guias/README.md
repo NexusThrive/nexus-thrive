@@ -5,9 +5,8 @@ dónde va) está en [nexus-architecture/](../nexus-architecture/README.md).
 
 | Guía | Para qué |
 |---|---|
-| [../flujo-gitlab-github.md](../flujo-gitlab-github.md) | Cómo se empuja y se fusiona: GitLab manda, GitHub es espejo de solo lectura |
 | [pruebas.md](pruebas.md) | Preparar la base de pruebas, correr cada capa y qué prueba escribir según lo que cambias |
-| [nueva-funcionalidad.md](nueva-funcionalidad.md) | La receta para agregar algo a un módulo o un módulo nuevo, con la lista antes del MR |
+| [nueva-funcionalidad.md](nueva-funcionalidad.md) | La receta para agregar algo a un módulo o un módulo nuevo, con la lista antes del PR |
 | [devops.md](devops.md) | Ramas, CI, SQL de producción, secretos, desplegar y volver atrás, observabilidad |
 | [../VERSIONADO.md](../VERSIONADO.md) | Versiones, tags, CHANGELOG y flujo de bug, funcionalidad y hotfix |
 | [../clerk-produccion.md](../clerk-produccion.md) | Configurar Clerk en el dominio de producción |

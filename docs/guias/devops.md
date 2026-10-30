@@ -13,7 +13,7 @@ la memoria de nadie. El detalle de versiones, tags y CHANGELOG está en
 
 ```mermaid
 flowchart LR
-  DEV["Local<br/>pnpm dev · nexus"] -->|rama fix/ feature/| PR[Merge request<br/>GitLab]
+  DEV["Local<br/>pnpm dev · nexus"] -->|rama fix/ feature/| PR[Pull request<br/>GitHub]
   PR --> CI["CI GitHub Actions<br/>tipos · lint · unitarias · Storybook<br/>migraciones limpias · integración"]
   CI -->|verde + revisión| MAIN[main]
   MAIN -->|autodespliegue| VERCEL[Vercel · producción]
@@ -33,22 +33,17 @@ flowchart LR
 ## 2. Ramas
 
 - `main` es la única rama que se despliega.
-- La entrada oficial es GitLab; GitHub es un espejo de solo lectura
-  ([flujo-gitlab-github.md](../flujo-gitlab-github.md)).
-- Todo entra por merge request en GitLab: `fix/<qué>`, `feature/<qué>`,
+- Todo entra por pull request en GitHub: `fix/<qué>`, `feature/<qué>`,
   `hotfix/<qué>`, `refactor/<qué>`, `docs/<qué>`.
-- Un MR hace **una** cosa. Si mientras arreglas ves otra, va en otro MR.
+- Un PR hace **una** cosa. Si mientras arreglas ves otra, va en otro PR.
 - Commits en español, imperativo, con alcance: `fix(caja): no cobra dos veces
   una factura`.
 
-**Protección de `main`** (en GitLab, el repositorio oficial):
+**Protección de `main`** (Settings → Branches en GitHub):
 
-- Solo entra por merge request (sin aprobaciones obligatorias: el equipo es de
-  una persona).
-- `main` está protegida: solo Maintainer u Owner pueden empujar y fusionar.
+- Solo entra por pull request.
 - Sin force push ni borrado de `main`.
-- El CI de GitHub (`verify`) sigue corriendo sobre el espejo, pero hoy el MR de
-  GitLab no espera su resultado.
+- El job `verify` del CI debe estar en verde antes de fusionar.
 - Los administradores pueden saltarse la regla para un hotfix urgente; si lo
   haces, déjalo anotado en el commit.
 
