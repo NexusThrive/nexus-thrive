@@ -1,6 +1,6 @@
 # Auditoría de E1: dependencias de Core hacia Industry
 
-Estado: **solo auditoría**. No se modificó ningún archivo de implementación. Alcance: exclusivamente imports de la capa Core hacia una
+Estado: auditoría previa a E1. **E1 se ejecutó después**: ver [`E1-resultados.md`](E1-resultados.md). Esta nota se conserva tal como era antes de implementar. Alcance: exclusivamente imports de la capa Core hacia una
 industria. Fuente: las 12 excepciones de la etapa E1 de `docs/architecture/exceptions.json` (64 → 52 si se resuelven) y lectura de
 `lib/tenant/db.ts` (1 469 líneas).
 

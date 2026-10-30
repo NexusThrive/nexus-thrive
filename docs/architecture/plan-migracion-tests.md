@@ -19,7 +19,10 @@ Carpetas con más pruebas: `tenant` 15, `ops` 12, `construction` 12 (+6 en `apu-
 
 Las 10 que leen por ruta: `events/n8n-templates`, `tenant/{deletion.integration,data-access,tenant-scope,page-authorization}`, `capabilities/registry`, `design/ui-rules`, `navigation/tenant-nav` y las dos `construction/apu-importer/master-pack*.file*`.
 
-### Hallazgo que condiciona el plan
+### Hallazgo que condiciona el plan (resuelto)
+
+> **Actualización:** `test-integration.sh` ya corre por patrón todas las `*.integration.test.ts` (ver `auditoria-pruebas-integracion.md`). La ola 5 ya no necesita decidir qué activar: al moverlas a `tests/integration/` siguen entrando solas.
+
 
 `test-integration.sh` lista 24 archivos a mano. Las otras **34** pruebas de integración (por ejemplo `accounting/*`, `api/api`, `catalog/catalog`, `admin/users`, `business/adjustment-notes`) se omiten en el paso «Unit tests» del CI (`TEST_DATABASE_URL=""`) y **no están** en el paso de integración, así que hoy podrían no ejecutarse nunca en CI. No se cambió nada. Al migrar a `tests/integration/**` hay que decidir si el script pasa a usar una carpeta/patrón (se activarían las 34, con posibles fallos que hoy están ocultos) o conserva la lista.
 

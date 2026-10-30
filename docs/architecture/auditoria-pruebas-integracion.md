@@ -1,7 +1,7 @@
 # Auditoría de las pruebas de integración fuera de `test-integration.sh`
 
-Estado: **solo auditoría estática**. No se activó, ejecutó ni modificó ninguna prueba, ni el CI, ni `test-integration.sh`.
-No hay `TEST_DATABASE_URL` en este entorno, así que nada se corrió contra una base.
+Estado: auditoría estática original **más su verificación posterior** (sección final). La clasificación de abajo se conserva; los resultados de la
+ejecución real y la decisión sobre `test-integration.sh` están en «Resultado de la verificación».
 
 ## Qué pasa hoy
 
@@ -90,3 +90,25 @@ prueban lógica pura y las de integración prueban la base de datos, la concurre
    Mientras tanto se pueden añadir de a grupos pequeños (por ejemplo `accounting`, `tax`, `receivables`).
 4. Dejar la de `master-pack` fuera del CI rutinario (ejecución manual o programada) y documentar cómo obtener el archivo.
 5. Hacerlo **antes** de la ola 5 del plan de migración (`plan-migracion-tests.md`), para migrar pruebas que ya se sabe que pasan.
+
+## Resultado de la verificación (después de la auditoría)
+
+Se creó una base PostgreSQL 17 desechable en Docker (puerto local propio, credenciales aleatorias, datos en memoria; no se usó la base de desarrollo ni ninguna
+otra) y se ejecutaron las 24 pruebas del script y las 33 de esta auditoría juntas, sin repetir ninguna.
+
+| Resultado | Cantidad |
+|---|---|
+| Archivos | 57 |
+| Pruebas | 333 |
+| Pasan | **333** |
+| Fallan / omitidas | 0 / 0 |
+
+La predicción estática se cumplió: ninguna de las 33 necesitó adaptación y ninguna falló por el entorno. Se repitieron al final de E1 (segunda ejecución, mismo
+resultado), así que son reproducibles.
+
+**No ejecutada:** `master-pack-import.file`. Exige el MASTER PACK real de un cliente y sus aserciones dependen de ese archivo (actividad `1.01`, cantidad `0.0013`,
+2.288 APU). Existe una copia en carpetas de respaldo del usuario, pero se trata de datos reales de un tercero y no se reutilizó. Su lógica la cubre
+`master-pack-import.integration` (paquete sintético), que pasa. Queda documentada como ejecución manual.
+
+**Cambio en el CI:** `test-integration.sh` ya no tiene una lista fija. Corre toda `*.integration.test.ts` de `lib/` y `tests/integration/` más 4 pruebas con otro
+nombre, y excluye las `*.file.integration.test.ts`. Resultado con el patrón: 58 archivos, 343 pruebas, 0 fallos. El workflow `ci.yml` no cambia: ya llama al script.
