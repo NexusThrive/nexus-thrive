@@ -1,0 +1,7 @@
+{
+  "name": "product-team",
+  "version": "0.4.0",
+  "description": "Equipo de producto, ingeniería y Studio de NEXUS THRIVE: 43 subagentes nativos de Claude Code, cada uno con su skill, más los flujos nueva-funcionalidad y ciclo-sprint. Sin motor externo: la independencia de la revisión la da usar otro subagente.",
+  "author": { "name": "NEXUS" },
+  "keywords": ["producto", "ingenieria", "studio", "subagentes", "skills", "sprint", "steward"]
+}

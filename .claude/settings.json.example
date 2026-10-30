@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm test:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm exec tsc:*)",
+      "Read(docs/**)",
+      "Read(plugins/**)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git push origin main:*)",
+      "Bash(git push origin sprint/*)",
+      "Bash(git commit --no-verify:*)",
+      "Bash(git merge main:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(rm -rf /:*)",
+      "Read(.env)",
+      "Read(.env.produccion)"
+    ]
+  }
+}

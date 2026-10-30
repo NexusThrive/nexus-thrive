@@ -265,6 +265,41 @@ pack APU real si se le pasa `MASTER_PACK_FILE=/ruta/al/archivo.xlsx`.
 - Cómo agregar una funcionalidad: [`docs/guias/nueva-funcionalidad.md`](docs/guias/nueva-funcionalidad.md).
 - Ramas, CI, secretos y despliegue: [`docs/guias/devops.md`](docs/guias/devops.md).
 
+## Equipo de ingeniería
+
+El repositorio incluye un plugin de Claude Code, [`plugins/product-team`](plugins/product-team/README.md), con
+**43 subagentes nativos** (ingeniería, Studio y el Steward), cada uno con su skill, más los flujos
+`nueva-funcionalidad` y `ciclo-sprint`. No hay motor externo ni Python: la revisión independiente la da usar
+**otro subagente** y la evidencia es la salida real de los comandos.
+
+```text
+objetivo → HU con criterios → especialista → implementación + pruebas
+→ QA por otro agente → revisión senior por otro agente → CI verde → integración en sprint
+```
+
+| Pieza | Dónde |
+| --- | --- |
+| Subagentes y skills por rol | `plugins/product-team/` |
+| Instalación | `.claude-plugin/marketplace.json` |
+| Compuerta de calidad | `.product-team/ci.json`, `CLAUDE.md` y el CI |
+| Criterio del dueño (Steward) | `docs/ingenieria/steward/criterios.md` |
+| Registro de herramientas externas | `docs/ingenieria/herramientas/registro.json` |
+| Arquitectura y decisiones | [`docs/ingenieria/arquitectura/`](docs/ingenieria/arquitectura/overview.md) |
+| Diagramas Mermaid | [`docs/diagrams/`](docs/diagrams/README.md) |
+| Conocimiento y fuentes | [`docs/knowledge/`](docs/knowledge/README.md) |
+
+```text
+/plugin marketplace add NexusThrive/nexus-thrive
+/plugin install product-team@nexus-thrive
+```
+
+Reglas del equipo (por instrucción, no por código): nada se da por terminado sin evidencia; quien implementa no
+emite el veredicto de QA ni de revisión; tres intentos por historia y luego decisión humana; `docs/ingenieria/PAUSA`
+detiene el ciclo de sprint; nunca `--force`, `--no-verify`, push ni merge a `main`.
+
+Integraciones externas: Graphify funciona en local (`--code-only`). NotebookLM **no está integrado**: la decisión
+está pendiente del dueño ([`docs/PENDIENTES.md`](docs/PENDIENTES.md)). n8n se retiró hasta tener una instancia real.
+
 ## Versiones
 
 `main` es la única rama que se despliega (Vercel la toma sola) y cada versión
@@ -291,6 +326,9 @@ historial en [`CHANGELOG.md`](CHANGELOG.md).
 | [`docs/nexus-architecture/`](docs/nexus-architecture/README.md) | Auditoría, arquitectura actual y objetivo, seguridad, deuda y roadmap |
 | [`docs/design/`](docs/design/interaction-patterns.md) | Patrones de interacción, accesibilidad y calidad |
 | [`docs/guias/`](docs/guias/README.md) | Pruebas, nueva funcionalidad y DevOps |
+| [`docs/ingenieria/arquitectura/`](docs/ingenieria/arquitectura/overview.md) | Equipo de ingeniería: agentes, loops, conocimiento, automatización, seguridad y operación |
+| [`docs/diagrams/`](docs/diagrams/README.md) | Diagramas Mermaid de arquitectura, agentes, loops, conocimiento, n8n y despliegue |
+| [`docs/knowledge/`](docs/knowledge/README.md) | Catálogo de fuentes, políticas, investigación y sincronización |
 | [`docs/prod-sql/`](docs/prod-sql/00-ORDEN.md) | Orden del SQL manual de producción |
 
 ---

@@ -1,0 +1,38 @@
+flowchart TB
+    subgraph N8N["n8n (no instalado — importación no verificada)"]
+        A["A · nueva solicitud<br/>webhook /nexus/a"]
+        B["B · conocimiento<br/>webhook /nexus/b"]
+        C["C · sprint<br/>webhook /nexus/c"]
+        D["D · recuperación<br/>cada 15 min"]
+        E["E · CI y revisión<br/>webhook /nexus/e"]
+        F["F · informes<br/>cada 24 h"]
+        G["G · notificaciones<br/>webhook /nexus/g"]
+        H["H · investigación<br/>semanal"]
+    end
+
+    NORM["Normalizar<br/>event · idempotency_key · title"]
+    AUTH{"Bearer token<br/>válido"}
+    BRIDGE["nexus-eng serve<br/>127.0.0.1:8787"]
+    LEDGER[("workflows/executions.json")]
+    ORCH["Orchestrator"]
+    TASKS[("tasks.json")]
+
+    A --> NORM
+    B --> NORM
+    C --> NORM
+    E --> NORM
+    G --> NORM
+    D --> NORM
+    F --> NORM
+    H --> NORM
+
+    NORM --> AUTH
+    AUTH -->|"no"| R401["401"]
+    AUTH -->|"sí"| BRIDGE
+    BRIDGE --> LEDGER
+    BRIDGE -->|"A: crear tarea si es nueva"| ORCH
+    ORCH --> TASKS
+    BRIDGE -->|"202 accepted"| OK1["primera entrega"]
+    BRIDGE -->|"200 duplicate"| OK2["repetición no duplica"]
+
+    style N8N stroke-dasharray: 6 4

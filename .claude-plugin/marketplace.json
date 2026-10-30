@@ -1,0 +1,14 @@
+{
+  "name": "nexus-thrive",
+  "owner": {
+    "name": "NEXUS"
+  },
+  "plugins": [
+    {
+      "name": "product-team",
+      "source": "./plugins/product-team",
+      "description": "43 subagentes con su skill: ingeniería, Studio (diseño, marca, marketing) y Steward."
+    }
+  ],
+  "description": "Plugins de Claude Code de NEXUS THRIVE: equipo de producto, ingeniería y Studio."
+}

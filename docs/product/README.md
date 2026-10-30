@@ -20,4 +20,4 @@ La parte de ingeniería vive en `docs/ingenieria/`: notas de diseño (`diseno/<i
 
 ## Compuerta de calidad
 
-`scripts/product-gate.py` lee `.product-team/ci.json` y corre lint y pruebas unitarias. Sin `coverage_min` no exige cobertura: para exigirla hay que instalar `@vitest/coverage-v8`, agregar `--coverage --coverage.reporter=cobertura` al comando de pruebas y fijar `coverage_min` y `coverage_file`. El CI del repositorio (`.github/workflows/ci.yml`) sigue siendo el que manda en los PR.
+Los comandos de la compuerta están en `.product-team/ci.json` (lint y pruebas) y los ejecutan los agentes del plugin a mano; el script `product-gate.py` se retiró (ADR 0013). Para exigir cobertura hay que instalar `@vitest/coverage-v8` y añadir `--coverage` al comando de pruebas. El CI del repositorio (`.github/workflows/ci.yml`) sigue siendo el que manda en los PR.
