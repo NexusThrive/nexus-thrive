@@ -57,7 +57,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [x] Centros de costo y sucursales _(PR-21)_
+- [x] Centros de costo y sucursales _(PR-21)_ — _hecho: modelo `CostCenter` (CENTER o BRANCH) en `prisma/contract.prisma`; alta y activación en `lib/accounting/accounting-db.ts` y `app/[tenant]/(app)/contabilidad/actions.ts`_
 - [ ] Reporte de gasto e ingreso por centro de costo.
 - [x] Lista de categorías — _hecho: categorías de gasto_
 - [x] Filtro y total por categoría. — _hecho: filtro por categoría en Finanzas_

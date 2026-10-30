@@ -58,8 +58,8 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [ ] Registro manual de campañas
-- [x] UTM automáticos _(PR-28)_
-- [x] Reporte simple: inversión vs. leads recibidos por origen. _(PR-28)_
+- [x] UTM automáticos _(PR-28)_ — _hecho: el enlace corto de la campaña añade los `utm_*` al redirigir, si está activo y el sitio habilitado (`resolveLink` en `lib/growth/growth-db.ts`)_
+- [x] Reporte simple: inversión vs. leads recibidos por origen. _(PR-28)_ — _hecho: `growthReport` en `lib/growth/growth-db.ts` suma inversión, clics, contactos y ventas por origen; inversión y clics sin filtro de fecha, costo por contacto y retorno solo con inversión mayor que 0_
 
 #### Técnico
 

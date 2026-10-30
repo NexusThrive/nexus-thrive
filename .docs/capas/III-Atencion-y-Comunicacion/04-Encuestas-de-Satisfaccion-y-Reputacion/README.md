@@ -57,7 +57,7 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [x] Enlace a Google Reviews _(PR-28)_
+- [x] Enlace a Google Reviews _(PR-28)_ — _hecho: `createReview` en `lib/growth/growth-db.ts` devuelve el enlace de reseña de Google (`googleReviewUrl` en `lib/growth/growth.ts`) y `app/s/[slug]/resena/review-form.tsx` lo muestra tras una reseña no baja_
 
 #### Técnico
 
