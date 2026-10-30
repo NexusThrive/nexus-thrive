@@ -33,6 +33,7 @@ import PresenceSummary from "./_components/presence-summary";
 import { StatTile } from "@/components/molecules/stat-tile";
 import { requirePageContext } from "@/lib/tenant/context";
 
+import { createMembershipsDb } from "@/lib/business/memberships-repo";
 /**
  * Dashboard del negocio. Server Component: toda la data (tenant, usuario,
  * métricas y actividad reciente) se resuelve aquí desde PostgreSQL vía
@@ -79,6 +80,7 @@ export default async function TenantDashboard({
 
   const { userId } = await auth();
   const tenantDb = createTenantDb(tenantRecord.id);
+  const memberships = createMembershipsDb(tenantRecord.id);
   const localUser = userId
     ? await tenantDb.users.findByClerkUserId(userId)
     : null;
@@ -107,7 +109,7 @@ export default async function TenantDashboard({
     tenantDb.finance.getSeries(days),
     tenantDb.customers.activeGrowth(days === 1 ? 7 : days),
     tenantDb.finance.getRecentActivity(20),
-    tenantDb.memberships.getMetrics(),
+    memberships.getMetrics(),
     tenantDb.finance.getMetrics(),
   ]);
   // Semana y mes miran más atrás que el periodo elegido (12 semanas / 12 meses), sin periodo previo.
@@ -122,7 +124,7 @@ export default async function TenantDashboard({
   // Fuentes de la actividad que no son movimientos: socios nuevos, membresías por vencer y cartera.
   const [newCustomers, expiring] = await Promise.all([
     moduleOn("crm") ? tenantDb.customers.recent(5) : [],
-    moduleOn("memberships") ? tenantDb.memberships.list({ status: "expiring", limit: 5 }).then((r) => r.rows) : [],
+    moduleOn("memberships") ? memberships.list({ status: "expiring", limit: 5 }).then((r) => r.rows) : [],
   ]);
   const hasCatalog =
     tenantRecord.modules.some((m) => m.active && m.moduleName === "inventory")

@@ -23,6 +23,7 @@ import {
   type RenewalFieldErrors,
 } from "./validators";
 
+import { createMembershipsDb } from "@/lib/business/memberships-repo";
 export type MembershipFormState = {
   status: "idle" | "error" | "ok";
   message?: string;
@@ -179,7 +180,7 @@ export async function renewMembershipAction(
 
   const { membershipId, provider, registerPayment } = validation.values;
 
-  const membership = await tenantDb.memberships.get(membershipId);
+  const membership = await createMembershipsDb(tenantDb.tenantId).get(membershipId);
   if (!membership) {
     return {
       status: "error",

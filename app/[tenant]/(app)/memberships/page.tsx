@@ -19,6 +19,7 @@ import { requirePageContext } from "@/lib/tenant/context";
 import { can } from "@/lib/business/permissions";
 import { routeCategory } from "@/lib/navigation/tenant-nav";
 
+import { createMembershipsDb } from "@/lib/business/memberships-repo";
 const PAGE_SIZE = 10;
 
 function firstString(value: string | string[] | undefined): string {
@@ -67,10 +68,11 @@ export default async function MembershipsPage({
   const tenantRecord = pageCtx.tenant;
 
   const tenantDb = createTenantDb(tenantRecord.id);
+  const memberships = createMembershipsDb(tenantRecord.id);
 
   const [metrics, membershipResult, activeCustomers] = await Promise.all([
-    tenantDb.memberships.getMetrics(),
-    tenantDb.memberships.list({
+    memberships.getMetrics(),
+    memberships.list({
       q,
       status,
       type,

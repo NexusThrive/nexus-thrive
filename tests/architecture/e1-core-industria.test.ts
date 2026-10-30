@@ -46,8 +46,13 @@ describe("createTenantDb (Core)", () => {
     for (const key of ["customers", "customerNotes", "users", "payments", "bookings", "expenses", "finance"]) expect(keys, key).toContain(key);
   });
 
-  test("lib/tenant/db.ts no importa nada de construcción", () => {
+  test("tampoco expone las membresías del gimnasio", () => {
+    expect(Object.keys(createTenantDb("negocio-a"))).not.toContain("memberships");
+  });
+
+  test("lib/tenant/db.ts no importa construcción ni el gimnasio", () => {
     const source = readFileSync(join(ROOT, "lib/tenant/db.ts"), "utf8");
     expect(source).not.toMatch(/from\s+["']@\/lib\/construction\//);
+    expect(source).not.toMatch(/from\s+["']@\/lib\/business\/(memberships|gym|museum)/);
   });
 });

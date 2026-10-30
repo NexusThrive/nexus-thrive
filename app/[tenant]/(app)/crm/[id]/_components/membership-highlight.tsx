@@ -6,7 +6,7 @@ import { Card, CardAction, CardHeader, CardTitle } from "@/components/molecules/
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import { typeLabel } from "@/lib/business/memberships";
 import { useMinute } from "@/lib/hooks/use-minute";
-import type { Customer360Membership } from "@/lib/tenant/db";
+import type { Customer360Membership } from "@/lib/business/memberships";
 import type { VerticalTerms } from "@/lib/vertical-terms";
 import { cn } from "@/lib/utils";
 import { MembershipStatusPill } from "./status-pills";

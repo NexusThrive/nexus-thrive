@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { customerProfileExtras } from "@/lib/business/customers-db";
 import { tenantWithModules } from "@/lib/tenant/membership";
-import { createTenantDb } from "@/lib/tenant/db";
+import { buildCustomer360, createTenantDb } from "@/lib/tenant/db";
+import { getCustomer360Memberships } from "@/lib/business/memberships-repo";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import { bmi, profileFor } from "@/lib/business/customer-fields";
 import CustomerHeader from "./_components/customer-header";
@@ -27,7 +28,7 @@ import { requirePageContext } from "@/lib/tenant/context";
  * FICHA DEL CLIENTE 360° — expediente centralizado de un cliente.
  *
  * Server Component: toda la carga inicial ocurre en el servidor vía
- * `customers.get360Details`, que verifica que el `customerId` pertenece a
+ * `customers.get360Base`, que verifica que el `customerId` pertenece a
  * ESTE tenant (Multi-Tenancy estricta: Clerk → tenant → tenantId →
  * customerId → tenantDb). Client Components solo para lo interactivo
  * (pestañas = links a `?tab=`, notas, acceso y edición con Server Actions).
@@ -55,22 +56,22 @@ export default async function CustomerPage({
   }
 
   // Devuelve `null` si el cliente no existe o es de otro tenant → 404.
+  // La ficha de Core y el aporte del gimnasio (membresías) se piden en paralelo
+  // y se reúnen aquí (contrato `Customer360Contribution`): Core no conoce las
+  // membresías.
   const tenantDb = createTenantDb(tenantRecord.id);
-  const details = await tenantDb.customers.get360Details(id);
-  if (!details) {
+  const [base, gym] = await Promise.all([
+    tenantDb.customers.get360Base(id),
+    getCustomer360Memberships(tenantRecord.id, id),
+  ]);
+  if (!base) {
     notFound();
   }
+  const details = buildCustomer360(base, [gym.contribution]);
+  const { memberships } = gym;
 
   const terms = getVerticalTerms(tenantRecord.vertical);
-  const {
-    customer,
-    payments,
-    paymentsTotal,
-    memberships,
-    notes,
-    timeline,
-    metrics,
-  } = details;
+  const { customer, payments, paymentsTotal, notes, timeline, metrics } = details;
 
   // Tabs según módulos ACTIVOS del tenant (spec: no mostrar pestañas de
   // módulos inactivos; no existen modelos Order/Booking en el schema).

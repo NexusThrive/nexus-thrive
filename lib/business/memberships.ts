@@ -129,6 +129,17 @@ export type MembershipPaymentEntry = {
   receiptNumber: number | null;
 };
 
+/** Fila serializable de membresía en la ficha 360° (estado DINÁMICO desde `endDate`). */
+export type Customer360Membership = {
+  id: string;
+  type: MembershipTypeValue;
+  status: MembershipStatusValue;
+  price: number;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+};
+
 /**
  * Normaliza un teléfono a formato wa.me internacional (sin '+').
  * Colombia: 0-prefijo → 57; móvil corto → 57; ya 57+ se conserva.
