@@ -31,11 +31,12 @@ Entre paréntesis, líneas del bloque de comentario (incluidas las vacías).
 | `lib/construction/report-engine.ts` (15) | Qué consolida el motor de informes | No: se lee mejor junto al código | — |
 | `lib/construction/budget.ts:233`, `lib/construction/projects.ts:211` | Comentarios de función interna | No: son locales | — |
 
-## Propuesta (si la aceptas)
+## Notas creadas
 
-Tres notas cortas, cada una con un enlace al archivo de código y sin tocar los comentarios originales:
-1. `docs/architecture/dinero-y-decimales.md` (money-service + decimales + montos en COP).
-2. `docs/architecture/borrado-de-un-negocio.md`.
-3. `docs/construction/convencion-semanas-lean.md`.
+Resumen con enlaces al código; los comentarios originales de `lib/` se conservan sin cambios.
+
+1. [`dinero-y-decimales.md`](dinero-y-decimales.md): servicio de dinero, texto/`BigInt` para decimales y montos en COP.
+2. [`borrado-de-un-negocio.md`](borrado-de-un-negocio.md): qué borra, qué no y cómo se mantiene la lista de tablas.
+3. [`../construction/convencion-semanas-lean.md`](../construction/convencion-semanas-lean.md): semana relativa frente a semana ISO.
 
 Todo lo demás se queda en el código.
