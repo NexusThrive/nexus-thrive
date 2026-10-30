@@ -273,3 +273,10 @@ html[data-motion="off"] *::after {
 .nx-morph-panel[data-morph] {
   animation: none !important;
 }
+/* Lista de un Select: el mismo viaje, más corto (300 ms + margen). */
+.nx-select-list[data-morph][data-state="open"] {
+  animation: none;
+}
+.nx-select-list[data-morph][data-state="closed"] {
+  animation: nx-popover-hold 360ms linear forwards;
+}

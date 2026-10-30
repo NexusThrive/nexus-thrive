@@ -15,8 +15,10 @@ import { motionOff } from "./reduced";
  * El contenido entra cuando la escala ya casi llegó a 1, así no se ve deformado.
  */
 
-/** Duración de cada sentido. Debe ser menor que el `nx-popover-hold` del CSS (520 ms). */
+/** Duración de cada sentido por defecto. Debe ser menor que el `nx-popover-hold` del CSS (520 ms). */
 export const POPOVER_MORPH_SECONDS = 0.48;
+/** Listas de un `Select`: más cortas (se usan mucho). Menor que el sostén de 360 ms del CSS. */
+export const SELECT_MORPH_SECONDS = 0.3;
 
 type Box = { w: number; h: number; left: number; top: number; radius: string; bg: string };
 
@@ -43,7 +45,11 @@ const CLEAR = "x,y,scaleX,scaleY,borderRadius,backgroundColor,overflow,opacity,t
  * siempre) con movimiento reducido o si no hay un control de origen visible.
  * Con `watchClose`, observa `data-state="closed"` (Radix) y sale solo.
  */
-export function armPopoverMorph(node: HTMLElement, origin: HTMLElement | null, { watchClose = false }: { watchClose?: boolean } = {}): PopoverMorph | null {
+export function armPopoverMorph(
+  node: HTMLElement,
+  origin: HTMLElement | null,
+  { watchClose = false, hideOrigin = true, seconds = POPOVER_MORPH_SECONDS }: { watchClose?: boolean; /** `false`: el control se queda a la vista (un `Select`: solo se anima la lista). */ hideOrigin?: boolean; seconds?: number } = {},
+): PopoverMorph | null {
   if (typeof window === "undefined" || motionOff() || !origin?.isConnected) return null;
   const anchor: HTMLElement = origin;
   const rect = anchor.getBoundingClientRect();
@@ -73,6 +79,13 @@ export function armPopoverMorph(node: HTMLElement, origin: HTMLElement | null, {
       gsap.set(anchor, { clearProps: "opacity" });
       return (leaving = Promise.resolve());
     }
+    if (!anchor.isConnected) {
+      // El control ya no está (un ítem que se cierra al elegirlo): el panel solo se apaga en su sitio.
+      leaving = new Promise<void>((resolve) => {
+        gsap.to(node, { opacity: 0, duration: 0.18, ease: "power1.in", onComplete: resolve });
+      });
+      return leaving;
+    }
     from = boxOf(anchor); // el control pudo moverse o estar a medio «presionar» al abrir
     const now = boxOf(node);
     // Su sitio de reposo se vuelve a medir (la página pudo moverse): lo visible menos el desplazamiento actual.
@@ -83,9 +96,9 @@ export function armPopoverMorph(node: HTMLElement, origin: HTMLElement | null, {
     const restW = node.offsetWidth || to.w;
     const restH = node.offsetHeight || to.h;
     gsap.set(node, { overflow: "hidden", transformOrigin: "0 0" });
-    const travel = POPOVER_MORPH_SECONDS - 0.1;
+    const travel = seconds - 0.1;
     leaving = new Promise<void>((resolve) => {
-      gsap
+      const tl = gsap
         .timeline({
           onComplete: () => {
             gsap.set(node, { opacity: 0 });
@@ -95,8 +108,9 @@ export function armPopoverMorph(node: HTMLElement, origin: HTMLElement | null, {
         })
         .to(items(), { opacity: 0, y: 6, duration: 0.12, stagger: { each: 0.015, from: "end" }, ease: "power2.in" }, 0)
         .to(node, { x: dx, y: dy, scaleX: from.w / restW, scaleY: from.h / restH, borderRadius: from.radius, backgroundColor: solid(from.bg, now.bg), duration: travel, ease: "expo.inOut" }, 0.1)
-        .to(node, { opacity: 0, duration: travel * 0.35, ease: "power1.in" }, 0.1 + travel * 0.65)
-        .fromTo(anchor, { opacity: 0 }, { opacity: 1, duration: travel * 0.4, ease: "power1.out", immediateRender: false }, 0.1 + travel * 0.6);
+        .to(node, { opacity: 0, duration: travel * 0.35, ease: "power1.in" }, 0.1 + travel * 0.65);
+      // El control reaparece con un fundido cruzado (si se había ocultado).
+      if (hideOrigin) tl.fromTo(anchor, { opacity: 0 }, { opacity: 1, duration: travel * 0.4, ease: "power1.out", immediateRender: false }, 0.1 + travel * 0.6);
     });
     return leaving;
   }
@@ -124,7 +138,7 @@ export function armPopoverMorph(node: HTMLElement, origin: HTMLElement | null, {
     started = true;
     gsap.set(node, { x: from.left - to.left, y: from.top - to.top, scaleX: from.w / to.w, scaleY: from.h / to.h, borderRadius: from.radius, backgroundColor: solid(from.bg, to.bg), overflow: "hidden", opacity: 1, transformOrigin: "0 0" });
     gsap.set(items(), { opacity: 0, y: 10 });
-    gsap.set(anchor, { opacity: 0 });
+    if (hideOrigin) gsap.set(anchor, { opacity: 0 });
     void node.offsetWidth;
     open = gsap.timeline({
       onComplete: () => {
@@ -133,7 +147,7 @@ export function armPopoverMorph(node: HTMLElement, origin: HTMLElement | null, {
       },
     });
     open
-      .to(node, { x: 0, y: 0, scaleX: 1, scaleY: 1, borderRadius: to.radius, backgroundColor: to.bg, duration: POPOVER_MORPH_SECONDS, ease: "expo.out" }, 0)
+      .to(node, { x: 0, y: 0, scaleX: 1, scaleY: 1, borderRadius: to.radius, backgroundColor: to.bg, duration: seconds, ease: "expo.out" }, 0)
       .to(items(), { opacity: 1, y: 0, duration: 0.34, stagger: 0.04, ease: "power3.out" }, 0.24);
   };
   raf = requestAnimationFrame(begin);

@@ -3,6 +3,7 @@
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { Check, ChevronDown } from "lucide-react";
+import { armPopoverMorph, SELECT_MORPH_SECONDS, type PopoverMorph } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { fieldClasses } from "./input";
 
@@ -64,6 +65,13 @@ function Select({
   void rest;
   const options = React.useMemo(() => parseOptions(children), [children]);
   const nativeRef = React.useRef<HTMLSelectElement>(null);
+  // La lista crece desde la caja del campo y vuelve a ella; la caja se queda a la vista (solo se anima la lista).
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const morph = React.useRef<PopoverMorph | null>(null);
+  const listBoxRef = React.useCallback((node: HTMLDivElement | null) => {
+    morph.current?.cancel();
+    morph.current = node ? armPopoverMorph(node, triggerRef.current, { watchClose: true, hideOrigin: false, seconds: SELECT_MORPH_SECONDS }) : null;
+  }, []);
   const listRef = React.useRef<HTMLDivElement>(null);
   const uid = React.useId();
   const listId = `${uid}-list`;
@@ -146,6 +154,7 @@ function Select({
     <PopoverPrimitive.Root open={open} onOpenChange={(next) => (next ? openList() : setOpen(false))}>
       <PopoverPrimitive.Trigger asChild>
         <button
+          ref={triggerRef}
           type="button"
           id={id}
           role="combobox"
@@ -191,6 +200,7 @@ function Select({
 
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content
+          ref={listBoxRef}
           role="presentation" /* Radix lo pone como role=dialog; aquí el rol útil es el del listbox interior */
           align="start"
           sideOffset={6}
