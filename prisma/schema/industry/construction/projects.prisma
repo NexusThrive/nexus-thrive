@@ -1,0 +1,91 @@
+// use prisma-8
+
+/// Ciclo de vida de un proyecto de obra (vertical construcción).
+enum ProjectStatus {
+  DRAFT
+  BIDDING
+  APPROVED
+  IN_EXECUTION
+  COMPLETED
+  CANCELLED
+}
+
+/// Contenedor de un proyecto de obra (FASE 1 del vertical construcción).
+/// Cada proyecto es dueño de su ficha (`ProjectHeader`, 1:1) y, en fases
+/// posteriores, de presupuestos, planificación y bitácora.
+///
+/// Aislamiento multi-tenant: toda consulta filtra por `tenantId` y la capa
+/// de negocio valida que el `Customer` pertenezca al mismo tenant antes de
+/// vincularlo (el índice compuesto impide cruces accidentales de lectura).
+///
+/// Campos:
+/// - `code`: Código de negocio: PROY-2026-001 (único dentro del tenant).
+/// - `budget`: Presupuesto de obra del proyecto (1:1 en esta fase, Tab 2).
+/// - `plan`: Plan operativo Lean (Last Planner System) del proyecto (1:1, Tab 3).
+/// - `fieldLog`: Bitácora de campo del proyecto (1:1, Tab 4).
+model Project {
+  id         String        @id @default(uuid())
+  tenantId   String
+  tenant     Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId String
+  customer   Customer      @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  code       String
+  name       String
+  description String?
+  status     ProjectStatus @default(DRAFT)
+  createdAt  DateTime      @default(now())
+  updatedAt  temporal.updatedAt()
+
+  header   ProjectHeader?
+  budget   ProjectBudget?
+  quotes   Quote[]
+  followUps ProjectFollowUp[]
+  plan     ProjectPlan?
+  fieldLog FieldLog?
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@index([customerId])
+  @@index([tenantId, status])
+  @@rls
+}
+
+/// 1:1 con Proyecto. Snapshot inicial tomado del Customer del CRM al crear
+/// el proyecto (no es una segunda fuente maestra de cliente: el maestro
+/// sigue siendo `Customer`; aquí se congela lo que aplica a ESTA obra).
+///
+/// Campos:
+/// - A) Datos tributarios / contractuales del cliente (snapshot del CRM). (desde `clientTaxName`)
+/// - B) Ubicación y tipo de obra. (desde `siteAddress`)
+/// - C) Responsables de la obra. (desde `technicalContact`)
+model ProjectHeader {
+  id        String   @id @default(uuid())
+  projectId String   @unique
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  clientTaxName      String?
+  clientTaxId        String?
+  clientTaxDv        String?
+  clientAddress      String?
+  clientCity         String?
+  clientBillingEmail String?
+  legalRepName       String?
+
+  siteAddress     String?
+  siteCity        String?
+  siteDepartment  String?
+  projectType     String?
+  siteAccessNotes String?
+
+  technicalContact            String?
+  technicalPhone              String?
+  projectLeaderName           String?
+  projectLeaderProfessionalId String?
+  supervisorName              String?
+
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+
+  @@index([projectId])
+  @@rls
+}

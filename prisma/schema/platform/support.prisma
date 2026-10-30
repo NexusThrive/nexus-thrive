@@ -1,0 +1,68 @@
+// use prisma-8
+
+/// Estado de un ticket de soporte.
+enum TicketStatus {
+  NEW
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  ESCALATED
+  RESOLVED
+  CLOSED
+}
+
+/// Prioridad de un ticket de soporte.
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+/// Ticket de soporte de un negocio (SUP-2026-00124 = año + consecutivo).
+model SupportTicket {
+  id               String         @id @default(uuid())
+  year             Int
+  seq              Int
+  tenantId         String?
+  tenant   Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  subject          String
+  description      String
+  category         String
+  priority         TicketPriority @default(NORMAL)
+  status           TicketStatus   @default(NEW)
+  channel          String
+  assigneeId       String?
+  requesterName    String?
+  requesterContact String?
+  solution         String?
+  firstResponseAt  DateTime?
+  resolvedAt       DateTime?
+  closedAt         DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        temporal.updatedAt()
+  messages         TicketMessage[]
+
+  @@unique([year, seq])
+  @@index([status])
+  @@index([tenantId])
+  @@rls
+}
+
+/// Mensaje dentro de un ticket de soporte, del cliente o del equipo de Nexus.
+///
+/// Campos:
+/// - `internal`: Nota interna: solo la ve el equipo NEXUS.
+model TicketMessage {
+  id            String        @id @default(uuid())
+  ticketId      String
+  ticket        SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  internal      Boolean       @default(false)
+  body          String
+  authorStaffId String?
+  authorName    String
+  createdAt     DateTime      @default(now())
+
+  @@index([ticketId])
+  @@rls
+}

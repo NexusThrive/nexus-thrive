@@ -1,0 +1,71 @@
+// use prisma-8
+
+/// Etapa comercial de una cuenta en el Operations Center. Distinta del
+/// estado de servicio (`Tenant.active` + `suspendedReason`): un problema de
+/// pago o técnico no es una cancelación comercial.
+/// Embudo comercial de NEXUS (Operations Center · CRM).
+enum LeadStage {
+  NEW
+  CONTACTED
+  QUALIFIED
+  DEMO
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+}
+
+/// Prospecto comercial de NEXUS. Regla: ningún lead activo sin responsable
+/// (StaffMember.id) ni próximo paso con fecha.
+///
+/// Campos:
+/// - `tenantId`: Negocio en el que se convirtió (al ganarse).
+model Lead {
+  id             String    @id @default(uuid())
+  company        String
+  contactName    String?
+  phone          String?
+  email          String?
+  vertical       String?
+  city           String?
+  source         String
+  stage          LeadStage @default(NEW)
+  ownerId        String?
+  nextStep       String?
+  nextStepAt     DateTime?
+  valueUsdCents  Int       @default(0)
+  plan           String?
+  notes          String?
+  lostReason     String?
+  tenantId       String?
+  tenant   Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  stageChangedAt DateTime  @default(now())
+  createdAt      DateTime  @default(now())
+  updatedAt      temporal.updatedAt()
+  activities     LeadActivity[]
+
+  @@index([stage])
+  @@index([ownerId])
+
+  @@index([tenantId])
+  @@rls
+}
+
+/// Actividad registrada sobre un prospecto del embudo comercial de Nexus (llamada, nota,
+/// seguimiento).
+///
+/// Campos:
+/// - `kind`: note | call | whatsapp | email | meeting | stage
+model LeadActivity {
+  id        String   @id @default(uuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  kind      String
+  body      String
+  staffId   String?
+  staffName String?
+  createdAt DateTime @default(now())
+
+  @@index([leadId])
+  @@rls
+}

@@ -1,0 +1,154 @@
+// use prisma-8
+
+/// Qué vende el negocio: producto con stock, servicio con duración, plan de
+/// membresía, entrada de museo o tour/paquete.
+enum ProductKind {
+  PRODUCT
+  SERVICE
+  PLAN
+  TICKET
+  TOUR
+}
+
+/// Catálogo del negocio: productos, servicios, planes, entradas y tours.
+///
+/// Campos:
+/// - `durationMinutes`: Servicios y tours: duración de la cita / del recorrido.
+/// - `durationDays`: Planes de membresía: días de vigencia.
+/// - `capacity`: Cupo por cita, clase o salida.
+/// - `unitCode`: Unidad de medida UN/CEFACT (la que usa la DIAN): EA unidad, KGM, LTR, MTR, HUR…
+/// - `taxCategory`: GRAVADO | EXCLUIDO | EXENTO
+/// - `publishedOnline`: Decide qué sale en el sitio y la tienda en línea.
+/// - `maxStock`: Techo de existencias (para sugerir cuánto reponer).
+/// - `reorderPoint`: Cuando las existencias bajan a este número conviene pedir más.
+model Product {
+  id              String      @id @default(uuid())
+  tenantId        String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  kind            ProductKind @default(PRODUCT)
+  name            String
+  description     String?
+  sku             String?
+  category        String?
+  price           Decimal
+  cost            Decimal?
+  trackStock      Boolean     @default(false)
+  stock           Int         @default(0)
+  minStock        Int         @default(0)
+  unit            String?
+  durationMinutes Int?
+  durationDays    Int?
+  capacity        Int?
+  active          Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       temporal.updatedAt()
+  movements       StockMovement[]
+  unitCode        String      @default("EA")
+  taxCategory     String      @default("GRAVADO")
+  taxRatePct      Decimal     @default(0)
+  brand           String?
+  imageUrl        String?
+  publishedOnline Boolean     @default(false)
+  variants        ProductVariant[]
+  barcodes        ProductBarcode[]
+  priceItems      PriceListItem[]
+  stockLevels     StockLevel[]
+  purchaseLines   PurchaseOrderLine[]
+  transferLines   StockTransferLine[]
+  countLines      StockCountLine[]
+  maxStock        Int?
+  reorderPoint    Int?
+
+  @@index([tenantId, kind])
+  @@rls
+}
+
+/// Variante de un producto (talla, color…). El precio vacío hereda el del producto.
+///
+/// Campos:
+/// - `attributes`: Atributos libres: { "talla": "M", "color": "negro" }.
+model ProductVariant {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku        String?
+  name       String
+  attributes Json?
+  price      Decimal?
+  cost       Decimal?
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  temporal.updatedAt()
+  barcodes   ProductBarcode[]
+  priceItems PriceListItem[]
+  stockLevels StockLevel[]
+
+  @@index([tenantId, productId])
+  @@index([tenantId, sku], unique: true, where: "\"sku\" IS NOT NULL", name: "ProductVariant_tenantId_sku_key")
+  @@rls
+}
+
+/// Código de barras de un producto o de una variante. Único por negocio.
+///
+/// Campos:
+/// - `symbology`: EAN13 | EAN8 | UPCA | CODE128 | INTERNO
+model ProductBarcode {
+  id         String          @id @default(uuid())
+  tenantId   String
+  tenant     Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId  String?
+  variant    ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  code       String
+  symbology  String          @default("EAN13")
+  createdAt  DateTime        @default(now())
+
+  @@unique([tenantId, code])
+  @@index([productId])
+  @@rls
+}
+
+/// Lista de precios (público, mayorista, convenio…). Una por negocio es la predeterminada.
+model PriceList {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  currency  String   @default("COP")
+  isDefault Boolean  @default(false)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+  items     PriceListItem[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@rls
+}
+
+/// Precio de un producto dentro de una lista de precios.
+///
+/// Campos:
+/// - `@@index([priceListId,`: Un precio por (lista, producto) y otro por (lista, producto,
+///   variante).
+model PriceListItem {
+  id          String          @id @default(uuid())
+  tenantId    String
+  tenant      Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  priceListId String
+  priceList   PriceList       @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId   String?
+  variant     ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  price       Decimal
+  updatedAt   temporal.updatedAt()
+
+  @@index([priceListId, productId], unique: true, where: "\"variantId\" IS NULL", name: "PriceListItem_product_key")
+  @@index([priceListId, productId, variantId], unique: true, where: "\"variantId\" IS NOT NULL", name: "PriceListItem_variant_key")
+  @@index([productId])
+  @@rls
+}

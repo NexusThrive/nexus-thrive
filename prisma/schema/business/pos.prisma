@@ -1,0 +1,16 @@
+// use prisma-8
+
+/// Terminal de punto de venta: una caja y una bodega desde donde se vende. Cada cajero abre su turno en ella.
+model PosTerminal {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  boxId       String
+  warehouseId String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
+  @@rls
+}

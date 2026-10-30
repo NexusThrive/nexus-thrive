@@ -1,0 +1,89 @@
+// use prisma-8
+
+/// Estado de una factura: emitida, pagada o anulada.
+enum InvoiceStatus {
+  ISSUED
+  PAID
+  VOID
+}
+
+/// Recibo o cuenta de cobro numerada (la factura electrónica DIAN llega
+/// después, con un proveedor).
+///
+/// Campos:
+/// - `kind`: Documento comercial unificado (lib/business/commercial-document.ts): QUOTE | ORDER |
+///   BILL (cuenta de cobro) | RECEIPT | SALE (venta registrada al cobrar) | CREDIT_NOTE. Cada tipo
+///   lleva su consecutivo.
+/// - `subtotal`: Base antes de descuentos, descuentos e impuestos (la suma de las líneas).
+/// - `projectId`: Obra a la que pertenece la cuenta de cobro (constructoras).
+/// - `sourceDocumentId`: Documento del que sale (cotización → pedido → cuenta; venta → nota
+///   crédito).
+/// - `originType`: Qué lo originó al cobrar: SALE (mostrador), TICKET_SALE, MEMBERSHIP… y su id.
+/// - `paymentId`: Cobro que lo generó (ventas registradas al cobrar).
+/// - `resolutionId`: Resolución de numeración con la que se numeró y su prefijo (vacío =
+///   consecutivo simple).
+/// - `withholdingTotal`: Retenciones que practica quien paga (retefuente, reteIVA…): total y
+///   detalle por concepto.
+/// - `paidTotal`: Lo abonado a una cuenta de cobro emitida (cartera). El saldo es total −
+///   paidTotal.
+/// - `tipTotal`: Propina de una venta de mostrador (no es ingreso: se cobra aparte del total).
+model Invoice {
+  id           String        @id @default(uuid())
+  tenantId     String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  kind         String
+  number       Int
+  customerId   String?
+  customerName String
+  customerDoc  String?
+  issueDate    DateTime
+  dueDate      DateTime?
+  status       InvoiceStatus @default(ISSUED)
+  notes        String?
+  subtotal      Decimal       @default(0)
+  discountTotal Decimal       @default(0)
+  taxTotal      Decimal       @default(0)
+  total        Decimal
+  voidReason   String?
+  createdById  String?
+  projectId    String?
+  sourceDocumentId String?
+  originType   String?
+  originId     String?
+  paymentId    String?
+  resolutionId String?
+  prefix       String?
+  withholdingTotal Decimal    @default(0)
+  withholdings Json?
+  paidTotal    Decimal       @default(0)
+  tipTotal     Decimal       @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    temporal.updatedAt()
+  lines        InvoiceLine[]
+
+  @@unique([tenantId, kind, number])
+  @@index([tenantId])
+  @@index([tenantId, issueDate])
+  @@index([sourceDocumentId])
+  @@rls
+}
+
+/// Línea de una factura: producto o servicio, cantidad, precio e impuestos.
+///
+/// Campos:
+/// - `discountPct`: Descuento e impuesto de la línea en % (0 = sin descuento / exenta).
+model InvoiceLine {
+  id          String  @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  productId   String?
+  description String
+  quantity    Decimal
+  unitPrice   Decimal
+  discountPct Decimal @default(0)
+  taxRatePct  Decimal @default(0)
+  total       Decimal
+
+  @@index([invoiceId])
+  @@rls
+}

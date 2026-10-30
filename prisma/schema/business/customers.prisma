@@ -1,0 +1,67 @@
+// use prisma-8
+
+/// Cliente o socio de un negocio: contacto, código de acceso y tarjeta NFC. Se enlaza al tercero
+/// único (Party) y es la base de pagos, membresías, cotizaciones y obras.
+///
+/// Campos:
+/// - `profile`: Campos propios del rubro (gym: peso, talla, objetivo…; turismo: pasaporte…).
+/// - `photoId`: Foto (Attachment.id, kind CUSTOMER_PHOTO).
+/// - `accessCode`: Código de acceso (QR) y tarjeta NFC vinculada.
+/// - `partyId`: Tercero único al que pertenece este cliente (la misma persona o empresa, con sus
+///   roles).
+/// - `@@index([tenantId,`: Un código o una tarjeta identifica a UN socio del negocio (DATA-04).
+model Customer {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  email     String?
+  phone     String?
+  active    Boolean  @default(true)
+  documentId String?
+  birthDate  DateTime?
+  tags       String[]?
+  profile    Json?
+  photoId    String?
+  city       String?
+  accessCode String?
+  nfcUid     String?
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+
+  payments Payment[]
+  memberships Membership[]
+  notes CustomerNote[]
+  quotes Quote[]
+  projects Project[]
+  partyId  String?
+  party    Party?   @relation(fields: [partyId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([partyId])
+  @@index([tenantId, accessCode], unique: true, where: "\"accessCode\" IS NOT NULL", name: "Customer_tenantId_accessCode_key")
+  @@index([tenantId, nfcUid], unique: true, where: "\"nfcUid\" IS NOT NULL", name: "Customer_tenantId_nfcUid_key")
+  @@rls
+}
+
+/// Observación interna sobre un cliente (Ficha 360°). Sin módulo propio:
+/// pertenece al núcleo del CRM.
+///
+/// Campos:
+/// - `createdBy`: User.id del autor (se conserva el contenido si el usuario se elimina).
+model CustomerNote {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  content    String
+  createdBy  String?
+  author     User?    @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  createdAt  DateTime @default(now())
+  updatedAt  temporal.updatedAt()
+
+  @@index([tenantId])
+  @@index([customerId])
+  @@rls
+}

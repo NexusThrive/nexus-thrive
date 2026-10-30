@@ -1,0 +1,48 @@
+// use prisma-8
+
+/// Ficha de Google Business (Maps) del negocio, leída por la API de Google Places con la llave del negocio: lo que
+/// Google muestra de él (nombre, dirección, teléfono, sitio, calificación y reseñas) para compararlo con lo que dice NEXUS.
+///
+/// Campos:
+/// - `placeId`: ID de lugar de Google (ChIJ…).
+/// - `status`: PENDING | OK | ERROR
+model GoogleListing {
+  id          String    @id @default(uuid())
+  tenantId    String    @unique
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  placeId     String
+  status      String    @default("PENDING")
+  name        String?
+  address     String?
+  phone       String?
+  website     String?
+  rating      Decimal?
+  ratingCount Int?
+  syncedAt    DateTime?
+  lastError   String?
+  createdAt   DateTime  @default(now())
+
+  @@rls
+}
+
+/// Reseña de un cliente: interna (enlace de reseña del negocio) o de Google. Las de 1–2 estrellas disparan una alerta.
+///
+/// Campos:
+/// - `source`: INTERNAL | GOOGLE
+/// - `status`: NEW | ALERTED | HANDLED
+model Review {
+  id           String    @id @default(uuid())
+  tenantId     String
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  source       String    @default("INTERNAL")
+  rating       Int
+  comment      String?
+  customerName String?
+  contact      String?
+  status       String    @default("NEW")
+  handledAt    DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([tenantId, createdAt])
+  @@rls
+}

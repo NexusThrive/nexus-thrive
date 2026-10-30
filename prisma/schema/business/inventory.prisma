@@ -1,0 +1,182 @@
+// use prisma-8
+
+/// Bodega o punto de almacenamiento. Una es la predeterminada («Principal»).
+model Warehouse {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  code      String?
+  address   String?
+  isDefault Boolean  @default(false)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+  levels    StockLevel[]
+  movements StockMovement[]
+  purchaseOrders PurchaseOrder[]
+  transfersFrom  StockTransfer[] @relation("TransferFrom")
+  transfersTo    StockTransfer[] @relation("TransferTo")
+  counts         StockCount[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@rls
+}
+
+/// Existencias de un producto (o variante) en una bodega, con su costo promedio.
+/// `Product.stock` es la suma de las bodegas (se mantiene para las pantallas actuales).
+///
+/// Campos:
+/// - `avgCost`: Costo promedio ponderado por unidad.
+/// - `variantKey`: variantId o "" (sin variante): permite una restricción única normal, sin índices
+///   parciales.
+model StockLevel {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId   String?
+  variant     ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  quantity    Int      @default(0)
+  avgCost     Decimal  @default(0)
+  variantKey  String   @default("")
+  updatedAt   temporal.updatedAt()
+
+  @@unique([warehouseId, productId, variantKey])
+  @@index([tenantId, productId])
+  @@rls
+}
+
+/// Movimiento de inventario (entrada, salida o ajuste) que alimenta el kardex.
+///
+/// Campos:
+/// - `kind`: IN (entrada) | OUT (salida) | SALE (venta) | ADJUST (ajuste de inventario)
+/// - `warehouseId`: Bodega del movimiento y variante (null = producto sin variante).
+/// - `unitCost`: Costo unitario al momento del movimiento (entrada: lo que costó; salida: costo
+///   promedio vigente).
+/// - `balanceAfter`: Saldo de la bodega justo después del movimiento (kardex).
+/// - `documentType`: Documento de origen: PURCHASE | SALE | TRANSFER | COUNT | ADJUSTMENT…
+model StockMovement {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  kind        String
+  quantity    Int
+  note        String?
+  paymentId   String?
+  createdById String?
+  createdAt   DateTime @default(now())
+  warehouseId String?
+  warehouse   Warehouse? @relation(fields: [warehouseId], references: [id], onDelete: SetNull)
+  variantId   String?
+  unitCost    Decimal?
+  balanceAfter Int?
+  documentType String?
+  documentId   String?
+  reason       String?
+
+  @@index([productId])
+  @@index([warehouseId])
+  @@index([documentType, documentId])
+
+  @@index([tenantId])
+  @@rls
+}
+
+/// Traslado de mercancía entre dos bodegas. Sale de una y entra a la otra al costo
+/// promedio de la bodega de origen, en la misma transacción (por el servicio de inventario).
+///
+/// Campos:
+/// - `number`: Consecutivo por negocio (TR-0001).
+model StockTransfer {
+  id              String   @id @default(uuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  number          Int
+  fromWarehouseId String
+  fromWarehouse   Warehouse @relation("TransferFrom", fields: [fromWarehouseId], references: [id], onDelete: Restrict)
+  toWarehouseId   String
+  toWarehouse     Warehouse @relation("TransferTo", fields: [toWarehouseId], references: [id], onDelete: Restrict)
+  note            String?
+  createdById     String?
+  createdAt       DateTime @default(now())
+  lines           StockTransferLine[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId, createdAt])
+  @@rls
+}
+
+/// Línea de un traslado entre bodegas: producto y cantidad movida.
+///
+/// Campos:
+/// - `unitCost`: Costo unitario con el que pasó (el promedio de la bodega de origen).
+model StockTransferLine {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  transferId  String
+  transfer    StockTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  variantId   String?
+  quantity    Int
+  unitCost    Decimal
+
+  @@index([transferId])
+  @@rls
+}
+
+/// Conteo físico de una bodega. Se toma una foto de lo esperado; se anota lo contado;
+/// al cerrarlo, cada diferencia genera su ajuste en el kardex con el motivo.
+///
+/// Campos:
+/// - `number`: Consecutivo por negocio (CT-0001).
+/// - `status`: DRAFT | COMPLETED | CANCELED
+/// - `note`: Motivo de los ajustes (obligatorio si hay diferencias).
+model StockCount {
+  id           String   @id @default(uuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  number       Int
+  warehouseId  String
+  warehouse    Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
+  status       String   @default("DRAFT")
+  note         String?
+  createdById  String?
+  createdAt    DateTime @default(now())
+  completedAt  DateTime?
+  lines        StockCountLine[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId, status])
+  @@rls
+}
+
+/// Línea de un conteo físico: cantidad contada frente a la del sistema.
+///
+/// Campos:
+/// - `expected`: Lo que decía el sistema al empezar el conteo.
+/// - `counted`: Lo que se contó (null = aún no contado).
+/// - `adjustment`: Diferencia aplicada al cerrar (contado − esperado).
+model StockCountLine {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  countId    String
+  count      StockCount @relation(fields: [countId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  expected   Int
+  counted    Int?
+  adjustment Int?
+
+  @@index([countId])
+  @@rls
+}

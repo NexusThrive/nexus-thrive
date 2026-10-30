@@ -1,0 +1,107 @@
+// use prisma-8
+
+/// Movimientos de la caja menor.
+enum CashMovementKind {
+  OPENING
+  INCOME
+  EXPENSE
+  VOUCHER
+  REPLENISH
+  ADJUST
+}
+
+/// Caja menor: un fondo fijo con responsable.
+model CashBox {
+  id                String   @id @default(uuid())
+  tenantId          String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name              String
+  fundAmount        Decimal  @default(0)
+  responsibleUserId String?
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         temporal.updatedAt()
+  sessions          CashSession[]
+
+  @@index([tenantId])
+  @@rls
+}
+
+/// Turno de caja: apertura, movimientos y cierre con arqueo.
+///
+/// Campos:
+/// - `terminalId`: Terminal de punto de venta en la que se abrió el turno (vacío = caja sin
+///   terminal).
+model CashSession {
+  id             String   @id @default(uuid())
+  tenantId       String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  boxId          String
+  box            CashBox  @relation(fields: [boxId], references: [id], onDelete: Cascade)
+  openedAt       DateTime @default(now())
+  openedById     String
+  openingAmount  Decimal
+  closedAt       DateTime?
+  closedById     String?
+  expectedAmount Decimal?
+  countedAmount  Decimal?
+  difference     Decimal?
+  closingNotes   String?
+  terminalId     String?
+  movements      CashMovement[]
+
+  @@index([tenantId, boxId])
+  @@rls
+}
+
+/// Movimiento de dinero dentro de una sesión de caja (entrada o salida).
+///
+/// Campos:
+/// - `beneficiary`: Quién recibe el vale.
+model CashMovement {
+  id          String           @id @default(uuid())
+  tenantId    String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sessionId   String
+  session     CashSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  kind        CashMovementKind
+  amount      Decimal
+  description String
+  beneficiary String?
+  paymentId   String?
+  expenseId   String?
+  createdById String?
+  createdAt   DateTime         @default(now())
+
+  @@index([sessionId])
+
+  @@index([tenantId])
+  @@rls
+}
+
+/// Gasto del negocio registrado desde caja o por la administración.
+///
+/// Campos:
+/// - `paidFrom`: CASH (caja menor) | BANK | CARD
+/// - `projectId`: Obra a la que se carga el gasto (constructoras).
+model Expense {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  amount      Decimal
+  category    String
+  description String
+  date        DateTime @default(now())
+  supplier      String?
+  paidFrom      String    @default("BANK")
+  voidedAt      DateTime?
+  voidReason    String?
+  cashSessionId String?
+  projectId     String?
+  createdById   String?
+  createdAt   DateTime @default(now())
+  updatedAt   temporal.updatedAt()
+
+  @@index([tenantId])
+  @@rls
+}

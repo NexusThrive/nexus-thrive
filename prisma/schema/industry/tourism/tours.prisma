@@ -1,36 +1,9 @@
 // use prisma-8
 
-/// Venta de taquilla (museo): entradas por tipo para una fecha y franja.
-model TicketSale {
-  id          String   @id @default(uuid())
-  tenantId    String
-  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  number      Int
-  visitDate   DateTime
-  /// Franja horaria "10:00".
-  slot        String
-  visitors    Int
-  /// [{ productId, name, qty, unitPrice }]
-  lines       Json
-  total       Decimal
-  /// TAQUILLA | GRUPO | COLEGIO | GUIADA
-  kind        String   @default("TAQUILLA")
-  groupName   String?
-  customerId  String?
-  paymentId   String?
-  /// PAID | RESERVED | VOID
-  status      String   @default("PAID")
-  /// Cita en la agenda (visitas guiadas y colegios).
-  bookingId   String?
-  createdById String?
-  createdAt   DateTime @default(now())
-
-  @@unique([tenantId, number])
-  @@index([tenantId, visitDate])
-  @@rls
-}
-
 /// Salida programada de un tour o paquete (agencias de turismo).
+///
+/// Campos:
+/// - `status`: SCHEDULED | DONE | CANCELLED
 model Departure {
   id           String   @id @default(uuid())
   tenantId     String
@@ -41,7 +14,6 @@ model Departure {
   capacity     Int
   guide        String?
   meetingPoint String?
-  /// SCHEDULED | DONE | CANCELLED
   status       String   @default("SCHEDULED")
   notes        String?
   createdAt    DateTime @default(now())
@@ -52,6 +24,11 @@ model Departure {
 }
 
 /// Reserva de un cliente en una salida: pasajeros, valor, abonos y voucher.
+///
+/// Campos:
+/// - `passengers`: [{ name, document, nationality }]
+/// - `code`: Código del voucher (ej. NX-7K2P9).
+/// - `status`: RESERVED | CONFIRMED | CANCELLED
 model TourBooking {
   id            String   @id @default(uuid())
   tenantId      String
@@ -59,14 +36,11 @@ model TourBooking {
   departureId   String
   customerId    String
   seats         Int
-  /// [{ name, document, nationality }]
   passengers    Json
   total         Decimal
-  /// Código del voucher (ej. NX-7K2P9).
   code          String
   sellerUserId  String?
   commissionPct Int?
-  /// RESERVED | CONFIRMED | CANCELLED
   status        String   @default("RESERVED")
   notes         String?
   createdAt     DateTime @default(now())

@@ -1,0 +1,72 @@
+// use prisma-8
+
+/// Mini-sitio público del negocio (`/s/<siteSlug>`): plantilla, textos, color y qué se muestra. Un negocio, un sitio.
+///
+/// Campos:
+/// - `siteSlug`: Dirección pública del sitio, única en toda la plataforma (editable).
+/// - `template`: clasica | moderna | oscura | minimal
+/// - `title`: Título y descripción para buscadores (SEO).
+model SiteConfig {
+  id           String   @id @default(uuid())
+  tenantId     String   @unique
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  enabled      Boolean  @default(false)
+  siteSlug     String   @unique
+  template     String   @default("clasica")
+  title        String?
+  description  String?
+  heroTitle    String?
+  heroSubtitle String?
+  about        String?
+  accent       String   @default("#D4AF37")
+  showCatalog  Boolean  @default(true)
+  showMap      Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    temporal.updatedAt()
+
+  @@rls
+}
+
+/// Enlace corto con UTM para una campaña (`/l/<código>`): redirige al sitio o la tienda del negocio con su origen marcado y cuenta los clics.
+///
+/// Campos:
+/// - `code`: Código corto único en toda la plataforma.
+/// - `path`: Ruta dentro del sitio del negocio: "" (inicio) o "/p/<id>".
+/// - `spend`: Lo invertido en la campaña (para comparar contra lo que trajo).
+model TrackedLink {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  code        String   @unique
+  name        String
+  path        String   @default("")
+  utmSource   String
+  utmMedium   String
+  utmCampaign String
+  spend       Decimal  @default(0)
+  clicks      Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
+  @@rls
+}
+
+/// Contacto que llega por el formulario del sitio, con su origen.
+///
+/// Campos:
+/// - `origin`: { source, medium, campaign } o vacío (directo).
+model ContactLead {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  phone     String
+  email     String?
+  message   String?
+  origin    Json?
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@rls
+}

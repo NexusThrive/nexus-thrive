@@ -1,0 +1,73 @@
+// use prisma-8
+
+/// Rol de un usuario dentro de un negocio.
+///
+/// Valores:
+/// - `ADMIN`: Equipo del negocio (fase V1): administración, recepción y asesores.
+enum Role {
+  SUPERADMIN
+  OWNER
+  STAFF
+  ADMIN
+  RECEPTION
+  ADVISOR
+}
+
+/// Usuario con acceso al sistema, vinculado a un negocio con un rol.
+///
+/// Campos:
+/// - `active`: Retirado del negocio: conserva su historial pero ya no entra.
+/// - `theme`: Tema elegido (light | dark), guardado en la cuenta.
+model User {
+  id          String   @id @default(uuid())
+  clerkUserId String
+  email       String
+  name        String?
+  role        Role     @default(STAFF)
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  active      Boolean  @default(true)
+  phone       String?
+  title       String?
+  theme       String?
+  removedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   temporal.updatedAt()
+
+  customerNotes CustomerNote[]
+
+  @@unique([clerkUserId, tenantId])
+  @@index([tenantId])
+  @@rls
+}
+
+/// Invitación para unirse al equipo de un negocio (se acepta al iniciar
+/// sesión con ese correo).
+model TenantInvite {
+  id          String    @id @default(uuid())
+  tenantId    String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  email       String
+  name        String?
+  role        Role
+  invitedById String?
+  acceptedAt  DateTime?
+  revokedAt   DateTime?
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+
+  @@index([tenantId])
+  @@index([email])
+  @@rls
+}
+
+/// Notificaciones que la persona descartó (deslizando).
+model DismissedNotification {
+  id        String   @id @default(uuid())
+  userId    String
+  key       String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, key])
+  @@rls
+}

@@ -1,0 +1,89 @@
+// use prisma-8
+
+/// Impuesto o retención parametrizable del negocio, con vigencia: el que aplica en una
+/// fecha es el vigente ese día (IVA 19 %, IVA 5 %, impoconsumo, retefuente, reteIVA, reteICA).
+///
+/// Campos:
+/// - `code`: Clave estable del concepto (IVA_19, RETEFUENTE_SERVICIOS…): varias vigencias comparten
+///   código.
+/// - `kind`: IVA | IMPOCONSUMO | RETEFUENTE | RETEIVA | RETEICA
+/// - `minBase`: Retenciones: solo se practican si la base llega a este valor (0 = siempre).
+model TaxRate {
+  id        String    @id @default(uuid())
+  tenantId  String
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  code      String
+  name      String
+  kind      String
+  ratePct   Decimal
+  minBase   Decimal   @default(0)
+  validFrom DateTime
+  validTo   DateTime?
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+
+  @@index([tenantId, code])
+  @@index([tenantId, kind])
+  @@rls
+}
+
+/// Resolución de numeración autorizada (DIAN u otra): rango con prefijo y vigencia para un
+/// tipo de documento. El consecutivo sale de aquí mientras esté activa; al agotarse avisa.
+///
+/// Campos:
+/// - `documentKind`: Tipo de documento comercial al que aplica (SALE, BILL, RECEIPT, CREDIT_NOTE…).
+/// - `resolutionNumber`: Número de la resolución (ej. 18760000001) y su fecha de expedición.
+/// - `nextNumber`: Próximo número por entregar (rangeFrom al crearla, o el siguiente al último ya
+///   usado).
+model NumberingResolution {
+  id               String    @id @default(uuid())
+  tenantId         String
+  tenant           Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  documentKind     String
+  prefix           String    @default("")
+  resolutionNumber String
+  rangeFrom        Int
+  rangeTo          Int
+  nextNumber       Int
+  validFrom        DateTime
+  validTo          DateTime
+  active           Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+
+  @@index([tenantId, documentKind])
+  @@rls
+}
+
+/// Documento fiscal electrónico de una venta, nota o compra a no obligado (documento soporte). NEXUS arma el
+/// contenido y lo entrega a un proveedor tecnológico detrás de un puerto; no firma ni emite por su cuenta. Vender
+/// nunca se bloquea: si el proveedor no está, el documento espera en PENDING_PROVIDER.
+///
+/// Campos:
+/// - `invoiceId`: Documento comercial del que sale (único: uno por venta/nota).
+/// - `supplierInvoiceId`: Factura de proveedor, cuando es un documento soporte.
+/// - `kind`: INVOICE | CREDIT_NOTE | DEBIT_NOTE | SUPPORT_DOCUMENT
+/// - `status`: PENDING_PROVIDER | SUBMITTED | ACCEPTED | REJECTED
+/// - `payload`: Foto del emisor, el adquirente, las líneas y los totales al momento de emitir.
+model FiscalDocument {
+  id                String   @id @default(uuid())
+  tenantId          String
+  tenant            Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  invoiceId         String?
+  supplierInvoiceId String?
+  kind              String
+  status            String   @default("PENDING_PROVIDER")
+  provider          String?
+  providerRef       String?
+  cufe              String?
+  rejectReason      String?
+  payload           Json
+  attempts          Int      @default(0)
+  lastAttemptAt     DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         temporal.updatedAt()
+
+  @@unique([tenantId, invoiceId])
+  @@unique([tenantId, supplierInvoiceId])
+  @@index([tenantId, status])
+  @@rls
+}

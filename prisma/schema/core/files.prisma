@@ -1,0 +1,21 @@
+// use prisma-8
+
+/// Archivo del negocio guardado en la base (comprobantes, fotos de clientes,
+/// soportes de gastos, logos). `kind` + `ownerId` dicen a qué pertenece.
+model Attachment {
+  id           String   @id @default(uuid())
+  tenantId     String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  kind         String
+  ownerId      String
+  fileName     String
+  mimeType     String
+  byteSize     Int
+  sha256       String
+  data         Bytes
+  uploadedById String?
+  createdAt    DateTime @default(now())
+
+  @@index([tenantId, kind, ownerId])
+  @@rls
+}

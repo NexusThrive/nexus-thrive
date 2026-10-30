@@ -1,0 +1,40 @@
+// use prisma-8
+
+/// Estado de una reserva en la agenda.
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+/// Reserva o cita en la agenda de un negocio (clase, turno, visita, mesa). Es el motor de agenda
+/// compartido por todos los rubros.
+///
+/// Campos:
+/// - `productId`: Servicio, clase o tour del catálogo (Product).
+/// - `staffUserId`: Persona del equipo que atiende (User.id).
+/// - `kind`: APPOINTMENT | CLASS | DELIVERY | VISIT | DEPARTURE
+model Booking {
+  id          String        @id @default(uuid())
+  tenantId    String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId  String
+  serviceName String
+  startDate   DateTime
+  endDate     DateTime
+  status      BookingStatus @default(PENDING)
+  totalAmount BigInt        @default(0)
+  notes       String?
+  productId      String?
+  staffUserId    String?
+  partySize      Int       @default(1)
+  kind           String    @default("APPOINTMENT")
+  reminderSentAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now())
+
+  @@index([tenantId])
+  @@index([customerId])
+  @@rls
+}

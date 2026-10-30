@@ -1,0 +1,105 @@
+// use prisma-8
+
+/// Suscripción de un negocio a NEXUS THRIVE (Operations Center · Facturación).
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  SUSPENDED
+  CANCELLED
+}
+
+/// Vencido no es un estado: se calcula con la fecha de vencimiento.
+enum ChargeStatus {
+  PENDING
+  PAID
+  VOID
+  REFUNDED
+}
+
+/// Suscripción vigente de un negocio. El precio se fija al crearla (no cambia
+/// si luego se edita el catálogo).
+///
+/// Campos:
+/// - `priceUsdCents`: Precio mensual equivalente (USD centavos).
+model Subscription {
+  id                 String             @id @default(uuid())
+  tenantId           String             @unique
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  plan               String
+  billingCycle       String
+  priceUsdCents      Int
+  status             SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  notes              String?
+  cancelledAt        DateTime?
+  cancelReason       String?
+  createdAt          DateTime           @default(now())
+  updatedAt          temporal.updatedAt()
+  charges            Charge[]
+  @@rls
+}
+
+/// Cobro de un período. Regla: no se confirma sin comprobante.
+///
+/// Campos:
+/// - `noticeSentAt`: Aviso de suspensión enviado al negocio (requisito para suspender).
+model Charge {
+  id             String       @id @default(uuid())
+  tenantId       String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  periodStart    DateTime
+  periodEnd      DateTime
+  amountUsdCents Int
+  status         ChargeStatus @default(PENDING)
+  dueAt          DateTime
+  method         String?
+  reference      String?
+  paidAt         DateTime?
+  recordedById   String?
+  confirmedById  String?
+  confirmedAt    DateTime?
+  noticeSentAt   DateTime?
+  refundedAt     DateTime?
+  refundReason   String?
+  voidReason     String?
+  notes          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      temporal.updatedAt()
+  evidence       ChargeEvidence[]
+
+  @@unique([subscriptionId, periodStart])
+  @@index([tenantId])
+  @@index([status])
+  @@rls
+}
+
+/// Comprobante de pago guardado en el sistema (no un enlace externo).
+model ChargeEvidence {
+  id           String   @id @default(uuid())
+  chargeId     String
+  charge       Charge   @relation(fields: [chargeId], references: [id], onDelete: Cascade)
+  fileName     String
+  mimeType     String
+  byteSize     Int
+  sha256       String
+  data         Bytes
+  uploadedById String?
+  createdAt    DateTime @default(now())
+
+  @@index([chargeId])
+  @@rls
+}
+
+/// Política de cobro y suspensión (una fila, id "default").
+model BillingPolicy {
+  id           String @id
+  reminderDays Int[]
+  graceDays    Int
+  noticeDays   Int
+  updatedAt    temporal.updatedAt()
+  @@rls
+}

@@ -1,0 +1,133 @@
+// use prisma-8
+
+/// Estado de un pago: pendiente, aprobado, rechazado o anulado.
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  DECLINED
+  VOIDED
+}
+
+/// Medio por el que se recibió un pago.
+enum PaymentProvider {
+  WOMPI
+  NEQUI
+  CASH
+  TRANSFER
+}
+
+/// Pago recibido por un negocio (efectivo, transferencia, Wompi, Nequi). No se borra: se anula con
+/// motivo.
+///
+/// Campos:
+/// - `receiptNumber`: Recibo consecutivo del negocio (R-000123).
+/// - `voidedAt`: Anulación con motivo (el pago no se borra).
+/// - `sourceType`: Qué pagó: MEMBERSHIP, INVOICE, TOUR_BOOKING, TICKET_SALE, PROJECT, SALE.
+/// - `cashSessionId`: Sesión de caja en la que entró (si fue en efectivo).
+model Payment {
+  id            String          @id @default(uuid())
+  tenantId      String
+  tenant        Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId    String?
+  customer      Customer?       @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  membershipId  String?
+  membership    Membership?     @relation(fields: [membershipId], references: [id], onDelete: SetNull)
+  amount        Decimal
+  status        PaymentStatus   @default(PENDING)
+  provider      PaymentProvider @default(CASH)
+  providerRefId String?         @unique
+  description   String?
+  receiptNumber Int?
+  voidedAt      DateTime?
+  voidReason    String?
+  notes         String?
+  sourceType    String?
+  sourceId      String?
+  cashSessionId String?
+  invoiceId     String?
+  createdAt     DateTime        @default(now())
+  updatedAt     temporal.updatedAt()
+
+  @@index([tenantId])
+  @@index([providerRefId])
+  @@index([membershipId])
+  @@unique([tenantId, receiptNumber])
+  @@rls
+}
+
+/// Intención de cobro en línea: lo que se le pide pagar a alguien (link, botón o QR). Solo se
+/// vuelve ingreso cuando el estado oficial llega (webhook del proveedor o confirmación manual con
+/// evidencia); confirmar dos veces el mismo cobro es imposible.
+///
+/// Campos:
+/// - `reference`: Código público del enlace (`/pay/<reference>`): imposible de adivinar, único en
+///   toda la plataforma.
+/// - `status`: PENDING | PAID | EXPIRED | FAILED | CANCELED
+/// - `channel`: LINK | QR
+/// - `invoiceId`: Cuenta de cobro que paga (el cobro baja su saldo).
+/// - `confirmedBy`: Cómo se confirmó: PROVIDER (webhook) | MANUAL (transferencia con evidencia).
+model PaymentIntent {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  reference     String   @unique
+  amount        Decimal
+  description   String
+  status        String   @default("PENDING")
+  channel       String   @default("LINK")
+  provider      String   @default("sandbox")
+  customerId    String?
+  invoiceId     String?
+  expiresAt     DateTime
+  paidAt        DateTime?
+  confirmedBy   String?
+  evidence      String?
+  providerRefId String?
+  paymentId     String?
+  refundedTotal Decimal  @default(0)
+  createdById   String?
+  createdAt     DateTime @default(now())
+  refunds       PaymentRefund[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, createdAt])
+  @@rls
+}
+
+/// Reembolso total o parcial de un cobro en línea.
+model PaymentRefund {
+  id          String        @id @default(uuid())
+  tenantId    String
+  tenant      Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  intentId    String
+  intent      PaymentIntent @relation(fields: [intentId], references: [id], onDelete: Cascade)
+  amount      Decimal
+  reason      String
+  createdById String?
+  createdAt   DateTime      @default(now())
+
+  @@index([tenantId, intentId])
+  @@rls
+}
+
+/// Conciliación diaria: lo que reporta el proveedor contra lo que NEXUS confirmó ese día.
+///
+/// Campos:
+/// - `day`: AAAA-MM-DD (hora de Colombia).
+/// - `differences`: Detalle de lo que no cuadra: [{ kind, externalId, expected, reported }].
+model ReconciliationRun {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  provider    String
+  day         String
+  expected    Decimal
+  reported    Decimal
+  differences Json
+  matched     Int
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId, day])
+  @@rls
+}
