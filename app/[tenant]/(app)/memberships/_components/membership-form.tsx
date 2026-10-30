@@ -10,15 +10,8 @@ import {
   type MembershipFormState,
 } from "../actions";
 import { PAYMENT_METHODS } from "@/lib/finance";
-import {
-  MEMBERSHIP_TYPES,
-  addMonths,
-  bogotaToday,
-  parsePlainDate,
-  plainToInputDate,
-  typeMonths,
-  type MembershipTypeValue,
-} from "@/lib/business/memberships";
+import { MEMBERSHIP_TYPES, typeMonths, type MembershipTypeValue } from "@/lib/business/memberships";
+import { addMonths, bogotaToday, parsePlainDate, formatPlainDate } from "@/lib/plain-date";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { labelClasses } from "@/components/atoms/input";
@@ -86,7 +79,7 @@ function MembershipForm({
 
   const [type, setType] = useState<MembershipTypeValue>("mensual");
   const [startDate, setStartDate] = useState(() =>
-    plainToInputDate(bogotaToday()),
+    formatPlainDate(bogotaToday()),
   );
   const [registerInitialPayment, setRegisterInitialPayment] = useState(true);
 
@@ -96,7 +89,7 @@ function MembershipForm({
     if (!plain) {
       return "";
     }
-    return plainToInputDate(addMonths(plain, typeMonths(type)));
+    return formatPlainDate(addMonths(plain, typeMonths(type)));
   }, [startDate, type]);
 
   const endDatePreview = useMemo(() => {
