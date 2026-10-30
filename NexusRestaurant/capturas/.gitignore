@@ -1,4 +1,0 @@
-# Las capturas muestran la interfaz de un producto de terceros con datos de ejemplo de la cuenta.
-# No se versionan por defecto: revisar derechos y privacidad antes de quitar esta regla.
-*.png
-!.gitignore

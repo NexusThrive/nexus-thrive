@@ -22,8 +22,10 @@ no una especificación para clonarlo.
 ## Material de apoyo
 
 - `capturas/` — pantallas en escritorio (1280 px) y móvil (375 px), menús
-  desplegables y páginas públicas. **No se versionan** (ver
-  `capturas/.gitignore`): son interfaz de un tercero con datos de ejemplo.
+  desplegables y páginas públicas. Son interfaz de un tercero, con los datos de
+  ejemplo de la cuenta del equipo; se incluyen como **evidencia de consulta
+  interna**, no para reutilizarlas. Se excluyeron las que mostraban datos
+  personales (perfil y horarios con nombres).
 - `datos/` — navegación, menús y catálogo de pantallas en JSON, con la forma de
   las llamadas de red (solo claves, nunca valores).
 - `herramientas/` — los dos scripts de Playwright, para repetir el recorrido.
