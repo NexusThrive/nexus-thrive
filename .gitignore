@@ -68,3 +68,11 @@ graphify-out/
 /playwright-report
 /blob-report
 backups/
+
+
+# Python del núcleo de ingeniería
+__pycache__/
+*.py[cod]
+
+# Herramientas locales del repositorio (entornos aislados)
+.tools/
