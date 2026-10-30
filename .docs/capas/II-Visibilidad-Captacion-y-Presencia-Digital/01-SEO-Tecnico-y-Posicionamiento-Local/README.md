@@ -57,8 +57,8 @@ tags: [capas, estructura, subcapa]
 
 #### Funcionalidad
 
-- [x] Títulos, descripciones y URLs editables _(PR-25)_
-- [x] Sitemap, robots y etiquetas básicas automáticas. _(PR-25)_
+- [x] Títulos, descripciones y URLs editables _(PR-25)_ — _hecho: `lib/site/site-db.ts` guarda `title`, `description` y `siteSlug` del sitio (validados) desde `app/[tenant]/(app)/sitio/_components/site-editor.tsx`_
+- [x] Sitemap, robots y etiquetas básicas automáticas. _(PR-25)_ — _hecho: `app/sitemap.ts`, `app/robots.ts`, `app/s/[slug]/sitemap.xml/route.ts`, `app/s/[slug]/robots.txt/route.ts`; `generateMetadata` y JSON-LD en `app/s/[slug]/page.tsx`_
 - [ ] Ficha de Google Business _(PR-27)_
 
 #### Técnico

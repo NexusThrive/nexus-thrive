@@ -58,8 +58,8 @@ tags: [capas, estructura, subcapa]
 #### Funcionalidad
 
 - [ ] Catálogo con fotos, descripción, precio y categoría. _(PR-26)_
-- [x] Carrito y checkout con datos del cliente. _(PR-26)_
-- [x] Pago por link o por transferencia con confirmación manual. _(PR-26)_
+- [x] Carrito y checkout con datos del cliente. _(PR-26)_ — _hecho: `placeOrder` en `lib/store/store-db.ts` crea el pedido con nombre y celular válidos (dirección y ciudad se piden, no son obligatorias) y, con inventario controlado, rechaza cantidades mayores a las existencias_
+- [x] Pago por link o por transferencia con confirmación manual. _(PR-26)_ — _hecho: enlace `/pay/<referencia>`; tarjeta, PSE o Nequi exigen Wompi conectado; confirmación manual solo del dueño o administración, con referencia de 4+ caracteres (`confirmIntent` en `lib/payments/intents-db.ts`)_
 - [ ] Pedido que llega por correo y WhatsApp al negocio. _(PR-26)_
 
 #### Técnico
