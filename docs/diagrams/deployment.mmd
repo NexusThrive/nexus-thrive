@@ -1,0 +1,41 @@
+flowchart LR
+    subgraph Dev["Estación de trabajo"]
+        direction TB
+        WT["Árbol de trabajo limpio"]
+        BR["rama de trabajo<br/>&lt;tipo&gt;/HU-…"]
+        CKPT[("checkpoint<br/>rama · commit · hashes")]
+        GATE["compuertas locales<br/>lint · tsc · test"]
+    end
+
+    subgraph Repo["Repositorio"]
+        SPRINT["rama sprint/S&lt;nn&gt;"]
+        MAIN["main (protegida)"]
+    end
+
+    subgraph CI["CI — GitHub Actions"]
+        PY["unittest núcleo + validate"]
+        NODE["tsc · lint · vitest"]
+        PG[("PostgreSQL efímero")]
+    end
+
+    subgraph External["Externo — no verificado aquí"]
+        PR["PR de promoción"]
+        PROD["Producción Vercel"]
+    end
+
+    WT --> BR
+    BR --> CKPT
+    BR --> GATE
+    GATE -->|"PR"| SPRINT
+    SPRINT --> CI
+    PY --> CI
+    NODE --> PG
+    CI -->|"verde"| PR
+    PR -->|"aprobación humana"| MAIN
+    MAIN --> PROD
+
+    CKPT -.->|"recover: resumable o drift"| BR
+
+    style MAIN stroke-width:4
+    style PROD stroke-dasharray: 6 4
+    style PR stroke-dasharray: 6 4

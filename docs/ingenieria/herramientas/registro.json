@@ -1,0 +1,883 @@
+{
+  "schema_version": 1,
+  "note": "Registro canónico de skills, plugins, MCP y herramientas externas. Una entrada activa exige procedencia, licencia admitida, revisión de seguridad, prueba y rollback.",
+  "updated_at": "2026-10-26",
+  "skills": [
+    {
+      "id": "ciclo-sprint",
+      "kind": "skill",
+      "status": "active",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": "plugins/product-team/skills/ciclo-sprint",
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "Ciclo de sprint con estados, compuertas, checkpoints y límite de intentos",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "4c4199fe2a3eb7f88fb620e50ce3e89b56a534e7a748c97543ea9a1b50e8acf5"
+    },
+    {
+      "id": "database-migrations",
+      "kind": "skill",
+      "status": "active",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": "plugins/product-team/skills/database-migrations",
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "Migraciones reversibles, RLS y aislamiento multiempresa",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "96fe96b31f04e62411fc923c74fb62a6d57814d6b23ae0dec961a5eadb41db3c"
+    },
+    {
+      "id": "graphify-analysis",
+      "kind": "skill",
+      "status": "active",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": "plugins/product-team/skills/graphify-analysis",
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "Uso del grafo estructural cuando está disponible",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "0324ecfd8039646b83a772e0e298a58f4c3f1f9a77aeac2618ff1fb018666e85"
+    },
+    {
+      "id": "n8n-automation",
+      "kind": "skill",
+      "status": "retired",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": null,
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "Diseño de workflows n8n autenticados e idempotentes",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "3200045f0b87afc9b43705de21609f8b110ce25a79d610e69a3d53ebd50baa1b",
+      "decision": "retirada con el núcleo (ADR 0013); sigue en el historial de git"
+    },
+    {
+      "id": "notebooklm-research",
+      "kind": "skill",
+      "status": "active",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": "plugins/product-team/skills/notebooklm-research",
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "Investigación con fuentes verificables y Knowledge Hub",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "093d6db094ab6e36ccb8064cef41044d736ccbbfd62b7421e6ba43848b900593"
+    },
+    {
+      "id": "nueva-funcionalidad",
+      "kind": "skill",
+      "status": "active",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": "plugins/product-team/skills/nueva-funcionalidad",
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "De idea a historias y tareas verificables",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "97eb2c1d1e19bca74970a0b7e736a4425a916ebf65aea99e78d275792cee78bf"
+    },
+    {
+      "id": "release-management",
+      "kind": "skill",
+      "status": "active",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": "plugins/product-team/skills/release-management",
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "Preparación de versión y promoción con evidencias",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "ee1bcba673aa45ffdb1d8ab22db2e1e95c7d61f1285f771e62702ef8a42b6531"
+    },
+    {
+      "id": "security-review",
+      "kind": "skill",
+      "status": "active",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": "plugins/product-team/skills/security-review",
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "Revisión de autorización, secretos y aislamiento",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "6d5d5c1a6cc0c19985715f3e2241f9c35ac89a9f4d738481d9847648f7d12791"
+    },
+    {
+      "id": "diseno-producto",
+      "kind": "skill",
+      "status": "active",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": "plugins/product-team/skills/diseno-producto",
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "Auditoría y diseño de flujos reales con estados completos",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "503967e95c71cf8b39c8af74a620c434d268169bfb849d69d8cef9c0c5d78b75"
+    },
+    {
+      "id": "sistema-diseno",
+      "kind": "skill",
+      "status": "active",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": "plugins/product-team/skills/sistema-diseno",
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "Gobierno de tokens, componentes y variantes",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "f282e9bd9ba40930b495508f764b9af92d10f8e9b6ca1aa2eead861b2aac41fc"
+    },
+    {
+      "id": "storybook-profesional",
+      "kind": "skill",
+      "status": "active",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": "plugins/product-team/skills/storybook-profesional",
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "Historias, patrones y pruebas de componentes",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "a90eab7d0c0653f382380d8178d807727df3fbd3ccb536fb16a98b9d4c02bcf6"
+    },
+    {
+      "id": "visual-qa",
+      "kind": "skill",
+      "status": "active",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": "plugins/product-team/skills/visual-qa",
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "Verificación visual y de interacción con Playwright",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "173c42d48011369ede9e39be6ce74031d29e83a18705b11d8b1ec65b36338f3d"
+    },
+    {
+      "id": "marca",
+      "kind": "skill",
+      "status": "active",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": "plugins/product-team/skills/marca",
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "Aplicación y revisión de identidad y mensajes",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "8061f8ff4ae7f9d3693445065fc56402d292c0842953a4badebf707c5bddd6be"
+    },
+    {
+      "id": "seo",
+      "kind": "skill",
+      "status": "active",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": "plugins/product-team/skills/seo",
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "Auditoría de indexabilidad, metadatos y contenido",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "e03c9c6baf00cded691afdf94c1468e52357512ee871453c1c18f7e10280f431"
+    },
+    {
+      "id": "growth",
+      "kind": "skill",
+      "status": "active",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": "plugins/product-team/skills/growth",
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "Experimentos con hipótesis y métricas reales",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "f14ca71f484c137e98cadca56dfa4a2347b1d23b0249042356fcc7e19355aff6"
+    },
+    {
+      "id": "contenido",
+      "kind": "skill",
+      "status": "active",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": "plugins/product-team/skills/contenido",
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "Flujo editorial con verificación factual y aprobación",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "48ee28ba9fd0f3c073e0ee67af32eaa101ec596e4739fb6f553d4b316b173463"
+    },
+    {
+      "id": "skills-externas",
+      "kind": "skill",
+      "status": "active",
+      "source": "nexus-thrive",
+      "version": "1.0.0",
+      "license": "proprietary",
+      "location": "plugins/product-team/skills/skills-externas",
+      "provenance": "Autoría interna Nexus Thrive",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "read-repository",
+        "run-repository-cli"
+      ],
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
+      },
+      "function": "Gobierno de skills, plugins y MCP externos",
+      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
+      "rollback": "Eliminar plugins/product-team/skills/<id>.",
+      "content_hash": "39f5b9858c17df05dce0eb23809c27e2680921ed12f61278d3ceb8a58d15b2a9"
+    },
+    {
+      "id": "playwright",
+      "kind": "tool",
+      "status": "installed",
+      "source": "https://github.com/microsoft/playwright",
+      "version": "1.64.1",
+      "license": "Apache-2.0",
+      "provenance": "Dependencia dev del repositorio; navegador Chromium 1248 instalado en caché local",
+      "compatibility": [
+        "opencode",
+        "claude-code",
+        "ci"
+      ],
+      "executes_code": true,
+      "permissions": [
+        "ejecutar navegador",
+        "leer aplicación local"
+      ],
+      "function": "Pruebas end-to-end, interacción, responsive y capturas de referencia",
+      "risks": "Los tests ejecutan código del repositorio; no deben apuntar a producción ni usar credenciales reales. Los navegadores ocupan disco.",
+      "test": "pnpm exec playwright --version y pnpm test:e2e contra Storybook estático en 127.0.0.1:6007",
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Dependencia mantenida, licencia Apache-2.0, sin envío de datos por defecto. Los reportes no deben contener secretos."
+      },
+      "rollback": "Quitar @playwright/test de devDependencies y borrar playwright.config.ts/e2e si se retira la estrategia."
+    },
+    {
+      "id": "vercel-skills-cli",
+      "kind": "tool",
+      "status": "evaluated",
+      "source": "https://github.com/vercel-labs/skills",
+      "version": "1.7.4 (usado vía npx, sin instalación global)",
+      "license": "MIT",
+      "provenance": "Repositorio oficial vercel-labs/skills; CLI ejecutada con npx sin instalación global",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": true,
+      "permissions": [
+        "lectura del repositorio",
+        "descarga de skills",
+        "escritura en carpetas de skills"
+      ],
+      "function": "Descubrir, inspeccionar, instalar y actualizar skills por repositorio",
+      "risks": "Instala contenido de terceros; una skill instalada puede contener instrucciones o scripts. Requiere inspección y revisión antes de habilitar.",
+      "test": "Ejecutado `npx --yes skills --version` → 1.7.4; instaló find-skills y security-audit en .agents/skills con hash fijado en skills-lock.json.",
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "La CLI en sí no se instala globalmente; cada skill resultante se revisa por separado."
+      },
+      "rollback": "No requiere rollback global: se usa vía npx. Las skills instaladas se eliminan de su carpeta y del registro."
+    },
+    {
+      "id": "find-skills",
+      "kind": "skill",
+      "status": "installed",
+      "source": "https://github.com/vercel-labs/skills",
+      "version": "1.7.4 (skills CLI)",
+      "license": "MIT",
+      "location": ".agents/skills/find-skills",
+      "provenance": "Instalada con `npx skills add vercel-labs/skills --skill find-skills`; hash fijado en skills-lock.json",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "lectura del repositorio",
+        "ejecutar el CLI de skills vía npx cuando el usuario lo pida"
+      ],
+      "function": "Descubrir e instalar skills del ecosistema abierto cuando no existe una skill interna equivalente",
+      "risks": "Instala contenido de terceros. Toda skill resultante debe pasar por este registro antes de usarse.",
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Solo instrucciones markdown; sin scripts ni hooks. El CLI se usa vía npx y cada skill instalada se registra por separado."
+      },
+      "test": "Instalada y detectada por OpenCode; `scripts/nexus-eng skills verify` valida su huella SHA-256 (b1460085…).",
+      "rollback": "`npx skills remove find-skills` o eliminar .agents/skills/find-skills, quitar la entrada de skills-lock.json y de este registro.",
+      "content_hash": "b146008599c31057cef1c145774cea5d5afb30e8f43fa802e47a4b461419aaaf",
+      "notes": "Se usa solo para buscar capacidades ausentes; no sustituye el gobierno de skills-externas ni la revisión de seguridad."
+    },
+    {
+      "id": "archify",
+      "kind": "skill",
+      "status": "evaluated",
+      "source": "https://github.com/tt-a1i/archify",
+      "version": "por confirmar",
+      "license": "Apache-2.0",
+      "provenance": "Repositorio oficial tt-a1i/archify; compatibilidad declarada con OpenCode y Claude Code",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": true,
+      "permissions": [
+        "lectura del repositorio",
+        "generación de HTML de diagramas"
+      ],
+      "function": "Diagramas interactivos de arquitectura y flujos",
+      "risks": "Genera HTML que no sustituye la documentación canónica. Puede requerir red o binarios propios; revisar el contenido instalado.",
+      "test": "Pendiente de instalación aislada y render de un diagrama de prueba",
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Licencia permisiva; la instalación debe ser local al repositorio y revisada antes de usar."
+      },
+      "rollback": "Eliminar la carpeta de la skill instalada y regenerar adaptadores; Mermaid sigue siendo la fuente versionada."
+    },
+    {
+      "id": "cloudflare-security-audit",
+      "kind": "skill",
+      "status": "installed",
+      "source": "https://github.com/cloudflare/security-audit-skill",
+      "version": "1.0.0",
+      "license": "MIT",
+      "provenance": "Instalada con `npx skills add cloudflare/security-audit-skill --skill security-audit`; hash fijado en skills-lock.json",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "lectura del repositorio",
+        "escritura limitada a informes de auditoría cuando se solicite"
+      ],
+      "function": "Auditoría de seguridad multifase con hallazgos verificables y esquema de reporte",
+      "risks": "Sus hallazgos requieren revisión independiente y no sustituyen pruebas. No debe ejecutarse en cada tarea trivial.",
+      "test": "Instalada y detectada por OpenCode; `scripts/nexus-eng skills verify` valida las 20 huellas de archivo y el CLI la marcó Safe.",
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "19 documentos markdown + report-schema.json; sin scripts ni hooks. El escaneo del CLI reportó Safe / 0 alertas. Es guía defensiva, no herramienta de explotación."
+      },
+      "rollback": "`npx skills remove security-audit` o eliminar .agents/skills/security-audit y su entrada en skills-lock.json y este registro.",
+      "location": ".agents/skills/security-audit",
+      "content_hash": "c7970d862af9b8bfd7601f31db6d3ea638c6e833f2f8bcf81293bcdb36f3f6f4",
+      "notes": "Se usa solo para auth, autorización, APIs públicas, RLS, secretos, webhooks, dependencias sensibles o auditorías explícitas."
+    },
+    {
+      "id": "ecc",
+      "kind": "platform",
+      "status": "evaluated",
+      "source": "https://github.com/affaan-m/ECC",
+      "version": "por confirmar",
+      "license": "MIT",
+      "provenance": "Repositorio oficial affaan-m/ECC; paridad variable entre harnesses",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": true,
+      "permissions": [
+        "hooks",
+        "scripts",
+        "memoria",
+        "reglas"
+      ],
+      "function": "Sistema de rendimiento de agentes: skills, hooks, memoria e investigación",
+      "risks": "Duplica agentes, hooks y reglas ya implementados. Los hooks no son portables entre clientes sin adaptación. Instalarlo completo rompería la fuente única.",
+      "test": "No se instala completo; se adoptan ideas ya cubiertas por el núcleo y se documentan las diferencias",
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Licencia permisiva, pero la instalación masiva se rechaza por duplicación y hooks no revisados."
+      },
+      "reason": "Adopción selectiva: el núcleo ya cubre TDD, debugging, revisión, seguridad, checkpoints y recuperación. No se copian hooks sin adaptar.",
+      "decision": "no-instalacion-masiva"
+    },
+    {
+      "id": "agency-agents",
+      "kind": "platform",
+      "status": "evaluated",
+      "source": "https://github.com/msitarzewski/agency-agents",
+      "version": "por confirmar",
+      "license": "MIT",
+      "provenance": "Repositorio oficial msitarzewski/agency-agents; atribución conservada en la adaptación de roles",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "lectura de perfiles"
+      ],
+      "function": "Catálogo amplio de perfiles de ingeniería, diseño, producto, marketing y ventas",
+      "risks": "Cientos de agentes sin clasificación; OpenCode descarta perfiles por encima de su límite. Copiarlos todos degrada el enrutamiento.",
+      "test": "Los 20 roles de Studio se redactaron como adaptación propia, no como copia; el registro canónico sigue siendo la fuente única",
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Contenido de instrucciones; se conserva atribución y licencia. No se instala el catálogo completo."
+      },
+      "reason": "Se adopta el mapa de competencias y se adaptan roles, sin copiar el catálogo ni crear un segundo registro.",
+      "decision": "adaptado-no-instalado"
+    },
+    {
+      "id": "addy-osmani-agent-skills",
+      "kind": "skill",
+      "status": "evaluated",
+      "source": "https://github.com/addyosmani/agent-skills",
+      "version": "por confirmar",
+      "license": "MIT",
+      "provenance": "Repositorio oficial addyosmani/agent-skills",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": false,
+      "permissions": [
+        "lectura de instrucciones"
+      ],
+      "function": "Skills de ingeniería frontend y buenas prácticas",
+      "risks": "Solapamiento con skills internas; instalar sin comparar crea duplicación de instrucciones.",
+      "test": "Pendiente de comparación con las skills canónicas antes de instalar",
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Contenido de instrucciones; revisar cada skill finalista."
+      },
+      "rollback": "Eliminar la skill instalada y su entrada en el registro."
+    },
+    {
+      "id": "codebase-memory-mcp",
+      "kind": "mcp",
+      "status": "deferred",
+      "source": "https://github.com/DeusData/codebase-memory-mcp",
+      "version": "por confirmar",
+      "license": "MIT",
+      "provenance": "Repositorio oficial DeusData/codebase-memory-mcp; binario local + servidor MCP",
+      "compatibility": [
+        "opencode",
+        "claude-code"
+      ],
+      "executes_code": true,
+      "permissions": [
+        "lectura completa del código",
+        "almacenamiento de índice"
+      ],
+      "function": "Consultas estructurales persistentes sobre el código",
+      "risks": "Instalador con descarga de binario; requiere revisar el script y el almacenamiento. Duplica el grafo si se suma a Graphify sin comparar.",
+      "test": "Pendiente: instalador no ejecutado; decisión comparativa con Graphify en ADR",
+      "security_review": {
+        "status": "pending",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Su instalador descarga binarios y mantiene un servidor. No se ejecuta sin inspección previa."
+      },
+      "reason": "Diferido: Graphify ya cubre el grafo estructural local sin daemon ni binario descargado. Mantener dos índices persistentes duplica trabajo; se reevalúa si Graphify deja de bastar.",
+      "rollback": "Detener el servidor MCP, eliminar el binario y su índice; quitar la entrada MCP del cliente."
+    },
+    {
+      "id": "graphify",
+      "kind": "tool",
+      "status": "installed",
+      "source": "https://github.com/Graphify-Labs/graphify",
+      "version": "0.9.95 (PyPI graphifyy)",
+      "license": "Apache-2.0",
+      "provenance": "Graphify-Labs/graphify; venv local .tools/graphify con pip (PyPI graphifyy 0.9.95, publicado 2026-10-23)",
+      "compatibility": [
+        "opencode",
+        "claude-code",
+        "ci"
+      ],
+      "executes_code": true,
+      "permissions": [
+        "lectura del repositorio",
+        "escritura de graphify-out/"
+      ],
+      "function": "Grafo estructural local del repositorio (AST) con consultas query/path/explain y nodos centrales",
+      "risks": "El modo semántico envía contenido a un proveedor LLM y exige API key; --code-only es local. El grafo es dato no confiable y no sustituye pruebas. graphify-out/ está en .gitignore.",
+      "test": "`graphify extract . --code-only --no-cluster --no-viz`: 1499 archivos, 8100 nodos, 26000 edges; `god-nodes` y `query` respondieron sobre el grafo real.",
+      "security_review": {
+        "status": "approved",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Apache-2.0, paquete PyPI, instalación aislada en venv local. Sin API key en el modo usado. Revisar el plugin antes de habilitarlo en un cliente."
+      },
+      "reason": "",
+      "rollback": "Eliminar .tools/graphify y cualquier graphify-out/ generado; quitar la skill del cliente si se instalara.",
+      "location": ".tools/graphify",
+      "decision": "adoptado-modo-code-only"
+    },
+    {
+      "id": "notebooklm-mcp",
+      "kind": "mcp",
+      "status": "rejected",
+      "source": "https://github.com/PleasePrompto/notebooklm-mcp",
+      "version": "archivado",
+      "license": "unknown-reviewed",
+      "provenance": "Repositorio archivado según la API de GitHub (2026-10-25)",
+      "compatibility": [
+        "claude-code"
+      ],
+      "executes_code": true,
+      "permissions": [
+        "autenticación de proveedor",
+        "acceso a cuadernos"
+      ],
+      "function": "Puente MCP hacia NotebookLM",
+      "risks": "Sin mantenimiento; autenticación frágil y dependencia de un proveedor externo. El adaptador actual del Knowledge Hub no ejecuta NotebookLM.",
+      "test": "No se instala; Knowledge Hub funciona sin NotebookLM y registra unavailable",
+      "security_review": {
+        "status": "rejected",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Repositorio archivado; no se adopta como dependencia operativa."
+      },
+      "reason": "Archivado y sin mantenimiento verificable. Se buscará alternativa mantenida antes de escribir una implementación nueva.",
+      "decision": "rechazado"
+    },
+    {
+      "id": "openhands",
+      "kind": "platform",
+      "status": "rejected",
+      "source": "https://github.com/OpenHands/OpenHands",
+      "version": "por confirmar",
+      "license": "MIT",
+      "provenance": "Repositorio oficial OpenHands/OpenHands; plataforma completa de agentes",
+      "compatibility": [
+        "standalone"
+      ],
+      "executes_code": true,
+      "permissions": [
+        "contenedores",
+        "red",
+        "modelos",
+        "almacenamiento"
+      ],
+      "function": "Plataforma de ejecución de agentes de programación",
+      "risks": "Requiere uv, Node 24 y opcionalmente Docker; duplica el harness y añade superficie operativa. No cubre una carencia que OpenCode y Claude Code no tengan ya.",
+      "test": "No se despliega. Evaluación documentada en ADR 0011.",
+      "security_review": {
+        "status": "rejected",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Infraestructura desproporcionada para el estado actual; revisar si aparece una necesidad real de ejecución aislada."
+      },
+      "reason": "No aporta valor suficiente frente a los clientes actuales y exige infraestructura innecesaria.",
+      "decision": "rechazado"
+    },
+    {
+      "id": "n8n",
+      "kind": "platform",
+      "status": "deferred",
+      "source": "https://github.com/n8n-io/n8n",
+      "version": "no instalado",
+      "license": "Sustainable-Use-1.0",
+      "provenance": "No instalado en este entorno; workflows versionados en integrations/n8n",
+      "compatibility": [
+        "standalone"
+      ],
+      "executes_code": true,
+      "permissions": [
+        "red",
+        "credenciales",
+        "ejecución de workflows"
+      ],
+      "function": "Automatización de eventos, briefs, aprobaciones, informes y métricas",
+      "risks": "Sin instancia no hay ejecución real. Los webhooks exigen autenticación y el núcleo valida idempotencia. No se publica en canales externos.",
+      "test": "JSON y esquemas validados por pnpm engineering:test; ejecución real pendiente de instancia",
+      "security_review": {
+        "status": "pending",
+        "reviewer": "security-engineer",
+        "date": "2026-10-25",
+        "notes": "Instancia no desplegada; revisar credenciales y exposición de red antes de activar."
+      },
+      "reason": "Integración generada y validada estáticamente; falta instancia y credenciales.",
+      "rollback": "Detener la instancia, revocar credenciales y desactivar webhooks; los workflows versionados permanecen."
+    }
+  ]
+}

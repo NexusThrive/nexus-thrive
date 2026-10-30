@@ -1,5 +1,7 @@
 # Pendientes de NEXUS
 
+> **Siguiente paso:** [SIGUIENTE-PASO.md](SIGUIENTE-PASO.md) (sistema y orden de restaurantes).
+
 Lista viva de lo que falta, en orden de prioridad. Cuando algo se termina, se
 marca y se anota dónde quedó (PR o archivo). La visión de producto está en
 [product-vision.md](nexus-architecture/product-vision.md) y la ruta técnica de
@@ -294,3 +296,22 @@ construir un motor de flujos propio.
 | ¿Nequi primero, o Wompi (tarjeta, PSE, Nequi) como pasarela única? | Paso 8 |
 | ¿Proveedor tecnológico DIAN? | Factura electrónica ([product-vision.md §3](nexus-architecture/product-vision.md)) |
 | ¿Qué rubros se venden primero? | Prioridad de todo lo anterior |
+| ¿Se integra NotebookLM (Gemini Notebook) como cuaderno «senior»? Ver §7 | Skill `notebooklm-research`, agente `steward` |
+
+---
+
+## 7. NotebookLM (Gemini Notebook): investigación pendiente
+
+Diferida por el dueño el 2026-10-30. Hallazgos de esa fecha:
+
+- La API oficial (Gemini Notebook Enterprise, Preview, `/v1alpha`) exige licencia y proyecto de Google Cloud,
+  gestiona cuadernos y fuentes, pero **no documenta ninguna forma de hacerle preguntas** al cuaderno.
+- La vía viable para consultar es no oficial: `notebooklm-py` (MIT, 0.8.6 del 2026-10-29, una sola persona
+  mantenedora, Beta) o los servidores MCP `roomi-fields/notebooklm-mcp` y `Pantheon-Security/notebooklm-mcp-secure`.
+  Usan APIs no documentadas y cookies de una cuenta Google (se recomienda una cuenta dedicada); ninguna página
+  aclara si cumplen los términos de Google.
+- Todo lo que se suba va a Google, a diferencia de Graphify, que es local.
+
+Para decidir: aceptar o no la vía no oficial con cuenta dedicada; qué carpetas pueden subirse (propuesta:
+`.docs/capas` y los ADR); probar en un entorno aislado con 2 o 3 documentos no sensibles; y, si se acepta, escribir un
+ADR que enmiende el 0008 con la versión fijada y la procedencia.

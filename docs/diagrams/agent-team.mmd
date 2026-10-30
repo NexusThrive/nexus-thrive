@@ -1,0 +1,71 @@
+flowchart TB
+    EM["engineering-manager<br/>orquestador · primary"]
+
+    subgraph Producto["Producto y requisitos"]
+        MT["mesa-de-trabajo<br/>investigación · solo lectura"]
+        PO["product-owner<br/>valor · alcance"]
+        RA["requirements-analyst<br/>HU · criterios"]
+        PM["project-manager<br/>backlog · sprints"]
+    end
+
+    subgraph Diseño["Diseño"]
+        ARQ["arquitecto<br/>contratos · ADR"]
+    end
+
+    subgraph Implementación["Implementación"]
+        SEN["senior-engineer<br/>casos complejos"]
+        BE["backend-engineer"]
+        FE["frontend-engineer"]
+        DB["database-engineer"]
+        INT["integrations-engineer"]
+        OPS["devops-engineer"]
+    end
+
+    subgraph Calidad["Calidad independiente"]
+        SEC["security-engineer<br/>solo lectura"]
+        QA["qa-engineer<br/>veredicto"]
+        SR["senior-reviewer<br/>solo lectura"]
+    end
+
+    subgraph Conocimiento["Conocimiento y entrega"]
+        KE["knowledge-engineer"]
+        RE["research-engineer<br/>solo lectura"]
+        RM["release-manager<br/>prepara PR"]
+    end
+
+    EM --> MT
+    EM --> PO
+    EM --> RA
+    EM --> PM
+    EM --> ARQ
+    ARQ --> SEN
+    ARQ --> BE
+    ARQ --> FE
+    ARQ --> DB
+    ARQ --> INT
+    ARQ --> OPS
+
+    SEN --> QA
+    BE --> QA
+    FE --> QA
+    DB --> QA
+    INT --> QA
+    OPS --> QA
+
+    QA --> SR
+    SEC --> SR
+    SR -->|"aprobado"| EM
+    QA -->|"changes_requested"| EM
+    SR -->|"changes_requested"| EM
+
+    EM --> KE
+    KE --> RE
+    EM --> RM
+
+    SR -.->|"nunca aprueba su propio trabajo"| SR
+    QA -.->|"nunca revisa lo que implementó"| QA
+
+    style SEC stroke-dasharray: 5 5
+    style SR stroke-dasharray: 5 5
+    style MT stroke-dasharray: 5 5
+    style RE stroke-dasharray: 5 5
