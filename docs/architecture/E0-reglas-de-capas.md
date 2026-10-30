@@ -10,13 +10,16 @@ Estado: implementado en la rama local `chore/HU-esquema-prisma-modular-01`, sin 
 | `docs/architecture/layers.json` | A qué capa pertenece cada carpeta o archivo de `lib/` y qué capas puede importar cada una |
 | `docs/architecture/exceptions.json` | Las 64 excepciones que existen hoy, cada una justificada, con etapa y estado |
 | `scripts/check-layers.mjs` | El verificador: lee los dos JSON, recorre los imports de `lib/` y falla ante lo no cubierto |
-| `scripts/check-layers.test.mjs` | 18 pruebas, 8 de ellas negativas |
+| `tests/architecture/layers.test.ts` | Pruebas de la regla (Vitest), con casos negativos |
 
 ```bash
-node scripts/check-layers.mjs            # comprueba; sale con 1 si hay problemas
+pnpm check:layers                        # comprueba; sale con 1 si hay problemas
 node scripts/check-layers.mjs --report   # resumen del grafo
-node --test scripts/check-layers.test.mjs
+pnpm exec vitest run tests/architecture  # las pruebas de la regla
 ```
+
+Se ejecuta sola en tres sitios, sin pasos nuevos en el CI: `pnpm test` (las pruebas de `tests/architecture/` incluyen la comprobación del
+repositorio actual, y el CI ya corre `pnpm test`), `pnpm verify` (paso `check:layers`) y `pnpm check:layers` a mano.
 
 ## Capas (D-1: la organización física no cambia)
 
@@ -94,7 +97,6 @@ La clasificación completa está en `exceptions.json` (`comparacionesVertical`).
 
 ## Límites conocidos
 
-- **No está conectado a `pnpm test` ni al CI.** `vitest` solo incluye `lib/**/*.test.ts` y el alcance excluye `lib/`, `package.json` y los workflows. Hasta que se conecte, la regla protege solo si alguien la ejecuta.
 - El verificador analiza texto con expresiones regulares, no un árbol sintáctico: no ve imports construidos dinámicamente con variables.
 - Solo se evalúan los imports de `lib/`. `app/` y `components/` son experience y pueden importar todo.
 - La clasificación por archivo dentro de `lib/business/` (gimnasio, membresías, museo) depende de los nombres `gym*`, `memberships*`, `museum*`.
