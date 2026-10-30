@@ -4,11 +4,7 @@ import { buildBudgetWorkbook } from "@/lib/construction/budget-export";
 import { tenantLetterhead } from "@/lib/tenant/membership";
 import { revalidatePath } from "next/cache";
 import { decimalToMicro } from "@/lib/construction/apu-engine";
-import type {
-  ApuActivityDetail,
-  ApuActivityRow,
-  ProjectBudgetData,
-} from "@/lib/tenant/db";
+import type { ApuActivityDetail, ApuActivityRow, ProjectBudgetData } from "@/lib/construction/shared";
 import {
   canGovernBudget,
   requireTenantContext,

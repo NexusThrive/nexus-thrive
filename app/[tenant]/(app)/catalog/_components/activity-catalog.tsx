@@ -17,7 +17,7 @@ import type {
   ApuChapterRow,
   ApuCompositionRow,
   ApuItemRow,
-} from "@/lib/tenant/db";
+} from "@/lib/construction/shared";
 import {
   addCompositionAction,
   createApuActivityAction,

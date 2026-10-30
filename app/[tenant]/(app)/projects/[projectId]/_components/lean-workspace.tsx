@@ -24,7 +24,7 @@ import {
   type CommitmentStatusValue,
   type NonComplianceCauseValue,
 } from "@/lib/construction/lean-engine";
-import type { ProjectPlanData } from "@/lib/tenant/db";
+import type { ProjectPlanData } from "@/lib/construction/shared";
 import {
   createLookaheadTaskAction,
   createWeeklyCommitmentAction,

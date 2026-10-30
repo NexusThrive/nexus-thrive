@@ -11,7 +11,7 @@ import type {
   CreateBudgetItemInput,
   CreateChapterInput,
   UpdateResourceInput,
-} from "@/lib/tenant/db";
+} from "@/lib/construction/shared";
 
 export const CHAPTER_NAME_MAX = 120;
 export const CHAPTER_DESCRIPTION_MAX = 300;

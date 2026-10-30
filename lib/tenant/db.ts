@@ -42,8 +42,6 @@ import { createFieldLogDb } from "@/lib/construction/field-log";
 import { createReportsDb } from "@/lib/construction/reports";
 import { escapeLike } from "@/lib/sql-like";
 
-export type * from "@/lib/construction/shared";
-
 
 export type CustomerSearchInput = {
   /** Texto libre (nombre, email o teléfono). */

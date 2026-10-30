@@ -18,7 +18,7 @@ import {
 } from "@/lib/construction/apu-engine";
 import SearchInput from "@/components/molecules/search-input";
 import FilterSelect from "@/components/molecules/filter-select";
-import type { ApuItemRow } from "@/lib/tenant/db";
+import type { ApuItemRow } from "@/lib/construction/shared";
 import {
   parseImportCsv,
   type ApuItemFormValues,

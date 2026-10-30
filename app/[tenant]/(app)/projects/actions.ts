@@ -10,7 +10,7 @@ import {
   projectStatusNeedsBaselineWarning,
   type ProjectStatusValue,
 } from "@/lib/construction/project-domain";
-import { type ProjectDetail } from "@/lib/tenant/db";
+import { type ProjectDetail } from "@/lib/construction/shared";
 import { requireTenantContext } from "@/lib/tenant/context";
 import {
   projectHeaderToInput,
