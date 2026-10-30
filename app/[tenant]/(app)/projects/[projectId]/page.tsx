@@ -18,6 +18,7 @@ import ProjectQuotesWorkspace from "./_components/project-quotes-workspace";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { requirePageContext } from "@/lib/tenant/context";
 
+import { createConstructionDb } from "@/lib/construction/construction-db";
 function firstString(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
 }
@@ -66,7 +67,9 @@ export default async function ProjectDetailPage({
   const tenantRecord = pageCtx.tenant;
 
   const tenantDb = createTenantDb(tenantRecord.id);
-  const project = await tenantDb.projects.get(projectId);
+
+  const construction = createConstructionDb(tenantRecord.id);
+  const project = await construction.projects.get(projectId);
   if (!project) {
     notFound();
   }
@@ -77,29 +80,29 @@ export default async function ProjectDetailPage({
   // Solo lectura: los contenedores nacen con la obra (ensureProjectContainers).
   // Si una obra antigua no los tiene, la pestaña ofrece "Preparar obra".
   const budget =
-    tab === "presupuesto" || tab === "cotizaciones" ? await tenantDb.budgets.get(projectId) : null;
+    tab === "presupuesto" || tab === "cotizaciones" ? await construction.budgets.get(projectId) : null;
   const [quotes, followUps] =
     tab === "cotizaciones"
       ? await Promise.all([
-          tenantDb.projectQuotes.list(projectId),
-          tenantDb.projectQuotes.listFollowUps(projectId),
+          construction.projectQuotes.list(projectId),
+          construction.projectQuotes.listFollowUps(projectId),
         ])
       : [[], []];
-  const baselines = await tenantDb.budgets.listBaselines(projectId);
+  const baselines = await construction.budgets.listBaselines(projectId);
   const hasApprovedBaseline = baselines.length > 0;
-  const plan = tab === "planificador" ? await tenantDb.lean.getPlan(projectId) : null;
+  const plan = tab === "planificador" ? await construction.lean.getPlan(projectId) : null;
   // Partidas del presupuesto: para enlazar tareas/compromisos/bitácora y para
   // registrar el avance de obra.
   const itemProgress =
     tab === "planificador" || tab === "bitacora" || tab === "campo"
-      ? await tenantDb.progress.listByItem(projectId)
+      ? await construction.progress.listByItem(projectId)
       : [];
   const budgetItemOptions = itemProgress.map((item) => ({
     id: item.itemId,
     label: `${item.code} · ${item.description}`,
   }));
   const fieldLog = tab === "bitacora" || tab === "campo"
-    ? await tenantDb.fieldLog.getLog(projectId)
+    ? await construction.fieldLog.getLog(projectId)
     : null;
   const prepareAction = prepareProjectAction.bind(null, tenantSlug, projectId);
 

@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "./db";
 
+import { createConstructionDb, type ConstructionDb } from "@/lib/construction/construction-db";
 /**
  * Pruebas de integración del ciclo de vida del proyecto
  * (`projects.updateProject`: compare-and-set sobre `status`).
@@ -22,7 +23,7 @@ describe.skipIf(!enabled)("projects.updateProject (integración)", () => {
   const slug = `test-cas-${Date.now().toString(36)}`;
   let tenantId = "";
   let projectId = "";
-  let tenantDb: ReturnType<typeof createTenantDb>;
+  let construction: ConstructionDb;
 
   beforeAll(async () => {
     if (normalize(process.env.DATABASE_URL) !== normalize(TEST_URL)) {
@@ -37,7 +38,7 @@ describe.skipIf(!enabled)("projects.updateProject (integración)", () => {
       vertical: "construction",
     });
     tenantId = tenant.id;
-    tenantDb = createTenantDb(tenantId);
+    construction = createConstructionDb(tenantId);
 
     const customer = await db.orm.public.Customer.create({
       tenantId,
@@ -74,7 +75,7 @@ describe.skipIf(!enabled)("projects.updateProject (integración)", () => {
   }
 
   test("transición válida con expectedStatus correcto", async () => {
-    const result = await tenantDb.projects.updateProject(projectId, {
+    const result = await construction.projects.updateProject(projectId, {
       expectedStatus: "DRAFT",
       status: "BIDDING",
     });
@@ -84,7 +85,7 @@ describe.skipIf(!enabled)("projects.updateProject (integración)", () => {
 
   test("expectedStatus viejo → STALE_STATUS y no escribe", async () => {
     await expect(
-      tenantDb.projects.updateProject(projectId, {
+      construction.projects.updateProject(projectId, {
         expectedStatus: "DRAFT",
         status: "CANCELLED",
       }),
@@ -94,7 +95,7 @@ describe.skipIf(!enabled)("projects.updateProject (integración)", () => {
 
   test("transición no permitida → INVALID_TRANSITION", async () => {
     await expect(
-      tenantDb.projects.updateProject(projectId, {
+      construction.projects.updateProject(projectId, {
         expectedStatus: "BIDDING",
         status: "COMPLETED",
       }),
@@ -104,14 +105,14 @@ describe.skipIf(!enabled)("projects.updateProject (integración)", () => {
 
   test("sin expectedStatus no hay cambio de estado", async () => {
     await expect(
-      tenantDb.projects.updateProject(projectId, { status: "APPROVED" }),
+      construction.projects.updateProject(projectId, { status: "APPROVED" }),
     ).rejects.toThrow("MISSING_EXPECTED_STATUS");
     expect(await currentStatus()).toBe("BIDDING");
   });
 
   test("guardado sin cambios no escribe (updatedAt intacto)", async () => {
     const before = await updatedAt();
-    const result = await tenantDb.projects.updateProject(projectId, {
+    const result = await construction.projects.updateProject(projectId, {
       expectedStatus: "BIDDING",
       status: "BIDDING",
     });
@@ -120,7 +121,7 @@ describe.skipIf(!enabled)("projects.updateProject (integración)", () => {
   });
 
   test("nombre y descripción se actualizan sin tocar el estado", async () => {
-    const result = await tenantDb.projects.updateProject(projectId, {
+    const result = await construction.projects.updateProject(projectId, {
       name: "Proyecto renombrado",
       description: null,
     });
@@ -134,13 +135,13 @@ describe.skipIf(!enabled)("projects.updateProject (integración)", () => {
   });
 
   test("CANCELLED es terminal", async () => {
-    await tenantDb.projects.updateProject(projectId, {
+    await construction.projects.updateProject(projectId, {
       expectedStatus: "BIDDING",
       status: "CANCELLED",
     });
     expect(await currentStatus()).toBe("CANCELLED");
     await expect(
-      tenantDb.projects.updateProject(projectId, {
+      construction.projects.updateProject(projectId, {
         expectedStatus: "CANCELLED",
         status: "APPROVED",
       }),
@@ -150,7 +151,7 @@ describe.skipIf(!enabled)("projects.updateProject (integración)", () => {
 
   test("proyecto inexistente → NOT_FOUND", async () => {
     await expect(
-      tenantDb.projects.updateProject("00000000-0000-0000-0000-000000000000", {
+      construction.projects.updateProject("00000000-0000-0000-0000-000000000000", {
         name: "x",
       }),
     ).rejects.toThrow("NOT_FOUND");
@@ -171,7 +172,9 @@ describe.skipIf(!enabled)("presupuesto: bloqueo y pertenencia (integración)", (
   let chapterId = "";
   let itemId = "";
   let dbA: ReturnType<typeof createTenantDb>;
+  let constructionA: ConstructionDb;
   let dbB: ReturnType<typeof createTenantDb>;
+  let constructionB: ConstructionDb;
 
   beforeAll(async () => {
     if (normalize(process.env.DATABASE_URL) !== normalize(TEST_URL)) {
@@ -193,7 +196,9 @@ describe.skipIf(!enabled)("presupuesto: bloqueo y pertenencia (integración)", (
     tenantIdA = a.id;
     tenantIdB = b.id;
     dbA = createTenantDb(tenantIdA);
+    constructionA = createConstructionDb(tenantIdA);
     dbB = createTenantDb(tenantIdB);
+    constructionB = createConstructionDb(tenantIdB);
 
     const customer = await db.orm.public.Customer.create({
       tenantId: tenantIdA,
@@ -206,11 +211,11 @@ describe.skipIf(!enabled)("presupuesto: bloqueo y pertenencia (integración)", (
       name: "Obra A",
     });
     projectId = project.id;
-    budgetId = (await dbA.budgets.getOrCreate(projectId)).id;
-    chapterId = (await dbA.budgets.createChapter(projectId, { name: "Cap 1" }))
+    budgetId = (await constructionA.budgets.getOrCreate(projectId)).id;
+    chapterId = (await constructionA.budgets.createChapter(projectId, { name: "Cap 1" }))
       .id;
     itemId = (
-      await dbA.budgets.createItem(projectId, {
+      await constructionA.budgets.createItem(projectId, {
         chapterId,
         code: "1.1",
         description: "Pared",
@@ -239,22 +244,22 @@ describe.skipIf(!enabled)("presupuesto: bloqueo y pertenencia (integración)", (
   }
 
   test("el otro negocio no ve el presupuesto ni el proyecto", async () => {
-    expect(await dbB.budgets.get(projectId)).toBeNull();
-    expect(await dbB.projects.get(projectId)).toBeNull();
+    expect(await constructionB.budgets.get(projectId)).toBeNull();
+    expect(await constructionB.projects.get(projectId)).toBeNull();
     await expect(
-      dbB.projects.updateProject(projectId, { name: "robo" }),
+      constructionB.projects.updateProject(projectId, { name: "robo" }),
     ).rejects.toThrow("NOT_FOUND");
   });
 
   test("el otro negocio no puede tocar capítulos ni partidas", async () => {
     await expect(
-      dbB.budgets.updateChapter(projectId, chapterId, { name: "robo" }),
+      constructionB.budgets.updateChapter(projectId, chapterId, { name: "robo" }),
     ).rejects.toThrow("Presupuesto no encontrado en este negocio.");
-    await expect(dbB.budgets.deleteChapter(projectId, chapterId)).rejects.toThrow(
+    await expect(constructionB.budgets.deleteChapter(projectId, chapterId)).rejects.toThrow(
       "Presupuesto no encontrado en este negocio.",
     );
     await expect(
-      dbB.budgets.updateItem(projectId, itemId, {
+      constructionB.budgets.updateItem(projectId, itemId, {
         code: "9.9",
         description: "robo",
         unit: "m2",
@@ -266,15 +271,15 @@ describe.skipIf(!enabled)("presupuesto: bloqueo y pertenencia (integración)", (
 
   test("guardado sin cambios no avanza la revisión", async () => {
     const before = await revision();
-    await dbA.budgets.updateChapter(projectId, chapterId, { name: "Cap 1" });
-    await dbA.budgets.updateItem(projectId, itemId, {
+    await constructionA.budgets.updateChapter(projectId, chapterId, { name: "Cap 1" });
+    await constructionA.budgets.updateItem(projectId, itemId, {
       code: "1.1",
       description: "Pared",
       unit: "m2",
       quantity: BigInt(1_000_000),
       unitCostDirect: BigInt(20_000_000_000),
     });
-    await dbA.budgets.updateAiu(projectId, {
+    await constructionA.budgets.updateAiu(projectId, {
       adminPct: BigInt(100_000),
       imprevPct: BigInt(50_000),
       utilidadPct: BigInt(50_000),
@@ -285,13 +290,13 @@ describe.skipIf(!enabled)("presupuesto: bloqueo y pertenencia (integración)", (
 
   test("cambio real sí avanza la revisión", async () => {
     const before = await revision();
-    await dbA.budgets.updateChapter(projectId, chapterId, { name: "Cap 1 bis" });
+    await constructionA.budgets.updateChapter(projectId, chapterId, { name: "Cap 1 bis" });
     expect(await revision()).toBe(before + 1);
   });
 
   test("revisión vieja → STALE_REVISION", async () => {
     await expect(
-      dbA.budgets.updateChapter(
+      constructionA.budgets.updateChapter(
         projectId,
         chapterId,
         { name: "Cap 2" },
@@ -301,21 +306,21 @@ describe.skipIf(!enabled)("presupuesto: bloqueo y pertenencia (integración)", (
   });
 
   test("presupuesto bloqueado: nada se muta ni se borra", async () => {
-    await dbA.budgets.setLocked(projectId, true);
+    await constructionA.budgets.setLocked(projectId, true);
     await expect(
-      dbA.budgets.createChapter(projectId, { name: "Cap bloqueado" }),
+      constructionA.budgets.createChapter(projectId, { name: "Cap bloqueado" }),
     ).rejects.toThrow("El presupuesto está bloqueado.");
     await expect(
-      dbA.budgets.updateChapter(projectId, chapterId, { name: "otro" }),
+      constructionA.budgets.updateChapter(projectId, chapterId, { name: "otro" }),
     ).rejects.toThrow("El presupuesto está bloqueado.");
     await expect(
-      dbA.budgets.deleteChapter(projectId, chapterId),
+      constructionA.budgets.deleteChapter(projectId, chapterId),
     ).rejects.toThrow("El presupuesto está bloqueado.");
     await expect(
-      dbA.budgets.deleteItem(projectId, itemId),
+      constructionA.budgets.deleteItem(projectId, itemId),
     ).rejects.toThrow("El presupuesto está bloqueado.");
     await expect(
-      dbA.budgets.updateAiu(projectId, {
+      constructionA.budgets.updateAiu(projectId, {
         adminPct: BigInt(200_000),
         imprevPct: BigInt(0),
         utilidadPct: BigInt(0),
@@ -327,11 +332,11 @@ describe.skipIf(!enabled)("presupuesto: bloqueo y pertenencia (integración)", (
       .select("name")
       .first();
     expect(chapter?.name).toBe("Cap 1 bis");
-    await dbA.budgets.setLocked(projectId, false, undefined, "Test unlock");
+    await constructionA.budgets.setLocked(projectId, false, undefined, "Test unlock");
   });
 
   test("verifyTotals sigue cuadrando tras las mutaciones", async () => {
-    const check = await dbA.budgets.verifyTotals(projectId);
+    const check = await constructionA.budgets.verifyTotals(projectId);
     expect(check.mismatches).toEqual([]);
   });
 });
@@ -344,7 +349,7 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
   let tenantId = "";
   let projectId = "";
   let budgetId = "";
-  let tenantDb: ReturnType<typeof createTenantDb>;
+  let construction: ConstructionDb;
 
   beforeAll(async () => {
     if (normalize(process.env.DATABASE_URL) !== normalize(TEST_URL)) {
@@ -359,7 +364,7 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
       vertical: "construction",
     });
     tenantId = tenant.id;
-    tenantDb = createTenantDb(tenantId);
+    construction = createConstructionDb(tenantId);
 
     const customer = await db.orm.public.Customer.create({
       tenantId,
@@ -372,7 +377,7 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
       name: "Obra Baseline",
     });
     projectId = project.id;
-    budgetId = (await tenantDb.budgets.getOrCreate(projectId)).id;
+    budgetId = (await construction.budgets.getOrCreate(projectId)).id;
   });
 
   afterAll(async () => {
@@ -400,7 +405,7 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
   test("1.10: aprobar línea base solo OWNER (helper canGovernBudget)", async () => {
     // El helper puro ya probado en tenant-context.test.ts;
     // aquí probamos la capa de datos: approveBaseline existe y retorna versión
-    const result = await tenantDb.budgets.approveBaseline(projectId, {
+    const result = await construction.budgets.approveBaseline(projectId, {
       userId: "user-owner",
       userName: "Juan Owner",
       note: "Línea base inicial",
@@ -415,12 +420,12 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
   test("1.10: línea base es inmutable (no hay update/delete en la API de datos); se pueden crear múltiples versiones", async () => {
     // Verificamos que solo existe create (approveBaseline) y get/list;
     // no existe updateBaseline ni deleteBaseline en tenant-db.budgets
-    const hasUpdate = "updateBaseline" in tenantDb.budgets;
-    const hasDelete = "deleteBaseline" in tenantDb.budgets;
+    const hasUpdate = "updateBaseline" in construction.budgets;
+    const hasDelete = "deleteBaseline" in construction.budgets;
     expect(hasUpdate).toBe(false);
     expect(hasDelete).toBe(false);
     // Unicidad: budgetId + version → se pueden crear múltiples versiones
-    const result2 = await tenantDb.budgets.approveBaseline(projectId, {
+    const result2 = await construction.budgets.approveBaseline(projectId, {
       userId: "u2",
       userName: "Otro",
       note: "segunda versión",
@@ -429,7 +434,7 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
     const countAfter = await baselineCount();
     expect(countAfter).toBe(2);
     // Debug: listar todas las baselines
-    const all = await tenantDb.budgets.listBaselines(projectId);
+    const all = await construction.budgets.listBaselines(projectId);
     expect(all.length).toBe(2);
   });
 
@@ -447,12 +452,13 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
       name: "Obra Baseline Test",
     });
     const dbT = createTenantDb(tenantId);
+    const constructionT = createConstructionDb(tenantId);
     const pid = proj.id;
-    const bid = (await dbT.budgets.getOrCreate(pid)).id;
+    const bid = (await constructionT.budgets.getOrCreate(pid)).id;
 
     async function latestBaselineFor(pid: string) {
       const row = await db.orm.public.BudgetBaseline
-        .where({ budgetId: (await dbT.budgets.getOrCreate(pid)).id })
+        .where({ budgetId: (await constructionT.budgets.getOrCreate(pid)).id })
         .orderBy((b) => b.version.desc())
         .first();
       if (!row) return null;
@@ -468,7 +474,7 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
     }
 
     // Primera aprobación
-    const r1 = await dbT.budgets.approveBaseline(pid, {
+    const r1 = await constructionT.budgets.approveBaseline(pid, {
       userId: "u1",
       userName: "User 1",
       note: "Primera",
@@ -480,12 +486,12 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
     const revAfterFirst = b1?.budgetRevision ?? 0;
 
     // Mutar el presupuesto (sube revisión)
-    await dbT.budgets.createChapter(pid, { name: "Cap mutado" });
+    await constructionT.budgets.createChapter(pid, { name: "Cap mutado" });
     const revAfterMut = await currentRevision(pid);
     expect(revAfterMut).toBeGreaterThan(revAfterFirst);
 
     // Segunda aprobación: version=2, budgetRevision = revisión actual
-    const r2 = await dbT.budgets.approveBaseline(pid, {
+    const r2 = await constructionT.budgets.approveBaseline(pid, {
       userId: "u2",
       userName: "User 2",
       note: "Segunda",
@@ -500,13 +506,13 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
   test("1.10: desbloqueo con motivo funciona - setLocked(false, reason) sí desbloquea", async () => {
     // La capa de datos EXIGE motivo para desbloquear (ver setLocked en
     // tenant-db); aquí se verifica que con motivo el desbloqueo funciona.
-    await tenantDb.budgets.setLocked(projectId, true);
+    await construction.budgets.setLocked(projectId, true);
     const locked = await db.orm.public.ProjectBudget
       .where({ id: budgetId })
       .select("isLocked")
       .first();
     expect(locked?.isLocked).toBe(true);
-    await tenantDb.budgets.setLocked(projectId, false, undefined, "Test unlock");
+    await construction.budgets.setLocked(projectId, false, undefined, "Test unlock");
     const unlocked = await db.orm.public.ProjectBudget
       .where({ id: budgetId })
       .select("isLocked")
@@ -515,9 +521,9 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
   });
 
   test("2.0: desbloqueo sin motivo falla - setLocked(false) sin reason lanza error y no desbloquea", async () => {
-    await tenantDb.budgets.setLocked(projectId, true);
+    await construction.budgets.setLocked(projectId, true);
     await expect(
-      tenantDb.budgets.setLocked(projectId, false),
+      construction.budgets.setLocked(projectId, false),
     ).rejects.toThrow("Desbloqueo requiere un motivo.");
     const locked = await db.orm.public.ProjectBudget
       .where({ id: budgetId })
@@ -525,15 +531,15 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
       .first();
     expect(locked?.isLocked).toBe(true);
     // Dejar desbloqueado para no contaminar los demás tests.
-    await tenantDb.budgets.setLocked(projectId, false, undefined, "PASO 0 unlock");
+    await construction.budgets.setLocked(projectId, false, undefined, "PASO 0 unlock");
   });
 
   test("2.0: bloquear y desbloquear NO borra líneas base (solo añade BudgetLockEvent)", async () => {
-    const before = await tenantDb.budgets.listBaselines(projectId);
+    const before = await construction.budgets.listBaselines(projectId);
     expect(before.length).toBeGreaterThanOrEqual(1);
-    await tenantDb.budgets.setLocked(projectId, true);
-    await tenantDb.budgets.setLocked(projectId, false, undefined, "PASO 0 unlock");
-    const after = await tenantDb.budgets.listBaselines(projectId);
+    await construction.budgets.setLocked(projectId, true);
+    await construction.budgets.setLocked(projectId, false, undefined, "PASO 0 unlock");
+    const after = await construction.budgets.listBaselines(projectId);
     expect(after.length).toBe(before.length);
     // El bloqueo/desbloqueo queda registrado como eventos, no toca baselines.
     const events = await db.orm.public.BudgetLockEvent
@@ -545,21 +551,21 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
   test("1.10: Informe Cero lee la última línea base o muestra 'Sin línea base aprobada'", async () => {
     // getInformeCeroData usa el presupuesto vivo (no la baseline)
     // La UI de informes debe leer listBaselines y si está vacía mostrar mensaje
-    const baselinesBefore = await tenantDb.budgets.listBaselines(projectId);
+    const baselinesBefore = await construction.budgets.listBaselines(projectId);
     expect(baselinesBefore.length).toBeGreaterThanOrEqual(1);
     // Verificamos que listBaselines devuelve correctamente las líneas base creadas
     // (el test "línea base inmutable" ya validó que se pueden crear múltiples versiones)
     // Para probar el caso "sin línea base" crearíamos un presupuesto nuevo sin aprobar,
     // pero eso requiere otro fixture. Aquí validamos la lógica existente.
-    const all = await tenantDb.budgets.listBaselines(projectId);
+    const all = await construction.budgets.listBaselines(projectId);
     expect(all.length).toBeGreaterThanOrEqual(1);
     expect(all[0].version).toBeGreaterThanOrEqual(1);
     expect(all[0].budgetRevision).toBeGreaterThan(0);
   });
 
   test("1.6: autor de bitácora desde la sesión (createEntry usa authorName/authorRole del contexto)", async () => {
-    const log = await tenantDb.fieldLog.getOrCreateLog(projectId);
-    const created = await tenantDb.fieldLog.createEntry(log.id, {
+    const log = await construction.fieldLog.getOrCreateLog(projectId);
+    const created = await construction.fieldLog.createEntry(log.id, {
       type: "OBSERVATION",
       entryDate: "2026-10-11",
       title: "Test autor",
@@ -595,21 +601,22 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
       name: "Proyecto Transiciones",
     });
     const dbT = createTenantDb(tenantId);
+    const constructionT = createConstructionDb(tenantId);
 
     // DRAFT → BIDDING
-    let r = await dbT.projects.updateProject(proj.id, { expectedStatus: "DRAFT", status: "BIDDING" });
+    let r = await constructionT.projects.updateProject(proj.id, { expectedStatus: "DRAFT", status: "BIDDING" });
     expect(r).toBe("BIDDING");
     // BIDDING → APPROVED no se hace a mano: exige una cotización aprobada
     // (projectQuotes.decide). Aquí se simula con la fila para seguir el recorrido.
     await expect(
-      dbT.projects.updateProject(proj.id, { expectedStatus: "BIDDING", status: "APPROVED" }),
+      constructionT.projects.updateProject(proj.id, { expectedStatus: "BIDDING", status: "APPROVED" }),
     ).rejects.toThrow("APPROVED_REQUIRES_QUOTE");
     await db.orm.public.Project.where({ id: proj.id }).update({ status: "APPROVED" });
     // APPROVED → IN_EXECUTION
-    r = await dbT.projects.updateProject(proj.id, { expectedStatus: "APPROVED", status: "IN_EXECUTION" });
+    r = await constructionT.projects.updateProject(proj.id, { expectedStatus: "APPROVED", status: "IN_EXECUTION" });
     expect(r).toBe("IN_EXECUTION");
     // IN_EXECUTION → COMPLETED
-    r = await dbT.projects.updateProject(proj.id, { expectedStatus: "IN_EXECUTION", status: "COMPLETED" });
+    r = await constructionT.projects.updateProject(proj.id, { expectedStatus: "IN_EXECUTION", status: "COMPLETED" });
     expect(r).toBe("COMPLETED");
   });
 
@@ -626,16 +633,17 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
       name: "Proyecto Inválido",
     });
     const dbT = createTenantDb(tenantId);
+    const constructionT = createConstructionDb(tenantId);
 
     // No saltear: DRAFT → APPROVED
     await expect(
-      dbT.projects.updateProject(proj.id, { expectedStatus: "DRAFT", status: "APPROVED" }),
+      constructionT.projects.updateProject(proj.id, { expectedStatus: "DRAFT", status: "APPROVED" }),
     ).rejects.toThrow("INVALID_TRANSITION");
 
     // No retroceder: BIDDING → DRAFT
-    await dbT.projects.updateProject(proj.id, { expectedStatus: "DRAFT", status: "BIDDING" });
+    await constructionT.projects.updateProject(proj.id, { expectedStatus: "DRAFT", status: "BIDDING" });
     await expect(
-      dbT.projects.updateProject(proj.id, { expectedStatus: "BIDDING", status: "DRAFT" }),
+      constructionT.projects.updateProject(proj.id, { expectedStatus: "BIDDING", status: "DRAFT" }),
     ).rejects.toThrow("INVALID_TRANSITION");
   });
 
@@ -652,15 +660,16 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
       name: "Proyecto Terminal",
     });
     const dbT = createTenantDb(tenantId);
+    const constructionT = createConstructionDb(tenantId);
 
     // Llevar a COMPLETED (la aprobación se simula con la fila: exige cotización).
-    await dbT.projects.updateProject(proj.id, { expectedStatus: "DRAFT", status: "BIDDING" });
+    await constructionT.projects.updateProject(proj.id, { expectedStatus: "DRAFT", status: "BIDDING" });
     await db.orm.public.Project.where({ id: proj.id }).update({ status: "APPROVED" });
-    await dbT.projects.updateProject(proj.id, { expectedStatus: "APPROVED", status: "IN_EXECUTION" });
-    await dbT.projects.updateProject(proj.id, { expectedStatus: "IN_EXECUTION", status: "COMPLETED" });
+    await constructionT.projects.updateProject(proj.id, { expectedStatus: "APPROVED", status: "IN_EXECUTION" });
+    await constructionT.projects.updateProject(proj.id, { expectedStatus: "IN_EXECUTION", status: "COMPLETED" });
 
     await expect(
-      dbT.projects.updateProject(proj.id, { expectedStatus: "COMPLETED", status: "IN_EXECUTION" }),
+      constructionT.projects.updateProject(proj.id, { expectedStatus: "COMPLETED", status: "IN_EXECUTION" }),
     ).rejects.toThrow("INVALID_TRANSITION");
 
     // CANCELLED desde DRAFT
@@ -670,9 +679,9 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
       code: `PROY-TERM2-${stamp}`,
       name: "Proyecto Terminal 2",
     });
-    await dbT.projects.updateProject(proj2.id, { expectedStatus: "DRAFT", status: "CANCELLED" });
+    await constructionT.projects.updateProject(proj2.id, { expectedStatus: "DRAFT", status: "CANCELLED" });
     await expect(
-      dbT.projects.updateProject(proj2.id, { expectedStatus: "CANCELLED", status: "APPROVED" }),
+      constructionT.projects.updateProject(proj2.id, { expectedStatus: "CANCELLED", status: "APPROVED" }),
     ).rejects.toThrow("INVALID_TRANSITION");
   });
 
@@ -689,13 +698,14 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
       name: "Proyecto Stale",
     });
     const dbT = createTenantDb(tenantId);
+    const constructionT = createConstructionDb(tenantId);
 
     // Avanzar a BIDDING
-    await dbT.projects.updateProject(proj.id, { expectedStatus: "DRAFT", status: "BIDDING" });
+    await constructionT.projects.updateProject(proj.id, { expectedStatus: "DRAFT", status: "BIDDING" });
 
     // Intentar con expectedStatus viejo (DRAFT)
     await expect(
-      dbT.projects.updateProject(proj.id, { expectedStatus: "DRAFT", status: "APPROVED" }),
+      constructionT.projects.updateProject(proj.id, { expectedStatus: "DRAFT", status: "APPROVED" }),
     ).rejects.toThrow("STALE_STATUS");
   });
 
@@ -710,9 +720,9 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
 
   test("guardado sin cambios NO sube revisión (verificación explícita)", async () => {
     // Setup: crear capítulo e ítem (esto SÍ sube revisión)
-    const chapterId = (await tenantDb.budgets.createChapter(projectId, { name: "Cap test" })).id;
+    const chapterId = (await construction.budgets.createChapter(projectId, { name: "Cap test" })).id;
     const itemId = (
-      await tenantDb.budgets.createItem(projectId, {
+      await construction.budgets.createItem(projectId, {
         chapterId,
         code: "T1",
         description: "Test",
@@ -730,15 +740,15 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
     const revBefore = Number(before?.revision ?? 0);
 
     // No-ops: no deben subir revisión
-    await tenantDb.budgets.updateChapter(projectId, chapterId, { name: "Cap test" });
-    await tenantDb.budgets.updateItem(projectId, itemId, {
+    await construction.budgets.updateChapter(projectId, chapterId, { name: "Cap test" });
+    await construction.budgets.updateItem(projectId, itemId, {
       code: "T1",
       description: "Test",
       unit: "m2",
       quantity: BigInt(1_000_000),
       unitCostDirect: BigInt(10_000_000_000),
     });
-    await tenantDb.budgets.updateAiu(projectId, {
+    await construction.budgets.updateAiu(projectId, {
       adminPct: BigInt(100_000),
       imprevPct: BigInt(50_000),
       utilidadPct: BigInt(50_000),
@@ -758,7 +768,7 @@ describe.skipIf(!enabled)(
   () => {
     const slug = `test-apu-list-${Date.now().toString(36)}`;
     let tenantId = "";
-    let tenantDb: ReturnType<typeof createTenantDb>;
+    let construction: ConstructionDb;
 
     beforeAll(async () => {
       if (normalize(process.env.DATABASE_URL) !== normalize(TEST_URL)) {
@@ -773,7 +783,7 @@ describe.skipIf(!enabled)(
         vertical: "construction",
       });
       tenantId = tenant.id;
-      tenantDb = createTenantDb(tenantId);
+      construction = createConstructionDb(tenantId);
 
       const items: Array<
         Omit<Parameters<typeof db.orm.public.ApuItem.create>[0], "tenantId">
@@ -807,48 +817,48 @@ describe.skipIf(!enabled)(
     });
 
     test("listItems: paginación + total (page 1 y última)", async () => {
-      const page1 = await tenantDb.apu.listItems({ page: 1, limit: 2 });
+      const page1 = await construction.apu.listItems({ page: 1, limit: 2 });
       expect(page1.total).toBe(5);
       expect(page1.rows).toHaveLength(2);
-      const page3 = await tenantDb.apu.listItems({ page: 3, limit: 2 });
+      const page3 = await construction.apu.listItems({ page: 3, limit: 2 });
       expect(page3.rows).toHaveLength(1);
       expect(page3.total).toBe(5);
     });
 
     test("listItems: búsqueda por nombre y por código (ilike insensible)", async () => {
-      const porNombre = await tenantDb.apu.listItems({ q: "cemento" });
+      const porNombre = await construction.apu.listItems({ q: "cemento" });
       expect(porNombre.rows.map((r) => r.name)).toEqual(["Cemento gris"]);
-      const porCodigo = await tenantDb.apu.listItems({ q: "l-mo-1" });
+      const porCodigo = await construction.apu.listItems({ q: "l-mo-1" });
       expect(porCodigo.rows.map((r) => r.code)).toEqual(["L-MO-1"]);
     });
 
     test("listItems: filtros categoría / unidad / activo + listUnits", async () => {
-      expect((await tenantDb.apu.listItems({ category: "MATERIAL" })).total).toBe(3);
-      expect((await tenantDb.apu.listItems({ unit: "HORA" })).total).toBe(2);
-      expect((await tenantDb.apu.listItems({ active: true })).total).toBe(4);
-      expect((await tenantDb.apu.listItems({ active: false })).total).toBe(1);
-      expect(await tenantDb.apu.listUnits()).toEqual(["BOLSA", "HORA", "M3", "UN"]);
+      expect((await construction.apu.listItems({ category: "MATERIAL" })).total).toBe(3);
+      expect((await construction.apu.listItems({ unit: "HORA" })).total).toBe(2);
+      expect((await construction.apu.listItems({ active: true })).total).toBe(4);
+      expect((await construction.apu.listItems({ active: false })).total).toBe(1);
+      expect(await construction.apu.listUnits()).toEqual(["BOLSA", "HORA", "M3", "UN"]);
     });
 
     test("listActivities: paginación + total + filtros unidad/activo + búsqueda", async () => {
-      const all = await tenantDb.apu.listActivities({ limit: 200 });
+      const all = await construction.apu.listActivities({ limit: 200 });
       expect(all.total).toBe(3);
       expect(all.rows.every((r) => typeof r.active === "boolean")).toBe(true);
 
-      const page1 = await tenantDb.apu.listActivities({ page: 1, limit: 2 });
+      const page1 = await construction.apu.listActivities({ page: 1, limit: 2 });
       expect(page1.rows).toHaveLength(2);
       expect(page1.total).toBe(3);
 
-      expect((await tenantDb.apu.listActivities({ unit: "M2" })).total).toBe(2);
+      expect((await construction.apu.listActivities({ unit: "M2" })).total).toBe(2);
       expect(
-        (await tenantDb.apu.listActivities({ active: false })).rows.map((r) => r.name),
+        (await construction.apu.listActivities({ active: false })).rows.map((r) => r.name),
       ).toEqual(["Instalación eléctrica"]);
 
       expect(
-        (await tenantDb.apu.listActivities({ q: "piso" })).rows.map((r) => r.name),
+        (await construction.apu.listActivities({ q: "piso" })).rows.map((r) => r.name),
       ).toEqual(["Piso en concreto"]);
       expect(
-        (await tenantDb.apu.listActivities({ q: "A-1" })).rows.map((r) => r.code),
+        (await construction.apu.listActivities({ q: "A-1" })).rows.map((r) => r.code),
       ).toEqual(["A-1"]);
     });
   },
@@ -861,7 +871,7 @@ describe.skipIf(!enabled)(
     const slugB = `test-apu-mut-b-${Date.now().toString(36)}`;
     let tenantIdA = "";
     let tenantIdB = "";
-    let tenantDbA: ReturnType<typeof createTenantDb>;
+    let constructionA: ConstructionDb;
     let itemUsedId = "";
     let itemFreeId = "";
     let itemForeignId = "";
@@ -888,7 +898,7 @@ describe.skipIf(!enabled)(
       });
       tenantIdA = tenantA.id;
       tenantIdB = tenantB.id;
-      tenantDbA = createTenantDb(tenantIdA);
+      constructionA = createConstructionDb(tenantIdA);
 
       const mkItem = async (
         tenantId: string,
@@ -954,22 +964,22 @@ describe.skipIf(!enabled)(
     });
 
     test("archiveItem / restoreItem alternan `active` sin borrar", async () => {
-      await tenantDbA.apu.archiveItem(itemFreeId);
-      expect((await tenantDbA.apu.getItem(itemFreeId))?.active).toBe(false);
+      await constructionA.apu.archiveItem(itemFreeId);
+      expect((await constructionA.apu.getItem(itemFreeId))?.active).toBe(false);
 
-      await tenantDbA.apu.restoreItem(itemFreeId);
-      expect((await tenantDbA.apu.getItem(itemFreeId))?.active).toBe(true);
+      await constructionA.apu.restoreItem(itemFreeId);
+      expect((await constructionA.apu.getItem(itemFreeId))?.active).toBe(true);
     });
 
     test("addComposition: crea la línea con rendimiento y desperdicio válidos", async () => {
-      const created = await tenantDbA.apu.addComposition(activityId, {
+      const created = await constructionA.apu.addComposition(activityId, {
         itemId: itemUsedId,
         consumption: "2.5",
         wastePercent: "10",
       });
       expect(created.id).toBeTruthy();
 
-      const detail = await tenantDbA.apu.getActivity(activityId);
+      const detail = await constructionA.apu.getActivity(activityId);
       expect(detail?.compositions).toHaveLength(1);
       expect(detail?.compositions[0]?.itemId).toBe(itemUsedId);
       expect(detail?.compositions[0]?.consumption).toBe("2.5");
@@ -977,7 +987,7 @@ describe.skipIf(!enabled)(
 
     test("addComposition: rechaza insumo duplicado (unicidad activityId+itemId)", async () => {
       await expect(
-        tenantDbA.apu.addComposition(activityId, {
+        constructionA.apu.addComposition(activityId, {
           itemId: itemUsedId,
           consumption: "1",
           wastePercent: "0",
@@ -987,7 +997,7 @@ describe.skipIf(!enabled)(
 
     test("addComposition: rechaza insumo de otro tenant", async () => {
       await expect(
-        tenantDbA.apu.addComposition(activityId, {
+        constructionA.apu.addComposition(activityId, {
           itemId: itemForeignId,
           consumption: "1",
           wastePercent: "0",
@@ -997,7 +1007,7 @@ describe.skipIf(!enabled)(
 
     test("addComposition: rechaza rendimiento y desperdicio fuera de rango", async () => {
       await expect(
-        tenantDbA.apu.addComposition(activityId, {
+        constructionA.apu.addComposition(activityId, {
           itemId: itemFreeId,
           consumption: "0",
           wastePercent: "0",
@@ -1005,7 +1015,7 @@ describe.skipIf(!enabled)(
       ).rejects.toThrow("APU_INVALID_CONSUMPTION");
 
       await expect(
-        tenantDbA.apu.addComposition(activityId, {
+        constructionA.apu.addComposition(activityId, {
           itemId: itemFreeId,
           consumption: "1",
           wastePercent: "60",
@@ -1014,38 +1024,38 @@ describe.skipIf(!enabled)(
     });
 
     test("removeComposition: quita la línea (idempotente)", async () => {
-      const affected = await tenantDbA.apu.removeComposition(activityId, itemUsedId);
+      const affected = await constructionA.apu.removeComposition(activityId, itemUsedId);
       expect(affected).toBe(1);
-      expect((await tenantDbA.apu.getActivity(activityId))?.compositions).toHaveLength(0);
+      expect((await constructionA.apu.getActivity(activityId))?.compositions).toHaveLength(0);
 
       // Segunda vez: nada que borrar.
-      expect(await tenantDbA.apu.removeComposition(activityId, itemUsedId)).toBe(0);
+      expect(await constructionA.apu.removeComposition(activityId, itemUsedId)).toBe(0);
     });
 
     test("deleteItem: bloqueado si el insumo está EN USO, permitido si no", async () => {
       // Lo usamos otra vez y probamos que el borrado se rechaza.
-      await tenantDbA.apu.addComposition(activityId, {
+      await constructionA.apu.addComposition(activityId, {
         itemId: itemUsedId,
         consumption: "1",
         wastePercent: "0",
       });
-      await expect(tenantDbA.apu.deleteItem(itemUsedId)).rejects.toThrow("APU_IN_USE");
-      expect(await tenantDbA.apu.getItem(itemUsedId)).not.toBeNull();
+      await expect(constructionA.apu.deleteItem(itemUsedId)).rejects.toThrow("APU_IN_USE");
+      expect(await constructionA.apu.getItem(itemUsedId)).not.toBeNull();
 
       // Lo quitamos de la composición y ahora sí se puede borrar.
-      await tenantDbA.apu.removeComposition(activityId, itemUsedId);
-      await tenantDbA.apu.deleteItem(itemUsedId);
-      expect(await tenantDbA.apu.getItem(itemUsedId)).toBeNull();
+      await constructionA.apu.removeComposition(activityId, itemUsedId);
+      await constructionA.apu.deleteItem(itemUsedId);
+      expect(await constructionA.apu.getItem(itemUsedId)).toBeNull();
     });
 
     test("deleteActivity: bloqueada si figura en un presupuesto, permitida si no", async () => {
-      await expect(tenantDbA.apu.deleteActivity(activityInQuoteId)).rejects.toThrow(
+      await expect(constructionA.apu.deleteActivity(activityInQuoteId)).rejects.toThrow(
         "APU_IN_USE",
       );
-      expect(await tenantDbA.apu.getActivity(activityInQuoteId)).not.toBeNull();
+      expect(await constructionA.apu.getActivity(activityInQuoteId)).not.toBeNull();
 
-      await tenantDbA.apu.deleteActivity(activityFreeId);
-      expect(await tenantDbA.apu.getActivity(activityFreeId)).toBeNull();
+      await constructionA.apu.deleteActivity(activityFreeId);
+      expect(await constructionA.apu.getActivity(activityFreeId)).toBeNull();
     });
   },
 );

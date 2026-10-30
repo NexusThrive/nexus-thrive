@@ -14,6 +14,7 @@ import ProjectsTable from "./_components/projects-table";
 import NewProjectModal from "./_components/new-project-modal";
 import { requirePageContext } from "@/lib/tenant/context";
 
+import { createConstructionDb } from "@/lib/construction/construction-db";
 const PROJECTS_PAGE_SIZE = 12;
 
 function firstString(value: string | string[] | undefined): string {
@@ -43,6 +44,8 @@ export default async function ProjectsPage({
 
   const tenantDb = createTenantDb(tenantRecord.id);
 
+
+  const construction = createConstructionDb(tenantRecord.id);
   const q = firstString(sp.pq).trim();
   const statusRaw = firstString(sp.ps);
   const status = isValidProjectStatus(statusRaw) ? statusRaw : undefined;
@@ -50,8 +53,8 @@ export default async function ProjectsPage({
   const requestedPage = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
 
   const [metrics, result, customersResult] = await Promise.all([
-    tenantDb.projects.getMetrics(),
-    tenantDb.projects.list({
+    construction.projects.getMetrics(),
+    construction.projects.list({
       q,
       status,
       page: requestedPage,

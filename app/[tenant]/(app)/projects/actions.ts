@@ -25,6 +25,10 @@ import {
   type UpdateProjectFormValues,
 } from "./validators";
 
+import { createConstructionDb } from "@/lib/construction/construction-db";
+
+/** Capa de datos de construcción del negocio activo (Core no la conoce). */
+const construction = (context: { tenantId: string }) => createConstructionDb(context.tenantId);
 /* ------------------------------------------------------------------ */
 /* Tipos de estado (firma useActionState)                              */
 /* ------------------------------------------------------------------ */
@@ -71,7 +75,7 @@ export async function createProjectAction(
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
-  const { tenantDb } = context;
+  const constructionDb = construction(context);
 
   const validation = validateCreateProject(formData);
   if (!validation.ok) {
@@ -84,7 +88,7 @@ export async function createProjectAction(
 
   let project: ProjectDetail;
   try {
-    project = await tenantDb.projects.create({
+    project = await constructionDb.projects.create({
       customerId: validation.values.customerId,
       name: validation.values.name,
       description: validation.values.description || undefined,
@@ -111,7 +115,7 @@ export async function createProjectAction(
   }
 
   // Presupuesto, plan y bitácora nacen con la obra: la página nunca los crea.
-  await ensureProjectContainers(tenantDb, project.id);
+  await ensureProjectContainers(constructionDb, project.id);
 
   revalidatePath(`/${tenantSlug}/projects`);
   return {
@@ -134,11 +138,11 @@ export async function prepareProjectAction(
   if (!context || !projectId) {
     return;
   }
-  const project = await context.tenantDb.projects.get(projectId);
+  const project = await construction(context).projects.get(projectId);
   if (!project) {
     return;
   }
-  await ensureProjectContainers(context.tenantDb, projectId);
+  await ensureProjectContainers(construction(context), projectId);
   revalidatePath(`/${tenantSlug}/projects/${projectId}`);
 }
 
@@ -152,7 +156,7 @@ export async function updateProjectHeaderAction(
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
-  const { tenantDb } = context;
+  const constructionDb = construction(context);
 
   if (!projectId) {
     return { status: "error", message: "Proyecto no válido." };
@@ -167,7 +171,7 @@ export async function updateProjectHeaderAction(
     };
   }
 
-  const updated = await tenantDb.projectHeaders.update(
+  const updated = await constructionDb.projectHeaders.update(
     projectId,
     projectHeaderToInput(validation.values),
   );
@@ -252,7 +256,7 @@ export async function updateProjectAction(
   }
 
   try {
-    await context.tenantDb.projects.updateProject(projectId, {
+    await construction(context).projects.updateProject(projectId, {
       name: validation.values.name,
       description:
         validation.values.description === ""
@@ -303,7 +307,7 @@ export async function updateProjectStatusAction(
 
   let applied: ProjectStatusValue;
   try {
-    applied = await context.tenantDb.projects.updateProject(projectId, {
+    applied = await construction(context).projects.updateProject(projectId, {
       expectedStatus,
       status,
     });
@@ -319,7 +323,7 @@ export async function updateProjectStatusAction(
 
   let warning: string | undefined;
   if (projectStatusNeedsBaselineWarning(applied)) {
-    const baselines = await context.tenantDb.budgets.listBaselines(projectId);
+    const baselines = await construction(context).budgets.listBaselines(projectId);
     if (baselines.length === 0) {
       warning = `El proyecto pasó a “${projectStatusLabel(applied)}” sin una línea base de presupuesto aprobada.`;
     }

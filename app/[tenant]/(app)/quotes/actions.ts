@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { canGovernBudget, requireTenantContext } from "@/lib/tenant/context";
 import { ensureProjectContainers } from "@/lib/construction/containers";
+import { createConstructionDb } from "@/lib/construction/construction-db";
 
 export type MigrateLegacyResult =
   | { ok: true; projectId: string; message: string }
@@ -25,7 +26,8 @@ export async function migrateLegacyQuoteAction(
     return { ok: false, message: "Solo el dueño del negocio puede migrar cotizaciones." };
   }
   const { tenantDb } = context;
-  const quote = await tenantDb.quotes.record(quoteId);
+  const constructionDb = createConstructionDb(context.tenantId);
+  const quote = await constructionDb.quotes.record(quoteId);
   if (!quote) return { ok: false, message: "No se encontró la cotización." };
   if (quote.projectId) return { ok: false, message: "Esta cotización ya pertenece a una obra." };
 
@@ -36,11 +38,11 @@ export async function migrateLegacyQuoteAction(
 
   let projectId: string | null = null;
   try {
-    const project = await tenantDb.projects.create({ customerId, name: quote.title });
+    const project = await constructionDb.projects.create({ customerId, name: quote.title });
     projectId = project.id;
-    await ensureProjectContainers(tenantDb, project.id);
+    await ensureProjectContainers(constructionDb, project.id);
     const member = await tenantDb.users.findByClerkUserId(context.userId);
-    const result = await tenantDb.projectQuotes.adoptLegacyQuote(quoteId, project.id, {
+    const result = await constructionDb.projectQuotes.adoptLegacyQuote(quoteId, project.id, {
       userId: context.userId,
       userName: member?.name?.trim() || member?.email || "Usuario",
     });
@@ -56,7 +58,7 @@ export async function migrateLegacyQuoteAction(
     };
   } catch (error) {
     if (projectId) {
-      await tenantDb.projects.delete(projectId);
+      await constructionDb.projects.delete(projectId);
     }
     console.error("[quotes] migrateLegacyQuoteAction", error);
     return {

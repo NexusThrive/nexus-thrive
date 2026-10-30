@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { customerContact } from "@/lib/business/customers-db";
-import { createTenantDb } from "@/lib/tenant/db";
 import { getQuoteTerms, getVerticalTerms } from "@/lib/vertical-terms";
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import PrintButton from "./_components/print-button";
@@ -10,6 +9,7 @@ import QuoteDocumentSheet from "@/components/organisms/quote-document-sheet";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { requirePageContext } from "@/lib/tenant/context";
 
+import { createConstructionDb } from "@/lib/construction/construction-db";
 /**
  * Documento comercial para el cliente — Fase 3.
  *
@@ -31,12 +31,11 @@ export default async function QuotePrintPage({
   // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
   const pageCtx = await requirePageContext(tenantSlug, "/quotes");
   const tenantRecord = pageCtx.tenant;
-
-  const tenantDb = createTenantDb(tenantRecord.id);
+  const construction = createConstructionDb(tenantRecord.id);
   const terms = getQuoteTerms(tenantRecord.vertical);
 
   // Versión emitida desde una obra: se imprime su foto congelada.
-  const versioned = await tenantDb.projectQuotes.getDocument(quoteId);
+  const versioned = await construction.projectQuotes.getDocument(quoteId);
   if (versioned) {
     return (
       <div className="min-h-screen bg-muted px-4 py-6 print:bg-card print:p-0">
@@ -56,7 +55,7 @@ export default async function QuotePrintPage({
     );
   }
 
-  const quote = await tenantDb.quotes.get(quoteId);
+  const quote = await construction.quotes.get(quoteId);
   if (!quote) {
     notFound();
   }

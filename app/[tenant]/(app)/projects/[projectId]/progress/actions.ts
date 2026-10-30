@@ -4,6 +4,10 @@ import { revalidatePath } from "next/cache";
 import { decimalToMicro } from "@/lib/construction/apu-engine";
 import { requireTenantContext } from "@/lib/tenant/context";
 
+import { createConstructionDb } from "@/lib/construction/construction-db";
+
+/** Capa de datos de construcción del negocio activo (Core no la conoce). */
+const construction = (context: { tenantId: string }) => createConstructionDb(context.tenantId);
 export type ProgressActionResult = { ok: true; message: string } | { ok: false; message: string };
 
 function progressErrorMessage(error: unknown): string {
@@ -34,7 +38,7 @@ export async function recordProgressAction(
   if (executed === null) return { ok: false, message: "Escribe la cantidad ejecutada (ej. 12.5)." };
   const member = await context.tenantDb.users.findByClerkUserId(context.userId);
   try {
-    const result = await context.tenantDb.progress.record(projectId, {
+    const result = await construction(context).progress.record(projectId, {
       budgetItemId: String(formData.get("budgetItemId") ?? ""),
       cutoffDate: String(formData.get("cutoffDate") ?? ""),
       executedQuantity: executed,
@@ -61,7 +65,7 @@ export async function deleteProgressAction(
 ): Promise<ProgressActionResult> {
   const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) return { ok: false, message: "No tienes acceso a este negocio." };
-  await context.tenantDb.progress.remove(entryId);
+  await construction(context).progress.remove(entryId);
   revalidatePath(`/${tenantSlug}/projects/${projectId}`);
   return { ok: true, message: "Acta eliminada." };
 }

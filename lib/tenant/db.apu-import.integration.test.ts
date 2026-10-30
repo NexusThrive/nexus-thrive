@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "./db";
 
+import { createConstructionDb, type ConstructionDb } from "@/lib/construction/construction-db";
 /**
  * Integración de la Etapa 3: importar una actividad del catálogo APU al
  * presupuesto (`budgets.importActivityFromCatalog`) y editar una línea de
@@ -29,7 +30,9 @@ describe.skipIf(!enabled)("budgets.importActivityFromCatalog / updateResource (i
   let tenantIdA = "";
   let tenantIdB = "";
   let dbA: ReturnType<typeof createTenantDb>;
+  let constructionA: ConstructionDb;
   let dbB: ReturnType<typeof createTenantDb>;
+  let constructionB: ConstructionDb;
   let projectId = "";
   let budgetId = "";
   let chapterId = "";
@@ -60,7 +63,9 @@ describe.skipIf(!enabled)("budgets.importActivityFromCatalog / updateResource (i
     tenantIdA = a.id;
     tenantIdB = b.id;
     dbA = createTenantDb(tenantIdA);
+    constructionA = createConstructionDb(tenantIdA);
     dbB = createTenantDb(tenantIdB);
+    constructionB = createConstructionDb(tenantIdB);
 
     const customer = await db.orm.public.Customer.create({
       tenantId: tenantIdA,
@@ -73,8 +78,8 @@ describe.skipIf(!enabled)("budgets.importActivityFromCatalog / updateResource (i
       name: "Obra APU",
     });
     projectId = project.id;
-    budgetId = (await dbA.budgets.getOrCreate(projectId)).id;
-    chapterId = (await dbA.budgets.createChapter(projectId, { name: "Mampostería" })).id;
+    budgetId = (await constructionA.budgets.getOrCreate(projectId)).id;
+    chapterId = (await constructionA.budgets.createChapter(projectId, { name: "Mampostería" })).id;
 
     const cement = await db.orm.public.ApuItem.create({
       tenantId: tenantIdA,
@@ -178,7 +183,7 @@ describe.skipIf(!enabled)("budgets.importActivityFromCatalog / updateResource (i
   test("importa la actividad con costos en punto fijo y sin insumos ajenos", async () => {
     const before = await budgetRow();
 
-    const { id } = await dbA.budgets.importActivityFromCatalog(
+    const { id } = await constructionA.budgets.importActivityFromCatalog(
       projectId,
       chapterId,
       activityId,
@@ -231,7 +236,7 @@ describe.skipIf(!enabled)("budgets.importActivityFromCatalog / updateResource (i
     const before = await budgetRow();
     const count = await itemCount();
     await expect(
-      dbA.budgets.importActivityFromCatalog(
+      constructionA.budgets.importActivityFromCatalog(
         projectId,
         chapterId,
         activityId,
@@ -246,7 +251,7 @@ describe.skipIf(!enabled)("budgets.importActivityFromCatalog / updateResource (i
   test("rechaza una actividad sin composición", async () => {
     const count = await itemCount();
     await expect(
-      dbA.budgets.importActivityFromCatalog(projectId, chapterId, emptyActivityId),
+      constructionA.budgets.importActivityFromCatalog(projectId, chapterId, emptyActivityId),
     ).rejects.toThrow("La actividad no tiene composición APU para importar.");
     expect(await itemCount()).toBe(count);
   });
@@ -254,10 +259,10 @@ describe.skipIf(!enabled)("budgets.importActivityFromCatalog / updateResource (i
   test("aislamiento: ni B importa en A, ni A importa del catálogo de B", async () => {
     const count = await itemCount();
     await expect(
-      dbB.budgets.importActivityFromCatalog(projectId, chapterId, activityIdB),
+      constructionB.budgets.importActivityFromCatalog(projectId, chapterId, activityIdB),
     ).rejects.toThrow("Presupuesto no encontrado en este negocio.");
     await expect(
-      dbA.budgets.importActivityFromCatalog(projectId, chapterId, activityIdB),
+      constructionA.budgets.importActivityFromCatalog(projectId, chapterId, activityIdB),
     ).rejects.toThrow("Actividad del catálogo no encontrada.");
     expect(await itemCount()).toBe(count);
   });
@@ -267,7 +272,7 @@ describe.skipIf(!enabled)("budgets.importActivityFromCatalog / updateResource (i
     const cement = (await resourcesOf(importedItemId)).find((r) => r.sourceItemId === cementId)!;
 
     // Desperdicio 10 % → 0 %: cemento 8.250 → 7.500; unitario 13.250 → 12.500.
-    const { revision } = await dbA.budgets.updateResource(
+    const { revision } = await constructionA.budgets.updateResource(
       projectId,
       cement.id,
       { wastePct: M(0) },
@@ -291,17 +296,17 @@ describe.skipIf(!enabled)("budgets.importActivityFromCatalog / updateResource (i
   test("updateResource rechaza rendimiento no positivo y desperdicio negativo", async () => {
     const cement = (await resourcesOf(importedItemId)).find((r) => r.sourceItemId === cementId)!;
     await expect(
-      dbA.budgets.updateResource(projectId, cement.id, { performance: M(0) }),
+      constructionA.budgets.updateResource(projectId, cement.id, { performance: M(0) }),
     ).rejects.toThrow("El rendimiento debe ser mayor a cero.");
     await expect(
-      dbA.budgets.updateResource(projectId, cement.id, { wastePct: M(-1) }),
+      constructionA.budgets.updateResource(projectId, cement.id, { wastePct: M(-1) }),
     ).rejects.toThrow("El desperdicio no puede ser negativo.");
   });
 
   test("updateResource: el otro negocio no puede tocar la línea", async () => {
     const cement = (await resourcesOf(importedItemId)).find((r) => r.sourceItemId === cementId)!;
     await expect(
-      dbB.budgets.updateResource(projectId, cement.id, { wastePct: M(500_000) }),
+      constructionB.budgets.updateResource(projectId, cement.id, { wastePct: M(500_000) }),
     ).rejects.toThrow("Presupuesto no encontrado en este negocio.");
     const unchanged = (await resourcesOf(importedItemId)).find((r) => r.id === cement.id)!;
     expect(M(unchanged.wastePct)).toBe(M(0));
@@ -310,7 +315,7 @@ describe.skipIf(!enabled)("budgets.importActivityFromCatalog / updateResource (i
   test("updateResource rechaza desperdicio mayor a 100 %", async () => {
     const cement = (await resourcesOf(importedItemId)).find((r) => r.sourceItemId === cementId)!;
     await expect(
-      dbA.budgets.updateResource(projectId, cement.id, { wastePct: M(1_000_001) }),
+      constructionA.budgets.updateResource(projectId, cement.id, { wastePct: M(1_000_001) }),
     ).rejects.toThrow("El desperdicio no puede superar el 100 %.");
   });
 
@@ -325,8 +330,8 @@ describe.skipIf(!enabled)("budgets.importActivityFromCatalog / updateResource (i
     })();
 
     const results = await Promise.allSettled([
-      dbA.budgets.updateResource(projectId, cement.id, { wastePct: M(50_000) }, before.revision),
-      dbA.budgets.updateResource(projectId, labor.id, { wastePct: M(50_000) }, before.revision),
+      constructionA.budgets.updateResource(projectId, cement.id, { wastePct: M(50_000) }, before.revision),
+      constructionA.budgets.updateResource(projectId, labor.id, { wastePct: M(50_000) }, before.revision),
     ]);
     const ok = results.filter((r) => r.status === "fulfilled");
     const failed = results.filter((r) => r.status === "rejected");
@@ -343,11 +348,11 @@ describe.skipIf(!enabled)("budgets.importActivityFromCatalog / updateResource (i
 
     // Restaura el estado para las pruebas siguientes.
     const current = await budgetRow();
-    await dbA.budgets.updateResource(projectId, changed[0].id, { wastePct: M(0) }, current.revision);
+    await constructionA.budgets.updateResource(projectId, changed[0].id, { wastePct: M(0) }, current.revision);
   });
 
   test("el APU se devuelve en orden estable: tipo y luego nombre", async () => {
-    const tree = await dbA.budgets.get(projectId);
+    const tree = await constructionA.budgets.get(projectId);
     const item = tree!.chapters
       .flatMap((chapter) => chapter.items)
       .find((it) => it.id === importedItemId)!;
@@ -356,16 +361,16 @@ describe.skipIf(!enabled)("budgets.importActivityFromCatalog / updateResource (i
 
   test("presupuesto bloqueado: no se importa ni se edita", async () => {
     const cement = (await resourcesOf(importedItemId)).find((r) => r.sourceItemId === cementId)!;
-    await dbA.budgets.setLocked(projectId, true);
+    await constructionA.budgets.setLocked(projectId, true);
     try {
       await expect(
-        dbA.budgets.importActivityFromCatalog(projectId, chapterId, activityId),
+        constructionA.budgets.importActivityFromCatalog(projectId, chapterId, activityId),
       ).rejects.toThrow("El presupuesto está bloqueado.");
       await expect(
-        dbA.budgets.updateResource(projectId, cement.id, { wastePct: M(50_000) }),
+        constructionA.budgets.updateResource(projectId, cement.id, { wastePct: M(50_000) }),
       ).rejects.toThrow("El presupuesto está bloqueado.");
     } finally {
-      await dbA.budgets.setLocked(projectId, false, undefined, "fin de prueba");
+      await constructionA.budgets.setLocked(projectId, false, undefined, "fin de prueba");
     }
   });
 });

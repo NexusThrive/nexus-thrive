@@ -6,6 +6,10 @@ import { requireTenantContext } from "@/lib/tenant/context";
 import { validateCreateFieldLogEntry } from "./validators";
 import { readImageUpload } from "@/lib/image-upload";
 
+import { createConstructionDb } from "@/lib/construction/construction-db";
+
+/** Capa de datos de construcción del negocio activo (Core no la conoce). */
+const construction = (context: { tenantId: string }) => createConstructionDb(context.tenantId);
 export type ActionState = {
   status: "idle" | "ok" | "error";
   message?: string;
@@ -28,7 +32,7 @@ export async function getOrCreateFieldLogAction(
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
-    await context.tenantDb.fieldLog.getOrCreateLog(projectId);
+    await construction(context).fieldLog.getOrCreateLog(projectId);
     revalidatePath(`/${tenantSlug}/projects/${projectId}`);
     return { status: "ok" };
   } catch (error) {
@@ -93,13 +97,13 @@ export async function createFieldLogEntryAction(
     // Fotos subidas: se guardan en el sistema (no como enlaces externos).
     const stored: string[] = [];
     for (const upload of uploads) {
-      const imageId = await context.tenantDb.apu.storeImage(upload.data, upload.mimeType);
+      const imageId = await construction(context).apu.storeImage(upload.data, upload.mimeType);
       stored.push(`/api/apu-images/${imageId}`);
     }
     values.photoUrls = [...values.photoUrls, ...stored];
     // Obtener la bitácora del proyecto
-    const log = await context.tenantDb.fieldLog.getOrCreateLog(projectId);
-    await context.tenantDb.fieldLog.createEntry(log.id, {
+    const log = await construction(context).fieldLog.getOrCreateLog(projectId);
+    await construction(context).fieldLog.createEntry(log.id, {
       type: values.type,
       entryDate: values.entryDate,
       title: values.title,
@@ -139,11 +143,11 @@ export async function deleteFieldLogEntryAction(
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
     // Obtener la bitácora para validar pertenencia
-    const log = await context.tenantDb.fieldLog.getLog(projectId);
+    const log = await construction(context).fieldLog.getLog(projectId);
     if (!log) {
       return { status: "error", message: "Bitácora no encontrada." };
     }
-    await context.tenantDb.fieldLog.deleteEntry(log.id, entryId);
+    await construction(context).fieldLog.deleteEntry(log.id, entryId);
     revalidatePath(`/${tenantSlug}/projects/${projectId}`);
     return { status: "ok" };
   } catch (error) {

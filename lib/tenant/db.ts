@@ -30,16 +30,6 @@ import {
   type MembershipStatusValue,
   type MembershipTypeValue,
 } from "@/lib/business/memberships";
-import { createCatalogDb } from "@/lib/construction/catalog";
-import { createQuotesDb } from "@/lib/construction/quotes";
-import { createProjectQuotesDb } from "@/lib/construction/project-quotes";
-import { createProgressDb } from "@/lib/construction/progress";
-import { createProjectsDb } from "@/lib/construction/projects";
-import { createProjectHeadersDb } from "@/lib/construction/project-headers";
-import { createBudgetsDb } from "@/lib/construction/budget";
-import { createPlanDb } from "@/lib/construction/plan";
-import { createFieldLogDb } from "@/lib/construction/field-log";
-import { createReportsDb } from "@/lib/construction/reports";
 import { escapeLike } from "@/lib/sql-like";
 
 
@@ -778,32 +768,6 @@ export function createTenantDb(tenantId: string) {
       listByCustomer: (customerId: string, limit = 100) =>
         listCustomerNotes(tenantId, customerId, limit),
     },
-
-    /* -------------------------------------------------------------- */
-    /* Módulo Construcción & APU — banco de insumos                    */
-    /* -------------------------------------------------------------- */
-
-    apu: createCatalogDb(tenantId),
-
-    /* -------------------------------------------------------------- */
-    /* Módulo Construcción & APU — presupuestos                        */
-    /* -------------------------------------------------------------- */
-
-    quotes: createQuotesDb(tenantId),
-    projectQuotes: createProjectQuotesDb(tenantId),
-    progress: createProgressDb(tenantId),
-
-    projects: createProjectsDb(tenantId),
-
-    projectHeaders: createProjectHeadersDb(tenantId),
-
-    budgets: createBudgetsDb(tenantId),
-
-    lean: createPlanDb(tenantId),
-
-    fieldLog: createFieldLogDb(tenantId),
-
-    reports: createReportsDb(tenantId),
 
     users: {
       list: () => db.orm.public.User.where({ tenantId }).all(),

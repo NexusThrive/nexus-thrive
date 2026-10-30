@@ -1,9 +1,9 @@
 import { describe, test, beforeAll, afterAll, expect } from "vitest";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant/db";
 import { executeImport } from "@/lib/construction/apu-importer/execute";
 import type { ExecutionPlan, PlannedItem } from "@/lib/construction/apu-importer/index";
 
+import { createConstructionDb, type ConstructionDb } from "@/lib/construction/construction-db";
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const enabled = Boolean(TEST_URL);
 
@@ -25,7 +25,7 @@ function makeItem(overrides: Partial<PlannedItem> = {}): PlannedItem {
 }
 
 describe.skipIf(!enabled)("apu-importer: price behavior", () => {
-  let tenantDb: ReturnType<typeof createTenantDb>;
+  let construction: ConstructionDb;
   let tenantId: string;
 
   beforeAll(async () => {
@@ -38,10 +38,10 @@ describe.skipIf(!enabled)("apu-importer: price behavior", () => {
       vertical: "construction",
     });
     tenantId = t.id;
-    tenantDb = createTenantDb(tenantId);
+    construction = createConstructionDb(tenantId);
     
     // Create an existing item with known price
-    await tenantDb.apu.createItem({
+    await construction.apu.createItem({
       name: "Cemento Portland",
       unit: "BOL",
       category: "MATERIAL",
@@ -75,7 +75,7 @@ describe.skipIf(!enabled)("apu-importer: price behavior", () => {
     expect(result.priceChanges[0].variationPct).toBeCloseTo(25, 1);
 
     // Verify in DB: price should still be 28000
-    const item = await tenantDb.apu.getItem(result.priceChanges[0].itemId);
+    const item = await construction.apu.getItem(result.priceChanges[0].itemId);
     expect(item?.unitPrice).toBe("28000");
   });
 
@@ -93,7 +93,7 @@ describe.skipIf(!enabled)("apu-importer: price behavior", () => {
     expect(result.priceChanges).toHaveLength(1);
 
     // Verify in DB: price should now be 35000
-    const item = await tenantDb.apu.getItem(result.priceChanges[0].itemId);
+    const item = await construction.apu.getItem(result.priceChanges[0].itemId);
     expect(item?.unitPrice).toBe("35000");
   });
 
@@ -146,7 +146,7 @@ describe.skipIf(!enabled)("apu-importer: price behavior", () => {
     expect(result.priceChanges[0].newPrice).toBe("40000");
     
     // Verify other fields updated but price not
-    const item = await tenantDb.apu.getItem(result.priceChanges[0].itemId);
+    const item = await construction.apu.getItem(result.priceChanges[0].itemId);
     expect(item?.name).toBe("Cemento Actualizado");
     expect(item?.unit).toBe("KG");
     expect(item?.category).toBe("EQUIPO");

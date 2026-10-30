@@ -14,6 +14,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { PageHeader } from "@/components/molecules/page-header";
 import { requirePageContext } from "@/lib/tenant/context";
 
+import { createConstructionDb } from "@/lib/construction/construction-db";
 function firstString(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
 }
@@ -43,11 +44,12 @@ export default async function QuotesPage({
   const pageCtx = await requirePageContext(tenantSlug, "/quotes");
   const tenantRecord = pageCtx.tenant;
   const tenantDb = createTenantDb(tenantRecord.id);
+  const construction = createConstructionDb(tenantRecord.id);
   const { userId } = await auth();
   const member = userId ? await tenantDb.users.findByClerkUserId(userId) : null;
   const canGovern = canGovernBudget((member?.role ?? "STAFF") as TenantRole);
 
-  const legacy = await tenantDb.projectQuotes.listLegacy();
+  const legacy = await construction.projectQuotes.listLegacy();
   const showLegacy = firstString(sp.folder) === "anteriores";
 
   if (showLegacy) {
@@ -73,7 +75,7 @@ export default async function QuotesPage({
   const q = firstString(sp.q).trim();
   const statusRaw = firstString(sp.status);
   const status = isValidProjectStatus(statusRaw) ? statusRaw : undefined;
-  const folders = await tenantDb.projectQuotes.listFolders({ q, status });
+  const folders = await construction.projectQuotes.listFolders({ q, status });
 
   return (
     <div className="space-y-6">

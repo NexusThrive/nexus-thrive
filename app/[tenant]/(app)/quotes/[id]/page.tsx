@@ -9,7 +9,6 @@ import {
   Wallet,
 } from "lucide-react";
 import { customerContact } from "@/lib/business/customers-db";
-import { createTenantDb } from "@/lib/tenant/db";
 import { getQuoteTerms, getVerticalTerms } from "@/lib/vertical-terms";
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import { QuoteStatusBadge } from "@/components/molecules/quote-badges";
@@ -17,6 +16,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { PageHeader } from "@/components/molecules/page-header";
 import { requirePageContext } from "@/lib/tenant/context";
 
+import { createConstructionDb } from "@/lib/construction/construction-db";
 /**
  * Detalle de una cotización.
  *
@@ -25,7 +25,7 @@ import { requirePageContext } from "@/lib/tenant/context";
  * anteriores a la obra se muestran en solo lectura, con su documento para
  * imprimir y la opción de pasarlas a una obra (en Cotizaciones anteriores).
  *
- * Multi-tenant: `tenantDb.quotes.get(quoteId)` filtra por `tenantId`; si el
+ * Multi-tenant: `construction.quotes.get(quoteId)` filtra por `tenantId`; si el
  * presupuesto no pertenece al tenant → 404 sin revelar su existencia.
  */
 export default async function QuoteDetailPage({
@@ -38,13 +38,12 @@ export default async function QuoteDetailPage({
   // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
   const pageCtx = await requirePageContext(tenantSlug, "/quotes");
   const tenantRecord = pageCtx.tenant;
-
-  const tenantDb = createTenantDb(tenantRecord.id);
-  const ownerProjectId = await tenantDb.quotes.projectOf(quoteId);
+  const construction = createConstructionDb(tenantRecord.id);
+  const ownerProjectId = await construction.quotes.projectOf(quoteId);
   if (ownerProjectId) {
     redirect(`/${tenantSlug}/projects/${ownerProjectId}?tab=cotizaciones`);
   }
-  const quote = await tenantDb.quotes.get(quoteId);
+  const quote = await construction.quotes.get(quoteId);
   if (!quote) {
     notFound();
   }

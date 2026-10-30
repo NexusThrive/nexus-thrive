@@ -1,7 +1,7 @@
 import { describe, test, beforeAll, afterAll, expect } from "vitest";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant/db";
 
+import { createConstructionDb, type ConstructionDb } from "@/lib/construction/construction-db";
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const enabled = Boolean(TEST_URL);
 
@@ -10,8 +10,8 @@ function normalize(url: string | undefined): string {
 }
 
 describe.skipIf(!enabled)("Cache invalidation & tenant isolation", () => {
-  let tenantDb1: ReturnType<typeof createTenantDb>;
-  let tenantDb2: ReturnType<typeof createTenantDb>;
+  let construction1: ConstructionDb;
+  let construction2: ConstructionDb;
   let tenant1Id: string;
   let tenant2Id: string;
 
@@ -32,17 +32,17 @@ describe.skipIf(!enabled)("Cache invalidation & tenant isolation", () => {
     });
     tenant1Id = t1.id;
     tenant2Id = t2.id;
-    tenantDb1 = createTenantDb(tenant1Id);
-    tenantDb2 = createTenantDb(tenant2Id);
+    construction1 = createConstructionDb(tenant1Id);
+    construction2 = createConstructionDb(tenant2Id);
     
     // Add some base data to tenant 1
-    const item1 = await tenantDb1.apu.createItem({
+    const item1 = await construction1.apu.createItem({
       name: "Item Cache Test 1",
       unit: "M2",
       category: "MATERIAL",
       unitPrice: "100.00",
     });
-    const act1 = await tenantDb1.apu.createActivity({
+    const act1 = await construction1.apu.createActivity({
       name: "Activity Cache Test 1",
       unit: "M2",
       code: "ACT-CACHE-1",
@@ -55,11 +55,11 @@ describe.skipIf(!enabled)("Cache invalidation & tenant isolation", () => {
   });
 
   test("cache key includes tenantId - different tenants have independent caches", async () => {
-    await tenantDb1.apu.invalidateP99();
-    const r1a = await tenantDb1.apu.getP99Thresholds();
+    await construction1.apu.invalidateP99();
+    const r1a = await construction1.apu.getP99Thresholds();
     
-    await tenantDb2.apu.invalidateP99();
-    const r2a = await tenantDb2.apu.getP99Thresholds();
+    await construction2.apu.invalidateP99();
+    const r2a = await construction2.apu.getP99Thresholds();
     
     expect(r1a).not.toBe(r2a);
     expect(r1a.activityUnitCost).toHaveProperty("M2");
@@ -67,24 +67,24 @@ describe.skipIf(!enabled)("Cache invalidation & tenant isolation", () => {
   });
 
   test("cache invalidation after mutation recalculates threshold", async () => {
-    const before = await tenantDb1.apu.getP99Thresholds();
+    const before = await construction1.apu.getP99Thresholds();
     const initialM2 = before.activityUnitCost.M2;
     expect(initialM2).toBeDefined();
     
-    const newItem = await tenantDb1.apu.createItem({
+    const newItem = await construction1.apu.createItem({
       name: "High Price Item",
       unit: "M2",
       category: "MATERIAL",
       unitPrice: "10000.00",
     });
-    const newAct = await tenantDb1.apu.createActivity({
+    const newAct = await construction1.apu.createActivity({
       name: "High Cost Activity",
       unit: "M2",
       code: "ACT-HIGH",
       compositions: [{ itemId: newItem.id, consumption: "10", wastePercent: "0" }],
     });
     
-    const after = await tenantDb1.apu.getP99Thresholds();
+    const after = await construction1.apu.getP99Thresholds();
     const newM2 = after.activityUnitCost.M2;
     
     expect(newM2).toBeDefined();
@@ -92,9 +92,9 @@ describe.skipIf(!enabled)("Cache invalidation & tenant isolation", () => {
   });
 
   test("manual invalidateP99 forces recalculation", async () => {
-    const before = await tenantDb1.apu.getP99Thresholds();
-    tenantDb1.apu.invalidateP99();
-    const after = await tenantDb1.apu.getP99Thresholds();
+    const before = await construction1.apu.getP99Thresholds();
+    construction1.apu.invalidateP99();
+    const after = await construction1.apu.getP99Thresholds();
     expect(after).toEqual(before);
   });
 });
