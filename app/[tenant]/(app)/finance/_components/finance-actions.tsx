@@ -4,19 +4,11 @@ import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Banknote, Camera, MinusCircle } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { ExpenseSheet } from "@/components/organisms/expense-sheet";
-import { PaymentSheet } from "@/components/organisms/payment-sheet";
-import { EXPENSE_CATEGORIES, PAYMENT_METHODS } from "@/lib/finance";
 import { cn } from "@/lib/utils";
-import { createExpenseAction, createPaymentAction } from "../actions";
+import { ConnectedExpenseSheet, ConnectedPaymentSheet, type CustomerOption } from "./finance-sheets";
 import { ScanPaymentSheet } from "./scan-payment-sheet";
 
-export type CustomerOption = {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string | null;
-};
+export type { CustomerOption };
 
 type Open = "pago" | "gasto" | "escaneo" | null;
 
@@ -106,52 +98,20 @@ export default function FinanceActions({
         defaultCustomerId={customers.some((c) => c.id === initialCustomerId) ? initialCustomerId : ""}
       />
 
-      <PaymentSheet
+      <ConnectedPaymentSheet
+        tenantSlug={tenantSlug}
         open={open === "pago"}
         onOpenChange={(next) => setSheet(next ? "pago" : null)}
         business={business}
-        defaultCustomerId={customers.some((c) => c.id === initialCustomerId) ? initialCustomerId : ""}
-        methods={PAYMENT_METHODS}
-        customers={customers.map((c) => ({ id: c.id, name: c.name, hint: c.email || undefined, phone: c.phone }))}
-        onCharge={async ({ amount, customerId, method, description }) => {
-          const form = new FormData();
-          form.set("tenantSlug", tenantSlug);
-          form.set("status", "APPROVED");
-          form.set("amount", String(amount));
-          form.set("customerId", customerId);
-          form.set("provider", method);
-          form.set("providerRefId", "");
-          form.set("description", description);
-          const state = await createPaymentAction({ status: "idle" }, form);
-          if (state.status === "ok" && state.receipt) return { ok: true, ...state.receipt };
-          const fieldError = state.errors ? Object.values(state.errors).find(Boolean) : undefined;
-          return { ok: false, message: state.message ?? fieldError ?? "No se pudo registrar el pago." };
-        }}
+        customers={customers}
+        defaultCustomerId={initialCustomerId}
       />
 
-      <ExpenseSheet
+      <ConnectedExpenseSheet
+        tenantSlug={tenantSlug}
         open={open === "gasto"}
         onOpenChange={(next) => setSheet(next ? "gasto" : null)}
-        categories={EXPENSE_CATEGORIES}
-        defaultPaidFrom={cashOpen ? "CASH" : "BANK"}
-        onSave={async ({ amount, category, description, supplier, paidFrom, file }) => {
-          const form = new FormData();
-          form.set("tenantSlug", tenantSlug);
-          form.set("amount", String(amount));
-          form.set("category", category);
-          form.set("description", description);
-          form.set("supplier", supplier ?? "");
-          form.set("paidFrom", paidFrom ?? "BANK");
-          if (file) form.set("receipt", file);
-          const state = await createExpenseAction({ status: "idle" }, form);
-          if (state.status === "ok") return { ok: true };
-          const field = state.errors?.amount ? "amount" : state.errors?.description ? "description" : state.errors?.category ? "category" : undefined;
-          return {
-            ok: false,
-            field,
-            message: state.message ?? (field ? state.errors?.[field] : undefined) ?? "No se pudo registrar el gasto.",
-          };
-        }}
+        cashOpen={cashOpen}
       />
     </>
   );

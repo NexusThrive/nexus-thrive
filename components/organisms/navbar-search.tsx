@@ -74,7 +74,7 @@ export function NavbarSearch({ className }: { className?: string }) {
             value={search.query}
             onValueChange={search.setQuery}
             onFocus={() => setOpen(true)}
-            placeholder="Buscar o ejecutar…"
+            placeholder="Buscar clientes, pagos, gastos o acciones…"
             className="h-10 w-full rounded-md border border-border bg-surface-muted pl-10 pr-16 text-[13px] outline-none transition-[border-color,background-color] duration-200 placeholder:text-muted-foreground hover:border-border-input focus:border-border-input focus:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           />
           <Kbd

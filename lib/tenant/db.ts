@@ -501,6 +501,18 @@ export function createTenantDb(tenantId: string) {
         return affectedRows;
       },
 
+      /** Los últimos clientes activos dados de alta (para la actividad del inicio). */
+      recent: async (limit = 5): Promise<{ id: string; name: string; createdAt: string }[]> => {
+        const rows = await db.orm.public.Customer
+          .where({ tenantId })
+          .where((customer) => customer.active.eq(true))
+          .orderBy((customer) => customer.createdAt.desc())
+          .limit(Math.min(20, Math.max(1, Math.trunc(limit))))
+          .select("id", "name", "createdAt")
+          .all();
+        return rows.map((c) => ({ id: c.id, name: c.name, createdAt: String(c.createdAt) }));
+      },
+
       /** Cantidad de clientes activos (para el dashboard). */
       countActive: () =>
         db.orm.public.Customer
@@ -963,9 +975,10 @@ export function createTenantDb(tenantId: string) {
        * `days` días, más los totales del periodo anterior del mismo largo.
        * Trae solo monto y fecha de la ventana y agrupa en lib/finance-series.
        */
-      getSeries: async (days: 1 | 7 | 30 = 30): Promise<FinanceSeries> => {
+      getSeries: async (days: number = 30, withPrevious = true): Promise<FinanceSeries> => {
+        // Sin periodo previo (vistas por semana y mes de la gráfica) la ventana es la mitad: menos filas.
         const since = Temporal.Instant.fromEpochMilliseconds(
-          Date.now() - (days * 2 + 1) * 86_400_000,
+          Date.now() - ((withPrevious ? days * 2 : days) + 1) * 86_400_000,
         );
         const [payments, expenses] = await Promise.all([
           db.orm.public.Payment
@@ -1130,18 +1143,26 @@ export function createTenantDb(tenantId: string) {
        * el pago se titula con el cliente y lleva "concepto · medio"; el gasto
        * se titula con su descripción y lleva "categoría · Caja menor".
        */
-      getMovements: async (limit = 30): Promise<MovementRow[]> => {
+      getMovements: async (limit = 30, range?: { start: Date; end: Date }): Promise<MovementRow[]> => {
         const safeLimit = Math.min(60, Math.max(1, Math.trunc(limit)));
+        // Con `range` (un día, semana o mes de la gráfica) solo trae lo de ese rango: [start, end).
+        const from = range ? Temporal.Instant.fromEpochMilliseconds(range.start.getTime()) : null;
+        const until = range ? Temporal.Instant.fromEpochMilliseconds(range.end.getTime()) : null;
         const [payments, expenses] = await Promise.all([
           db.orm.public.Payment
             .where({ tenantId })
-            .where((payment) => payment.status.eq("APPROVED"))
+            .where((payment) =>
+              from && until
+                ? and(payment.status.eq("APPROVED"), payment.createdAt.gte(from), payment.createdAt.lt(until))
+                : payment.status.eq("APPROVED"),
+            )
             .orderBy((payment) => payment.createdAt.desc())
             .limit(safeLimit)
             .all(),
           db.orm.public.Expense
             .where({ tenantId })
             .where((expense) => expense.voidedAt.isNull())
+            .where((expense) => (from && until ? and(expense.date.gte(from), expense.date.lt(until)) : expense.voidedAt.isNull()))
             .orderBy((expense) => expense.date.desc())
             .limit(safeLimit)
             .all(),

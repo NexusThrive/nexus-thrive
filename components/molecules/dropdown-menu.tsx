@@ -4,6 +4,7 @@ import * as React from "react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
 
+import { armPopoverMorph, type PopoverMorph } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 function DropdownMenu(
@@ -31,14 +32,37 @@ function DropdownMenuTrigger(
   );
 }
 
+/**
+ * Panel de un menú. Todo menú viaja desde su botón (el mismo efecto de los modales
+ * «Pretty», `lib/motion/popover-morph.ts`): crece desde el control que lo abrió y
+ * vuelve a él al cerrar. El control se encuentra por `aria-labelledby`, que Radix
+ * apunta a su disparador; sin control a la vista, o con movimiento reducido, anima
+ * el CSS de siempre.
+ */
 function DropdownMenuContent({
   className,
   sideOffset = 4,
+  ref,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
+  const morph = React.useRef<PopoverMorph | null>(null);
+  const setRef = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      morph.current?.cancel();
+      morph.current = null;
+      if (node) {
+        const triggerId = node.getAttribute("aria-labelledby");
+        morph.current = armPopoverMorph(node, triggerId ? document.getElementById(triggerId) : null, { watchClose: true });
+      }
+      if (typeof ref === "function") ref(node);
+      else if (ref) (ref as React.RefObject<HTMLDivElement | null>).current = node;
+    },
+    [ref],
+  );
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
+        ref={setRef}
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(

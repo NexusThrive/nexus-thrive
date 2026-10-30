@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { IconTile } from "@/components/atoms/icon-tile";
 import { ListItem } from "@/components/molecules/list-item";
+import { QuickActionLink } from "@/components/organisms/quick-action-link";
 import type { QuickCreateAction } from "@/lib/navigation/quick-create";
 
 /**
@@ -34,7 +34,8 @@ export default function QuickActions({
             const Icon = action.icon;
             return (
               <li key={action.key} className="flex min-h-0 flex-1 flex-col">
-                <Link
+                <QuickActionLink
+                  actionKey={action.key}
                   href={`/${tenantSlug}${action.href}`}
                   data-press="card"
                   className="flex flex-1 flex-col focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
@@ -51,7 +52,7 @@ export default function QuickActions({
                     title={action.label}
                     subtitle={action.hint}
                   />
-                </Link>
+                </QuickActionLink>
               </li>
             );
           })}

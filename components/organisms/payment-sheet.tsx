@@ -9,6 +9,7 @@ import { inputClasses } from "@/components/atoms/input";
 import { NMark } from "@/components/atoms/n-mark";
 import { Alert } from "@/components/molecules/alert";
 import { Field } from "@/components/molecules/field";
+import { FullPanelLink } from "@/components/molecules/full-panel-link";
 import { Keypad, applyKey, type KeypadKey } from "@/components/molecules/keypad";
 import { ReceiptPrinter, type ReceiptData } from "@/components/organisms/receipt-printer";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
@@ -45,6 +46,7 @@ export function PaymentSheet({
   methods,
   business,
   defaultCustomerId = "",
+  fullHref,
   onCharge,
 }: {
   open: boolean;
@@ -53,6 +55,8 @@ export function PaymentSheet({
   methods: readonly { value: string; label: string }[];
   business: { name: string; subtitle?: string };
   defaultCustomerId?: string;
+  /** Mini-modal de «Crear»: enlace «Abrir en el panel completo» a la sección del módulo. */
+  fullHref?: string;
   onCharge: (input: PaymentChargeInput) => Promise<PaymentChargeResult>;
 }) {
   const [amount, setAmount] = useState(0);
@@ -207,7 +211,12 @@ export function PaymentSheet({
       open={open}
       onOpenChange={close}
       title="Registrar pago"
-      description={receipt ? "Comprobante listo para entregar." : "Cobra y genera el comprobante."}
+      description={
+        <>
+          {receipt ? "Comprobante listo para entregar." : "Cobra y genera el comprobante."}
+          {fullHref && !receipt ? <> <FullPanelLink href={fullHref} /></> : null}
+        </>
+      }
       footer={footer}
     >
       {receipt ? (

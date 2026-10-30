@@ -22,8 +22,10 @@
   --nx-graphite-900: #141416;
   --nx-graphite-800: #1e1e21;
   --nx-graphite-700: #2a2a2e;
+  --nx-graphite-550: #5f5f67; /* texto secundario en claro: 5,9:1 sobre paper (AA pide 4,5) */
   --nx-graphite-500: #6b6b73;
   --nx-graphite-400: #a1a1a8;
+  --nx-graphite-350: #b0b0b6; /* texto secundario en oscuro: 8,5:1 sobre la superficie */
   --nx-graphite-200: #e8e6e1;
   --nx-graphite-100: #f2f1ee;
 
@@ -144,7 +146,7 @@
   --surface-hover: #eae8e2;
 
   --foreground: var(--nx-graphite-950);
-  --foreground-muted: var(--nx-graphite-500);
+  --foreground-muted: var(--nx-graphite-550);
   --foreground-inverse: var(--nx-paper);
 
   --primary: var(--nx-ink);
@@ -174,7 +176,7 @@
   /* --- Sidebar: navegación (blanca en claro, Ink en oscuro) --- */
   --sidebar-bg: var(--nx-white);
   --sidebar-fg: var(--nx-graphite-950);
-  --sidebar-fg-muted: var(--nx-graphite-500);
+  --sidebar-fg-muted: var(--nx-graphite-550);
   --sidebar-border: var(--nx-graphite-200);
   --sidebar-hover: rgba(0, 0, 0, 0.05);
   --sidebar-active: rgba(0, 0, 0, 0.06);
@@ -197,7 +199,7 @@
   --surface-hover: #26262a;
 
   --foreground: var(--nx-paper);
-  --foreground-muted: var(--nx-graphite-400);
+  --foreground-muted: var(--nx-graphite-350);
   --foreground-inverse: var(--nx-paper);
 
   --primary: var(--nx-gold-500);
@@ -225,7 +227,7 @@
 
   --sidebar-bg: var(--nx-ink);
   --sidebar-fg: var(--nx-paper);
-  --sidebar-fg-muted: var(--nx-graphite-400);
+  --sidebar-fg-muted: var(--nx-graphite-350);
   --sidebar-border: var(--nx-graphite-700);
   --sidebar-hover: rgba(255, 255, 255, 0.06);
   --sidebar-active: rgba(255, 255, 255, 0.08);
@@ -236,6 +238,13 @@
 [data-density="compact"] {
   --control-h: 34px;
   --row-h: 46px;
+}
+
+/* En pantallas muy anchas el contenido crece para no dejar el centro angosto. */
+@media (min-width: 1536px) {
+  :root {
+    --content-max: 1480px;
+  }
 }
 
 @media (min-width: 768px) {

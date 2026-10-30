@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { Banknote, Bell, CalendarClock, Clock, MinusCircle, X } from "lucide-react";
-import { flash, spring } from "@/lib/motion";
-import { unreadCount, type AppNotification, type NotificationKind } from "@/lib/dashboard/notifications";
+import { EASE_IN_OUT, armPopoverMorph, flash, motionOff, spring, type PopoverMorph } from "@/lib/motion";
+import { newArrivals, unreadCount, type AppNotification, type NotificationKind } from "@/lib/dashboard/notifications";
+import { NOTIFICATIONS_REFRESH, type NotificationArrival } from "@/lib/dashboard/notifications-client";
 import { cn } from "@/lib/utils";
 
 const ICONS: Record<NotificationKind, typeof Bell> = {
@@ -23,6 +24,8 @@ function when(iso: string): string {
 }
 
 const POLL_MS = 60_000;
+/** Tras la acción que la genera, la notificación sale pasados unos segundos (no de inmediato). */
+const ARRIVAL_DELAY_MS = 5000;
 const SEEN_EVENT = "nx:notifications-seen";
 
 function readSeen(key: string): string | null {
@@ -64,21 +67,129 @@ export function NotificationCenter({
   const [items, setItems] = useState<AppNotification[]>([]);
   const lastSeen = useSyncExternalStore(subscribeSeen, () => readSeen(storageKey), () => null);
   const [open, setOpen] = useState(false);
+  // El panel viaja desde la campana y vuelve a ella (el efecto de los modales Pretty): sigue montado
+  // (`panel`) mientras dura la vuelta, aunque ya esté cerrado (`open`).
+  const [panel, setPanel] = useState(false);
+  const bellButton = useRef<HTMLButtonElement>(null);
+  const morph = useRef<PopoverMorph | null>(null);
+  const panelRef = useCallback((node: HTMLDivElement | null) => {
+    morph.current?.cancel();
+    morph.current = node ? armPopoverMorph(node, bellButton.current) : null;
+  }, []);
+  const closePanel = useCallback(() => {
+    setOpen(false);
+    const m = morph.current;
+    if (!m) return setPanel(false);
+    void m.exit().then(() => setPanel(false));
+  }, []);
+  // Pendientes (nuevas desde la última vez) o leídas; sin elegir, abre en pendientes si las hay.
+  const [tab, setTab] = useState<"pending" | "read" | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const bellRef = useRef<SVGSVGElement>(null);
   const countRef = useRef<HTMLElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const prevUnread = useRef(0);
+  const lastSeenRef = useRef<string | null>(null);
+  const known = useRef<Set<string> | null>(null); // ids ya vistos por esta carga (null = aún no hay primera carga)
+  const popRef = useRef<HTMLDivElement>(null);
+  const localAt = useRef(0); // cuándo salió un aviso inmediato (la lista real no lo repite)
+  // Lo que acaba de llegar: sale como aviso junto a la campana y vuelve a ella.
+  const [incoming, setIncoming] = useState<AppNotification[]>([]);
+  const [hovering, setHovering] = useState(false);
 
   const unread = unreadCount(items, lastSeen);
+  useEffect(() => {
+    lastSeenRef.current = lastSeen;
+  }, [lastSeen]);
 
   const refresh = useCallback(async () => {
     try {
-      setItems(await load());
+      const next = await load();
+      const arrived = newArrivals(known.current, next, lastSeenRef.current);
+      known.current = new Set(next.map((n) => n.id));
+      setItems(next);
+      // Si ya salió el aviso inmediato de esta acción, la lista real solo actualiza el contador.
+      if (arrived.length && Date.now() - localAt.current > ARRIVAL_DELAY_MS + 3000) setIncoming(arrived);
     } catch {
       // sin red: se mantiene la última lista
     }
   }, [load]);
+
+  // Una acción que pudo generar una notificación (un cobro, un gasto…) la trae unos segundos
+  // después: así no salta encima de lo que la persona acaba de hacer.
+  useEffect(() => {
+    let show = 0;
+    let first = 0;
+    let retry = 0;
+    const soon = (event: Event) => {
+      const arrival = (event as CustomEvent<NotificationArrival | undefined>).detail;
+      window.clearTimeout(show);
+      window.clearTimeout(first);
+      window.clearTimeout(retry);
+      localAt.current = Date.now();
+      // La acción ya sabe qué genera: el aviso sale pasados `ARRIVAL_DELAY_MS`, sin esperar al servidor.
+      if (arrival) {
+        const local: AppNotification = { ...arrival, id: `local-${localAt.current}`, at: new Date().toISOString() };
+        show = window.setTimeout(() => setIncoming([local]), ARRIVAL_DELAY_MS);
+      }
+      // La lista real (campana y contador) se actualiza a la vez; si no trajo el aviso, un segundo vistazo.
+      first = window.setTimeout(() => void refresh(), ARRIVAL_DELAY_MS);
+      retry = window.setTimeout(() => void refresh(), ARRIVAL_DELAY_MS + 1500);
+    };
+    window.addEventListener(NOTIFICATIONS_REFRESH, soon);
+    return () => {
+      window.removeEventListener(NOTIFICATIONS_REFRESH, soon);
+      window.clearTimeout(show);
+      window.clearTimeout(first);
+      window.clearTimeout(retry);
+    };
+  }, [refresh]);
+
+  // Al salir el aviso, un barrido diagonal a 24° (el corte de la N, como el cambio de tema) lo tiñe
+  // entero de oro NEXUS y luego se retira, dejando ver el mensaje.
+  const sweepRef = useRef<HTMLSpanElement>(null);
+  const arrivalKey = incoming.map((n) => n.id).join(",");
+  useEffect(() => {
+    const card = popRef.current;
+    const sweep = sweepRef.current;
+    if (!card || !sweep || !arrivalKey || motionOff()) return;
+    const W = card.offsetWidth;
+    const off = Math.tan((24 * Math.PI) / 180) * card.offsetHeight;
+    const poly = (leftTop: number, rightTop: number) => `polygon(${leftTop}px 0, ${rightTop}px 0, ${rightTop - off}px 100%, ${leftTop - off}px 100%)`;
+    const animation = sweep.animate(
+      [
+        { clipPath: poly(0, 0), easing: "cubic-bezier(.65,0,.35,1)" },
+        { clipPath: poly(0, W + off), offset: 0.46 },
+        { clipPath: poly(0, W + off), offset: 0.6, easing: "cubic-bezier(.65,0,.35,1)" },
+        { clipPath: poly(W + off, W + off) },
+      ],
+      { duration: 1000, fill: "both" },
+    );
+    return () => animation.cancel();
+  }, [arrivalKey]);
+
+  /** Oculta el aviso: se encoge y vuela hacia la campana (sin animación con movimiento reducido). */
+  const hideIncoming = useCallback(() => {
+    const el = popRef.current;
+    if (!el || motionOff()) {
+      setIncoming([]);
+      return;
+    }
+    el.animate(
+      [
+        { opacity: 1, transform: "none" },
+        { opacity: 0, transform: "translateY(-30px) scale(0.1)" },
+      ],
+      { duration: 460, easing: EASE_IN_OUT, fill: "forwards" },
+    ).onfinish = () => setIncoming([]);
+  }, []);
+
+  // El aviso se queda unos segundos (se pausa con el cursor encima) y regresa a la campana.
+  useEffect(() => {
+    if (!incoming.length || hovering) return;
+    const timer = window.setTimeout(hideIncoming, 5200);
+    return () => window.clearTimeout(timer);
+  }, [incoming, hovering, hideIncoming]);
 
   useEffect(() => {
     const first = window.setTimeout(refresh, 0);
@@ -103,9 +214,9 @@ export function NotificationCenter({
   useEffect(() => {
     if (!open) return;
     const onDown = (e: PointerEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+      if (!rootRef.current?.contains(e.target as Node)) closePanel();
     };
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closePanel();
     document.addEventListener("pointerdown", onDown);
     document.addEventListener("keydown", onKey);
     listRef.current?.querySelectorAll("[data-unread]").forEach((el) => flash(el));
@@ -113,7 +224,11 @@ export function NotificationCenter({
       document.removeEventListener("pointerdown", onDown);
       document.removeEventListener("keydown", onKey);
     };
-  }, [open]);
+  }, [open, closePanel]);
+
+  const isNewOf = (n: AppNotification) => !lastSeen || n.at > lastSeen;
+  const view = tab ?? (unread > 0 ? "pending" : "read");
+  const shown = items.filter((n) => isNewOf(n) === (view === "pending"));
 
   const markRead = () => {
     // Las citas de más tarde también quedan vistas.
@@ -129,11 +244,17 @@ export function NotificationCenter({
   return (
     <div ref={rootRef} className="relative h-fit">
       <button
+        ref={bellButton}
         type="button"
         aria-label={unread ? `Notificaciones, ${unread} nuevas` : "Notificaciones"}
         aria-expanded={open}
         data-press=""
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          setIncoming([]);
+          if (open) return closePanel();
+          setPanel(true);
+          setOpen(true);
+        }}
         className="relative grid size-10 place-items-center rounded-md transition-colors hover:bg-surface-muted"
       >
         <Bell ref={bellRef} aria-hidden="true" className="size-[18px] origin-top" strokeWidth={1.6} />
@@ -147,11 +268,54 @@ export function NotificationCenter({
         ) : null}
       </button>
 
-      {open ? (
+      {incoming.length && !open ? (
         <div
+          ref={popRef}
+          role="status"
+          aria-live="polite"
+          onPointerEnter={() => setHovering(true)}
+          onPointerLeave={() => setHovering(false)}
+          style={{ transformOrigin: "calc(100% - 20px) 0" }}
+          className="absolute right-0 top-[calc(100%+6px)] z-(--z-popover) w-[min(340px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--nx-shadow-overlay)] motion-safe:animate-[nx-pop_.2s_var(--nx-ease-out)]"
+        >
+          <span ref={sweepRef} aria-hidden="true" className="pointer-events-none absolute inset-0 bg-accent [clip-path:polygon(0_0,0_0,0_100%,0_100%)]" />
+          {(() => {
+            const n = incoming[0]!;
+            const Icon = ICONS[n.kind];
+            return (
+              <div className="flex items-center gap-2.5 py-2.5 pl-3.5 pr-1.5 text-[13px]">
+                <Link href={hrefFor(n.href)} onClick={() => setIncoming([])} className="flex min-w-0 flex-1 items-center gap-2.5 rounded-sm focus-visible:outline-2 focus-visible:outline-ring">
+                  <span className={cn("grid size-[30px] shrink-0 place-items-center rounded-md", n.kind === "expense" || n.kind === "membership" ? "bg-accent-subtle text-accent-text" : "bg-surface-muted")}>
+                    <Icon aria-hidden="true" className="size-4" strokeWidth={1.7} />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <b className="block truncate font-medium">{n.title}</b>
+                    <small className="block truncate text-xs text-muted-foreground">
+                      {n.detail ? `${n.detail} · ` : ""}
+                      {incoming.length > 1 ? `y ${incoming.length - 1} más` : "Ahora"}
+                    </small>
+                  </span>
+                </Link>
+                <button
+                  type="button"
+                  aria-label="Cerrar aviso"
+                  onClick={hideIncoming}
+                  className="grid size-8 shrink-0 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+                >
+                  <X aria-hidden="true" className="size-3.5" />
+                </button>
+              </div>
+            );
+          })()}
+        </div>
+      ) : null}
+
+      {panel ? (
+        <div
+          ref={panelRef}
           role="dialog"
           aria-label="Notificaciones"
-          className="absolute right-0 top-[calc(100%+6px)] z-(--z-popover) w-[min(360px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto origin-top-right overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--nx-shadow-overlay)] motion-safe:animate-[nx-pop_.22s_var(--nx-ease-out)]"
+          className="absolute right-0 top-[calc(100%+6px)] z-(--z-popover) w-[min(360px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto nx-morph-panel origin-top-right overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--nx-shadow-overlay)] motion-safe:animate-[nx-pop_.22s_var(--nx-ease-out)]"
         >
           <div className="flex items-center justify-between border-b border-border py-1.5 pl-3.5 pr-1.5">
             <b className="text-sm font-semibold">Notificaciones</b>
@@ -164,9 +328,26 @@ export function NotificationCenter({
               Marcar leídas
             </button>
           </div>
-          {items.length ? (
-            <ul ref={listRef} className="max-h-[360px] overflow-y-auto">
-              {items.map((n) => {
+          <div role="tablist" aria-label="Estado de las notificaciones" className="flex gap-1 border-b border-border px-2 py-1.5">
+            {(["pending", "read"] as const).map((id) => {
+              const count = items.filter((n) => (!lastSeen || n.at > lastSeen) === (id === "pending")).length;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={view === id}
+                  onClick={() => setTab(id)}
+                  className={cn("rounded-md px-2.5 py-1 text-[12.5px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-ring", view === id ? "bg-surface-muted text-foreground" : "text-muted-foreground hover:text-foreground")}
+                >
+                  {id === "pending" ? "Pendientes" : "Leídas"} <span className="font-mono text-[11px] opacity-70">{count}</span>
+                </button>
+              );
+            })}
+          </div>
+          {shown.length ? (
+            <ul ref={listRef} role="tabpanel" className="max-h-[360px] overflow-y-auto">
+              {shown.map((n) => {
                 const Icon = ICONS[n.kind];
                 const isNew = !lastSeen || n.at > lastSeen;
                 return (
@@ -174,7 +355,7 @@ export function NotificationCenter({
                     <Link
                       href={hrefFor(n.href)}
                       draggable={false}
-                      onClick={() => setOpen(false)}
+                      onClick={closePanel}
                       className="flex items-center gap-2.5 py-2.5 pl-3.5 pr-8 text-[13px] transition-colors hover:bg-surface-muted"
                     >
                       <span className={cn("grid size-[30px] shrink-0 place-items-center rounded-md", n.kind === "expense" || n.kind === "membership" ? "bg-accent-subtle text-accent-text" : "bg-surface-muted")}>
@@ -193,7 +374,13 @@ export function NotificationCenter({
               })}
             </ul>
           ) : (
-            <p className="px-4 py-8 text-center text-[13px] text-muted-foreground">Nada nuevo hoy. Aquí verás cobros, citas y vencimientos.</p>
+            <p className="px-4 py-8 text-center text-[13px] text-muted-foreground">
+              {items.length === 0
+                ? "Nada nuevo hoy. Aquí verás cobros, citas y vencimientos."
+                : view === "pending"
+                  ? "Estás al día: no tienes notificaciones pendientes."
+                  : "Todavía no has leído ninguna notificación."}
+            </p>
           )}
         </div>
       ) : null}

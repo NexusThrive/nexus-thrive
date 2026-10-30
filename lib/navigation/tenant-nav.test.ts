@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { MODULES, VERTICALS } from "@/lib/admin/catalogs";
 import { activeNavItem, buildTenantNav, isNavActive, modulesForRoute, tenantRelativePath } from "./tenant-nav";
-import { quickCreateActions } from "./quick-create";
+import { quickCreateActions, quickSheetFor } from "./quick-create";
 
 describe("buildTenantNav", () => {
   it("siempre muestra Inicio aunque el módulo de panel no esté activo", () => {
@@ -132,3 +132,33 @@ describe("modulesForRoute", () => {
     expect(modulesForRoute("/presence")).toBeNull();
   });
 });
+
+describe("quickCreateActions por permisos", () => {
+  const mods = ["construction", "crm", "finance"] as const;
+  it("sin rol ofrece todo (compatibilidad)", () => {
+    expect(quickCreateActions("construction", [...mods], Infinity).map((a) => a.key)).toContain("payment");
+  });
+  it("un asesor no registra pagos ni gastos", () => {
+    const keys = quickCreateActions("construction", [...mods], Infinity, "ADVISOR").map((a) => a.key);
+    expect(keys).not.toContain("payment");
+    expect(keys).not.toContain("expense");
+    expect(keys).toContain("new-customer");
+  });
+  it("solo el propietario crea obras; recepción cobra pero no crea obras", () => {
+    expect(quickCreateActions("construction", [...mods], Infinity, "OWNER").map((a) => a.key)).toContain("new-project");
+    const reception = quickCreateActions("construction", [...mods], Infinity, "RECEPTION").map((a) => a.key);
+    expect(reception).not.toContain("new-project");
+    expect(reception).toContain("payment");
+  });
+});
+
+describe("quickSheetFor", () => {
+  it("pago, gasto y socio nuevo tienen mini-modal; el resto navega", () => {
+    expect(quickSheetFor("payment")).toBe("payment");
+    expect(quickSheetFor("expense")).toBe("expense");
+    expect(quickSheetFor("new-customer")).toBe("customer");
+    expect(quickSheetFor("booking")).toBeNull();
+    expect(quickSheetFor("invoice")).toBeNull();
+  });
+});
+

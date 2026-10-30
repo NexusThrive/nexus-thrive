@@ -49,3 +49,34 @@ export const Row: Story = {
     </div>
   ),
 };
+
+/** Cada cifra responde ¿cuánto hay?, ¿cómo va? y ¿qué puedo hacer?: variación, «?» con el cálculo y una acción. */
+export const ConContexto: Story = {
+  decorators: narrow,
+  args: {
+    label: "Ingresos",
+    value: 50286088,
+    format: "cop",
+    icon: TrendingUp,
+    delta: <Delta value={12} />,
+    hint: "6 cobros registrados · vs. periodo anterior",
+    info: "Suma de los pagos aprobados del periodo. La variación compara con el periodo anterior del mismo largo.",
+    action: { label: "Ver cobros" },
+    trend: [3, 5, 4, 7, 6, 9, 8, 11],
+    href: "#",
+  },
+};
+
+/** Sin periodo previo no se inventa un 0 %: se dice que no hay variación. */
+export const SinVariacion: Story = {
+  decorators: narrow,
+  args: {
+    label: "Gastos",
+    value: 60000,
+    format: "cop",
+    icon: MinusCircle,
+    hint: "Sin variación disponible · caja menor y fijos",
+    info: "Suma de los gastos registrados en el periodo, sin los anulados.",
+    action: { label: "Ver gastos" },
+  },
+};

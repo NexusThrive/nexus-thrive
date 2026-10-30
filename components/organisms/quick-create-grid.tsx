@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { IconTile } from "@/components/atoms/icon-tile";
+import { QuickActionLink } from "@/components/organisms/quick-action-link";
 import { useShell } from "@/components/providers/shell-context";
 
 /**
@@ -18,8 +18,9 @@ export function QuickCreateGrid({ onNavigate }: { onNavigate?: () => void }) {
       {quickActions.map((action, i) => {
         const Icon = action.icon;
         return (
-          <Link
+          <QuickActionLink
             key={action.key}
+            actionKey={action.key}
             href={hrefFor(action.href)}
             onClick={onNavigate}
             data-press="card"
@@ -30,7 +31,7 @@ export function QuickCreateGrid({ onNavigate }: { onNavigate?: () => void }) {
               <Icon />
             </IconTile>
             <span className="font-semibold">{action.label}</span>
-          </Link>
+          </QuickActionLink>
         );
       })}
     </div>

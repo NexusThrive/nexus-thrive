@@ -25,3 +25,19 @@ export default meta;
 
 export const Semana: StoryObj<typeof meta> = {};
 export const Mes: StoryObj<typeof meta> = { args: { data: month } };
+
+const withStates: ChartPoint[] = week.map((p, i) => ({
+  ...p,
+  from: `2026-10-${10 + i}`,
+  to: `2026-10-${10 + i}`,
+  count: i < 2 ? 0 : 3,
+  // Los dos primeros días son anteriores al negocio; el tercero existía pero no tuvo movimientos.
+  state: i < 2 ? ("nodata" as const) : i === 2 ? ("empty" as const) : ("data" as const),
+  income: i < 3 ? 0 : p.income,
+  expenses: i < 3 ? 0 : p.expenses,
+}));
+
+/** «Sin datos» (el negocio aún no existía) no se dibuja como un cero; «sin movimientos» es una marca punteada. Clic o Enter abre el detalle. */
+export const SinDatosYSinMovimientos: StoryObj<typeof meta> = {
+  args: { data: withStates, onSelect: () => undefined },
+};

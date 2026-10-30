@@ -668,7 +668,7 @@ export function CustomizableDashboard({
           <div
             ref={gridRef}
             // `dense`: un bloque más pequeño sube a rellenar el hueco que dejó otro (sin espacios en blanco).
-            className="grid grid-cols-2 gap-3.5 [grid-auto-flow:dense] lg:-mx-[7px] lg:gap-x-0 lg:[grid-template-columns:repeat(96,minmax(0,1fr))]"
+            className="grid grid-cols-2 gap-3.5 lg:gap-y-5 [grid-auto-flow:dense] lg:-mx-[7px] lg:gap-x-0 lg:[grid-template-columns:repeat(96,minmax(0,1fr))]"
             onPointerDown={(e) => e.target === e.currentTarget && setSelectedId(null)}
             onClickCapture={(e) => {
               if (!suppressClick.current) return;

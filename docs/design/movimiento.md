@@ -29,7 +29,8 @@ catálogo vivo en Storybook (*Fundamentos → Movimiento*).
 | Panel lateral: entra y sale deslizándose por la derecha (misma duración, en espejo) | CSS `drawer-in` / `drawer-out` | `responsive-sheet.module.css` |
 | Sostén de la salida del modal (para que Radix espere) y fallbacks sin botón | CSS | `responsive-sheet.module.css` |
 | Hoja inferior móvil | CSS (sube y baja; se arrastra) | `responsive-sheet.module.css` |
-| Menús, popovers, ayuda, tooltips | CSS (`tw-animate-css` de Radix) | `components/molecules/*` |
+| **Menús** (`DropdownMenu`), campana de avisos y **lista del `Select`**: entrada y salida | GSAP (viaje desde su control y su reversa, con `transform`) | `dropdown-menu.tsx`, `select.tsx`, `notification-center.tsx` → `armPopoverMorph` (`lib/motion/popover-morph.ts`) |
+| Popovers, ayuda, tooltips | CSS (`tw-animate-css` de Radix) | `components/molecules/*` |
 | Buscador de la navbar: el campo se ensancha al enfocar (`max-width`, 320 ms) y el panel crece desde su borde inferior, del mismo ancho (`nx-drop-down`: clip-path + opacidad) | CSS | `navbar-search.tsx`, `app/styles/motion.css` |
 | Tarjeta elevable | CSS `nx-lift` | `Card interactive`, `KpiCard` con enlace |
 | Entrada de bloques | CSS `nx-rise` + `--i` | dashboard, tarjetas |
@@ -115,6 +116,24 @@ dueño. El viaje con GSAP da el mismo resultado visual para esta superficie sin
 esos costos. Se reevalúa con React estable y un caso real de elemento
 compartido entre rutas (tarjeta → ficha de una obra), con `prefers-reduced-motion`
 y fallback sin la API.
+
+### Menús y listas que viajan desde su control
+
+Todo `DropdownMenu` (el menú de tres puntos del inicio, «Crear» de la navbar, el selector de
+negocio, los menús de fila…), el panel de la campana y la lista de un `Select` hacen el mismo
+viaje que los modales: el panel **es** el control (tamaño, posición, radio y color), crece hasta su
+sitio y, al cerrar, vuelve a él (`lib/motion/popover-morph.ts`, 480 ms; 300 ms en el `Select`).
+
+- **Qué se mueve:** `transform` (escala desde la esquina y traslación) y, por eso, no recoloca el
+  panel (Radix lo recalcularía si cambiara `width`/`height`); el contenido entra cuando la escala ya
+  casi llegó a 1. Con `data-morph` el CSS no anima (un dueño) y solo sostiene la salida para que
+  Radix espere (`nx-popover-hold`).
+- **Menús:** el control se oculta mientras dura el viaje y reaparece con un fundido cruzado; se
+  encuentra por `aria-labelledby` (Radix lo apunta a su disparador), así **no hay que hacer nada**
+  en cada menú nuevo.
+- **`Select`:** la caja del campo **se queda a la vista**: solo se anima la lista, que crece desde ella.
+- **Sin viaje:** movimiento reducido, o sin control a la vista (un ítem que se cierra al elegirlo): el
+  panel solo se apaga en su sitio. El foco, las flechas, Escape y los roles siguen siendo de Radix.
 
 ### Salida garantizada cuando el padre desmonta el panel
 

@@ -251,3 +251,32 @@ html[data-motion="off"] *::after {
     transform: none;
   }
 }
+
+/* --- Paneles anclados que viajan desde su botón (lib/motion/popover-morph.ts) ---
+   Con `data-morph` el viaje lo dibuja GSAP (un solo dueño): se apaga la animación
+   de entrada y la de salida solo sostiene el panel para que Radix no lo desmonte
+   antes de que termine la reversa (480 ms + margen). */
+@keyframes nx-popover-hold {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+[data-slot="dropdown-menu-content"][data-morph][data-state="open"] {
+  animation: none;
+}
+[data-slot="dropdown-menu-content"][data-morph][data-state="closed"] {
+  animation: nx-popover-hold 520ms linear forwards;
+}
+.nx-morph-panel[data-morph] {
+  animation: none !important;
+}
+/* Lista de un Select: el mismo viaje, más corto (300 ms + margen). */
+.nx-select-list[data-morph][data-state="open"] {
+  animation: none;
+}
+.nx-select-list[data-morph][data-state="closed"] {
+  animation: nx-popover-hold 360ms linear forwards;
+}

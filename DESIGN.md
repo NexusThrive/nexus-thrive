@@ -77,7 +77,7 @@ z-index o una duración sueltos: usa el token, y si falta, se agrega aquí.
 | `--surface-muted` | grafito 100 | grafito 800 | Campos, zonas secundarias |
 | `--border` / `--border-strong` | grafito 200 / `#D9D7D1` | grafito 700 / `#3A3A40` | Separadores |
 | `--border-input` | `#D2D0CA` | `#3A3A40` | Controles editables |
-| `--foreground` / `--foreground-muted` | grafito 950 / 500 | papel / grafito 400 | Texto |
+| `--foreground` / `--foreground-muted` | grafito 950 / 550 (5,9:1) | papel / grafito 350 (8,5:1) | Texto |
 | `--primary` | tinta | oro 500 | Botón principal |
 | `--accent` / `--accent-text` | oro 500 / oro 700 | oro 500 | Acento; texto dorado legible |
 | `--ring` | `#8F6F12` | oro 500 | Foco visible |
@@ -95,7 +95,7 @@ interruptor de la barra). Densidad compacta con `data-density="compact"`
 | Espacio (base 4 px) | `--space-1`…`--space-20` (4–80 px) |
 | Radios | `--radius-sm` 2 · `md` 4 · `lg` 6 · `xl` 8 px |
 | Controles | `--control-h` 40 px · `--row-h` 56 px |
-| Layout | `--sidebar-width` 248 · colapsada 76 · `--topbar-height` 60 (72 desde 768 px) · `--content-max` 1280 · `--content-prose` 72 ch |
+| Layout | `--sidebar-width` 248 · colapsada 76 · `--topbar-height` 60 (72 desde 768 px) · `--content-max` 1280 (1480 desde 1536 px) · `--content-prose` 72 ch |
 | Superficies | `--dialog-w-sm` 440 · `md` 520 · `lg` 640 · `xl` 768 · `--drawer-w` 440 · `--drawer-w-lg` 560 · `--popover-w` 320 |
 
 ### Elevación y capas
@@ -172,8 +172,9 @@ Storybook con sus estados.
 | Esperando contenido dentro de un panel, ficha o lista | `SkeletonRows` (esqueleto con la forma de lo que viene) | `components/molecules/skeleton-rows.tsx` |
 | Esperando la página | `PageSkeleton` (en `loading.tsx`) | `components/organisms/page-skeleton.tsx` |
 | Elegir una opción de una lista | `Select` propio (mismos props que `<select>`; **no** usar `<select>` nativo) | `components/atoms/select.tsx` |
-| Menú de acciones | `DropdownMenu` | `components/molecules/dropdown-menu.tsx` |
+| Menú de acciones | `DropdownMenu` (el panel viaja desde su botón y vuelve a él; ver `docs/design/movimiento.md`) | `components/molecules/dropdown-menu.tsx` |
 | Inicio que cada persona ordena | `CustomizableDashboard` (12 columnas; se edita manteniendo presionado un bloque, sin botón «Personalizar»; arrastrar, ancho y alto por las esquinas, ocultar y «Agregar» gráficos del catálogo `lib/dashboard/chart-catalog.ts`; cada tarjeta es su propio bloque `widgets` con `id`, `label`, `span` y `half`; preferencia versionada en `localStorage`) | `components/organisms/customizable-dashboard.tsx`, lógica en `lib/dashboard/layout.ts` |
+| Crear sin salir de la pantalla (pago, gasto, socio) | **Mini-modal de creación**: `QuickCreateProvider` + `useQuickCreate().open(key)` abren una hoja encima de la pantalla actual desde «Crear», «Acciones rápidas» y la paleta (`QuickActionLink` conserva el `href`: Ctrl/⌘-clic o sin JS navegan). Cada hoja lleva `FullPanelLink` («Abrir en el panel completo →» a la sección). Una operación nueva declara su acción una vez en `lib/navigation/quick-create.ts` (`quickSheetFor`) y reutiliza el formulario del módulo | `components/organisms/quick-create-host.tsx`, `quick-action-link.tsx`, `components/molecules/full-panel-link.tsx`; hojas: `finance-sheets.tsx`, `customer-sheet.tsx` |
 | Guiar a una cuenta nueva | `WelcomeChecklist` («Primeros pasos»): pasos por módulo activo, marcados por datos reales; «Ocultar» por negocio en `localStorage` | `components/organisms/welcome-checklist.tsx`, armado en `app/[tenant]/(app)/page.tsx` |
 | Buscar clientes y catálogo | `CommandPalette` (Ctrl K) + `searchEntitiesAction`: desde 2 letras, 250 ms de espera, máx. 5 por tipo, solo módulos activos y siempre por `tenantId` | `components/organisms/command-palette.tsx`, `app/[tenant]/(app)/_actions/search.ts` |
 | Instalar la app / aviso de versión | `usePwa()`, `UpdateNotice` | `components/providers/pwa.tsx` (política en `docs/design/pwa.md`) |

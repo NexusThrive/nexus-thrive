@@ -84,3 +84,21 @@ Hay dos tipos y no se mezclan:
 
 - **Pequeño** (`ResponsiveSheet` / `FormDialog`, `size` sm–lg): una acción puntual con uno o dos campos (cobrar, anular, emitir una nota, nueva terminal). Se abre **encima** de lo que se está viendo y no lo reemplaza.
 - **Avanzado** (`ResponsiveSheet size="full"`, p. ej. `DocumentViewer`): pantalla completa para ver o trabajar un documento entero. **Facturas, cuentas de cobro, recibos y notas crédito y débito se ven así**, con su estilo de factura (emisor, adquirente, líneas, impuestos, retenciones, saldo, documentos relacionados) e impresión limpia. Las acciones rápidas del documento (modales pequeños) se abren sobre él.
+
+## Mini-modales de creación
+
+Crear algo frecuente (un pago, un gasto, un socio) no debe sacar a la persona de lo que estaba
+haciendo. Desde «Crear» (navbar y botón central móvil), «Acciones rápidas» y la paleta, esas
+acciones abren **una hoja encima de la pantalla actual** (`QuickCreateProvider`); al guardar se
+actualiza el inicio, la campana avisa y la hoja se cierra. Reglas:
+
+1. **El panel completo siempre está a un paso.** Cada hoja lleva `FullPanelLink` («Abrir en el panel
+   completo →») a la sección del módulo; navegar cierra la hoja. El `href` de la acción sigue
+   siendo la sección, así Ctrl/⌘-clic, clic central y sin JavaScript abren la página de siempre.
+2. **Se declara una vez.** La acción vive en `lib/navigation/quick-create.ts` (`quickSheetFor`); la
+   hoja reutiliza el formulario del módulo (sin copias de la lógica) y su misma Server Action.
+3. **Sin mini-modal, se navega.** Reserva, factura y obra siguen llevando a su sección hasta que
+   tengan su formulario corto.
+4. **Datos bajo demanda.** Lo que necesita la hoja (clientes, caja abierta) se pide en reposo y se
+   refresca al abrir (`loadQuickCreateDataAction`, con sesión, módulo activo y `tenantId`).
+

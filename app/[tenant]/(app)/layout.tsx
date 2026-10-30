@@ -9,6 +9,7 @@ import TenantNotifications from "./_components/tenant-notifications";
 import ThemeSync from "./_components/theme-sync";
 import { cookies } from "next/headers";
 import { auth } from "@clerk/nextjs/server";
+import { createTenantDb } from "@/lib/tenant/db";
 import { AppEntrySplash, SPLASH_COOKIE } from "@/components/organisms/app-entry-splash";
 
 /**
@@ -53,9 +54,9 @@ export default async function AppLayout({
   );
 
   const { userId } = await auth();
-  const [savedTheme, businesses] = userId
-    ? await Promise.all([memberTheme(tenantRecord.id, userId), businessesOfMember(userId)])
-    : [null, []];
+  const [savedTheme, businesses, me] = userId
+    ? await Promise.all([memberTheme(tenantRecord.id, userId), businessesOfMember(userId), createTenantDb(tenantRecord.id).users.findByClerkUserId(userId)])
+    : [null, [], null];
 
   // La intro de la N solo sale al entrar a la app tras iniciar sesión (una vez por sesión).
   const showSplash = !(await cookies()).has(SPLASH_COOKIE);
@@ -68,6 +69,7 @@ export default async function AppLayout({
         tenantName={tenantRecord.name}
         vertical={tenantRecord.vertical}
         activeModules={activeModules}
+        role={me?.role}
         businesses={businesses}
         onSwitchBusiness={rememberBusinessAction}
         topbarActions={<TenantNotifications tenantSlug={tenantRecord.slug} />}
