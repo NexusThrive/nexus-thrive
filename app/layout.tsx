@@ -10,8 +10,12 @@ import { PwaProvider } from "@/components/providers/pwa";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL?.trim() || "https://app.nexusthrive.com.co",
+  ),
   title: "NEXUS THRIVE",
-  description: "NEXUS THRIVE — plataforma de gestión de negocios.",
+  description:
+    "NEXUS THRIVE — el sistema operativo del negocio: vende, cobra, controla caja e inventario y atiende a tus clientes en un solo lugar.",
   applicationName: "NEXUS THRIVE",
   appleWebApp: { capable: true, title: "NEXUS", statusBarStyle: "black-translucent" },
   icons: { apple: "/icons/apple-touch-icon.png" },
