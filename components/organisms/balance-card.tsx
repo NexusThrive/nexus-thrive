@@ -8,7 +8,7 @@ const cop = (n: number) => `${n < 0 ? "−" : ""}$ ${Math.round(Math.abs(n)).toL
 
 /**
  * Tarjeta de balance (Finanzas del artefacto): fondo tinta con dos franjas
- * oro inclinadas a 24°, el balance cuenta hasta su cifra, la barra divide
+ * oro inclinadas a 24° a todo el alto, el balance cuenta hasta su cifra, la barra divide
  * ingresos (oro) y gastos (grafito) y crece al aparecer, y abajo las
  * acciones de registrar. Siempre oscura, en ambos temas.
  */
@@ -49,8 +49,12 @@ export function BalanceCard({
 
   return (
     <section className="relative isolate overflow-hidden rounded-lg bg-black p-[22px] text-[#F7F6F3]">
-      <i aria-hidden="true" className="absolute -right-[30px] -top-10 -z-10 h-[260px] w-[150px] -skew-x-[24deg] bg-gradient-to-b from-[rgba(212,175,55,.32)] to-transparent" />
-      <i aria-hidden="true" className="absolute -top-10 right-[70px] -z-10 h-[260px] w-[22px] -skew-x-[24deg] bg-[rgba(212,175,55,.18)]" />
+      {/* Franjas oro inclinadas a 24°: ocupan todo el alto de la tarjeta (se salen
+          por arriba y por abajo, así el borde recto es el de la tarjeta y no un
+          corte a media altura) y quedan dentro por la derecha, sin recortarse. */}
+      <i aria-hidden="true" className="absolute -inset-y-8 right-[6%] -z-10 w-[132px] -skew-x-[24deg] bg-gradient-to-b from-[rgba(212,175,55,.30)] via-[rgba(212,175,55,.12)] to-[rgba(212,175,55,.04)]" />
+      <i aria-hidden="true" className="absolute -inset-y-8 right-[calc(6%+160px)] -z-10 w-[18px] -skew-x-[24deg] bg-gradient-to-b from-[rgba(212,175,55,.22)] to-[rgba(212,175,55,.05)]" />
+      <i aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 rounded-lg ring-1 ring-inset ring-white/[0.06]" />
       <p className="text-[12.5px] text-[#A1A1A8]">{label}</p>
       <p className="mb-3.5 mt-1.5 font-display text-[clamp(28px,6vw,40px)] font-bold leading-[1.1] tracking-[-0.02em] tabular-nums">
         <CountUp value={balance} format={cop} duration={1400} />

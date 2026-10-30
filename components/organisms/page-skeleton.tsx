@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/atoms/skeleton";
 
-export type PageSkeletonVariant = "dashboard" | "table" | "detail" | "form";
+export type PageSkeletonVariant = "dashboard" | "table" | "detail" | "form" | "profile";
 
 function HeaderSkeleton({ actions = true }: { actions?: boolean }) {
   return (
@@ -70,7 +70,23 @@ export function PageSkeleton({
 }) {
   return (
     <div className="grid gap-5" role="status" aria-busy="true" aria-label={label}>
-      {variant === "detail" ? (
+      {variant === "profile" ? (
+        // Ficha 360°: cabecera con foto y acciones, resumen en tres columnas y pestañas.
+        <div className="flex flex-wrap items-center gap-4 rounded-lg border border-border bg-card p-4 sm:p-5">
+          <Skeleton className="size-16 shrink-0 rounded-full" />
+          <div className="grid min-w-0 flex-1 gap-2.5">
+            <Skeleton className="h-6 w-56 max-w-[70%]" />
+            <div className="flex flex-wrap gap-2">
+              <Skeleton className="h-5 w-20" />
+              <Skeleton className="h-5 w-28" />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Skeleton className="h-10 w-28" />
+            <Skeleton className="size-10" />
+          </div>
+        </div>
+      ) : variant === "detail" ? (
         <div className="grid gap-2.5">
           <Skeleton className="h-3 w-28" />
           <Skeleton className="h-8 w-72 max-w-[85%]" />
@@ -121,6 +137,30 @@ export function PageSkeleton({
             ))}
           </div>
           <KpiRowSkeleton />
+          <TableSkeleton rows={5} />
+        </>
+      ) : null}
+
+      {variant === "profile" ? (
+        <>
+          <div className="grid gap-5 lg:grid-cols-3">
+            <div className="grid gap-3 rounded-lg border border-border bg-card p-5 lg:col-span-2">
+              <Skeleton className="h-3 w-32" />
+              <Skeleton className="h-7 w-48" />
+              <Skeleton className="h-2 w-full" />
+              <Skeleton className="h-3 w-40" />
+            </div>
+            <div className="grid gap-3 rounded-lg border border-border bg-card p-5">
+              <Skeleton className="h-3 w-28" />
+              <Skeleton className="h-7 w-36" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+          </div>
+          <div className="flex gap-4 border-b border-border pb-2.5">
+            {[90, 110, 90, 120, 100].map((w, i) => (
+              <Skeleton key={i} className="h-3.5" style={{ width: w }} />
+            ))}
+          </div>
           <TableSkeleton rows={5} />
         </>
       ) : null}

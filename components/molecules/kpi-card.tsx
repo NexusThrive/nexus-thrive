@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { CountUp, type CountFormat } from "@/components/atoms/count-up";
-import { Sparkline } from "@/components/atoms/sparkline";
+import type { CountFormat } from "@/components/atoms/count-up";
+import { KpiTrendBody } from "./kpi-trend-body";
 import { cn } from "@/lib/utils";
 
 export type KpiFormat = CountFormat;
@@ -10,7 +10,7 @@ export type KpiFormat = CountFormat;
 /**
  * KPI NEXUS THRIVE: etiqueta + icono discreto arriba, valor Montserrat 600
  * tabular que cuenta hasta su cifra, pie con la variación y una tendencia
- * que se dibuja al aparecer. Con `href` toda la tarjeta navega (foco de luz
+ * que se revela al aparecer y se puede recorrer con el puntero (la cifra muestra el valor del punto). Con `href` toda la tarjeta navega (foco de luz
  * oro y hundimiento al presionar). Sin chips de color; con `alert` se
  * antepone un punto rojo de 6 px. Acepta `value` numérico (anima) o texto.
  */
@@ -58,29 +58,20 @@ export function KpiCard({
         </span>
         {Icon && <Icon aria-hidden="true" strokeWidth={1.6} className="size-4 shrink-0" />}
       </div>
-      <p
-        className={cn(
-          "mt-1.5 whitespace-nowrap font-display font-semibold tabular-nums tracking-[-0.015em] text-foreground",
-          compact ? "text-2xl leading-8" : "text-[clamp(20px,3.6vw,28px)] leading-[1.2]",
-        )}
-      >
-        {typeof value === "number" ? <CountUp value={value} format={format} /> : value}
-      </p>
-      {delta || hint ? (
-        <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-          {delta}
-          {hint ? <span>{hint}</span> : null}
-        </div>
-      ) : null}
-      {trend ? (
-        <Sparkline values={trend} color={trendColor} delay={250 + index * 80} className="mt-auto pt-2" />
-      ) : null}
+      <KpiTrendBody value={value} format={format} compact={compact} trend={trend} trendColor={trendColor} delay={250 + index * 80}>
+        {delta || hint ? (
+          <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+            {delta}
+            {hint ? <span>{hint}</span> : null}
+          </div>
+        ) : null}
+      </KpiTrendBody>
       {children ? <div className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">{children}</div> : null}
     </>
   );
 
   const classes = cn(
-    "nx-rise nx-spot relative flex h-full flex-col gap-0.5 overflow-hidden rounded-lg border border-border bg-card p-4",
+    "group/kpi nx-rise nx-spot relative flex h-full flex-col gap-0.5 overflow-hidden rounded-lg border border-border bg-card p-4",
     trend && "min-h-[148px]",
     href && "nx-lift focus-visible:outline-2 focus-visible:outline-ring",
     className,

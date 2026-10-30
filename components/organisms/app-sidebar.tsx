@@ -61,31 +61,41 @@ export function AppSidebar() {
   const sideRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLElement>(null);
   const indicatorRef = useRef<HTMLSpanElement>(null);
+  const pinnedRef = useRef<HTMLElement>(null);
+  const pinnedIndicatorRef = useRef<HTMLSpanElement>(null);
   const [tip, setTip] = useState<{ text: string; top: number; left: number } | null>(null);
   const [peek, setPeek] = useState(false);
   const peekTimer = useRef<number | undefined>(undefined);
   // Ingresos y Gastos se despliegan y se ocultan; lo elegido se recuerda en este navegador.
   const closed = useSyncExternalStore(subscribeClosed, readClosed, () => EMPTY);
+  const mainGroups = groups.filter((group) => !group.pinned);
+  const pinnedGroups = groups.filter((group) => group.pinned);
   const toggle = (label: string) => writeClosed({ ...closed, [label]: !closed[label] });
 
   useLayoutEffect(() => {
-    const nav = navRef.current;
-    const indicator = indicatorRef.current;
-    if (!nav || !indicator) return;
-    const place = () => {
-      const active = nav.querySelector<HTMLElement>('[aria-current="page"]');
-      if (!active) {
-        indicator.style.opacity = "0";
-        return;
-      }
-      indicator.style.opacity = "1";
-      indicator.style.height = `${active.offsetHeight}px`;
-      indicator.style.transform = `translateY(${active.offsetTop}px)`;
-    };
-    place();
-    const observer = new ResizeObserver(place);
-    observer.observe(nav);
-    return () => observer.disconnect();
+    const pairs = [
+      [navRef.current, indicatorRef.current],
+      [pinnedRef.current, pinnedIndicatorRef.current],
+    ] as const;
+    const observers: ResizeObserver[] = [];
+    for (const [nav, indicator] of pairs) {
+      if (!nav || !indicator) continue;
+      const place = () => {
+        const active = nav.querySelector<HTMLElement>('[aria-current="page"]');
+        if (!active) {
+          indicator.style.opacity = "0";
+          return;
+        }
+        indicator.style.opacity = "1";
+        indicator.style.height = `${active.offsetHeight}px`;
+        indicator.style.transform = `translateY(${active.offsetTop}px)`;
+      };
+      place();
+      const observer = new ResizeObserver(place);
+      observer.observe(nav);
+      observers.push(observer);
+    }
+    return () => observers.forEach((observer) => observer.disconnect());
   }, [activeKey, rail, closed]);
 
   function showTip(event: React.PointerEvent) {
@@ -127,7 +137,7 @@ export function AppSidebar() {
     >
       <nav ref={navRef} className={styles.nav} onPointerOver={showTip} onPointerLeave={() => setTip(null)}>
         <span ref={indicatorRef} className={styles.indicator} aria-hidden="true" />
-        {groups.map((group, g) => {
+        {mainGroups.map((group, g) => {
           // El riel (solo iconos) no oculta nada; el grupo con la página activa tampoco se esconde.
           const hasActive = group.items.some((item) => item.key === activeKey);
           const collapsed = Boolean(group.collapsible && closed[group.label] && !rail && !hasActive);
@@ -154,7 +164,6 @@ export function AppSidebar() {
                       aria-label={item.label}
                       aria-current={active ? "page" : undefined}
                       onClick={(event) => {
-                        setPeek(false); // al elegir, el riel vuelve a su tamaño
                         onNavigate?.(item, event);
                       }}
                       className={styles.link}
@@ -171,6 +180,30 @@ export function AppSidebar() {
       </nav>
 
       <div className={styles.foot}>
+        {pinnedGroups.length > 0 ? (
+          <nav ref={pinnedRef} className={styles.pinned} aria-label="Sistema" onPointerOver={showTip} onPointerLeave={() => setTip(null)}>
+            <span ref={pinnedIndicatorRef} className={styles.indicator} aria-hidden="true" />
+            {pinnedGroups.flatMap((group) => group.items).map((item) => {
+              const Icon = item.icon;
+              const active = item.key === activeKey;
+              return (
+                <Link
+                  key={item.key}
+                  href={hrefFor(item.href)}
+                  aria-label={item.label}
+                  aria-current={active ? "page" : undefined}
+                  onClick={(event) => {
+                    onNavigate?.(item, event);
+                  }}
+                  className={styles.link}
+                >
+                  <Icon aria-hidden="true" strokeWidth={1.6} />
+                  <span className={styles.label}>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        ) : null}
         <button
           type="button"
           className={styles.collapse}
@@ -179,6 +212,7 @@ export function AppSidebar() {
           aria-pressed={rail}
         >
           <PanelLeft aria-hidden="true" className="size-4" />
+          <span className={styles.label}>{rail ? "Expandir" : "Contraer"}</span>
         </button>
       </div>
 

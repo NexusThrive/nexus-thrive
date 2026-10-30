@@ -12,7 +12,7 @@ export type ChartPoint = {
   expenses: number;
 };
 
-const H = 220;
+const DEFAULT_H = 220;
 const PAD_LEFT = 46;
 const PAD_BOTTOM = 24;
 const PAD_TOP = 10;
@@ -33,7 +33,8 @@ function niceMax(max: number): number {
  * Las barras crecen escalonadas al aparecer, el último día va en oro y la
  * información sigue al cursor o al dedo con un tooltip que rebota.
  */
-export function IncomeChart({ data, label = "Gráfico de ingresos y gastos" }: { data: ChartPoint[]; label?: string }) {
+export function IncomeChart({ data, label = "Gráfico de ingresos y gastos", height = DEFAULT_H }: { data: ChartPoint[]; label?: string; /** Alto del gráfico (px); por defecto 220. */ height?: number }) {
+  const H = height;
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const [width, setWidth] = useState(640);

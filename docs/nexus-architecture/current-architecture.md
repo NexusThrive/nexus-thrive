@@ -67,7 +67,7 @@ flowchart LR
 | Aspecto | Cómo está | Evidencia |
 |---|---|---|
 | Rutas | Segmento dinámico `[tenant]` con grupo `(app)` (shell + gate de onboarding); `/admin` aparte; `/onboarding` de primer nivel | `app/` |
-| Layouts | `app/layout.tsx` (Clerk, tema, splash) → `[tenant]/layout.tsx` (acceso) → `(app)/layout.tsx` (shell, menú, notificaciones) | — |
+| Layouts | `app/layout.tsx` (Clerk, tema) → `[tenant]/layout.tsx` (acceso) → `(app)/layout.tsx` (shell, menú, notificaciones, intro de la N al entrar tras iniciar sesión) | — |
 | Sistema de componentes | Atomic design: `components/{atoms,molecules,organisms,templates,providers}` con historias de Storybook | `components/` |
 | Formularios | Mezcla de `useActionState` + `FormData` (formularios antiguos) y acciones con objetos tipados (más recientes) | `finance/actions.ts` vs `billing/actions.ts` |
 | Validación | Validadores manuales por módulo (`validators.ts`), sin librería de esquemas; se repite en servidor | `app/[tenant]/(app)/*/validators.ts` |

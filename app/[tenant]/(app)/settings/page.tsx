@@ -5,7 +5,6 @@ import { tenantWithModules } from "@/lib/tenant/membership";
 import { createTenantDb } from "@/lib/tenant/db";
 import { listTeam, seatLimit } from "@/lib/business/team-db";
 import type { BusinessModel } from "@/lib/tenant/business-context";
-import { listApiKeys } from "@/lib/api/keys";
 import { canManageTeam } from "@/lib/business/roles";
 import { paymentMethodLabel } from "@/lib/finance";
 import { getTenantAccess } from "@/lib/benefits/benefits-db";
@@ -16,7 +15,6 @@ import {
   sortModules,
 } from "@/lib/admin/catalogs";
 import SettingsShell, {
-  type CardOwner,
   type PlanInfo,
   type ModuleState,
   type ProfileInitialValues,
@@ -107,25 +105,14 @@ export default async function SettingsPage({
     usage: await consumptionFor(tenantRecord.id),
   };
 
-  const ROLE_LABELS = { OWNER: "Propietario", STAFF: "Equipo", SUPERADMIN: "Administrador" } as const;
-  const card: CardOwner = {
-    name: localUser?.name?.trim() || "Tu nombre",
-    role: `${ROLE_LABELS[(localUser?.role as keyof typeof ROLE_LABELS) ?? "OWNER"] ?? "Propietario"} · ${tenantRecord.name}`,
-    code: `NT-${tenantRecord.id.replace(/-/g, "").slice(0, 4).toUpperCase()}`,
-  };
-
-  const apiKeys = team.canManage ? await listApiKeys(tenantRecord.id) : [];
-
   return (
     <SettingsShell
       tenantSlug={tenantRecord.slug}
       canManage={canManage}
       profile={profile}
       team={team}
-      apiKeys={apiKeys}
       systemInfo={systemInfo}
       plan={plan}
-      card={card}
       me={(() => { const m = team.members.find((x) => x.isMe); return { name: m?.name ?? "", email: m?.email ?? "", roleLabel: roleLabel(m?.role ?? "STAFF"), title: m?.title ?? "", phone: m?.phone ?? "" }; })()}
       context={{ vertical: tenantRecord.vertical as VerticalValue, businessModels: (tenantRecord.businessModels ?? []) as BusinessModel[], activity: tenantRecord.activity ?? "" }}
     />

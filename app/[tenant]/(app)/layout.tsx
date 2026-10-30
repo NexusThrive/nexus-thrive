@@ -7,7 +7,9 @@ import { TenantShell } from "@/components/templates/tenant-shell";
 import { VerticalTermsProvider } from "./vertical-terms-context";
 import TenantNotifications from "./_components/tenant-notifications";
 import ThemeSync from "./_components/theme-sync";
+import { cookies } from "next/headers";
 import { auth } from "@clerk/nextjs/server";
+import { AppEntrySplash, SPLASH_COOKIE } from "@/components/organisms/app-entry-splash";
 
 /**
  * Ruta `(app)`: shell del negocio + gate de onboarding.
@@ -55,8 +57,12 @@ export default async function AppLayout({
     ? await Promise.all([memberTheme(tenantRecord.id, userId), businessesOfMember(userId)])
     : [null, []];
 
+  // La intro de la N solo sale al entrar a la app tras iniciar sesión (una vez por sesión).
+  const showSplash = !(await cookies()).has(SPLASH_COOKIE);
+
   return (
     <VerticalTermsProvider terms={getVerticalTerms(tenantRecord.vertical)}>
+      {showSplash ? <AppEntrySplash /> : null}
       <TenantShell
         tenantSlug={tenantRecord.slug}
         tenantName={tenantRecord.name}

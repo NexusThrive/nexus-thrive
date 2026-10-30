@@ -5,28 +5,8 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { cn } from "@/lib/utils";
+import { armModalMorph, exitPlayerFor, MORPH_SECONDS } from "@/lib/motion/modal-morph";
 import styles from "./responsive-sheet.module.css";
-
-/* Último control pulsado (clic, toque o Enter/Espacio): de ahí «nace» el modal.
-   Un solo oyente para toda la app; se guarda una referencia débil. */
-let lastActivator: WeakRef<HTMLElement> | null = null;
-let tracking = false;
-function trackActivators() {
-  if (tracking || typeof document === "undefined") return;
-  tracking = true;
-  const remember = (event: Event) => {
-    const el = (event.target as Element | null)?.closest?.<HTMLElement>('button, a, [role="button"]');
-    if (el) lastActivator = new WeakRef(el);
-  };
-  document.addEventListener("pointerdown", remember, true);
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") remember(event);
-  }, true);
-}
-
-const MORPH_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
-/** Duración del morfeo (entrada y salida: la misma, en espejo). Debe coincidir con `modal-out-hold` en el CSS. */
-const MORPH_MS = 380;
 
 /**
  * Huella de lo escrito en un panel: valores de campos, casillas y archivos
@@ -67,9 +47,6 @@ function saveFromPrompt(content: HTMLElement | null) {
   buttons[buttons.length - 1]?.click();
 }
 
-/** Reversa de cada modal con morfeo (la registra `connectToActivator`). */
-const exitPlayers = new WeakMap<HTMLElement, (el: HTMLElement) => void>();
-
 /**
  * Salida «a la fuerza». Muchas pantallas montan el panel solo mientras está
  * abierto (`{abierto ? <Panel open … /> : null}`): al cerrar, React lo quita en
@@ -96,112 +73,14 @@ function ghostOut(content: HTMLElement, scrim: HTMLElement | null) {
     copies.push(clone);
     return clone;
   };
-  const player = exitPlayers.get(content);
+  const player = exitPlayerFor(content);
   if (scrim) document.body.appendChild(copy(scrim));
   const panel = copy(content);
   // Sin reversa (panel lateral, hoja móvil o modal sin botón de origen): salida CSS.
   if (!player) panel.removeAttribute("data-morph");
   document.body.appendChild(panel);
   player?.(panel);
-  window.setTimeout(() => copies.forEach((el) => el.remove()), MORPH_MS + 120);
-}
-
-// Desde que se carga el módulo: muchas pantallas montan el panel solo al abrirlo,
-// y el clic que lo abre ocurre antes de que exista.
-trackActivators();
-
-/**
- * Modal flotante centrado (PC): «nace» del control que lo abrió.
- *
- * - **Entrada (morfeo):** animación de Web Animations que lleva el modal desde
- *   el rectángulo del control (posición y proporciones) hasta su sitio, con
- *   un breve enfoque (de 4 px de desenfoque a nítido) y opacidad que sube
- *   rápido para que la deformación del contenido casi no se vea. Es el mismo
- *   efecto que un elemento compartido de View Transitions, hecho con FLIP
- *   porque así el foco, Radix y el flujo de React no cambian.
- * - **Salida:** el mismo morfeo en reversa (de vuelta al control, curva espejo,
- *   misma duración). El CSS solo sostiene la animación para que Radix espere.
- *   La superficie deja de capturar el puntero al instante: no bloquea el clic.
- *
- * Si el control ya no existe, está fuera de pantalla, el movimiento está
- * reducido, o la forma es panel lateral u hoja móvil, no hay morfeo: entra la
- * animación CSS centrada de siempre. Un solo dueño por fase: con morfeo la
- * entrada CSS se apaga (`data-morph`).
- */
-function connectToActivator(node: HTMLElement) {
-  node.style.transformOrigin = "";
-  node.removeAttribute("data-morph");
-  // Panel lateral y hoja móvil NO hacen morfeo: el panel siempre entra y sale
-  // deslizándose por su borde (CSS `drawer-in`/`drawer-out`), la hoja sube y baja.
-  if (node.dataset.variant === "drawer" || !window.matchMedia("(min-width: 768px)").matches) return;
-  const activator = lastActivator?.deref();
-  if (!activator?.isConnected) return;
-  const a = activator.getBoundingClientRect();
-  if (a.width === 0 || a.bottom < 0 || a.top > window.innerHeight || a.right < 0 || a.left > window.innerWidth) return;
-
-  // offsetWidth/Height ignoran la escala de la animación. El modal va centrado.
-  const w = node.offsetWidth;
-  const h = node.offsetHeight;
-  const homeX = window.innerWidth / 2;
-  const homeY = window.innerHeight / 2;
-  const base = "translate(-50%, -50%) ";
-  node.style.transformOrigin = `${a.left + a.width / 2 - (homeX - w / 2)}px ${a.top + a.height / 2 - (homeY - h / 2)}px`;
-
-  const root = document.documentElement;
-  const motionOff = root.dataset.motion === "off" || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (motionOff || typeof node.animate !== "function") return;
-
-  const rest = `${base}translate(0px, 0px) scale(1, 1)`;
-  // Misma lista de funciones y origen centrado en las dos direcciones: el
-  // camino es recto hasta el botón (con otra estructura, o con el origen en el
-  // botón, el navegador interpola por matrices y se pasa de largo).
-  const toButton = (target: DOMRect | null) => {
-    const dx = target ? target.left + target.width / 2 - homeX : 0;
-    const dy = target ? target.top + target.height / 2 - homeY : 0;
-    const sx = target ? Math.min(1, Math.max(0.08, target.width / w)) : 0.94;
-    const sy = target ? Math.min(1, Math.max(0.08, target.height / h)) : 0.94;
-    return `${base}translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`;
-  };
-
-  node.setAttribute("data-morph", "");
-  node.animate(
-    [
-      { transform: toButton(a), transformOrigin: "50% 50%", opacity: 0, filter: "blur(4px)", offset: 0 },
-      { opacity: 1, filter: "blur(0px)", offset: 0.45 },
-      { transform: rest, transformOrigin: "50% 50%", opacity: 1, filter: "blur(0px)", offset: 1 },
-    ],
-    { duration: MORPH_MS, easing: MORPH_EASE },
-  );
-
-  // `data-morph` se mantiene mientras esté abierto: quitarlo antes haría que la
-  // entrada CSS arrancara de nuevo. Al cerrar se juega el mismo morfeo EN
-  // REVERSA hacia el botón; mientras, el CSS (`modal-out-hold`) solo mantiene
-  // viva la animación para que Radix no desmonte antes de tiempo.
-  // Reversa hacia el botón (donde esté ahora). Sirve a `node` y al fantasma de
-  // `ghostOut` (copia que se anima cuando el padre desmonta el panel de golpe).
-  const playExit = (el: HTMLElement) => {
-    const now = activator.isConnected ? activator.getBoundingClientRect() : null;
-    const visible = now && now.width > 0 && now.bottom >= 0 && now.top <= window.innerHeight;
-    el.animate(
-      [
-        { transform: rest, transformOrigin: "50% 50%", opacity: 1, filter: "blur(0px)", offset: 0 },
-        { opacity: 1, filter: "blur(0px)", offset: 0.55 },
-        { transform: toButton(visible ? now : null), transformOrigin: "50% 50%", opacity: 0, filter: "blur(4px)", offset: 1 },
-      ],
-      // Curva espejo de la entrada: (0.22, 1, 0.36, 1) → (0.64, 0, 0.78, 0).
-      { duration: MORPH_MS, easing: "cubic-bezier(0.64, 0, 0.78, 0)", fill: "forwards" },
-    );
-  };
-  exitPlayers.set(node, playExit);
-
-  const watcher = new MutationObserver(() => {
-    if (node.getAttribute("data-state") !== "closed") return;
-    watcher.disconnect();
-    // Solo la de entrada (script): cancelar la CSS de sostén haría desmontar de golpe.
-    node.getAnimations().forEach((animation) => !(animation instanceof CSSAnimation) && animation.cancel());
-    playExit(node);
-  });
-  watcher.observe(node, { attributes: true, attributeFilter: ["data-state"] });
+  window.setTimeout(() => copies.forEach((el) => el.remove()), MORPH_SECONDS * 1000 + 120);
 }
 
 /**
@@ -214,12 +93,13 @@ function connectToActivator(node: HTMLElement) {
  *   panel lateral derecho (`drawer`, 440 px; `size="lg"` 560 px) para fichas,
  *   registros con varias secciones y detalle que conserva el contexto.
  *
- * En PC el modal se abre como un morfeo desde el control que lo abrió y se
- * cierra hacia él (ver `connectToActivator` y docs/design/movimiento.md).
+ * En PC el modal viaja desde el control que lo abrió y vuelve a él en 600 ms
+ * por sentido (GSAP, `armModalMorph`); no aplica a móvil, `drawer`, `alert`,
+ * `size="full"` ni movimiento reducido (ver docs/design/movimiento.md §4).
  *
  * Radix Dialog aporta el foco atrapado, Escape, el fondo que cierra, la
- * devolución del foco al control que lo abrió y los roles ARIA; las
- * animaciones viven en el CSS Module (sin JS por cuadro).
+ * devolución del foco al control que lo abrió y los roles ARIA; la hoja móvil,
+ * el panel lateral y el sostén de la salida viven en el CSS Module.
  *
  * Cuándo usar cada forma: docs/design/interaction-patterns.md. Para
  * formularios, preferir `FormDialog` / `FormDrawer` (form-sheet.tsx), que ya
@@ -285,11 +165,18 @@ export function ResponsiveSheet({
   const lastContent = useRef<HTMLElement | null>(null);
   const lastScrim = useRef<HTMLElement | null>(null);
   const mountedAt = useRef(0);
+  const morphCleanup = useRef<() => void>(() => {});
   const setContent = useCallback((node: HTMLDivElement | null) => {
+    // React puede soltar y volver a enganchar el ref (StrictMode): la limpieza
+    // evita dos líneas de tiempo sobre el mismo panel.
+    morphCleanup.current();
+    morphCleanup.current = () => {};
     contentRef.current = node;
     if (node) {
       lastContent.current = node;
-      if (!alert) connectToActivator(node);
+      // Móvil, drawer, alert, `size="full"` y movimiento reducido no viajan:
+      // lo decide `armModalMorph` (docs/superpowers/specs/2026-10-29-prettymodal-desktop-design.md).
+      if (!alert) morphCleanup.current = armModalMorph(node);
       // Huella de «cómo abrió». Se mantiene al día (también si los campos
       // llegan después de montar, p. ej. al cargar una ficha) hasta justo antes
       // del primer cambio de la persona: ahí queda fija.
@@ -323,6 +210,7 @@ export function ResponsiveSheet({
       const content = lastContent.current;
       if (!content || content.getAttribute("data-state") !== "open") return; // ya cerró con su propia animación
       if (performance.now() - mountedAt.current < 250) return; // doble montaje de StrictMode en desarrollo
+      morphCleanup.current();
       ghostOut(content, lastScrim.current);
     };
   }, []);

@@ -41,16 +41,21 @@ export function RouteBar({ className }: { className?: string }) {
     return () => document.removeEventListener("click", onClick);
   }, []);
 
+  // La ruta nueva llegó: la barra se llena. Diferido a rAF para no encadenar renders dentro del efecto.
   useEffect(() => {
-    if (phase !== "loading") return;
-    // Diferido a rAF para no encadenar renders dentro del efecto.
-    const raf = requestAnimationFrame(() => setPhase("finishing"));
-    const timer = setTimeout(() => setPhase("idle"), reduce ? 200 : 520);
-    return () => {
-      cancelAnimationFrame(raf);
-      clearTimeout(timer);
-    };
-  }, [pathname, phase, reduce]);
+    const raf = requestAnimationFrame(() => setPhase((p) => (p === "loading" ? "finishing" : p)));
+    return () => cancelAnimationFrame(raf);
+  }, [pathname]);
+
+  // Llena, se desvanece y se quita; si la ruta no cambia nunca, no se queda colgada.
+  useEffect(() => {
+    if (phase === "idle") return;
+    const timer = setTimeout(
+      () => setPhase("idle"),
+      phase === "finishing" ? (reduce ? 200 : 640) : 15000,
+    );
+    return () => clearTimeout(timer);
+  }, [phase, reduce]);
 
   if (phase === "idle") return null;
 
@@ -59,6 +64,11 @@ export function RouteBar({ className }: { className?: string }) {
   return (
     <div
       className={cn("nx-strip fixed inset-x-0 top-14 z-(--z-banner)", className)}
+      style={
+        finishing
+          ? { opacity: 0, transition: reduce ? "none" : "opacity .28s ease-out .3s" }
+          : { opacity: 1 }
+      }
       role="progressbar"
       aria-label="Cargando página"
     >
@@ -66,7 +76,7 @@ export function RouteBar({ className }: { className?: string }) {
         className={cn("nx-bar", !finishing && "ind")}
         style={
           finishing
-            ? { width: "100%", transition: "width .3s ease, opacity .4s ease" }
+            ? { width: "100%", transition: "width .3s ease" }
             : undefined
         }
       />

@@ -200,26 +200,140 @@ test.describe("Confirmación sobre un panel", () => {
 test.describe("Modal conectado al botón", () => {
   test.skip(({ isMobile }) => isMobile, "En móvil es una hoja inferior");
 
-  test("el origen de la escala es el botón que lo abrió", async ({ page }) => {
+  type Frame = { t: number; w: number; ow: number; cx: number; cy: number };
+
+  /** Graba anchura (visual y de maquetación) y centro del diálogo durante `ms`. */
+  const record = (page: import("@playwright/test").Page, ms: number) =>
+    page.evaluate((duration) => {
+      const w = window as unknown as { __m: Frame[]; __t0: number; __esc: number | null };
+      w.__m = [];
+      w.__t0 = performance.now();
+      w.__esc = null;
+      document.addEventListener(
+        "keydown",
+        (event) => {
+          if (event.key === "Escape") w.__esc = performance.now() - w.__t0;
+        },
+        { capture: true },
+      );
+      const tick = () => {
+        const d = document.querySelector('[role="dialog"]');
+        if (d) {
+          const r = d.getBoundingClientRect();
+          w.__m.push({
+            t: Math.round(performance.now() - w.__t0),
+            w: Math.round(r.width),
+            // Ancho de maquetación: la escala no lo cambia, el viaje del ZIP sí.
+            ow: Math.round((d as HTMLElement).offsetWidth),
+            cx: Math.round(r.left + r.width / 2),
+            cy: Math.round(r.top + r.height / 2),
+          });
+        }
+        if (performance.now() - w.__t0 < duration) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }, ms);
+  const frames = (page: import("@playwright/test").Page) =>
+    page.evaluate(() => (window as unknown as { __m: Frame[] }).__m);
+  const escapeAt = (page: import("@playwright/test").Page) =>
+    page.evaluate(() => (window as unknown as { __esc: number | null }).__esc);
+
+  test("nace del botón y vuelve a él (viaje del ZIP a 0,6 s)", async ({ page }) => {
+    await page.setViewportSize({ width: 1100, height: 600 });
+    await openStory(page, "organismos-formsheet--dialog");
+    const boton = page.getByRole("button", { name: "Nuevo cliente" });
+    const caja = (await boton.boundingBox())!;
+
+    await record(page, 900);
+    await boton.click();
+    const dialogo = page.getByRole("dialog");
+    await dialogo.waitFor();
+    expect(await dialogo.evaluate((el) => el.hasAttribute("data-morph"))).toBe(true);
+    await page.waitForTimeout(900);
+    const apertura = await frames(page);
+    expect(apertura[0].ow, "arranca con el ancho real del botón").toBeLessThan(260);
+    expect(Math.abs(apertura[0].cy - (caja.y + caja.height / 2)), "arranca en el botón").toBeLessThan(24);
+    expect(apertura.at(-1)!.ow, "termina con el ancho del modal").toBeGreaterThan(400);
+
+    // El cierre vuelve al botón.
+    await record(page, 900);
+    await page.keyboard.press("Escape");
+    await expect(dialogo).toHaveCount(0);
+    const cierre = await frames(page);
+    expect(cierre.at(-1)!.ow, "termina con el ancho real del botón").toBeLessThan(260);
+    expect(Math.abs(cierre.at(-1)!.cx - (caja.x + caja.width / 2)), "termina en el botón").toBeLessThan(24);
+    await expect(boton).toBeFocused();
+  });
+
+  test("cerrar a mitad de apertura continúa desde donde va, sin saltar al centro", async ({ page }) => {
+    await page.setViewportSize({ width: 1100, height: 600 });
+    await openStory(page, "organismos-formsheet--dialog");
+    const boton = page.getByRole("button", { name: "Nuevo cliente" });
+    const caja = (await boton.boundingBox())!;
+
+    await record(page, 1800); // cubre apertura, Escape y todo el viaje de vuelta
+    await boton.click();
+    const dialogo = page.getByRole("dialog");
+    await dialogo.waitFor();
+    await page.waitForTimeout(80); // a mitad del viaje de 600 ms
+    const antes = await dialogo.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return { ow: (el as HTMLElement).offsetWidth, cx: Math.round(r.left + r.width / 2) };
+    });
+    await page.keyboard.press("Escape");
+    await expect(dialogo).toHaveCount(0);
+    await page.waitForTimeout(120);
+
+    const m = await frames(page);
+    const esc = (await escapeAt(page))!;
+    const despues = m.filter((f) => f.t >= esc);
+    expect(Math.max(...despues.map((f) => f.ow)), "no se estira de golpe hacia el tamaño final").toBeLessThan(antes.ow + 80);
+    expect(m.at(-1)!.ow, "termina en el ancho del botón").toBeLessThan(260);
+    expect(Math.abs(m.at(-1)!.cx - (caja.x + caja.width / 2)), "termina en el botón").toBeLessThan(24);
+  });
+
+  test("la X y el fondo también devuelven al botón", async ({ page }) => {
+    await page.setViewportSize({ width: 1100, height: 600 });
+    await openStory(page, "organismos-formsheet--dialog");
+    const boton = page.getByRole("button", { name: "Nuevo cliente" });
+    const caja = (await boton.boundingBox())!;
+
+    for (const cerrar of ["x", "fondo"] as const) {
+      await boton.click();
+      const dialogo = page.getByRole("dialog");
+      await dialogo.waitFor();
+      await page.waitForTimeout(600);
+      await record(page, 900);
+      if (cerrar === "x") await dialogo.getByRole("button", { name: "Cerrar" }).click();
+      else await page.mouse.click(60, 300);
+      await expect(dialogo).toHaveCount(0);
+      const m = await frames(page);
+      expect(m.at(-1)!.ow, `${cerrar}: termina en el ancho del botón`).toBeLessThan(260);
+      expect(Math.abs(m.at(-1)!.cx - (caja.x + caja.width / 2)), `${cerrar}: termina en el botón`).toBeLessThan(24);
+    }
+  });
+});
+
+test.describe("Variantes sin viaje", () => {
+  test.skip(({ isMobile }) => isMobile, "El panel lateral y el modal solo se comparan en escritorio");
+
+  test("el panel lateral no se arma", async ({ page }) => {
+    await openStory(page, "organismos-formsheet--drawer");
+    await page.getByRole("button", { name: "Editar cliente" }).click();
+    const dialogo = page.getByRole("dialog");
+    await dialogo.waitFor();
+    expect(await dialogo.evaluate((el) => el.hasAttribute("data-morph"))).toBe(false);
+  });
+
+  test("movimiento reducido: sin data-morph y sin viaje", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await openStory(page, "organismos-formsheet--dialog");
     await page.getByRole("button", { name: "Nuevo cliente" }).click();
-    const dialog = page.getByRole("dialog");
-    await dialog.waitFor();
-    const origin = await dialog.evaluate((el) => (el as HTMLElement).style.transformOrigin);
-    expect(origin).toMatch(/^-?[\d.]+px -?[\d.]+px$/);
-    // Entra con un morfeo (Web Animations) que parte del rectángulo del botón.
-    await page.keyboard.press("Escape");
-    await expect(dialog).toHaveCount(0);
-    await page.getByRole("button", { name: "Nuevo cliente" }).click();
-    const morph = await page.getByRole("dialog").evaluate((el) => ({
-      animating: el.getAnimations().some((a) => a instanceof Animation && !(a as CSSAnimation).animationName),
-      attr: el.hasAttribute("data-morph"),
-    }));
-    expect(morph.animating || morph.attr).toBe(true);
-    // Se cierra igual (el origen no afecta a la interacción) y devuelve el foco.
-    await page.keyboard.press("Escape");
-    await expect(dialog).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Nuevo cliente" })).toBeFocused();
+    const dialogo = page.getByRole("dialog");
+    await dialogo.waitFor();
+    expect(await dialogo.evaluate((el) => el.hasAttribute("data-morph"))).toBe(false);
+    const ancho = await dialogo.evaluate((el) => Math.round(el.getBoundingClientRect().width));
+    expect(ancho).toBeGreaterThan(400);
   });
 });
 

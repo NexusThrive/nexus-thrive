@@ -16,7 +16,13 @@ export type NavItem = {
 };
 
 /** `collapsible`: el grupo se despliega y se oculta en la barra lateral (Ingresos, Gastos). */
-export type NavGroup = { label: string; items: NavItem[]; collapsible?: boolean };
+export type NavGroup = {
+  label: string;
+  items: NavItem[];
+  collapsible?: boolean;
+  /** Se ancla al pie de la barra lateral, fuera del desplazamiento (Sistema: configuración). */
+  pinned?: boolean;
+};
 
 type ModuleNav = CapabilityNav;
 
@@ -127,7 +133,7 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
       items: label === "Compras y gastos" ? [...expenses, ...forGroup(label)] : forGroup(label),
       ...(COLLAPSIBLE.includes(label) ? { collapsible: true } : {}),
     })),
-    { label: "Sistema", items: [FUNCTIONS_ITEM, DATA_ITEM, SETTINGS_ITEM] },
+    { label: "Sistema", items: [FUNCTIONS_ITEM, DATA_ITEM, SETTINGS_ITEM], pinned: true },
   ].filter((group) => group.items.length > 0);
 }
 

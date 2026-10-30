@@ -187,6 +187,18 @@ export default function CustomerTable({
     );
   };
 
+  // Toda la fila abre la ficha; los controles de dentro (enlaces, botones, casillas) conservan su acción.
+  // El enlace del nombre sigue siendo el camino con teclado y lector de pantalla.
+  const openProfile = (event: React.MouseEvent<HTMLElement>, id: string) => {
+    if ((event.target as Element).closest("a, button, input, label, [role='button']")) return;
+    if (window.getSelection()?.toString()) return; // se está seleccionando texto
+    if (event.metaKey || event.ctrlKey) {
+      window.open(`/${tenantSlug}/crm/${id}`, "_blank");
+      return;
+    }
+    router.push(`/${tenantSlug}/crm/${id}`);
+  };
+
   const isArchivedView = status === "archived";
   // Seleccionar es para eliminar: sin ese permiso no hay casillas ni barra.
   const selectable = isArchivedView && canRemove;
@@ -297,7 +309,11 @@ export default function CustomerTable({
               </thead>
               <tbody className="divide-y divide-border">
                 {rows.map((row) => (
-                  <tr key={row.id} className="transition hover:bg-muted/60">
+                  <tr
+                    key={row.id}
+                    onClick={(event) => openProfile(event, row.id)}
+                    className="cursor-pointer transition hover:bg-muted/60"
+                  >
                     {selectable ? (
                       <td className="px-4 py-3">
                         <input
