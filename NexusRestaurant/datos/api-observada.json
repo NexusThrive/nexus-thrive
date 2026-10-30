@@ -1,0 +1,324 @@
+[
+ {
+  "method": "POST",
+  "path": "/app/menus",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/menus"
+ },
+ {
+  "method": "POST",
+  "path": "/app/orders",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/orders"
+ },
+ {
+  "method": "POST",
+  "path": "/app/store",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/store"
+ },
+ {
+  "method": "POST",
+  "path": "/app/tables",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/tables"
+ },
+ {
+  "method": "POST",
+  "path": "/app/riders",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/riders"
+ },
+ {
+  "method": "POST",
+  "path": "/app/platforms",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/platforms"
+ },
+ {
+  "method": "POST",
+  "path": "/app/devices",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/devices"
+ },
+ {
+  "method": "POST",
+  "path": "/app/modifiers",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/modifiers"
+ },
+ {
+  "method": "POST",
+  "path": "/app/tags",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/tags"
+ },
+ {
+  "method": "POST",
+  "path": "/app/appearance",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/appearance"
+ },
+ {
+  "method": "POST",
+  "path": "/app/banners",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/banners"
+ },
+ {
+  "method": "POST",
+  "path": "/app/sales",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/sales"
+ },
+ {
+  "method": "POST",
+  "path": "/app/inventory",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/inventory"
+ },
+ {
+  "method": "POST",
+  "path": "/app/inventory/stock",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/inventory/stock"
+ },
+ {
+  "method": "POST",
+  "path": "/app/inventory/purchases",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/inventory/purchases"
+ },
+ {
+  "method": "POST",
+  "path": "/app/inventory/counts",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/inventory/counts"
+ },
+ {
+  "method": "POST",
+  "path": "/app/inventory/production",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/inventory/production"
+ },
+ {
+  "method": "POST",
+  "path": "/app/inventory/reports",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/inventory/reports"
+ },
+ {
+  "method": "POST",
+  "path": "/app/brand",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/brand"
+ },
+ {
+  "method": "POST",
+  "path": "/app/branches",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/branches"
+ },
+ {
+  "method": "POST",
+  "path": "/app/billing",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/billing"
+ },
+ {
+  "method": "POST",
+  "path": "/app/team",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/team"
+ },
+ {
+  "method": "POST",
+  "path": "/app/activity",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/activity"
+ },
+ {
+  "method": "POST",
+  "path": "/app/academy",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/academy"
+ },
+ {
+  "method": "POST",
+  "path": "/app/feedback",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/feedback"
+ },
+ {
+  "method": "POST",
+  "path": "/app/refiere",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/refiere"
+ },
+ {
+  "method": "POST",
+  "path": "/app/tools",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/tools"
+ },
+ {
+  "method": "POST",
+  "path": "/app/menus/recipes",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/menus/recipes"
+ },
+ {
+  "method": "POST",
+  "path": "/app/menus/items",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/menus/items"
+ },
+ {
+  "method": "POST",
+  "path": "/app/view-as",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/view-as"
+ },
+ {
+  "method": "POST",
+  "path": "/app/menus/import",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/menus/import"
+ },
+ {
+  "method": "POST",
+  "path": "/app/menus/photos",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/menus/photos"
+ },
+ {
+  "method": "POST",
+  "path": "/app/perfil",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/perfil"
+ },
+ {
+  "method": "POST",
+  "path": "/app/menus/:id",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/menus/bdf35027-0b9a-4050-a903-88df08f0f178"
+ },
+ {
+  "method": "POST",
+  "path": "/app/colega-cards",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/colega-cards"
+ },
+ {
+  "method": "POST",
+  "path": "/app/domains",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/domains"
+ },
+ {
+  "method": "POST",
+  "path": "/app/menus/translations",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/menus/translations"
+ },
+ {
+  "method": "POST",
+  "path": "/app/coupons",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/coupons"
+ },
+ {
+  "method": "POST",
+  "path": "/app/whatsapp",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/whatsapp"
+ },
+ {
+  "method": "POST",
+  "path": "/app/team/schedule",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/team/schedule"
+ },
+ {
+  "method": "POST",
+  "path": "/app/team/time-off",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/team/time-off"
+ },
+ {
+  "method": "POST",
+  "path": "/app/team/attendance",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/team/attendance"
+ },
+ {
+  "method": "POST",
+  "path": "/app/team/training",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/team/training"
+ },
+ {
+  "method": "POST",
+  "path": "/app/devices/new",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/devices/new"
+ },
+ {
+  "method": "POST",
+  "path": "/app/products/:id",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/products/398cb94d-b7d6-42e0-abfb-a779f4dd2ff2"
+ },
+ {
+  "method": "POST",
+  "path": "/app/products/new",
+  "status": 200,
+  "ctype": "text/x-component",
+  "from": "/app/products/new?category=ddab7725-097d-4be6-a960-d00f0c32efcc"
+ }
+]

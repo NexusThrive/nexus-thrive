@@ -1,0 +1,118 @@
+[
+ {
+  "trigger": "Restaurante: <restaurante>, Sucursal: · <sucursal>",
+  "open": [
+   {
+    "role": "menu",
+    "items": [
+     {
+      "text": "<restaurante>",
+      "href": null
+     },
+     {
+      "text": "Nuevo restaurante",
+      "href": "/app/branches?abrir=restaurante"
+     },
+     {
+      "text": "<sucursal>",
+      "href": null
+     },
+     {
+      "text": "Nueva sucursal",
+      "href": "/app/branches?abrir=sucursal"
+     },
+     {
+      "text": "Ajustes de la marca",
+      "href": "/app/brand"
+     },
+     {
+      "text": "Ver el panel como…",
+      "href": "/app/view-as"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "trigger": "Pedidos en línea",
+  "open": []
+ },
+ {
+  "trigger": "Te quedan 10 días de prueba gratis",
+  "open": [
+   {
+    "role": "menu",
+    "items": [
+     {
+      "text": "Agenda una videollamada GRATISAlguien de Colega configura contigo tu r",
+      "href": "https://link.colegastudio.com/widget/bookings/configura-tu-men-gratis"
+     },
+     {
+      "text": "Activar mi plan",
+      "href": "/app/billing"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "trigger": "Primeros pasos: 1 de 7",
+  "open": [
+   {
+    "role": "dialog",
+    "items": [
+     {
+      "text": "Personalizar",
+      "href": "/app/appearance"
+     },
+     {
+      "text": "Importar con IA",
+      "href": "/app/menus/import"
+     },
+     {
+      "text": "Subir fotos",
+      "href": "/app/menus/photos"
+     },
+     {
+      "text": "Completar datos",
+      "href": "/app/branches?abrir=datos"
+     },
+     {
+      "text": "Ver vista previa",
+      "href": "/app/preview"
+     },
+     {
+      "text": "Descargar QR",
+      "href": "/app/branches?abrir=qr"
+     },
+     {
+      "text": "Cerrar",
+      "href": null
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "trigger": "Tu cuenta",
+  "open": [
+   {
+    "role": "menu",
+    "items": [
+     {
+      "text": "Mi perfil",
+      "href": "/app/perfil"
+     },
+     {
+      "text": "Refiere y gana",
+      "href": "/app/refiere"
+     },
+     {
+      "text": "Cerrar sesión",
+      "href": null
+     }
+    ]
+   }
+  ]
+ }
+]

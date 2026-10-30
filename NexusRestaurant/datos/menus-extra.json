@@ -1,0 +1,117 @@
+{
+ "aside_0_Agregar nueva herramienta": "ERR TimeoutError: locator.click: Timeout 3000ms exceeded.\nCall log:\n\u001b[2m  - waiting ",
+ "aside_1_Agregar nueva herramienta": [
+  {
+   "role": "menu",
+   "text": "Agregar a Menú\nTodo está incluido en tu plan, salvo lo que diga lo contrario.\nReseñas de platos\nActivar\nAsistente\nActivar\nVer todas las herramientas",
+   "links": [
+    "/app/tools"
+   ]
+  }
+ ],
+ "aside_2_Agregar nueva herramienta": "ERR TimeoutError: locator.click: Timeout 3000ms exceeded.\nCall log:\n\u001b[2m  - waiting ",
+ "aside_3_Agregar nueva herramienta": "ERR TimeoutError: locator.click: Timeout 3000ms exceeded.\nCall log:\n\u001b[2m  - waiting ",
+ "aside_4_Agregar nueva herramienta": "ERR TimeoutError: locator.click: Timeout 3000ms exceeded.\nCall log:\n\u001b[2m  - waiting ",
+ "aside_5_Agregar un nuevo módulo": [
+  {
+   "role": "menu",
+   "text": "Agregar un módulo\nCada módulo agrupa herramientas. Actívalo cuando lo necesites.\nTienda de artículos\nActivar\nCEDIS\nActivar\nVer todas las herramientas",
+   "links": [
+    "/app/tools"
+   ]
+  }
+ ],
+ "topbar_pedidos_en_linea": [
+  {
+   "role": "menu",
+   "text": "Pedidos en línea sin aceptar\nNo hay pedidos esperando.",
+   "links": []
+  }
+ ],
+ "topbar_busqueda_global": [
+  {
+   "role": "dialog",
+   "text": "Buscar en todo el sistema\nBuscar en todo el sistema\nPedidos\nOperación\nTienda en línea\nOperación\nMesas\nOperación\nRepartidores\nOperación\nPlataformas de delivery\nOperación\nCajas e impresoras\nOperación\nMenús\nMenú\nModificadores\nMenú\nEtiquetas\nMenú\nPersonalización\nMenú\nBanners\nMenú\nClientes\nClientes\nVentas\nFinanzas\nResumen\nInventario\nExistencias\nInventario\nCompras y proveedores\nInventario\nConteos y mermas\nInventario\nProducción\nInventario\nReportes\nInventario\nAjustes de la marca\nNegocio\nSucursales\nNegocio\nSuscripción y pagos\nNegocio\nPersonal\nNegocio\nActividad\nNegocio\nSoporte y documentación\nAyuda\nAcademia\nAyuda\nFeedback y sugerencias\nAyuda\nRefiere y gana\nAyuda\nMás herramientas\nAyuda\nNuevo platillo\nAcciones\nDescargar el QR de la sucursal\nAcciones\nAgregar un nuevo módulo\nAcciones",
+   "links": []
+  },
+  {
+   "role": "listbox",
+   "text": "Pedidos\nOperación\nTienda en línea\nOperación\nMesas\nOperación\nRepartidores\nOperación\nPlataformas de delivery\nOperación\nCajas e impresoras\nOperación\nMenús\nMenú\nModificadores\nMenú\nEtiquetas\nMenú\nPersonalización\nMenú\nBanners\nMenú\nClientes\nClientes\nVentas\nFinanzas\nResumen\nInventario\nExistencias\nInventario\nCompras y proveedores\nInventario\nConteos y mermas\nInventario\nProducción\nInventario\nReportes\nInventario\nAjustes de la marca\nNegocio\nSucursales\nNegocio\nSuscripción y pagos\nNegocio\nPersonal\nNegocio\nActividad\nNegocio\nSoporte y documentación\nAyuda\nAcademia\nAyuda\nFeedback y sugerencias\nAyuda\nRefiere y gana\nAyuda\nMás herramientas\nAyuda\nNuevo platillo\nAcciones\nDescargar el QR de la sucursal\nAcciones\nAgregar un nuevo módulo\nAcciones",
+   "links": []
+  }
+ ],
+ "topbar_notificaciones": "ERR TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting",
+ "topbar_regalo_refiere": [
+  {
+   "role": "menu",
+   "text": "Te quedan 10 días de prueba gratis\nHasta el 8 de noviembre\nTienes todas las funciones: menú, tienda en línea, POS, comandera, repartidores e IA. Configura tu restaurante hoy con Primeros pasos para aprovechar tu prueba al máximo.\nAgenda una videollamada GRATIS\nAlguien de Colega configura contigo tu restaurante y te enseña las funciones principales.\nActivar mi plan",
+   "links": [
+    "https://link.colegastudio.com/widget/bookings/configura-tu-men-gratis",
+    "/app/billing"
+   ]
+  }
+ ],
+ "topbar_cohete_primeros_pasos": [
+  {
+   "role": "dialog",
+   "text": "Primeros pasos\n2 de 7 listos\nCompleta estos pasos para tener tu menú listo para tus clientes. Se marcan solos cuando los terminas.\n1\nSube tu logo y elige tus colores\n· pendiente\nQue tu menú se vea como tu restaurante.\nPersonalizar\n2\nCrea o importa tu menú\n· pendiente\nAgrega al menos 5 platillos tuyos. Con IA lo importas de un PDF o una foto.\nImportar con IA\n3\nAgrega fotos a tus platillos\n· pendiente\nAl menos 5 platillos con foto. Súbelas todas de una vez.\nSubir fotos\n4\nCompleta los datos de tu sucursal\n· pendiente\nDirección, WhatsApp o teléfono y horario.\nCompletar datos\nRevisa tu menú como lo verán tus clientes\n· listo\nActiva tu menú\n· listo\n7\nDescarga e imprime tu QR\n· pendiente\nPonlo en tus mesas, en la entrada o en tu mostrador.\nDescargar QR\nCerrar",
+   "links": [
+    "/app/appearance",
+    "/app/menus/import",
+    "/app/menus/photos",
+    "/app/branches?abrir=datos",
+    "/app/branches?abrir=qr"
+   ]
+  }
+ ],
+ "busqueda_consulta_caja": [
+  {
+   "role": "dialog",
+   "text": "Buscar en todo el sistema\nBuscar en todo el sistema\nCajas e impresoras\nOperación",
+   "links": []
+  },
+  {
+   "role": "listbox",
+   "text": "Cajas e impresoras\nOperación",
+   "links": []
+  }
+ ],
+ "movil_menu": [
+  {
+   "role": "dialog",
+   "text": "Módulos\nRestaurante:\n<restaurante>\n, Sucursal:\n· <sucursal>\nOperación\nMenú\nMenús\nModificadores\nEtiquetas\nPersonalización\nBanners\nAgregar nueva herramienta\nClientes\nFinanzas\nInventario\nNegocio\nAgregar un nuevo módulo\nAyuda\nCerrar",
+   "links": [
+    "/app/orders",
+    "/app/store",
+    "/app/tables",
+    "/app/riders",
+    "/app/platforms",
+    "/app/devices",
+    "/app/menus",
+    "/app/modifiers",
+    "/app/tags",
+    "/app/appearance",
+    "/app/banners",
+    "/app/customers",
+    "/app/sales",
+    "/app/inventory",
+    "/app/inventory/stock",
+    "/app/inventory/purchases",
+    "/app/inventory/counts",
+    "/app/inventory/production",
+    "/app/inventory/reports",
+    "/app/brand",
+    "/app/branches",
+    "/app/billing",
+    "/app/team",
+    "/app/activity",
+    "/soporte",
+    "/app/academy",
+    "/app/feedback",
+    "/app/refiere",
+    "/app/tools",
+    "https://link.colegastudio.com/widget/bookings/configura-tu-men-gratis"
+   ]
+  }
+ ]
+}
