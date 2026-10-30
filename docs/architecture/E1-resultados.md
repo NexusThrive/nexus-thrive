@@ -52,6 +52,7 @@ gimnasio, etapa E2).
 | | Antes de E1 | Después |
 |---|---|---|
 | Integración (base PostgreSQL 17 desechable) | 57 archivos / 333 pruebas: todas pasan | 58 archivos / 343: todas pasan, 0 omitidas |
+| De las 34 pruebas que estaban fuera del script | — | **33 ejecutadas**; 1 pendiente (`master-pack-import.file`, necesita un archivo; ver `auditoria-pruebas-integracion.md`) |
 | Equivalencia de la ficha 360° | — | 8 escenarios idénticos a la salida anterior (`tests/integration/tenant/customer-360.golden.json`) |
 | Contrato G1 (puro) | — | 13 pruebas en `tests/unit/tenant/customer-360-contract.test.ts` |
 | Forma de las capas de datos | — | `tests/architecture/e1-core-industria.test.ts` |

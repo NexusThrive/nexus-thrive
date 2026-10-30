@@ -3,7 +3,11 @@
 Estado: auditoría estática original **más su verificación posterior** (sección final). La clasificación de abajo se conserva; los resultados de la
 ejecución real y la decisión sobre `test-integration.sh` están en «Resultado de la verificación».
 
-## Qué pasa hoy
+> **Inventario al cierre de E1.** Se identificaron 34 pruebas de integración fuera de `test-integration.sh`:
+> **33 se ejecutaron y pasan** (ahora corren por patrón en el script) y **1 queda pendiente**, `master-pack-import.file`, que **no se ejecutó**.
+> Cuando más abajo aparece «las 34», se refiere a la auditoría original; las que se ejecutaron son 33.
+
+## Situación al auditar (antes de E1)
 
 | Dato | Valor |
 |---|---|
@@ -13,7 +17,7 @@ ejecución real y la decisión sobre `test-integration.sh` están en «Resultado
 | Casos de prueba en las 20 integración listadas | 145 |
 
 Esas 34 se omiten en el paso «Unit tests» del CI (`TEST_DATABASE_URL=""` → `describe.skipIf`) y no están en el paso «Integration tests», que
-llama a `test-integration.sh`. **Hoy no se ejecutan en CI.**
+llama a `test-integration.sh`. **Entonces no se ejecutaban en CI.**
 
 ### Por qué quedaron fuera (evidencia)
 
@@ -106,9 +110,34 @@ otra) y se ejecutaron las 24 pruebas del script y las 33 de esta auditoría junt
 La predicción estática se cumplió: ninguna de las 33 necesitó adaptación y ninguna falló por el entorno. Se repitieron al final de E1 (segunda ejecución, mismo
 resultado), así que son reproducibles.
 
-**No ejecutada:** `master-pack-import.file`. Exige el MASTER PACK real de un cliente y sus aserciones dependen de ese archivo (actividad `1.01`, cantidad `0.0013`,
-2.288 APU). Existe una copia en carpetas de respaldo del usuario, pero se trata de datos reales de un tercero y no se reutilizó. Su lógica la cubre
-`master-pack-import.integration` (paquete sintético), que pasa. Queda documentada como ejecución manual.
+**Pendiente, no ejecutada:** `master-pack-import.file` (3 casos). Exige el MASTER PACK real de un cliente y sus aserciones dependen de ese archivo.
+Existe una copia en carpetas de respaldo del usuario, pero son datos reales de un tercero y no se reutilizaron. Su lógica la cubre
+`master-pack-import.integration` (paquete sintético), que pasa. Ver «Prueba pendiente» al final.
 
 **Cambio en el CI:** `test-integration.sh` ya no tiene una lista fija. Corre toda `*.integration.test.ts` de `lib/` y `tests/integration/` más 4 pruebas con otro
 nombre, y excluye las `*.file.integration.test.ts`. Resultado con el patrón: 58 archivos, 343 pruebas, 0 fallos. El workflow `ci.yml` no cambia: ya llama al script.
+
+## Prueba pendiente: `master-pack-import.file`
+
+No cuenta entre las 33 ejecutadas. El script de integración la excluye (`--exclude '**/*.file.integration.test.ts'`) y, sin `MASTER_PACK_FILE`, se omite sola.
+
+**Cómo ejecutarla hoy** (a mano, sobre una base desechable y con un archivo que se pueda usar):
+
+```bash
+MASTER_PACK_FILE=/ruta/al/fixture.xlsx pnpm exec vitest run \
+  lib/construction/apu-importer/master-pack-import.file.integration.test.ts
+```
+
+**Requisitos para hacerlo con un fixture sintético y seguro** (no existe todavía; no se creó en E1):
+
+1. **Formato.** Un `.xlsx` cuyas hojas satisfagan `isMasterPackWorkbook` (nombres normalizados por `sheetKey` en `lib/construction/apu-importer/master-pack.ts`), con
+   bloques de APU, hojas planas de capítulos, actividades y auxiliares, y fotos incrustadas como dibujos (`xl/drawings`), que es de donde las lee el analizador.
+2. **Aserciones concretas.** La prueba exige una actividad `1.01` cuyas secciones, en orden, sean `EQUIPO y HERRAMIENTAS:` y `MANO de OBRA:`, con una primera línea de
+   cantidad `0.0013`; que tenga precio de referencia; y al menos una actividad no auxiliar con una línea en `%` y un insumo con foto. Los totales (insumos, actividades,
+   capítulos, imágenes) salen del propio plan, así que un fixture pequeño basta.
+3. **Lo que ya existe no alcanza.** `samplePack()` (`__fixtures__/sample-pack.ts`) es un pack *ya analizado* (no un `.xlsx`) y sus secciones y cantidades no coinciden con
+   las aserciones anteriores; por eso lo usa `master-pack-import.integration` y no esta prueba.
+4. **Dos caminos:** (a) un script que genere el `.xlsx` con datos inventados y la forma anterior; o (b) parametrizar la prueba para que las aserciones sobre `1.01` solo
+   apliquen cuando el archivo es el pack real.
+5. **Seguridad.** El fixture se genera a partir de datos inventados, nunca del archivo de un cliente; no se confirma ningún pack real en el repositorio.
+6. **Entorno.** Base desechable con `TEST_DATABASE_URL` igual a `DATABASE_URL` y `MASTER_PACK_FILE` apuntando al fixture.

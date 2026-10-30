@@ -12,7 +12,7 @@ reconozca `lib/**/*.test.ts` **y** `tests/**/*.test.ts` (`vitest.config.mts`).
 | Con `vi.mock` de ruta relativa | 0 |
 | Que leen archivos por ruta (hay que recalcular la raíz) | 10 |
 | Rutas de prueba fijas en `test-integration.sh` | 24 (20 integración + 4 con otro nombre) |
-| Pruebas `*.integration.test.ts` que **no** están en esa lista | **34** |
+| Pruebas `*.integration.test.ts` que **no** estaban en esa lista | **34** (33 ya se ejecutan por patrón; 1, `master-pack-import.file`, queda pendiente) |
 | Archivos (`.md`, `.sh`, `.yml`, `.json`) que citan rutas de pruebas de `lib/` (`DESIGN.md`, `pull_request_template.md`, `docs/guias/pruebas.md`, `docs/construction/*`, `docs/nexus-architecture/*`…) | 27 |
 
 Carpetas con más pruebas: `tenant` 15, `ops` 12, `construction` 12 (+6 en `apu-importer`), `business` 10, `presence` 7, `accounting` 6, `pos`, `plans`, `finance`, `events`, `einvoice`, `api` 4 cada una.
@@ -48,7 +48,7 @@ tests/
 | 2 | Unitarias de `tenant`, `ops`, `business`, `presence`, `accounting`, `finance`, `pos`, `plans`, `events`, `api`… | Medio | Ninguno |
 | 3 | `construction/` (incluye `apu-importer/`, 18 pruebas) | Medio | Fixtures de datos junto a las pruebas: revisar rutas |
 | 4 | Las 10 que leen por ruta | Medio | Ajuste manual de la raíz; revisar cada una |
-| 5 | Integración: mover a `tests/integration/` | **Alto** | Decidir sobre las 34 no listadas; reescribir las 24 rutas de `test-integration.sh`; actualizar documentación |
+| 5 | Integración: mover a `tests/integration/` | **Alto** | Nada que decidir sobre las 34 antes no listadas: 33 ya corren por patrón y 1 (`master-pack-import.file`) queda pendiente; el script ya no tiene rutas que reescribir; actualizar documentación |
 | 6 | Cierre | Bajo | Quitar `lib/**/*.test.ts` del `include`; añadir una prueba de arquitectura que falle si aparece un `*.test.ts` dentro de `lib/`; actualizar `docs/guias/pruebas.md` y las demás referencias |
 
 ## Verificación de cada ola (criterios de aceptación)
