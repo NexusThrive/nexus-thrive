@@ -1,0 +1,289 @@
+// use prisma-8
+
+enum Role {
+  SUPERADMIN
+  OWNER
+  STAFF
+  /// Equipo del negocio (fase V1): administración, recepción y asesores.
+  ADMIN
+  RECEPTION
+  ADVISOR
+}
+
+/// Etapa comercial de una cuenta en el Operations Center. Distinta del
+/// estado de servicio (`Tenant.active` + `suspendedReason`): un problema de
+/// pago o técnico no es una cancelación comercial.
+/// Embudo comercial de NEXUS (Operations Center · CRM).
+enum LeadStage {
+  NEW
+  CONTACTED
+  QUALIFIED
+  DEMO
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+}
+
+enum TicketStatus {
+  NEW
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  ESCALATED
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+/// Suscripción de un negocio a NEXUS THRIVE (Operations Center · Facturación).
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  SUSPENDED
+  CANCELLED
+}
+
+/// Vencido no es un estado: se calcula con la fecha de vencimiento.
+enum ChargeStatus {
+  PENDING
+  PAID
+  VOID
+  REFUNDED
+}
+
+/// Bandeja de NEXUS (canales propios con los negocios).
+enum InboxChannel {
+  WHATSAPP
+  EMAIL
+}
+
+enum ConversationStatus {
+  OPEN
+  PENDING
+  CLOSED
+}
+
+/// Movimientos de la caja menor.
+enum CashMovementKind {
+  OPENING
+  INCOME
+  EXPENSE
+  VOUCHER
+  REPLENISH
+  ADJUST
+}
+
+/// Tipo de código de acceso: `PROMO` es un regalo (cortesía/promoción) y `PAID`
+/// es un acceso pagado que NEXUS emite tras confirmar el pago. Cambia el texto
+/// que ve la persona ("gratis" vs "cuenta activada"), no el canje.
+enum BenefitKind {
+  PROMO
+  PAID
+}
+
+/// Qué vende el negocio: producto con stock, servicio con duración, plan de
+/// membresía, entrada de museo o tour/paquete.
+enum ProductKind {
+  PRODUCT
+  SERVICE
+  PLAN
+  TICKET
+  TOUR
+}
+
+enum InvoiceStatus {
+  ISSUED
+  PAID
+  VOID
+}
+
+enum AccountStage {
+  ONBOARDING
+  ACTIVE
+  CANCELLED
+  ARCHIVED
+}
+
+/// Plan de NEXUS elegido en el onboarding (Thrive Essential / Elite / Signature).
+enum TenantPlan {
+  /// Gratis: módulos base para conocer NEXUS.
+  ESSENTIAL
+  /// Módulos a la medida del negocio.
+  ELITE
+  /// Todos los módulos del rubro con acompañamiento.
+  SIGNATURE
+}
+
+/// Ciclo de facturación del plan.
+enum BillingCycle {
+  MONTHLY
+  ANNUAL
+}
+
+/// Perfil del negocio en el onboarding auto-servicio: persona natural vs empresa.
+enum TenantType {
+  /// Emprendedor / persona natural (perfil liviano: sin NIT obligatorio).
+  INDIVIDUAL
+  /// Empresa / negocio establecido (perfil completo: NIT, tamaño, dirección).
+  COMPANY
+}
+
+enum Vertical {
+  gym
+  tourism_agency
+  hospitality
+  construction
+  carpentry
+  restaurant
+  retail
+  beauty
+  healthcare
+  mechanic
+  education
+  real_estate
+  hardware_store
+  nautical_transport
+  tour_guides
+  events
+  museum
+  /// Perfil general: agencia, consultora, empresa B2B, emprendimiento o negocio mixto. No exige un rubro.
+  general
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  DECLINED
+  VOIDED
+}
+
+enum PaymentProvider {
+  WOMPI
+  NEQUI
+  CASH
+  TRANSFER
+}
+
+enum MembershipType {
+  mensual
+  trimestral
+  anual
+}
+
+enum MembershipStatus {
+  active
+  expiring
+  expired
+}
+
+/// Categoría de un insumo del banco APU (Análisis de Precios Unitarios).
+enum ApuItemCategory {
+  MATERIAL
+  MANO_DE_OBRA
+  EQUIPO
+  TRANSPORTE
+  /// Otros costos (secciones "OTROS" del pack APU).
+  OTRO
+  /// Subcontratos (sección "SUBCONTRATOS" del pack APU).
+  SUBCONTRATO
+}
+
+/// Origen de una línea de composición APU: importada de un archivo (se
+/// reemplaza al reimportar) o creada a mano (nunca la toca una importación).
+enum CompositionOrigin {
+  IMPORT
+  MANUAL
+}
+
+/// Estado de un presupuesto/cotización de obra.
+enum QuoteStatus {
+  DRAFT
+  SENT
+  APPROVED
+  REJECTED
+  /// Reemplazada por una versión posterior de la misma obra.
+  SUPERSEDED
+}
+
+/// Tipo de seguimiento comercial de una obra (carpeta de cotizaciones).
+enum FollowUpType {
+  NOTE
+  CALL
+  EMAIL
+  MEETING
+  VISIT
+}
+
+/// Ciclo de vida de un proyecto de obra (vertical construcción).
+enum ProjectStatus {
+  DRAFT
+  BIDDING
+  APPROVED
+  IN_EXECUTION
+  COMPLETED
+  CANCELLED
+}
+
+/// Categoría de un recurso que compone la actividad (APU) de una partida
+/// presupuestaria (FASE 2 — Tab 2). Distinto de `ApuItemCategory` (banco de
+/// insumos reutilizable): aquí es la clasificación dentro de un presupuesto.
+enum ResourceType {
+  MATERIAL
+  LABOR
+  EQUIPMENT
+  TRANSPORT
+  OTHER
+  SUBCONTRACT
+}
+
+/// Resultado evaluado de un compromiso semanal (Last Planner System). No
+/// representa el avance de una tarea: es el resultado del compromiso de la
+/// semana — pendiente de evaluar, cumplido o no cumplido (FASE 3 — Tab 3).
+enum CommitmentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+/// Causa de No Cumplimiento (CNC) de un compromiso fallido. Catálogo base
+/// del sistema CNC (Last Planner System).
+enum NonComplianceCause {
+  WEATHER
+  MATERIALS
+  LABOR
+  EQUIPMENT
+  DESIGN_CHANGE
+  PREVIOUS_WORK
+  OTHER
+}
+
+/// Tipo de anotación en la bitácora de campo (FASE 4 — Tab 4).
+enum FieldNoteType {
+  ADVANCE
+  OBSERVATION
+  AUTHORIZATION
+  INCIDENT
+}
+
+/// Condición meteorológica registrada en una anotación de campo (FASE 4 — Tab 4).
+enum WeatherCondition {
+  SUNNY
+  CLOUDY
+  RAIN_LIGHT
+  RAIN_HEAVY
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}

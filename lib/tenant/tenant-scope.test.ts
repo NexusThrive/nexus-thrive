@@ -45,8 +45,19 @@ const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
   { file: "lib/construction/shared.ts", model: "ProjectBudget", why: "recalcBudgetTotals recibe un presupuesto ya leído con tenantId." },
 ];
 
+/** El contrato está dividido por dominio en prisma/schema/ (docs/architecture/). */
+function schemaFiles(dir: string): string[] {
+  return readdirSync(join(ROOT, dir)).flatMap((name) => {
+    const path = `${dir}/${name}`;
+    if (statSync(join(ROOT, path)).isDirectory()) return schemaFiles(path);
+    return name.endsWith(".prisma") ? [path] : [];
+  });
+}
+
 function tenantModels(): Set<string> {
-  const contract = readFileSync(join(ROOT, "prisma/contract.prisma"), "utf8");
+  const contract = schemaFiles("prisma/schema")
+    .map((file) => readFileSync(join(ROOT, file), "utf8"))
+    .join("\n");
   const models = new Set<string>();
   for (const m of contract.matchAll(/model (\w+) \{([\s\S]*?)\n\}/g)) {
     if (/^\s+tenantId\s/m.test(m[2])) models.add(m[1]);

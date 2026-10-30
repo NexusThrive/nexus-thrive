@@ -1,0 +1,466 @@
+// use prisma-8
+
+model Tenant {
+  id           String   @id @default(uuid())
+  name         String
+  slug         String   @unique
+  customDomain String?  @unique
+  vertical     Vertical
+  active       Boolean  @default(true)
+
+  /// Wizard de onboarding: false = el tenant es nuevo y debe configurarse.
+  onboardingCompleted Boolean @default(false)
+  /// Perfil adaptativo (onboarding auto-servicio). Las reglas de validación
+  /// viven en lib/onboarding/validation.ts; estos campos son la persistencia.
+  tenantType TenantType @default(COMPANY)
+  /// Razón social (solo COMPANY; el nombre comercial vive en `name`).
+  legalName String?
+  /// NIT/RUT (obligatorio en COMPANY, opcional en INDIVIDUAL).
+  taxId String?
+  /// Tamaño del equipo: "SOLO" | "2-5" | "6-20" | "20+" (guardado como texto
+  /// validado por la app; el enum rígido dificultaría agregar rangos).
+  teamSize String?
+  /// Dirección física; "REMOTE" si el negocio no tiene local.
+  address String?
+  /// Coordenadas confirmadas con Google Places durante el onboarding
+  /// (opcionales: si no se confirmó la ubicación, quedan en null).
+  latitude  Float?
+  longitude Float?
+  /// `place_id` de Google Places, para refrescar/ubicar el local luego.
+  placeId String?
+  /// Identidad y ubicación (Paso 1 del onboarding).
+  city              String?
+  whatsappNumber    String?
+  /// Ecosistema digital (Paso 3 del onboarding).
+  websiteUrl        String?
+  instagramHandle   String?
+  googleBusinessUrl String?
+  /// Plan elegido en el onboarding. Aún no hay cobro: se guarda la elección y
+  /// el precio que se le mostró (calculado en el servidor con lib/plans).
+  plan                TenantPlan   @default(ESSENTIAL)
+  billingCycle        BillingCycle @default(MONTHLY)
+  /// Precio mensual en centavos de USD (0 en Essential).
+  planMonthlyUsdCents Int          @default(0)
+  planSelectedAt      DateTime?
+  /// Tramo de clientes elegido (CustomerTierSetting.id) y módulos contratados
+  /// con el plan. "Contratado" ≠ "habilitado" (TenantModule) ≠ "operativo"
+  /// (ModuleSetting.status).
+  customerTierId    String?
+  contractedModules String[]?
+  /// Límites acordados en un código a medida (null = los del plan).
+  maxUsers          Int?
+  maxCustomers      Int?
+  /// Método de costeo del inventario. Hoy solo AVG (promedio ponderado); FIFO llegará después.
+  costingMethod     String   @default("AVG")
+  /// Genera el documento fiscal de cada venta para enviarlo a un proveedor tecnológico autorizado.
+  einvoiceEnabled    Boolean  @default(false)
+  /// Contabiliza automáticamente cada venta, cobro, nota y compra con las reglas del plan de cuentas.
+  accountingEnabled  Boolean  @default(false)
+  /// Modelo comercial (contexto, no restricción): B2B | B2C | B2B2C. Vacío = sin definir.
+  businessModels    String[]?
+  /// Qué hace el negocio, en sus palabras (contexto para recomendaciones).
+  activity          String?
+  /// Operations Center: etapa comercial y responsable de cuenta (StaffMember.id).
+  accountStage     AccountStage @default(ACTIVE)
+  accountManagerId String?
+  /// Métodos de pago aceptados (Paso 4 del onboarding; catálogo PaymentProvider).
+  /// Nullable en DB: un tenant nuevo aún no los configuró; el código normaliza a [].
+  paymentMethods    PaymentProvider[]?
+
+  /// Suspensión administrativa (Panel CEO): motivo obligatorio + timestamp.
+  /// Se conserva aunque el tenant se reactive (historial de por qué se suspendió).
+  suspendedReason String?
+  suspendedAt     DateTime?
+
+  /// Ajustes operativos del rubro (aforo del museo, franjas, horarios…).
+  settings          Json?
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+
+  users         User[]
+  customers     Customer[]
+  payments      Payment[]
+  expenses      Expense[]
+  memberships   Membership[]
+  modules       TenantModule[]
+  customerNotes CustomerNote[]
+  apuItems      ApuItem[]
+  apuActivities ApuActivity[]
+  apuImages     ApuImage[]
+  apuChapters   ApuChapter[]
+  apuImportRuns ApuImportRun[]
+  apuPriceHistory ApuItemPriceHistory[]
+  quotes        Quote[]
+  projectFollowUps ProjectFollowUp[]
+  budgetItemProgress BudgetItemProgress[]
+  projects      Project[]
+  projectBudgets ProjectBudget[]
+  budgetChapters BudgetChapter[]
+  budgetItems   BudgetItem[]
+  budgetItemResources BudgetItemResource[]
+  budgetBaselines   BudgetBaseline[]
+  projectPlans      ProjectPlan[]
+  lookaheadTasks    LookaheadTask[]
+  weeklyCommitments WeeklyCommitment[]
+  fieldLogs         FieldLog[]
+  presenceScans     PresenceScan[]
+  bookings           Booking[]
+  contacts           TenantContact[]
+  leads              Lead[]
+  apiKeys            ApiKey[]
+  apiRequestLogs     ApiRequestLog[]
+  idempotencyRecords IdempotencyRecord[]
+  outboxEvents       OutboxEvent[]
+  webhookEndpoints   WebhookEndpoint[]
+  webhookDeliveries  WebhookDelivery[]
+  usageCounters      UsageCounter[]
+  externalConnections ExternalConnection[]
+  providerEvents     ProviderEvent[]
+  parties            Party[]
+  partyRoles         PartyRole[]
+  productVariants    ProductVariant[]
+  productBarcodes    ProductBarcode[]
+  priceLists         PriceList[]
+  priceListItems     PriceListItem[]
+  warehouses         Warehouse[]
+  stockLevels        StockLevel[]
+  purchaseOrders     PurchaseOrder[]
+  purchaseOrderLines PurchaseOrderLine[]
+  supplierInvoices   SupplierInvoice[]
+  stockTransfers     StockTransfer[]
+  stockTransferLines StockTransferLine[]
+  stockCounts        StockCount[]
+  stockCountLines    StockCountLine[]
+  taxRates           TaxRate[]
+  posTerminals       PosTerminal[]
+  paymentIntents     PaymentIntent[]
+  fiscalDocuments    FiscalDocument[]
+  accounts           Account[]
+  accountingPeriods  AccountingPeriod[]
+  accountingRules    AccountingRule[]
+  costCenters        CostCenter[]
+  journalEntries     JournalEntry[]
+  presenceSnapshots  PresenceSnapshot[]
+  siteConfigs        SiteConfig[]
+  storeOrders        StoreOrder[]
+  googleListings     GoogleListing[]
+  trackedLinks       TrackedLink[]
+  contactLeads       ContactLead[]
+  reviews            Review[]
+  storeOrderLines    StoreOrderLine[]
+  journalLines       JournalLine[]
+  paymentRefunds     PaymentRefund[]
+  reconciliationRuns ReconciliationRun[]
+  supplierPayments   SupplierPayment[]
+  numberingResolutions NumberingResolution[]
+  supportTickets     SupportTicket[]
+  charges            Charge[]
+  benefitRedemptions BenefitRedemption[]
+  inboxConversations InboxConversation[]
+  satisfactionSurveys SatisfactionSurvey[]
+  attachments        Attachment[]
+  cashBoxes          CashBox[]
+  cashSessions       CashSession[]
+  cashMovements      CashMovement[]
+  products           Product[]
+  stockMovements     StockMovement[]
+  invoices           Invoice[]
+  invites            TenantInvite[]
+  attendances        Attendance[]
+  ticketSales        TicketSale[]
+  departures         Departure[]
+  tourBookings       TourBooking[]
+  presenceRequests   PresenceRequest[]
+  subscription       Subscription?
+
+  @@index([slug])
+  @@rls
+}
+
+model TenantModule {
+  id         String       @id @default(uuid())
+  tenantId   String
+  tenant     Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Id de la capacidad (lib/capabilities/registry.ts). Texto validado en el
+  /// servidor con `isModule`: agregar un módulo no necesita migración.
+  moduleName String
+  active     Boolean      @default(true)
+  createdAt  DateTime     @default(now())
+  updatedAt  temporal.updatedAt()
+
+  @@unique([tenantId, moduleName])
+  @@index([tenantId])
+  @@rls
+}
+
+model User {
+  id          String   @id @default(uuid())
+  clerkUserId String
+  email       String
+  name        String?
+  role        Role     @default(STAFF)
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// Retirado del negocio: conserva su historial pero ya no entra.
+  active      Boolean  @default(true)
+  phone       String?
+  title       String?
+  /// Tema elegido (light | dark), guardado en la cuenta.
+  theme       String?
+  removedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   temporal.updatedAt()
+
+  customerNotes CustomerNote[]
+
+  @@unique([clerkUserId, tenantId])
+  @@index([tenantId])
+  @@rls
+}
+
+/// Registro de auditoría de acciones privilegiadas del SuperAdmin
+/// (suspensión, activación, módulos, exportación, impersonación). No se
+/// relaciona por FK con Tenant a propósito: la auditoría debe sobrevivir al
+/// borrado del negocio. NUNCA guarda secretos ni tokens.
+model AuditLog {
+  id         String   @id @default(uuid())
+  /// Clerk user id del SuperAdmin actor (no expone datos sensibles).
+  actorId    String
+  actorEmail String?
+  /// Acción auditada (string controlado por el código, no un enum: las
+  /// migraciones de enum en Prisma 8 son frágiles y aquí no aportan valor).
+  action     String
+  /// Negocio objetivo (puede ser null en acciones globales como exportar).
+  targetTenantId   String?
+  targetTenantName String?
+  /// Metadatos serializables (motivo, módulos, filas exportadas…). Sin secretos.
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+  /// Quién actuó: USER | API_KEY | AGENT | AUTOMATION | SYSTEM.
+  actorType  String   @default("USER")
+  /// Llave de API que ejecutó la acción (si fue por API/MCP).
+  apiKeyId   String?
+  /// Identificador de la petición (el mismo de `X-Request-Id`).
+  requestId  String?
+
+  @@index([createdAt])
+  @@index([targetTenantId])
+  @@index([actorId])
+  @@index([apiKeyId])
+  @@rls
+}
+
+/// Rol del equipo interno de NEXUS (Operations Center). Los permisos son
+/// claves controladas por `lib/ops/permissions.ts`; `system` = rol base que
+/// no se puede borrar (sí editar, salvo el de Propietario).
+model StaffRole {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  name        String
+  description String?
+  permissions String[]
+  system      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   temporal.updatedAt()
+
+  members StaffMember[]
+  invites StaffInvite[]
+  @@rls
+}
+
+/// Invitación al equipo de NEXUS: un enlace de un solo uso que ata una cuenta
+/// de Clerk concreta a la ficha del integrante. Evita depender de que la
+/// persona se registre con el mismo correo.
+model StaffInvite {
+  id          String    @id @default(uuid())
+  token       String    @unique
+  email       String
+  roleId      String
+  role        StaffRole @relation(fields: [roleId], references: [id])
+  /// Quién generó la invitación.
+  createdById String?
+  /// Vence (por defecto 7 días).
+  expiresAt   DateTime
+  /// Cuándo se usó (la cuenta quedó vinculada).
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   temporal.updatedAt()
+
+  @@index([email])
+  @@index([roleId])
+  @@rls
+}
+
+/// Integrante del equipo NEXUS. No pertenece a ningún negocio: su acceso al
+/// panel sale de su rol. Se invita por correo; `clerkUserId` se completa
+/// la primera vez que entra con ese correo.
+model StaffMember {
+  id          String    @id @default(uuid())
+  clerkUserId String?   @unique
+  email       String    @unique
+  name        String?
+  title       String?
+  roleId      String
+  role        StaffRole @relation(fields: [roleId], references: [id])
+  active      Boolean   @default(true)
+  invitedById String?
+  joinedAt    DateTime?
+  lastSeenAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   temporal.updatedAt()
+
+  @@index([roleId])
+  @@rls
+}
+
+/// Contactos de un negocio para el equipo NEXUS (no son clientes del
+/// negocio): para qué sirve cada canal y cuándo contactarlo.
+model TenantContact {
+  id               String   @id @default(uuid())
+  tenantId         String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name             String
+  /// Dueño, administrativo, técnico, comercial…
+  purpose          String
+  phone            String?
+  whatsapp         String?
+  email            String?
+  preferredChannel String?
+  hours            String?
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        temporal.updatedAt()
+
+  @@index([tenantId])
+  @@rls
+}
+
+/// Archivo del negocio guardado en la base (comprobantes, fotos de clientes,
+/// soportes de gastos, logos). `kind` + `ownerId` dicen a qué pertenece.
+model Attachment {
+  id           String   @id @default(uuid())
+  tenantId     String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  kind         String
+  ownerId      String
+  fileName     String
+  mimeType     String
+  byteSize     Int
+  sha256       String
+  data         Bytes
+  uploadedById String?
+  createdAt    DateTime @default(now())
+
+  @@index([tenantId, kind, ownerId])
+  @@rls
+}
+
+/// Invitación para unirse al equipo de un negocio (se acepta al iniciar
+/// sesión con ese correo).
+model TenantInvite {
+  id          String    @id @default(uuid())
+  tenantId    String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  email       String
+  name        String?
+  role        Role
+  invitedById String?
+  acceptedAt  DateTime?
+  revokedAt   DateTime?
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+
+  @@index([tenantId])
+  @@index([email])
+  @@rls
+}
+
+/// Notificaciones que la persona descartó (deslizando).
+model DismissedNotification {
+  id        String   @id @default(uuid())
+  userId    String
+  key       String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, key])
+  @@rls
+}
+
+/// Consumo medido por negocio, medidor y periodo (`YYYY-MM`). Base de los cupos
+/// (`limitQuantity` null = el predeterminado del medidor) y del cobro por uso.
+model UsageCounter {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// api.requests | events.delivered | ai.tokens | messages.sent | automations.runs
+  meter         String
+  period        String
+  quantity      Int      @default(0)
+  limitQuantity Int?
+  updatedAt     temporal.updatedAt()
+
+  @@unique([tenantId, meter, period])
+  @@index([tenantId, period])
+  @@rls
+}
+
+/// Tercero único: una persona o empresa del negocio, una sola vez, con los roles
+/// que cumple (cliente, proveedor, empleado, contacto). Los documentos
+/// comerciales, la cartera y la contabilidad cuelgan de aquí.
+model Party {
+  id             String   @id @default(uuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  /// PERSON | COMPANY
+  kind           String   @default("PERSON")
+  /// CC | NIT | CE | PASAPORTE | TI | RC | NIT_EXTRANJERO (opcional: puede ser desconocido).
+  documentType   String?
+  /// Solo letras y números, sin puntos ni guiones ni dígito de verificación.
+  documentNumber String?
+  checkDigit     String?
+  legalName      String
+  tradeName      String?
+  email          String?
+  phone          String?
+  addressLine    String?
+  city           String?
+  countryCode    String   @default("CO")
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      temporal.updatedAt()
+  roles          PartyRole[]
+  customers      Customer[]
+  purchaseOrders PurchaseOrder[]
+  supplierInvoices SupplierInvoice[]
+
+  @@index([tenantId, legalName])
+  /// Un documento identifica a UN tercero por negocio.
+  @@index([tenantId, documentNumber], unique: true, where: "\"documentNumber\" IS NOT NULL", name: "Party_tenantId_documentNumber_key")
+  @@rls
+}
+
+model PartyRole {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  partyId   String
+  party     Party    @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  /// CUSTOMER | SUPPLIER | EMPLOYEE | CONTACT
+  role      String
+  createdAt DateTime @default(now())
+
+  @@unique([partyId, role])
+  @@index([tenantId, role])
+  @@rls
+}
+
+/// Límite de negocios por persona, fijado desde el Operations Center (clave: correo en minúsculas). Sin fila = sin límite.
+model AccountLimit {
+  email             String   @id
+  maxOrganizations  Int
+  note              String?
+  updatedAt         temporal.updatedAt()
+  @@rls
+}

@@ -19,7 +19,8 @@
 # ============================================================================
 set -euo pipefail
 
-CONTRACT="prisma/contract.prisma"
+# El contrato se divide por dominio en prisma/schema/ (antes: prisma/contract.prisma).
+CONTRACT="prisma/schema prisma/contract.prisma"
 SQL_DIR="docs/prod-sql"
 
 BASE="${1:-}"
@@ -43,8 +44,24 @@ changed_files() {
   git diff --name-only "$BASE"...HEAD -- "$@" 2>/dev/null || true
 }
 
-if [ -z "$(changed_files "$CONTRACT")" ]; then
+# shellcheck disable=SC2086 # CONTRACT es una lista de rutas a propósito
+if [ -z "$(changed_files $CONTRACT)" ]; then
   # No cambió el modelo de datos: no hace falta SQL.
+  exit 0
+fi
+
+# Mover modelos entre archivos del contrato no cambia la base. Se exime solo si
+# el contenido (líneas sin comentarios `//` ni blancos, ordenadas) es el mismo
+# en la base de comparación y en HEAD: es una pura reubicación, no un cambio.
+schema_lines() {
+  local ref="$1" f
+  # shellcheck disable=SC2086 # CONTRACT es una lista de rutas a propósito
+  for f in $(git ls-tree -r --name-only "$ref" -- $CONTRACT 2> /dev/null | grep '\.prisma$' || true); do
+    git show "$ref:$f"
+  done | sed 's/[[:space:]]*$//' | grep -vE '^[[:space:]]*$|^[[:space:]]*//([^/]|$)' | LC_ALL=C sort
+}
+if [ "$(schema_lines "$BASE" | sha256sum)" = "$(schema_lines HEAD | sha256sum)" ]; then
+  echo "El contrato solo cambió de archivos (mismo contenido): no hay cambio de tablas."
   exit 0
 fi
 
@@ -52,7 +69,7 @@ new_sql="$(changed_files "$SQL_DIR" | grep '\.sql$' || true)"
 
 if [ -z "$new_sql" ]; then
   cat >&2 <<EOF
-ERROR: cambió el modelo de datos ($CONTRACT) pero no hay ningún SQL nuevo en $SQL_DIR/.
+ERROR: cambió el modelo de datos (prisma/schema/) pero no hay ningún SQL nuevo en $SQL_DIR/.
 
 La app se despliega sola (Vercel toma main), pero el SQL de producción se
 corre a mano en Supabase. Sin ese SQL, la versión se cae en producción.

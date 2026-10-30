@@ -33,7 +33,7 @@ pnpm test:integration      # requiere Postgres local (TEST_DATABASE_URL)
 ```
 
 `pnpm verify` encadena tipos, unitarias, integración y build; es lo que corre el
-CI. Si cambias el contrato de datos (`prisma/contract.prisma`), revisa
+CI. Si cambias el contrato de datos (`prisma/schema/`, un archivo por dominio), revisa
 [devops.md §4](docs/guias/devops.md#sql-de-producción): el SQL de producción se
 corre **antes** del merge.
 
