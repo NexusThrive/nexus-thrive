@@ -9,6 +9,7 @@ import { searchEntitiesAction, type SearchHit } from "@/app/[tenant]/(app)/_acti
 import { Kbd } from "@/components/atoms/kbd";
 import { setTheme } from "@/components/atoms/theme-toggle";
 import { usePwa } from "@/components/providers/pwa";
+import { useQuickCreate } from "@/components/organisms/quick-create-host";
 import { usePalette, useShell } from "@/components/providers/shell-context";
 import { CAPABILITIES } from "@/lib/capabilities/registry";
 import { cn } from "@/lib/utils";
@@ -88,6 +89,7 @@ export function PaletteList({
 }) {
   const { groups, activeModules, createActions, quickActions, hrefFor } = useShell();
   const router = useRouter();
+  const quick = useQuickCreate();
   const { canInstall, install } = usePwa();
   const actions = createActions ?? quickActions;
   // Lo que el negocio aún no usa también se encuentra: lleva a Funciones para encenderlo.
@@ -151,7 +153,7 @@ export function PaletteList({
             <Command.Item
               key={action.key}
               value={`crear ${action.label}`}
-              onSelect={() => run(() => router.push(hrefFor(action.href)))}
+              onSelect={() => run(() => { if (!quick.open(action.key)) router.push(hrefFor(action.href)); })}
               className={itemClass}
             >
               <action.icon aria-hidden="true" />

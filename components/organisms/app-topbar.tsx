@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/molecules/dropdown-menu";
 import { RouteBar } from "@/components/molecules/route-bar";
+import { useQuickCreate } from "@/components/organisms/quick-create-host";
 import { useShell } from "@/components/providers/shell-context";
 import { cn } from "@/lib/utils";
 import styles from "./app-topbar.module.css";
@@ -46,6 +47,7 @@ function AccountButton() {
 export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; /** Selector de negocio (PC), a la derecha. */ switcher?: ReactNode; /** Buscador en línea de PC (`NavbarSearch`); sin él, el botón abre la paleta modal. */ search?: ReactNode }) {
   const { title, brandName, hrefFor, openSearch, quickActions, createActions = quickActions } = useShell();
   const router = useRouter();
+  const quick = useQuickCreate();
 
   return (
     <header
@@ -125,7 +127,9 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
                 {createActions.map((action) => (
                   <DropdownMenuItem
                     key={action.key}
-                    onSelect={() => router.push(hrefFor(action.href))}
+                    onSelect={() => {
+                      if (!quick.open(action.key)) router.push(hrefFor(action.href));
+                    }}
                     className="min-h-12 items-center gap-3 px-2.5"
                   >
                     <span className="grid size-8 shrink-0 place-items-center rounded-md bg-surface-muted text-foreground">

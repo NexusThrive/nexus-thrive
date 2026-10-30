@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { MODULES, VERTICALS } from "@/lib/admin/catalogs";
 import { activeNavItem, buildTenantNav, isNavActive, modulesForRoute, tenantRelativePath } from "./tenant-nav";
-import { quickCreateActions } from "./quick-create";
+import { quickCreateActions, quickSheetFor } from "./quick-create";
 
 describe("buildTenantNav", () => {
   it("siempre muestra Inicio aunque el módulo de panel no esté activo", () => {
@@ -149,6 +149,16 @@ describe("quickCreateActions por permisos", () => {
     const reception = quickCreateActions("construction", [...mods], Infinity, "RECEPTION").map((a) => a.key);
     expect(reception).not.toContain("new-project");
     expect(reception).toContain("payment");
+  });
+});
+
+describe("quickSheetFor", () => {
+  it("pago, gasto y socio nuevo tienen mini-modal; el resto navega", () => {
+    expect(quickSheetFor("payment")).toBe("payment");
+    expect(quickSheetFor("expense")).toBe("expense");
+    expect(quickSheetFor("new-customer")).toBe("customer");
+    expect(quickSheetFor("booking")).toBeNull();
+    expect(quickSheetFor("invoice")).toBeNull();
   });
 });
 

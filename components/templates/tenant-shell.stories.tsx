@@ -3,11 +3,15 @@ import { Building2, HandCoins, Wallet } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { KpiCard } from "@/components/molecules/kpi-card";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
+import { VerticalTermsProvider } from "@/app/[tenant]/(app)/vertical-terms-context";
+import { getVerticalTerms } from "@/lib/vertical-terms";
 import { TenantShell } from "./tenant-shell";
 
 const meta = {
   title: "Plantillas/TenantShell",
   component: TenantShell,
+  // El layout `(app)` envuelve el shell con el vocabulario de la vertical (los mini-modales de «Crear» lo leen).
+  decorators: [(Story) => <VerticalTermsProvider terms={getVerticalTerms("construction")}><Story /></VerticalTermsProvider>],
   args: {
     tenantSlug: "constructora",
     tenantName: "Constructora Andina",

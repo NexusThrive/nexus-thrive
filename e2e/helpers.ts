@@ -24,6 +24,15 @@ export async function expectNoAxeViolations(page: Page) {
         .map((a) => a.finished.catch(() => undefined)),
     ),
   );
+  // El viaje de los modales y paneles anclados lo dibuja GSAP con estilos en línea (no aparece en `getAnimations`):
+  // se espera a que el panel termine de abrir (sin transform ni opacidad a medias) para no medir contrastes intermedios.
+  await page
+    .waitForFunction(() =>
+      Array.from(document.querySelectorAll<HTMLElement>("[data-morph]")).every(
+        (el) => el.getAttribute("data-state") === "closed" || (!el.style.transform && !["0", "0.5"].includes(el.style.opacity) && ![...el.children].some((c) => (c as HTMLElement).style.opacity === "0")),
+      ),
+    )
+    .catch(() => undefined);
   // El complemento de accesibilidad de Storybook también corre axe al pintar la historia:
   // si coincide con este escaneo, se espera un instante y se repite una vez.
   const scan = () => new AxeBuilder({ page }).withTags(WCAG_AA).analyze();

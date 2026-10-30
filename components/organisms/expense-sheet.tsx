@@ -1,5 +1,6 @@
 "use client";
 
+import { FullPanelLink } from "@/components/molecules/full-panel-link";
 import { useRef, useState } from "react";
 import { Check, Paperclip } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
@@ -35,6 +36,7 @@ export function ExpenseSheet({
   categories,
   onSave,
   defaultPaidFrom = "BANK",
+  fullHref,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -42,6 +44,8 @@ export function ExpenseSheet({
   onSave: (input: ExpenseSaveInput) => Promise<ExpenseSaveResult>;
   /** De dónde sale por defecto (CASH si hay una caja abierta). */
   defaultPaidFrom?: string;
+  /** Mini-modal de «Crear»: enlace «Abrir en el panel completo» a la sección del módulo. */
+  fullHref?: string;
 }) {
   const [raw, setRaw] = useState("");
   const [category, setCategory] = useState(categories[0] ?? "");
@@ -101,7 +105,12 @@ export function ExpenseSheet({
       open={open}
       onOpenChange={close}
       title="Registrar gasto"
-      description="Se descuenta de la caja menor."
+      description={
+        <>
+          Se descuenta de la caja menor.
+          {fullHref ? <> <FullPanelLink href={fullHref} /></> : null}
+        </>
+      }
       footer={
         <>
           <button type="button" onClick={() => close(false)} disabled={state !== "idle"} className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none")}>

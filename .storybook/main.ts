@@ -30,6 +30,10 @@ const config: StorybookConfig = {
       "@nexus/brand": path.resolve(import.meta.dirname, "../packages/brand/src"),
       // Server action de la búsqueda: en Storybook no hay servidor ni base.
       "@/app/[tenant]/(app)/_actions/search": path.resolve(import.meta.dirname, "mocks/search.ts"),
+      // Mini-modales de «Crear»: datos de muestra, sin servidor ni base.
+      "@/app/[tenant]/(app)/_actions/quick-create": path.resolve(import.meta.dirname, "mocks/quick-create.ts"),
+      "@/app/[tenant]/(app)/finance/actions": path.resolve(import.meta.dirname, "mocks/finance-actions.ts"),
+      "@/app/[tenant]/(app)/crm/profile-actions": path.resolve(import.meta.dirname, "mocks/profile-actions.ts"),
       // Acciones de compras: en Storybook hay datos de muestra.
       // Existencias: en Storybook hay datos de muestra.
       "@/app/[tenant]/(app)/stock/actions": path.resolve(import.meta.dirname, "mocks/stock-actions.ts"),

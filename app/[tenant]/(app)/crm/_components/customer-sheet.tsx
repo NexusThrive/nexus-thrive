@@ -6,6 +6,7 @@ import { Camera } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses, textareaClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
+import { FullPanelLink } from "@/components/molecules/full-panel-link";
 import { PhoneInput } from "@/components/molecules/phone-input";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
@@ -13,7 +14,7 @@ import { bmi, profileFor, type FieldDef } from "@/lib/business/customer-fields";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import { formatCurrency } from "@/lib/format";
 import { useVerticalTerms } from "../../vertical-terms-context";
-import { customerFormDataAction, getCustomerForEditAction, saveCustomerAction, type CustomerEdit } from "../profile-actions";
+import { customerFormDataAction, getCustomerForEditAction, saveCustomerAction, type CustomerEdit } from "@/app/[tenant]/(app)/crm/profile-actions";
 import { Select } from "@/components/atoms/select";
 
 const EMPTY: CustomerEdit = { id: "", name: "", email: "", phone: "", documentId: "", birthDate: "", city: "", tags: "", profile: {}, photoId: null };
@@ -24,7 +25,7 @@ const EMPTY: CustomerEdit = { id: "", name: "", email: "", phone: "", documentId
  * entra (crea la membresía y su cobro). Turismo, museo y constructora tienen
  * los suyos.
  */
-export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved }: { tenantSlug: string; customerId?: string | null; onClose: () => void; onSaved?: (id: string) => void }) {
+export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved, fullHref }: { tenantSlug: string; customerId?: string | null; onClose: () => void; onSaved?: (id: string) => void; /** Mini-modal de «Crear»: enlace «Abrir en el panel completo». */ fullHref?: string }) {
   const terms = useVerticalTerms();
   const [v, setV] = useState<CustomerEdit>(EMPTY);
   const [meta, setMeta] = useState<Awaited<ReturnType<typeof customerFormDataAction>>>(null);
@@ -124,7 +125,12 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
       open
       onOpenChange={(o) => !o && !pending && onClose()}
       title={customerId ? `Editar ${terms.customer.toLowerCase()}` : `Nuevo ${terms.customer.toLowerCase()}`}
-      description={profile.fields.length ? profile.title : "Datos de contacto e identificación."}
+      description={
+        <>
+          {profile.fields.length ? profile.title : "Datos de contacto e identificación."}
+          {fullHref && !customerId ? <> <FullPanelLink href={fullHref} /></> : null}
+        </>
+      }
       footer={
         <>
           <button type="button" onClick={onClose} disabled={pending} className={buttonVariants({ variant: "outline" })}>

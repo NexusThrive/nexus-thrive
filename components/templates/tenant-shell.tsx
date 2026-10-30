@@ -8,6 +8,7 @@ import { BusinessSwitcher } from "@/components/organisms/business-switcher";
 import { NavbarSearch } from "@/components/organisms/navbar-search";
 import { MobileTabBar } from "@/components/organisms/mobile-tab-bar";
 import { NetworkBanner } from "@/components/molecules/network-banner";
+import { QuickCreateProvider } from "@/components/organisms/quick-create-host";
 import { RouteBreadcrumbs } from "@/components/organisms/route-breadcrumbs";
 import { ShellProvider } from "@/components/providers/shell-context";
 import styles from "./tenant-shell.module.css";
@@ -55,6 +56,7 @@ export function TenantShell({
       role={role}
     >
       <ToastProvider>
+        <QuickCreateProvider>
         <div className={styles.root}>
           <AppSidebar />
           <div className={styles.main}>
@@ -72,6 +74,7 @@ export function TenantShell({
           <CommandPalette inlineOnDesktop />
           <NetworkBanner />
         </div>
+        </QuickCreateProvider>
       </ToastProvider>
     </ShellProvider>
   );

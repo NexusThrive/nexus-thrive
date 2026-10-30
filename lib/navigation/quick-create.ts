@@ -64,3 +64,19 @@ export function quickCreateActions(
   }
   return actions.filter((action) => !role || !action.permission || can(role, action.permission)).slice(0, limit);
 }
+
+/** Mini-modales disponibles: crear sin salir de la pantalla en la que se está. */
+export type QuickSheet = "payment" | "expense" | "customer";
+
+const QUICK_SHEETS: Record<string, QuickSheet> = {
+  payment: "payment",
+  expense: "expense",
+  "new-customer": "customer",
+};
+
+/**
+ * Qué mini-modal abre una acción de «Crear» (por su `key`), o `null` si todavía
+ * no tiene: entonces se navega a su sección como siempre. Una operación nueva se
+ * suma aquí y en `QuickCreateHost`; su `href` sigue siendo el «panel completo».
+ */
+export const quickSheetFor = (key: string): QuickSheet | null => QUICK_SHEETS[key] ?? null;
