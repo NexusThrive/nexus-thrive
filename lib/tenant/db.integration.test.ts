@@ -1,6 +1,5 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "./db";
 
 import { createConstructionDb, type ConstructionDb } from "@/lib/construction/construction-db";
 /**
@@ -171,9 +170,7 @@ describe.skipIf(!enabled)("presupuesto: bloqueo y pertenencia (integración)", (
   let budgetId = "";
   let chapterId = "";
   let itemId = "";
-  let dbA: ReturnType<typeof createTenantDb>;
   let constructionA: ConstructionDb;
-  let dbB: ReturnType<typeof createTenantDb>;
   let constructionB: ConstructionDb;
 
   beforeAll(async () => {
@@ -195,9 +192,7 @@ describe.skipIf(!enabled)("presupuesto: bloqueo y pertenencia (integración)", (
     });
     tenantIdA = a.id;
     tenantIdB = b.id;
-    dbA = createTenantDb(tenantIdA);
     constructionA = createConstructionDb(tenantIdA);
-    dbB = createTenantDb(tenantIdB);
     constructionB = createConstructionDb(tenantIdB);
 
     const customer = await db.orm.public.Customer.create({
@@ -451,7 +446,6 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
       code: `PROY-BASE-TEST-${stamp}`,
       name: "Obra Baseline Test",
     });
-    const dbT = createTenantDb(tenantId);
     const constructionT = createConstructionDb(tenantId);
     const pid = proj.id;
     const bid = (await constructionT.budgets.getOrCreate(pid)).id;
@@ -600,7 +594,6 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
       code: `PROY-TRANS-${stamp}`,
       name: "Proyecto Transiciones",
     });
-    const dbT = createTenantDb(tenantId);
     const constructionT = createConstructionDb(tenantId);
 
     // DRAFT → BIDDING
@@ -632,7 +625,6 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
       code: `PROY-INV-${stamp}`,
       name: "Proyecto Inválido",
     });
-    const dbT = createTenantDb(tenantId);
     const constructionT = createConstructionDb(tenantId);
 
     // No saltear: DRAFT → APPROVED
@@ -659,7 +651,6 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
       code: `PROY-TERM-${stamp}`,
       name: "Proyecto Terminal",
     });
-    const dbT = createTenantDb(tenantId);
     const constructionT = createConstructionDb(tenantId);
 
     // Llevar a COMPLETED (la aprobación se simula con la fila: exige cotización).
@@ -697,7 +688,6 @@ describe.skipIf(!enabled)("presupuesto/proyecto: línea base, autor y transicion
       code: `PROY-STALE-${stamp}`,
       name: "Proyecto Stale",
     });
-    const dbT = createTenantDb(tenantId);
     const constructionT = createConstructionDb(tenantId);
 
     // Avanzar a BIDDING

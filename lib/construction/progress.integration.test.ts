@@ -1,6 +1,5 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant/db";
 import { isoWeekOf, bogotaToday, mondayOf, formatPlainDate } from "@/lib/construction/lean-engine";
 
 import { createConstructionDb, type ConstructionDb } from "@/lib/construction/construction-db";
@@ -152,7 +151,6 @@ describe.skipIf(!TEST_URL)("avance de obra y valor ganado (integración)", () =>
     expect(entries[0].budgetItemId).toBe(itemId);
     expect(entries[0].photoUrls).toHaveLength(1);
 
-    const other = createTenantDb(tenantId);
     const otherConstruction = createConstructionDb(tenantId);
     const otherCustomer = await db.orm.public.Customer.create({ tenantId, name: "Otro" });
     const otherProject = (await otherConstruction.projects.create({ customerId: otherCustomer.id, name: "Otra obra" })).id;

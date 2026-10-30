@@ -1,6 +1,5 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "./db";
 
 import { createConstructionDb, type ConstructionDb } from "@/lib/construction/construction-db";
 /**
@@ -29,9 +28,7 @@ const M = (value: bigint | number | string) => BigInt(value);
 describe.skipIf(!enabled)("budgets.importActivityFromCatalog / updateResource (integración)", () => {
   let tenantIdA = "";
   let tenantIdB = "";
-  let dbA: ReturnType<typeof createTenantDb>;
   let constructionA: ConstructionDb;
-  let dbB: ReturnType<typeof createTenantDb>;
   let constructionB: ConstructionDb;
   let projectId = "";
   let budgetId = "";
@@ -62,9 +59,7 @@ describe.skipIf(!enabled)("budgets.importActivityFromCatalog / updateResource (i
     });
     tenantIdA = a.id;
     tenantIdB = b.id;
-    dbA = createTenantDb(tenantIdA);
     constructionA = createConstructionDb(tenantIdA);
-    dbB = createTenantDb(tenantIdB);
     constructionB = createConstructionDb(tenantIdB);
 
     const customer = await db.orm.public.Customer.create({

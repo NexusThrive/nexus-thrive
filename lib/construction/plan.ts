@@ -1,6 +1,6 @@
 /**
  * Planificador Lean (Last Planner System).
- * Extraído de `lib/tenant/db.ts`; `createTenantDb` lo compone. Todo
+ * Extraído de `lib/tenant/db.ts`; `createConstructionDb` lo compone. Todo
  * acceso va acotado al `tenantId` recibido.
  */
 import {

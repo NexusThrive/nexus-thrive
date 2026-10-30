@@ -3,7 +3,6 @@
 import { requireTenantContext } from "@/lib/tenant/context";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import { createTenantDb } from "@/lib/tenant/db";
 import { getQuoteTerms } from "@/lib/vertical-terms";
 import { analyzeFile, buildExecutionPlan } from "@/lib/construction/apu-importer";
 import { executeImport } from "@/lib/construction/apu-importer/execute";
@@ -62,12 +61,9 @@ const ACCESS_DENIED_FORM = {
   message: "No tienes acceso a este negocio.",
 } as const;
 
-type TenantDb = ReturnType<typeof createTenantDb>;
-
 async function actionContext(tenantSlug: string): Promise<
   | {
       tenantId: string;
-      tenantDb: TenantDb;
       terms: ReturnType<typeof getQuoteTerms>;
       userId: string;
       canImport: boolean;
@@ -80,7 +76,6 @@ async function actionContext(tenantSlug: string): Promise<
   }
   return {
     tenantId: context.tenantId,
-    tenantDb: context.tenantDb,
     terms: getQuoteTerms(context.vertical),
     userId: context.userId,
     canImport: canGovernBudget(context.role),

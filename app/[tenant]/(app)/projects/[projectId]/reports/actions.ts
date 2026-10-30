@@ -2,7 +2,6 @@
 
 import { requireTenantContext } from "@/lib/tenant/context";
 import { auth } from "@clerk/nextjs/server";
-import { createTenantDb } from "@/lib/tenant/db";
 
 import { createConstructionDb } from "@/lib/construction/construction-db";
 
@@ -36,7 +35,6 @@ export type BomExportResult = {
 
 type TenantContext = {
   tenantId: string;
-  tenantDb: ReturnType<typeof createTenantDb>;
 };
 
 async function actionContext(
@@ -46,7 +44,7 @@ async function actionContext(
   if (!context) {
     return null;
   }
-  return { tenantId: context.tenantId, tenantDb: context.tenantDb };
+  return { tenantId: context.tenantId };
 }
 
 export async function getInformeCeroDataAction(
