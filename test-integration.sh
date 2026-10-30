@@ -27,28 +27,21 @@ fi
 # Los archivos corren uno tras otro: varios tocan tablas de la plataforma
 # (roles del panel, catálogo de planes) y en paralelo se pisaban entre sí
 # (p. ej. uno borraba el rol "ops" que el otro estaba usando).
+#
+# Qué corre: TODA prueba `*.integration.test.ts` (en lib/ y en tests/integration/)
+# más cuatro que no llevan «integration» en el nombre. Antes había una lista
+# escrita a mano y 34 pruebas quedaron fuera sin que nadie lo notara; con el
+# patrón, una prueba nueva entra sola.
+#
+# Qué NO corre: `*.file.integration.test.ts` (importan un archivo real del
+# cliente, p. ej. el MASTER PACK, indicado con una variable de entorno que no
+# está en el repositorio). Se ejecutan a mano:
+#   MASTER_PACK_FILE=/ruta/al/archivo.xlsx pnpm exec vitest run \
+#     lib/construction/apu-importer/master-pack-import.file.integration.test.ts
 pnpm exec vitest run --testTimeout=20000 --no-file-parallelism \
-  lib/benefits/benefits-db.integration.test.ts \
-  lib/plans/settings.integration.test.ts \
-  lib/ops/access.integration.test.ts \
-  lib/ops/team-invite.integration.test.ts \
-  lib/tenant/membership.integration.test.ts \
-  lib/tenant/audit.integration.test.ts \
-  lib/tenant/constraints.integration.test.ts \
-  lib/tenant/deletion.integration.test.ts \
-  lib/business/qr-read.integration.test.ts \
-  lib/business/money-service.integration.test.ts \
-  lib/business/documents.integration.test.ts \
-  lib/tenant/db.integration.test.ts \
-  lib/prisma8-query-patterns.integration.test.ts \
-  lib/tenant/db.cache-invalidation.test.ts \
+  --exclude '**/*.file.integration.test.ts' \
+  '.integration.test.ts' \
   lib/tenant/db.archived-rejection.test.ts \
+  lib/tenant/db.cache-invalidation.test.ts \
   lib/construction/apu-importer/price-behavior.test.ts \
-  lib/construction/apu-importer/field-changes.test.ts \
-  lib/tenant/db.apu-import.integration.test.ts \
-  lib/construction/containers.integration.test.ts \
-  lib/construction/apu-importer/master-pack-import.integration.test.ts \
-  lib/construction/project-quotes.integration.test.ts \
-  lib/construction/progress.integration.test.ts \
-  lib/construction/flow.integration.test.ts \
-  lib/business/gym-db.integration.test.ts
+  lib/construction/apu-importer/field-changes.test.ts
