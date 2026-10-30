@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "descripcion": "Clasificación de lib/ por capa de Nexus V2 (E0). La comprueba scripts/check-layers.mjs. No mueve archivos: solo declara a qué capa pertenece cada carpeta. Aprobado D-1: la organización física se mantiene.",
+  "layers": {
+    "foundation": { "mayImport": [], "descripcion": "Utilidades y acceso a la base. No depende de nada de Nexus." },
+    "core": { "mayImport": ["foundation"], "descripcion": "Identidad, organizaciones, tenant, permisos, planes, terceros, archivos, API de operaciones." },
+    "business": { "mayImport": ["foundation", "core"], "descripcion": "Capacidades empresariales generales: clientes, catálogo, inventario, ventas, compras, POS, tienda." },
+    "finance": { "mayImport": ["foundation", "core", "business"], "descripcion": "Pagos, caja, impuestos, contabilidad, cartera." },
+    "integrations": { "mayImport": ["foundation", "core", "business", "finance"], "descripcion": "Puertos y adaptadores hacia proveedores y superficies externas (API, MCP, Google, facturación electrónica)." },
+    "automation": { "mayImport": ["foundation", "core"], "descripcion": "Eventos, outbox, webhooks internos y funciones automáticas." },
+    "platform": { "mayImport": ["foundation", "core", "business", "finance", "integrations", "automation"], "descripcion": "Operación global de Nexus como SaaS (Operations Center). No es un segundo Core." },
+    "industry": { "mayImport": ["foundation", "core", "business", "finance", "integrations", "automation"], "descripcion": "Extensiones sectoriales. Cada industria solo puede importarse a sí misma." },
+    "experience": { "mayImport": ["foundation", "core", "business", "finance", "integrations", "automation", "platform", "industry"], "descripcion": "Navegación, onboarding, dashboard, presencia, sitio y utilidades de interfaz." }
+  },
+  "reglas": {
+    "R1-nadie-importa-industry": "Solo experience puede importar una industria (y la propia industria su código).",
+    "R2-industry-no-importa-industry": "Una industria no importa de otra.",
+    "R3-<capa>-no-importa-<capa>": "Una capa solo importa las capas de su lista mayImport."
+  },
+  "units": [
+    { "path": "prisma/", "layer": "foundation" },
+
+    { "path": "lib/app-url.ts", "layer": "foundation" },
+    { "path": "lib/calendar.ts", "layer": "foundation" },
+    { "path": "lib/cn.ts", "layer": "foundation" },
+    { "path": "lib/contact.ts", "layer": "foundation" },
+    { "path": "lib/db-errors.ts", "layer": "foundation" },
+    { "path": "lib/format.ts", "layer": "foundation" },
+    { "path": "lib/image-upload.ts", "layer": "foundation" },
+    { "path": "lib/init-scripts.ts", "layer": "foundation" },
+    { "path": "lib/qr.ts", "layer": "foundation" },
+    { "path": "lib/rate-limit.ts", "layer": "foundation" },
+    { "path": "lib/temporal.d.ts", "layer": "foundation" },
+    { "path": "lib/utils.ts", "layer": "foundation" },
+
+    { "path": "lib/vertical-terms.ts", "layer": "core" },
+    { "path": "lib/tenant", "layer": "core" },
+    { "path": "lib/auth", "layer": "core" },
+    { "path": "lib/admin", "layer": "core" },
+    { "path": "lib/plans", "layer": "core" },
+    { "path": "lib/usage", "layer": "core" },
+    { "path": "lib/capabilities", "layer": "core" },
+    { "path": "lib/operations", "layer": "core" },
+    { "path": "lib/parties", "layer": "core" },
+    { "path": "lib/files", "layer": "core" },
+
+    { "path": "lib/business", "layer": "business" },
+    { "path": "lib/catalog", "layer": "business" },
+    { "path": "lib/inventory", "layer": "business" },
+    { "path": "lib/purchasing", "layer": "business" },
+    { "path": "lib/pos", "layer": "business" },
+    { "path": "lib/store", "layer": "business" },
+    { "path": "lib/benefits", "layer": "business" },
+    { "path": "lib/growth", "layer": "business" },
+    { "path": "lib/data-exchange", "layer": "business" },
+    { "path": "lib/presence", "layer": "business" },
+
+    { "path": "lib/finance", "layer": "finance" },
+    { "path": "lib/accounting", "layer": "finance" },
+    { "path": "lib/tax", "layer": "finance" },
+    { "path": "lib/receivables", "layer": "finance" },
+    { "path": "lib/payments", "layer": "finance" },
+
+    { "path": "lib/providers", "layer": "integrations" },
+    { "path": "lib/einvoice", "layer": "integrations" },
+    { "path": "lib/google", "layer": "integrations" },
+    { "path": "lib/maps", "layer": "integrations" },
+    { "path": "lib/api", "layer": "integrations" },
+    { "path": "lib/mcp", "layer": "integrations" },
+
+    { "path": "lib/events", "layer": "core" },
+    { "path": "lib/functions", "layer": "automation" },
+
+    { "path": "lib/ops", "layer": "platform" },
+
+    { "path": "lib/fonts.ts", "layer": "experience" },
+    { "path": "lib/navigation", "layer": "experience" },
+    { "path": "lib/motion", "layer": "experience" },
+    { "path": "lib/design", "layer": "experience" },
+    { "path": "lib/hooks", "layer": "experience" },
+    { "path": "lib/site", "layer": "experience" },
+    { "path": "lib/seo", "layer": "experience" },
+    { "path": "lib/onboarding", "layer": "experience" },
+    { "path": "lib/dashboard", "layer": "experience" },
+
+    { "path": "lib/construction", "layer": "industry", "industry": "construction" },
+    { "path": "lib/business/gym*.ts", "layer": "industry", "industry": "gym" },
+    { "path": "lib/business/memberships*.ts", "layer": "industry", "industry": "gym" },
+    { "path": "lib/business/museum*.ts", "layer": "industry", "industry": "museum" },
+
+    { "path": "app/", "layer": "experience" },
+    { "path": "components/", "layer": "experience" }
+  ]
+}
