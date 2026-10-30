@@ -30,6 +30,7 @@
     { "path": "lib/init-scripts.ts", "layer": "foundation" },
     { "path": "lib/qr.ts", "layer": "foundation" },
     { "path": "lib/rate-limit.ts", "layer": "foundation" },
+    { "path": "lib/sql-like.ts", "layer": "foundation" },
     { "path": "lib/temporal.d.ts", "layer": "foundation" },
     { "path": "lib/utils.ts", "layer": "foundation" },
 

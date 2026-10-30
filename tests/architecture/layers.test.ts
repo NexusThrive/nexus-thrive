@@ -123,11 +123,14 @@ describe("pruebas negativas: una dependencia prohibida nueva se detecta", () => 
 
 describe("la lista de excepciones solo puede encogerse", () => {
   test("una excepción que ya no se necesita hace fallar", () => {
+    // Se toma cualquier excepción abierta de import y se quita su archivo de origen:
+    // la violación desaparece y la excepción sobra.
+    const open = exceptions.exceptions.find((e: { tipo: string; estado: string }) => e.tipo === "import" && e.estado !== "resuelta");
     const sources = libSources();
-    delete sources["lib/business/gym-db.ts"];
+    delete sources[open.origen];
     const { violations, unclassified } = findViolations(sources, layers);
     const p = compare(violations, unclassified, exceptions, layers, findVerticalLiterals(allSources()));
-    expect(p.some((m) => m.includes("ya no se necesita") && m.includes("gym-db.ts"))).toBe(true);
+    expect(p.some((m) => m.includes("ya no se necesita") && m.includes(open.origen))).toBe(true);
   });
 
   test("maxAbiertas impide ampliar la lista", () => {

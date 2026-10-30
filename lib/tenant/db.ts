@@ -40,9 +40,7 @@ import { createBudgetsDb } from "@/lib/construction/budget";
 import { createPlanDb } from "@/lib/construction/plan";
 import { createFieldLogDb } from "@/lib/construction/field-log";
 import { createReportsDb } from "@/lib/construction/reports";
-import {
-  escapeLike,
-} from "@/lib/construction/shared";
+import { escapeLike } from "@/lib/sql-like";
 
 export type * from "@/lib/construction/shared";
 

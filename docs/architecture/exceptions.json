@@ -1,6 +1,6 @@
 {
   "descripcion": "Excepciones de E0 a las reglas de dependencia (scripts/check-layers.mjs). Cada una registra origen, destino, regla, justificación, etapa prevista de resolución y estado. La lista solo puede reducirse: una excepción nueva o una que sobra hace fallar la comprobación, y maxAbiertas solo baja. Ampliarla requiere justificación y aprobación explícita del dueño.",
-  "maxAbiertas": 64,
+  "maxAbiertas": 63,
   "etapasPrevistas": {
     "E1": "E1 · Core deja de importar rubros (registro de repositorios por rubro)",
     "E2": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
@@ -150,19 +150,6 @@
       "importaciones": 1,
       "soloTipos": false,
       "justificacion": "El alta de socios (Business) usa reglas de membresía del gimnasio. Al mudar el gimnasio a industry, Business pasa a llamar un contrato.",
-      "etapa": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-012",
-      "tipo": "import",
-      "origen": "lib/business/gym-db.ts",
-      "destino": "lib/construction/shared.ts",
-      "regla": "R2-industry-no-importa-industry",
-      "importaciones": 1,
-      "soloTipos": false,
-      "justificacion": "gym-db usa escapeLike, utilidad genérica alojada en construcción. Una industria importa de otra.",
       "etapa": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
       "estado": "abierta",
       "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"

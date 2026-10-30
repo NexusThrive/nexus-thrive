@@ -22,9 +22,9 @@ import {
   type ProjectMetrics,
   type ProjectRow,
   type UpdateProjectInput,
-  escapeLike,
   serializeProjectHeader,
 } from "./shared";
+import { escapeLike } from "@/lib/sql-like";
 
 export function createProjectsDb(tenantId: string) {
   return {

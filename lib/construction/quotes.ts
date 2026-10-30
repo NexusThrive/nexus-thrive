@@ -21,8 +21,8 @@ import {
   type QuoteListInput,
   type QuoteMetrics,
   type QuoteRow,
-  escapeLike,
 } from "./shared";
+import { escapeLike } from "@/lib/sql-like";
 
 export function createQuotesDb(tenantId: string) {
   return {
