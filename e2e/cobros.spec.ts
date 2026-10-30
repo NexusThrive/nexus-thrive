@@ -37,6 +37,8 @@ test.describe("Cobros en línea", () => {
     await c.getByRole("button", { name: "Confirmar pago" }).click();
     await expect(c.getByText(/evidencia de la transferencia/).last()).toBeVisible();
     await c.getByRole("button", { name: "Cancelar" }).click();
+    // El formulario tiene datos escritos: la guarda pide confirmar la salida.
+    await page.getByRole("dialog", { name: "¿Guardar los cambios?" }).getByRole("button", { name: "Descartar" }).click();
     await page.getByRole("button", { name: "Reembolsar" }).click();
     const r = page.getByRole("dialog", { name: "Reembolsar" });
     await r.getByLabel(/Valor a reembolsar/).fill("200000");
@@ -60,7 +62,11 @@ test.describe("Cobros en línea", () => {
     await openStory(page, "páginas-dinero-cobros-en-línea--dos-pasarelas");
     await page.getByRole("button", { name: "Nuevo cobro" }).click();
     const dialog = page.getByRole("dialog", { name: "Nuevo cobro" });
-    await expect(dialog.getByLabel(/Pasarela/)).toHaveValue("wompi");
-    await expect(dialog.getByRole("option", { name: "Pasarela de prueba" })).toBeAttached();
+    const pasarela = dialog.getByRole("combobox", { name: "Pasarela" });
+    await expect(pasarela).toContainText("Wompi");
+    await pasarela.click();
+    await expect(page.getByRole("option", { name: "Pasarela de prueba" })).toBeVisible();
+    await page.getByRole("option", { name: "Pasarela de prueba" }).click();
+    await expect(pasarela).toContainText("Pasarela de prueba");
   });
 });

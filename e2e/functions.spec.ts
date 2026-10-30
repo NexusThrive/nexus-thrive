@@ -39,8 +39,8 @@ test.describe("Funciones", () => {
     await openStory(page, "páginas-funciones-funciones--default");
     await page.getByRole("switch", { name: "Encender Facturación" }).click();
     await expect(page.getByText("Función encendida: ya está en tu menú")).toBeVisible();
-    await expect(page.getByRole("region", { name: /Ventas y cobros/ }).getByText("Facturación")).toBeVisible();
-    await expect(page.getByRole("switch", { name: "Apagar Facturación" })).toBeChecked();
+    const ventas = page.getByRole("region", { name: /Ventas y cobros/ });
+    await expect(ventas.getByRole("switch", { name: "Apagar Facturación" })).toBeChecked();
   });
 
   test("si no se puede cambiar, vuelve al estado anterior y explica", async ({ page }) => {
