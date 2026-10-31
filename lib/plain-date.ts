@@ -20,10 +20,16 @@ const bogotaDayFormatter = new Intl.DateTimeFormat("en-CA", {
   day: "2-digit",
 });
 
-/** Normaliza Date / string ISO (Temporal o JS) a `Date`; null si inválido. */
+/** Normaliza Date, `Temporal.Instant` o string ISO a `Date`; null si inválido. */
 function toJsDate(value: unknown): Date | null {
   if (value instanceof Date) {
     return Number.isNaN(value.getTime()) ? null : value;
+  }
+  // `Temporal.Instant` (y cualquier objeto con `epochMilliseconds`): antes caía en `null` y
+  // `bogotaToday` devolvía «hoy» en silencio en lugar del día del instante recibido.
+  if (typeof value === "object" && value !== null && "epochMilliseconds" in value) {
+    const date = new Date(Number((value as { epochMilliseconds: unknown }).epochMilliseconds));
+    return Number.isNaN(date.getTime()) ? null : date;
   }
   if (typeof value !== "string") {
     return null;
@@ -42,6 +48,15 @@ export function bogotaToday(instant?: unknown): PlainDate {
   const iso = bogotaDayFormatter.format(safe); // "YYYY-MM-DD"
   const [year, month, day] = iso.split("-").map(Number);
   return { year, month, day };
+}
+
+/**
+ * Día de calendario de Bogotá de un instante, como "YYYY-MM-DD". Es la fecha de negocio
+ * en Colombia: entre las 19:00 y las 24:00 de Bogotá el día UTC ya es el siguiente, así que
+ * NO se debe cortar el instante UTC con `slice(0, 10)` para fechar un asiento o un documento.
+ */
+export function bogotaDay(instant?: unknown): string {
+  return formatPlainDate(bogotaToday(instant));
 }
 
 /** "YYYY-MM-DD" */

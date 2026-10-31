@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { addMonths, bogotaToday, formatPlainDate, parsePlainDate } from "@/lib/plain-date";
+import { addMonths, bogotaDay, bogotaToday, formatPlainDate, parsePlainDate } from "@/lib/plain-date";
 
 describe("parsePlainDate", () => {
   test("acepta YYYY-MM-DD válidas", () => {
@@ -58,5 +58,38 @@ describe("bogotaToday", () => {
   test("sin argumento devuelve una fecha válida", () => {
     const today = bogotaToday();
     expect(parsePlainDate(formatPlainDate(today))).toEqual(today);
+  });
+});
+
+describe("bogotaDay (fecha de negocio en Colombia)", () => {
+  // Bogotá es UTC−5 todo el año (sin horario de verano): 05:00Z es la medianoche local.
+  test.each([
+    ["justo antes de la medianoche de Bogotá", "2026-10-31T04:59:59.999Z", "2026-10-30"],
+    ["justo en la medianoche de Bogotá", "2026-10-31T05:00:00.000Z", "2026-10-31"],
+    ["medianoche UTC = 19:00 del día anterior en Bogotá (la franja del defecto)", "2026-10-31T00:00:00Z", "2026-10-30"],
+    ["las 23:30 de Bogotá siguen siendo el mismo día", "2026-10-31T04:30:00Z", "2026-10-30"],
+    ["cambio de mes: último segundo de octubre", "2026-11-01T04:59:59Z", "2026-10-31"],
+    ["cambio de mes: primer instante de noviembre", "2026-11-01T05:00:00Z", "2026-11-01"],
+    ["cambio de año: 31 de diciembre a las 22:00 de Bogotá", "2026-01-01T03:00:00Z", "2025-12-31"],
+    ["cambio de año: 1 de enero a la medianoche de Bogotá", "2026-01-01T05:00:00Z", "2026-01-01"],
+    ["año bisiesto: 29 de febrero a las 23:59 de Bogotá", "2028-03-01T04:59:00Z", "2028-02-29"],
+    ["año no bisiesto: 28 de febrero a las 23:59 de Bogotá", "2027-03-01T04:59:00Z", "2027-02-28"],
+    ["convención de fechas escritas a mano (12:00 UTC = 07:00 Bogotá)", "2026-10-31T12:00:00Z", "2026-10-31"],
+    ["nueve decimales, como los entrega Temporal", "2026-10-31T04:59:59.123456789Z", "2026-10-30"],
+  ])("%s", (_nombre, iso, esperado) => {
+    expect(bogotaDay(iso)).toBe(esperado);
+  });
+
+  test("acepta Date y Temporal.Instant, y NO cae en «hoy» con un Instant", () => {
+    expect(bogotaDay(new Date("2026-11-01T04:59:59Z"))).toBe("2026-10-31");
+    expect(bogotaDay(Temporal.Instant.from("2026-11-01T04:59:59Z"))).toBe("2026-10-31");
+    expect(bogotaDay(Temporal.Instant.from("2020-03-01T12:00:00Z"))).toBe("2020-03-01");
+    expect(bogotaToday(Temporal.Instant.from("2020-03-01T12:00:00Z"))).toEqual({ year: 2020, month: 3, day: 1 });
+  });
+
+  test("cortar el instante UTC con slice daría otro día: es el defecto que esta función evita", () => {
+    const instant = "2026-10-31T00:30:00Z";
+    expect(instant.slice(0, 10)).toBe("2026-10-31");
+    expect(bogotaDay(instant)).toBe("2026-10-30");
   });
 });

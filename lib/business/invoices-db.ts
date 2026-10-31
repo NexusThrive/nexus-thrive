@@ -3,6 +3,7 @@ import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
 import { type InvoiceKind, type LineInput } from "./invoice";
 import { createDocument } from "./documents-db";
+import { bogotaDay } from "@/lib/plain-date";
 
 /** Recibos y cuentas de cobro del negocio (servidor). */
 
@@ -38,7 +39,8 @@ export async function listInvoices(tenantId: string): Promise<InvoiceRow[]> {
     customerId: i.customerId,
     customerName: i.customerName,
     customerDoc: i.customerDoc,
-    issueDate: day(i.issueDate)!,
+    // El día de Bogotá, igual que en `documentView`: la lista y el detalle muestran la misma fecha.
+    issueDate: bogotaDay(i.issueDate),
     dueDate: day(i.dueDate),
     status: i.status as InvoiceRow["status"],
     notes: i.notes,
