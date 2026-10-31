@@ -194,7 +194,7 @@ describe("estructura final de platform (M4)", () => {
   });
 
   test("la prueba de aislamiento por negocio sigue vigilando benefits y excluye solo las ocho carpetas del panel", () => {
-    const text = read("lib/core/tenancy/tenant-scope.test.ts");
+    const text = read("tests/architecture/tenant-scope.test.ts");
     const dirs = /const PLATFORM_DIRS = \[(.*?)\];/.exec(text)![1].match(/"[^"]+"/g)!.map((d) => d.slice(1, -1)).sort();
     expect(dirs).toEqual(["accounts", "admin", "billing", "crm", "inbox", "presence", "support", "team"].map((m) => `lib/platform/${m}/`));
     expect(dirs).not.toContain("lib/platform/benefits/");

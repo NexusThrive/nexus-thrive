@@ -173,9 +173,9 @@ describe("movimientos menores de M3", () => {
     expect(classify("lib/business/inventory/inventory.ts", layers)?.layer).toBe("business");
   });
 
-  test("lib/business solo contiene subcarpetas de módulo (y la prueba que cruza varios módulos)", () => {
+  test("lib/business solo contiene subcarpetas de módulo (las pruebas viven en tests/)", () => {
     const loose = readdirSync(join(ROOT, "lib/business")).filter((n) => statSync(join(ROOT, "lib/business", n)).isFile());
-    expect(loose).toEqual(["business.test.ts"]);
+    expect(loose).toEqual([]);
     expect(readdirSync(join(ROOT, "lib/business")).filter((n) => statSync(join(ROOT, "lib/business", n)).isDirectory()).sort()).toEqual(["catalog", "customers", "data-exchange", "growth", "inventory", "pos", "presence", "purchasing", "sales", "scheduling", "store"]);
   });
 });

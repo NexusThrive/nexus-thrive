@@ -89,7 +89,7 @@ Un módulo nace con lo que **existe**, nunca vacío ni para «lo que vendrá». 
    | `<tema>-db.ts` | Repositorio: recibe `tenantId`, filtra siempre por él | Integración, con base de prueba |
    | `<tema>-port.ts` | Puerto, si el módulo necesita algo de un área que no puede importar | Arquitectura (`e5-puertos`) |
    | `operations.ts` | Operaciones que se exponen por API/MCP/pantallas | Unitaria + registro en `runtime/operations.ts` |
-   | `<tema>.test.ts` / `<tema>.integration.test.ts` | Pruebas colocadas junto al código | — |
+   | — | Las pruebas **no** van en `lib/`: viven en `tests/` (ver §7) | — |
 
 3. **No toques `layers.json`**: el área se deduce de la ruta. Solo las rutas fuera de `lib/<área>/` necesitan unidad.
 4. **Actualiza la prueba de forma del área** en el mismo cambio. Cada área tiene una que enumera sus módulos (`tests/architecture/v10-core.test.ts`, `v10-business-completo.test.ts`, `v10-integrations.test.ts`, `v10-experience.test.ts`, `v10-finance.test.ts`, `v10-platform.test.ts`, `v10-foundation.test.ts`). Es intencional: obliga a que un módulo nuevo sea una decisión consciente y no un archivo caído en una carpeta.
@@ -128,17 +128,18 @@ Si el sector solo cambia vocabulario, módulos activados por defecto y recetas, 
 
 | Tipo | Dónde | Cómo se ejecuta |
 |---|---|---|
-| Unitaria (reglas puras, sin base) | **Junto al código**: `lib/<área>/<módulo>/<tema>.test.ts` | `pnpm test` |
-| Integración (con base de datos) | Junto al código como `<tema>.integration.test.ts`, o en `tests/integration/<tema>/` si cruza varios módulos | `pnpm test:integration` (necesita `TEST_DATABASE_URL`) |
+| Unitaria (reglas puras, sin base) | `tests/unit/<área>/<módulo>/<tema>.test.ts` (espejo de `lib/`) | `pnpm test` |
+| Integración (con base de datos) | `tests/integration/<área>/<módulo>/<tema>.integration.test.ts`, o `tests/integration/<tema>/` si cruza varios módulos | `pnpm test:integration` (necesita `TEST_DATABASE_URL`) |
 | Arquitectura (formas, fronteras, reglas del diseño) | `tests/architecture/` | `pnpm test` |
 | Unitaria transversal (no pertenece a un módulo) | `tests/unit/` | `pnpm test` |
+| Datos de apoyo de pruebas | `tests/fixtures/<área>/…` | — |
 | Interfaz (accesibilidad, estados) | Historias de Storybook junto al componente + `e2e/` | `pnpm test:e2e` |
 
 Reglas:
 
 - **La integración nunca apunta a una base de desarrollo ni a producción.** Crea una base aparte (idealmente desechable) y exporta `TEST_DATABASE_URL` y `DATABASE_URL` con la **misma** URL; el script lo exige. La base debe tener `CREATE EXTENSION pg_trgm` antes de aplicar migraciones.
-- Las pruebas colocadas viajan con su módulo cuando este se mueve.
-- `test-integration.sh` lista a mano dos pruebas por nombre; si mueves esas carpetas, actualiza el script (una prueba de arquitectura lo exige).
+- `lib/` es solo implementación: `tests/architecture/v10-pruebas.test.ts` falla si aparece un `*.test.ts` o un fixture dentro de `lib/`. Si mueves un módulo, mueve su carpeta espejo en `tests/`. Los imports de las pruebas usan siempre `@/lib/…`.
+- `test-integration.sh` lista a mano cuatro pruebas por nombre (en `tests/integration/…`); si mueves esas carpetas, actualiza el script (una prueba de arquitectura lo exige).
 - Una prueba de arquitectura **no basta con que dé verde**: debe poder fallar. Cuando la escribas, comprueba que falla con una infracción deliberada (§13.3).
 
 ## 8. Cómo evitar ciclos y dependencias indebidas (pregunta 8)

@@ -14,8 +14,8 @@
 
 ## Revisión de datos (obligatoria si toca lib/ o acciones)
 
-- [ ] **Sin acceso directo a la base desde `app/`**: todo pasa por un repositorio de `lib/` (ESLint y `lib/core/tenancy/data-access.test.ts` lo vigilan).
-- [ ] **`tenantId` en cada consulta** de una tabla de negocio (`lib/core/tenancy/tenant-scope.test.ts`); una excepción nueva lleva su motivo en esa prueba.
+- [ ] **Sin acceso directo a la base desde `app/`**: todo pasa por un repositorio de `lib/` (ESLint y `tests/architecture/data-access.test.ts` lo vigilan).
+- [ ] **`tenantId` en cada consulta** de una tabla de negocio (`tests/architecture/tenant-scope.test.ts`); una excepción nueva lleva su motivo en esa prueba.
 - [ ] **Permiso** comprobado en el servidor: `requireTenantContext(slug, "/<ruta>")` + `can(ctx.role, "…")` (o `requireStaff("…")` en el panel).
 - [ ] **Dinero solo por `money-service.ts`** (cobrar, pagar, anular, caja): en una transacción y sin cobros dobles.
 - [ ] **Bitácora**: lo sensible o destructivo deja `logTenantAction` (o `logOps` en el panel).
