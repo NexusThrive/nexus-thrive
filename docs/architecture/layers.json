@@ -25,6 +25,7 @@
     { "path": "lib/cn.ts", "layer": "foundation" },
     { "path": "lib/contact.ts", "layer": "foundation" },
     { "path": "lib/db-errors.ts", "layer": "foundation" },
+    { "path": "lib/db-transaction.ts", "layer": "foundation" },
     { "path": "lib/format.ts", "layer": "foundation" },
     { "path": "lib/image-upload.ts", "layer": "foundation" },
     { "path": "lib/init-scripts.ts", "layer": "foundation" },

@@ -1,4 +1,4 @@
-import type { MoneyTx } from "@/lib/business/money-service";
+import type { DbTransaction } from "@/lib/db-transaction";
 
 type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
 
@@ -24,7 +24,7 @@ export type DomainEvent = {
  * existe aunque el servidor se caiga justo después. El envío lo hace el
  * despachador (`dispatcher.ts`), nunca esta función.
  */
-export async function emitEvent(tx: MoneyTx, tenantId: string, event: DomainEvent): Promise<void> {
+export async function emitEvent(tx: DbTransaction, tenantId: string, event: DomainEvent): Promise<void> {
   await tx.orm.public.OutboxEvent.create({
     tenantId,
     type: event.type,

@@ -1,5 +1,6 @@
 import { emitEvent } from "@/lib/events/outbox";
 import { db } from "@/prisma/db";
+import type { DbTransaction } from "@/lib/db-transaction";
 import { toNumber } from "@/lib/format";
 import type { PaymentStatusValue } from "@/lib/finance";
 import { applyStockMovement, StockError } from "@/lib/inventory/stock-service";
@@ -26,7 +27,8 @@ import { insertDocument, issueCreditNote, saleDocumentOfPayment } from "./docume
  *   ya lo reclamó, el UPDATE no afecta filas y se aborta: no hay doble cobro.
  */
 
-export type MoneyTx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+/** Transacción del servicio de dinero (alias del tipo de Foundation `DbTransaction`). */
+export type MoneyTx = DbTransaction;
 
 export { MoneyError };
 

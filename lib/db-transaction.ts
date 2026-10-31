@@ -1,0 +1,10 @@
+import type { db } from "@/prisma/db";
+
+/**
+ * Transacción de la base de datos: lo que recibe el callback de `db.transaction`.
+ *
+ * Tipo de Foundation. Lo comparten el servicio de dinero (Business), el outbox de
+ * eventos (Core) y quien escriba varias filas de forma atómica. Antes vivía en
+ * `lib/business/money-service.ts` como `MoneyTx` y obligaba a Core a importar de Business.
+ */
+export type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];

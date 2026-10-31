@@ -1,6 +1,6 @@
 {
   "descripcion": "Excepciones de E0 a las reglas de dependencia (scripts/check-layers.mjs). Cada una registra origen, destino, regla, justificación, etapa prevista de resolución y estado. La lista solo puede reducirse: una excepción nueva o una que sobra hace fallar la comprobación, y maxAbiertas solo baja. Ampliarla requiere justificación y aprobación explícita del dueño.",
-  "maxAbiertas": 51,
+  "maxAbiertas": 50,
   "etapasPrevistas": {
     "E1": "E1 · Core deja de importar rubros (registro de repositorios por rubro)",
     "E2": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
@@ -229,19 +229,6 @@
       "soloTipos": false,
       "justificacion": "El despachador de eventos (Core) invoca lógica de presencia digital directamente. Los suscriptores deben registrarse desde su dominio.",
       "etapa": "E3 · Operaciones y suscriptores de eventos por dominio (cada dominio se registra; Core no los conoce)",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-019",
-      "tipo": "import",
-      "origen": "lib/events/outbox.ts",
-      "destino": "lib/business/money-service.ts",
-      "regla": "R3-core-no-importa-business",
-      "importaciones": 1,
-      "soloTipos": true,
-      "justificacion": "Importa solo tipos de money-service. Se resuelve al mover los tipos de dinero a Core.",
-      "etapa": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
       "estado": "abierta",
       "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
     },
