@@ -1,6 +1,7 @@
 {
   "descripcion": "Excepciones de E0 a las reglas de dependencia (scripts/check-layers.mjs). Cada una registra origen, destino, regla, justificación, etapa prevista de resolución y estado. La lista solo puede reducirse: una excepción nueva o una que sobra hace fallar la comprobación, y maxAbiertas solo baja. Ampliarla requiere justificación y aprobación explícita del dueño.",
   "maxAbiertas": 0,
+  "maxCiclosDeTipos": 4,
   "etapasPrevistas": {
     "E1": "E1 · Core deja de importar rubros (registro de repositorios por rubro)",
     "E2": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
