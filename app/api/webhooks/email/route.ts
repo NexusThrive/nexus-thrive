@@ -1,5 +1,5 @@
-import { ingestInbound } from "@/lib/ops/inbox";
-import { verifyInboundEmailSecret } from "@/lib/ops/inbox-providers";
+import { ingestInbound } from "@/lib/platform/inbox/inbox";
+import { verifyInboundEmailSecret } from "@/lib/platform/inbox/inbox-providers";
 
 /**
  * Correo entrante para la bandeja de NEXUS. Lo llama el servicio de correo

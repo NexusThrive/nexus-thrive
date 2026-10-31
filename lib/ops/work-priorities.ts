@@ -1,7 +1,7 @@
 import type { PriorityItem } from "./accounts";
 import { listCharges } from "../platform/billing/billing";
 import { accountHealth } from "./health";
-import { listConversations } from "./inbox";
+import { listConversations } from "../platform/inbox/inbox";
 import { dunningLabel } from "../platform/billing/billing-rules";
 import { followUpState, stageMeta } from "../platform/crm/crm-rules";
 import { listLeads } from "../platform/crm/leads";

@@ -1,6 +1,6 @@
-import { ingestInbound } from "@/lib/ops/inbox";
-import { verifyMetaSignature } from "@/lib/ops/inbox-providers";
-import { parseWhatsappWebhook } from "@/lib/ops/inbox-rules";
+import { ingestInbound } from "@/lib/platform/inbox/inbox";
+import { verifyMetaSignature } from "@/lib/platform/inbox/inbox-providers";
+import { parseWhatsappWebhook } from "@/lib/platform/inbox/inbox-rules";
 
 /**
  * Webhook de WhatsApp Cloud API (Meta) para la bandeja de NEXUS.

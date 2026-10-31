@@ -4,8 +4,8 @@ import { Badge } from "@/components/atoms/badge";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getStaffContext } from "@/lib/platform/team/access";
 import { listManagers } from "@/lib/ops/accounts";
-import { listConversations, listInboxMessages } from "@/lib/ops/inbox";
-import { providers } from "@/lib/ops/inbox-providers";
+import { listConversations, listInboxMessages } from "@/lib/platform/inbox/inbox";
+import { providers } from "@/lib/platform/inbox/inbox-providers";
 import { tenantOptions } from "@/lib/platform/crm/leads";
 import InboxView from "./_components/inbox-view";
 

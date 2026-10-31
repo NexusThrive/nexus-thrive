@@ -53,6 +53,11 @@ const MODULES: Record<string, Record<string, string>> = {
     "lib/platform/support/satisfaction.ts": "lib/ops/satisfaction.ts",
     "lib/platform/support/satisfaction-rules.ts": "lib/ops/satisfaction-rules.ts",
   },
+  inbox: {
+    "lib/platform/inbox/inbox.ts": "lib/ops/inbox.ts",
+    "lib/platform/inbox/inbox-rules.ts": "lib/ops/inbox-rules.ts",
+    "lib/platform/inbox/inbox-providers.ts": "lib/ops/inbox-providers.ts",
+  },
 };
 
 const files = (dir: string): string[] =>
