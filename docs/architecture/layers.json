@@ -44,7 +44,6 @@
     { "path": "lib/temporal.d.ts", "layer": "foundation" },
     { "path": "lib/utils.ts", "layer": "foundation" },
 
-    { "path": "lib/vertical-terms.ts", "layer": "core" },
     { "path": "lib/tenant", "layer": "core" },
     { "path": "lib/auth", "layer": "core" },
     { "path": "lib/admin", "layer": "core" },

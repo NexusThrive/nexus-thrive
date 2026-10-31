@@ -16,6 +16,8 @@
  *   solo tipos tienen un tope (`maxCiclosDeTipos`) que solo puede bajar. Los imports
  *   dinámicos (`import()`) son perezosos y no cuentan como ciclo de carga.
  * - Resultado reproducible: mismas fuentes, misma salida (todo va ordenado, sin fechas).
+ * - Unidades huérfanas: una unidad de layers.json que apunta a un archivo o carpeta que ya no existe
+ *   (se movió o se borró) falla; así la clasificación no acumula entradas muertas.
  *
  * Uso:
  *   node scripts/check-layers.mjs            # comprueba (sale 1 si hay problemas)
@@ -150,6 +152,17 @@ export function findViolations(sources, layers, { exists } = {}) {
   return { violations: [...violations.values()], unclassified: [...unclassified].sort(), conflicts: [...conflicts.values()].sort((a, b) => a.file.localeCompare(b.file)) };
 }
 
+/**
+ * Unidades de layers.json que no apuntan a nada (archivo o carpeta inexistente). Las que llevan `*` son patrones y no se
+ * pueden comprobar con una ruta. `exists` es inyectable en pruebas.
+ */
+export function findOrphanUnits(layers, exists = (p) => existsSync(join(ROOT, p))) {
+  return layers.units
+    .map((u) => u.path)
+    .filter((p) => !p.includes("*") && !exists(p.replace(/\/$/, "")))
+    .sort();
+}
+
 /** Componentes fuertemente conexos con más de un archivo (Tarjan). Devuelve grupos ordenados. */
 function cyclesOf(nodes, edges) {
   let index = 0;
@@ -223,6 +236,7 @@ const REQUIRED = ["id", "origen", "destino", "regla", "justificacion", "etapa", 
 export function compare(violations, unclassified, exceptions, layers, literals = [], extras = {}) {
   const problems = [];
   for (const f of unclassified) problems.push(`Sin clasificar en layers.json: ${f}`);
+  for (const p of extras.orphans ?? []) problems.push(`Unidad de layers.json sin archivos (¿se movió o se borró?): ${p}`);
   for (const c of extras.conflicts ?? []) problems.push(`Ubicación incoherente: ${c.file} está en lib/${c.area}/ pero layers.json (${c.unit}) lo clasifica como ${c.layer}`);
   if (extras.cycles) {
     for (const group of extras.cycles.valueCycles) problems.push(`Ciclo de valores: ${[...group, group[0]].join(" → ")}`);
@@ -276,11 +290,12 @@ function main() {
   const literals = findVerticalLiterals(read(listSources(ROOT, ["lib", "app", "components"])));
   const { violations, unclassified, conflicts } = findViolations(sources, layers);
   const cycles = findCycles(sources);
-  if (process.argv.includes("--json")) { console.log(JSON.stringify({ violations, unclassified, conflicts, cycles, literals }, null, 1)); return; }
+  const orphans = findOrphanUnits(layers);
+  if (process.argv.includes("--json")) { console.log(JSON.stringify({ violations, unclassified, conflicts, orphans, cycles, literals }, null, 1)); return; }
   if (process.argv.includes("--report")) {
     const by = {};
     for (const v of violations) by[v.rule] = (by[v.rule] ?? 0) + 1;
-    console.log(`archivos: ${Object.keys(sources).length} | violaciones (archivo→archivo): ${violations.length} | sin clasificar: ${unclassified.length} | ubicaciones incoherentes: ${conflicts.length}`);
+    console.log(`archivos: ${Object.keys(sources).length} | violaciones (archivo→archivo): ${violations.length} | sin clasificar: ${unclassified.length} | ubicaciones incoherentes: ${conflicts.length} | unidades huérfanas: ${orphans.length}`);
     console.log(by);
     // Dependencias entre capas (archivo→archivo, todas las permitidas): ayuda a ver hacia dónde apunta cada capa.
     const matrix = {};
@@ -300,7 +315,7 @@ function main() {
     for (const g of cycles.typeCycles) console.log("  tipos: " + g.join(" ⇄ "));
     return;
   }
-  const problems = compare(violations, unclassified, exceptions, layers, literals, { conflicts, cycles });
+  const problems = compare(violations, unclassified, exceptions, layers, literals, { conflicts, orphans, cycles });
   const open = (exceptions.exceptions ?? []).filter((e) => e.estado !== "resuelta").length;
   if (problems.length) {
     console.error(`✗ Reglas de capas: ${problems.length} problema(s)\n` + problems.map((p) => "  - " + p).join("\n"));
