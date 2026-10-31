@@ -2,69 +2,15 @@
  * Menú lateral del negocio: arma los grupos de navegación según el rubro y los módulos activos, resuelve la ruta
  * relativa al negocio, el elemento activo y la categoría de una ruta.
  */
-import type { LucideIcon } from "lucide-react";
 import { Blocks, FileSpreadsheet, Receipt, Settings } from "lucide-react";
 import { MODULES, type ModuleValue, type VerticalValue } from "@/lib/admin/catalogs";
-import { CAPABILITIES, CAPABILITY_CATEGORIES, type CapabilityCategory, type CapabilityNav } from "@/lib/capabilities/registry";
+import { CAPABILITIES, CAPABILITY_CATEGORIES, type CapabilityCategory } from "@/lib/capabilities/registry";
+import { MODULE_NAV } from "@/lib/capabilities/route-modules";
 import { getVerticalTerms } from "@/lib/vertical-terms";
+import type { NavGroup, NavItem } from "./nav-types";
 
-export type NavItem = {
-  /** Clave estable (para React y para la paleta de comandos). */
-  key: string;
-  /** Módulo del negocio al que pertenece (no aplica en el panel CEO). */
-  module?: ModuleValue | "settings";
-  label: string;
-  /** Ruta relativa al negocio: "" = inicio, "/crm", "/projects"… */
-  href: string;
-  icon: LucideIcon;
-};
-
-/** `collapsible`: el grupo se despliega y se oculta en la barra lateral (Ingresos, Gastos). */
-export type NavGroup = {
-  label: string;
-  items: NavItem[];
-  collapsible?: boolean;
-  /** Se ancla al pie de la barra lateral, fuera del desplazamiento (Sistema: configuración). */
-  pinned?: boolean;
-};
-
-type ModuleNav = CapabilityNav;
-
-/** Menú de cada módulo: sale del registro de capacidades (ADR-0003). */
-const MODULE_NAV = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.nav as readonly ModuleNav[]])) as Record<ModuleValue, readonly ModuleNav[]>;
-
-/**
- * Módulos que dan acceso a cada ruta del negocio, derivados del menú (una sola
- * fuente). Una ruta puede venir de varios módulos: `/finance` la abren Finanzas
- * y Pagos. El servidor la usa para no servir pantallas ni acciones de módulos
- * apagados (SEC-06): ocultarlas del menú no basta.
- */
-const ROUTE_MODULES: ReadonlyMap<string, readonly ModuleValue[]> = (() => {
-  const map = new Map<string, ModuleValue[]>();
-  for (const [moduleName, entry] of Object.entries(MODULE_NAV) as [ModuleValue, readonly ModuleNav[]][]) {
-    for (const nav of entry) {
-      const route = nav.href.split("?")[0];
-      if (!route) continue; // El inicio existe siempre.
-      map.set(route, [...(map.get(route) ?? []), moduleName]);
-    }
-  }
-  return map;
-})();
-
-/**
- * Módulos que habilitan `route` ("/crm", "/projects/9/budget"…), o `null` si
- * la ruta no depende de un módulo (inicio, configuración, presencia).
- */
-export function modulesForRoute(route: string): readonly ModuleValue[] | null {
-  const path = route.split("?")[0];
-  let best: string | null = null;
-  for (const candidate of ROUTE_MODULES.keys()) {
-    if ((path === candidate || path.startsWith(`${candidate}/`)) && (!best || candidate.length > best.length)) {
-      best = candidate;
-    }
-  }
-  return best ? ROUTE_MODULES.get(best)! : null;
-}
+export type { NavGroup, NavItem };
+export { modulesForRoute } from "@/lib/capabilities/route-modules";
 
 /** Todas las funciones del sistema: encender o apagar lo que usa el negocio (no depende de un módulo). */
 export const FUNCTIONS_ITEM: NavItem = {

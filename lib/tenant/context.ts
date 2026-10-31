@@ -5,7 +5,7 @@ import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant/db";
 import type { BusinessRole } from "@/lib/auth/roles";
 import { can } from "@/lib/auth/permissions";
-import { modulesForRoute } from "@/lib/navigation/tenant-nav";
+import { modulesForRoute } from "@/lib/capabilities/route-modules";
 
 /**
  * Contexto de tenant resuelto para una server action: usuario autenticado,
