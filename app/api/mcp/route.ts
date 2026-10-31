@@ -1,4 +1,4 @@
-import { apiDeps } from "@/lib/api/runtime-deps";
+import { apiDeps } from "@/lib/runtime/api-deps";
 import { handleMcp } from "@/lib/mcp/server";
 
 /**

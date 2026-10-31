@@ -18,7 +18,7 @@ import { tenantProvisioningPort } from "@/lib/tenant/provisioning-port";
 /**
  * Raíz de composición: conecta cada puerto declarado por un dominio con la implementación de otro.
  *
- * Es el único lugar que conoce a los dos lados (por eso está en la capa de experiencia, que puede importar todo). Se ejecuta
+ * Es el único lugar que conoce a los dos lados (por eso está en la capa `runtime`, que puede importarlo todo y a la que nadie de `lib/` llama). Se ejecuta
  * una vez al arrancar el servidor (`instrumentation.ts`) y en la preparación de las pruebas (`vitest.setup.ts`). Es idempotente:
  * volver a llamarla reemplaza las implementaciones por las mismas.
  *

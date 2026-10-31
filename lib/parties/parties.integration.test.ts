@@ -3,7 +3,7 @@ import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
 import { saveCustomer } from "@/lib/business/customers-db";
 import { runOperation } from "@/lib/operations/engine";
-import { OPERATIONS } from "@/lib/operations/registry";
+import { OPERATIONS } from "@/lib/runtime/operations";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { createParty, findDuplicates, listParties, syncCustomerParty } from "./parties-db";
 

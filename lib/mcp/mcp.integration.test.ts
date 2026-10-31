@@ -5,7 +5,7 @@ import { authenticateApiKey, createApiKey } from "@/lib/api/keys";
 import type { ApiDeps } from "@/lib/api/handler";
 import { resetRateLimits } from "@/lib/api/rate-limit";
 import { recordIncomeNow } from "@/lib/business/money-service";
-import { OPERATIONS } from "@/lib/operations/registry";
+import { OPERATIONS } from "@/lib/runtime/operations";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { tenantWithModules } from "@/lib/tenant/membership";
 import { handleMcp } from "./server";

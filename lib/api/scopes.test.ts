@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { OPERATIONS } from "@/lib/operations/registry";
+import { OPERATIONS } from "@/lib/runtime/operations";
 import { invalidScope, scopeAllows } from "./scopes";
 
 const customers = { id: "customers.search", risk: "read" as const };

@@ -1,24 +1,25 @@
-import { businessOperations } from "./definitions/business";
-import { customerOperations } from "./definitions/customers";
-import { eventOperations } from "./definitions/events";
-import { financeOperations } from "./definitions/finance";
+import { businessOperations } from "@/lib/operations/definitions/business";
+import { customerOperations } from "@/lib/operations/definitions/customers";
+import { eventOperations } from "@/lib/operations/definitions/events";
+import { financeOperations } from "@/lib/operations/definitions/finance";
 import { inventoryOperations } from "@/lib/inventory/operations";
 import { presenceOperations } from "@/lib/presence/operations";
 import { purchaseOperations } from "@/lib/purchasing/operations";
-import { partyOperations } from "./definitions/parties";
-import { isAvailable, runOperation } from "./engine";
-import type { OperationContext, OperationDefinition } from "./types";
+import { partyOperations } from "@/lib/operations/definitions/parties";
+import { isAvailable, runOperation } from "@/lib/operations/engine";
+import type { OperationContext, OperationDefinition } from "@/lib/operations/types";
 
 /**
  * Todas las operaciones de negocio disponibles para integraciones. Las pantallas,
  * la API (`/api/v1`) y el MCP las consumen de aquí; si una operación no está en
  * este registro, no existe para ellas. Agregar una = agregar su definición.
  *
- * Este archivo es la RAÍZ DE COMPOSICIÓN: cada dominio declara sus propias operaciones
- * (inventario, compras y presencia en su carpeta, con su `operations.ts`) y aquí solo se
- * reúnen en una lista explícita y con tipos. El motor (`engine.ts`) y los tipos
- * (`types.ts`) son de Core y no conocen a ningún dominio. En `layers.json` este archivo
- * está en la capa de integraciones, que sí puede componer dominios.
+ * Es parte de la RAÍZ DE COMPOSICIÓN (`lib/runtime`, junto a `ports.ts`): cada dominio declara
+ * sus propias operaciones (inventario, compras y presencia en su carpeta, con su `operations.ts`)
+ * y aquí solo se reúnen en una lista explícita y con tipos. El motor (`engine.ts`) y los tipos
+ * (`types.ts`) son de Core y no conocen a ningún dominio. Antes vivía en `lib/operations/registry.ts`
+ * (capa de integraciones); en la capa `runtime` nadie de `lib/` puede importarlo: solo lo usan los
+ * puntos de entrada (rutas y acciones) y las pruebas.
  */
 export const OPERATIONS: readonly OperationDefinition[] = Object.freeze([
   ...businessOperations,
@@ -40,5 +41,5 @@ export const operationsFor = (ctx: Pick<OperationContext, "role" | "activeModule
 /** Ejecuta una operación del registro (el camino único de la pantalla, la API y el MCP). */
 export const run = (ctx: OperationContext, id: string, input: unknown) => runOperation(OPERATIONS, ctx, id, input);
 
-export { describeOperation } from "./engine";
-export * from "./types";
+export { describeOperation } from "@/lib/operations/engine";
+export * from "@/lib/operations/types";

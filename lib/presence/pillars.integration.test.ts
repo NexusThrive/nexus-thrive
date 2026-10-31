@@ -4,7 +4,7 @@ import { createAdminDb } from "@/lib/admin/db";
 import { dispatchPending } from "@/lib/events/dispatcher";
 import { emitEvent } from "@/lib/events/outbox";
 import { runOperation } from "@/lib/operations/engine";
-import { OPERATIONS } from "@/lib/operations/registry";
+import { OPERATIONS } from "@/lib/runtime/operations";
 import { confirmIntent, createIntent } from "@/lib/payments/intents-db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { todayCO } from "@/lib/tax/tax";

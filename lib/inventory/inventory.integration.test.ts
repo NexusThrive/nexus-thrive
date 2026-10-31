@@ -4,7 +4,7 @@ import { createAdminDb } from "@/lib/admin/db";
 import { moneyTransaction, sellProduct } from "@/lib/business/money-service";
 import { moveStock } from "@/lib/business/products-db";
 import { runOperation } from "@/lib/operations/engine";
-import { OPERATIONS } from "@/lib/operations/registry";
+import { OPERATIONS } from "@/lib/runtime/operations";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { createWarehouse, kardex, reconcile, stockByWarehouse } from "./kardex";
 import { applyStockMovement, StockError } from "./stock-service";
