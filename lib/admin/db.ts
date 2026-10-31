@@ -393,13 +393,9 @@ const ROLE_LABELS: Record<"SUPERADMIN" | "OWNER" | "STAFF" | "ADMIN" | "RECEPTIO
   ADVISOR: "Asesor",
 };
 
+import { escapeLike } from "@/lib/sql-like";
 import { AUDIT_ACTION_LABELS } from "./audit-labels";
 export { AUDIT_ACTION_LABELS };
-
-/** Escapa los comodines de LIKE para que la búsqueda sea literal. */
-function escapeLike(input: string): string {
-  return input.replace(/[\\%_]/g, (char) => `\\${char}`);
-}
 
 /**
  * URL de acceso directo a un negocio.
