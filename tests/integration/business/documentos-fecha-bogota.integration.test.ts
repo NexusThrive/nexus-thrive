@@ -9,7 +9,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
-import { setAccountingEnabled } from "@/lib/accounting/ledger-db";
+import { setAccountingEnabled } from "@/lib/domains/finance/accounting/ledger-db";
 import { createDocument, documentView } from "@/lib/business/sales/documents-db";
 import { listInvoices } from "@/lib/business/sales/invoices-db";
 import { setFiscalEnabled } from "@/lib/einvoice/einvoice-db";

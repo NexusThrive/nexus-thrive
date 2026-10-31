@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
-import { listEntries } from "@/lib/accounting/ledger-db";
-import { listAccounts, listCostCenters, listPeriods, listRules } from "@/lib/accounting/accounting-db";
+import { listEntries } from "@/lib/domains/finance/accounting/ledger-db";
+import { listAccounts, listCostCenters, listPeriods, listRules } from "@/lib/domains/finance/accounting/accounting-db";
 import { can } from "@/lib/auth/permissions";
 import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { requireTenantContext } from "@/lib/tenant/context";

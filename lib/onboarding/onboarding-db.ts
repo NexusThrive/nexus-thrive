@@ -1,4 +1,4 @@
-import { seedAccounting } from "@/lib/accounting/accounting-db";
+import { seedAccounting } from "@/lib/domains/finance/accounting/accounting-db";
 import { db } from "@/prisma/db";
 import type { ModuleValue } from "@/lib/onboarding/types";
 

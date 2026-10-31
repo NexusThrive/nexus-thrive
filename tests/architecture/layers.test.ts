@@ -129,7 +129,7 @@ describe("la lista de excepciones solo puede encogerse", () => {
     const sources = libSources();
     const origen = Object.keys(sources).find((f) => f.startsWith("lib/business/"))!;
     const sobrante = {
-      id: "EX-TEST", tipo: "import", origen, destino: "lib/accounting/ledger-db.ts", regla: "R3-business-no-importa-domains", importaciones: 1, soloTipos: false,
+      id: "EX-TEST", tipo: "import", origen, destino: "lib/domains/finance/accounting/ledger-db.ts", regla: "R3-business-no-importa-domains", importaciones: 1, soloTipos: false,
       justificacion: "prueba", etapa: "prueba", estado: "abierta", aprobacion: "prueba",
     };
     const conSobrante = { ...exceptions, maxAbiertas: exceptions.maxAbiertas + 1, exceptions: [...exceptions.exceptions, sobrante] };

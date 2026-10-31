@@ -1,7 +1,8 @@
 /**
  * V10 · M5 · Finance como familia de dominios.
  *
- * Se amplía etapa a etapa. M5.3: `tax` vive en `lib/domains/finance/tax` (área `domains` por ruta, sin unidad
+ * Se amplía etapa a etapa. M5.4: `accounting` vive en `lib/domains/finance/accounting`, depende de Foundation, de Business
+ * (error y servicio de dinero, tabla de intercambio) y de `tax`, y nadie por debajo de Experience lo importa. M5.3: `tax` vive en `lib/domains/finance/tax` (área `domains` por ruta, sin unidad
  * en `layers.json`) y solo depende de Foundation. M5.2: las ayudas de captura de pagos en pantalla (teclado numérico y lectura
  * de un QR de cobro) viven en `lib/payment-input` (Experience), solo dependen del kernel de Foundation y
  * la carpeta antigua `lib/finance` ya no existe.
@@ -75,6 +76,39 @@ describe("M5.3 · domains/finance/tax", () => {
 
   test("ningún módulo de foundation, core, business ni de automatización importa tax", () => {
     const ofensores = libSources().filter((f) => /^lib\/(foundation|core|business|events|operations|tenant|auth)\//.test(f) && importsOf(f).some((s) => s.startsWith("@/lib/domains/finance/tax")));
+    expect(ofensores).toEqual([]);
+  });
+});
+
+describe("M5.4 · domains/finance/accounting", () => {
+  const dir = "lib/domains/finance/accounting";
+  const produccion = ["accounting-db.ts", "ledger-db.ts", "ledger.ts", "puc.ts", "reports-db.ts", "reports.ts"];
+
+  test("contiene exactamente los seis módulos de producción, y lib/accounting ya no existe", () => {
+    const hoy = readdirSync(join(ROOT, dir)).filter((n) => n.endsWith(".ts") && !n.endsWith(".test.ts"));
+    expect(hoy.sort()).toEqual(produccion);
+    expect(existsSync(join(ROOT, "lib/accounting"))).toBe(false);
+  });
+
+  test.each(produccion)("%s está en el área domains por su ruta, sin unidad propia", (name) => {
+    const c = classify(`${dir}/${name}`, layers);
+    expect(c?.layer).toBe("domains");
+    expect(c?.byPath).toBe(true);
+  });
+
+  test("solo depende de Foundation, de Business (lista cerrada), de tax y de sí mismo", () => {
+    const permitidos = new RegExp(
+      "^(node:crypto|@/prisma/db|@/lib/format|@/lib/business/sales/money-error|@/lib/data-exchange/table|@/lib/domains/finance/tax/tax|\\./(puc|ledger|accounting-db|reports))$",
+    );
+    for (const name of produccion) {
+      for (const spec of importsOf(`${dir}/${name}`)) expect(spec, name).toMatch(permitidos);
+    }
+  });
+
+  test("ningún módulo de foundation, core, business ni de automatización importa accounting", () => {
+    const ofensores = libSources().filter(
+      (f) => /^lib\/(foundation|core|business|events|operations|tenant|auth)\//.test(f) && importsOf(f).some((s) => s.startsWith("@/lib/domains/finance/accounting")),
+    );
     expect(ofensores).toEqual([]);
   });
 });

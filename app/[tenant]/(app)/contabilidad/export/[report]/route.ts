@@ -1,4 +1,4 @@
-import { REPORTS, ledgerRows, reportCsv, type ReportKind } from "@/lib/accounting/reports-db";
+import { REPORTS, ledgerRows, reportCsv, type ReportKind } from "@/lib/domains/finance/accounting/reports-db";
 import { can } from "@/lib/auth/permissions";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";

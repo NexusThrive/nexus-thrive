@@ -15,9 +15,9 @@ import { FormDialog } from "@/components/organisms/form-sheet";
 import ReportsPanel from "./reports-panel";
 import { Switch } from "@/components/atoms/switch";
 import { setEnabledAction, verifyLedgerAction, closePeriodAction, createAccountAction, createCostCenterAction, loadPucAction, reopenPeriodAction, toggleAccountAction, toggleCostCenterAction, toggleRuleAction, type AccResult } from "@/app/[tenant]/(app)/contabilidad/actions";
-import { TYPE_LABELS, periodLabel } from "@/lib/accounting/puc";
-import type { AccountRow, CostCenterRow, PeriodRow, RuleRow } from "@/lib/accounting/accounting-db";
-import type { EntryRow } from "@/lib/accounting/ledger-db";
+import { TYPE_LABELS, periodLabel } from "@/lib/domains/finance/accounting/puc";
+import type { AccountRow, CostCenterRow, PeriodRow, RuleRow } from "@/lib/domains/finance/accounting/accounting-db";
+import type { EntryRow } from "@/lib/domains/finance/accounting/ledger-db";
 import { formatCurrency } from "@/lib/format";
 
 type Tab = "entries" | "reports" | "puc" | "rules" | "centers" | "periods";

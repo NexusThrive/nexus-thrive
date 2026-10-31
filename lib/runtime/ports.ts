@@ -1,5 +1,5 @@
-import { seedAccounting } from "@/lib/accounting/accounting-db";
-import { cashAccountFor, postByRule, reverseSource } from "@/lib/accounting/ledger-db";
+import { seedAccounting } from "@/lib/domains/finance/accounting/accounting-db";
+import { cashAccountFor, postByRule, reverseSource } from "@/lib/domains/finance/accounting/ledger-db";
 import { accountingPort } from "@/lib/business/sales/accounting-port";
 import { fiscalQueuePort } from "@/lib/business/sales/fiscal-port";
 import { numberingPort } from "@/lib/business/sales/numbering-port";
