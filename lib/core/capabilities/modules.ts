@@ -3,7 +3,7 @@ import { CAPABILITIES, CHILDREN_OF, type CapabilityId } from "./registry";
 /**
  * Catálogo de módulos derivado del registro de capacidades: cuáles son base y cuáles especializados, sus nombres y las
  * guardas y utilidades para listas de módulos (orden estable, hijos que se desprendieron de otra función).
- * Antes vivía dentro de `lib/admin/catalogs.ts`, junto con los sectores y los medios de pago.
+ * Antes vivía dentro de `lib/core/tenancy/catalogs.ts`, junto con los sectores y los medios de pago.
  */
 
 type CapabilityOf<K extends "base" | "specialized"> = Extract<(typeof CAPABILITIES)[number], { kind: K }>["id"];

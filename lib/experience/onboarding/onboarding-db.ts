@@ -1,6 +1,6 @@
 import { seedAccounting } from "@/lib/domains/finance/accounting/accounting-db";
 import { db } from "@/prisma/db";
-import type { ModuleValue } from "@/lib/onboarding/types";
+import type { ModuleValue } from "@/lib/core/tenancy/onboarding/types";
 
 /**
  * Escrituras del alta de un negocio (onboarding). Las reglas (validación,

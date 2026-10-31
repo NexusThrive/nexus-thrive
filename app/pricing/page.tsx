@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { Eyebrow } from "@/components/molecules/page-header";
 import { PublicPricing } from "@/components/organisms/pricing/public-pricing";
 import { PublicLayout } from "@/components/templates/public-layout";
-import { SHOW_PRICING } from "@/lib/onboarding/flags";
+import { SHOW_PRICING } from "@/lib/experience/onboarding/flags";
 import { loadPricingConfig } from "@/lib/core/entitlements/settings";
 
 export const metadata: Metadata = {

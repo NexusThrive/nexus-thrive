@@ -4,7 +4,7 @@ import { Check, Lock, Sparkles, Users } from "lucide-react";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import type { VerticalValue } from "@/lib/core/sectors/verticals";
 import type { ModuleValue } from "@/lib/core/capabilities/modules";
-import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
+import { MODULE_ICONS } from "@/lib/experience/onboarding/module-meta";
 import type { Billing, PlanKey } from "@/lib/core/entitlements/catalog";
 import { activePlans, modulePriceCents, offeredModules, quote, verticalOf, type PricingConfig, formatUsdCents } from "@/lib/core/entitlements/pricing";
 import { cn } from "@/lib/utils";

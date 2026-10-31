@@ -48,9 +48,9 @@ describe("Etapa C · lib/core", () => {
     for (const u of layers.units) expect(u.path, u.path).not.toMatch(new RegExp(`^lib/(${ORIGENES.join("|")})\\b`));
   });
 
-  test("nav-types y onboarding/types siguen en Core fuera de lib/core hasta la etapa Z", () => {
-    expect(classify("lib/navigation/nav-types.ts", layers)?.layer).toBe("core");
-    expect(classify("lib/onboarding/types.ts", layers)?.layer).toBe("core");
+  test("nav-types (core/capabilities) y los tipos del alta (core/tenancy/onboarding) son Core", () => {
+    expect(classify("lib/core/capabilities/nav-types.ts", layers)?.layer).toBe("core");
+    expect(classify("lib/core/tenancy/onboarding/types.ts", layers)?.layer).toBe("core");
   });
 
   test("las pruebas de integración con nombre propio del script existen en su ruta nueva", () => {

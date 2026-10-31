@@ -6,7 +6,7 @@ import { moduleRulesOf, setTenantModule, slugTakenByOther, updateTenantProfile }
 import { createTenantDb } from "@/lib/core/tenancy/db";
 import { isVertical } from "@/lib/core/sectors/verticals";
 import { isModule } from "@/lib/core/capabilities/modules";
-import { validateSlug } from "@/lib/admin/catalogs";
+import { validateSlug } from "@/lib/core/tenancy/catalogs";
 import { checkModuleToggle } from "@/lib/core/entitlements/compat";
 import { loadPricingConfig } from "@/lib/core/entitlements/settings";
 import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";

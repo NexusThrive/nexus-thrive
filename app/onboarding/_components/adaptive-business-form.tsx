@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { Check, Link2, MapPin, Receipt } from "lucide-react";
 import type { VerticalValue } from "@/lib/core/sectors/verticals";
-import { getVerticalIcon } from "@/lib/admin/vertical-icons";
-import { normalizeSlug, normalizeAndValidateSlug } from "@/lib/onboarding/slug";
+import { getVerticalIcon } from "@/lib/experience/vertical-icons";
+import { normalizeSlug, normalizeAndValidateSlug } from "@/lib/core/tenancy/onboarding/slug";
 import {
   TEAM_SIZES,
   TEAM_SIZE_LABELS,
   type OnboardingDraft,
   type OnboardingFieldErrors,
-} from "@/lib/onboarding/types";
+} from "@/lib/core/tenancy/onboarding/types";
 import { inputClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
 import { cn } from "@/lib/utils";

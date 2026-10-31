@@ -3,10 +3,10 @@
 import { Building2, FileSpreadsheet, MapPin, MessageCircleWarning, NotebookPen, Receipt, StickyNote, User } from "lucide-react";
 import { NMark } from "@/components/atoms/n-mark";
 import { Odometer } from "@/components/atoms/odometer";
-import { getVerticalIcon } from "@/lib/admin/vertical-icons";
+import { getVerticalIcon } from "@/lib/experience/vertical-icons";
 import { VERTICAL_LABELS, type VerticalValue } from "@/lib/core/sectors/verticals";
 import { MODULE_LABELS, type ModuleValue } from "@/lib/core/capabilities/modules";
-import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
+import { MODULE_ICONS } from "@/lib/experience/onboarding/module-meta";
 import { cn } from "@/lib/utils";
 
 export type ScenePreview = {

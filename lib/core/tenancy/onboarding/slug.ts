@@ -7,7 +7,7 @@
  * porque requiere `db`.
  */
 
-import { validateSlug, type SlugValidation } from "@/lib/admin/catalogs";
+import { validateSlug, type SlugValidation } from "@/lib/core/tenancy/catalogs";
 
 const COMBINING_MARKS = /[\u0300-\u036f]/g;
 /** Cualquier carácter que no sea a-z0-9 se convierte en separador. */

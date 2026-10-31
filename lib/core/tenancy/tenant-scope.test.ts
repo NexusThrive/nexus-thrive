@@ -31,7 +31,7 @@ const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
   { file: "lib/business/sales/finance-db.ts", model: "Payment", why: "Recibo público por token firmado y referencia del proveedor, única en toda la plataforma (solo sí/no)." },
   { file: "lib/core/tenancy/team-db.ts", model: "TenantInvite", why: "Invitaciones a un correo en cualquier negocio, al entrar con ese correo verificado." },
   { file: "lib/core/tenancy/membership.ts", model: "User", why: "Resuelve el negocio de una cuenta de la sesión (clerkUserId)." },
-  { file: "lib/onboarding/prefill.ts", model: "User", why: "Membresías de la cuenta de la sesión para reanudar el alta." },
+  { file: "lib/experience/onboarding/prefill.ts", model: "User", why: "Membresías de la cuenta de la sesión para reanudar el alta." },
   { file: "lib/core/api/keys.ts", model: "ApiKey", why: "Autenticar: se busca por el hash de la llave (única en la plataforma); de ahí sale el negocio." },
   { file: "lib/domains/finance/payments/intents-db.ts", model: "PaymentIntent", why: "Enlace público de cobro: se busca por su código aleatorio (único en la plataforma) y solo devuelve negocio, valor, descripción y estado." },
   { file: "lib/business/presence/pillars-db.ts", model: "Tenant", why: "Cron semanal: recorre los negocios activos y trabaja cada uno con su propio tenantId." },

@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import { db } from "@/prisma/db";
 
-/** Las columnas de fecha del ORM son `Temporal.Instant` (`lib/temporal.d.ts`). */
+/** Las columnas de fecha del ORM son `Temporal.Instant` (`lib/foundation/dates/temporal.d.ts`). */
 const instant = (d: Date) => Temporal.Instant.fromEpochMilliseconds(d.getTime());
 const msOf = (value: unknown): number | null => {
   if (!value) return null;

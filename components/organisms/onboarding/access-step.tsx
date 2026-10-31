@@ -3,7 +3,7 @@
 import { useState, useTransition, type FormEvent, type ReactNode } from "react";
 import { Gift, KeyRound, Loader2, MessageCircle, X } from "lucide-react";
 import { claimAccessCodeAction, clearAccessCodeAction } from "@/app/onboarding/actions";
-import type { OnboardingBenefit } from "@/lib/onboarding/types";
+import type { OnboardingBenefit } from "@/lib/core/tenancy/onboarding/types";
 import { cn } from "@/lib/utils";
 import { accessRequestMessage, whatsappLink } from "@/lib/foundation/contact";
 import { BenefitCard } from "./benefit-card";

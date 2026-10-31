@@ -198,3 +198,17 @@ Al unir `inventory` con `sales` bajo `lib/business/` (etapa B), la prueba «los 
 - **No es una solución definitiva.** Es **deuda arquitectónica pendiente**. Para saldarla hay que decidir, con su propio análisis, entre: mover `stock-docs-db` y la dependencia con `accounting-port` hacia `sales`, invertir una de las dependencias mediante un puerto, o fusionar `inventory` en `sales`. Ninguna se hizo ni se prejuzga aquí. Al saldarla se elimina la excepción de la prueba.
 - **No se modificó código** (implementaciones, contratos ni dependencias) para ocultar el ciclo.
 
+## 9. Decisiones del cierre de V10 (etapas F y Z)
+
+| # | Decisión | Estado |
+|---|---|---|
+| **Z-1** | La raíz de `lib/` contiene exactamente las nueve áreas y `utils.ts` y `cn.ts`; lo fija `tests/architecture/v10-raiz-lib.test.ts` | **Implementada** |
+| **Z-2** | `design/`, `seo/` y la prueba de patrones de Prisma pasan a `tests/` (antes «fuera de V10») | **Implementada** (movimientos de pruebas, sin cambios de comportamiento) |
+| **Z-3** | `nav-types` → `core/capabilities`; el alta del negocio (`types`, `validation`, `presets`, `slug`) → `core/tenancy/onboarding`; `catalogs.ts` → `core/tenancy` | **Implementada** |
+| **Z-4** | `onboarding-db` se queda en `experience/onboarding` porque importa Domains, que Core no puede importar. Ajusta el plan de cierre §10 | **Implementada** (informada al dueño en el cierre) |
+| **Z-5** | `layers.json` se reduce a las unidades que la ruta no puede deducir (5) y se retira la capa `automation` | **Implementada** |
+| **Z-6** | Documentación final: `guia-implementacion-lib.md` y `reglas-dependencias.md` | **Implementada** |
+| **B-1** (vigente) | Excepción temporal y puntual `inventory ⇄ sales`; deuda arquitectónica pendiente | **Vigente** (§8.1) |
+
+M7 y M6c quedan **fuera de V10** (E-6). Lo que sigue pendiente después del cierre está en [`V10-cierre-resultados.md`](V10-cierre-resultados.md) §8.4.
+

@@ -8,11 +8,10 @@
     "business": { "mayImport": ["foundation", "core"], "descripcion": "Capacidades empresariales generales: clientes, catálogo, inventario, ventas, compras, POS, tienda." },
     "domains": { "mayImport": ["foundation", "core", "business"], "descripcion": "Familias de dominios especializados (hoy `finance`, todavía en sus carpetas de origen mientras avanza M5; al terminar vive en `lib/domains/finance/`). Entre familias solo por contrato." },
     "integrations": { "mayImport": ["foundation", "core", "business", "domains"], "descripcion": "Puertos y adaptadores hacia proveedores y superficies externas (API, MCP, Google, facturación electrónica)." },
-    "automation": { "mayImport": ["foundation", "core"], "descripcion": "Eventos, outbox, webhooks internos y funciones automáticas." },
-    "platform": { "mayImport": ["foundation", "core", "business", "domains", "integrations", "automation"], "descripcion": "Operación global de Nexus como SaaS (Operations Center). No es un segundo Core." },
-    "industry": { "mayImport": ["foundation", "core", "business", "domains", "integrations", "automation"], "descripcion": "Extensiones sectoriales. Cada industria solo puede importarse a sí misma." },
-    "experience": { "mayImport": ["foundation", "core", "business", "domains", "integrations", "automation", "platform", "industry"], "descripcion": "Navegación, onboarding, dashboard, presencia, sitio y utilidades de interfaz." },
-    "runtime": { "mayImport": ["foundation", "core", "business", "domains", "integrations", "automation", "platform", "industry", "experience"], "descripcion": "Raíz de composición: conecta puertos y registros. Puede importarlo todo; solo la importan los puntos de entrada (instrumentation.ts) y las pruebas." }
+    "platform": { "mayImport": ["foundation", "core", "business", "domains", "integrations"], "descripcion": "Operación global de Nexus como SaaS (Operations Center). No es un segundo Core." },
+    "industry": { "mayImport": ["foundation", "core", "business", "domains", "integrations"], "descripcion": "Extensiones sectoriales. Cada industria solo puede importarse a sí misma." },
+    "experience": { "mayImport": ["foundation", "core", "business", "domains", "integrations", "platform", "industry"], "descripcion": "Navegación, onboarding, dashboard, presencia, sitio y utilidades de interfaz." },
+    "runtime": { "mayImport": ["foundation", "core", "business", "domains", "integrations", "platform", "industry", "experience"], "descripcion": "Raíz de composición: conecta puertos y registros. Puede importarlo todo; solo la importan los puntos de entrada (instrumentation.ts) y las pruebas." }
   },
   "reglas": {
     "R1-nadie-importa-industry": "Solo experience puede importar una industria (y la propia industria su código).",
@@ -23,25 +22,15 @@
     { "path": "prisma/", "layer": "foundation" },
 
     { "path": "lib/cn.ts", "layer": "foundation" },
-    { "path": "lib/temporal.d.ts", "layer": "foundation" },
     { "path": "lib/utils.ts", "layer": "foundation" },
 
-    { "path": "lib/admin", "layer": "core" },
-    { "path": "lib/runtime", "layer": "runtime" },
 
 
 
 
 
 
-    { "path": "lib/navigation/nav-types.ts", "layer": "core" },
-    { "path": "lib/design", "layer": "experience" },
-    { "path": "lib/seo", "layer": "experience" },
-    { "path": "lib/onboarding/types.ts", "layer": "core" },
-    { "path": "lib/onboarding", "layer": "experience" },
 
-    { "path": "lib/industry/gym", "layer": "industry", "industry": "gym" },
-    { "path": "lib/industry/museum", "layer": "industry", "industry": "museum" },
 
     { "path": "app/", "layer": "experience" },
     { "path": "components/", "layer": "experience" }

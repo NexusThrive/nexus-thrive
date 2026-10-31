@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 import { MODULES, MODULE_LABELS, isModule } from "@/lib/core/capabilities/modules";
-import { MODULE_DESCRIPTIONS, MODULE_ICONS } from "@/lib/onboarding/module-meta";
+import { MODULE_DESCRIPTIONS, MODULE_ICONS } from "@/lib/experience/onboarding/module-meta";
 import { defaultPricingConfig } from "@/lib/core/entitlements/pricing";
 import { CAPABILITIES, CAPABILITY_CATEGORIES, CHILDREN_OF } from "./registry";
 

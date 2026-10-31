@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
-import { getOnboardingPrefill } from "@/lib/onboarding/prefill";
+import { getOnboardingPrefill } from "@/lib/experience/onboarding/prefill";
 import { deleteTenantCompletely } from "./deletion";
 import { businessesOfMember, homeTenantFor, isActiveMember, rememberBusiness } from "./membership";
 

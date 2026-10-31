@@ -30,7 +30,7 @@ describe("catálogo de sectores en Core", () => {
 
   test("separado de la administración: los sectores no importan lib/admin y catalogs.ts ya no contiene sectores ni módulos", () => {
     for (const f of SECTOR_FILES) expect(importsOf(f).filter((s: string) => /^@\/lib\/admin\b/.test(s)), f).toEqual([]);
-    const catalogs = read("lib/admin/catalogs.ts");
+    const catalogs = read("lib/core/tenancy/catalogs.ts");
     for (const symbol of ["VERTICALS", "VERTICAL_RECIPES", "VerticalTerms", "MODULES", "normalizeVertical", "withChildModules"]) {
       expect(catalogs, symbol).not.toMatch(new RegExp(`\\b${symbol}\\b\\s*[=:(]|export (const|type|function) ${symbol}\\b`));
     }

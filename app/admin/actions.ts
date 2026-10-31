@@ -11,7 +11,7 @@ import type { PermissionKey } from "@/lib/platform/team/permissions";
 import { revalidatePath } from "next/cache";
 import { organizationLimitProblem } from "@/lib/platform/admin/users-db";
 import { createAdminDb, type AuditLogInput } from "@/lib/platform/admin/db";
-import { validateSlug, type SlugValidation } from "@/lib/admin/catalogs";
+import { validateSlug, type SlugValidation } from "@/lib/core/tenancy/catalogs";
 import {
   validateSuspendTenant,
   validateTenantForm,

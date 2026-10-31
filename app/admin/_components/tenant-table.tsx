@@ -26,7 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/molecules/dropdown-menu";
 import { EmptyState } from "@/components/molecules/empty-state";
-import { getVerticalIcon } from "@/lib/admin/vertical-icons";
+import { getVerticalIcon } from "@/lib/experience/vertical-icons";
 import { VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
 import { MODULE_LABELS, type ModuleValue } from "@/lib/core/capabilities/modules";
 import type { TenantListRow, TenantSortKey } from "@/lib/platform/admin/db";

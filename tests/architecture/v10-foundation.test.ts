@@ -7,7 +7,7 @@
  * importa ninguna otra área: lo comprueba `pnpm check:layers`; aquí se fija la forma.
  *
  * Excepciones documentadas en la raíz de `lib/`: `utils.ts` y `cn.ts` (convención de shadcn/ui, decisión E-3).
- * `temporal.d.ts` se mueve en la etapa Z.
+ * `temporal.d.ts` pasó a `foundation/dates/` en la etapa Z.
  */
 import { existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -27,7 +27,8 @@ const produccion = (dir: string) => readdirSync(join(ROOT, dir)).filter((n) => n
 
 describe("Etapa F · lib/foundation", () => {
   test("dates/ y db/ contienen exactamente sus tres archivos", () => {
-    expect(produccion("lib/foundation/dates")).toEqual(FECHAS.map((f) => `${f}.ts`));
+    // `temporal.d.ts` (tipos globales de Temporal) vive junto a las fechas desde la etapa Z.
+    expect(produccion("lib/foundation/dates")).toEqual([...FECHAS.map((f) => `${f}.ts`), "temporal.d.ts"]);
     expect(produccion("lib/foundation/db")).toEqual(BASE_DATOS.map((f) => `${f}.ts`));
   });
 
@@ -43,8 +44,8 @@ describe("Etapa F · lib/foundation", () => {
 
   test("la raíz de lib/ solo conserva archivos con excepción documentada", () => {
     const sueltos = readdirSync(join(ROOT, "lib")).filter((n) => statSync(join(ROOT, "lib", n)).isFile()).sort();
-    // utils.ts y cn.ts: convención shadcn (E-3). temporal.d.ts (etapa Z) y la prueba de patrones de Prisma (M8) siguen pendientes.
-    expect(sueltos).toEqual(["cn.ts", "prisma8-query-patterns.integration.test.ts", "temporal.d.ts", "utils.ts"]);
+    // utils.ts y cn.ts: convención shadcn/ui (decisión E-3). La raíz completa la fija v10-raiz-lib.test.ts.
+    expect(sueltos).toEqual(["cn.ts", "utils.ts"]);
   });
 
   test.each([

@@ -42,7 +42,7 @@ import type { VerticalTerms } from "@/lib/core/sectors/lexicon";
  * De aquí salen la lista de módulos y sus nombres (`lib/core/capabilities/modules.ts`),
  * el menú del negocio y las rutas que el servidor exige
  * (`lib/core/capabilities/route-modules.ts` → `modulesForRoute`), los iconos y textos
- * del onboarding (`lib/onboarding/module-meta.ts`) y el catálogo inicial de
+ * del onboarding (`lib/experience/onboarding/module-meta.ts`) y el catálogo inicial de
  * precios y estados (`lib/core/entitlements/pricing.ts`, `lib/core/entitlements/catalog.ts`).
  *
  * Agregar un módulo: una entrada aquí + su carpeta en `app/[tenant]/(app)/`

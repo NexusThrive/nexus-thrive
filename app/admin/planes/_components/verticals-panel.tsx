@@ -9,7 +9,7 @@ import { inputClasses } from "@/components/atoms/input";
 import { Switch } from "@/components/atoms/switch";
 import { Field } from "@/components/molecules/field";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { getVerticalIcon } from "@/lib/admin/vertical-icons";
+import { getVerticalIcon } from "@/lib/experience/vertical-icons";
 import type { ModuleValue } from "@/lib/core/capabilities/modules";
 import type { ModuleConfig, VerticalConfig } from "@/lib/core/entitlements/pricing";
 import { cn } from "@/lib/utils";

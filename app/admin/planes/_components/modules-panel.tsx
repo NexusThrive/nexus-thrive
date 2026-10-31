@@ -8,7 +8,7 @@ import { Switch } from "@/components/atoms/switch";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { UsdInput } from "@/components/molecules/usd-input";
 import { CAPABILITIES, CAPABILITY_CATEGORIES } from "@/lib/core/capabilities/registry";
-import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
+import { MODULE_ICONS } from "@/lib/experience/onboarding/module-meta";
 import type { ModuleConfig, ModuleStatus } from "@/lib/core/entitlements/pricing";
 import { cn } from "@/lib/utils";
 import { saveModuleAction } from "../actions";

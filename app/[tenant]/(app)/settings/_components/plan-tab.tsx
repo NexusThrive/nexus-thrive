@@ -1,6 +1,6 @@
 import { Check, Sparkles } from "lucide-react";
 import { MODULE_LABELS, type ModuleValue } from "@/lib/core/capabilities/modules";
-import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
+import { MODULE_ICONS } from "@/lib/experience/onboarding/module-meta";
 import { PLANS, type Billing, type PlanKey } from "@/lib/core/entitlements/catalog";
 import type { TenantAccess } from "@/lib/platform/benefits/benefits-db";
 import { ConsumptionPanel } from "@/components/organisms/consumption-panel";

@@ -13,7 +13,7 @@ import {
   EMPTY_DRAFT,
   type OnboardingDraft,
   type OnboardingPrefill,
-} from "@/lib/onboarding/types";
+} from "@/lib/core/tenancy/onboarding/types";
 
 /**
  * El `include("tenant", ...)` del ORM devuelve la fila relacionada con los

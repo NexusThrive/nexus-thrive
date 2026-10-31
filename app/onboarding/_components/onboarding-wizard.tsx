@@ -3,8 +3,8 @@
 import { useMemo, useState, useTransition } from "react";
 import { ArrowRight } from "lucide-react";
 import { completeAdaptiveOnboardingAction } from "../actions";
-import { validateAdaptiveOnboarding } from "@/lib/onboarding/validation";
-import { FLOW_META, PROGRESS_STEPS, nextStep, previousStep, progressIndex, type FlowStep } from "@/lib/onboarding/flow";
+import { validateAdaptiveOnboarding } from "@/lib/core/tenancy/onboarding/validation";
+import { FLOW_META, PROGRESS_STEPS, nextStep, previousStep, progressIndex, type FlowStep } from "@/lib/experience/onboarding/flow";
 import {
   EMPTY_DRAFT,
   TEAM_SIZE_LABELS,
@@ -12,8 +12,8 @@ import {
   type OnboardingBenefit,
   type OnboardingDraft,
   type OnboardingPrefill,
-} from "@/lib/onboarding/types";
-import { SHOW_PRICING } from "@/lib/onboarding/flags";
+} from "@/lib/core/tenancy/onboarding/types";
+import { SHOW_PRICING } from "@/lib/experience/onboarding/flags";
 import { MODULE_LABELS } from "@/lib/core/capabilities/modules";
 import { modulePriceCents, planOf, quote as quotePlan, signupVerticals, type PricingConfig, formatUsdCents } from "@/lib/core/entitlements/pricing";
 import type { PlanKey } from "@/lib/core/entitlements/catalog";

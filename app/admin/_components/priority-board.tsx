@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { CheckCircle2, CircleDot } from "lucide-react";
-import { getVerticalIcon } from "@/lib/admin/vertical-icons";
+import { getVerticalIcon } from "@/lib/experience/vertical-icons";
 import type { PriorityItem } from "@/lib/platform/accounts/accounts";
 import { cn } from "@/lib/utils";
 

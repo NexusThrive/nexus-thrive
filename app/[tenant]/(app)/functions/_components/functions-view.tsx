@@ -14,7 +14,7 @@ import { useToast } from "@/components/molecules/toast";
 import { setFunctionAction } from "@/app/[tenant]/(app)/functions/actions";
 import { CAPABILITY_CATEGORIES, type CapabilityCategory } from "@/lib/core/capabilities/registry";
 import { searchable, type FunctionGroups, type FunctionItem } from "@/lib/core/capabilities/discovery/functions";
-import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
+import { MODULE_ICONS } from "@/lib/experience/onboarding/module-meta";
 import { cn } from "@/lib/utils";
 
 type Status = "all" | "on" | "off";

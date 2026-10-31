@@ -7,7 +7,7 @@ import { Switch } from "@/components/atoms/switch";
 import { useToast } from "@/components/molecules/toast";
 import type { ModuleValue } from "@/lib/core/capabilities/modules";
 import { CAPABILITIES, CAPABILITY_CATEGORIES } from "@/lib/core/capabilities/registry";
-import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
+import { MODULE_ICONS } from "@/lib/experience/onboarding/module-meta";
 import type { ModuleState } from "@/lib/core/entitlements/compat";
 import { cn } from "@/lib/utils";
 import { toggleTenantModuleAction } from "../../../actions";

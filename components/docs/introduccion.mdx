@@ -44,7 +44,7 @@ entonces suben a `components/`.
    `LoadingState`, `useToast`. Ver **Introducción/Elegir el patrón**.
 2. **Prohibido**: `window.confirm`/`alert`, modales hechos a mano (`fixed inset-0`), Radix
    Dialog directo, `z-index` numérico, colores/sombras/duraciones sueltos y `title` como única
-   ayuda. Una prueba (`lib/design/ui-rules.test.ts`) lo vigila.
+   ayuda. Una prueba (`tests/architecture/ui-rules.test.ts`) lo vigila.
 3. **Lógica fuera de la UI**: reglas y cálculos en `lib/` como funciones puras con pruebas;
    los datos por repositorios con `tenantId`. Nada en `app/` importa la base.
 4. **Servidor por defecto**: `"use client"` solo donde hay estado, efectos o eventos.

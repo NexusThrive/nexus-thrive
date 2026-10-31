@@ -2,7 +2,7 @@
 
 ## Por qué elegimos esta estructura y cómo permite escalar la plataforma
 
-Estado: **documento de referencia** (2026-10-31). Describe la estructura a la que llega V10 y por qué se eligió. Qué parte ya está hecha y qué falta está en la §10; el plan para terminar, en [`V10-plan-de-cierre.md`](V10-plan-de-cierre.md). El diseño técnico detallado (reglas, matriz de dependencias, etapas M0–M8) sigue en [`V10-arquitectura-fisica.md`](V10-arquitectura-fisica.md) y las decisiones en [`V10-decisiones.md`](V10-decisiones.md).
+Estado: **documento de referencia, estructura terminada** (cierre de V10, 2026-10-31). Describe la estructura de `lib/` y por qué se eligió. Cómo trabajar en ella sin romperla está en [`guia-implementacion-lib.md`](guia-implementacion-lib.md); quién puede importar a quién, en [`reglas-dependencias.md`](reglas-dependencias.md); lo ocurrido etapa por etapa, en [`V10-cierre-resultados.md`](V10-cierre-resultados.md). El diseño técnico original (matriz, etapas M0–M8) sigue en [`V10-arquitectura-fisica.md`](V10-arquitectura-fisica.md) y las decisiones en [`V10-decisiones.md`](V10-decisiones.md).
 
 ---
 
@@ -77,13 +77,13 @@ Incluye `providers` (pasarelas y mensajería), facturación electrónica (`einvo
 
 **¿Por qué existe?** Porque los servicios externos pueden cambiar, desaparecer o ser sustituidos. Separar las integraciones permite que las funcionalidades de Nexus dependan menos de un proveedor específico: cambiar de pasarela de pagos no debería obligar a reconstruir las ventas.
 
-*Nota:* hoy `lib/api` y `lib/mcp` están clasificadas aquí, pero solo dependen de Core y Foundation (medido); V10 las lleva a `core/api`, porque son la superficie pública de las operaciones y no un proveedor externo.
+*Nota:* `lib/api` y `lib/mcp` estuvieron clasificadas aquí, pero solo dependían de Core y Foundation (medido); en la etapa C pasaron a `core/api` y `core/api/mcp`, porque son la superficie pública de las operaciones y no un proveedor externo.
 
 ### 3.6. Industry — Adaptaciones por sector
 
 **Responsabilidad:** las particularidades operativas de cada industria.
 
-Hoy: `gym` y `museum` (ya bajo `industry/`) y `construction` (en `lib/construction`, pendiente de moverse). `restaurant` nace cuando se implemente, no antes.
+Hoy: `gym`, `museum` y `construction`, los tres bajo `lib/industry/`. `restaurant` nace cuando se implemente, no antes. El mecanismo para que un sector declare su definición (`sector.ts` + `runtime/sectors.ts`) existe y está probado, pero ningún sector lo usa todavía (trabajo M7, fuera de V10).
 
 **¿Por qué existe?** Porque los negocios comparten capacidades, pero no trabajan igual. Un gimnasio administra membresías; un museo, visitantes y actividades; una constructora, proyectos y presupuestos. Industry incorpora esas diferencias sin contaminar los módulos compartidos. Un sector no importa a otro, y nadie lo importa salvo `runtime` y `experience`.
 
@@ -207,36 +207,53 @@ Una sola plataforma. Múltiples capacidades. Diferentes industrias. Una arquitec
 
 ---
 
-## 10. Estructura destino y estado actual
+## 10. Estructura final y estado
 
-La estructura destino (propuesta del dueño, con los ajustes que se explican en [`V10-plan-de-cierre.md`](V10-plan-de-cierre.md) §5):
+La estructura a la que llegó V10 (cierre, 2026-10-31). La raíz de `lib/` contiene **exactamente las nueve áreas y dos archivos de excepción** (`utils.ts` y `cn.ts`, convención de shadcn/ui, decisión E-3); una prueba de arquitectura lo fija (`tests/architecture/v10-raiz-lib.test.ts`).
 
 ```
 lib/
-├── foundation/     kernel/ · dates/ · db/ · format · qr · rate-limit · ports …
-├── core/           tenancy/ · auth/ · audit/ · parties/ · files/ · sectors/ · capabilities/
-│                   entitlements/ · events/ · operations/ · api/
-├── business/       customers/ · catalog/ · sales/ · scheduling/ · inventory/ · purchasing/
-│                   pos/ · store/ · data-exchange/ · growth/ · presence/
+├── foundation/     kernel/ · dates/ · db/ · format · qr · rate-limit · ports · app-url · contact · image-upload · init-scripts · countries · limits
+├── core/           tenancy/ · auth/ · parties/ · files/ · sectors/ · capabilities/ · entitlements/ · events/ · operations/ · api/
+├── business/       customers/ · catalog/ · sales/ · scheduling/ · inventory/ · purchasing/ · pos/ · store/ · data-exchange/ · growth/ · presence/
 ├── domains/
 │   └── finance/    accounting/ · tax/ · receivables/ · payments/
 ├── integrations/   providers/ · einvoice/ · google/ · maps/
 ├── industry/       gym/ · museum/ · construction/        (restaurant/ cuando exista)
-├── platform/       admin/ · billing/ · support/ · crm/ · inbox/ · team/ · accounts/ · presence/ · benefits/
-├── experience/     navigation/ · dashboard/ · onboarding/ · site/ · motion/ · hooks/ · payment-input/ · fonts
-└── runtime/        ports.ts · operations.ts · sectors.ts · api-deps.ts
+├── platform/       admin/ · team/ · billing/ · support/ · crm/ · inbox/ · accounts/ · presence/ · benefits/
+├── experience/     navigation/ · dashboard/ · onboarding/ · site/ · motion/ · hooks/ · payment-input/ · fonts · vertical-icons
+├── runtime/        ports · operations · sectors · api-deps
+├── utils.ts        (excepción documentada)
+└── cn.ts           (excepción documentada)
 ```
 
-| Área | Estado (2026-10-31) |
-|---|---|
-| `runtime` | **Hecho** (M1) |
-| `platform` | **Hecho** (M4: 9 módulos) |
-| `domains` | **Hecho** (M5: `finance` con 4 módulos) |
-| `business` | **Parcial.** Hechos `customers`, `catalog`, `sales`, `scheduling` (M3). Siguen en la raíz de `lib/`: `inventory`, `purchasing`, `pos`, `store`, `data-exchange`, `growth`, `presence` |
-| `foundation` | **Parcial.** Hechos `kernel/` (M5), `countries`, `limits`. Siguen sueltos en la raíz: 16 archivos de producción (`format`, `plain-date`, `ports`, `qr`…) más `temporal.d.ts` |
-| `core` | **Parcial.** Hecho `sectors/` (M2). Siguen en la raíz: `tenant`, `auth`, `plans`, `usage`, `events`, `operations`, `capabilities`, `functions`, `parties`, `files`; y `api`/`mcp` figuran como Integrations |
-| `integrations` | **Clasificada, sin mover:** `providers`, `einvoice`, `google`, `maps` siguen en la raíz |
-| `experience` | **Clasificada, sin mover:** `navigation`, `dashboard`, `onboarding`, `site`, `motion`, `hooks`, `payment-input`, `fonts` siguen en la raíz |
-| `industry` | **Parcial.** `gym` y `museum` hechos; `construction` (39 archivos de producción) sigue en `lib/construction` |
+| Área | Estado | Cómo se llegó |
+|---|---|---|
+| `runtime` | **Hecho** | M1 |
+| `platform` | **Hecho** (9 módulos) | M4 |
+| `domains` | **Hecho** (`finance` con 4 módulos) | M5 |
+| `business` | **Hecho** (11 módulos) | M3 y etapa B |
+| `foundation` | **Hecho** (`kernel/`, `dates/`, `db/` y archivos planos) | M5 y etapas F y Z |
+| `core` | **Hecho** (10 módulos; `api`/`mcp` y `functions` ya no son Integrations/automation) | M2 y etapa C; Z añadió `nav-types` y las reglas del alta |
+| `integrations` | **Hecho** (4 módulos) | Etapa I |
+| `experience` | **Hecho** (incluye el flujo de `onboarding` y `vertical-icons`) | Etapas X y Z |
+| `industry` | **Hecho** (`gym`, `museum`, `construction`) | M2 y etapa N |
 
-Hoy `lib/` tiene **63 entradas en su raíz** (42 carpetas y 21 archivos sueltos); la meta es que contenga **solo las nueve áreas** (con las dos excepciones documentadas en el plan de cierre).
+### Cómo se repartieron las últimas piezas (etapa Z)
+
+| Pieza | Destino | Por qué ahí |
+|---|---|---|
+| `navigation/nav-types.ts` | `core/capabilities` | Tipo compartido que usan capas bajas (decisión E-5) |
+| `onboarding/{types, validation, presets, slug}` | `core/tenancy/onboarding` | Reglas y tipos del alta del negocio; solo dependen de Core |
+| `onboarding/{flags, flow, module-meta, prefill, onboarding-db}` | `experience/onboarding` | Flujo de pantallas; `onboarding-db` importa Domains (`seedAccounting`), que Core no puede importar |
+| `admin/catalogs.ts` | `core/tenancy/catalogs.ts` | Rubros, módulos y recetas del alta |
+| `admin/vertical-icons.ts` | `experience/vertical-icons.ts` | Presentación |
+| `temporal.d.ts` | `foundation/dates/` | Tipos globales de Temporal, junto a las fechas |
+| `design/`, `seo/`, prueba de patrones de Prisma | `tests/architecture`, `tests/unit`, `tests/integration` | Solo contenían pruebas |
+
+### Deuda y límites conocidos
+
+- **Deuda arquitectónica:** ciclo entre módulos `inventory ⇄ sales` (cuatro dependencias exactas), aceptado como excepción temporal y puntual y fijado por prueba ([`reglas-dependencias.md`](reglas-dependencias.md) §5.2).
+- **Sectores:** el registro por `sector.ts` existe pero ningún sector lo usa aún (M7, fuera de V10).
+- **El verificador solo escanea `lib/`** y no ve pruebas ni historias; `app/` y `components/` se vigilan con pruebas puntuales.
+- **Documentación antigua** con rutas anteriores a V10 (informes E0 a E9, `docs/nexus-architecture/*`, `.docs/*`): pasada documental P-12 pendiente.

@@ -162,10 +162,12 @@ describe("módulos de lib/platform (M4)", () => {
 });
 
 describe("estructura final de platform (M4)", () => {
-  test("lib/ops y lib/benefits ya no existen y lib/admin solo conserva lo que no es administración de la plataforma", () => {
+  test("lib/ops, lib/benefits y lib/admin ya no existen (catalogs.ts está en core/tenancy y vertical-icons.ts en experience)", () => {
     expect(exists("lib/ops")).toBe(false);
     expect(exists("lib/benefits")).toBe(false);
-    expect(readdirSync(join(ROOT, "lib/admin")).sort()).toEqual(["catalogs.ts", "vertical-icons.ts"]);
+    expect(exists("lib/admin")).toBe(false);
+    expect(exists("lib/core/tenancy/catalogs.ts")).toBe(true);
+    expect(exists("lib/experience/vertical-icons.ts")).toBe(true);
     expect(readdirSync(join(ROOT, "lib/platform")).sort()).toEqual(["accounts", "admin", "benefits", "billing", "crm", "inbox", "presence", "support", "team"]);
   });
 

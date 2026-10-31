@@ -14,7 +14,7 @@ import {
 } from "@/lib/foundation/kernel/payment-vocabulary";
 import { type VerticalValue } from "@/lib/core/sectors/verticals";
 import { MODULES, sortModules, type ModuleValue } from "@/lib/core/capabilities/modules";
-import type { OnboardingTenantType } from "@/lib/onboarding/types";
+import type { OnboardingTenantType } from "@/lib/core/tenancy/onboarding/types";
 
 /** Vigencia de la invitación al dueño de un negocio creado desde el panel. */
 const OWNER_INVITE_DAYS = 14;

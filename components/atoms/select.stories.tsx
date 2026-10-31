@@ -20,7 +20,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Select propio de NEXUS: botón con forma de campo y lista flotante dibujada con divs, no el menú nativo del sistema. Misma API que `<select>` (hijos `<option>`/`<optgroup>`, `value`/`defaultValue`, `onChange(e)` con `e.target.value`, `name`, `required`, `disabled`) y participa en formularios y Server Actions porque debajo vive un `<select>` real oculto. Teclado: ↑ ↓ abren y mueven, Inicio/Fin, escribir salta a una opción, Enter/Espacio eligen, Esc cierra. Opciones de 44 px en táctil. Prohibido el `<select>` nativo (lo vigila `lib/design/ui-rules.test.ts`).",
+          "Select propio de NEXUS: botón con forma de campo y lista flotante dibujada con divs, no el menú nativo del sistema. Misma API que `<select>` (hijos `<option>`/`<optgroup>`, `value`/`defaultValue`, `onChange(e)` con `e.target.value`, `name`, `required`, `disabled`) y participa en formularios y Server Actions porque debajo vive un `<select>` real oculto. Teclado: ↑ ↓ abren y mueven, Inicio/Fin, escribir salta a una opción, Enter/Espacio eligen, Esc cierra. Opciones de 44 px en táctil. Prohibido el `<select>` nativo (lo vigila `tests/architecture/ui-rules.test.ts`).",
       },
     },
   },
