@@ -1,5 +1,5 @@
 import { and, or } from "@prisma/orm-postgres/orm-client";
-import { seedAccounting } from "@/lib/accounting/accounting-db";
+import { tenantProvisioningPort } from "@/lib/tenant/provisioning-port";
 import { db } from "@/prisma/db";
 import {
   formatCurrency,
@@ -841,7 +841,7 @@ export function createAdminDb() {
         });
 
         // Un negocio nuevo trae su plan de cuentas y sus reglas contables de partida.
-        await seedAccounting(tenant.id, tx);
+        await tenantProvisioningPort.use().onCreated(tx, tenant.id);
 
         return tenant;
       }),

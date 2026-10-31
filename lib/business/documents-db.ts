@@ -2,7 +2,7 @@ import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
 import { accountingPort, type AccountingEvent } from "./accounting-port";
 import { enqueueFiscal } from "@/lib/einvoice/einvoice-db";
-import { allocateNumber, commitNumber, withholdingsFor } from "@/lib/tax/tax-db";
+import { numberingPort } from "./numbering-port";
 import { bogotaDay, todayCO } from "@/lib/plain-date";
 import {
   canConvert,
@@ -58,12 +58,12 @@ export type NewDocument = {
 export async function insertDocument(tx: Writer, tenantId: string, doc: NewDocument, userId: string | null) {
   const issueDate = doc.issueDate ?? now();
   // Con resolución de numeración el número sale de su rango; sin ella, máximo + 1 como siempre.
-  const allocation = await allocateNumber(tx, tenantId, doc.kind, todayCO(issueDate.epochMilliseconds));
+  const allocation = await numberingPort.use().allocate(tx, tenantId, doc.kind, todayCO(issueDate.epochMilliseconds));
   const { top } = await tx.orm.public.Invoice.where({ tenantId, kind: doc.kind }).aggregate((a) => ({ top: a.max("number") }));
   const number = allocation ? allocation.number : (top ?? 0) + 1;
   const totals = documentTotals(doc.lines);
   const taxableTotal = Math.round((totals.subtotal - totals.discountTotal) * 100) / 100;
-  const withholdings = await withholdingsFor(tx, tenantId, doc.withholdingCodes ?? [], { taxable: taxableTotal, tax: totals.taxTotal }, todayCO(issueDate.epochMilliseconds));
+  const withholdings = await numberingPort.use().withholdings(tx, tenantId, doc.withholdingCodes ?? [], { taxable: taxableTotal, tax: totals.taxTotal }, todayCO(issueDate.epochMilliseconds));
   const withheld = Math.round(withholdings.reduce((s, w) => s + w.amount, 0) * 100) / 100;
   const created = await tx.orm.public.Invoice.create({
     tenantId,
@@ -92,7 +92,7 @@ export async function insertDocument(tx: Writer, tenantId: string, doc: NewDocum
     tipTotal: dec(doc.tipTotal ?? 0),
     withholdings: withholdings.length ? (withholdings as never) : null,
   });
-  if (allocation) await commitNumber(tx, tenantId, allocation);
+  if (allocation) await numberingPort.use().commit(tx, tenantId, allocation);
   const createdLines: (DocumentLineInput & { total: number })[] = [];
   for (const l of doc.lines) {
     await tx.orm.public.InvoiceLine.create({
