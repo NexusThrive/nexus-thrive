@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { can } from "@/lib/auth/permissions";
-import { cancelOrder } from "@/lib/store/store-db";
+import { cancelOrder } from "@/lib/business/store/store-db";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";
 

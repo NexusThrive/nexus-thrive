@@ -116,7 +116,7 @@ describe("piezas neutrales que antes colgaban de módulos de Nexus (M4)", () => 
   });
 
   test("ningún módulo de Business ni de Core importa el programa de beneficios", () => {
-    const offenders = [...files("lib/business"), ...files("lib/data-exchange"), ...files("lib/tenant"), ...files("lib/plans")]
+    const offenders = [...files("lib/business"), ...files("lib/tenant"), ...files("lib/plans")]
       .filter((f) => !/\.test\./.test(f))
       .filter((f) => importsOf(f).some((s: string) => /^@\/lib\/(benefits|platform\/benefits)\b/.test(s)));
     expect(offenders).toEqual([]);

@@ -1,6 +1,6 @@
 import { can } from "@/lib/auth/permissions";
-import { receiptOf } from "@/lib/pos/pos-db";
-import { escposBytes, receiptLines } from "@/lib/pos/receipt";
+import { receiptOf } from "@/lib/business/pos/pos-db";
+import { escposBytes, receiptLines } from "@/lib/business/pos/receipt";
 import { requireTenantContext } from "@/lib/tenant/context";
 
 /** Bytes ESC/POS del tiquete para una app de impresión térmica (Bluetooth/USB). */

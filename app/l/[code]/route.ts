@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { destinationUrl } from "@/lib/growth/growth";
+import { destinationUrl } from "@/lib/business/growth/growth";
 import { getAppBaseUrl } from "@/lib/app-url";
-import { resolveLink } from "@/lib/growth/growth-db";
+import { resolveLink } from "@/lib/business/growth/growth-db";
 
 /** Enlace corto de una campaña: cuenta el clic y lleva al sitio del negocio con su origen (UTM) marcado. */
 export async function GET(_req: Request, { params }: { params: Promise<{ code: string }> }) {

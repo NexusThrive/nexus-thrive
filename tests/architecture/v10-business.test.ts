@@ -93,19 +93,60 @@ describe("módulos de lib/business (M3)", () => {
     }
   });
 
-  test("los módulos de business no forman ciclos entre sí", () => {
-    const moduleOf = (f: string) => /^lib\/business\/([^/]+)\//.exec(f)?.[1] ?? null;
-    const edges = new Map<string, Set<string>>();
+  /**
+   * Deuda arquitectónica conocida desde M3 (`V10-M3-resultados.md`, punto 4) que se acepta de forma TEMPORAL y PUNTUAL
+   * al unir `inventory` con `sales` bajo `lib/business` (etapa B, `V10-decisiones.md` §8). Es el único par de módulos
+   * que puede depender uno del otro, y la dependencia real es exactamente esta (valor y tipo; no solo tipos):
+   */
+  const CICLO_CONOCIDO = ["inventory", "sales"] as const;
+  const DEPENDENCIAS_DEL_CICLO_CONOCIDO = [
+    "inventory/stock-docs-db.ts → sales/money-service.ts [valor]",
+    "inventory/stock-service.ts → sales/accounting-port.ts [valor]",
+    "inventory/stock-service.ts → sales/money-service.ts [tipo]",
+    "sales/money-service.ts → inventory/stock-service.ts [valor]",
+  ];
+
+  const moduleOf = (f: string) => /^lib\/business\/([^/]+)\//.exec(f)?.[1] ?? null;
+
+  /** Dependencias entre módulos de `business`, con su clase (valor, tipo o dinámica). */
+  function dependenciasEntreModulos() {
+    const deps: { from: string; to: string; edge: string; kind: "valor" | "tipo" | "dinámica" }[] = [];
     for (const f of files("lib/business").filter((x) => !/\.test\./.test(x))) {
       const from = moduleOf(f);
       if (!from) continue;
       for (const { spec, typeOnly, dynamic } of parseImports(read(f))) {
-        if (typeOnly || dynamic) continue;
-        const to = moduleOf(resolveImport(f, spec, ROOT, exists) ?? "");
-        if (to && to !== from) edges.set(from, (edges.get(from) ?? new Set()).add(to));
+        const target = resolveImport(f, spec, ROOT, exists) ?? "";
+        const to = moduleOf(target);
+        if (!to || to === from) continue;
+        const kind = typeOnly ? "tipo" : dynamic ? "dinámica" : "valor";
+        deps.push({ from, to, kind, edge: `${f.replace("lib/business/", "")} → ${target.replace("lib/business/", "")} [${kind}]` });
       }
     }
-    for (const [a, set] of edges) for (const b of set) expect(edges.get(b)?.has(a) ?? false, `ciclo ${a} ⇄ ${b}`).toBe(false);
+    return deps;
+  }
+
+  test("los módulos de business no forman ciclos entre sí, salvo el ciclo conocido inventory ⇄ sales", () => {
+    const edges = new Map<string, Set<string>>();
+    for (const d of dependenciasEntreModulos()) {
+      if (d.kind !== "valor") continue;
+      edges.set(d.from, (edges.get(d.from) ?? new Set()).add(d.to));
+    }
+    const conocido = (a: string, b: string) => CICLO_CONOCIDO.includes(a as never) && CICLO_CONOCIDO.includes(b as never);
+    for (const [a, set] of edges) for (const b of set) {
+      if (conocido(a, b)) continue;
+      expect(edges.get(b)?.has(a) ?? false, `ciclo ${a} ⇄ ${b}`).toBe(false);
+    }
+  });
+
+  test("el ciclo conocido inventory ⇄ sales es exactamente el documentado: ni más ni menos dependencias", () => {
+    const [a, b] = CICLO_CONOCIDO;
+    const reales = dependenciasEntreModulos()
+      .filter((d) => (d.from === a && d.to === b) || (d.from === b && d.to === a))
+      .map((d) => d.edge)
+      .sort();
+    // Si una dependencia desaparece, quítala de la lista; si todo el ciclo se resuelve, elimina la excepción.
+    // Si aparece una nueva, no se añade aquí sin una decisión: la deuda solo puede achicarse.
+    expect(reales).toEqual([...DEPENDENCIAS_DEL_CICLO_CONOCIDO].sort());
   });
 });
 
@@ -127,15 +168,15 @@ describe("movimientos menores de M3", () => {
   });
 
   test("inventory.ts (reglas de existencias) vive en el módulo de inventario y business ya no lo tiene", () => {
-    expect(exists("lib/inventory/inventory.ts")).toBe(true);
+    expect(exists("lib/business/inventory/inventory.ts")).toBe(true);
     expect(exists("lib/business/inventory.ts")).toBe(false);
-    expect(classify("lib/inventory/inventory.ts", layers)?.layer).toBe("business");
+    expect(classify("lib/business/inventory/inventory.ts", layers)?.layer).toBe("business");
   });
 
   test("lib/business solo contiene subcarpetas de módulo (y la prueba que cruza varios módulos)", () => {
     const loose = readdirSync(join(ROOT, "lib/business")).filter((n) => statSync(join(ROOT, "lib/business", n)).isFile());
     expect(loose).toEqual(["business.test.ts"]);
-    expect(readdirSync(join(ROOT, "lib/business")).filter((n) => statSync(join(ROOT, "lib/business", n)).isDirectory()).sort()).toEqual(["catalog", "customers", "sales", "scheduling"]);
+    expect(readdirSync(join(ROOT, "lib/business")).filter((n) => statSync(join(ROOT, "lib/business", n)).isDirectory()).sort()).toEqual(["catalog", "customers", "data-exchange", "growth", "inventory", "pos", "presence", "purchasing", "sales", "scheduling", "store"]);
   });
 });
 

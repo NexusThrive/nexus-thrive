@@ -3,10 +3,10 @@ import { cashAccountFor, postByRule, reverseSource } from "@/lib/domains/finance
 import { accountingPort } from "@/lib/business/sales/accounting-port";
 import { fiscalQueuePort } from "@/lib/business/sales/fiscal-port";
 import { numberingPort } from "@/lib/business/sales/numbering-port";
-import { paymentGatewayPort } from "@/lib/store/payment-gateway-port";
+import { paymentGatewayPort } from "@/lib/business/store/payment-gateway-port";
 import { checkoutPort } from "@/lib/domains/finance/payments/checkout-port";
 import { connectedGateways, createIntent } from "@/lib/domains/finance/payments/intents-db";
-import { listingPort } from "@/lib/presence/listing-port";
+import { listingPort } from "@/lib/business/presence/listing-port";
 import { enqueueFiscal } from "@/lib/integrations/einvoice/einvoice-db";
 import { listingView } from "@/lib/integrations/google/google-db";
 import { decryptCredentials } from "@/lib/integrations/providers/connections";

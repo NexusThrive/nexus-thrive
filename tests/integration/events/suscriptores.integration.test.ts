@@ -6,7 +6,7 @@ import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import { db } from "@/prisma/db";
 import { dispatchPending, type EventSubscriber } from "@/lib/events/dispatcher";
 import { emitEvent, type EventType } from "@/lib/events/outbox";
-import { presenceSubscriber } from "@/lib/presence/subscribers";
+import { presenceSubscriber } from "@/lib/business/presence/subscribers";
 
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const normalize = (url: string | undefined) => (url ?? "").replace(/\?.*$/, "");

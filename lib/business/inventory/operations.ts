@@ -105,7 +105,7 @@ export const inventoryOperations: OperationDefinition[] = [
     handler: async (ctx, input) => {
       const { getProduct } = await import("@/lib/business/catalog/products-db");
       if (!(await getProduct(ctx.tenantId, input.productId))) throw new OperationError("invalid_input", "El producto no existe en este negocio.", 404);
-      const { kardex, stockByWarehouse } = await import("@/lib/inventory/kardex");
+      const { kardex, stockByWarehouse } = await import("@/lib/business/inventory/kardex");
       const [lines, levels] = await Promise.all([kardex(ctx.tenantId, input.productId, { warehouseId: input.warehouseId, limit: input.limit }), stockByWarehouse(ctx.tenantId, input.productId)]);
       return { lines, byWarehouse: levels.map((l) => ({ warehouse: l.warehouse, quantity: l.quantity, avgCost: l.avgCost, value: l.value })) };
     },
@@ -121,7 +121,7 @@ export const inventoryOperations: OperationDefinition[] = [
     input: z.object({}),
     output: z.object({ items: z.array(z.object({ id: z.string(), name: z.string(), code: z.string().nullable(), isDefault: z.boolean() })) }),
     handler: async (ctx) => {
-      const { listWarehouses } = await import("@/lib/inventory/kardex");
+      const { listWarehouses } = await import("@/lib/business/inventory/kardex");
       return { items: await listWarehouses(ctx.tenantId) };
     },
   }),
@@ -136,7 +136,7 @@ export const inventoryOperations: OperationDefinition[] = [
     input: z.object({ onlyNeeded: z.boolean().default(true) }),
     output: z.object({ items: z.array(z.object({ productId: z.string(), name: z.string(), stock: z.number(), minStock: z.number(), maxStock: z.number().nullable(), reorderPoint: z.number().nullable(), onOrder: z.number(), suggested: z.number() })) }),
     handler: async (ctx, input) => {
-      const { reorderOverview } = await import("@/lib/inventory/stock-docs-db");
+      const { reorderOverview } = await import("@/lib/business/inventory/stock-docs-db");
       const rows = await reorderOverview(ctx.tenantId);
       return { items: rows.filter((r) => !input.onlyNeeded || r.needsOrder).map(({ needsOrder: _n, ...r }) => r) };
     },

@@ -14,7 +14,7 @@ import { connectGoogle } from "@/lib/integrations/google/google-db";
 import { checkoutPort, type CheckoutPort } from "@/lib/domains/finance/payments/checkout-port";
 import { createIntent, publicIntent } from "@/lib/domains/finance/payments/intents-db";
 import { PortNotProvidedError } from "@/lib/ports";
-import { listingPort, type ListingPort } from "@/lib/presence/listing-port";
+import { listingPort, type ListingPort } from "@/lib/business/presence/listing-port";
 import { encryptCredentials } from "@/lib/integrations/providers/connections";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 
@@ -149,7 +149,7 @@ describe.skipIf(!TEST_URL)("puertos hacia las integraciones (integración)", () 
     });
 
     test("sin el puerto conectado, medir la presencia falla de forma visible", async () => {
-      const { refreshPresence } = await import("@/lib/presence/pillars-db");
+      const { refreshPresence } = await import("@/lib/business/presence/pillars-db");
       await withoutPort("google-listing", async () => {
         await expect(refreshPresence(tenantId)).rejects.toThrow(PortNotProvidedError);
       });

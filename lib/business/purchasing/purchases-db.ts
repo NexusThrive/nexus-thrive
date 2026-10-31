@@ -4,7 +4,7 @@ import { msOf } from "@/lib/events/instant";
 import { accountingPort } from "@/lib/business/sales/accounting-port";
 import { MoneyError } from "@/lib/business/sales/money-error";
 import { moneyTransaction } from "@/lib/business/sales/money-service";
-import { applyStockMovement, ensureDefaultWarehouse, StockError } from "@/lib/inventory/stock-service";
+import { applyStockMovement, ensureDefaultWarehouse, StockError } from "@/lib/business/inventory/stock-service";
 import { canCancel, canClose, canMarkOrdered, canReceive, nextStatus, orderCode, orderTotals, validateLines, type OrderStatus } from "./purchases";
 
 /**

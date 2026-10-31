@@ -27,9 +27,9 @@ describe("operaciones por dominio", () => {
   });
 
   test.each([
-    ["lib/inventory/operations.ts", "inventory"],
-    ["lib/purchasing/operations.ts", "purchases"],
-    ["lib/presence/operations.ts", "presence"],
+    ["lib/business/inventory/operations.ts", "inventory"],
+    ["lib/business/purchasing/operations.ts", "purchases"],
+    ["lib/business/presence/operations.ts", "presence"],
   ])("%s declara las operaciones de su dominio", (file) => {
     expect(exists(file)).toBe(true);
   });
@@ -50,7 +50,7 @@ describe("operaciones por dominio", () => {
     expect(classify("lib/runtime/operations.ts", layers)?.layer).toBe("runtime");
     expect(classify("lib/operations/engine.ts", layers)?.layer).toBe("core");
     const imports = importsOf("lib/runtime/operations.ts");
-    for (const dominio of ["@/lib/inventory/operations", "@/lib/purchasing/operations", "@/lib/presence/operations"]) expect(imports).toContain(dominio);
+    for (const dominio of ["@/lib/business/inventory/operations", "@/lib/business/purchasing/operations", "@/lib/business/presence/operations"]) expect(imports).toContain(dominio);
   });
 });
 
@@ -61,7 +61,7 @@ describe("suscriptores de eventos", () => {
   });
 
   test("el suscriptor de presencia vive en su dominio y la ruta de cron lo entrega", () => {
-    expect(exists("lib/presence/subscribers.ts")).toBe(true);
+    expect(exists("lib/business/presence/subscribers.ts")).toBe(true);
     expect(read("app/api/cron/webhooks/route.ts")).toContain("dispatchPending({ subscribers: [presenceSubscriber] })");
   });
 

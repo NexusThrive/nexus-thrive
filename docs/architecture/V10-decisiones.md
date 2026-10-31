@@ -175,3 +175,26 @@ Aprobadas por el dueño al autorizar M5 con las recomendaciones del diseño ([`V
 
 **Pendiente de decisión, fuera de M5:** el movimiento físico de las carpetas de `core`, `business`, `integrations` y `experience` que hoy siguen en la raíz de `lib/` y que V10 (M0–M8) no programa mover (`V10-M5-resultados.md` §9.4). Requiere un diseño propio y la aprobación del dueño; no está iniciado.
 
+## 8. Plan de cierre de V10 y etapas I y B (2026-10-31)
+
+El dueño aprobó el plan de cierre ([`V10-plan-de-cierre.md`](V10-plan-de-cierre.md)): E-1 a E-9 con las recomendaciones, con la precisión de que la raíz de `lib/` tendrá **las nueve áreas y las dos excepciones documentadas `utils.ts` y `cn.ts`** (no «solo nueve directorios»). E-6: V10 es reorganización física sin cambios de comportamiento; M7 y M6c quedan fuera. Resultados de cada etapa en [`V10-cierre-resultados.md`](V10-cierre-resultados.md).
+
+### 8.1 Excepción temporal y puntual: ciclo `inventory ⇄ sales` (decisión B-1)
+
+Al unir `inventory` con `sales` bajo `lib/business/` (etapa B), la prueba «los módulos de business no forman ciclos entre sí» (P-1, M3) detectó un ciclo **entre módulos**. El dueño decidió aceptarlo como excepción **temporal, específica y documentada** (opción A), sin fusionar módulos ni alterar dependencias a mitad de la etapa.
+
+**La dependencia real es esta (de valor y de tipo; no es solo un ciclo de tipos):**
+
+| Sentido | Archivo → archivo | Clase |
+|---|---|---|
+| `inventory → sales` | `stock-docs-db.ts` → `money-service.ts` | valor |
+| `inventory → sales` | `stock-service.ts` → `accounting-port.ts` | valor |
+| `inventory → sales` | `stock-service.ts` → `money-service.ts` | tipo |
+| `sales → inventory` | `money-service.ts` → `stock-service.ts` | valor |
+
+- **A nivel de archivo** no hay ciclo de valores: el único ciclo es el de tipos `money-service ⇄ stock-service`, que ya cuenta en el tope de 3. **A nivel de módulo** el ciclo es de valor, porque `stock-docs-db` y `stock-service` (inventory) importan valores de `sales` y `money-service` (sales) importa un valor de `stock-service` (inventory).
+- **Origen:** identificado en M3 (`V10-M3-resultados.md`, punto 4: «se conserva; resolverlo es una etapa propia»). Esa etapa **nunca se programó**.
+- **Cómo está acotada:** `tests/architecture/v10-business.test.ts` permite **exclusivamente** el par `inventory ⇄ sales` y exige que sus dependencias sean exactamente las cuatro de la tabla (ni más ni menos). Cualquier otro ciclo entre módulos de `business` hace fallar la prueba, y una dependencia nueva entre estos dos módulos también. La regla general no se debilitó ni se tocó el verificador.
+- **No es una solución definitiva.** Es **deuda arquitectónica pendiente**. Para saldarla hay que decidir, con su propio análisis, entre: mover `stock-docs-db` y la dependencia con `accounting-port` hacia `sales`, invertir una de las dependencias mediante un puerto, o fusionar `inventory` en `sales`. Ninguna se hizo ni se prejuzga aquí. Al saldarla se elimina la excepción de la prueba.
+- **No se modificó código** (implementaciones, contratos ni dependencias) para ocultar el ciclo.
+

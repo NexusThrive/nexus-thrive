@@ -3,7 +3,7 @@ import { closeCashSession, openCashSession } from "@/lib/business/sales/finance-
 import { MoneyError, moneyTransaction, recordIncome } from "@/lib/business/sales/money-service";
 import { toNumber } from "@/lib/format";
 import { emitEvent } from "@/lib/events/outbox";
-import { StockError, applyStockMovement } from "@/lib/inventory/stock-service";
+import { StockError, applyStockMovement } from "@/lib/business/inventory/stock-service";
 import { db } from "@/prisma/db";
 import { cartTotals, settlePayments, tipFor, type PaymentInput } from "./cart";
 

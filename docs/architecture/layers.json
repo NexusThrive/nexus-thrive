@@ -51,14 +51,6 @@
     { "path": "lib/parties", "layer": "core" },
     { "path": "lib/files", "layer": "core" },
 
-    { "path": "lib/business", "layer": "business" },
-    { "path": "lib/inventory", "layer": "business" },
-    { "path": "lib/purchasing", "layer": "business" },
-    { "path": "lib/pos", "layer": "business" },
-    { "path": "lib/store", "layer": "business" },
-    { "path": "lib/growth", "layer": "business" },
-    { "path": "lib/data-exchange", "layer": "business" },
-    { "path": "lib/presence", "layer": "business" },
 
 
     { "path": "lib/api", "layer": "integrations" },

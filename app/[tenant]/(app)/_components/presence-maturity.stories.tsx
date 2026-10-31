@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { computeMaturity } from "@/lib/presence/maturity";
+import { computeMaturity } from "@/lib/business/presence/maturity";
 import PresenceMaturity from "./presence-maturity";
 
 const meta = {

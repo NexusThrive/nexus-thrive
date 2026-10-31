@@ -3,7 +3,7 @@ import { toNumber } from "@/lib/format";
 import { balanceOf } from "@/lib/foundation/kernel/aging";
 import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { checkoutPort } from "./checkout-port";
-import { settleStoreOrder, storeOrderLines } from "@/lib/store/store-settle";
+import { settleStoreOrder, storeOrderLines } from "@/lib/business/store/store-settle";
 import { db } from "@/prisma/db";
 import { effectiveStatus, newReference, reconcile, validateIntent, type IntentStatus, type Reconciliation, type ReportRow } from "./intents";
 

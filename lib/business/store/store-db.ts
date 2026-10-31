@@ -2,7 +2,7 @@ import { emitEvent } from "@/lib/events/outbox";
 import { toNumber } from "@/lib/format";
 import { paymentGatewayPort } from "./payment-gateway-port";
 import { db } from "@/prisma/db";
-import { sanitizeOrigin } from "@/lib/growth/growth";
+import { sanitizeOrigin } from "@/lib/business/growth/growth";
 import { ABANDON_AFTER_MINUTES, isAbandoned, normalizeCart, orderCode, orderMessage, orderTotals, validateCustomer, type CartLine, type CustomerData } from "./cart";
 
 /** Tienda en línea (servidor). El sitio público se resuelve por su dirección; todo lo demás va por `tenantId` del negocio dueño. */

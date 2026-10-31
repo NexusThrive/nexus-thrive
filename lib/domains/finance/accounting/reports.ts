@@ -1,4 +1,4 @@
-import { toCsv } from "@/lib/data-exchange/table";
+import { toCsv } from "@/lib/business/data-exchange/table";
 import { cents, fromCents } from "./ledger";
 import type { AccountType } from "./puc";
 

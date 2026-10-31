@@ -1,7 +1,7 @@
 import type { DocumentLineInput } from "@/lib/business/sales/commercial-document";
 import { emitEvent } from "@/lib/events/outbox";
 import { toNumber } from "@/lib/format";
-import { applyStockMovement, StockError } from "@/lib/inventory/stock-service";
+import { applyStockMovement, StockError } from "@/lib/business/inventory/stock-service";
 import type { MoneyTx } from "@/lib/business/sales/money-service";
 import { orderCode } from "./cart";
 

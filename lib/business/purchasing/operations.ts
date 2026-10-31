@@ -20,7 +20,7 @@ export const purchaseOperations: OperationDefinition[] = [
     input: z.object({ status: status.optional(), limit: z.number().int().min(1).max(100).default(50) }),
     output: z.object({ items: z.array(orderSummary) }),
     handler: async (ctx, input) => {
-      const { listOrders } = await import("@/lib/purchasing/purchases-db");
+      const { listOrders } = await import("@/lib/business/purchasing/purchases-db");
       const rows = await listOrders(ctx.tenantId, { status: input.status, limit: input.limit });
       return { items: rows.map(({ id, code, status: st, supplierName, total, expectedDate, createdAt, lineCount, pendingUnits }) => ({ id, code, status: st, supplierName, total, expectedDate, createdAt, lineCount, pendingUnits })) };
     },
@@ -43,7 +43,7 @@ export const purchaseOperations: OperationDefinition[] = [
       invoices: z.array(z.object({ id: z.string(), number: z.string(), issueDate: z.string(), dueDate: z.string().nullable(), total: z.number(), status: z.string() })),
     }),
     handler: async (ctx, input) => {
-      const { getOrder } = await import("@/lib/purchasing/purchases-db");
+      const { getOrder } = await import("@/lib/business/purchasing/purchases-db");
       const order = await getOrder(ctx.tenantId, input.orderId);
       if (!order) throw new OperationError("invalid_input", "La orden no existe en este negocio.", 404);
       return order;

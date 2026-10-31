@@ -1,6 +1,6 @@
 import { ArrowDownRight, ArrowRight, ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
-import type { Pillar, PhaseA, Trend } from "@/lib/presence/pillars";
+import type { Pillar, PhaseA, Trend } from "@/lib/business/presence/pillars";
 
 const TREND = { up: { icon: ArrowUpRight, text: "Sube", tone: "text-success" }, flat: { icon: ArrowRight, text: "Estable", tone: "text-muted-foreground" }, down: { icon: ArrowDownRight, text: "Baja", tone: "text-danger" } } as const;
 

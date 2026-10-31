@@ -20,7 +20,7 @@ export const presenceOperations: OperationDefinition[] = [
       trend: z.object({ direction: z.enum(["up", "flat", "down"]), delta: z.number(), days: z.number() }),
     }),
     handler: async (ctx) => {
-      const { presenceV2 } = await import("@/lib/presence/pillars-db");
+      const { presenceV2 } = await import("@/lib/business/presence/pillars-db");
       const r = await presenceV2(ctx.tenantId);
       return { score: r.phase.score, coverage: r.phase.coverage, phase: r.phase.phase, pillars: r.pillars.map((p) => ({ key: p.key, label: p.label, score: p.score, hint: p.hint })), trend: { direction: r.trend.direction, delta: r.trend.delta, days: r.trend.days } };
     },

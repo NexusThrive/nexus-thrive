@@ -1,5 +1,5 @@
 /** Acciones de compras en Storybook: datos de muestra, sin servidor ni base. */
-import type { OrderDetail } from "@/lib/purchasing/purchases-db";
+import type { OrderDetail } from "@/lib/business/purchasing/purchases-db";
 
 const wait = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms));
 

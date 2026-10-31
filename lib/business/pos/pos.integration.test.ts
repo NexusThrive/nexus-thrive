@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { moneyTransaction } from "@/lib/business/sales/money-service";
-import { applyStockMovement } from "@/lib/inventory/stock-service";
+import { applyStockMovement } from "@/lib/business/inventory/stock-service";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { closeTurn, createTerminal, listTerminals, myTurn, openTurn, sellCart } from "./pos-db";
 

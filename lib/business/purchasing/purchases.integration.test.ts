@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
-import { kardex, reconcile, stockByWarehouse } from "@/lib/inventory/kardex";
+import { kardex, reconcile, stockByWarehouse } from "@/lib/business/inventory/kardex";
 import { runOperation } from "@/lib/operations/engine";
 import { OPERATIONS } from "@/lib/runtime/operations";
 import { createParty } from "@/lib/parties/parties-db";

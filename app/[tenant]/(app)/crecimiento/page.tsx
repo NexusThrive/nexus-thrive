@@ -3,7 +3,7 @@ import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getAppBaseUrl } from "@/lib/app-url";
 import { can } from "@/lib/auth/permissions";
-import { growthReport, listLinks, listReviews, reputationOf } from "@/lib/growth/growth-db";
+import { growthReport, listLinks, listReviews, reputationOf } from "@/lib/business/growth/growth-db";
 import { listingView } from "@/lib/integrations/google/google-db";
 import { siteForEditor } from "@/lib/site/site-db";
 import { requireTenantContext } from "@/lib/tenant/context";

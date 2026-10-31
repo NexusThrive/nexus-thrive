@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireTenantContext } from "@/lib/tenant/context";
-import { scanTenantPresence } from "@/lib/presence/scan";
+import { scanTenantPresence } from "@/lib/business/presence/scan";
 
 /**
  * Analiza la presencia digital del negocio autenticado: verifica el sitio,

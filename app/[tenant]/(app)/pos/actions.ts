@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 import { can } from "@/lib/auth/permissions";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { findByBarcode } from "@/lib/business/catalog/catalog-db";
-import { returnSale, saleForReturn, type ReturnInput, type SaleToReturn } from "@/lib/pos/returns-db";
-import { closeTurn, createTerminal, openTurn, sellCart, type SaleInput, type SaleResult } from "@/lib/pos/pos-db";
+import { returnSale, saleForReturn, type ReturnInput, type SaleToReturn } from "@/lib/business/pos/returns-db";
+import { closeTurn, createTerminal, openTurn, sellCart, type SaleInput, type SaleResult } from "@/lib/business/pos/pos-db";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";
 

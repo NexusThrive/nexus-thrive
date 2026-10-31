@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { can } from "@/lib/auth/permissions";
-import { importCustomers, importProducts, type ImportKind, type ImportReport } from "@/lib/data-exchange/exchange-db";
-import { readTable } from "@/lib/data-exchange/table";
+import { importCustomers, importProducts, type ImportKind, type ImportReport } from "@/lib/business/data-exchange/exchange-db";
+import { readTable } from "@/lib/business/data-exchange/table";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";
 

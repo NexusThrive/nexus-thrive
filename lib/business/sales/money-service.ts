@@ -3,7 +3,7 @@ import { db } from "@/prisma/db";
 import type { DbTransaction } from "@/lib/db-transaction";
 import { toNumber } from "@/lib/format";
 import type { PaymentStatusValue } from "@/lib/foundation/kernel/payment-vocabulary";
-import { applyStockMovement, StockError } from "@/lib/inventory/stock-service";
+import { applyStockMovement, StockError } from "@/lib/business/inventory/stock-service";
 import { balanceOf, validatePayment } from "@/lib/foundation/kernel/aging";
 import { accountingPort } from "./accounting-port";
 import { todayCO } from "@/lib/plain-date";

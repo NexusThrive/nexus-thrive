@@ -8,7 +8,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { useToast } from "@/components/molecules/toast";
 import { cancelOrderAction } from "@/app/[tenant]/(app)/pedidos-tienda/actions";
-import type { OrderRow } from "@/lib/store/store-db";
+import type { OrderRow } from "@/lib/business/store/store-db";
 import { formatCurrency } from "@/lib/format";
 
 const STATUS = { PENDING_PAYMENT: { label: "Esperando pago", tone: "warning" }, PAID: { label: "Pagado", tone: "success" }, ABANDONED: { label: "Abandonado", tone: "secondary" }, CANCELED: { label: "Cancelado", tone: "secondary" } } as const;

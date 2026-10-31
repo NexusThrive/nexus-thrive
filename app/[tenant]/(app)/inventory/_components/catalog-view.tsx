@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/molecules/empty-state";
 import { SearchField } from "@/components/molecules/search-field";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { KIND_LABELS } from "@/lib/business/catalog/catalog-kinds";
-import { stockLevel } from "@/lib/inventory/inventory";
+import { stockLevel } from "@/lib/business/inventory/inventory";
 import type { ProductKindValue, ProductRow } from "@/lib/business/catalog/products-db";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";

@@ -10,8 +10,8 @@ import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { COUNT_LABELS, countDifference, countSummary } from "@/lib/inventory/stock-docs";
-import type { CountDetail } from "@/lib/inventory/stock-docs-db";
+import { COUNT_LABELS, countDifference, countSummary } from "@/lib/business/inventory/stock-docs";
+import type { CountDetail } from "@/lib/business/inventory/stock-docs-db";
 import { cancelCountAction, countDetailAction, finalizeCountAction, saveCountAction } from "@/app/[tenant]/(app)/stock/actions";
 
 const TONES = { DRAFT: "warning", COMPLETED: "success", CANCELED: "muted" } as const;

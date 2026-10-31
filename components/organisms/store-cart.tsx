@@ -5,8 +5,8 @@ import { MessageCircle, ShoppingBag } from "lucide-react";
 import { readOrigin } from "@/components/organisms/site-extras";
 import { placeOrderAction } from "@/app/s/[slug]/actions";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { MAX_QTY, type CustomerData } from "@/lib/store/cart";
-import type { PlaceResult } from "@/lib/store/store-db";
+import { MAX_QTY, type CustomerData } from "@/lib/business/store/cart";
+import type { PlaceResult } from "@/lib/business/store/store-db";
 
 /**
  * Carrito de la tienda del mini-sitio. Vive en el navegador (por sitio) y solo manda al servidor ids y

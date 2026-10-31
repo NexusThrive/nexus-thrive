@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { connectGoogle, disconnectGoogle, syncGoogle } from "@/lib/integrations/google/google-db";
-import { refreshPresence } from "@/lib/presence/pillars-db";
+import { refreshPresence } from "@/lib/business/presence/pillars-db";
 import { can } from "@/lib/auth/permissions";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";

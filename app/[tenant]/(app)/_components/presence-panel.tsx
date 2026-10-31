@@ -11,8 +11,8 @@ import { ProgressBar } from "@/components/atoms/progress-bar";
 import { SocialIcon, type SocialName } from "@/components/atoms/social-icon";
 import { cn } from "@/lib/utils";
 import { formatRelativeTime } from "@/lib/format";
-import { PRESENCE_STATES, type PresenceCheck } from "@/lib/presence/presence";
-import type { PresenceSnapshot } from "@/lib/presence/load";
+import { PRESENCE_STATES, type PresenceCheck } from "@/lib/business/presence/presence";
+import type { PresenceSnapshot } from "@/lib/business/presence/load";
 import { scanPresenceAction } from "../_actions/presence";
 
 /**

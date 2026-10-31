@@ -5,7 +5,7 @@
  * ya tiene (identidad, WhatsApp, ubicación, Google, Instagram, catálogo) y, si
  * hay un escaneo, desde la verificación real del sitio web. Nada sube por el
  * solo hecho de declararlo: los canales sociales y de contacto suman como
- * "declarados" y el sitio solo suma cuando `lib/presence/website.ts` lo
+ * "declarados" y el sitio solo suma cuando `lib/business/presence/website.ts` lo
  * confirma. Sin sitio publicado el techo es 60/100.
  */
 

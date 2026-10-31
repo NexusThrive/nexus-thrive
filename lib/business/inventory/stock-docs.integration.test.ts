@@ -5,7 +5,7 @@ import { moneyTransaction } from "@/lib/business/sales/money-service";
 import { runOperation } from "@/lib/operations/engine";
 import { OPERATIONS } from "@/lib/runtime/operations";
 import { createParty } from "@/lib/parties/parties-db";
-import { createOrder, markOrdered } from "@/lib/purchasing/purchases-db";
+import { createOrder, markOrdered } from "@/lib/business/purchasing/purchases-db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { createWarehouse, kardex, reconcile, stockByWarehouse } from "./kardex";
 import { applyStockMovement } from "./stock-service";

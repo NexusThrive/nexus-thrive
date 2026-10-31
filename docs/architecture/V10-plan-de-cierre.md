@@ -1,6 +1,6 @@
 # V10 — Plan de cierre: la meta, lo que falta y las decisiones
 
-Estado: **propuesta para aprobar** (2026-10-31). Nada de esto está implementado ni autorizado: es el plan para decidir. El «por qué» de la arquitectura está en [`V10-arquitectura-objetivo.md`](V10-arquitectura-objetivo.md); el diseño técnico original, en [`V10-arquitectura-fisica.md`](V10-arquitectura-fisica.md); lo hecho hasta M5, en los informes `V10-M*-resultados.md`.
+Estado: **plan aprobado (E-1 a E-9) y en ejecución** (2026-10-31). Etapas I y B hechas; resultados en [`V10-cierre-resultados.md`](V10-cierre-resultados.md). El «por qué» de la arquitectura está en [`V10-arquitectura-objetivo.md`](V10-arquitectura-objetivo.md); el diseño técnico original, en [`V10-arquitectura-fisica.md`](V10-arquitectura-fisica.md); lo hecho hasta M5, en los informes `V10-M*-resultados.md`.
 
 ## 1. La meta: cuándo V10 está terminada
 
@@ -8,8 +8,8 @@ V10 termina cuando se cumplen **estos siete criterios, todos medibles**. Al cump
 
 | # | Criterio | Cómo se comprueba | Hoy |
 |---|---|---|---|
-| 1 | La raíz de `lib/` contiene **solo las nueve áreas** (más las excepciones del criterio 2) | `ls lib` | 63 entradas (42 carpetas y 21 archivos) |
-| 2 | Excepciones documentadas y justificadas: `lib/utils.ts` y `lib/cn.ts` (convención shadcn, 173 importadores) y, si se decide, `temporal.d.ts` | Lista en este documento | por decidir (E-3) |
+| 1 | La raíz de `lib/` contiene **las nueve áreas** (nueve directorios) **y los dos archivos documentados `utils.ts` y `cn.ts`**; nada más | `ls lib` | 53 entradas (32 carpetas y 21 archivos) |
+| 2 | Excepciones documentadas y justificadas: `lib/utils.ts` y `lib/cn.ts` (convención shadcn, 173 importadores; aprobado en E-3). `temporal.d.ts` se mueve a `foundation` en la etapa Z | Lista en este documento | aprobado |
 | 3 | `check:layers`: 0 violaciones, 0 huérfanas, 0 incoherentes, **0 excepciones (tope 0)**, 0 ciclos de valores, ciclos de tipos sin aumentar | `pnpm check:layers` | cumple (290 archivos, 3 ciclos de tipos) |
 | 4 | `layers.json` sin unidades por carpeta: el área se deduce de la ruta | revisión del archivo | 61 unidades (la mayoría por carpeta) |
 | 5 | Contrato público, Prisma, migraciones, RLS y autenticación sin cambios; exportaciones idénticas en lo movido | contrato de 15 operaciones + OpenAPI; `storageHash`; `cmp-exports` | cumple en M0–M5 |

@@ -8,7 +8,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { useToast } from "@/components/molecules/toast";
-import type { ReorderRow } from "@/lib/inventory/stock-docs-db";
+import type { ReorderRow } from "@/lib/business/inventory/stock-docs-db";
 import { setLevelsAction } from "@/app/[tenant]/(app)/stock/actions";
 
 const num = (v: string) => (v.trim() === "" ? null : Number(v));
