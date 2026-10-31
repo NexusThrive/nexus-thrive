@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
-import { addDaysKey, bogotaToMs, monthGrid, weekStart } from "@/lib/business/calendar";
+import { addDaysKey, bogotaToMs, monthGrid, weekStart } from "@/lib/business/scheduling/calendar";
 import { listProducts } from "@/lib/business/products-db";
 import { todayBogota } from "@/lib/ops/leads";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
-import { activeTeam, bookingsBetween, customerPhoneOptions, customersByIds } from "@/lib/business/bookings-db";
+import { activeTeam, bookingsBetween, customerPhoneOptions, customersByIds } from "@/lib/business/scheduling/bookings-db";
 import AgendaCalendar from "./_agenda/agenda-calendar";
 import type { AgendaBooking } from "./_agenda/types";
 import { routeCategory } from "@/lib/navigation/tenant-nav";

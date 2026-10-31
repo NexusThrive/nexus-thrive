@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
 import { StatTile } from "@/components/molecules/stat-tile";
-import { addDaysKey, bogotaToMs } from "@/lib/business/calendar";
+import { addDaysKey, bogotaToMs } from "@/lib/business/scheduling/calendar";
 import { attendanceBetween, attendanceCount, expiringSoon, unknownScansBetween } from "@/lib/industry/gym/gym-db";
 import { canHandleCash } from "@/lib/auth/roles";
 import { bogotaDayKey } from "@/lib/finance/series";

@@ -5,7 +5,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { PageHeader } from "@/components/molecules/page-header";
 import { StatTile } from "@/components/molecules/stat-tile";
 import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
-import { addDaysKey } from "@/lib/business/calendar";
+import { addDaysKey } from "@/lib/business/scheduling/calendar";
 import { slotLoads, visitorReport, weekdayOf, WEEKDAYS } from "@/lib/industry/museum/museum";
 import { getMuseumSettings, salesBetween, salesOn, ticketTypes } from "@/lib/industry/museum/museum-db";
 import { canHandleCash, canManage } from "@/lib/auth/roles";

@@ -124,7 +124,7 @@ describe("ficha del cliente por rubro", () => {
   });
 });
 
-import { bogotaParts, bogotaToMs, capacityLeft, monthGrid, occupancy, reminderText, slotPosition, staffConflict, weekStart } from "./calendar";
+import { bogotaParts, bogotaToMs, capacityLeft, monthGrid, occupancy, reminderText, slotPosition, staffConflict, weekStart } from "./scheduling/calendar";
 
 describe("agenda", () => {
   it("cuadrícula del mes empieza en lunes", () => {
