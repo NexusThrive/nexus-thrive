@@ -16,21 +16,21 @@ import {
   type ApuSnapshot,
   type QuoteStatusValue,
   type ResourceTypeValue,
-} from "@/lib/construction/apu-engine";
+} from "@/lib/industry/construction/apu-engine";
 import {
   type ProjectStatusValue,
-} from "@/lib/construction/project-domain";
+} from "@/lib/industry/construction/project-domain";
 import {
   bogotaToday,
   formatPlainDate,
   type CommitmentStatusValue,
   type NonComplianceCauseValue,
-} from "@/lib/construction/lean-engine";
+} from "@/lib/industry/construction/lean-engine";
 import {
   normalizePhotoUrls,
   type FieldNoteTypeValue,
   type WeatherConditionValue,
-} from "@/lib/construction/field-log-engine";
+} from "@/lib/industry/construction/field-log-engine";
 
 /* Módulo Construcción & APU                                           */
 /* ------------------------------------------------------------------ */
@@ -773,7 +773,7 @@ export async function lockRevision(tx: TenantTx, budget: BudgetRow): Promise<voi
 /* Guardados sin cambios (Etapa 1)                                     */
 /* ------------------------------------------------------------------ */
 
-// Las guardas no-op viven en un módulo puro (lib/construction/budget-guards.ts) para poder
+// Las guardas no-op viven en un módulo puro (lib/industry/construction/budget-guards.ts) para poder
 // probarlas sin abrir conexión a base de datos.
 
 /** Transacción de Prisma 8 (misma forma que el `db` pero ligada a la tx). */

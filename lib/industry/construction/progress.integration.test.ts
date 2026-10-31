@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { isoWeekOf, bogotaToday, mondayOf, formatPlainDate } from "@/lib/construction/lean-engine";
+import { isoWeekOf, bogotaToday, mondayOf, formatPlainDate } from "@/lib/industry/construction/lean-engine";
 
-import { createConstructionDb, type ConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb, type ConstructionDb } from "@/lib/industry/construction/construction-db";
 /**
  * Integración: actas de avance → valor ganado del informe semanal, y enlace
  * de lookahead / compromisos / bitácora a una partida. Sin TEST_DATABASE_URL

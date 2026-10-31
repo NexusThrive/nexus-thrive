@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertTriangle, CheckCircle2, Columns3 } from "lucide-react";
-import type { ColumnMapping, ImportTargetField } from "@/lib/construction/apu-importer/types";
+import type { ColumnMapping, ImportTargetField } from "@/lib/industry/construction/apu-importer/types";
 import { Select } from "@/components/atoms/select";
 
 const TARGET_LABELS: Record<ImportTargetField, string> = {

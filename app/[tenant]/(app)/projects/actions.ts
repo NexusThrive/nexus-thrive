@@ -1,6 +1,6 @@
 "use server";
 
-import { ensureProjectContainers } from "@/lib/construction/containers";
+import { ensureProjectContainers } from "@/lib/industry/construction/containers";
 import { revalidatePath } from "next/cache";
 import {
   canChangeProjectStatus,
@@ -9,8 +9,8 @@ import {
   projectStatusLabel,
   projectStatusNeedsBaselineWarning,
   type ProjectStatusValue,
-} from "@/lib/construction/project-domain";
-import { type ProjectDetail } from "@/lib/construction/shared";
+} from "@/lib/industry/construction/project-domain";
+import { type ProjectDetail } from "@/lib/industry/construction/shared";
 import { requireTenantContext } from "@/lib/tenant/context";
 import {
   projectHeaderToInput,
@@ -25,7 +25,7 @@ import {
   type UpdateProjectFormValues,
 } from "./validators";
 
-import { createConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 
 /** Capa de datos de construcción del negocio activo (Core no la conoce). */
 const construction = (context: { tenantId: string }) => createConstructionDb(context.tenantId);

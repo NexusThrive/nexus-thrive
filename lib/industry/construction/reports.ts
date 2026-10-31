@@ -11,7 +11,7 @@ import {
   type InformeCeroData,
   type WeeklyReportData,
   type BomResource,
-} from "@/lib/construction/report-engine";
+} from "@/lib/industry/construction/report-engine";
 import {
   loadBudgetTree,
   loadFieldLog,
@@ -90,7 +90,7 @@ export function createReportsDb(tenantId: string) {
           } : null,
         };
 
-        const { buildInformeCeroData } = await import("@/lib/construction/report-engine");
+        const { buildInformeCeroData } = await import("@/lib/industry/construction/report-engine");
         return buildInformeCeroData(projectData, budgetData, tenant
           ? {
               name: tenant.legalName?.trim() || tenant.name,
@@ -146,7 +146,7 @@ export function createReportsDb(tenantId: string) {
           header: null, // Se cargaría si es necesario
         };
 
-        const { buildWeeklyReportData } = await import("@/lib/construction/report-engine");
+        const { buildWeeklyReportData } = await import("@/lib/industry/construction/report-engine");
         // Todas las actas: el informe toma las que cierran hasta el fin de semana.
         const progressEntries = await createProgressDb(tenantId).entriesUntil(projectId, "9999-12-31");
         return buildWeeklyReportData(
@@ -172,7 +172,7 @@ export function createReportsDb(tenantId: string) {
         }
 
         const budgetData = await loadBudgetTree(budget);
-        const { buildBomExportData } = await import("@/lib/construction/report-engine");
+        const { buildBomExportData } = await import("@/lib/industry/construction/report-engine");
         return buildBomExportData(budgetData);
       },
   };

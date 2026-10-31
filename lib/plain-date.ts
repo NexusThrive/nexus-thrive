@@ -4,7 +4,7 @@
  * Utilidad de Foundation, sin dependencias de dominio ni de `Temporal`: la usan
  * el gimnasio (membresías), construcción (planificador Lean) y quien necesite
  * «el día de hoy en Bogotá». Antes existían dos copias (en
- * `lib/industry/gym/memberships.ts` y en `lib/construction/lean-engine.ts`).
+ * `lib/industry/gym/memberships.ts` y en `lib/industry/construction/lean-engine.ts`).
  */
 
 /** Zona horaria operativa. */

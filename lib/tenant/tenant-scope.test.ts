@@ -40,10 +40,10 @@ const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
   { file: "lib/business/store/store-db.ts", model: "SiteConfig", why: "Tienda pública: se resuelve el negocio por la dirección del sitio (única en la plataforma); todo lo demás va por su tenantId." },
   { file: "lib/business/store/store-db.ts", model: "StoreOrder", why: "Cron de carritos abandonados: recorre los pedidos sin pagar de todos los negocios y opera por id de filas ya leídas." },
   { file: "lib/site/site-db.ts", model: "SiteConfig", why: "Sitio público: se busca por su dirección (única en la plataforma) y la unicidad de la dirección al guardar; el negocio se resuelve de ahí." },
-  { file: "lib/construction/shared.ts", model: "LookaheadTask", why: "Hijas de un plan leído con tenantId (la fila del plan no lo trae)." },
-  { file: "lib/construction/shared.ts", model: "WeeklyCommitment", why: "Igual que LookaheadTask." },
-  { file: "lib/construction/shared.ts", model: "BudgetChapter", why: "sumBudgetDirect recibe un presupuesto ya leído con tenantId." },
-  { file: "lib/construction/shared.ts", model: "ProjectBudget", why: "recalcBudgetTotals recibe un presupuesto ya leído con tenantId." },
+  { file: "lib/industry/construction/shared.ts", model: "LookaheadTask", why: "Hijas de un plan leído con tenantId (la fila del plan no lo trae)." },
+  { file: "lib/industry/construction/shared.ts", model: "WeeklyCommitment", why: "Igual que LookaheadTask." },
+  { file: "lib/industry/construction/shared.ts", model: "BudgetChapter", why: "sumBudgetDirect recibe un presupuesto ya leído con tenantId." },
+  { file: "lib/industry/construction/shared.ts", model: "ProjectBudget", why: "recalcBudgetTotals recibe un presupuesto ya leído con tenantId." },
 ];
 
 /** El contrato está dividido por dominio en prisma/schema/ (docs/architecture/). */

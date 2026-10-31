@@ -18,7 +18,7 @@ import {
   decimalToMicro,
   resourceLineCostMicro,
   type ApuSnapshot,
-} from "@/lib/construction/apu-engine";
+} from "@/lib/industry/construction/apu-engine";
 import {
   bumpRevision,
   insertBaseline,

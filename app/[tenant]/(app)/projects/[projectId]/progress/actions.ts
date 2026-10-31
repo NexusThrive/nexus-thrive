@@ -1,10 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { decimalToMicro } from "@/lib/construction/apu-engine";
+import { decimalToMicro } from "@/lib/industry/construction/apu-engine";
 import { requireTenantContext } from "@/lib/tenant/context";
 
-import { createConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 
 /** Capa de datos de construcción del negocio activo (Core no la conoce). */
 const construction = (context: { tenantId: string }) => createConstructionDb(context.tenantId);

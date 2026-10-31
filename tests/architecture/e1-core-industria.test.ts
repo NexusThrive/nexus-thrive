@@ -9,7 +9,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
-import { createConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 import { createTenantDb } from "@/lib/tenant/db";
 
 const ROOT = join(import.meta.dirname, "..", "..");
@@ -52,7 +52,7 @@ describe("createTenantDb (Core)", () => {
 
   test("lib/tenant/db.ts no importa construcción ni el gimnasio", () => {
     const source = readFileSync(join(ROOT, "lib/tenant/db.ts"), "utf8");
-    expect(source).not.toMatch(/from\s+["']@\/lib\/construction\//);
+    expect(source).not.toMatch(/from\s+["']@\/lib\/industry\/construction\//);
     expect(source).not.toMatch(/from\s+["']@\/lib\/industry\//);
   });
 });

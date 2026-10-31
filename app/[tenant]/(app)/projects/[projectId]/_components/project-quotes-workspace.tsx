@@ -12,7 +12,7 @@ import type {
   FollowUpTypeValue,
   ProjectFollowUpRow,
   ProjectQuoteRow,
-} from "@/lib/construction/project-quotes";
+} from "@/lib/industry/construction/project-quotes";
 import {
   completeFollowUpAction,
   createFollowUpAction,

@@ -1,10 +1,10 @@
 "use server";
 
-import { buildBudgetWorkbook } from "@/lib/construction/budget-export";
+import { buildBudgetWorkbook } from "@/lib/industry/construction/budget-export";
 import { tenantLetterhead } from "@/lib/tenant/membership";
 import { revalidatePath } from "next/cache";
-import { decimalToMicro } from "@/lib/construction/apu-engine";
-import type { ApuActivityDetail, ApuActivityRow, ProjectBudgetData } from "@/lib/construction/shared";
+import { decimalToMicro } from "@/lib/industry/construction/apu-engine";
+import type { ApuActivityDetail, ApuActivityRow, ProjectBudgetData } from "@/lib/industry/construction/shared";
 import {
   canGovernBudget,
   requireTenantContext,
@@ -22,7 +22,7 @@ import {
   type ChapterFormValues,
 } from "./validators";
 
-import { createConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 
 /** Capa de datos de construcción del negocio activo (Core no la conoce). */
 const construction = (context: { tenantId: string }) => createConstructionDb(context.tenantId);

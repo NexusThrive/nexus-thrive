@@ -6,7 +6,7 @@ import { parseMasterPack } from "./master-pack";
 import { buildMasterPackPlan } from "./master-pack-plan";
 import { executeMasterPackImport } from "./master-pack-import";
 
-import { createConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 /**
  * Importación real del pack (2.288 APU, 1.323 fotos) dos veces sobre una base
  * de prueba. Requiere TEST_DATABASE_URL y MASTER_PACK_FILE.

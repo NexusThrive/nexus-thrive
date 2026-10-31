@@ -26,7 +26,7 @@ import {
   type CncBreakdown,
   type CommitmentStatusValue,
   type NonComplianceCauseValue,
-} from "@/lib/construction/lean-engine";
+} from "@/lib/industry/construction/lean-engine";
 
 import {
   formatMoneyMicro,
@@ -42,7 +42,7 @@ import type {
   ProjectPlanData,
   WeeklyCommitmentData,
   LookaheadTaskData,
-} from "@/lib/construction/shared";
+} from "@/lib/industry/construction/shared";
 
 import {
   getLogSummaryStats,
@@ -50,7 +50,7 @@ import {
   weatherConditionLabel,
   type FieldLogEntryData,
   type FieldNoteTypeValue,
-} from "@/lib/construction/field-log-engine";
+} from "@/lib/industry/construction/field-log-engine";
 
 // ---------------------------------------------------------------------------
 // Tipos de entrada (datos que vienen de tenant-db, ya serializados)

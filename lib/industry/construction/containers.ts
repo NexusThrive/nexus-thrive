@@ -1,4 +1,4 @@
-import type { ConstructionDb } from "@/lib/construction/construction-db";
+import type { ConstructionDb } from "@/lib/industry/construction/construction-db";
 
 /**
  * Crea (si faltan) los tres contenedores de una obra: presupuesto, plan Lean

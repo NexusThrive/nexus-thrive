@@ -1,5 +1,5 @@
 import { db } from "@/prisma/db";
-import type { ApuItemCategoryValue } from "@/lib/construction/apu-engine";
+import type { ApuItemCategoryValue } from "@/lib/industry/construction/apu-engine";
 
 /** Fila ya validada del CSV de insumos. */
 export type ApuItemImportRow = {

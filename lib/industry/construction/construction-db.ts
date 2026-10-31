@@ -1,13 +1,13 @@
-import { createBudgetsDb } from "@/lib/construction/budget";
-import { createCatalogDb } from "@/lib/construction/catalog";
-import { createFieldLogDb } from "@/lib/construction/field-log";
-import { createPlanDb } from "@/lib/construction/plan";
-import { createProgressDb } from "@/lib/construction/progress";
-import { createProjectHeadersDb } from "@/lib/construction/project-headers";
-import { createProjectQuotesDb } from "@/lib/construction/project-quotes";
-import { createProjectsDb } from "@/lib/construction/projects";
-import { createQuotesDb } from "@/lib/construction/quotes";
-import { createReportsDb } from "@/lib/construction/reports";
+import { createBudgetsDb } from "@/lib/industry/construction/budget";
+import { createCatalogDb } from "@/lib/industry/construction/catalog";
+import { createFieldLogDb } from "@/lib/industry/construction/field-log";
+import { createPlanDb } from "@/lib/industry/construction/plan";
+import { createProgressDb } from "@/lib/industry/construction/progress";
+import { createProjectHeadersDb } from "@/lib/industry/construction/project-headers";
+import { createProjectQuotesDb } from "@/lib/industry/construction/project-quotes";
+import { createProjectsDb } from "@/lib/industry/construction/projects";
+import { createQuotesDb } from "@/lib/industry/construction/quotes";
+import { createReportsDb } from "@/lib/industry/construction/reports";
 
 /**
  * Capa de datos del rubro construcción, ligada a un negocio.

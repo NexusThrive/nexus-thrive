@@ -16,7 +16,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { PageHeader } from "@/components/molecules/page-header";
 import { requirePageContext } from "@/lib/tenant/context";
 
-import { createConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 /**
  * Detalle de una cotización.
  *

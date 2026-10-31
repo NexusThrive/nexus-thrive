@@ -73,7 +73,6 @@
     { "path": "lib/onboarding", "layer": "experience" },
     { "path": "lib/dashboard", "layer": "experience" },
 
-    { "path": "lib/construction", "layer": "industry", "industry": "construction" },
     { "path": "lib/industry/gym", "layer": "industry", "industry": "gym" },
     { "path": "lib/industry/museum", "layer": "industry", "industry": "museum" },
 

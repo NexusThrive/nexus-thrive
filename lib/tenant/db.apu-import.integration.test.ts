@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 
-import { createConstructionDb, type ConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb, type ConstructionDb } from "@/lib/industry/construction/construction-db";
 /**
  * Integración de la Etapa 3: importar una actividad del catálogo APU al
  * presupuesto (`budgets.importActivityFromCatalog`) y editar una línea de

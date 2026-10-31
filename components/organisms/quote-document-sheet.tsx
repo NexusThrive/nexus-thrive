@@ -1,5 +1,5 @@
 import { formatDateShort, formatMoneyMicro, formatPercentMicro, formatQuantityMicro } from "@/lib/format";
-import type { QuoteDocument, QuoteParty } from "@/lib/construction/quote-document";
+import type { QuoteDocument, QuoteParty } from "@/lib/industry/construction/quote-document";
 
 function Party({ title, party }: { title: string; party: QuoteParty }) {
   const lines = [

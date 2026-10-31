@@ -7,7 +7,7 @@ import { Button } from "@/components/atoms/button";
 import { NLoader } from "@/components/atoms/n-loader";
 import { formatDateShort, formatMoneyMicro, formatQuantityMicro } from "@/lib/format";
 import { cn } from "@/lib/cn";
-import type { ItemProgressRow } from "@/lib/construction/progress";
+import type { ItemProgressRow } from "@/lib/industry/construction/progress";
 import {
   deleteProgressAction,
   recordProgressAction,

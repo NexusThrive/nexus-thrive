@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import type { QuoteDocument } from "@/lib/construction/quote-document";
+import type { QuoteDocument } from "@/lib/industry/construction/quote-document";
 import QuoteDocumentSheet from "./quote-document-sheet";
 
 /** Dinero y cantidades en micro-unidades (×1.000.000), como en `Quote.snapshot`. */

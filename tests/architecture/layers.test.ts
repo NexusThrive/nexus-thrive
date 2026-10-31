@@ -37,22 +37,22 @@ describe("clasificación y reglas", () => {
     expect(classify("lib/industry/gym/gym-db.ts", layers)).toMatchObject({ layer: "industry", industry: "gym" });
     expect(classify("lib/industry/museum/museum-db.ts", layers)).toMatchObject({ layer: "industry", industry: "museum" });
     expect(classify("lib/business/customers/customers-db.ts", layers)?.layer).toBe("business");
-    expect(classify("lib/construction/quotes.ts", layers)?.industry).toBe("construction");
+    expect(classify("lib/industry/construction/quotes.ts", layers)?.industry).toBe("construction");
     expect(classify("lib/events/outbox.ts", layers)?.layer).toBe("core");
   });
 
   test("importar hacia abajo o dentro de la misma capa está permitido", () => {
     const c = (f: string) => classify(f, layers);
     expect(ruleFor(c("lib/business/customers/customers-db.ts"), c("lib/tenant/context.ts"), layers)).toBeNull();
-    expect(ruleFor(c("lib/construction/quotes.ts"), c("lib/business/customers/customers-db.ts"), layers)).toBeNull();
-    expect(ruleFor(c("lib/construction/quotes.ts"), c("lib/construction/budget.ts"), layers)).toBeNull();
-    expect(ruleFor(c("app/[tenant]/page.tsx"), c("lib/construction/quotes.ts"), layers)).toBeNull();
+    expect(ruleFor(c("lib/industry/construction/quotes.ts"), c("lib/business/customers/customers-db.ts"), layers)).toBeNull();
+    expect(ruleFor(c("lib/industry/construction/quotes.ts"), c("lib/industry/construction/budget.ts"), layers)).toBeNull();
+    expect(ruleFor(c("app/[tenant]/page.tsx"), c("lib/industry/construction/quotes.ts"), layers)).toBeNull();
   });
 
   test("devuelve la regla incumplida", () => {
     const c = (f: string) => classify(f, layers);
-    expect(ruleFor(c("lib/business/customers/customers-db.ts"), c("lib/construction/quotes.ts"), layers)).toMatch(/^R1/);
-    expect(ruleFor(c("lib/industry/gym/gym-db.ts"), c("lib/construction/shared.ts"), layers)).toMatch(/^R2/);
+    expect(ruleFor(c("lib/business/customers/customers-db.ts"), c("lib/industry/construction/quotes.ts"), layers)).toMatch(/^R1/);
+    expect(ruleFor(c("lib/industry/gym/gym-db.ts"), c("lib/industry/construction/shared.ts"), layers)).toMatch(/^R2/);
     expect(ruleFor(c("lib/tenant/context.ts"), c("lib/business/customers/customers-db.ts"), layers)).toBe("R3-core-no-importa-business");
   });
 });
@@ -82,7 +82,7 @@ import "side-effect";
 
 describe("pruebas negativas: una dependencia prohibida nueva se detecta", () => {
   test("R1: Business importando una industria", () => {
-    const p = problemsWith({ "lib/business/zz-negativa.ts": `import { createQuotesDb } from "@/lib/construction/quotes";` });
+    const p = problemsWith({ "lib/business/zz-negativa.ts": `import { createQuotesDb } from "@/lib/industry/construction/quotes";` });
     expect(p.some((m) => m.includes("R1-nadie-importa-industry") && m.includes("lib/business/zz-negativa.ts"))).toBe(true);
   });
 
@@ -92,7 +92,7 @@ describe("pruebas negativas: una dependencia prohibida nueva se detecta", () => 
   });
 
   test("R2: una industria importando otra", () => {
-    const p = problemsWith({ "lib/construction/zz-negativa.ts": `import { x } from "@/lib/industry/gym/gym-db";` });
+    const p = problemsWith({ "lib/industry/construction/zz-negativa.ts": `import { x } from "@/lib/industry/gym/gym-db";` });
     expect(p.some((m) => m.includes("R2-industry-no-importa-industry"))).toBe(true);
   });
 

@@ -11,11 +11,11 @@ import {
 } from "@/prisma/db";
 import {
   currentYearBogota,
-} from "@/lib/construction/apu-engine";
+} from "@/lib/industry/construction/apu-engine";
 import {
   canTransitionProjectStatus,
   type ProjectStatusValue,
-} from "@/lib/construction/project-domain";
+} from "@/lib/industry/construction/project-domain";
 import {
   type ProjectDetail,
   type ProjectListInput,

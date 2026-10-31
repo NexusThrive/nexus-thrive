@@ -15,7 +15,7 @@ import {
   isoWeekOf,
   relativeWeekNumber,
   WINDOW_WEEKS,
-} from "@/lib/construction/lean-engine";
+} from "@/lib/industry/construction/lean-engine";
 import {
   type CreateCommitmentInput,
   type CreateLookaheadTaskInput,

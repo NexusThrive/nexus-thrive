@@ -3,7 +3,7 @@
  * Extraído de `lib/tenant/db.ts`; `createConstructionDb` lo compone. Todo
  * acceso va acotado al `tenantId` recibido.
  */
-import { categoryForSection } from "@/lib/construction/apu-importer/master-pack-plan";
+import { categoryForSection } from "@/lib/industry/construction/apu-importer/master-pack-plan";
 import {
   db,
 } from "@/prisma/db";
@@ -20,12 +20,12 @@ import {
   decimalToMicro,
   resourceLineCostMicro,
   type ResourceTypeValue,
-} from "@/lib/construction/apu-engine";
+} from "@/lib/industry/construction/apu-engine";
 import {
   isUnchangedAiu,
   isUnchangedChapter,
   isUnchangedItem,
-} from "@/lib/construction/budget-guards";
+} from "@/lib/industry/construction/budget-guards";
 import {
   type AiuConfigInput,
   type BudgetBaselineData,

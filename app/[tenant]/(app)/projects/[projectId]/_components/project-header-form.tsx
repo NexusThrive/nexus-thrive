@@ -3,8 +3,8 @@
 import { useActionState } from "react";
 import { Save } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
-import type { ProjectHeaderData } from "@/lib/construction/shared";
-import { PROJECT_TYPE_OPTIONS } from "@/lib/construction/project-domain";
+import type { ProjectHeaderData } from "@/lib/industry/construction/shared";
+import { PROJECT_TYPE_OPTIONS } from "@/lib/industry/construction/project-domain";
 import {
   updateProjectHeaderAction,
   type ProjectHeaderFormState,

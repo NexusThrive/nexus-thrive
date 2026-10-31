@@ -7,7 +7,7 @@ import Modal from "@/components/organisms/modal";
 import {
   calculateBudgetTotals,
   percentToMicro,
-} from "@/lib/construction/apu-engine";
+} from "@/lib/industry/construction/apu-engine";
 import { formatMoneyMicro } from "@/lib/format";
 import {
   updateAiuConfigAction,

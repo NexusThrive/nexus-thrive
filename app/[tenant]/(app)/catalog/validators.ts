@@ -9,7 +9,7 @@ import {
   isValidCategory,
   isValidPercent,
   isValidUnit,
-} from "@/lib/construction/apu-engine";
+} from "@/lib/industry/construction/apu-engine";
 
 /** Tope por porcentaje AIU (configuración de negocio). */
 export const AIU_PERCENT_LIMITS = {

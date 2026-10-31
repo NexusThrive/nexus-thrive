@@ -4,19 +4,19 @@ import { requireTenantContext } from "@/lib/tenant/context";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { getQuoteTerms } from "@/lib/core/sectors/terms";
-import { analyzeFile, buildExecutionPlan } from "@/lib/construction/apu-importer";
-import { executeImport } from "@/lib/construction/apu-importer/execute";
-import { isMasterPackWorkbook, parseMasterPack } from "@/lib/construction/apu-importer/master-pack";
-import { buildMasterPackPlan } from "@/lib/construction/apu-importer/master-pack-plan";
+import { analyzeFile, buildExecutionPlan } from "@/lib/industry/construction/apu-importer/index";
+import { executeImport } from "@/lib/industry/construction/apu-importer/execute";
+import { isMasterPackWorkbook, parseMasterPack } from "@/lib/industry/construction/apu-importer/master-pack";
+import { buildMasterPackPlan } from "@/lib/industry/construction/apu-importer/master-pack-plan";
 import {
   executeMasterPackImport,
   type MasterPackImportResult,
-} from "@/lib/construction/apu-importer/master-pack-import";
+} from "@/lib/industry/construction/apu-importer/master-pack-import";
 import {
   summarizeMasterPack,
   type MasterPackSummary,
-} from "@/lib/construction/apu-importer/master-pack-summary";
-import { discardImportBlob, readImportSource } from "@/lib/construction/apu-importer/upload-source";
+} from "@/lib/industry/construction/apu-importer/master-pack-summary";
+import { discardImportBlob, readImportSource } from "@/lib/industry/construction/apu-importer/upload-source";
 import { canGovernBudget } from "@/lib/tenant/context";
 import * as XLSX from "xlsx";
 import type {
@@ -24,7 +24,7 @@ import type {
   ImportPreview,
   ImportResult,
   ParsedRow,
-} from "@/lib/construction/apu-importer/types";
+} from "@/lib/industry/construction/apu-importer/types";
 
 /* ------------------------------------------------------------------ */
 /* Límites de seguridad                                                */

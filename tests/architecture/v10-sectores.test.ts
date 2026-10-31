@@ -62,8 +62,8 @@ describe("catálogo de sectores en Core", () => {
 describe("registro explícito de sectores", () => {
   test("ningún módulo compartido importa una industria; solo runtime puede componerlas", () => {
     const offenders = ls("lib")
-      .filter((f) => /\.(ts|tsx)$/.test(f) && !/\.(test|stories)\./.test(f) && !f.startsWith("lib/industry/") && !f.startsWith("lib/runtime/") && !f.startsWith("lib/construction/"))
-      .filter((f) => importsOf(f).some((s: string) => /^@\/lib\/(industry|construction)\b/.test(s)))
+      .filter((f) => /\.(ts|tsx)$/.test(f) && !/\.(test|stories)\./.test(f) && !f.startsWith("lib/industry/") && !f.startsWith("lib/runtime/"))
+      .filter((f) => importsOf(f).some((s: string) => /^@\/lib\/industry\b/.test(s)))
       // La experiencia sí puede (regla R1): se excluye lo clasificado como experiencia.
       .filter((f) => classify(f, layers)?.layer !== "experience");
     expect(offenders).toEqual([]);

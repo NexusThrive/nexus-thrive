@@ -9,7 +9,7 @@ import {
   validateUpdateCommitmentStatus,
 } from "./validators";
 
-import { createConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 
 /** Capa de datos de construcción del negocio activo (Core no la conoce). */
 const construction = (context: { tenantId: string }) => createConstructionDb(context.tenantId);

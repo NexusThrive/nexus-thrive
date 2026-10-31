@@ -15,7 +15,7 @@ import {
   activityUnitCost,
   isStrictlyPositive,
   isValidPercent,
-} from "@/lib/construction/apu-engine";
+} from "@/lib/industry/construction/apu-engine";
 import {
   type ApuActivityDetail,
   type ApuActivityListInput,
@@ -816,7 +816,7 @@ export function createCatalogDb(tenantId: string) {
         const apuImporterStatus = { recentFiles: 0, lastImport: null as string | null };
 
         // APU_UNITS configuradas (del motor)
-        const { APU_UNITS } = await import("@/lib/construction/apu-engine");
+        const { APU_UNITS } = await import("@/lib/industry/construction/apu-engine");
 
         return {
           activitiesWithoutComposition,

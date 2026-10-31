@@ -4,7 +4,7 @@ import { buildMasterPackPlan } from "./master-pack-plan";
 import { executeMasterPackImport } from "./master-pack-import";
 import { samplePack } from "./__fixtures__/sample-pack";
 
-import { createConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 /**
  * Reglas de "no se pierde ningún dato" con un pack sintético (corre en CI).
  * Se salta sin TEST_DATABASE_URL.

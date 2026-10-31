@@ -7,7 +7,7 @@ import { ArrowRight } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
 import { QuoteStatusBadge } from "@/components/molecules/quote-badges";
 import { formatCurrency, formatDateShort } from "@/lib/format";
-import type { QuoteStatusValue } from "@/lib/construction/apu-engine";
+import type { QuoteStatusValue } from "@/lib/industry/construction/apu-engine";
 import { migrateLegacyQuoteAction, type MigrateLegacyResult } from "../actions";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { Select } from "@/components/atoms/select";

@@ -9,7 +9,7 @@ import QuoteDocumentSheet from "@/components/organisms/quote-document-sheet";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { requirePageContext } from "@/lib/tenant/context";
 
-import { createConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 /**
  * Documento comercial para el cliente — Fase 3.
  *

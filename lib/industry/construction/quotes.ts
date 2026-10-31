@@ -15,7 +15,7 @@ import {
 import {
   calculateQuoteTotals,
   type ApuSnapshot,
-} from "@/lib/construction/apu-engine";
+} from "@/lib/industry/construction/apu-engine";
 import {
   type QuoteDetail,
   type QuoteListInput,

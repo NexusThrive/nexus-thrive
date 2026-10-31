@@ -5,7 +5,7 @@ import { createTenantDb } from "@/lib/tenant/db";
 import { canGovernBudget, type TenantRole } from "@/lib/tenant/context";
 import { getQuoteTerms } from "@/lib/core/sectors/terms";
 import { formatDateShort } from "@/lib/format";
-import { isValidCategory } from "@/lib/construction/apu-engine";
+import { isValidCategory } from "@/lib/industry/construction/apu-engine";
 import TabNav from "@/components/molecules/tab-nav";
 import ItemsBank from "./_components/items-bank";
 import ActivityCatalog from "./_components/activity-catalog";
@@ -14,7 +14,7 @@ import { KpiCard } from "@/components/molecules/kpi-card";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { requirePageContext } from "@/lib/tenant/context";
 
-import { createConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 const ITEMS_PAGE_SIZE = 10;
 const ACTIVITIES_PAGE_SIZE = 50;
 

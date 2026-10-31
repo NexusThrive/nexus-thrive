@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { ensureProjectContainers } from "./containers";
 
-import { createConstructionDb, type ConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb, type ConstructionDb } from "@/lib/industry/construction/construction-db";
 /** Integración: los contenedores de la obra se crean una sola vez. */
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const normalize = (url: string | undefined) => (url ?? "").replace(/\?.*$/, "");

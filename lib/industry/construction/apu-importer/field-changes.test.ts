@@ -1,8 +1,8 @@
 import { describe, test, beforeAll, expect } from "vitest";
 import { db } from "@/prisma/db";
-import { analyzeFile, buildExecutionPlan, computeImportChangesFromPlan } from "@/lib/construction/apu-importer";
+import { analyzeFile, buildExecutionPlan, computeImportChangesFromPlan } from "@/lib/industry/construction/apu-importer/index";
 
-import { createConstructionDb, type ConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb, type ConstructionDb } from "@/lib/industry/construction/construction-db";
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const enabled = Boolean(TEST_URL);
 
