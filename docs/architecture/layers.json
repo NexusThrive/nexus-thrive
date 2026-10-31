@@ -30,6 +30,7 @@
     { "path": "lib/image-upload.ts", "layer": "foundation" },
     { "path": "lib/init-scripts.ts", "layer": "foundation" },
     { "path": "lib/plain-date.ts", "layer": "foundation" },
+    { "path": "lib/ports.ts", "layer": "foundation" },
     { "path": "lib/bogota-month.ts", "layer": "foundation" },
     { "path": "lib/qr.ts", "layer": "foundation" },
     { "path": "lib/rate-limit.ts", "layer": "foundation" },
@@ -49,6 +50,7 @@
     { "path": "lib/capabilities", "layer": "core" },
     { "path": "lib/operations", "layer": "core" },
     { "path": "lib/operations/registry.ts", "layer": "integrations" },
+    { "path": "lib/runtime", "layer": "experience" },
     { "path": "lib/parties", "layer": "core" },
     { "path": "lib/files", "layer": "core" },
 
