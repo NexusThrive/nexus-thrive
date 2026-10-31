@@ -75,7 +75,7 @@ Reglas que da la seguridad del modelo:
 | 6 | **Limpiar la ficha de staff vieja** (`santiagocastellar201022@gmail.com`, inactiva) | Tú | No |
 
 Las variables opcionales van en `.env.produccion`. El orden del SQL, en
-`docs/prod-sql/00-ORDEN.md`.
+`docs/wiki/08-operacion-y-despliegue/prod-sql-orden.md`.
 
 ---
 

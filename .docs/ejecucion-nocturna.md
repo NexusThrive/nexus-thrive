@@ -35,7 +35,7 @@ Estado real de los PR de esta sesión (#75 a #105). Cada uno es una rama apilada
 | #104 | PR-29 madurez NEXUS (fase B) | listo para revisión | reglas, Postgres, e2e | metas por dimensión sin calibrar |
 | #105 | PR-30 cambio de fase y reporte semanal | listo para revisión | reglas, Postgres | sin envío real por WhatsApp/correo (VI.08) |
 
-## Migraciones (en orden, ver `docs/prod-sql/00-ORDEN.md`)
+## Migraciones (en orden, ver `docs/wiki/08-operacion-y-despliegue/prod-sql-orden.md`)
 Filas 23 a 36: 23 perfil general, 24 traslados/conteos, 25 impuestos y numeración, 26 cartera, 27 POS terminales, 28 cobros en línea, 29 factura electrónica, 30 contabilidad (plan), 31 asientos, 32 presencia v2, 33 mini-sitio, 34 tienda, 35 Google Business, 36 reputación y atribución. Todas aditivas. SQL **antes** que el código. No se corrió nada contra producción; la base de desarrollo `nexus` del usuario recibió 23 y 24 (con respaldo).
 
 ## Decisiones
@@ -52,4 +52,4 @@ Filas 23 a 36: 23 perfil general, 24 traslados/conteos, 25 impuestos y numeraci�
 - El `Alert` de éxito tiene bajo contraste de texto; se evitó en informes contables.
 
 ## Próximo paso exacto
-Revisar los PR en orden (dos pilas: UI #58–#62 → #83 → #84 → #85 → #90; datos/negocio hasta #105), aplicar el SQL de `docs/prod-sql/00-ORDEN.md` en orden **antes** del código, y calibrar con un contador y negocios piloto lo marcado como «no probado».
+Revisar los PR en orden (dos pilas: UI #58–#62 → #83 → #84 → #85 → #90; datos/negocio hasta #105), aplicar el SQL de `docs/wiki/08-operacion-y-despliegue/prod-sql-orden.md` en orden **antes** del código, y calibrar con un contador y negocios piloto lo marcado como «no probado».

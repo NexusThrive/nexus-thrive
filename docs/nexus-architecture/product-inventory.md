@@ -85,7 +85,7 @@ Cada página llama a `getStaffContext()` y comprueba un permiso de
 | Compras y proveedores | NO ENCONTRADO (solo `Expense.supplier` texto) |
 | Factura electrónica DIAN | PLANIFICADO (`Invoice` lo dice en su comentario) |
 | Pagos en línea (Wompi) | PLANIFICADO (`IDEAS-E-IMPLEMENTACIONES-IMPORTANTES.md` §3); `WOMPI` existe solo como valor de enum |
-| Automatizaciones configurables / motor de eventos | NO ENCONTRADO (solo `.docs/capas/I-…/05-Motor-de-Eventos-y-Webhooks`) |
+| Automatizaciones configurables / motor de eventos | NO ENCONTRADO (solo `docs/wiki/04-modulos/capas/I-…/05-Motor-de-Eventos-y-Webhooks`) |
 | Integraciones por negocio (WhatsApp Business, Meta) | PARCIAL: variables `META_APP_ID`, `META_CONFIG_ID` en `.env.produccion`, sin flujo |
 | Reportes configurables | PARCIAL: informes de construcción y reporte de visitantes; no hay módulo de reportes genérico |
 | Multiempresa para asesores/contadores | NO ENCONTRADO (no hay selector de negocio ni rol de asesor externo) |

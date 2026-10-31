@@ -10,8 +10,8 @@ tags: [plan, pr, migraciones, sql, orden]
 # Hoja de ruta de implementación
 
 Cómo empezamos y en qué orden se construye lo descrito en
-[`vision-negocio-conectado.md`](vision-negocio-conectado.md), respetando las
-reglas de [`integracion-api-mcp-webhooks.md`](integracion-api-mcp-webhooks.md).
+[`vision-negocio-conectado.md`](../docs/wiki/02-producto/vision-negocio-conectado.md), respetando las
+reglas de [`integracion-api-mcp-webhooks.md`](../docs/wiki/07-integraciones/api-mcp-webhooks.md).
 Son **30 PR** pequeños, en orden de dependencia, **de lo más básico a lo más
 avanzado**. Cada uno deja el producto funcionando.
 
@@ -35,7 +35,7 @@ webhooks, tercero único— se probaron).
    repositorio en `lib/` (con `tenantId`, `can()`, `money-service` y
    `logTenantAction`) + **operación en el registro** (API, MCP y evento, según
    la regla transversal) + pantalla si la hay + pruebas + docs + casillas
-   marcadas en `.docs/capas/`.
+   marcadas en `docs/wiki/04-modulos/capas/`.
 4. **Detrás de interruptor** cuando cambia comportamiento visible: módulo o
    capacidad activable por negocio (registro de capacidades, ADR-0003); el
    código nuevo llega apagado y se prende por negocio.
@@ -60,7 +60,7 @@ de verdad; si no, todos contra `main`.
 ## Pruebas                         (unitarias · integración con base · contrato API · e2e)
 ## Aislamiento y permisos          (probado con dos negocios; roles)
 ## Integración                     (OpenAPI · MCP · evento · ejemplo n8n)
-## Casillas marcadas               (.docs/capas/… _hecho: dónde_)
+## Casillas marcadas               (docs/wiki/04-modulos/capas/… _hecho: dónde_)
 ## Riesgos y plan de vuelta atrás
 ```
 
@@ -107,7 +107,7 @@ Por cada PR con tablas:
 ## 3. Los 30 PR, adaptados a las capas
 
 **Las capas son la guía.** Cada PR cierra casillas concretas de
-[`capas/`](capas/README.md): en el README de cada subcapa, la casilla pendiente
+[`capas/`](../docs/wiki/04-modulos/capas/README.md): en el README de cada subcapa, la casilla pendiente
 lleva `_(PR-NN)_`; cuando el PR existe de punta a punta, se marca `- [x]` con
 _hecho: dónde_. De esas marcas salen solas las **capas**, los **niveles (N)** y
 las **etiquetas** de cada PR. Un PR toca una o pocas subcapas y, casi siempre,
@@ -185,12 +185,12 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-02-api-llaves.sql`](sql/PR-02-api-llaves.sql)
 - **Hecho cuando:** Una llave de prueba lee clientes y ventas de su negocio y de ningún otro (prueba con dos negocios); OpenAPI publicado; límites y errores RFC 9457.
 - **Casillas que marca:**
-  - [`X.02 · N1`](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/02-API-Webhooks-y-Marketplace-de-Modulos/README.md)
+  - [`X.02 · N1`](../docs/wiki/04-modulos/capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/02-API-Webhooks-y-Marketplace-de-Modulos/README.md)
     - [x] Llaves de API por negocio _hecho: lib/api/keys.ts + Ajustes → Integraciones_
     - [x] API REST documentada _hecho: GET /api/v1/openapi.json, generado del registro_
     - [x] Límite de peticiones _hecho: lib/api/rate-limit.ts, 120/min por llave, en memoria_
     - [x] API interna `/api/v1` de solo lectura sobre los repositorios de `lib/` (contexto, permisos, módulos y bitácora)
-  - [`X.02 · N2`](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/02-API-Webhooks-y-Marketplace-de-Modulos/README.md)
+  - [`X.02 · N2`](../docs/wiki/04-modulos/capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/02-API-Webhooks-y-Marketplace-de-Modulos/README.md)
     - [ ] Documentación pública interactiva
     - [x] Alcances (scopes) granulares _hecho: lib/api/scopes.ts_
     - [x] Versionado de la API _hecho: prefijo /api/v1_
@@ -203,9 +203,9 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-03-outbox-webhooks.sql`](sql/PR-03-outbox-webhooks.sql)
 - **Hecho cuando:** Un receptor de prueba recibe `sale.completed` firmado; si cae, reintenta y al volver recibe todo; reenvío manual.
 - **Casillas que marca:**
-  - [`I.05 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/05-Motor-de-Eventos-y-Webhooks/README.md)
+  - [`I.05 · N1`](../docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/05-Motor-de-Eventos-y-Webhooks/README.md)
     - [x] Webhooks salientes _hecho: lib/events/dispatcher.ts + app/api/cron/webhooks_
-  - [`I.05 · N2`](capas/I-Fundacion-Nucleo-e-Infraestructura/05-Motor-de-Eventos-y-Webhooks/README.md)
+  - [`I.05 · N2`](../docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/05-Motor-de-Eventos-y-Webhooks/README.md)
     - [x] Webhooks firmados _hecho: lib/events/signing.ts (HMAC-SHA256, rotación de secreto)_
 
 ### PR-04 · Servidor MCP de solo lectura
@@ -216,9 +216,9 @@ de «hecho»). No se edita a mano.
 - **Esquema:** sin tablas nuevas
 - **Hecho cuando:** Un cliente MCP lista solo las herramientas que permite su llave y responde «¿cómo nos fue hoy?» con datos reales.
 - **Casillas que marca:**
-  - [`IX.04 · N1`](capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/04-Copiloto-de-Inteligencia-Artificial/README.md)
+  - [`IX.04 · N1`](../docs/wiki/04-modulos/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/04-Copiloto-de-Inteligencia-Artificial/README.md)
     - [x] Agente de consulta de solo lectura: ventas, caja, clientes e inventario con datos reales
-  - [`X.02 · N2`](capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/02-API-Webhooks-y-Marketplace-de-Modulos/README.md)
+  - [`X.02 · N2`](../docs/wiki/04-modulos/capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/02-API-Webhooks-y-Marketplace-de-Modulos/README.md)
     - [x] MCP de NEXUS: capa delgada sobre la misma API, sin reglas propias
 
 ### PR-05 · Origen en la bitácora y cupos de uso
@@ -229,7 +229,7 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-05-uso-y-origen.sql`](sql/PR-05-uso-y-origen.sql)
 - **Hecho cuando:** Cada acción por API/MCP deja quién fue; superar el cupo devuelve 429.
 - **Casillas que marca:**
-  - [`I.04 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/04-Multi-Tenancy-y-Aislamiento-de-Datos/README.md)
+  - [`I.04 · N1`](../docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/04-Multi-Tenancy-y-Aislamiento-de-Datos/README.md)
     - [x] Medición de uso _hecho: lib/usage/meters.ts (UsageCounter, cupo mensual con 429) y origen en la bitácora (lib/operations/audit.ts)_
 
 ### PR-06 · Conexiones externas y puertos
@@ -240,7 +240,7 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-06-conexiones-externas.sql`](sql/PR-06-conexiones-externas.sql)
 - **Hecho cuando:** Un webhook de prueba entra con firma válida, se guarda una sola vez y se procesa; con firma inválida se rechaza.
 - **Casillas que marca:**
-  - [`V.00 · N1`](capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md)
+  - [`V.00 · N1`](../docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md)
     - [ ] Una pasarela (Wompi o la que elijas) conectada
 
 ### PR-07 · n8n en casa: túnel, nodo y plantillas
@@ -251,7 +251,7 @@ de «hecho»). No se edita a mano.
 - **Esquema:** sin tablas nuevas
 - **Hecho cuando:** Un flujo real en casa reacciona a un evento y, tras apagar n8n un rato, se pone al día al volver.
 - **Casillas que marca:**
-  - [`VI.08 · N1`](capas/VI-Operacion-Productividad-y-Logistica/08-Automatizaciones-y-Flujos-de-Trabajo/README.md)
+  - [`VI.08 · N1`](../docs/wiki/04-modulos/capas/VI-Operacion-Productividad-y-Logistica/08-Automatizaciones-y-Flujos-de-Trabajo/README.md)
     - [ ] n8n conectado a NEXUS por la API con llave del negocio (nunca a la base)
 
 ### PR-08 · Tercero único mínimo
@@ -262,14 +262,14 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-08-terceros.sql`](sql/PR-08-terceros.sql)
 - **Hecho cuando:** Cada cliente tiene su tercero; un NIT repetido en el mismo negocio es imposible; un proveedor se crea sin ser cliente.
 - **Casillas que marca:**
-  - [`I.00 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/00-Nucleo-Transversal-y-Modelo-de-Tercero-Unico/README.md)
+  - [`I.00 · N1`](../docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/00-Nucleo-Transversal-y-Modelo-de-Tercero-Unico/README.md)
     - [x] Tercero único con roles _hecho: lib/parties/parties-db.ts (Party, PartyRole; cada cliente guardado tiene su tercero)_
-  - [`I.01 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/01-Catalogo-Maestro-de-Productos-y-Servicios/README.md)
+  - [`I.01 · N1`](../docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/01-Catalogo-Maestro-de-Productos-y-Servicios/README.md)
     - [x] Clientes y proveedores
-  - [`I.01 · N2`](capas/I-Fundacion-Nucleo-e-Infraestructura/01-Catalogo-Maestro-de-Productos-y-Servicios/README.md)
+  - [`I.01 · N2`](../docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/01-Catalogo-Maestro-de-Productos-y-Servicios/README.md)
     - [ ] Ficha de tercero completa
     - [x] Detección de duplicados
-  - [`IV.00 · N1`](capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/00-Perfil-Integral-del-Cliente-CRM-360/README.md)
+  - [`IV.00 · N1`](../docs/wiki/04-modulos/capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/00-Perfil-Integral-del-Cliente-CRM-360/README.md)
     - [ ] Empresas / clientes
 
 ### PR-09 · Catálogo maestro: variantes, códigos de barras y precios
@@ -280,11 +280,11 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-09-catalogo-maestro.sql`](sql/PR-09-catalogo-maestro.sql)
 - **Hecho cuando:** Un producto con tallas y dos listas de precios se busca por código de barras.
 - **Casillas que marca:**
-  - [`I.01 · N2`](capas/I-Fundacion-Nucleo-e-Infraestructura/01-Catalogo-Maestro-de-Productos-y-Servicios/README.md)
+  - [`I.01 · N2`](../docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/01-Catalogo-Maestro-de-Productos-y-Servicios/README.md)
     - [x] Variantes
     - [x] Listas de precios
     - [x] Clasificación fiscal por ítem
-  - [`V.03 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/03-Punto-de-Venta-Fisico-y-Movil-POS/README.md)
+  - [`V.03 · N2`](../docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/03-Punto-de-Venta-Fisico-y-Movil-POS/README.md)
     - [x] Catálogo con búsqueda, categorías y código de barras.
 
 ### PR-10 · Inventario I: bodegas y kardex con costo
@@ -295,9 +295,9 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-10-inventario-bodegas-kardex.sql`](sql/PR-10-inventario-bodegas-kardex.sql)
 - **Hecho cuando:** Una venta descuenta con costo; el kardex cuadra con el stock; dos ventas simultáneas no dejan stock negativo.
 - **Casillas que marca:**
-  - [`VI.04 · N1`](capas/VI-Operacion-Productividad-y-Logistica/04-Inventarios-Bodegas-y-Logistica/README.md)
+  - [`VI.04 · N1`](../docs/wiki/04-modulos/capas/VI-Operacion-Productividad-y-Logistica/04-Inventarios-Bodegas-y-Logistica/README.md)
     - [x] Descuento automático al facturar y suma al recibir compras.
-  - [`VI.04 · N2`](capas/VI-Operacion-Productividad-y-Logistica/04-Inventarios-Bodegas-y-Logistica/README.md)
+  - [`VI.04 · N2`](../docs/wiki/04-modulos/capas/VI-Operacion-Productividad-y-Logistica/04-Inventarios-Bodegas-y-Logistica/README.md)
     - [x] Múltiples bodegas
     - [x] Kardex
     - [x] Método de costeo
@@ -310,7 +310,7 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-11-traslados-conteos-compras.sql`](sql/PR-11-traslados-conteos-compras.sql)
 - **Hecho cuando:** Recibir una compra sube stock y costo; un conteo con diferencia genera su ajuste con motivo.
 - **Casillas que marca:**
-  - [`VI.05 · N1`](capas/VI-Operacion-Productividad-y-Logistica/05-Compras-y-Gestion-de-Proveedores/README.md)
+  - [`VI.05 · N1`](../docs/wiki/04-modulos/capas/VI-Operacion-Productividad-y-Logistica/05-Compras-y-Gestion-de-Proveedores/README.md)
     - [x] Orden de compra _hecho: app/[tenant]/(app)/purchases + lib/purchasing_
     - [x] Registro de la factura del proveedor _hecho: se registra al recibir (SupplierInvoice)_
     - [x] Entrada de mercancía al inventario al recibir. _hecho: receiveOrder → servicio de inventario con costo_
@@ -333,10 +333,10 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-13-impuestos-y-numeracion.sql`](sql/PR-13-impuestos-y-numeracion.sql)
 - **Hecho cuando:** Una venta con IVA 19 % y 5 % y retefuente calcula bien (casos de un contador); la numeración respeta el rango y avisa.
 - **Casillas que marca:**
-  - [`VII.03 · N1`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/03-Documentos-Transaccionales-y-Reglas-Fiscales/README.md)
+  - [`VII.03 · N1`](../docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/03-Documentos-Transaccionales-y-Reglas-Fiscales/README.md)
     - [ ] Beneficiario
     - [ ] Tipo de comprobante
-  - [`VII.04 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md)
+  - [`VII.04 · N2`](../docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md)
     - [ ] Impuestos por ítem y por tercero
     - [x] Gestión de resoluciones y consecutivos
 
@@ -356,7 +356,7 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-15-pos-terminales-turnos.sql`](sql/PR-15-pos-terminales-turnos.sql)
 - **Hecho cuando:** Un cajero abre turno, vende 5 líneas con efectivo + Nequi y cierra con arqueo; todo descuenta inventario.
 - **Casillas que marca:**
-  - [`V.03 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/03-Punto-de-Venta-Fisico-y-Movil-POS/README.md)
+  - [`V.03 · N2`](../docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/03-Punto-de-Venta-Fisico-y-Movil-POS/README.md)
     - [x] Descuentos, propinas y pago mixto
     - [x] Turnos por cajero
     - [x] Funciona en celular y tablet.
@@ -369,9 +369,9 @@ de «hecho»). No se edita a mano.
 - **Esquema:** sin tablas nuevas
 - **Hecho cuando:** Escanear agrega la línea; una devolución genera su nota crédito y reingresa el stock.
 - **Casillas que marca:**
-  - [`V.03 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/03-Punto-de-Venta-Fisico-y-Movil-POS/README.md)
+  - [`V.03 · N2`](../docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/03-Punto-de-Venta-Fisico-y-Movil-POS/README.md)
     - [x] Impresoras térmicas
-  - [`V.06 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/06-Ventas-Pedidos-y-Entregas/README.md)
+  - [`V.06 · N2`](../docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/06-Ventas-Pedidos-y-Entregas/README.md)
     - [x] Notas crédito y débito
     - [x] Devoluciones
 
@@ -383,14 +383,14 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-17-pagos-intenciones-conciliacion.sql`](sql/PR-17-pagos-intenciones-conciliacion.sql)
 - **Hecho cuando:** Cobrar por enlace sandbox → webhook → pago confirmado una sola vez aunque el webhook llegue repetido; la conciliación marca una diferencia sembrada.
 - **Casillas que marca:**
-  - [`V.00 · N1`](capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md)
+  - [`V.00 · N1`](../docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md)
     - [ ] Pago con tarjeta, PSE y Nequi desde un checkout alojado por la pasarela.
     - [x] Confirmación de pago por webhook y estado visible en la orden.
     - [ ] Nequi Negocios: QR dinámico e intención de cobro; solo se registra el ingreso con el estado oficial
-  - [`V.00 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md)
+  - [`V.00 · N2`](../docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md)
     - [x] Reembolsos totales y parciales
     - [x] Conciliación diaria
-  - [`V.01 · N1`](capas/V-Ventas-Digitales-Comercio-y-Pagos/01-Enlaces-y-Solicitudes-de-Cobro/README.md)
+  - [`V.01 · N1`](../docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/01-Enlaces-y-Solicitudes-de-Cobro/README.md)
     - [x] Link de pago
     - [x] Botón de pago
     - [x] Estado del link (pendiente, pagado, vencido).
@@ -403,12 +403,12 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-18-facturacion-electronica.sql`](sql/PR-18-facturacion-electronica.sql)
 - **Hecho cuando:** Toda venta genera su documento fiscal y queda PENDING_PROVIDER; el sandbox lo acepta o rechaza con causa legible; vender nunca se bloquea.
 - **Casillas que marca:**
-  - [`VII.04 · N1`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md)
+  - [`VII.04 · N1`](../docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md)
     - [ ] Factura electrónica
     - [x] Datos del emisor y del adquirente
     - [ ] PDF y XML
     - [x] Documento soporte
-  - [`VII.04 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md)
+  - [`VII.04 · N2`](../docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md)
     - [x] Factura automática
     - [ ] Estado ante la DIAN
 
@@ -420,7 +420,7 @@ de «hecho»). No se edita a mano.
 - **Esquema:** sin tablas nuevas
 - **Hecho cuando:** Pago de prueba de punta a punta; la conciliación contra el reporte del proveedor cuadra. (Cuando se decida.)
 - **Casillas que marca:**
-  - [`V.00 · N2`](capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md)
+  - [`V.00 · N2`](../docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md)
     - [x] Varias pasarelas
 
 ### PR-20 · Proveedor tecnológico DIAN
@@ -431,7 +431,7 @@ de «hecho»). No se edita a mano.
 - **Esquema:** sin tablas nuevas
 - **Hecho cuando:** Un documento del set de pruebas queda aceptado y los pendientes históricos se envían en orden sin duplicar. (Cuando se elija.)
 - **Casillas que marca:**
-  - [`VII.04 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md)
+  - [`VII.04 · N2`](../docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md)
     - [ ] Notas crédito y débito electrónicas
 
 ### PR-21 · Contabilidad I: plan de cuentas, períodos y reglas
@@ -442,12 +442,12 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-21-contabilidad-plan-y-periodos.sql`](sql/PR-21-contabilidad-plan-y-periodos.sql)
 - **Hecho cuando:** Un negocio nuevo trae su PUC; las reglas iniciales se pueden ver y desactivar.
 - **Casillas que marca:**
-  - [`I.00 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/00-Nucleo-Transversal-y-Modelo-de-Tercero-Unico/README.md)
+  - [`I.00 · N1`](../docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/00-Nucleo-Transversal-y-Modelo-de-Tercero-Unico/README.md)
     - [x] Dimensiones analíticas
     - [x] Periodos y cierres
-  - [`VII.05 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md)
+  - [`VII.05 · N2`](../docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md)
     - [x] Plan de cuentas (PUC)
-  - [`VII.06 · N1`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/06-Presupuestos-y-Centros-de-Costo/README.md)
+  - [`VII.06 · N1`](../docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/06-Presupuestos-y-Centros-de-Costo/README.md)
     - [x] Centros de costo y sucursales
 
 ### PR-22 · Contabilidad II: asientos automáticos y partida doble
@@ -458,10 +458,10 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-22-contabilidad-asientos.sql`](sql/PR-22-contabilidad-asientos.sql)
 - **Hecho cuando:** Una venta con IVA, costo y cobro genera un asiento cuadrado y trazable; anular lo reversa; cerrar el mes bloquea cambios.
 - **Casillas que marca:**
-  - [`I.00 · N1`](capas/I-Fundacion-Nucleo-e-Infraestructura/00-Nucleo-Transversal-y-Modelo-de-Tercero-Unico/README.md)
+  - [`I.00 · N1`](../docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/00-Nucleo-Transversal-y-Modelo-de-Tercero-Unico/README.md)
     - [x] Motor contable
     - [x] Libro mayor inalterable
-  - [`VII.05 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md)
+  - [`VII.05 · N2`](../docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md)
     - [x] Asientos automáticos
     - [ ] Terceros y centros de costo en cada asiento
 
@@ -473,10 +473,10 @@ de «hecho»). No se edita a mano.
 - **Esquema:** sin tablas nuevas
 - **Hecho cuando:** El balance de prueba cuadra con una muestra revisada por un contador; el archivo se importa en su software.
 - **Casillas que marca:**
-  - [`VII.05 · N1`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md)
+  - [`VII.05 · N1`](../docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md)
     - [x] Reportes simples
     - [x] Exportación
-  - [`VII.05 · N2`](capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md)
+  - [`VII.05 · N2`](../docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md)
     - [x] Libros auxiliares, libro diario, libro mayor y balance de prueba.
     - [x] Reportes para el contador
 
@@ -488,7 +488,7 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-24-presencia-v2.sql`](sql/PR-24-presencia-v2.sql)
 - **Hecho cuando:** La barra muestra la fase A con pilares nuevos y su tendencia; `get_presence` responde por MCP; se recalcula por eventos.
 - **Casillas que marca:**
-  - [`II.00 · N2`](capas/II-Visibilidad-Captacion-y-Presencia-Digital/00-Sitios-Web-Landing-Pages-y-Cms/README.md)
+  - [`II.00 · N2`](../docs/wiki/04-modulos/capas/II-Visibilidad-Captacion-y-Presencia-Digital/00-Sitios-Web-Landing-Pages-y-Cms/README.md)
     - [x] Barra de Presencia en dos fases: visibilidad **verificada** (venta en línea, reputación, atribución) y, cuando está llena, madurez NEXUS
 
 ### PR-25 · Mini-sitio con catálogo y SEO técnico
@@ -499,12 +499,12 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-25-sitio-y-catalogo-publico.sql`](sql/PR-25-sitio-y-catalogo-publico.sql)
 - **Hecho cuando:** El sitio sale en un negocio real, rápido en móvil, con datos estructurados válidos; el pilar «Sitio» pasa a verificado.
 - **Casillas que marca:**
-  - [`II.00 · N1`](capas/II-Visibilidad-Captacion-y-Presencia-Digital/00-Sitios-Web-Landing-Pages-y-Cms/README.md)
+  - [`II.00 · N1`](../docs/wiki/04-modulos/capas/II-Visibilidad-Captacion-y-Presencia-Digital/00-Sitios-Web-Landing-Pages-y-Cms/README.md)
     - [ ] Plantillas por vertical, con edición de textos, imágenes y colores.
     - [ ] Subdominio automático (`negocio.nexusthrive.co`).
     - [x] Botón flotante de WhatsApp, mapa y datos de contacto.
     - [x] Diseño responsive (celular primero).
-  - [`II.01 · N1`](capas/II-Visibilidad-Captacion-y-Presencia-Digital/01-SEO-Tecnico-y-Posicionamiento-Local/README.md)
+  - [`II.01 · N1`](../docs/wiki/04-modulos/capas/II-Visibilidad-Captacion-y-Presencia-Digital/01-SEO-Tecnico-y-Posicionamiento-Local/README.md)
     - [x] Títulos, descripciones y URLs editables
     - [x] Sitemap, robots y etiquetas básicas automáticas.
 
@@ -516,12 +516,12 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-26-tienda-carrito-y-envios.sql`](sql/PR-26-tienda-carrito-y-envios.sql)
 - **Hecho cuando:** Un cliente compra de punta a punta (sandbox): pedido → pago → stock → documento fiscal en cola → aviso; el abandono dispara un evento.
 - **Casillas que marca:**
-  - [`V.04 · N1`](capas/V-Ventas-Digitales-Comercio-y-Pagos/04-Comercio-Electronico/README.md)
+  - [`V.04 · N1`](../docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/04-Comercio-Electronico/README.md)
     - [ ] Catálogo con fotos, descripción, precio y categoría.
     - [x] Carrito y checkout con datos del cliente.
     - [x] Pago por link o por transferencia con confirmación manual.
     - [ ] Pedido que llega por correo y WhatsApp al negocio.
-  - [`V.05 · N1`](capas/V-Ventas-Digitales-Comercio-y-Pagos/05-Reservas-y-Control-de-Disponibilidad/README.md)
+  - [`V.05 · N1`](../docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/05-Reservas-y-Control-de-Disponibilidad/README.md)
     - [ ] Formulario de solicitud de reserva
 
 ### PR-27 · SEO local y Google Business
@@ -532,7 +532,7 @@ de «hecho»). No se edita a mano.
 - **Esquema:** sin tablas nuevas
 - **Hecho cuando:** La ficha se sincroniza en un negocio piloto; el pilar «Google» pasa a verificado.
 - **Casillas que marca:**
-  - [`II.01 · N1`](capas/II-Visibilidad-Captacion-y-Presencia-Digital/01-SEO-Tecnico-y-Posicionamiento-Local/README.md)
+  - [`II.01 · N1`](../docs/wiki/04-modulos/capas/II-Visibilidad-Captacion-y-Presencia-Digital/01-SEO-Tecnico-y-Posicionamiento-Local/README.md)
     - [ ] Ficha de Google Business
 
 ### PR-28 · Reputación y atribución de ventas
@@ -543,13 +543,13 @@ de «hecho»). No se edita a mano.
 - **Esquema:** [`sql/PR-28-reputacion-y-atribucion.sql`](sql/PR-28-reputacion-y-atribucion.sql)
 - **Hecho cuando:** El tablero dice de dónde vino cada venta; una reseña de 1–2 estrellas dispara una alerta.
 - **Casillas que marca:**
-  - [`II.02 · N1`](capas/II-Visibilidad-Captacion-y-Presencia-Digital/02-Publicidad-Digital-y-Atribucion-Multicanal/README.md)
+  - [`II.02 · N1`](../docs/wiki/04-modulos/capas/II-Visibilidad-Captacion-y-Presencia-Digital/02-Publicidad-Digital-y-Atribucion-Multicanal/README.md)
     - [x] UTM automáticos
     - [x] Reporte simple: inversión vs. leads recibidos por origen.
-  - [`II.03 · N1`](capas/II-Visibilidad-Captacion-y-Presencia-Digital/03-Formularios-Enlaces-Cortos-y-Codigos-Qr/README.md)
+  - [`II.03 · N1`](../docs/wiki/04-modulos/capas/II-Visibilidad-Captacion-y-Presencia-Digital/03-Formularios-Enlaces-Cortos-y-Codigos-Qr/README.md)
     - [x] Enlaces cortos
     - [x] Formulario simple
-  - [`III.04 · N1`](capas/III-Atencion-y-Comunicacion/04-Encuestas-de-Satisfaccion-y-Reputacion/README.md)
+  - [`III.04 · N1`](../docs/wiki/04-modulos/capas/III-Atencion-y-Comunicacion/04-Encuestas-de-Satisfaccion-y-Reputacion/README.md)
     - [x] Enlace a Google Reviews
 
 ### PR-29 · Calculadores de madurez (fase B)
@@ -560,7 +560,7 @@ de «hecho»). No se edita a mano.
 - **Esquema:** sin tablas nuevas
 - **Hecho cuando:** Cada señal sale de datos reales y tiene prueba con casos límite; un dato malo baja su señal y dice cómo arreglarlo.
 - **Casillas que marca:**
-  - [`IX.00 · N2`](capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/00-Dashboards-y-Analitica-Operativa/README.md)
+  - [`IX.00 · N2`](../docs/wiki/04-modulos/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/00-Dashboards-y-Analitica-Operativa/README.md)
     - [ ] Pulso del negocio: señales de madurez con acción sugerida y avisos por WhatsApp/correo cuando una empeora
 
 ### PR-30 · Transición de fase y avisos
@@ -571,7 +571,7 @@ de «hecho»). No se edita a mano.
 - **Esquema:** sin tablas nuevas
 - **Hecho cuando:** Un negocio que sostiene la fase A entra a la fase B; si una señal empeora llega el aviso; el reporte semanal sale solo.
 - **Casillas que marca:**
-  - [`IX.00 · N2`](capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/00-Dashboards-y-Analitica-Operativa/README.md)
+  - [`IX.00 · N2`](../docs/wiki/04-modulos/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/00-Dashboards-y-Analitica-Operativa/README.md)
     - [ ] Pulso del negocio: señales de madurez con acción sugerida y avisos por WhatsApp/correo cuando una empeora
 
 <!-- pr:fin -->

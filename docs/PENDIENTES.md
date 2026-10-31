@@ -7,7 +7,7 @@ marca y se anota dónde quedó (PR o archivo). La visión de producto está en
 [product-vision.md](nexus-architecture/product-vision.md) y la ruta técnica de
 crecimiento en [scaling-path.md](nexus-architecture/scaling-path.md).
 La guía por capas (qué está hecho y qué sigue en cada capacidad) está en
-[`.docs/README.md`](../.docs/README.md).
+[`docs/wiki/02-producto/guia-de-construccion.md`](wiki/02-producto/guia-de-construccion.md).
 
 Actualizado: 2026-10-23.
 
@@ -31,7 +31,7 @@ Para no repetir trabajo: la base está estable desde las PR #45 y #46.
 
 ## Lo siguiente
 
-Según el [mapa de capacidades](../.docs/mapa-de-capacidades.md#qué-es-lo-siguiente-en-realidad).
+Según el [mapa de capacidades](wiki/02-producto/mapa-de-capacidades.md#qué-es-lo-siguiente-en-realidad).
 Estado al 2026-10-23 (PR #48–#52 y el del documento comercial):
 
 | Paso | Estado |
@@ -47,7 +47,7 @@ Estado al 2026-10-23 (PR #48–#52 y el del documento comercial):
 |---|---|---|
 | 1.1 | Mergear la PR de la landing | `NexusThrive/nexus-thrive-web#2` |
 | 1.2 | Enviar el ticket para purgar los PR #36–#44 (aún muestran los secretos viejos, ya rotados) | support.github.com |
-| 1.3 | Activar **Verify at sign-up** en Clerk producción y anotar la fecha | [clerk-produccion.md §6](clerk-produccion.md) |
+| 1.3 | Activar **Verify at sign-up** en Clerk producción y anotar la fecha | [clerk-produccion.md §6](wiki/08-operacion-y-despliegue/clerk-produccion.md) |
 | 1.4 | Borrar el respaldo local del historial viejo cuando ya no haga falta (contiene los secretos rotados) | `NexusThrive/_respaldos/` |
 
 ---
@@ -111,7 +111,7 @@ arquitectura donde agregar una automatización no obligue a reconstruir nada.
 > **Regla transversal (2026-10-24):** todo lo de este capítulo se generaliza a
 > *toda* subcapa: API + MCP + webhooks para todo, con puertos para pagos, DIAN
 > y demás proveedores. El estándar completo está en
-> [`.docs/integracion-api-mcp-webhooks.md`](../.docs/integracion-api-mcp-webhooks.md).
+> [`docs/wiki/07-integraciones/api-mcp-webhooks.md`](wiki/07-integraciones/api-mcp-webhooks.md).
 
 ### 5.2 Arquitectura
 
@@ -313,5 +313,5 @@ Diferida por el dueño el 2026-10-30. Hallazgos de esa fecha:
 - Todo lo que se suba va a Google, a diferencia de Graphify, que es local.
 
 Para decidir: aceptar o no la vía no oficial con cuenta dedicada; qué carpetas pueden subirse (propuesta:
-`.docs/capas` y los ADR); probar en un entorno aislado con 2 o 3 documentos no sensibles; y, si se acepta, escribir un
+`docs/wiki/04-modulos/capas` y los ADR); probar en un entorno aislado con 2 o 3 documentos no sensibles; y, si se acepta, escribir un
 ADR que enmiende el 0008 con la versión fijada y la procedencia.

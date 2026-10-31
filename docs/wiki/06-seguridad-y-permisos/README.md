@@ -6,4 +6,4 @@ Autenticación, roles y permisos, aislamiento por negocio.
 
 ## Contenido
 
-_(el índice se completa a medida que se consolidan las páginas)_
+_Pendiente: esta sección se escribe en la fase 4._

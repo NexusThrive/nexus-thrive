@@ -3,7 +3,7 @@ import { BUSINESS_PERMISSIONS } from "@/lib/core/auth/permissions";
 import { isModule } from "@/lib/core/capabilities/modules";
 import { describeOperation, OPERATIONS, getOperation, operationsFor } from "@/lib/runtime/operations";
 
-/** Contrato del registro (.docs/integracion-api-mcp-webhooks.md §1): lo que toda operación debe tener. */
+/** Contrato del registro (docs/wiki/07-integraciones/api-mcp-webhooks.md §1): lo que toda operación debe tener. */
 describe("registro de operaciones", () => {
   test("ids únicos, con la forma recurso.accion", () => {
     const ids = OPERATIONS.map((o) => o.id);

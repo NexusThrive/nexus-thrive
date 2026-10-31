@@ -26,7 +26,7 @@ Los dos módulos propuestos se importaban mutuamente (`money-service → documen
 
 | Commit | Alcance |
 |---|---|
-| `8f640dc` | Preparación: el verificador detecta **unidades inexistentes** de `layers.json` (P-10); se retira la huérfana `lib/vertical-terms.ts` (H-1); [`V10-decisiones.md`](V10-decisiones.md) |
+| `8f640dc` | Preparación: el verificador detecta **unidades inexistentes** de `layers.json` (P-10); se retira la huérfana `lib/vertical-terms.ts` (H-1); [`V10-decisiones.md`](../decisions/V10-decisiones.md) |
 | `4ff7ce6` | `business/scheduling` (2 archivos) |
 | `cf3d5e2` | `business/customers` (3 archivos) |
 | `5cdd9ea` | `business/catalog` (6 archivos, incluidas 2 pruebas); se retira la unidad `lib/catalog` |
@@ -68,13 +68,13 @@ Pruebas nuevas: 11 de arquitectura en `tests/architecture/v10-business.test.ts` 
 ## Riesgos y pendientes
 
 - **Ramas paralelas:** cualquier rama que importe las rutas antiguas tendrá que actualizarse con el mismo codemod; `integracion/local-revision` no se integra (P-13).
-- **Documentación viva con rutas antiguas** (pasada documental independiente, P-12): `docs/guias/nueva-funcionalidad.md`, `docs/guias/pruebas.md`, `docs/PENDIENTES.md`, `docs/nexus-architecture/*`, `.docs/arquitectura-v2/*`, y los informes de etapas anteriores (que se conservan tal cual por ser históricos). Hay además un comentario con ruta antigua en `prisma/schema/business/sales.prisma` (no se tocó Prisma) y una cita genérica `lib/business/*-db.ts` en `DESIGN.md`.
+- **Documentación viva con rutas antiguas** (pasada documental independiente, P-12): `docs/wiki/09-desarrollo/nueva-funcionalidad.md`, `docs/wiki/10-pruebas-y-calidad/pruebas.md`, `docs/PENDIENTES.md`, `docs/nexus-architecture/*`, `.docs/arquitectura-v2/*`, y los informes de etapas anteriores (que se conservan tal cual por ser históricos). Hay además un comentario con ruta antigua en `prisma/schema/business/sales.prisma` (no se tocó Prisma) y una cita genérica `lib/business/*-db.ts` en `DESIGN.md`.
 - **`lib/business/business.test.ts`** queda en la raíz de `lib/business`; su destino se decide en la migración de pruebas.
 - **`receipt-share.ts`** (canvas del navegador) está dentro de `sales`; es código de cliente que importan componentes. No cambió de naturaleza.
 
 ## Estado de las decisiones: aprobadas, implementadas y pendientes
 
-Detalle completo en [`V10-decisiones.md`](V10-decisiones.md). Resumen de lo que M3 toca:
+Detalle completo en [`V10-decisiones.md`](../decisions/V10-decisiones.md). Resumen de lo que M3 toca:
 
 | Estado | Qué |
 |---|---|

@@ -31,7 +31,7 @@ gantt
 | Quitar bootstrap de OWNER; alta desde el panel con invitación al dueño | [SEC-02](security-audit.md#sec-02) | Consulta de negocios sin miembros en producción revisada; prueba: un tercero que abre `/{slug}` de un negocio vacío ve "Sin acceso" |
 | Revisar `.env.produccion` e historial; rotar si hace falta | [SEC-04](security-audit.md#sec-04) | Archivo sin valores; secretos rotados si había |
 | Ejecutar la prueba RSC de SEC-03 | [SEC-03](security-audit.md#sec-03) | Resultado documentado (vulnerable / no vulnerable) |
-| Confirmar verificación de correo en Clerk | [SEC-10](security-audit.md#sec-10) | Captura de la configuración en el ADR o en `docs/clerk-produccion.md` |
+| Confirmar verificación de correo en Clerk | [SEC-10](security-audit.md#sec-10) | Captura de la configuración en el ADR o en `docs/wiki/08-operacion-y-despliegue/clerk-produccion.md` |
 
 Riesgo: bajo (cambios pequeños). Depende de: nada.
 
@@ -64,7 +64,7 @@ probar sobre copia de producción.
 
 | Tarea | Criterio |
 |---|---|
-| Registro de capacidades en código ([ADR-0003](decisions/0003-registro-de-capacidades.md)); menú, onboarding y precios derivan de él | Añadir una capacidad de prueba toca ≤ 3 archivos |
+| Registro de capacidades en código ([ADR-0003](../decisions/arquitectura/0003-registro-de-capacidades.md)); menú, onboarding y precios derivan de él | Añadir una capacidad de prueba toca ≤ 3 archivos |
 | `requireCapability(ctx, id)` en páginas y acciones; respeta contratado + habilitado | Prueba: capacidad desactivada → 404 en página y error en acción |
 | Separar `construction` de `quotes`; recetas corregidas | Ningún rubro no constructor ve APU |
 | Retirar del menú lo que no tiene página; decidir `orders` y salidas de turismo | Prueba de `href` ↔ `page.tsx` por rubro |

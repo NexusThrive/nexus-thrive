@@ -3,7 +3,7 @@
  *
  * Todas las pruebas viven en `tests/` (unit/, integration/, architecture/, fixtures/) y reflejan `lib/<área>/<módulo>`.
  * Esta prueba falla si aparece un `*.test.ts` o un fixture dentro de `lib/`, o si una carpeta espejo apunta a un módulo
- * que ya no existe. Guía: `docs/guias/pruebas.md`.
+ * que ya no existe. Guía: `docs/wiki/10-pruebas-y-calidad/pruebas.md`.
  */
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";

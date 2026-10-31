@@ -6,4 +6,6 @@ Prisma (estructura del contrato por dominio), migraciones, tenancy, dinero y bor
 
 ## Contenido
 
-_(el índice se completa a medida que se consolidan las páginas)_
+- [Borrado de un negocio](borrado-de-un-negocio.md)
+- [Dinero y decimales](dinero-y-decimales.md)
+- [Prisma: estructura del contrato y de sus carpetas](prisma-estructura.md)

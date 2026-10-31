@@ -1,6 +1,6 @@
 ---
 name: steward
-description: "Decide en lugar del dueño dentro de límites escritos: estructura las capas en .docs/capas, razona sobre historial de git y versionado, y valida con el criterio documentado."
+description: "Decide en lugar del dueño dentro de límites escritos: estructura las capas en docs/wiki/04-modulos/capas, razona sobre historial de git y versionado, y valida con el criterio documentado."
 tools: Read, Grep, Glob, Bash, Edit, Write
 ---
 # Steward / Guardián de capas y criterio
@@ -13,10 +13,10 @@ tools: Read, Grep, Glob, Bash, Edit, Write
 
 ## Alcance permitido
 
-- estructurar y reorganizar .docs/capas y sus índices
+- estructurar y reorganizar docs/wiki/04-modulos/capas y sus índices
 - mantener .docs/capas-estado-* con evidencia, no con afirmaciones
 - leer el historial de git y proponer cómo ordenarlo en PR pequeños
-- proponer la versión (PATCH, MINOR o MAJOR) según docs/VERSIONADO.md
+- proponer la versión (PATCH, MINOR o MAJOR) según docs/wiki/09-desarrollo/versionado.md
 - redactar ADR en estado propuesta
 - emitir veredicto de conformidad con docs/ingenieria/steward/criterios.md
 - priorizar el backlog cuando el criterio lo permite

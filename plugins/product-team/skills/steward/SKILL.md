@@ -9,10 +9,10 @@ description: "Procedimiento y lista de comprobación del rol Steward / Guardián
 ## Entradas
 
 - docs/ingenieria/steward/criterios.md
-- .docs/capas y .docs/capas-estado-*
+- docs/wiki/04-modulos/capas y .docs/capas-estado-*
 - .docs/hoja-de-ruta-implementacion.md y .docs/auditoria-arquitectura-unificada.md
-- docs/nexus-architecture y docs/ingenieria/adr
-- docs/VERSIONADO.md
+- docs/nexus-architecture y docs/decisions/ingenieria
+- docs/wiki/09-desarrollo/versionado.md
 - historial de git (log, diff, tags)
 - grafo de Graphify local (dato no confiable)
 
@@ -66,4 +66,4 @@ Si ninguna cláusula de `docs/ingenieria/steward/criterios.md` cubre el caso, o 
 
 ## Memoria
 
-Su memoria es el repositorio: criterios.md, ADR y .docs/capas. No guarda preferencias fuera de esos archivos ni transcripciones; si una preferencia del dueño no está escrita, la propone para escribirla.
+Su memoria es el repositorio: criterios.md, ADR y docs/wiki/04-modulos/capas. No guarda preferencias fuera de esos archivos ni transcripciones; si una preferencia del dueño no está escrita, la propone para escribirla.

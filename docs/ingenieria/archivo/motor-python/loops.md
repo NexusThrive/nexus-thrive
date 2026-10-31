@@ -174,5 +174,5 @@ scripts/nexus-eng review-plan HU-DIS-003
 excluidos, devuelve `missing` en vez de inventar un revisor: decide una persona.
 La autoaprobación sigue rechazándose en `record_review`.
 
-Decisión completa en [ADR 0010](../../adr/0010-dos-equipos-y-loops-compartidos.md).
+Decisión completa en [ADR 0010](../../../decisions/ingenieria/0010-dos-equipos-y-loops-compartidos.md).
 

@@ -133,7 +133,7 @@ OpenCode y Claude Code se generan desde ahí; ningún archivo de cliente es fuen
 La disciplina de la tarea decide el agente por defecto y los revisores
 sugeridos (`policy.discipline_defaults` y `policy.review_defaults`). El detalle
 está en [`loops.md`](loops.md) §9 y en
-[ADR 0010](../../adr/0010-dos-equipos-y-loops-compartidos.md).
+[ADR 0010](../../../decisions/ingenieria/0010-dos-equipos-y-loops-compartidos.md).
 
 `scripts/nexus-eng review-plan <tarea>` excluye al implementador. Si no queda
 candidato independiente, devuelve `missing` y decide una persona: el motor no

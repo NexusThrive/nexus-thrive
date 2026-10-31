@@ -89,6 +89,6 @@ acciones con aprobación.
 
 1. Mergear en orden: #48 → #49 (rediseño), #50 → #51 → #52 → PR del paso 2
    (las migraciones van en cadena) y NexusThrive/nexus-thrive-web#3.
-2. Aplicar en producción los SQL 10, 11 y 12 de `docs/prod-sql/00-ORDEN.md`
+2. Aplicar en producción los SQL 10, 11 y 12 de `docs/wiki/08-operacion-y-despliegue/prod-sql-orden.md`
    (o migrar desde el despliegue).
 3. Paso 2 → pantalla "Documentos" con `FormDrawer` y `quotes` en `READY`.

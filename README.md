@@ -129,11 +129,11 @@ Google Places, Nequi, envío de WhatsApp y correo, subdominios con DNS. La
 contabilidad y las tarifas fiscales de ejemplo deben confirmarse con un
 contador antes de usarse en producción.
 
-El estado por capa está en [`.docs/capas/README.md`](.docs/capas/README.md) y
+El estado por capa está en [`docs/wiki/04-modulos/capas/README.md`](docs/wiki/04-modulos/capas/README.md) y
 [`.docs/capas-estado-2026-10-25.md`](.docs/capas-estado-2026-10-25.md); el
 seguimiento de la ejecución, en
 [`.docs/ejecucion-nocturna.md`](.docs/ejecucion-nocturna.md); las migraciones,
-en [`docs/prod-sql/00-ORDEN.md`](docs/prod-sql/00-ORDEN.md).
+en [`docs/wiki/08-operacion-y-despliegue/prod-sql-orden.md`](docs/wiki/08-operacion-y-despliegue/prod-sql-orden.md).
 
 ## Módulos
 
@@ -214,7 +214,7 @@ dinero usan el servicio transaccional de dinero y las reglas puras viven junto a
 sus pruebas. La auditoría completa, con hallazgos y deuda técnica, está en
 [`docs/nexus-architecture/README.md`](docs/nexus-architecture/README.md) y la
 arquitectura objetivo en
-[`docs/nexus-architecture/target-architecture.md`](docs/nexus-architecture/target-architecture.md).
+[`docs/wiki/03-arquitectura/anterior-a-v10/target-architecture.md`](docs/wiki/03-arquitectura/anterior-a-v10/target-architecture.md).
 
 ## Puesta en marcha
 
@@ -238,14 +238,14 @@ Variables de entorno:
 
 Para **producción** hay una lista completa con valores sugeridos en
 `.env.produccion` y el orden de ejecución del SQL en
-[`docs/prod-sql/00-ORDEN.md`](docs/prod-sql/00-ORDEN.md).
+[`docs/wiki/08-operacion-y-despliegue/prod-sql-orden.md`](docs/wiki/08-operacion-y-despliegue/prod-sql-orden.md).
 
 ### Autenticación en producción
 
 El login lo monta Clerk en el navegador, desde un host codificado en la
 Publishable Key. Al cambiar de dominio hay que actualizar la key, el CNAME del
 Frontend API y los orígenes permitidos. Todo está en
-[`docs/clerk-produccion.md`](docs/clerk-produccion.md).
+[`docs/wiki/08-operacion-y-despliegue/clerk-produccion.md`](docs/wiki/08-operacion-y-despliegue/clerk-produccion.md).
 
 ## Verificación
 
@@ -261,9 +261,9 @@ El CI (`.github/workflows/ci.yml`) ejecuta todo esto sobre un Postgres efímero.
 El test `lib/industry/construction/apu-importer/master-pack*.file*.test.ts` verifica un
 pack APU real si se le pasa `MASTER_PACK_FILE=/ruta/al/archivo.xlsx`.
 
-- Cómo preparar la base de pruebas: [`docs/guias/pruebas.md`](docs/guias/pruebas.md).
-- Cómo agregar una funcionalidad: [`docs/guias/nueva-funcionalidad.md`](docs/guias/nueva-funcionalidad.md).
-- Ramas, CI, secretos y despliegue: [`docs/guias/devops.md`](docs/guias/devops.md).
+- Cómo preparar la base de pruebas: [`docs/wiki/10-pruebas-y-calidad/pruebas.md`](docs/wiki/10-pruebas-y-calidad/pruebas.md).
+- Cómo agregar una funcionalidad: [`docs/wiki/09-desarrollo/nueva-funcionalidad.md`](docs/wiki/09-desarrollo/nueva-funcionalidad.md).
+- Ramas, CI, secretos y despliegue: [`docs/wiki/08-operacion-y-despliegue/devops.md`](docs/wiki/08-operacion-y-despliegue/devops.md).
 
 ## Equipo de ingeniería
 
@@ -284,8 +284,8 @@ objetivo → HU con criterios → especialista → implementación + pruebas
 | Compuerta de calidad | `.product-team/ci.json`, `CLAUDE.md` y el CI |
 | Criterio del dueño (Steward) | `docs/ingenieria/steward/criterios.md` |
 | Registro de herramientas externas | `docs/ingenieria/herramientas/registro.json` |
-| Arquitectura y decisiones | [`docs/ingenieria/arquitectura/`](docs/ingenieria/arquitectura/overview.md) |
-| Diagramas Mermaid | [`docs/diagrams/`](docs/diagrams/README.md) |
+| Arquitectura y decisiones | [`equipo-ingenieria.md`](docs/wiki/09-desarrollo/equipo-ingenieria.md) |
+| Diagramas Mermaid | [`docs/diagrams/`](docs/wiki/03-arquitectura/diagramas.md) |
 | Conocimiento y fuentes | [`docs/knowledge/`](docs/knowledge/README.md) |
 
 ```text
@@ -314,7 +314,7 @@ El script verifica que el árbol esté limpio y en `main`, corre las puertas
 (tipos, lint, pruebas y build) y crea y sube el tag. **No** sube `main` ni aplica
 el SQL de producción: eso es del PR y del SQL Editor de Supabase.
 
-El proceso completo está en [`docs/VERSIONADO.md`](docs/VERSIONADO.md) y el
+El proceso completo está en [`docs/wiki/09-desarrollo/versionado.md`](docs/wiki/09-desarrollo/versionado.md) y el
 historial en [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Documentación
@@ -325,11 +325,11 @@ historial en [`CHANGELOG.md`](CHANGELOG.md).
 | [`DESIGN.md`](DESIGN.md) | Marca, tokens, componentes, movimiento y layout |
 | [`docs/nexus-architecture/`](docs/nexus-architecture/README.md) | Auditoría, arquitectura actual y objetivo, seguridad, deuda y roadmap |
 | [`docs/design/`](docs/design/interaction-patterns.md) | Patrones de interacción, accesibilidad y calidad |
-| [`docs/guias/`](docs/guias/README.md) | Pruebas, nueva funcionalidad y DevOps |
-| [`docs/ingenieria/arquitectura/`](docs/ingenieria/arquitectura/overview.md) | Equipo de ingeniería: agentes, loops, conocimiento, automatización, seguridad y operación |
-| [`docs/diagrams/`](docs/diagrams/README.md) | Diagramas Mermaid de arquitectura, agentes, loops, conocimiento, n8n y despliegue |
+| [`docs/wiki/`](docs/wiki/Home.md) | **Manual vigente**: arquitectura, módulos, datos, pruebas, DevOps y nueva funcionalidad |
+| [`equipo-ingenieria.md`](docs/wiki/09-desarrollo/equipo-ingenieria.md) | Equipo de ingeniería: agentes, loops, conocimiento, automatización, seguridad y operación |
+| [`docs/diagrams/`](docs/wiki/03-arquitectura/diagramas.md) | Diagramas Mermaid de arquitectura, agentes, loops, conocimiento, n8n y despliegue |
 | [`docs/knowledge/`](docs/knowledge/README.md) | Catálogo de fuentes, políticas, investigación y sincronización |
-| [`docs/prod-sql/`](docs/prod-sql/00-ORDEN.md) | Orden del SQL manual de producción |
+| [`docs/prod-sql/`](docs/wiki/08-operacion-y-despliegue/prod-sql-orden.md) | Orden del SQL manual de producción |
 
 ---
 

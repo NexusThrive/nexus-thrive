@@ -18,15 +18,15 @@
 | 00 | Este README | Resumen ejecutivo y mapa |
 | 01 | [product-inventory.md](product-inventory.md) | Qué funcionalidades existen de verdad, rutas y estado |
 | 02 | [user-journey.md](user-journey.md) | Del registro al uso diario, con diagramas |
-| 03 | [current-architecture.md](current-architecture.md) | Frontend, backend, datos e integraciones tal como están |
-| 04 | [domain-and-data-model.md](domain-and-data-model.md) | Entidades reales, relaciones y diagrama ER |
-| 05 | [modules-and-dependencies.md](modules-and-dependencies.md) | Catálogo de módulos, acoplamientos y rubros |
+| 03 | [current-architecture.md](../wiki/03-arquitectura/anterior-a-v10/current-architecture.md) | Frontend, backend, datos e integraciones tal como están |
+| 04 | [domain-and-data-model.md](../wiki/03-arquitectura/anterior-a-v10/domain-and-data-model.md) | Entidades reales, relaciones y diagrama ER |
+| 05 | [modules-and-dependencies.md](../wiki/03-arquitectura/anterior-a-v10/modules-and-dependencies.md) | Catálogo de módulos, acoplamientos y rubros |
 | 06 | [security-audit.md](security-audit.md) | Autenticación, autorización, aislamiento y riesgos |
 | 07 | [technical-debt.md](technical-debt.md) | Registro de hallazgos con prioridad P0–P3 |
-| 08 | [target-architecture.md](target-architecture.md) | Arquitectura objetivo (propuesta, no implementada) |
+| 08 | [target-architecture.md](../wiki/03-arquitectura/anterior-a-v10/target-architecture.md) | Arquitectura objetivo (propuesta, no implementada) |
 | 09 | [onboarding-and-ux.md](onboarding-and-ux.md) | Onboarding y experiencia objetivo (propuesta) |
 | 10 | [roadmap.md](roadmap.md) | Plan por etapas con criterios de finalización |
-| 11 | [decisions/](decisions/README.md) | Decisiones arquitectónicas **propuestas** (ADR) |
+| 11 | [decisions/](../decisions/arquitectura/README.md) | Decisiones arquitectónicas **propuestas** (ADR) |
 | 12 | [product-vision.md](product-vision.md) | Visión: sistema operativo del negocio en Colombia, DIAN y orden de construcción |
 | 13 | [scaling-path.md](scaling-path.md) | Ruta de escalabilidad: del monolito modular a servicios |
 | 14 | [propuesta-bloque-b-3-a-7.md](propuesta-bloque-b-3-a-7.md) | Diseño propuesto: cartera, POS, datos fiscales, DIAN/Nequi, eventos, API `/api/v1` (A.3) |
@@ -111,7 +111,7 @@ cliente comercial del negocio (separado correctamente de `User`). El equipo NEXU
 es otra entidad (`StaffMember` + `StaffRole`, permisos granulares). Los módulos son
 filas `TenantModule` (habilitado), con `Tenant.contractedModules` (contratado) y
 `ModuleSetting.status` (operativo): tres conceptos que el código distingue, pero
-**solo la navegación los respeta**. Ver [domain-and-data-model.md](domain-and-data-model.md).
+**solo la navegación los respeta**. Ver [domain-and-data-model.md](../wiki/03-arquitectura/anterior-a-v10/domain-and-data-model.md).
 
 ### 5. ¿Cómo se aíslan los datos?
 

@@ -36,4 +36,4 @@ Retiradas exactamente 8, ninguna modificada ni añadida; eran **todas** las de l
 
 ## Lo que queda
 
-Ver [`hoja-de-ruta.md`](hoja-de-ruta.md).
+Ver [`hoja-de-ruta.md`](../wiki/02-producto/hoja-de-ruta.md).

@@ -52,7 +52,7 @@ Evidencia: `proxy.ts`, `app/auth/callback/page.tsx`, `app/auth/callback/actions.
 | Cierre de sesión | `UserButton` en la barra superior (`components/organisms/app-topbar.tsx:83`); `SignOutButton` en avisos del equipo e invitaciones | IMPLEMENTADO |
 | Protección de rutas | El proxy **no protege** rutas: solo redirige `/`. La protección vive en `app/[tenant]/layout.tsx`, `app/admin/layout.tsx`, `app/onboarding/layout.tsx` y en cada acción | Ver [security-audit.md](security-audit.md#sec-03) |
 | Fallo de Clerk | `components/molecules/auth-mount-fallback.tsx` muestra aviso y reintento si el formulario no monta; proxy opcional de la Frontend API (`NEXT_PUBLIC_CLERK_PROXY_URL`) | IMPLEMENTADO |
-| Dominio | La Publishable Key codifica el host; `docs/clerk-produccion.md` documenta qué cambiar al mover de dominio | Documentado |
+| Dominio | La Publishable Key codifica el host; `docs/wiki/08-operacion-y-despliegue/clerk-produccion.md` documenta qué cambiar al mover de dominio | Documentado |
 
 ## 3. Onboarding real
 
@@ -166,4 +166,4 @@ escrituras son atómicas.
 | Activar rubro especial | No existe un flujo: el rubro se fija en el onboarding y el panel; cambiarlo no migra datos | — | `Tenant.vertical` | — | Pantallas condicionadas por `vertical` en el menú |
 | Automatización | NO ENCONTRADO | — | — | — | — |
 
-Siguiente: [current-architecture.md](current-architecture.md).
+Siguiente: [current-architecture.md](../wiki/03-arquitectura/anterior-a-v10/current-architecture.md).

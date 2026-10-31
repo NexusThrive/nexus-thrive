@@ -6,4 +6,5 @@ API, MCP, webhooks, pagos, facturación electrónica y n8n.
 
 ## Contenido
 
-_(el índice se completa a medida que se consolidan las páginas)_
+- [Integración: API, MCP y webhooks para todo](api-mcp-webhooks.md)
+- [n8n en casa con NEXUS THRIVE](n8n-en-casa.md)

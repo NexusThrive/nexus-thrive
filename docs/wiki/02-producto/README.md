@@ -6,4 +6,8 @@ Visión, capacidades, rubros y hoja de ruta.
 
 ## Contenido
 
-_(el índice se completa a medida que se consolidan las páginas)_
+- [Un solo sistema: núcleo, perfil y funciones](distribucion-por-rubro.md)
+- [Guía de construcción de NEXUS](guia-de-construccion.md)
+- [Hoja de ruta: lo que queda después de E3](hoja-de-ruta.md)
+- [Mapa de capacidades empresariales vs. capas de NEXUS](mapa-de-capacidades.md)
+- [Destino: un negocio visible, que vende en línea y está conectado por dentro](vision-negocio-conectado.md)

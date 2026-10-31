@@ -22,7 +22,7 @@ Trabajo **solo de documentación** (sin código, esquema ni migraciones). Ordena
 
 ## Estructura propuesta
 
-Cuatro categorías, respetando el modelo ya documentado en [`distribucion-por-rubro.md`](../distribucion-por-rubro.md) (un solo sistema; el rubro es perfil; las funciones se activan por organización):
+Cuatro categorías, respetando el modelo ya documentado en [`distribucion-por-rubro.md`](../../docs/wiki/02-producto/distribucion-por-rubro.md) (un solo sistema; el rubro es perfil; las funciones se activan por organización):
 
 - **A · Core** — no depende de ningún rubro: identidad, organizaciones, permisos, aislamiento, auditoría, respaldo, planes.
 - **B · Compartidas** — servicios que varias funciones usan: catálogo, clientes, dinero, inventario, contabilización, facturación, avisos, reportes.
@@ -41,7 +41,7 @@ Cuatro categorías, respetando el modelo ya documentado en [`distribucion-por-ru
 8. **¿Mantener, rellenar o aplazar?** 32 MANTENER · 25 RELLENAR · 13 APLAZAR (reglas en A).
 9. **¿Orden correcto?** F: Core → compartidas → contratos → GYM → RESTAURANTE → pruebas entre funciones → aplazado.
 
-## Qué se cambió en `.docs/capas/`
+## Qué se cambió en `docs/wiki/04-modulos/capas/`
 
 Solo se **añadió**; no se borró ni renombró nada:
 

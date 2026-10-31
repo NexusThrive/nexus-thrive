@@ -33,4 +33,4 @@ Corte previo a llevar la rama `release/nexus-v2-todo-junto` a `main`. Solo se ma
 | Beneficiario · Tipo de comprobante · Impuestos por ítem y por tercero · Ficha de tercero completa | Parciales: faltan campos o reglas |
 | «Detección de duplicados» (CRM-360, Caja menor) y «Variantes» (Comercio electrónico) | Son casillas distintas a las de I.01; no se tocan |
 
-Las tablas por capa están en `.docs/capas/README.md`; el estado de cada PR, en `.docs/ejecucion-nocturna.md`.
+Las tablas por capa están en `docs/wiki/04-modulos/capas/README.md`; el estado de cada PR, en `.docs/ejecucion-nocturna.md`.

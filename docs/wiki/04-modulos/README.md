@@ -6,4 +6,6 @@ Qué hace cada módulo y las once capas de implementación.
 
 ## Contenido
 
-_(el índice se completa a medida que se consolidan las páginas)_
+- [Capas de implementación](capas/README.md) — las 11 capas y 70 subcapas
+- [Documentación de módulos: qué conviene trasladar a `docs/architecture/`](documentacion-de-modulos.md)
+- [Control de acceso del gym · cómo funcionan las tarjetas](gym-acceso-nfc.md)

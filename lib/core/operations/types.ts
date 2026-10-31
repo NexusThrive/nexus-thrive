@@ -5,7 +5,7 @@ import type { ModuleValue } from "@/lib/core/capabilities/modules";
 /**
  * Registro de operaciones: una operación de negocio se declara UNA vez y de ahí
  * salen la pantalla, la API REST (`/api/v1`), la herramienta MCP y el evento
- * (ver .docs/integracion-api-mcp-webhooks.md §1).
+ * (ver docs/wiki/07-integraciones/api-mcp-webhooks.md §1).
  */
 
 /** Qué tan delicada es: decide la aprobación que exige (documento §4.3). */

@@ -59,7 +59,7 @@ Un resultado `unavailable` no es un fallo del sistema: se registra en
 
 Estado real: **instalado en un venv local**, modo `--code-only` (AST, sin LLM y
 sin clave de API). Decisión completa en
-[ADR 0009](../../adr/0009-graphify-vs-codebase-memory.md).
+[ADR 0009](../../../decisions/ingenieria/0009-graphify-vs-codebase-memory.md).
 
 | Dato | Valor |
 |---|---|

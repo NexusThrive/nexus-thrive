@@ -1,6 +1,6 @@
 # V10 — Resultados del cierre, por etapa
 
-Informe acumulado de las etapas del [plan de cierre](V10-plan-de-cierre.md). Cada etapa añade una sección: un commit principal, una verificación completa y los problemas encontrados. Decisiones asociadas: [`V10-decisiones.md`](V10-decisiones.md) §8. Rama local `chore/HU-esquema-prisma-modular-01`, sin push, PR, merge ni despliegue.
+Informe acumulado de las etapas del [plan de cierre](V10-plan-de-cierre.md). Cada etapa añade una sección: un commit principal, una verificación completa y los problemas encontrados. Decisiones asociadas: [`V10-decisiones.md`](../decisions/V10-decisiones.md) §8. Rama local `chore/HU-esquema-prisma-modular-01`, sin push, PR, merge ni despliegue.
 
 ## Avance hacia la meta
 
@@ -46,7 +46,7 @@ La raíz de `lib/` pasó de 66 entradas (inicio de M5) a **11**: las nueve área
 
 ### Excepción temporal: ciclo `inventory ⇄ sales`
 
-Al juntar los módulos aparece un ciclo entre módulos que la prueba de M3 («los módulos de business no forman ciclos entre sí») rechazó. El dueño aceptó la **excepción temporal y puntual** (opción A): ver [`V10-decisiones.md`](V10-decisiones.md) §8.1. Resumen: cuatro dependencias exactas (tres `inventory → sales`, de valor y de tipo, y una `sales → inventory` de valor); ya identificada en M3; **deuda arquitectónica pendiente, no una solución**; la prueba permite solo ese par y exige que sus dependencias sean exactamente esas.
+Al juntar los módulos aparece un ciclo entre módulos que la prueba de M3 («los módulos de business no forman ciclos entre sí») rechazó. El dueño aceptó la **excepción temporal y puntual** (opción A): ver [`V10-decisiones.md`](../decisions/V10-decisiones.md) §8.1. Resumen: cuatro dependencias exactas (tres `inventory → sales`, de valor y de tipo, y una `sales → inventory` de valor); ya identificada en M3; **deuda arquitectónica pendiente, no una solución**; la prueba permite solo ese par y exige que sus dependencias sean exactamente esas.
 
 ### Problemas encontrados
 
@@ -211,11 +211,11 @@ Dejó la raíz de `lib/` con **solo lo importante** y escribió la documentació
 
 | Documento | Estado |
 |---|---|
-| [`V10-arquitectura-objetivo.md`](V10-arquitectura-objetivo.md) | Actualizado: estructura final, estado por área, reparto de las últimas piezas y deuda conocida |
+| [`V10-arquitectura-objetivo.md`](../wiki/03-arquitectura/arquitectura-objetivo.md) | Actualizado: estructura final, estado por área, reparto de las últimas piezas y deuda conocida |
 | [`V10-cierre-resultados.md`](V10-cierre-resultados.md) | Este informe, completo hasta Z |
-| [`guia-implementacion-lib.md`](guia-implementacion-lib.md) | **Nuevo.** Regla fundamental, las diez preguntas previas, árbol de decisión de área, Core o Business, cuándo crear/reutilizar/separar/fusionar/mover/retirar, sectores, integraciones, pruebas, ciclos, aislamiento, contratos, referencias indirectas (con los incidentes reales de V10) y verificaciones |
-| [`reglas-dependencias.md`](reglas-dependencias.md) | **Nuevo.** Matriz, reglas R1 a R3, dependencias internas por área, mecanismos para invertir dependencias, excepciones vigentes y límites del verificador |
-| [`../guias/nueva-funcionalidad.md`](../guias/nueva-funcionalidad.md) | Rutas actualizadas a la estructura V10 y enlace a la guía nueva |
+| [`guia-implementacion-lib.md`](../wiki/03-arquitectura/guia-implementacion-lib.md) | **Nuevo.** Regla fundamental, las diez preguntas previas, árbol de decisión de área, Core o Business, cuándo crear/reutilizar/separar/fusionar/mover/retirar, sectores, integraciones, pruebas, ciclos, aislamiento, contratos, referencias indirectas (con los incidentes reales de V10) y verificaciones |
+| [`reglas-dependencias.md`](../wiki/03-arquitectura/reglas-dependencias.md) | **Nuevo.** Matriz, reglas R1 a R3, dependencias internas por área, mecanismos para invertir dependencias, excepciones vigentes y límites del verificador |
+| [`../guias/nueva-funcionalidad.md`](../wiki/09-desarrollo/nueva-funcionalidad.md) | Rutas actualizadas a la estructura V10 y enlace a la guía nueva |
 | `DESIGN.md`, `docs/design/movimiento.md`, `components/docs/introduccion.mdx` | Ruta de `ui-rules.test.ts` actualizada |
 
 ### 7.5 Problemas encontrados y decisiones de alcance
@@ -223,7 +223,7 @@ Dejó la raíz de `lib/` con **solo lo importante** y escribió la documentació
 1. **`onboarding-db` NO fue a Core (ajuste al plan).** El plan (§10) mandaba `onboarding/onboarding-db` a `core/tenancy`, pero importa `seedAccounting` de `domains/finance/accounting`, y Core no puede importar Domains (R3). Se quedó en `experience/onboarding`, donde ya estaba y donde sí puede importar Domains; solo lo usa `app/onboarding/actions.ts`. La mutación Z2 demuestra que ponerlo en Core rompería la regla.
 2. **Subcarpeta `core/tenancy/onboarding/`.** Los cuatro archivos de reglas del alta (`types`, `validation`, `presets`, `slug`) no se mezclaron con los de `core/tenancy` para evitar nombres ambiguos como `types.ts`; forman una subcarpeta con cuatro archivos relacionados (criterio E-2).
 3. **Pruebas de etapas anteriores que describían estados intermedios** («`lib/admin` conserva dos archivos», «`navigation` solo conserva `nav-types`», «la raíz conserva cuatro archivos»): actualizadas al estado final sin debilitarlas.
-4. **Guía existente desfasada.** `docs/guias/nueva-funcionalidad.md` citaba rutas anteriores incluso a V10 (por ejemplo `lib/business/permissions.ts`); se actualizaron y se enlazó la guía nueva.
+4. **Guía existente desfasada.** `docs/wiki/09-desarrollo/nueva-funcionalidad.md` citaba rutas anteriores incluso a V10 (por ejemplo `lib/business/permissions.ts`); se actualizaron y se enlazó la guía nueva.
 5. **El commit de la etapa Z incluye, por error mío, un cambio de `app/icon.svg` que no era de V10** (el dueño quitó el rectángulo negro de fondo del SVG mientras se trabajaba y mi `git add -A` lo recogió). No cambia ninguna regla ni comportamiento de `lib/`; no se reescribió el historial. Los cambios de favicon y manifiesto posteriores van en su propio commit.
 6. **No se tocaron** (por reglas): los comentarios de `prisma/schema/**` que nombran rutas antiguas, los informes históricos E0 a E9 y los demás documentos de `docs/` y `.docs/` (pasada P-12).
 

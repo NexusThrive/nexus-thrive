@@ -6,4 +6,7 @@ Entornos, Clerk, SQL de producción y operación.
 
 ## Contenido
 
-_(el índice se completa a medida que se consolidan las páginas)_
+- [Clerk en producción · app.nexusthrive.com.co](clerk-produccion.md)
+- [Flujo de DevOps](devops.md)
+- [Migrar producción sin copiar y pegar](prod-sql-automatizacion.md)
+- [Orden de ejecución del SQL de producción (Supabase)](prod-sql-orden.md)

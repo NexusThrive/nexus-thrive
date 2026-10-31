@@ -6,4 +6,6 @@ Convenciones, cómo añadir funcionalidad y el equipo de ingeniería.
 
 ## Contenido
 
-_(el índice se completa a medida que se consolidan las páginas)_
+- [Arquitectura del equipo de ingeniería](equipo-ingenieria.md)
+- [Cómo agregar una funcionalidad](nueva-funcionalidad.md)
+- [Versionado y entregas](versionado.md)

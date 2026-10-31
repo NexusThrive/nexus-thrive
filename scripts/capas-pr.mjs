@@ -1,4 +1,4 @@
-// Genera, desde las casillas de .docs/capas marcadas `_(PR-NN)_`, la tabla y la
+// Genera, desde las casillas de docs/wiki/04-modulos/capas marcadas `_(PR-NN)_`, la tabla y la
 // ficha de cada PR en .docs/hoja-de-ruta-implementacion.md (entre
 // <!-- pr:inicio --> y <!-- pr:fin -->). Capas, niveles y etiquetas salen de
 // las casillas; lo demás, de scripts/capas-pr.data.mjs.
@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url";
 import { HITOS, PRS } from "./capas-pr.data.mjs";
 
 const root = resolve(fileURLToPath(import.meta.url), "../..");
-const capasDir = join(root, ".docs/capas");
+const capasDir = join(root, "docs/wiki/04-modulos/capas");
 const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"];
 
 /** pr → [{ sub, nivel, texto, hecho }] */

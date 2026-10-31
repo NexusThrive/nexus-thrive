@@ -1,4 +1,4 @@
-// Plan de PR sobre las capas. Cada PR cierra casillas de .docs/capas marcadas
+// Plan de PR sobre las capas. Cada PR cierra casillas de docs/wiki/04-modulos/capas marcadas
 // en su README con `_(PR-NN)_`; de ahí salen sus capas, niveles y etiquetas.
 // `node scripts/capas-pr.mjs --write` regenera la sección 3 de
 // .docs/hoja-de-ruta-implementacion.md.

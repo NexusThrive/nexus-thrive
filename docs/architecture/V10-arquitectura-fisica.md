@@ -520,7 +520,7 @@ M0 → M1 → M2 → M6a/b/e → M3 → M4 → M5 → M6c/d → M7. M2 y M3 son 
 
 ## 8. Riesgos y decisiones que necesitan aprobación
 
-> **Nota de numeración (añadida tras la autorización).** Los «D-V10-n» de esta tabla son las **preguntas del diseño**; la autorización aprobó una lista D-V10-1…9 con otro enunciado en 3, 4, 6, 7 y 8. La correspondencia definitiva (preguntas = Q-n, autorización = D-V10-n, revisión = P-n) está en [`V10-decisiones.md`](V10-decisiones.md). La tabla de abajo se conserva tal como se escribió.
+> **Nota de numeración (añadida tras la autorización).** Los «D-V10-n» de esta tabla son las **preguntas del diseño**; la autorización aprobó una lista D-V10-1…9 con otro enunciado en 3, 4, 6, 7 y 8. La correspondencia definitiva (preguntas = Q-n, autorización = D-V10-n, revisión = P-n) está en [`V10-decisiones.md`](../decisions/V10-decisiones.md). La tabla de abajo se conserva tal como se escribió.
 
 | # | Decisión | Opciones | Recomendación |
 |---|---|---|---|

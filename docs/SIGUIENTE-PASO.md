@@ -5,12 +5,12 @@ Estado al 2026-10-30. Este archivo existe para retomar el trabajo sin depender d
 ## Dónde estamos
 
 - El equipo de ingeniería son **subagentes nativos** del plugin `plugins/product-team` (43 agentes, una skill por rol,
-  más el Steward). Se retiró el núcleo Python. Decisión: [ADR 0013](ingenieria/adr/0013-subagentes-nativos-en-plugin.md)
-  (propuesta, pendiente de aceptación humana) y [ADR 0012](ingenieria/adr/0012-agente-steward.md) (Steward).
+  más el Steward). Se retiró el núcleo Python. Decisión: [ADR 0013](decisions/ingenieria/0013-subagentes-nativos-en-plugin.md)
+  (propuesta, pendiente de aceptación humana) y [ADR 0012](decisions/ingenieria/0012-agente-steward.md) (Steward).
 - Quedan **abiertos a propósito** los dos PR de restaurante, que son el siguiente trabajo:
   - **Investigación de Colega Menus** (`NexusRestaurant/`): arquitectura observada, mapa del panel, módulos, modelo de
     datos inferido y propuesta de integración hueco por hueco (RST-3 a RST-9), con decisiones D1–D6.
-  - **Arquitectura Core, compartido y rubros** (`.docs/capas/ARQUITECTURA-CORE-Y-RUBROS.md`): tres anillos, reglas de
+  - **Arquitectura Core, compartido y rubros** (`docs/wiki/04-modulos/capas/ARQUITECTURA-CORE-Y-RUBROS.md`): tres anillos, reglas de
     dependencia F1–F7, fases F0–F9 y decisiones D-1 a D-8.
 
 ## Qué sigue, en orden
@@ -31,10 +31,10 @@ Estado al 2026-10-30. Este archivo existe para retomar el trabajo sin depender d
 | Qué | Dónde |
 |---|---|
 | 7 puntos del criterio del dueño sin llenar: sin ellos el Steward solo pregunta | `docs/ingenieria/steward/criterios.md` §P |
-| 70 casillas `[x]` sin la nota «hecho: dónde» | `.docs/capas` (regla en `.docs/capas/README.md`) |
-| 2 casillas ambiguas de V/02: «Planes de suscripción» (línea 73) y «Implementado en la rama actual» (línea 79) | `.docs/capas/V-Ventas-Digitales-Comercio-y-Pagos/02-Suscripciones-y-Cobros-Recurrentes/README.md` |
+| 70 casillas `[x]` sin la nota «hecho: dónde» | `docs/wiki/04-modulos/capas` (regla en `docs/wiki/04-modulos/capas/README.md`) |
+| 2 casillas ambiguas de V/02: «Planes de suscripción» (línea 73) y «Implementado en la rama actual» (línea 79) | `docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/02-Suscripciones-y-Cobros-Recurrentes/README.md` |
 | NotebookLM (Gemini Notebook): investigación diferida | [`PENDIENTES.md` §7](PENDIENTES.md) |
-| Aceptar o rechazar los ADR 0012 y 0013 | `docs/ingenieria/adr/` |
+| Aceptar o rechazar los ADR 0012 y 0013 | `docs/decisions/ingenieria/` |
 | Unificar los 4 agentes heredados con `backend-engineer`, `frontend-engineer`, `qa-engineer` y `senior-reviewer` | `plugins/product-team/agents/` |
 | Decidir si se reescribe el historial de git para quitar `.tools/` (~195 MB) | ver el PR «deja de versionar .tools» |
 

@@ -1,6 +1,6 @@
 ## Qué cambia y por qué
 
-<!-- Una o dos frases. Enlaza el pendiente o la capa (.docs/) si aplica. -->
+<!-- Una o dos frases. Enlaza el pendiente o la capa (docs/wiki/04-modulos/capas/) si aplica. -->
 
 ## Qué se probó
 

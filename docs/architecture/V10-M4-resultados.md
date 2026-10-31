@@ -2,7 +2,7 @@
 
 Ejecutado en la rama local `chore/HU-esquema-prisma-modular-01`, a partir de `c5b6502` y bajo la autorización de M4 (2026-10-31). Sin push, PR, merge ni despliegue.
 **Solo M4.** M5–M8, `SectorView`, D-V10-9, `hasMemberAccess()`, la auditoría (M6), `tenant/db.ts`, `lib/construction`, el enum de Prisma y las migraciones no se tocaron.
-Fuente de las decisiones: [`V10-decisiones.md`](V10-decisiones.md).
+Fuente de las decisiones: [`V10-decisiones.md`](../decisions/V10-decisiones.md).
 
 ## 1. Resumen ejecutivo
 
@@ -132,7 +132,7 @@ Sin cambios: `git status` y `git diff c5b6502..HEAD` vacíos en `prisma/` y `mig
 2. **Criterio de aceptación aclarado:** las tres referencias de `app/[tenant]` a `benefits-db` se mantienen (opción A, C-2); ver §6.
 3. **`createTenant` dentro de `platform/admin`:** es aprovisionamiento; moverlo a Core es una decisión futura.
 4. **`validators.ts` mezcla** `validateContact` (cuentas) con los de equipo; partirlo es una pasada futura.
-5. **Documentación viva con rutas antiguas** (pasada documental independiente, P-12): `docs/guias/pruebas.md`, `docs/PENDIENTES.md`, `docs/nexus-architecture/*`, `docs/product/contexto-dominio.md`, `.docs/…`, dos scripts SQL de producción (`docs/prod-sql/*`, no se tocan) y un comentario en `prisma/schema/core/team.prisma` (Prisma no se modifica).
+5. **Documentación viva con rutas antiguas** (pasada documental independiente, P-12): `docs/wiki/10-pruebas-y-calidad/pruebas.md`, `docs/PENDIENTES.md`, `docs/nexus-architecture/*`, `docs/product/contexto-dominio.md`, `.docs/…`, dos scripts SQL de producción (`docs/prod-sql/*`, no se tocan) y un comentario en `prisma/schema/core/team.prisma` (Prisma no se modifica).
 6. **Ramas paralelas:** cualquier rama que importe `@/lib/ops/…`, `@/lib/benefits/…` o `@/lib/admin/db` tendrá que reaplicar el codemod; `integracion/local-revision` sigue sin integrarse (P-13).
 7. **Trabajo independiente fuera de V10, registrado y no iniciado (C-3):** auditoría de aislamiento por negocio y revisión de las guardas de `app/admin`. La prueba `lib/tenant/tenant-scope.test.ts` se mantiene sin debilitar. Alcance anotado en `V10-decisiones.md` §6.
 

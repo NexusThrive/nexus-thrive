@@ -6,7 +6,7 @@ updated: 2026-10-25
 
 # D · Checklist de RESTAURANTE
 
-**Hallazgo principal:** el restaurante **no tiene funciones propias construidas**. El mapa de capacidades lo dice: «Restaurantes: mesas, comandas y recetas — ⬜ Falta; el rubro existe sin pantallas propias» (`.docs/mapa-de-capacidades.md`). No hay modelos de mesa, comanda, cocina ni receta en `prisma/contract.prisma`. Hoy un restaurante usa funciones generales: `orders` (marcada `PLANNED`), POS, inventario, compras de insumos y finanzas (`distribucion-por-rubro.md` §4). Las filas `RST-n` son etiquetas de esta tabla; no sustituyen identificadores.
+**Hallazgo principal:** el restaurante **no tiene funciones propias construidas**. El mapa de capacidades lo dice: «Restaurantes: mesas, comandas y recetas — ⬜ Falta; el rubro existe sin pantallas propias» (`docs/wiki/02-producto/mapa-de-capacidades.md`). No hay modelos de mesa, comanda, cocina ni receta en `prisma/contract.prisma`. Hoy un restaurante usa funciones generales: `orders` (marcada `PLANNED`), POS, inventario, compras de insumos y finanzas (`distribucion-por-rubro.md` §4). Las filas `RST-n` son etiquetas de esta tabla; no sustituyen identificadores.
 
 | ID | Capacidad | Categoría | Estado verificado | Decisión | Dependencias | Evidencia | Criterio de aceptación |
 |---|---|---|---|---|---|---|---|
