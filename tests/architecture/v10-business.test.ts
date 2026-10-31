@@ -125,5 +125,17 @@ describe("movimientos menores de M3", () => {
     expect(classify("lib/foundation/countries.ts", layers)).toMatchObject({ layer: "foundation", byPath: true });
     expect(parseImports(read("lib/foundation/countries.ts"))).toEqual([]);
   });
+
+  test("inventory.ts (reglas de existencias) vive en el módulo de inventario y business ya no lo tiene", () => {
+    expect(exists("lib/inventory/inventory.ts")).toBe(true);
+    expect(exists("lib/business/inventory.ts")).toBe(false);
+    expect(classify("lib/inventory/inventory.ts", layers)?.layer).toBe("business");
+  });
+
+  test("lib/business solo contiene subcarpetas de módulo (y la prueba que cruza varios módulos)", () => {
+    const loose = readdirSync(join(ROOT, "lib/business")).filter((n) => statSync(join(ROOT, "lib/business", n)).isFile());
+    expect(loose).toEqual(["business.test.ts"]);
+    expect(readdirSync(join(ROOT, "lib/business")).filter((n) => statSync(join(ROOT, "lib/business", n)).isDirectory()).sort()).toEqual(["catalog", "customers", "sales", "scheduling"]);
+  });
 });
 
