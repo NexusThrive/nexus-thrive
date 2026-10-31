@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { canGovernBudget, requireTenantContext } from "@/lib/tenant/context";
+import { canGovernBudget, requireTenantContext } from "@/lib/core/tenancy/context";
 import { ensureProjectContainers } from "@/lib/industry/construction/containers";
 import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 

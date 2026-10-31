@@ -10,7 +10,7 @@ import { KpiCard } from "@/components/molecules/kpi-card";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { followUpState, isActiveStage, LEAD_STAGES, pipelineSummary, stageMeta, type LeadStageValue } from "@/lib/platform/crm/crm-rules";
-import { formatUsdCents } from "@/lib/plans/pricing";
+import { formatUsdCents } from "@/lib/core/entitlements/pricing";
 import { moveLeadAction } from "../actions";
 import type { LeadRow } from "@/lib/platform/crm/leads";
 import LeadBoard, { LeadCard } from "./lead-board";

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { withShell } from "../../../../../.storybook/decorators";
-import type { PartyRow } from "@/lib/parties/parties-db";
+import type { PartyRow } from "@/lib/core/parties/parties-db";
 import type { OrderRow } from "@/lib/business/purchasing/purchases-db";
 import OrderDetailSheet from "./order-detail-sheet";
 import OrderSheet from "./order-sheet";

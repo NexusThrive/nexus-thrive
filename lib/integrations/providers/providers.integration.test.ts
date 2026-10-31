@@ -1,9 +1,9 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
-import { dispatchPending } from "@/lib/events/dispatcher";
-import { createEndpoint } from "@/lib/events/endpoints";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
+import { dispatchPending } from "@/lib/core/events/dispatcher";
+import { createEndpoint } from "@/lib/core/events/endpoints";
 import { connectProvider, disconnectProvider, listConnections } from "./connections";
 import { MAX_BODY_BYTES, processPendingProviderEvents, receiveProviderWebhook } from "./inbound";
 import { sandboxSignature } from "./sandbox";

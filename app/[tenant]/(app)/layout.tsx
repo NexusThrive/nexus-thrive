@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { rememberBusinessAction } from "./_actions/business";
-import { activeTenantWithModules, businessesOfMember, memberTheme } from "@/lib/tenant/membership";
-import { sortModules, isModule } from "@/lib/capabilities/modules";
+import { activeTenantWithModules, businessesOfMember, memberTheme } from "@/lib/core/tenancy/membership";
+import { sortModules, isModule } from "@/lib/core/capabilities/modules";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import { TenantShell } from "@/components/templates/tenant-shell";
 import { VerticalTermsProvider } from "./vertical-terms-context";
@@ -9,7 +9,7 @@ import TenantNotifications from "./_components/tenant-notifications";
 import ThemeSync from "./_components/theme-sync";
 import { cookies } from "next/headers";
 import { auth } from "@clerk/nextjs/server";
-import { createTenantDb } from "@/lib/tenant/db";
+import { createTenantDb } from "@/lib/core/tenancy/db";
 import { AppEntrySplash, SPLASH_COOKIE } from "@/components/organisms/app-entry-splash";
 
 /**

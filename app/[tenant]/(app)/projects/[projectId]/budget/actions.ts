@@ -1,14 +1,14 @@
 "use server";
 
 import { buildBudgetWorkbook } from "@/lib/industry/construction/budget-export";
-import { tenantLetterhead } from "@/lib/tenant/membership";
+import { tenantLetterhead } from "@/lib/core/tenancy/membership";
 import { revalidatePath } from "next/cache";
 import { decimalToMicro } from "@/lib/industry/construction/apu-engine";
 import type { ApuActivityDetail, ApuActivityRow, ProjectBudgetData } from "@/lib/industry/construction/shared";
 import {
   canGovernBudget,
   requireTenantContext,
-} from "@/lib/tenant/context";
+} from "@/lib/core/tenancy/context";
 import {
   validateAiuConfig,
   validateCreateBudgetItem,

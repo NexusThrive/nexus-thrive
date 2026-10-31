@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { decimalToMicro } from "@/lib/industry/construction/apu-engine";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 

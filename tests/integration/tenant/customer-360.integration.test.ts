@@ -11,7 +11,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { buildCustomer360, createTenantDb } from "@/lib/tenant/db";
+import { buildCustomer360, createTenantDb } from "@/lib/core/tenancy/db";
 import { getCustomer360Memberships } from "@/lib/industry/gym/memberships-repo";
 
 const TEST_URL = process.env.TEST_DATABASE_URL;

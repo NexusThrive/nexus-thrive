@@ -1,4 +1,4 @@
-import type { Customer360Payment } from "@/lib/tenant/db";
+import type { Customer360Payment } from "@/lib/core/tenancy/db";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { paymentMethodLabel } from "@/lib/foundation/kernel/payment-vocabulary";
 import { PaymentStatusPill } from "./status-pills";

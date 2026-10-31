@@ -1,5 +1,5 @@
 import { VERTICALS, isVertical, type VerticalValue } from "@/lib/core/sectors/verticals";
-import { MODULES, isModule, type ModuleValue } from "@/lib/capabilities/modules";
+import { MODULES, isModule, type ModuleValue } from "@/lib/core/capabilities/modules";
 import { validateSlug } from "@/lib/admin/catalogs";
 import {
   TEAM_SIZES,
@@ -7,7 +7,7 @@ import {
   type TeamSizeValue,
 } from "@/lib/onboarding/types";
 import { TAX_ID_PATTERN } from "@/lib/onboarding/validation";
-import { normalizeEmail } from "@/lib/auth/session-email";
+import { normalizeEmail } from "@/lib/core/auth/session-email";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

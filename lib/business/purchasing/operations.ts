@@ -3,7 +3,7 @@
  * y consultar una orden. Son de solo lectura.
  */
 import { z } from "zod";
-import { defineOperation, OperationError, type OperationDefinition } from "@/lib/operations/types";
+import { defineOperation, OperationError, type OperationDefinition } from "@/lib/core/operations/types";
 
 const status = z.enum(["DRAFT", "ORDERED", "PARTIAL", "RECEIVED", "CANCELED"]);
 const orderSummary = z.object({ id: z.string(), code: z.string(), status, supplierName: z.string(), total: z.number(), expectedDate: z.string().nullable(), createdAt: z.string(), lineCount: z.number(), pendingUnits: z.number() });

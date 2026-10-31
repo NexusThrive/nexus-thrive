@@ -3,10 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { parseMuseumSettings } from "@/lib/industry/museum/museum";
 import { createTicketSale, payTicketSale, saveMuseumSettings, seedTicketTypes, voidTicketSale, type NewSale } from "@/lib/industry/museum/museum-db";
-import { canHandleCash, canManage } from "@/lib/auth/roles";
+import { canHandleCash, canManage } from "@/lib/core/auth/roles";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
-import { requireTenantContext } from "@/lib/tenant/context";
-import { logTenantAction } from "@/lib/tenant/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
 
 export type TicketResult = { ok: true; message?: string } | { ok: false; message: string };
 const DENIED: TicketResult = { ok: false, message: "Tu rol no permite esta acción." };

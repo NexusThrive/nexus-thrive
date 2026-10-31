@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createBenefitCode, expireBenefitTrial, redeemBenefit } from "@/lib/platform/benefits/benefits-db";
 import { saveCustomer } from "@/lib/business/customers/customers-db";
-import { seatLimit } from "@/lib/tenant/team-db";
+import { seatLimit } from "@/lib/core/tenancy/team-db";
 
 /**
  * Integración del canje de accesos:

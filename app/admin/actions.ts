@@ -1,8 +1,8 @@
 "use server";
 
 import { isVertical } from "@/lib/core/sectors/verticals";
-import { checkModuleToggle } from "@/lib/plans/compat";
-import { loadPricingConfig } from "@/lib/plans/settings";
+import { checkModuleToggle } from "@/lib/core/entitlements/compat";
+import { loadPricingConfig } from "@/lib/core/entitlements/settings";
 
 import { clerkClient } from "@clerk/nextjs/server";
 import { headers } from "next/headers";

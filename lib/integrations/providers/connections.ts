@@ -1,7 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { db } from "@/prisma/db";
-import { msOf, toInstant } from "@/lib/events/instant";
-import { decryptSecret, encryptSecret } from "@/lib/events/secrets";
+import { msOf, toInstant } from "@/lib/core/events/instant";
+import { decryptSecret, encryptSecret } from "@/lib/core/events/secrets";
 import { adapterFor } from "./registry";
 import type { Environment, ProviderCredentials } from "./types";
 

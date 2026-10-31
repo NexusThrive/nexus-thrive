@@ -1,5 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
-import { readAttachmentFor } from "@/lib/files/stored-files";
+import { readAttachmentFor } from "@/lib/core/files/stored-files";
 import { staffCanViewAccounts } from "@/lib/platform/team/access";
 
 /**

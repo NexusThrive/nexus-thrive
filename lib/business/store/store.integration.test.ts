@@ -3,7 +3,7 @@ import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { confirmIntent } from "@/lib/domains/finance/payments/intents-db";
 import { saveSite } from "@/lib/experience/site/site-db";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { cancelOrder, listOrders, markAbandonedOrders, placeOrder } from "./store-db";
 
 /** Tienda en línea de punta a punta (pedido → pago → stock → documento → aviso) contra Postgres real y DOS negocios. */

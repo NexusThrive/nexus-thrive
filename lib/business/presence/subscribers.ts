@@ -1,4 +1,4 @@
-import type { EventSubscriber } from "@/lib/events/dispatcher";
+import type { EventSubscriber } from "@/lib/core/events/dispatcher";
 import { refreshPresence } from "./pillars-db";
 
 /**

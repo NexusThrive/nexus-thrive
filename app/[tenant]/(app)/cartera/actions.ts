@@ -2,11 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { receiveInvoicePayment } from "@/lib/business/sales/money-service";
-import { can } from "@/lib/auth/permissions";
+import { can } from "@/lib/core/auth/permissions";
 import { paySupplierInvoice } from "@/lib/domains/finance/receivables/receivables-db";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
-import { logTenantAction } from "@/lib/tenant/audit";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type CarteraResult = { ok: true; message: string } | { ok: false; message: string };
 const methodOk = (m: string) => PAYMENT_METHODS.some((x) => x.value === m);

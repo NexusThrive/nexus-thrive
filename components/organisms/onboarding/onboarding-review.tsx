@@ -2,10 +2,10 @@ import { Building2, Link2, MapPin, MapPinned, Pencil, Receipt, Store, User, User
 import type { ReactNode } from "react";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { VERTICAL_LABELS, type VerticalValue } from "@/lib/core/sectors/verticals";
-import { MODULE_LABELS, type ModuleValue } from "@/lib/capabilities/modules";
+import { MODULE_LABELS, type ModuleValue } from "@/lib/core/capabilities/modules";
 import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
-import type { Billing, PlanKey } from "@/lib/plans/catalog";
-import { formatUsdCents, type Quote } from "@/lib/plans/pricing";
+import type { Billing, PlanKey } from "@/lib/core/entitlements/catalog";
+import { formatUsdCents, type Quote } from "@/lib/core/entitlements/pricing";
 
 export type ReviewData = {
   tenantType: "INDIVIDUAL" | "COMPANY" | null;

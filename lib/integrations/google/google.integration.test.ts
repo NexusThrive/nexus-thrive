@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { presenceV2 } from "@/lib/business/presence/pillars-db";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { connectGoogle, disconnectGoogle, listingView, syncGoogle } from "./google-db";
 
 /** Ficha de Google contra Postgres real y DOS negocios, con la API de Google simulada. */

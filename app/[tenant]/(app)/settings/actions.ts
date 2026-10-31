@@ -1,16 +1,16 @@
 "use server";
 
-import { requireTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { revalidatePath } from "next/cache";
-import { moduleRulesOf, setTenantModule, slugTakenByOther, updateTenantProfile } from "@/lib/tenant/settings-db";
-import { createTenantDb } from "@/lib/tenant/db";
+import { moduleRulesOf, setTenantModule, slugTakenByOther, updateTenantProfile } from "@/lib/core/tenancy/settings-db";
+import { createTenantDb } from "@/lib/core/tenancy/db";
 import { isVertical } from "@/lib/core/sectors/verticals";
-import { isModule } from "@/lib/capabilities/modules";
+import { isModule } from "@/lib/core/capabilities/modules";
 import { validateSlug } from "@/lib/admin/catalogs";
-import { checkModuleToggle } from "@/lib/plans/compat";
-import { loadPricingConfig } from "@/lib/plans/settings";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
-import { logTenantAction } from "@/lib/tenant/audit";
+import { checkModuleToggle } from "@/lib/core/entitlements/compat";
+import { loadPricingConfig } from "@/lib/core/entitlements/settings";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
 
 type TenantDb = ReturnType<typeof createTenantDb>;
 

@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { customerProfileExtras } from "@/lib/business/customers/customers-db";
-import { tenantWithModules } from "@/lib/tenant/membership";
-import { buildCustomer360, createTenantDb } from "@/lib/tenant/db";
+import { tenantWithModules } from "@/lib/core/tenancy/membership";
+import { buildCustomer360, createTenantDb } from "@/lib/core/tenancy/db";
 import { getCustomer360Memberships } from "@/lib/industry/gym/memberships-repo";
 import { getVerticalTerms, hasMemberAccess } from "@/lib/core/sectors/terms";
 import { bmi, profileFor } from "@/lib/business/customers/customer-fields";
@@ -22,7 +22,7 @@ import MembershipsTable from "./_components/memberships-table";
 import NotesPanel from "./_components/notes-panel";
 import AccessCard from "./_components/access-card";
 import { memberStatus } from "@/lib/industry/gym/gym-db";
-import { requirePageContext } from "@/lib/tenant/context";
+import { requirePageContext } from "@/lib/core/tenancy/context";
 
 /**
  * FICHA DEL CLIENTE 360° — expediente centralizado de un cliente.

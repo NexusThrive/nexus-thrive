@@ -3,7 +3,7 @@ import { toNumber } from "@/lib/format";
 import { db } from "@/prisma/db";
 import { buildFiscalPayload, fiscalKindOf } from "./payload";
 import type { FiscalKind, FiscalPayload } from "./port";
-import { checkWebhookUrl } from "@/lib/events/ssrf";
+import { checkWebhookUrl } from "@/lib/core/events/ssrf";
 import { decryptCredentials, encryptCredentials } from "@/lib/integrations/providers/connections";
 import { httpEInvoice } from "./http-provider";
 import { einvoicePort } from "./registry";

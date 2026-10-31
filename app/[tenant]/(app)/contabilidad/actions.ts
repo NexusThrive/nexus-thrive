@@ -4,9 +4,9 @@ import { revalidatePath } from "next/cache";
 import { closePeriod, createAccount, createCostCenter, reopenPeriod, seedAccounting, setAccountActive, setCostCenterActive, setRuleActive } from "@/lib/domains/finance/accounting/accounting-db";
 import { listEntries, setAccountingEnabled, verifyLedger } from "@/lib/domains/finance/accounting/ledger-db";
 import { REPORTS, buildReport, ledgerRows, type ReportKind, type ReportResult } from "@/lib/domains/finance/accounting/reports-db";
-import { can } from "@/lib/auth/permissions";
-import { logTenantAction } from "@/lib/tenant/audit";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { can } from "@/lib/core/auth/permissions";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type AccResult = { ok: true; message: string } | { ok: false; message: string };
 const DENIED: AccResult = { ok: false, message: "Solo el dueño o administración maneja la contabilidad." };

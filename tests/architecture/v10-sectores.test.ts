@@ -37,7 +37,7 @@ describe("catálogo de sectores en Core", () => {
   });
 
   test("los sectores solo importan Core y Foundation: ninguna industria, negocio ni finanzas", () => {
-    const allowed = /^(\.\/|@\/lib\/capabilities\/|@\/lib\/core\/sectors\/)/;
+    const allowed = /^(\.\/|@\/lib\/core\/capabilities\/|@\/lib\/core\/sectors\/)/;
     for (const f of SECTOR_FILES) {
       const bad = importsOf(f).filter((s: string) => !allowed.test(s));
       expect(bad, f).toEqual([]);
@@ -47,7 +47,7 @@ describe("catálogo de sectores en Core", () => {
   test("hojas sin ciclo: verticals y lexicon no importan nada de Nexus; el registro de capacidades solo toma de ellas sus tipos", () => {
     expect(importsOf("lib/core/sectors/verticals.ts")).toEqual([]);
     expect(importsOf("lib/core/sectors/lexicon.ts").filter((s: string) => s.startsWith("@/"))).toEqual([]);
-    const fromRegistry = importsOf("lib/capabilities/registry.ts").filter((s: string) => s.startsWith("@/lib/core/sectors/"));
+    const fromRegistry = importsOf("lib/core/capabilities/registry.ts").filter((s: string) => s.startsWith("@/lib/core/sectors/"));
     expect(fromRegistry.sort()).toEqual(["@/lib/core/sectors/lexicon", "@/lib/core/sectors/verticals"]);
   });
 

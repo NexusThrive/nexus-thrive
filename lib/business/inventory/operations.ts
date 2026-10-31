@@ -4,7 +4,7 @@
  * `products-db` o `stock-service` bajo demanda.
  */
 import { z } from "zod";
-import { defineOperation, OperationError, type OperationDefinition } from "@/lib/operations/types";
+import { defineOperation, OperationError, type OperationDefinition } from "@/lib/core/operations/types";
 
 const productSummary = z.object({
   id: z.string(),

@@ -34,7 +34,7 @@ describe("lib/runtime es la raíz de composición", () => {
   });
 
   test("las ubicaciones anteriores ya no existen (no quedan duplicados ni reexportaciones)", () => {
-    for (const f of ["lib/operations/registry.ts", "lib/operations/registry.test.ts", "lib/api/runtime-deps.ts"]) {
+    for (const f of ["lib/operations/registry.ts", "lib/operations/registry.test.ts", "lib/api/runtime-deps.ts", "lib/core/operations/registry.ts", "lib/core/operations/registry.test.ts", "lib/core/api/runtime-deps.ts"]) {
       expect(existsSync(join(ROOT, f)), f).toBe(false);
     }
   });

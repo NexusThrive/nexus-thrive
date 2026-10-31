@@ -13,7 +13,7 @@ import { setAccountingEnabled } from "@/lib/domains/finance/accounting/ledger-db
 import { createDocument, documentView } from "@/lib/business/sales/documents-db";
 import { listInvoices } from "@/lib/business/sales/invoices-db";
 import { setFiscalEnabled } from "@/lib/integrations/einvoice/einvoice-db";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const normalize = (url: string | undefined) => (url ?? "").replace(/\?.*$/, "");

@@ -1,23 +1,23 @@
-import { consumptionFor } from "@/lib/usage/consumption-db";
+import { consumptionFor } from "@/lib/core/entitlements/consumption-db";
 import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
-import { tenantWithModules } from "@/lib/tenant/membership";
-import { createTenantDb } from "@/lib/tenant/db";
-import { listTeam, seatLimit } from "@/lib/tenant/team-db";
-import type { BusinessModel } from "@/lib/tenant/business-context";
-import { canManageTeam } from "@/lib/auth/roles";
+import { tenantWithModules } from "@/lib/core/tenancy/membership";
+import { createTenantDb } from "@/lib/core/tenancy/db";
+import { listTeam, seatLimit } from "@/lib/core/tenancy/team-db";
+import type { BusinessModel } from "@/lib/core/tenancy/business-context";
+import { canManageTeam } from "@/lib/core/auth/roles";
 import { paymentMethodLabel } from "@/lib/foundation/kernel/payment-vocabulary";
 import { getTenantAccess } from "@/lib/platform/benefits/benefits-db";
 import { type VerticalValue, VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
-import { MODULES, sortModules } from "@/lib/capabilities/modules";
+import { MODULES, sortModules } from "@/lib/core/capabilities/modules";
 import SettingsShell, {
   type PlanInfo,
   type ModuleState,
   type ProfileInitialValues,
   type SystemInfoItem,
 } from "./_components/settings-shell";
-import { requirePageContext } from "@/lib/tenant/context";
-import { roleLabel } from "@/lib/auth/roles";
+import { requirePageContext } from "@/lib/core/tenancy/context";
+import { roleLabel } from "@/lib/core/auth/roles";
 
 /**
  * Módulo de Ajustes del negocio (Server Component).

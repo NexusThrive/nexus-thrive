@@ -1,5 +1,5 @@
 /* Orden de capas: los estilos de Clerk van en "clerk", antes de las utilidades,
-   para que las clases de marca de lib/auth/clerk-appearance ganen. */
+   para que las clases de marca de lib/core/auth/clerk-appearance ganen. */
 @layer theme, base, clerk, components, utilities;
 
 @import "tailwindcss";

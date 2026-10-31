@@ -1,10 +1,10 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { acceptInvitesFor } from "@/lib/tenant/team-db";
-import { homeTenantFor } from "@/lib/tenant/membership";
+import { acceptInvitesFor } from "@/lib/core/tenancy/team-db";
+import { homeTenantFor } from "@/lib/core/tenancy/membership";
 import { findStaffByEmail, getStaffContext } from "@/lib/platform/team/access";
 import { StaffAccessNotice } from "@/components/molecules/staff-access-notice";
-import { verifiedEmailOf } from "@/lib/auth/session-email";
+import { verifiedEmailOf } from "@/lib/core/auth/session-email";
 
 /**
  * Callback post-login de Clerk: la ÚNICA puerta que decide a dónde va cada

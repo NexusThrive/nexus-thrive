@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { SignIn } from "@clerk/nextjs";
-import { clerkAppearance } from "@/lib/auth/clerk-appearance";
+import { clerkAppearance } from "@/lib/core/auth/clerk-appearance";
 
 export const metadata: Metadata = { title: "Iniciar sesión · NEXUS THRIVE" };
 

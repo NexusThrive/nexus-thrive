@@ -1,4 +1,4 @@
-import { emitEvent } from "@/lib/events/outbox";
+import { emitEvent } from "@/lib/core/events/outbox";
 import { db } from "@/prisma/db";
 import type { DbTransaction } from "@/lib/db-transaction";
 import { toNumber } from "@/lib/format";

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Mail, Phone } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
-import type { Customer360Profile, CustomerAccountStatus } from "@/lib/tenant/db";
+import type { Customer360Profile, CustomerAccountStatus } from "@/lib/core/tenancy/db";
 import { typeLabel, type Customer360Membership } from "@/lib/industry/gym/memberships";
 import { formatDateShort } from "@/lib/format";
 import type { VerticalTerms } from "@/lib/core/sectors/terms";

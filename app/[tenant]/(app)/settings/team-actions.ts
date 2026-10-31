@@ -1,10 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { BUSINESS_ROLES, canManageTeam, type BusinessRole } from "@/lib/auth/roles";
-import { activeOwners, createInvite, revokeInvite, seatLimit, setMemberActive, setMemberRole, updateMemberProfile, activeMemberWithEmail, memberRoleOf } from "@/lib/tenant/team-db";
-import { requireTenantContext } from "@/lib/tenant/context";
-import { logTenantAction } from "@/lib/tenant/audit";
+import { BUSINESS_ROLES, canManageTeam, type BusinessRole } from "@/lib/core/auth/roles";
+import { activeOwners, createInvite, revokeInvite, seatLimit, setMemberActive, setMemberRole, updateMemberProfile, activeMemberWithEmail, memberRoleOf } from "@/lib/core/tenancy/team-db";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
 
 export type TeamResult = { ok: true; message?: string } | { ok: false; message: string };
 const DENIED: TeamResult = { ok: false, message: "Solo el dueño o administración maneja el equipo." };

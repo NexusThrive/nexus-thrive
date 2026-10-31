@@ -6,7 +6,7 @@ import { recordIncomeNow, voidPayment } from "@/lib/business/sales/money-service
 import { moneyTransaction } from "@/lib/business/sales/money-service";
 import { applyStockMovement } from "@/lib/business/inventory/stock-service";
 import { sellCart, openTurn, createTerminal } from "@/lib/business/pos/pos-db";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { closePeriod } from "./accounting-db";
 import { listEntries, postEntry, setAccountingEnabled, verifyLedger } from "./ledger-db";
 

@@ -5,7 +5,7 @@ import { confirmIntent } from "@/lib/domains/finance/payments/intents-db";
 import { presenceV2 } from "@/lib/business/presence/pillars-db";
 import { saveSite } from "@/lib/experience/site/site-db";
 import { placeOrder } from "@/lib/business/store/store-db";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { attributionStats, createLead, createLink, createReview, growthReport, handleReview, listLinks, listReviews, reputationOf, resolveLink, setLinkActive } from "./growth-db";
 
 /** Atribución y reputación de punta a punta contra Postgres real y DOS negocios. */

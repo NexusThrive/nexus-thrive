@@ -11,7 +11,7 @@ import {
   type ProjectStatusValue,
 } from "@/lib/industry/construction/project-domain";
 import { type ProjectDetail } from "@/lib/industry/construction/shared";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import {
   projectHeaderToInput,
   validateCreateProject,

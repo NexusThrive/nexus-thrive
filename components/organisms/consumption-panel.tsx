@@ -1,5 +1,5 @@
 import { Alert } from "@/components/molecules/alert";
-import { needsAttention, type ConsumptionRow } from "@/lib/usage/consumption";
+import { needsAttention, type ConsumptionRow } from "@/lib/core/entitlements/consumption";
 
 const nf = new Intl.NumberFormat("es-CO");
 const STATE_TEXT = { ok: "", near: "Cerca del límite", over: "Límite alcanzado", unlimited: "Sin límite acordado" } as const;

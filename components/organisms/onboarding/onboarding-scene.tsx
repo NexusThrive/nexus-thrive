@@ -5,7 +5,7 @@ import { NMark } from "@/components/atoms/n-mark";
 import { Odometer } from "@/components/atoms/odometer";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { VERTICAL_LABELS, type VerticalValue } from "@/lib/core/sectors/verticals";
-import { MODULE_LABELS, type ModuleValue } from "@/lib/capabilities/modules";
+import { MODULE_LABELS, type ModuleValue } from "@/lib/core/capabilities/modules";
 import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
 import { cn } from "@/lib/utils";
 

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getStaffContext } from "@/lib/platform/team/access";
-import { loadPricingConfig } from "@/lib/plans/settings";
+import { loadPricingConfig } from "@/lib/core/entitlements/settings";
 import CatalogTabs from "./_components/catalog-tabs";
 
 export const metadata: Metadata = { title: "Planes y módulos · NEXUS Operations Center" };

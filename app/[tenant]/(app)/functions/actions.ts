@@ -2,15 +2,15 @@
 
 import { revalidatePath } from "next/cache";
 import { isVertical } from "@/lib/core/sectors/verticals";
-import { isModule } from "@/lib/capabilities/modules";
-import { CAPABILITIES } from "@/lib/capabilities/registry";
-import { toggleProblem } from "@/lib/functions/functions";
-import { tenantWithModules } from "@/lib/tenant/membership";
-import { checkModuleToggle } from "@/lib/plans/compat";
-import { loadPricingConfig } from "@/lib/plans/settings";
-import { moduleRulesOf, setTenantModule } from "@/lib/tenant/settings-db";
-import { logTenantAction } from "@/lib/tenant/audit";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { isModule } from "@/lib/core/capabilities/modules";
+import { CAPABILITIES } from "@/lib/core/capabilities/registry";
+import { toggleProblem } from "@/lib/core/capabilities/discovery/functions";
+import { tenantWithModules } from "@/lib/core/tenancy/membership";
+import { checkModuleToggle } from "@/lib/core/entitlements/compat";
+import { loadPricingConfig } from "@/lib/core/entitlements/settings";
+import { moduleRulesOf, setTenantModule } from "@/lib/core/tenancy/settings-db";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type FunctionResult = { ok: true; message: string } | { ok: false; message: string };
 

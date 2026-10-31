@@ -2,7 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { homeTenantFor } from "@/lib/tenant/membership";
+import { homeTenantFor } from "@/lib/core/tenancy/membership";
 import { normalizeBenefitCode } from "@/lib/platform/benefits/benefits";
 import { getBenefitByCode, redeemBenefit } from "@/lib/platform/benefits/benefits-db";
 import { setBenefitCookie } from "@/lib/platform/benefits/benefit-cookie";

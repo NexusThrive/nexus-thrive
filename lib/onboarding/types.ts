@@ -1,15 +1,15 @@
-import type { Billing, PlanKey } from "@/lib/plans/catalog";
+import type { Billing, PlanKey } from "@/lib/core/entitlements/catalog";
 
 /**
  * Tipos compartidos del onboarding adaptativo (auto-servicio).
  *
  * Seguros para importar desde el cliente y el servidor: no importan
  * `db` ni funciones server-only. Los catálogos (verticals, módulos,
- * recetas) viven en lib/core/sectors/ y lib/capabilities/modules.ts y se reutilizan tal cual.
+ * recetas) viven en lib/core/sectors/ y lib/core/capabilities/modules.ts y se reutilizan tal cual.
  */
 
 import type { VerticalValue } from "@/lib/core/sectors/verticals";
-import type { ModuleValue } from "@/lib/capabilities/modules";
+import type { ModuleValue } from "@/lib/core/capabilities/modules";
 
 export type { ModuleValue, VerticalValue };
 

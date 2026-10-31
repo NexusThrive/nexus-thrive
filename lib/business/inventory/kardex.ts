@@ -1,5 +1,5 @@
 import { db } from "@/prisma/db";
-import { msOf } from "@/lib/events/instant";
+import { msOf } from "@/lib/core/events/instant";
 import { toNumber } from "@/lib/format";
 import type { KardexLine } from "./stock-service";
 

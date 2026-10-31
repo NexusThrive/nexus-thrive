@@ -1,12 +1,12 @@
 "use server";
 
-import { requireTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { revalidatePath } from "next/cache";
 import { paymentRefTaken } from "@/lib/business/sales/finance-db";
 import { getAppBaseUrl } from "@/lib/app-url";
 import { formatCurrency } from "@/lib/format";
 import { receiptCode } from "@/lib/business/sales/invoice";
-import { canHandleCash } from "@/lib/auth/roles";
+import { canHandleCash } from "@/lib/core/auth/roles";
 import { addAttachment, addCashMovement, checkAttachment, currentCashSession, receiptToken } from "@/lib/business/sales/finance-db";
 import {
   validateExpense,

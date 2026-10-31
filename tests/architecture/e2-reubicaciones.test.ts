@@ -15,7 +15,7 @@ const exists = (rel: string) => existsSync(join(ROOT, rel));
 const exceptions = JSON.parse(read("docs/architecture/exceptions.json")) as { exceptions: { regla: string; etapa: string }[] };
 
 describe("permisos, roles y equipo viven en Core", () => {
-  test.each(["lib/auth/permissions.ts", "lib/auth/roles.ts", "lib/auth/permissions.test.ts", "lib/tenant/team-db.ts"])("existe %s", (file) => {
+  test.each(["lib/core/auth/permissions.ts", "lib/core/auth/roles.ts", "lib/core/auth/permissions.test.ts", "lib/core/tenancy/team-db.ts"])("existe %s", (file) => {
     expect(exists(file)).toBe(true);
   });
 
@@ -47,11 +47,11 @@ describe("gimnasio y museo viven en lib/industry/", () => {
 
 describe("dependencias invertidas", () => {
   test("el outbox de eventos (Core) no importa del servicio de dinero (Business)", () => {
-    expect(read("lib/events/outbox.ts")).not.toMatch(/@\/lib\/business\//);
+    expect(read("lib/core/events/outbox.ts")).not.toMatch(/@\/lib\/business\//);
   });
 
   test("lib/files (Core) no importa de la plataforma de NEXUS", () => {
-    expect(read("lib/files/stored-files.ts")).not.toMatch(/@\/lib\/ops\//);
+    expect(read("lib/core/files/stored-files.ts")).not.toMatch(/@\/lib\/ops\//);
   });
 
   test("las rutas de archivos entregan la compuerta del equipo NEXUS de forma explícita", () => {
@@ -60,7 +60,7 @@ describe("dependencias invertidas", () => {
   });
 
   test("escapeLike tiene una sola definición (Foundation)", () => {
-    for (const file of ["lib/platform/admin/db.ts", "lib/tenant/db.ts", "lib/industry/gym/gym-db.ts"]) {
+    for (const file of ["lib/platform/admin/db.ts", "lib/core/tenancy/db.ts", "lib/industry/gym/gym-db.ts"]) {
       expect(read(file), file).not.toMatch(/function escapeLike/);
     }
     expect(read("lib/sql-like.ts")).toMatch(/export function escapeLike/);

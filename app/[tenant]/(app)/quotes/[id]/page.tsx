@@ -14,7 +14,7 @@ import { formatCurrency, formatDateShort } from "@/lib/format";
 import { QuoteStatusBadge } from "@/components/molecules/quote-badges";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { PageHeader } from "@/components/molecules/page-header";
-import { requirePageContext } from "@/lib/tenant/context";
+import { requirePageContext } from "@/lib/core/tenancy/context";
 
 import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 /**

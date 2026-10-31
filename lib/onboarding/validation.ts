@@ -7,10 +7,10 @@
  * (colisión) se chequea aparte contra la base de datos.
  */
 
-import type { Billing, PlanKey } from "@/lib/plans/catalog";
-import { defaultPricingConfig, resolveModules, signupVerticals, type PricingConfig } from "@/lib/plans/pricing";
+import type { Billing, PlanKey } from "@/lib/core/entitlements/catalog";
+import { defaultPricingConfig, resolveModules, signupVerticals, type PricingConfig } from "@/lib/core/entitlements/pricing";
 import { isVertical, type VerticalValue } from "@/lib/core/sectors/verticals";
-import { isModule, sortModules, type ModuleValue } from "@/lib/capabilities/modules";
+import { isModule, sortModules, type ModuleValue } from "@/lib/core/capabilities/modules";
 import {
   isOnboardingTenantType,
   isTeamSize,

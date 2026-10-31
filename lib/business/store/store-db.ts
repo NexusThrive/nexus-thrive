@@ -1,4 +1,4 @@
-import { emitEvent } from "@/lib/events/outbox";
+import { emitEvent } from "@/lib/core/events/outbox";
 import { toNumber } from "@/lib/format";
 import { paymentGatewayPort } from "./payment-gateway-port";
 import { db } from "@/prisma/db";

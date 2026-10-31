@@ -10,7 +10,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 import { createConstructionDb } from "@/lib/industry/construction/construction-db";
-import { createTenantDb } from "@/lib/tenant/db";
+import { createTenantDb } from "@/lib/core/tenancy/db";
 
 const ROOT = join(import.meta.dirname, "..", "..");
 const CONSTRUCTION_KEYS = ["apu", "budgets", "fieldLog", "lean", "progress", "projectHeaders", "projectQuotes", "projects", "quotes", "reports"];
@@ -50,8 +50,8 @@ describe("createTenantDb (Core)", () => {
     expect(Object.keys(createTenantDb("negocio-a"))).not.toContain("memberships");
   });
 
-  test("lib/tenant/db.ts no importa construcción ni el gimnasio", () => {
-    const source = readFileSync(join(ROOT, "lib/tenant/db.ts"), "utf8");
+  test("lib/core/tenancy/db.ts no importa construcción ni el gimnasio", () => {
+    const source = readFileSync(join(ROOT, "lib/core/tenancy/db.ts"), "utf8");
     expect(source).not.toMatch(/from\s+["']@\/lib\/industry\/construction\//);
     expect(source).not.toMatch(/from\s+["']@\/lib\/industry\//);
   });

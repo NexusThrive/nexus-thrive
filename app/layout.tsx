@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { ClerkProvider } from "@clerk/nextjs";
-import { clerkLocalization, clerkProviderAppearance } from "@/lib/auth/clerk-appearance";
+import { clerkLocalization, clerkProviderAppearance } from "@/lib/core/auth/clerk-appearance";
 import { fontVariables } from "@/lib/experience/fonts";
 import { prefsInitScript, themeInitScript } from "@/lib/init-scripts";
 import { MotionProvider } from "@/components/providers/motion-provider";

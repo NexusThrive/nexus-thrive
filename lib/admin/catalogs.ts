@@ -1,6 +1,6 @@
 /**
  * Catálogos de la plataforma que no son de sectores ni de módulos: los medios de pago del alta y las reglas de los identificadores
- * (slugs) de un negocio. Los sectores y su vocabulario viven en `lib/core/sectors/`; los módulos, en `lib/capabilities/modules.ts`.
+ * (slugs) de un negocio. Los sectores y su vocabulario viven en `lib/core/sectors/`; los módulos, en `lib/core/capabilities/modules.ts`.
  */
 
 /**

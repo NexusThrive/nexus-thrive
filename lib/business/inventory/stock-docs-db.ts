@@ -1,6 +1,6 @@
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
-import { msOf, toInstant } from "@/lib/events/instant";
+import { msOf, toInstant } from "@/lib/core/events/instant";
 import { moneyTransaction } from "@/lib/business/sales/money-service";
 import { applyStockMovement, StockError } from "./stock-service";
 import { countCode, countSummary, suggestedOrder, transferCode, validateLevels, validateTransfer, type CountStatus } from "./stock-docs";

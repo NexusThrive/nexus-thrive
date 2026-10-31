@@ -3,7 +3,7 @@ import { db } from "@/prisma/db";
 import { formatDateShort, toNumber } from "@/lib/format";
 import { monthRangeBogota, resolveMonthYear } from "@/lib/bogota-month";
 import { escapeLike } from "@/lib/sql-like";
-import type { Customer360Contribution, CustomerTimelineEvent } from "@/lib/tenant/db";
+import type { Customer360Contribution, CustomerTimelineEvent } from "@/lib/core/tenancy/db";
 import {
   EXPIRING_WINDOW_DAYS,
   MEMBERSHIP_STATUSES,

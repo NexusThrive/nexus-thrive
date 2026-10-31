@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { ProviderUnavailable, httpEInvoice } from "./http-provider";
 import type { FiscalPayload } from "./port";
 
-vi.mock("@/lib/events/ssrf", async (orig) => ({ ...(await orig<typeof import("@/lib/events/ssrf")>()), resolvesPublic: async (h: string) => h !== "interno.example.com" }));
+vi.mock("@/lib/core/events/ssrf", async (orig) => ({ ...(await orig<typeof import("@/lib/core/events/ssrf")>()), resolvesPublic: async (h: string) => h !== "interno.example.com" }));
 
 const payload = { code: "V-000042", total: 119_000 } as FiscalPayload;
 const reply = (status: number, body: unknown) => (async () => new Response(typeof body === "string" ? body : JSON.stringify(body), { status })) as unknown as typeof fetch;

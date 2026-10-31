@@ -1,6 +1,6 @@
 "use server";
 
-import { requireTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { auth } from "@clerk/nextjs/server";
 
 import { createConstructionDb } from "@/lib/industry/construction/construction-db";

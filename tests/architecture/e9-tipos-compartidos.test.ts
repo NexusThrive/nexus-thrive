@@ -11,7 +11,7 @@ import { describe, expect, test } from "vitest";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore el verificador es un .mjs sin tipos
 import { classify, loadJson } from "../../scripts/check-layers.mjs";
-import { modulesForRoute as fromCore } from "@/lib/capabilities/route-modules";
+import { modulesForRoute as fromCore } from "@/lib/core/capabilities/route-modules";
 import { modulesForRoute as fromNav } from "@/lib/experience/navigation/tenant-nav";
 
 const ROOT = join(import.meta.dirname, "..", "..");
@@ -20,7 +20,7 @@ const layers = loadJson("docs/architecture/layers.json");
 const importsOf = (rel: string) => [...read(rel).matchAll(/^import\s+(type\s+)?[\s\S]*?from\s+["']([^"']+)["']/gm)].map((m) => ({ typeOnly: !!m[1], from: m[2] }));
 
 describe("tipos y reglas que dejaron de ser de experiencia", () => {
-  test.each(["lib/navigation/nav-types.ts", "lib/onboarding/types.ts", "lib/capabilities/route-modules.ts"])("%s es de Core", (file) => {
+  test.each(["lib/navigation/nav-types.ts", "lib/onboarding/types.ts", "lib/core/capabilities/route-modules.ts"])("%s es de Core", (file) => {
     expect(classify(file, layers)?.layer).toBe("core");
   });
 
@@ -41,7 +41,7 @@ describe("tipos y reglas que dejaron de ser de experiencia", () => {
   });
 
   test("el servidor (tenant/context) y el panel de operaciones ya no importan de tenant-nav", () => {
-    for (const file of ["lib/tenant/context.ts", "lib/platform/team/nav.ts"]) {
+    for (const file of ["lib/core/tenancy/context.ts", "lib/platform/team/nav.ts"]) {
       expect(read(file), file).not.toContain("navigation/tenant-nav");
     }
   });

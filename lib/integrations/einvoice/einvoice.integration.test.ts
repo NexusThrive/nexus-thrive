@@ -2,8 +2,8 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { createDocument, issueAdjustmentNote } from "@/lib/business/sales/documents-db";
-import { createParty } from "@/lib/parties/parties-db";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { createParty } from "@/lib/core/parties/parties-db";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { connectSandboxProvider, createSupportDocument, fiscalSettings, listFiscal, retryFiscal, setFiscalEnabled, submitPending } from "./einvoice-db";
 
 /** Facturación electrónica por el puerto contra Postgres real y DOS negocios. */

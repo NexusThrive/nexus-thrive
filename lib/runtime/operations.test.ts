@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { BUSINESS_PERMISSIONS } from "@/lib/auth/permissions";
-import { isModule } from "@/lib/capabilities/modules";
+import { BUSINESS_PERMISSIONS } from "@/lib/core/auth/permissions";
+import { isModule } from "@/lib/core/capabilities/modules";
 import { describeOperation, OPERATIONS, getOperation, operationsFor } from "@/lib/runtime/operations";
 
 /** Contrato del registro (.docs/integracion-api-mcp-webhooks.md §1): lo que toda operación debe tener. */

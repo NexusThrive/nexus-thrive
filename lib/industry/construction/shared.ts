@@ -1,6 +1,6 @@
 /**
  * Tipos y helpers compartidos por los módulos de construcción.
- * Extraído de `lib/tenant/db.ts`.
+ * Extraído de `lib/core/tenancy/db.ts`.
  */
 import {
   db,

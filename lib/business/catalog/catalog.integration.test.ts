@@ -1,9 +1,9 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
-import { runOperation } from "@/lib/operations/engine";
+import { runOperation } from "@/lib/core/operations/engine";
 import { OPERATIONS } from "@/lib/runtime/operations";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { addBarcode, createPriceList, createVariant, findByBarcode, listVariants, resolvePrice, setDefaultPriceList, setListPrice, setProductTax } from "./catalog-db";
 
 /** Catálogo maestro contra Postgres real y con DOS negocios. */

@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { createDocument, documentView, issueAdjustmentNote } from "./documents-db";
 
 /** Notas crédito y débito sobre un documento, contra Postgres real y DOS negocios. */

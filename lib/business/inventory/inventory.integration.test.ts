@@ -3,9 +3,9 @@ import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { moneyTransaction, sellProduct } from "@/lib/business/sales/money-service";
 import { moveStock } from "@/lib/business/catalog/products-db";
-import { runOperation } from "@/lib/operations/engine";
+import { runOperation } from "@/lib/core/operations/engine";
 import { OPERATIONS } from "@/lib/runtime/operations";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { createWarehouse, kardex, reconcile, stockByWarehouse } from "./kardex";
 import { applyStockMovement, StockError } from "./stock-service";
 

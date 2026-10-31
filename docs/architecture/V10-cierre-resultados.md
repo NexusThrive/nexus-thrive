@@ -9,12 +9,12 @@ Informe acumulado de las etapas del [plan de cierre](V10-plan-de-cierre.md). Cad
 | I · integrations | **Hecha** | `d406c29` |
 | B · business | **Hecha** (con excepción temporal documentada) | `5ce3a33` |
 | N · construction | **Hecha** | `748ff50` |
-| X · experience | **Hecha** | ver §4 |
-| C · core | Pendiente | — |
+| X · experience | **Hecha** | `7221fc2` |
+| C · core | **Hecha** | ver §5 |
 | F · foundation | Pendiente | — |
 | Z · remate | Pendiente | — |
 
-La raíz de `lib/` pasó de 66 entradas (inicio de M5) a 47 tras la etapa X (27 carpetas y 20 archivos). La meta es: las nueve áreas y los dos archivos documentados `utils.ts` y `cn.ts`.
+La raíz de `lib/` pasó de 66 entradas (inicio de M5) a 35 tras la etapa C (15 carpetas y 20 archivos). La meta es: las nueve áreas y los dos archivos documentados `utils.ts` y `cn.ts`.
 
 ## 1. Etapa I · integrations (`d406c29`)
 
@@ -94,4 +94,43 @@ Al juntar los módulos aparece un ciclo entre módulos que la prueba de M3 («lo
 1. **`next build` falló y nada más lo detectó (corregido).** `fonts.ts` carga las fuentes con `next/font/local` y una ruta **relativa al propio archivo** (`../app/fonts/…`); al bajarlo un nivel la ruta dejó de resolver. `tsc`, las pruebas de arquitectura y las 1 833 unitarias pasaban; solo falló `next build` («Font file not found»). Se ajustaron las dos rutas (`../../app/fonts/…`) y se añadió una prueba que exige que cada fuente declarada exista. Revisé el resto de archivos movidos: no hay otras rutas relativas a archivos (`new URL`, `__dirname`, `readFileSync`). En las etapas anteriores el build se ejecutó en cada `pnpm verify` y pasó.
 2. **Carrera de arranque de mi base desechable (infraestructura, no código).** La primera integración falló en 65 archivos porque creé la base mientras Postgres reiniciaba tras su inicialización («database system is shutting down») y `nexus_e5_test` no llegó a existir. Se recreó el contenedor esperando a que la inicialización termine; la integración dio 66 archivos y 413 pruebas.
 3. **Referencias que el codemod no reescribe:** rutas de `payment-input` dentro de plantillas de texto de `v10-finance.test.ts` y comentarios en `app/styles/motion.css`, `components/docs/movimiento.mdx` y `lib/plans/pricing.ts`. Actualizadas. Los documentos de `docs/` con la ruta antigua quedan para P-12.
+
+## 5. Etapa C · core
+
+Las doce carpetas de Core que seguían en la raíz de `lib/` → `lib/core/`:
+
+| Antes | Ahora |
+|---|---|
+| `tenant` | `core/tenancy` |
+| `auth`, `parties`, `files`, `events`, `operations` | `core/<mismo nombre>` |
+| `plans` + `usage` | `core/entitlements` |
+| `capabilities` | `core/capabilities` |
+| `functions` | `core/capabilities/discovery` |
+| `api` | `core/api` |
+| `mcp` | `core/api/mcp` |
+
+`lib/core/` contiene ahora sus diez módulos: `api`, `auth`, `capabilities`, `entitlements`, `events`, `files`, `operations`, `parties`, `sectors` y `tenancy`.
+
+| | |
+|---|---|
+| Archivos movidos | 97 (56 de producción y 41 pruebas), con `git mv`; sin colisiones de nombre al fusionar `plans` y `usage` |
+| Archivos con referencias reescritas | 303 (550 alias, 88 relativas, 62 literales) |
+| Capas | Se retiran 12 unidades de `layers.json` (las doce carpetas). `api` y `mcp` dejan de ser **Integrations** y `functions` deja de ser **automation**: pasan a Core por su ruta. La capa `automation` queda sin archivos (se retira de `layers.json` en la etapa Z) |
+| Fronteras | Core sigue importando solo Foundation: 0 violaciones. La matriz entre áreas cambia únicamente por la reclasificación (`automation → core` 4 y `automation → foundation` 2 desaparecen y pasan a Core; `integrations → core` 12→6 y `runtime → integrations` 6→4 porque `api`/`mcp` ya son Core; `core → foundation` 25→28; `runtime → core` 15→17). **No aparece ninguna arista nueva hacia o desde Core** |
+| Aislamiento por negocio | `tenant-scope.test.ts` (ahora en `lib/core/tenancy/`) sigue vigilando todo `lib/`; sus excepciones y `PLATFORM_FILES` apuntan a rutas nuevas |
+| Ciclos | Los mismos 3 de tipos (`auth/permissions ⇄ roles`, `inventory ⇄ sales` y `dashboard`), solo con la ruta renombrada; la excepción exacta `inventory ⇄ sales` no se tocó ni se amplió; 0 ciclos de valores |
+| Pruebas | `tests/architecture/v10-core.test.ts` (28): los diez módulos, las doce carpetas de origen inexistentes, `api/mcp` y `capabilities/discovery`, área por ruta sin unidades, sin unidades viejas, `nav-types`/`onboarding/types` aún en Core fuera de `lib/core`, y rutas del script de integración |
+| Exportaciones | 287 de 56 archivos, idénticas |
+| Verificación | `pnpm verify` verde (incluido `next build`); unitarias 122 archivos y 1 862 (base de la etapa 1 834; +28); integración **66 archivos y 413** (sin pérdidas); contrato (15 operaciones + OpenAPI) idéntico; Prisma y migraciones sin cambios; `check:layers`: 290 archivos, 0 violaciones, 0 excepciones |
+
+### Qué NO se tocó (según lo acordado)
+`nav-types.ts` sigue en `lib/navigation/` (pasa a `core/capabilities` en Z, E-5) y el flujo de `onboarding` queda entero para Z.
+
+### Problemas encontrados
+
+1. **Import relativo a un `.mjs` roto (corregido).** `data-access.test.ts` importa `../../eslint/legacy-db-access.mjs`; el codemod solo resuelve TypeScript y no lo reescribió. Lo detectó `tsc`. Se ajustó a `../../../eslint/…`. Revisé todo el repositorio en busca de más imports relativos o de alias que no resuelvan: no hay otros reales (solo cadenas sintéticas de fixtures que ya existían).
+2. **Dos comprobaciones que habrían quedado vacías sin avisar (corregidas).** En `e3-dominios.test.ts`, «`lib/operations/definitions/*.ts` ya no existe» comprobaba una carpeta que dejó de existir, así que siempre habría pasado; ahora apunta a `lib/core/operations/definitions/`. Lo mismo con `v10-composicion.test.ts` (se añaden las rutas nuevas a las ubicaciones que no deben existir), con las fuentes sintéticas de `layers.test.ts` (R1 y R3 de Core) y con la expresión regular de `v10-sectores.test.ts` (capacidades permitidas al registro de sectores). `v10-platform.test.ts` enumeraba seis carpetas de Core; ahora recorre `lib/core` entera (cubre más que antes) y sigue sin ofensores.
+3. **Script de integración:** las dos pruebas de `lib/tenant` que lista `test-integration.sh` se actualizaron a `lib/core/tenancy/…`. La integración se mantiene en 66 archivos y 413 pruebas, y la guarda de rutas explícitas sigue activa.
+4. **Rutas en documentación y configuración:** actualizados `eslint/legacy-db-access.mjs` (comentario), `.github/pull_request_template.md` (dos rutas) y `app/globals.css` (comentario). **No se tocaron** los comentarios de `prisma/schema/**` que nombran `lib/plans` y `lib/capabilities` (Prisma no se modifica) ni los documentos de `docs/` (pasada P-12).
+5. **Sin hallazgos de rutas en tiempo de ejecución:** las pruebas movidas calculan la raíz con `process.cwd()`, no con rutas relativas al archivo; en el código de producción movido no hay `__dirname`, `import.meta` ni lecturas de archivos.
 

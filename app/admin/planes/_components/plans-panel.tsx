@@ -7,7 +7,7 @@ import { inputClasses, textareaClasses } from "@/components/atoms/input";
 import { Switch } from "@/components/atoms/switch";
 import { Field } from "@/components/molecules/field";
 import { UsdInput } from "@/components/molecules/usd-input";
-import type { PlanConfig } from "@/lib/plans/pricing";
+import type { PlanConfig } from "@/lib/core/entitlements/pricing";
 import { cn } from "@/lib/utils";
 import { savePlanAction } from "../actions";
 import { useSave } from "./use-save";

@@ -1,7 +1,7 @@
 import { insertDocument } from "@/lib/business/sales/documents-db";
 import { MoneyError, moneyTransaction } from "@/lib/business/sales/money-service";
 import { toNumber } from "@/lib/format";
-import { emitEvent } from "@/lib/events/outbox";
+import { emitEvent } from "@/lib/core/events/outbox";
 import { applyStockMovement } from "@/lib/business/inventory/stock-service";
 import { db } from "@/prisma/db";
 

@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
-import { can } from "@/lib/auth/permissions";
+import { can } from "@/lib/core/auth/permissions";
 import { listResolutions, listTaxRates } from "@/lib/domains/finance/tax/tax-db";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import TaxesView from "./_components/taxes-view";
 import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 

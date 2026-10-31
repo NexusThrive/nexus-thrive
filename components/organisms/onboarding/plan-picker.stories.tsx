@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { defaultPricingConfig } from "@/lib/plans/pricing";
+import { defaultPricingConfig } from "@/lib/core/entitlements/pricing";
 import { PlanPicker, type PlanSelection } from "./plan-picker";
 
 function Demo({ vertical, initial }: { vertical: "construction" | "gym" | "beauty"; initial: PlanSelection }) {

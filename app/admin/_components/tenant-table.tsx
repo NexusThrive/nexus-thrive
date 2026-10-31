@@ -28,7 +28,7 @@ import {
 import { EmptyState } from "@/components/molecules/empty-state";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
-import { MODULE_LABELS, type ModuleValue } from "@/lib/capabilities/modules";
+import { MODULE_LABELS, type ModuleValue } from "@/lib/core/capabilities/modules";
 import type { TenantListRow, TenantSortKey } from "@/lib/platform/admin/db";
 import { cn } from "@/lib/utils";
 import TenantStatusBadge from "./tenant-status-badge";

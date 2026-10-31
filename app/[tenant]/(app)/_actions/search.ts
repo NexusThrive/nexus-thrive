@@ -2,7 +2,7 @@
 
 import { listProducts } from "@/lib/business/catalog/products-db";
 import { formatCurrency } from "@/lib/format";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type SearchHit = {
   id: string;

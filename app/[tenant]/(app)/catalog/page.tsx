@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { BookOpen, ImageIcon, Layers, Package, Upload } from "lucide-react";
-import { createTenantDb } from "@/lib/tenant/db";
-import { canGovernBudget, type TenantRole } from "@/lib/tenant/context";
+import { createTenantDb } from "@/lib/core/tenancy/db";
+import { canGovernBudget, type TenantRole } from "@/lib/core/tenancy/context";
 import { getQuoteTerms } from "@/lib/core/sectors/terms";
 import { formatDateShort } from "@/lib/format";
 import { isValidCategory } from "@/lib/industry/construction/apu-engine";
@@ -12,7 +12,7 @@ import ActivityCatalog from "./_components/activity-catalog";
 import { PageHeader } from "@/components/molecules/page-header";
 import { KpiCard } from "@/components/molecules/kpi-card";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { requirePageContext } from "@/lib/tenant/context";
+import { requirePageContext } from "@/lib/core/tenancy/context";
 
 import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 const ITEMS_PAGE_SIZE = 10;

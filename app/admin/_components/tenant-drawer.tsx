@@ -19,7 +19,7 @@ import { Button } from "@/components/atoms/button";
 import { Skeleton } from "@/components/atoms/skeleton";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
-import { MODULE_LABELS } from "@/lib/capabilities/modules";
+import { MODULE_LABELS } from "@/lib/core/capabilities/modules";
 import { TEAM_SIZE_LABELS, type TeamSizeValue } from "@/lib/onboarding/types";
 import { paymentMethodLabel } from "@/lib/foundation/kernel/payment-vocabulary";
 import { formatCurrency, formatDateTime } from "@/lib/format";

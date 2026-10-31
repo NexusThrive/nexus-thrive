@@ -6,11 +6,11 @@ import { validateLines, type InvoiceKind, type LineInput } from "@/lib/business/
 import { documentView, issueAdjustmentNote, type DocumentView } from "@/lib/business/sales/documents-db";
 import { createInvoice, payInvoice, voidInvoice, invoiceStatus } from "@/lib/business/sales/invoices-db";
 import { MoneyError } from "@/lib/business/sales/money-error";
-import { canHandleCash, canManage } from "@/lib/auth/roles";
+import { canHandleCash, canManage } from "@/lib/core/auth/roles";
 import { receiptCode } from "@/lib/business/sales/invoice";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
-import { requireTenantContext } from "@/lib/tenant/context";
-import { logTenantAction } from "@/lib/tenant/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
 
 export type BillingResult = { ok: true; message?: string; id?: string } | { ok: false; message: string };
 const DENIED: BillingResult = { ok: false, message: "Tu rol no permite esta acción." };

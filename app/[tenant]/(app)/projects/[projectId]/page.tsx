@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { ArrowLeft, CalendarDays, User } from "lucide-react";
-import { createTenantDb } from "@/lib/tenant/db";
+import { createTenantDb } from "@/lib/core/tenancy/db";
 import { PROJECT_TABS, parseProjectTab } from "@/lib/industry/construction/project-domain";
 import { ProjectStatusBadge } from "../_components/project-status-badge";
 import ProjectTabs from "./_components/project-tabs";
@@ -16,7 +16,7 @@ import { prepareProjectAction } from "../actions";
 import PrepareProject from "./_components/prepare-project";
 import ProjectQuotesWorkspace from "./_components/project-quotes-workspace";
 import { EmptyState } from "@/components/molecules/empty-state";
-import { requirePageContext } from "@/lib/tenant/context";
+import { requirePageContext } from "@/lib/core/tenancy/context";
 
 import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 function firstString(value: string | string[] | undefined): string {

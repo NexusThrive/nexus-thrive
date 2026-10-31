@@ -2,7 +2,7 @@
  * Rangos de mes en horario de Bogotá.
  *
  * Utilidad de Foundation: la comparten las métricas de finanzas (Core) y las de
- * membresías (gimnasio). Antes eran funciones privadas de `lib/tenant/db.ts`.
+ * membresías (gimnasio). Antes eran funciones privadas de `lib/core/tenancy/db.ts`.
  */
 
 /**

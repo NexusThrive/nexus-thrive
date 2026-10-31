@@ -1,6 +1,6 @@
 /**
  * Cotizaciones.
- * Extraído de `lib/tenant/db.ts`; `createConstructionDb` lo compone. Todo
+ * Extraído de `lib/core/tenancy/db.ts`; `createConstructionDb` lo compone. Todo
  * acceso va acotado al `tenantId` recibido.
  */
 import {

@@ -6,7 +6,7 @@
  */
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import { db } from "@/prisma/db";
-import { readApuImageFor, readAttachmentFor } from "@/lib/files/stored-files";
+import { readApuImageFor, readAttachmentFor } from "@/lib/core/files/stored-files";
 
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const normalize = (url: string | undefined) => (url ?? "").replace(/\?.*$/, "");

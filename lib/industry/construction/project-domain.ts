@@ -6,8 +6,8 @@
  * los valores; este módulo solo agrega la capa de presentación/validación.
  */
 
-import type { BusinessRole } from "@/lib/auth/roles";
-import { can } from "@/lib/auth/permissions";
+import type { BusinessRole } from "@/lib/core/auth/roles";
+import { can } from "@/lib/core/auth/permissions";
 
 export type ProjectStatusValue =
   | "DRAFT"

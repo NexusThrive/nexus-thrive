@@ -1,14 +1,14 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { HandCoins, MinusCircle, TrendingUp, Users, Wallet } from "lucide-react";
-import { tenantWithModules } from "@/lib/tenant/membership";
-import { createTenantDb } from "@/lib/tenant/db";
+import { tenantWithModules } from "@/lib/core/tenancy/membership";
+import { createTenantDb } from "@/lib/core/tenancy/db";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import { formatCurrency, formatRelativeTime } from "@/lib/format";
 import type { RecentActivityItem } from "@/lib/experience/dashboard/types";
 import { greetingFor, percentChange } from "@/lib/experience/dashboard/index";
 import { GRANULARITIES, HISTORY_DAYS, bogotaDayKey, chartBuckets, runningBalance, type FinanceSeries, type Granularity } from "@/lib/foundation/kernel/finance-series";
-import { sortModules, isModule } from "@/lib/capabilities/modules";
+import { sortModules, isModule } from "@/lib/core/capabilities/modules";
 import { quickCreateActions } from "@/lib/experience/navigation/quick-create";
 import { CHART_CATALOG } from "@/lib/experience/dashboard/chart-catalog";
 import { cashFlow, comparison, countLabel, daysUntil, updatedLabel } from "@/lib/experience/dashboard/insights";
@@ -31,7 +31,7 @@ import { listProducts } from "@/lib/business/catalog/products-db";
 import { loadPresence } from "@/lib/business/presence/load";
 import PresenceSummary from "./_components/presence-summary";
 import { StatTile } from "@/components/molecules/stat-tile";
-import { requirePageContext } from "@/lib/tenant/context";
+import { requirePageContext } from "@/lib/core/tenancy/context";
 
 import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
 /**

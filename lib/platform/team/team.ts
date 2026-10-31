@@ -1,5 +1,5 @@
 import { db } from "@/prisma/db";
-import { exactIlikePattern } from "@/lib/auth/session-email";
+import { exactIlikePattern } from "@/lib/core/auth/session-email";
 import { OWNER_ROLE_KEY, normalizePermissions, type PermissionKey } from "./permissions";
 
 /** Datos del equipo NEXUS para el panel (solo valores serializables). */

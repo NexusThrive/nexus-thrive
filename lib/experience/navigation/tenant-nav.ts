@@ -4,14 +4,14 @@
  */
 import { Blocks, FileSpreadsheet, Receipt, Settings } from "lucide-react";
 import { type VerticalValue } from "@/lib/core/sectors/verticals";
-import { MODULES, type ModuleValue } from "@/lib/capabilities/modules";
-import { CAPABILITIES, CAPABILITY_CATEGORIES, type CapabilityCategory } from "@/lib/capabilities/registry";
-import { MODULE_NAV } from "@/lib/capabilities/route-modules";
+import { MODULES, type ModuleValue } from "@/lib/core/capabilities/modules";
+import { CAPABILITIES, CAPABILITY_CATEGORIES, type CapabilityCategory } from "@/lib/core/capabilities/registry";
+import { MODULE_NAV } from "@/lib/core/capabilities/route-modules";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import type { NavGroup, NavItem } from "../../navigation/nav-types";
 
 export type { NavGroup, NavItem };
-export { modulesForRoute } from "@/lib/capabilities/route-modules";
+export { modulesForRoute } from "@/lib/core/capabilities/route-modules";
 
 /** Todas las funciones del sistema: encender o apagar lo que usa el negocio (no depende de un módulo). */
 export const FUNCTIONS_ITEM: NavItem = {

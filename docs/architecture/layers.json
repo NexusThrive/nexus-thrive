@@ -40,24 +40,12 @@
     { "path": "lib/temporal.d.ts", "layer": "foundation" },
     { "path": "lib/utils.ts", "layer": "foundation" },
 
-    { "path": "lib/tenant", "layer": "core" },
-    { "path": "lib/auth", "layer": "core" },
     { "path": "lib/admin", "layer": "core" },
-    { "path": "lib/plans", "layer": "core" },
-    { "path": "lib/usage", "layer": "core" },
-    { "path": "lib/capabilities", "layer": "core" },
-    { "path": "lib/operations", "layer": "core" },
     { "path": "lib/runtime", "layer": "runtime" },
-    { "path": "lib/parties", "layer": "core" },
-    { "path": "lib/files", "layer": "core" },
 
 
 
-    { "path": "lib/api", "layer": "integrations" },
-    { "path": "lib/mcp", "layer": "integrations" },
 
-    { "path": "lib/events", "layer": "core" },
-    { "path": "lib/functions", "layer": "automation" },
 
 
     { "path": "lib/navigation/nav-types.ts", "layer": "core" },

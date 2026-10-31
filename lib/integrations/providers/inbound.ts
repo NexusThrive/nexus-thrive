@@ -1,6 +1,6 @@
 import { db } from "@/prisma/db";
-import { emitEvent } from "@/lib/events/outbox";
-import { toInstant } from "@/lib/events/instant";
+import { emitEvent } from "@/lib/core/events/outbox";
+import { toInstant } from "@/lib/core/events/instant";
 import { handlePaymentEvent } from "@/lib/domains/finance/payments/intents-db";
 import { decryptCredentials } from "./connections";
 import { adapterFor } from "./registry";

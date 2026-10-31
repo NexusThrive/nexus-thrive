@@ -9,7 +9,7 @@
 
 import { type VerticalValue } from "@/lib/core/sectors/verticals";
 import { VERTICAL_RECIPES } from "@/lib/core/sectors/catalog";
-import { sortModules, withChildModules, type ModuleValue } from "@/lib/capabilities/modules";
+import { sortModules, withChildModules, type ModuleValue } from "@/lib/core/capabilities/modules";
 import type { OnboardingTenantType } from "./types";
 
 /** Módulos que implican equipo/operación: se omiten en el perfil INDIVIDUAL. */

@@ -41,7 +41,7 @@ fi
 pnpm exec vitest run --testTimeout=20000 --no-file-parallelism \
   --exclude '**/*.file.integration.test.ts' \
   '.integration.test.ts' \
-  lib/tenant/db.archived-rejection.test.ts \
-  lib/tenant/db.cache-invalidation.test.ts \
+  lib/core/tenancy/db.archived-rejection.test.ts \
+  lib/core/tenancy/db.cache-invalidation.test.ts \
   lib/industry/construction/apu-importer/price-behavior.test.ts \
   lib/industry/construction/apu-importer/field-changes.test.ts

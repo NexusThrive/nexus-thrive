@@ -2,10 +2,10 @@ import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { createDocument } from "@/lib/business/sales/documents-db";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { connectHttpProvider, listFiscal, setFiscalEnabled, submitPending } from "./einvoice-db";
 
-vi.mock("@/lib/events/ssrf", async (orig) => ({ ...(await orig<typeof import("@/lib/events/ssrf")>()), resolvesPublic: async () => true }));
+vi.mock("@/lib/core/events/ssrf", async (orig) => ({ ...(await orig<typeof import("@/lib/core/events/ssrf")>()), resolvesPublic: async () => true }));
 
 /** Proveedor tecnológico por HTTP: los pendientes históricos salen en orden y sin duplicar, aunque el proveedor falle a ratos. */
 const TEST_URL = process.env.TEST_DATABASE_URL;

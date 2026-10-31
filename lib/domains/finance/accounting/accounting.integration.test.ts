@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { PUC_TEMPLATE } from "./puc";
 import { PeriodClosedError, assertPeriodOpen, closePeriod, createAccount, createCostCenter, isPeriodOpen, listAccounts, listCostCenters, listPeriods, listRules, reopenPeriod, seedAccounting, setAccountActive, setRuleActive } from "./accounting-db";
 

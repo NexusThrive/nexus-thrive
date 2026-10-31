@@ -1,13 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { can } from "@/lib/auth/permissions";
+import { can } from "@/lib/core/auth/permissions";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { findByBarcode } from "@/lib/business/catalog/catalog-db";
 import { returnSale, saleForReturn, type ReturnInput, type SaleToReturn } from "@/lib/business/pos/returns-db";
 import { closeTurn, createTerminal, openTurn, sellCart, type SaleInput, type SaleResult } from "@/lib/business/pos/pos-db";
-import { logTenantAction } from "@/lib/tenant/audit";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type PosResult = { ok: true; message: string } | { ok: false; message: string };
 const cashier = async (slug: string) => {

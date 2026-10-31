@@ -1,13 +1,13 @@
 "use server";
 
-import { requireTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { revalidatePath } from "next/cache";
-import { createTenantDb } from "@/lib/tenant/db";
+import { createTenantDb } from "@/lib/core/tenancy/db";
 import { getVerticalTerms, type VerticalTerms } from "@/lib/core/sectors/terms";
-import { can } from "@/lib/auth/permissions";
-import { logTenantAction } from "@/lib/tenant/audit";
+import { can } from "@/lib/core/auth/permissions";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
 import { withinLimit } from "@/lib/foundation/limits";
-import { customerLimit } from "@/lib/tenant/customer-limit";
+import { customerLimit } from "@/lib/core/tenancy/customer-limit";
 
 /** Resultado de las acciones de fila / acciones masivas. */
 export type CustomerActionResult = {

@@ -3,8 +3,8 @@ import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { ArrowLeft, Building2 } from "lucide-react";
 import { allCustomerOptions } from "@/lib/business/customers/customers-db";
-import { createTenantDb } from "@/lib/tenant/db";
-import { canGovernBudget, type TenantRole } from "@/lib/tenant/context";
+import { createTenantDb } from "@/lib/core/tenancy/db";
+import { canGovernBudget, type TenantRole } from "@/lib/core/tenancy/context";
 import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/industry/construction/project-domain";
 import SearchInput from "@/components/molecules/search-input";
 import FilterSelect from "@/components/molecules/filter-select";
@@ -12,7 +12,7 @@ import QuoteFolders from "./_components/quote-folders";
 import LegacyQuotes from "./_components/legacy-quotes";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { PageHeader } from "@/components/molecules/page-header";
-import { requirePageContext } from "@/lib/tenant/context";
+import { requirePageContext } from "@/lib/core/tenancy/context";
 
 import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 function firstString(value: string | string[] | undefined): string {

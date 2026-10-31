@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createApiKey, listApiKeys, revokeApiKey, type ApiEnvironment, type ApiKeyRow } from "@/lib/api/keys";
-import { invalidScope } from "@/lib/api/scopes";
-import { canManageTeam } from "@/lib/auth/roles";
+import { createApiKey, listApiKeys, revokeApiKey, type ApiEnvironment, type ApiKeyRow } from "@/lib/core/api/keys";
+import { invalidScope } from "@/lib/core/api/scopes";
+import { canManageTeam } from "@/lib/core/auth/roles";
 import { OPERATIONS } from "@/lib/runtime/operations";
-import { logTenantAction } from "@/lib/tenant/audit";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 /** Llaves de API del negocio (X.02). Solo quien maneja el equipo (dueño y administración). */
 export type CreateKeyResult =

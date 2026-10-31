@@ -1,10 +1,10 @@
 "use server";
 
 import { readImageUpload } from "@/lib/image-upload";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { revalidatePath } from "next/cache";
 import { importApuItems } from "@/lib/industry/construction/catalog-import";
-import { createAuth, type NexusRole } from "@/lib/auth/authorization";
+import { createAuth, type NexusRole } from "@/lib/core/auth/authorization";
 import { getQuoteTerms, type QuoteTerms } from "@/lib/core/sectors/terms";
 import type { ApuItemCategoryValue } from "@/lib/industry/construction/apu-engine";
 import { isUniqueViolation } from "@/lib/db-errors";

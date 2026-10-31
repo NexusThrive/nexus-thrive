@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { can } from "@/lib/auth/permissions";
+import { can } from "@/lib/core/auth/permissions";
 import { cancelIntent, connectedGateways, confirmIntent, createIntent, refundIntent, runReconciliation, type IntentRow } from "@/lib/domains/finance/payments/intents-db";
 import { parseReport } from "@/lib/domains/finance/payments/intents";
 import type { Reconciliation } from "@/lib/domains/finance/payments/intents";
-import { logTenantAction } from "@/lib/tenant/audit";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type CobroResult = { ok: true; message: string } | { ok: false; message: string };
 const refresh = (slug: string) => revalidatePath(`/${slug}/cobros`);

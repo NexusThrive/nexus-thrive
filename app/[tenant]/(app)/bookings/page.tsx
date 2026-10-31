@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
 import { addDaysKey, bogotaToMs, monthGrid, weekStart } from "@/lib/business/scheduling/calendar";
 import { listProducts } from "@/lib/business/catalog/products-db";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import { activeTeam, bookingsBetween, customerPhoneOptions, customersByIds } from "@/lib/business/scheduling/bookings-db";
 import AgendaCalendar from "./_agenda/agenda-calendar";

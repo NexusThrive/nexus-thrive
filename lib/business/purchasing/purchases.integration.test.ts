@@ -2,10 +2,10 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { kardex, reconcile, stockByWarehouse } from "@/lib/business/inventory/kardex";
-import { runOperation } from "@/lib/operations/engine";
+import { runOperation } from "@/lib/core/operations/engine";
 import { OPERATIONS } from "@/lib/runtime/operations";
-import { createParty } from "@/lib/parties/parties-db";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { createParty } from "@/lib/core/parties/parties-db";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { cancelOrder, closeOrder, createOrder, getOrder, listOrders, markOrdered, receiveOrder, registerSupplierInvoice } from "./purchases-db";
 
 /** Compras con recepción al inventario contra Postgres real y DOS negocios. */

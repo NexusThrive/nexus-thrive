@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { createDocument } from "@/lib/business/sales/documents-db";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { NumberingError, createResolution, createTaxRate, ensureDefaultTaxes, listResolutions, listTaxRates, setResolutionActive, updateTaxRate } from "./tax-db";
 
 /** Impuestos con vigencia y numeración por resolución contra Postgres real y DOS negocios. */

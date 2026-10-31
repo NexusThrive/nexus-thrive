@@ -3,7 +3,7 @@ import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { moneyTransaction } from "@/lib/business/sales/money-service";
 import { applyStockMovement } from "@/lib/business/inventory/stock-service";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { closeTurn, createTerminal, listTerminals, myTurn, openTurn, sellCart } from "./pos-db";
 
 /** Punto de venta contra Postgres real y DOS negocios. */

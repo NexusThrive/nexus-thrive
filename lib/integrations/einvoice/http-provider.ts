@@ -1,4 +1,4 @@
-import { checkWebhookUrl, resolvesPublic } from "@/lib/events/ssrf";
+import { checkWebhookUrl, resolvesPublic } from "@/lib/core/events/ssrf";
 import type { EInvoicePort, FiscalPayload, SubmitResult } from "./port";
 
 /**

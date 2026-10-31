@@ -3,7 +3,7 @@ import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { createDocument } from "@/lib/business/sales/documents-db";
 import { recordIncomeNow } from "@/lib/business/sales/money-service";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { setAccountingEnabled } from "./ledger-db";
 import { buildReport, ledgerRows, reportCsv } from "./reports-db";
 

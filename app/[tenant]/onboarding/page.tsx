@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { requirePageContext } from "@/lib/tenant/context";
+import { requirePageContext } from "@/lib/core/tenancy/context";
 
 /**
  * `/{tenant}/onboarding` era un segundo wizard (el clásico). Hay uno solo, el

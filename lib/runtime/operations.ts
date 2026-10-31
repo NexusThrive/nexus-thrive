@@ -1,13 +1,13 @@
-import { businessOperations } from "@/lib/operations/definitions/business";
-import { customerOperations } from "@/lib/operations/definitions/customers";
-import { eventOperations } from "@/lib/operations/definitions/events";
-import { financeOperations } from "@/lib/operations/definitions/finance";
+import { businessOperations } from "@/lib/core/operations/definitions/business";
+import { customerOperations } from "@/lib/core/operations/definitions/customers";
+import { eventOperations } from "@/lib/core/operations/definitions/events";
+import { financeOperations } from "@/lib/core/operations/definitions/finance";
 import { inventoryOperations } from "@/lib/business/inventory/operations";
 import { presenceOperations } from "@/lib/business/presence/operations";
 import { purchaseOperations } from "@/lib/business/purchasing/operations";
-import { partyOperations } from "@/lib/operations/definitions/parties";
-import { isAvailable, runOperation } from "@/lib/operations/engine";
-import type { OperationContext, OperationDefinition } from "@/lib/operations/types";
+import { partyOperations } from "@/lib/core/operations/definitions/parties";
+import { isAvailable, runOperation } from "@/lib/core/operations/engine";
+import type { OperationContext, OperationDefinition } from "@/lib/core/operations/types";
 
 /**
  * Todas las operaciones de negocio disponibles para integraciones. Las pantallas,
@@ -41,5 +41,5 @@ export const operationsFor = (ctx: Pick<OperationContext, "role" | "activeModule
 /** Ejecuta una operación del registro (el camino único de la pantalla, la API y el MCP). */
 export const run = (ctx: OperationContext, id: string, input: unknown) => runOperation(OPERATIONS, ctx, id, input);
 
-export { describeOperation } from "@/lib/operations/engine";
-export * from "@/lib/operations/types";
+export { describeOperation } from "@/lib/core/operations/engine";
+export * from "@/lib/core/operations/types";

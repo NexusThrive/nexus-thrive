@@ -7,7 +7,7 @@ import { formatCurrency, formatDateShort } from "@/lib/format";
 import PrintButton from "./_components/print-button";
 import QuoteDocumentSheet from "@/components/organisms/quote-document-sheet";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { requirePageContext } from "@/lib/tenant/context";
+import { requirePageContext } from "@/lib/core/tenancy/context";
 
 import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 /**

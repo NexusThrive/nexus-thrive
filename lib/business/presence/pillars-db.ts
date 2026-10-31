@@ -3,7 +3,7 @@ import { db } from "@/prisma/db";
 import { listingPort } from "./listing-port";
 import { attributionStats, reputationOf } from "@/lib/business/growth/growth-db";
 import { loadPresence } from "./load";
-import { emitEvent } from "@/lib/events/outbox";
+import { emitEvent } from "@/lib/core/events/outbox";
 import { isoWeek, phaseChangeNotice, weeklyReport, type Phase } from "./notices";
 import { computeMaturity, type Maturity, type MaturityInput } from "./maturity";
 import { computePillars, phaseA, trendOf, type Pillar, type PhaseA, type Trend } from "./pillars";

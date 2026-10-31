@@ -9,7 +9,7 @@ import {
   type AdminFormState,
 } from "../actions";
 import { VERTICAL_ICONS, VERTICAL_LABELS, VERTICALS, type VerticalValue } from "@/lib/core/sectors/verticals";
-import { MODULE_LABELS, MODULES } from "@/lib/capabilities/modules";
+import { MODULE_LABELS, MODULES } from "@/lib/core/capabilities/modules";
 import {
   TEAM_SIZE_LABELS,
   type OnboardingTenantType,

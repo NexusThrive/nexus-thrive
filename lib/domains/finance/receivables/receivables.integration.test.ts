@@ -3,8 +3,8 @@ import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { createDocument } from "@/lib/business/sales/documents-db";
 import { receiveInvoicePayment, payInvoice, voidPayment } from "@/lib/business/sales/money-service";
-import { createParty } from "@/lib/parties/parties-db";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { createParty } from "@/lib/core/parties/parties-db";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { payables, paySupplierInvoice, receivables } from "./receivables-db";
 
 /** Cartera por cobrar y por pagar contra Postgres real y DOS negocios. */

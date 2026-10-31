@@ -24,7 +24,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { useReducedMotion } from "@/lib/experience/hooks/use-reduced-motion";
 import { dropRule, followUpState, isActiveStage, LEAD_STAGES, stageMeta, type LeadStageValue } from "@/lib/platform/crm/crm-rules";
 import type { LeadRow } from "@/lib/platform/crm/leads";
-import { formatUsdCents } from "@/lib/plans/pricing";
+import { formatUsdCents } from "@/lib/core/entitlements/pricing";
 import { cn } from "@/lib/utils";
 
 const FOLLOW = {

@@ -1,6 +1,6 @@
 import { withinLimit } from "@/lib/foundation/limits";
-import { customerLimit } from "@/lib/tenant/customer-limit";
-import { syncCustomerParty } from "@/lib/parties/parties-db";
+import { customerLimit } from "@/lib/core/tenancy/customer-limit";
+import { syncCustomerParty } from "@/lib/core/parties/parties-db";
 import { db } from "@/prisma/db";
 import { CUSTOMER_HEADERS, PRODUCT_HEADERS, documentKey, parseCustomers, parseProducts, type ParsedRows, type RowError } from "./rows";
 import { toCsv, type Table } from "./table";

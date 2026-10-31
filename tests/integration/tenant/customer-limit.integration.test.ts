@@ -1,11 +1,11 @@
 /**
- * Límite de clientes del plan: política de Core (`lib/tenant/customer-limit.ts`), usada por el
+ * Límite de clientes del plan: política de Core (`lib/core/tenancy/customer-limit.ts`), usada por el
  * medidor de consumo, la importación y el alta de clientes.
  */
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { customerLimit } from "@/lib/tenant/customer-limit";
-import { consumptionFor } from "@/lib/usage/consumption-db";
+import { customerLimit } from "@/lib/core/tenancy/customer-limit";
+import { consumptionFor } from "@/lib/core/entitlements/consumption-db";
 
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const normalize = (url: string | undefined) => (url ?? "").replace(/\?.*$/, "");

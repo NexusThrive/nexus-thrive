@@ -1,4 +1,4 @@
-import { createTenantDb } from "@/lib/tenant/db";
+import { createTenantDb } from "@/lib/core/tenancy/db";
 import {
   MEMBERSHIP_STATUSES,
   MEMBERSHIP_TYPES,
@@ -15,8 +15,8 @@ import {
   type MembershipCustomerOption,
 } from "./_components/membership-form";
 import { PageHeader } from "@/components/molecules/page-header";
-import { requirePageContext } from "@/lib/tenant/context";
-import { can } from "@/lib/auth/permissions";
+import { requirePageContext } from "@/lib/core/tenancy/context";
+import { can } from "@/lib/core/auth/permissions";
 import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";

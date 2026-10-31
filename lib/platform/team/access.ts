@@ -1,7 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
-import { exactIlikePattern, normalizeEmail, verifiedEmailOf } from "@/lib/auth/session-email";
+import { exactIlikePattern, normalizeEmail, verifiedEmailOf } from "@/lib/core/auth/session-email";
 import { OWNER_ROLE_KEY, SYSTEM_ROLES, normalizePermissions, type PermissionKey } from "./permissions";
 
 /**
@@ -187,7 +187,7 @@ export async function getStaffContext(): Promise<StaffContext | null> {
 
 /**
  * ¿La sesión actual es del equipo NEXUS con acceso a cuentas? Es lo que las rutas
- * de archivos entregan a `lib/files/stored-files` como `StaffFileAccess`.
+ * de archivos entregan a `lib/core/files/stored-files` como `StaffFileAccess`.
  */
 export async function staffCanViewAccounts(): Promise<boolean> {
   return Boolean((await getStaffContext())?.permissions.includes("accounts.view"));

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { withShell } from "../../../../../.storybook/decorators";
-import { buildConsumption } from "@/lib/usage/consumption";
+import { buildConsumption } from "@/lib/core/entitlements/consumption";
 import PlanTab from "./plan-tab";
 
 const usage = (seats: number, customers: number | null, api: number) =>

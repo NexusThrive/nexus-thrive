@@ -2,11 +2,11 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getOnboardingPrefill } from "@/lib/onboarding/prefill";
 import OnboardingWizard from "./_components/onboarding-wizard";
-import { loadPricingConfig } from "@/lib/plans/settings";
+import { loadPricingConfig } from "@/lib/core/entitlements/settings";
 import { getPendingBenefit } from "@/lib/platform/benefits/benefit-cookie";
 import { findStaffByEmail } from "@/lib/platform/team/access";
 import { StaffAccessNotice } from "@/components/molecules/staff-access-notice";
-import { verifiedEmailOf } from "@/lib/auth/session-email";
+import { verifiedEmailOf } from "@/lib/core/auth/session-email";
 
 /**
  * Onboarding adaptativo (auto-servicio).

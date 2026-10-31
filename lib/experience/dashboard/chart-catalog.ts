@@ -1,4 +1,4 @@
-import type { ModuleValue } from "@/lib/capabilities/modules";
+import type { ModuleValue } from "@/lib/core/capabilities/modules";
 import type { Span } from "./layout";
 
 /**

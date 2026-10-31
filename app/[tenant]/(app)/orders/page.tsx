@@ -1,6 +1,6 @@
 import { ShoppingCart } from "lucide-react";
 import ModulePlaceholder from "@/components/templates/module-placeholder";
-import { requirePageContext } from "@/lib/tenant/context";
+import { requirePageContext } from "@/lib/core/tenancy/context";
 
 /** Módulo Pedidos: habilitado por TenantModule; implementación en roadmap. */
 export default async function OrdersPage({ params }: { params: Promise<{ tenant: string }> }) {

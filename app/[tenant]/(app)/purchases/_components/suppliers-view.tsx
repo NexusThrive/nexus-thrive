@@ -10,8 +10,8 @@ import { EmptyState } from "@/components/molecules/empty-state";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { FormDrawer } from "@/components/organisms/form-sheet";
-import { DOCUMENT_TYPES } from "@/lib/parties/documents";
-import type { PartyRow } from "@/lib/parties/parties-db";
+import { DOCUMENT_TYPES } from "@/lib/core/parties/documents";
+import type { PartyRow } from "@/lib/core/parties/parties-db";
 import { createSupplierAction } from "@/app/[tenant]/(app)/purchases/actions";
 
 /** Proveedores: terceros con el rol SUPPLIER (un proveedor que también compra es la misma ficha). */

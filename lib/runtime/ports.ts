@@ -13,7 +13,7 @@ import { decryptCredentials } from "@/lib/integrations/providers/connections";
 import { wompiCheckoutUrl } from "@/lib/integrations/providers/wompi";
 import { providedPorts } from "@/lib/ports";
 import { allocateNumber, commitNumber, withholdingsFor } from "@/lib/domains/finance/tax/tax-db";
-import { tenantProvisioningPort } from "@/lib/tenant/provisioning-port";
+import { tenantProvisioningPort } from "@/lib/core/tenancy/provisioning-port";
 
 /**
  * Raíz de composición: conecta cada puerto declarado por un dominio con la implementación de otro.

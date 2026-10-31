@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
-import { can } from "@/lib/auth/permissions";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { can } from "@/lib/core/auth/permissions";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import DataExchange from "./_components/data-exchange";
 
 /**

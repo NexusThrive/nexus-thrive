@@ -14,9 +14,9 @@ import {
   type OnboardingPrefill,
 } from "@/lib/onboarding/types";
 import { SHOW_PRICING } from "@/lib/onboarding/flags";
-import { MODULE_LABELS } from "@/lib/capabilities/modules";
-import { modulePriceCents, planOf, quote as quotePlan, signupVerticals, type PricingConfig, formatUsdCents } from "@/lib/plans/pricing";
-import type { PlanKey } from "@/lib/plans/catalog";
+import { MODULE_LABELS } from "@/lib/core/capabilities/modules";
+import { modulePriceCents, planOf, quote as quotePlan, signupVerticals, type PricingConfig, formatUsdCents } from "@/lib/core/entitlements/pricing";
+import type { PlanKey } from "@/lib/core/entitlements/catalog";
 import ProfileSelection from "./profile-selection";
 import AdaptiveBusinessForm from "./adaptive-business-form";
 import { buttonVariants } from "@/components/atoms/button-variants";

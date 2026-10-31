@@ -16,7 +16,7 @@ import { createIntent, publicIntent } from "@/lib/domains/finance/payments/inten
 import { PortNotProvidedError } from "@/lib/ports";
 import { listingPort, type ListingPort } from "@/lib/business/presence/listing-port";
 import { encryptCredentials } from "@/lib/integrations/providers/connections";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const normalize = (url: string | undefined) => (url ?? "").replace(/\?.*$/, "");

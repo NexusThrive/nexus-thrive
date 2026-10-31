@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
-import { canManage } from "@/lib/auth/roles";
+import { canManage } from "@/lib/core/auth/roles";
 import { listProducts } from "@/lib/business/catalog/products-db";
 import { listWarehouses } from "@/lib/business/inventory/kardex";
 import { listCounts, listTransfers, reorderOverview, stockOverview } from "@/lib/business/inventory/stock-docs-db";
-import { requireTenantContext } from "@/lib/tenant/context";
-import { tenantWithModules } from "@/lib/tenant/membership";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
+import { tenantWithModules } from "@/lib/core/tenancy/membership";
 import StockView from "./_components/stock-view";
 import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 

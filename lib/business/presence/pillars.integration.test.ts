@@ -1,12 +1,12 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
-import { dispatchPending } from "@/lib/events/dispatcher";
-import { emitEvent } from "@/lib/events/outbox";
-import { runOperation } from "@/lib/operations/engine";
+import { dispatchPending } from "@/lib/core/events/dispatcher";
+import { emitEvent } from "@/lib/core/events/outbox";
+import { runOperation } from "@/lib/core/operations/engine";
 import { OPERATIONS } from "@/lib/runtime/operations";
 import { confirmIntent, createIntent } from "@/lib/domains/finance/payments/intents-db";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { maturityInput, presenceV2, refreshPresence, sendWeeklyReport } from "./pillars-db";
 

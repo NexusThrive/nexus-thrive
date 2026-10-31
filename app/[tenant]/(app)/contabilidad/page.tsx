@@ -3,10 +3,10 @@ import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
 import { listEntries } from "@/lib/domains/finance/accounting/ledger-db";
 import { listAccounts, listCostCenters, listPeriods, listRules } from "@/lib/domains/finance/accounting/accounting-db";
-import { can } from "@/lib/auth/permissions";
+import { can } from "@/lib/core/auth/permissions";
 import { todayCO } from "@/lib/domains/finance/tax/tax";
-import { requireTenantContext } from "@/lib/tenant/context";
-import { tenantWithModules } from "@/lib/tenant/membership";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
+import { tenantWithModules } from "@/lib/core/tenancy/membership";
 import AccountingView from "./_components/accounting-view";
 import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
