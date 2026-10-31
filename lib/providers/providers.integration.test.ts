@@ -115,7 +115,7 @@ describe.skipIf(!TEST_URL)("conexiones y webhooks entrantes (integración)", () 
     if (!hook.ok) throw new Error("endpoint");
     const hits: string[] = [];
     await send(connB, evt("evt_to_n8n"));
-    const result = await dispatchPending({ tenantIds: [a, b], resolveHost: async () => true, fetchImpl: (async (_u: unknown, init: RequestInit) => (hits.push(String(init.body)), new Response("ok"))) as unknown as typeof fetch });
+    const result = await dispatchPending({ subscribers: [], tenantIds: [a, b], resolveHost: async () => true, fetchImpl: (async (_u: unknown, init: RequestInit) => (hits.push(String(init.body)), new Response("ok"))) as unknown as typeof fetch });
     expect(result.succeeded).toBeGreaterThanOrEqual(1);
     expect(hits.some((h) => h.includes("evt_to_n8n"))).toBe(true);
   });

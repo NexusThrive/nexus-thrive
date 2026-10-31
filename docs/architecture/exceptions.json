@@ -1,6 +1,6 @@
 {
   "descripcion": "Excepciones de E0 a las reglas de dependencia (scripts/check-layers.mjs). Cada una registra origen, destino, regla, justificación, etapa prevista de resolución y estado. La lista solo puede reducirse: una excepción nueva o una que sobra hace fallar la comprobación, y maxAbiertas solo baja. Ampliarla requiere justificación y aprobación explícita del dueño.",
-  "maxAbiertas": 33,
+  "maxAbiertas": 32,
   "etapasPrevistas": {
     "E1": "E1 · Core deja de importar rubros (registro de repositorios por rubro)",
     "E2": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
@@ -177,19 +177,6 @@
       "soloTipos": false,
       "justificacion": "Al emitir o cobrar, Business llama a Finance (contabilización, impuestos, cartera). Debe pasar a eventos de dominio que Finance consume.",
       "etapa": "E5 · Business→Finance por eventos de dominio y contabilización fuera de Business",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-018",
-      "tipo": "import",
-      "origen": "lib/events/dispatcher.ts",
-      "destino": "lib/presence/pillars-db.ts",
-      "regla": "R3-core-no-importa-business",
-      "importaciones": 1,
-      "soloTipos": false,
-      "justificacion": "El despachador de eventos (Core) invoca lógica de presencia digital directamente. Los suscriptores deben registrarse desde su dominio.",
-      "etapa": "E3 · Operaciones y suscriptores de eventos por dominio (cada dominio se registra; Core no los conoce)",
       "estado": "abierta",
       "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
     },

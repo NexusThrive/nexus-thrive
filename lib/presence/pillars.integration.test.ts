@@ -10,6 +10,7 @@ import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { todayCO } from "@/lib/tax/tax";
 import { maturityInput, presenceV2, refreshPresence, sendWeeklyReport } from "./pillars-db";
 
+import { presenceSubscriber } from "./subscribers";
 const suffixM = Date.now().toString(36);
 
 /** Presencia v2 contra Postgres real y DOS negocios: pilares con datos reales, foto diaria, tendencia y evento. */
@@ -70,7 +71,7 @@ describe.skipIf(!TEST_URL)("presencia v2 (integración)", () => {
   test("se recalcula por eventos: el despachador refresca la presencia del negocio con una venta", async () => {
     await db.orm.public.PresenceSnapshot.where({ tenantId: b }).deleteAll();
     await db.transaction((tx) => emitEvent(tx, b, { type: "sale.completed", resourceType: "payment", resourceId: "p", payload: {} }));
-    await dispatchPending({ tenantIds: [b] });
+    await dispatchPending({ tenantIds: [b], subscribers: [presenceSubscriber] });
     expect((await db.orm.public.PresenceSnapshot.where({ tenantId: b }).all()).length).toBe(1);
   });
 
