@@ -38,11 +38,11 @@ confirmar si se **agrega** la descripción que falta (bajo riesgo) y qué hacer 
 
 ## 4. Estructura del código
 
-- **V10 · arquitectura física extensible de `lib/`** — diseño: [`V10-arquitectura-fisica.md`](V10-arquitectura-fisica.md); decisiones: [`V10-decisiones.md`](V10-decisiones.md). Informes: [M0–M2](V10-M0-M2-resultados.md), [revisión previa a M3](V10-revision-post-M0-M2.md), [M3](V10-M3-resultados.md).
-  - **Implementado:** M0 (verificador), M1 (`lib/runtime`), M2 (sectores en Core) y M3 (`lib/business` en módulos).
+- **V10 · arquitectura física extensible de `lib/`** — diseño: [`V10-arquitectura-fisica.md`](V10-arquitectura-fisica.md); decisiones: [`V10-decisiones.md`](V10-decisiones.md). Informes: [M0–M2](V10-M0-M2-resultados.md), [revisión previa a M3](V10-revision-post-M0-M2.md), [M3](V10-M3-resultados.md), [M4](V10-M4-resultados.md).
+  - **Implementado:** M0 (verificador), M1 (`lib/runtime`), M2 (sectores en Core), M3 (`lib/business` en módulos) y **M4 (`lib/platform` con nueve módulos; `lib/ops` y `lib/benefits` ya no existen)**.
   - **Aprobado, no implementado:** D-V10-9 (acceso de socios por módulo activo), `SectorView`, permisos `members.*` y la comprobación previa de solo lectura (todo en M7); la pasada documental sobre rutas antiguas (P-12); la composición de suscriptores (P-11, pospuesta).
-  - **Propuesto, a confirmar en su etapa:** `domains/finance/<módulo>` (M5; `lib/domains/` no existe y no se crea vacío) y `benefits` → `platform/benefits` (M4, con `withinLimit` extraída antes).
-  - **Pendiente de autorización:** M4, M5, M6, M7 y M8.
+  - **Propuesto, a confirmar en su etapa:** `domains/finance/<módulo>` (M5; `lib/domains/` no existe y no se crea vacío). Opciones futuras sin autorizar: un módulo de acceso del negocio en Core para que `app/[tenant]` no importe `benefits-db`, y mover `createTenant` a Core.
+  - **Pendiente de autorización:** M5, M6, M7 y M8.
 - **Mover `lib/construction/` a `lib/industry/construction/`** (~56 archivos y ~100 importadores): etapa independiente, sin decidir.
 - **`lib/tenant/db.ts` sigue grande:** conserva clientes, pagos, reservas, gastos y finanzas, que la regla de capas no ve.
 - La ficha 360° consulta al gimnasio aunque su módulo esté inactivo (mismo comportamiento de antes; se puede omitir).

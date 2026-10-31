@@ -33,14 +33,14 @@ Estado de las nueve:
 
 | D | Aprobada | Implementada | Pendiente |
 |---|---|---|---|
-| D-V10-1 | Sí | Sí (M0 declara el cambio en `layers.json`; M1–M3 mueven archivos) | — |
-| D-V10-2 | Sí | Sí (áreas por ruta, capas `domains` y `runtime`, M0) | Materializar las áreas que aún no tienen archivos (`domains`, `platform`, `core` completo) en sus etapas |
+| D-V10-1 | Sí | Sí (M0 declara el cambio en `layers.json`; M1–M4 mueven archivos) | — |
+| D-V10-2 | Sí | Sí (áreas por ruta, capas `domains` y `runtime`, M0). `platform` ya tiene archivos (M4) | Materializar las áreas que aún no los tienen (`domains`) y completar `core` en sus etapas |
 | D-V10-3 | Sí | Sí (verificador de reglas, M0) | — |
 | D-V10-4 | Sí | Parcial: principio documentado y límites en `lexicon.ts` (M2) | Los procesos sectoriales llegan con M7 |
 | D-V10-5 | Sí | Sí (M2) | — |
 | D-V10-6 | Sí | Sí (se usaron en M1–M3; el reporte vive en `check-layers --report`) | — |
 | D-V10-7 | Sí | Sí (registro y `runtime/sectors.ts`, M2) | Primera industria con definición propia (M7) |
-| D-V10-8 | Sí | Parcial: M1–M3 | M4–M8 |
+| D-V10-8 | Sí | Parcial: M1–M4 | M5–M8 |
 | D-V10-9 | **Sí, solo la dirección** | **No** | Implementación en M7, tras la comprobación de solo lectura sobre una copia (P-8) |
 
 ## 2. Preguntas abiertas del diseño (Q-n) y su resolución
@@ -54,7 +54,7 @@ Las resoluciones de esta tabla se tomaron al preparar M3 a partir de las recomen
 | **Q-4** ¿`money-service` pasa a Finance? | **No.** Queda en `business/sales` | Aprobada (**P-2**) | Hecho (M3) |
 | **Q-6** Enum `Vertical` | **Mantener el enum durante M7**; la opción B (texto + FK a `VerticalSetting`) es una dirección futura sujeta a la etapa Prisma | Aprobada (**P-6**) | Etapa Prisma P5 |
 | **Q-7a** `presence`, `growth` | **Se quedan en `business`** | Propuesta (recomendación del diseño) | Se reabre solo si aparece un segundo módulo de análisis |
-| **Q-7b** `benefits` | **Ubicación prevista: `lib/platform/benefits/`** (ver §2.2) | Propuesta con prerrequisito | Al autorizar M4 |
+| **Q-7b** `benefits` | **`lib/platform/benefits/`** (ver §2.2) | **Implementada en M4**, con su prerrequisito (`withinLimit` → Foundation) | Hecho (`e32f894`, `0de8609`) |
 | **Q-8** `extensions/` | **No se introduce** | Propuesta (recomendación del diseño) | Se reabre con un requisito real de código externo o por negocio |
 
 ### 2.1 Q-3 — `domains/finance/<módulo>`: qué es y qué no es
@@ -86,11 +86,21 @@ Las resoluciones de esta tabla se tomaron al preparar M3 a partir de las recomen
 - *No seguir en `business`:* no es una capacidad de negocio reutilizable; el único contacto de Business con él es la función genérica `withinLimit`, que es lo que hay que sacar de ahí.
 - *`platform` es compatible con sus consumidores:* la experiencia (`app/`, onboarding, ajustes del negocio) puede importar `platform` según la matriz; ningún módulo de `business` lo importaría una vez extraída `withinLimit`.
 
-**Prerrequisito (pendiente de autorización).** Antes de mover `benefits`, extraer `withinLimit` a un lugar neutral — el diseño propone `foundation` (M6e) — y actualizar sus **3** usuarios (`customers-db`, `exchange-db`, `crm/actions`). Si no, `business → platform` violaría la matriz de áreas. Puede hacerse como un paso mínimo propio inmediatamente antes de M4.
+**Prerrequisito (resuelto en M4: `e32f894`).** Antes de mover `benefits`, extraer `withinLimit` a un lugar neutral — el diseño propone `foundation` (M6e) — y actualizar sus **3** usuarios (`customers-db`, `exchange-db`, `crm/actions`). Si no, `business → platform` violaría la matriz de áreas. Puede hacerse como un paso mínimo propio inmediatamente antes de M4.
 
-**Puntos que se confirman al autorizar M4 (no se resuelven ahora):** (1) si `getTenantAccess` y `expireBenefitTrial`, que usan las pantallas del propio negocio, se quedan en `platform/benefits` (permitido: experiencia → platform) o se separan hacia Core como estado de acceso del negocio; (2) el destino definitivo de `benefit-cookie.ts` (hoy solo lo usan el alta y el canje).
+**Puntos que se dejaron para M4 (resueltos en M4, ver «Resolución en M4» abajo):** (1) si `getTenantAccess` y `expireBenefitTrial`, que usan las pantallas del propio negocio, se quedan en `platform/benefits` (permitido: experiencia → platform) o se separan hacia Core como estado de acceso del negocio; (2) el destino definitivo de `benefit-cookie.ts` (hoy solo lo usan el alta y el canje).
 
-**Qué NO hace esta decisión:** no mueve nada, no crea `lib/platform/`, no cambia `layers.json`.
+**Qué NO hace esta decisión por sí sola:** no mueve nada. El movimiento lo ejecutó M4.
+
+**Resolución en M4 (2026-10-31).**
+
+| Componente | Destino | Razón (responsabilidad y consumidores reales) |
+|---|---|---|
+| `withinLimit` | **`lib/foundation/limits.ts`** | Comparación pura genérica; la usaban Business, data-exchange y una acción de CRM. Prerrequisito de mover `benefits` |
+| `benefits.ts` | `platform/benefits/` | Lógica pura de los códigos de acceso de Nexus; consumida solo por puntos de entrada y por `benefits-db` |
+| `benefits-db.ts` (canje, alta y edición de códigos) | `platform/benefits/` | Programa comercial de Nexus; usa `createAdminDb` para auditar el canje |
+| `getTenantAccess` y `expireBenefitTrial` | **Se quedan en `benefits-db.ts`** | Dependen solo de Core, pero leen y escriben los datos de canje que el módulo posee, y todos sus consumidores (el layout y los ajustes del negocio, más la prueba) son puntos de entrada de la experiencia, que pueden importar platform. Separarlas exigiría partir `benefits-db.ts` y mover también `benefits.ts` a Core (necesitan `BenefitKind`/`normalizeBenefitKind`). Una prueba fija que `app/[tenant]` solo importa platform en esas tres referencias. **Opción futura, sin autorizar:** pasarlas a un módulo de acceso del negocio en Core si se quiere que las páginas de los negocios no importen platform en absoluto |
+| `benefit-cookie.ts` | `platform/benefits/` | Cookie del alta y del canje (`/c/[code]`); depende de los dos archivos hermanos y solo lo usan esos dos flujos |
 
 ### 2.3 Q-7a y Q-8 — por qué no se crean áreas ni módulos
 
@@ -122,3 +132,16 @@ Coinciden una a una con el texto de la autorización de M3 (P-1…P-13 son las m
 - Las 13 decisiones P de la tabla anterior se contrastaron con el texto de la autorización de M3: **sin diferencias de contenido ni de numeración**.
 - La única fuente de ambigüedad es la numeración D/Q (§0–§1) y la coincidencia «P-5» / «P5» (§0), ya aclaradas. `V10-arquitectura-fisica.md` §8 lleva una nota que remite a este documento; el resto de informes históricos se conserva sin cambios.
 - Ninguna decisión de este documento crea directorios, módulos ni áreas por sí misma.
+
+## 5. Decisiones tomadas dentro del alcance autorizado de M4
+
+Tomadas bajo la autorización de M4 (2026-10-31); ninguna cambia contratos públicos, comportamiento, datos ni una decisión ya aprobada. Detalle en [`V10-M4-resultados.md`](V10-M4-resultados.md).
+
+| Decisión | Estado |
+|---|---|
+| `platform` queda con **nueve módulos** (`admin`, `benefits`, `team`, `billing`, `crm`, `support`, `inbox`, `accounts`, `presence`); el diseño preveía seis nombres (`billing`, `support`, `crm`, `inbox`, `team`, `health`) | **Implementada** |
+| `todayBogota` (copia exacta de `bogotaDay`) se retira y sus 10 usos pasan a Foundation | **Implementada** (`d9f7c6a`) |
+| `TenantAuditAction` (las 38 acciones `BIZ_*`) lo define Core y `AuditAction` lo compone; evita Core → Platform sin tocar los escritores (P-9) | **Implementada** (`6053359`) |
+| `lib/admin/catalogs.ts` y `vertical-icons.ts` **permanecen** en `lib/admin/` (no son administración de la plataforma) | **Implementada**; su destino definitivo queda **pendiente** (slug → Core en M6d; íconos → experiencia) |
+| `createAdminDb` se mantiene como infraestructura interna de `platform/admin` (incluida `createTenant`) | **Implementada**; mover el alta de negocios a Core es una **opción futura sin autorizar** |
+
