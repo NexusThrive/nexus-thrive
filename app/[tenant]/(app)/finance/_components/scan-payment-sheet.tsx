@@ -16,7 +16,7 @@ import { ReceiptPrinter, type ReceiptData } from "@/components/organisms/receipt
 import { PAYMENT_METHODS, type PaymentMethodValue } from "@/lib/foundation/kernel/payment-vocabulary";
 import { spring } from "@/lib/motion";
 import { receiptQrDataUrl, receiptQrPayload } from "@/lib/business/sales/receipt-qr";
-import { bestCopAmount, guessPaymentMethod, parseQrPaymentPayload } from "@/lib/finance/payment-scan";
+import { bestCopAmount, guessPaymentMethod, parseQrPaymentPayload } from "@/lib/payment-input/payment-scan";
 import { cn } from "@/lib/utils";
 import { registerScannedPaymentAction } from "../actions";
 import { Select } from "@/components/atoms/select";

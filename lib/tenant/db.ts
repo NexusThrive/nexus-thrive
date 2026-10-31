@@ -865,7 +865,7 @@ export function createTenantDb(tenantId: string) {
       /**
        * Serie diaria (Bogotá) de ingresos aprobados y gastos de los últimos
        * `days` días, más los totales del periodo anterior del mismo largo.
-       * Trae solo monto y fecha de la ventana y agrupa en lib/finance-series.
+       * Trae solo monto y fecha de la ventana y agrupa en lib/foundation/kernel/finance-series.
        */
       getSeries: async (days: number = 30, withPrevious = true): Promise<FinanceSeries> => {
         // Sin periodo previo (vistas por semana y mes de la gráfica) la ventana es la mitad: menos filas.

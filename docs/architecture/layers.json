@@ -60,7 +60,6 @@
     { "path": "lib/data-exchange", "layer": "business" },
     { "path": "lib/presence", "layer": "business" },
 
-    { "path": "lib/finance", "layer": "domains" },
     { "path": "lib/accounting", "layer": "domains" },
     { "path": "lib/tax", "layer": "domains" },
     { "path": "lib/receivables", "layer": "domains" },
@@ -83,6 +82,7 @@
     { "path": "lib/motion", "layer": "experience" },
     { "path": "lib/design", "layer": "experience" },
     { "path": "lib/hooks", "layer": "experience" },
+    { "path": "lib/payment-input", "layer": "experience" },
     { "path": "lib/site", "layer": "experience" },
     { "path": "lib/seo", "layer": "experience" },
     { "path": "lib/onboarding/types.ts", "layer": "core" },
