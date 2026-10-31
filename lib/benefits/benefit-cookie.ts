@@ -18,6 +18,9 @@ import type { OnboardingBenefit } from "@/lib/onboarding/types";
 
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 14;
 
+/**
+ * Guarda el código de beneficio en una cookie httpOnly (SameSite lax, segura en producción) para aplicarlo más adelante.
+ */
 export async function setBenefitCookie(code: string): Promise<void> {
   const store = await cookies();
   store.set(BENEFIT_COOKIE, normalizeBenefitCode(code), {
@@ -29,11 +32,13 @@ export async function setBenefitCookie(code: string): Promise<void> {
   });
 }
 
+/** Código de beneficio guardado en la cookie, normalizado; vacío si no hay. */
 export async function readBenefitCookie(): Promise<string> {
   const store = await cookies();
   return normalizeBenefitCode(store.get(BENEFIT_COOKIE)?.value ?? "");
 }
 
+/** Borra la cookie del código de beneficio. */
 export async function clearBenefitCookie(): Promise<void> {
   const store = await cookies();
   store.delete(BENEFIT_COOKIE);

@@ -188,6 +188,9 @@ export function computePresence(input: PresenceInput): PresenceResult {
   return { score, state: stateOf(score), checks };
 }
 
+/**
+ * Estado de presencia según el puntaje: invisible (hasta 25), visible (hasta 50), conectado (hasta 75) o dominante.
+ */
 export function stateOf(score: number): PresenceState {
   if (score <= 25) return "INVISIBLE";
   if (score <= 50) return "VISIBLE";

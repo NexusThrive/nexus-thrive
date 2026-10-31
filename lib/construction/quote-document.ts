@@ -66,6 +66,9 @@ export type QuoteDocument = {
   };
 };
 
+/**
+ * Arma el documento de cotización de un proyecto (versión, código, vigencia, ficha, capítulos y totales) a partir del presupuesto, con o sin el detalle de APU. Es una función pura.
+ */
 export function buildQuoteDocument(input: {
   version: number;
   code: string;

@@ -29,6 +29,9 @@ const IMPORTANT_FIELDS = new Set([
   "quantity",
 ]);
 
+/**
+ * Calcula el puntaje de confianza de una importación (0–100) y su nivel (alta confianza, requiere revisión o corrección manual) según el mapeo de columnas, la validez de precios, las filas aceptadas, las categorías inferidas y las anomalías. La fórmula está en la cabecera del archivo.
+ */
 export function computeConfidence(input: {
   mapping: ColumnMapping[];
   rows: ParsedRow[];

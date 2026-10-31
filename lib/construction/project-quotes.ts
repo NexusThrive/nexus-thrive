@@ -93,6 +93,9 @@ function now(): Temporal.Instant {
   return Temporal.Instant.fromEpochMilliseconds(Date.now());
 }
 
+/**
+ * Repositorio de las cotizaciones de un proyecto: listarlas, emitir una versión con su documento, registrar la decisión del cliente, listar carpetas, adoptar cotizaciones heredadas y gestionar los seguimientos.
+ */
 export function createProjectQuotesDb(tenantId: string) {
   const toRow = (quote: {
     id: string;

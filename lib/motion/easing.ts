@@ -9,6 +9,9 @@ export function expoOut(t: number): number {
   return t >= 1 ? 1 : 1 - Math.pow(2, -10 * t);
 }
 
+/**
+ * Curva de aceleración cuártica que arranca y termina suave; recibe el avance `t` de 0 a 1 y devuelve el avance suavizado.
+ */
 export function easeInOutQuart(t: number): number {
   return t < 0.5 ? 8 * t ** 4 : 1 - (-2 * t + 2) ** 4 / 2;
 }

@@ -75,6 +75,7 @@ const toRow = (p: Record<string, unknown>, roles: string[]): PartyRow => ({
   roles: roles.sort(),
 });
 
+/** Agrega un rol (cliente, proveedor…) a un tercero; si ya lo tenía, no hace nada. */
 export async function addRole(tenantId: string, partyId: string, role: PartyRoleName): Promise<void> {
   try {
     await db.orm.public.PartyRole.create({ tenantId, partyId, role });
@@ -102,6 +103,9 @@ export async function findDuplicates(tenantId: string, probe: { documentNumber?:
 
 export type CreatePartyResult = { ok: true; party: PartyRow; possibleDuplicates: DuplicateMatch[] } | { ok: false; code: "duplicate_document" | "invalid"; message: string; existingId?: string };
 
+/**
+ * Crea un tercero (persona o empresa) con datos normalizados y recortados. Valida el nombre y avisa de posibles duplicados por documento, correo, teléfono o nombre.
+ */
 export async function createParty(tenantId: string, input: PartyInput): Promise<CreatePartyResult> {
   const legalName = input.legalName.trim().slice(0, 160);
   if (legalName.length < 2) return { ok: false, code: "invalid", message: "Escribe el nombre o razón social." };
@@ -174,6 +178,7 @@ export async function syncCustomerParty(tenantId: string, customerId: string): P
   }
 }
 
+/** Terceros del negocio con filtro por rol y texto; máximo 50 (20 por defecto). */
 export async function listParties(tenantId: string, opts: { role?: PartyRoleName; q?: string; limit?: number } = {}): Promise<PartyRow[]> {
   const limit = Math.min(50, Math.max(1, Math.trunc(opts.limit ?? 20)));
   let ids: string[] | null = null;

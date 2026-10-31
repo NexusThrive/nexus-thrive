@@ -57,6 +57,10 @@ async function fetchPublic(
   return null;
 }
 
+/**
+ * Analiza el sitio web público de un negocio: solo sigue direcciones públicas (revalidadas en cada redirección), con tiempo límite.
+ * Devuelve si responde, si usa HTTPS, el código de estado, el título, la descripción y si declara `viewport`; ante cualquier fallo, la señal como no accesible.
+ */
 export async function analyzeWebsite(rawUrl: string, resolve?: Resolver): Promise<WebsiteSignal> {
   const url = withProtocol(rawUrl);
 

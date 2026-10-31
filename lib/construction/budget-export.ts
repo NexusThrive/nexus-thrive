@@ -19,6 +19,9 @@ function pct(microFraction: string): number {
   return (Number(BigInt(microFraction)) / SCALE) * 100;
 }
 
+/**
+ * Genera el libro de Excel del presupuesto de obra (hojas «Presupuesto» y «APU») con valores numéricos en pesos. Es una función pura.
+ */
 export function buildBudgetWorkbook(input: {
   budget: ProjectBudgetData;
   projectCode: string;

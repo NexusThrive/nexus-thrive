@@ -17,6 +17,9 @@ export type UsageSignals = {
 
 export type Suggestion = { module: ModuleValue; reason: string };
 
+/**
+ * Módulos sugeridos según el uso real (por ejemplo, inventario si ya registra cobros, compras si controla inventario), solo si aún no están activos.
+ */
 export function suggestFromUsage(signals: UsageSignals, active: ReadonlySet<string>): Suggestion[] {
   const out: Suggestion[] = [];
   if (!active.has("inventory") && signals.payments >= 5) out.push({ module: "inventory", reason: "Ya registras cobros: lleva también tus productos y existencias." });

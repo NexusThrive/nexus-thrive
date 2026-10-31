@@ -39,10 +39,12 @@ export const COMMITMENT_STATUSES = [
 ] as const;
 export type CommitmentStatusValue = (typeof COMMITMENT_STATUSES)[number]["value"];
 
+/** Nombre para mostrar de un estado de compromiso semanal. */
 export function commitmentStatusLabel(status: CommitmentStatusValue): string {
   return COMMITMENT_STATUSES.find((o) => o.value === status)?.label ?? status;
 }
 
+/** Comprueba que un texto sea un estado de compromiso semanal válido. */
 export function isValidCommitmentStatus(
   raw: string,
 ): raw is CommitmentStatusValue {
@@ -62,6 +64,7 @@ export const NON_COMPLIANCE_CAUSES = [
 export type NonComplianceCauseValue =
   (typeof NON_COMPLIANCE_CAUSES)[number]["value"];
 
+/** Nombre para mostrar de una causa de no cumplimiento; «Sin causa registrada» si no hay. */
 export function nonComplianceCauseLabel(
   cause: NonComplianceCauseValue | null | undefined,
 ): string {
@@ -71,6 +74,7 @@ export function nonComplianceCauseLabel(
   return NON_COMPLIANCE_CAUSES.find((o) => o.value === cause)?.label ?? cause;
 }
 
+/** Comprueba que un texto sea una causa de no cumplimiento válida. */
 export function isValidNonComplianceCause(
   raw: string,
 ): raw is NonComplianceCauseValue {

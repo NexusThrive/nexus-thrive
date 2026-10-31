@@ -210,6 +210,7 @@ export function formatApuUnit(unit: string | null | undefined): string {
   return APU_UNIT_LABELS[unit] ?? unit;
 }
 
+/** Nombre para mostrar de una categoría de insumo del APU. */
 export function apuCategoryLabel(category: ApuItemCategoryValue): string {
   return (
     APU_ITEM_CATEGORIES.find((option) => option.value === category)?.label ??
@@ -217,24 +218,28 @@ export function apuCategoryLabel(category: ApuItemCategoryValue): string {
   );
 }
 
+/** Nombre para mostrar de un estado de cotización. */
 export function quoteStatusLabel(status: QuoteStatusValue): string {
   return (
     QUOTE_STATUSES.find((option) => option.value === status)?.label ?? status
   );
 }
 
+/** Comprueba que un texto sea una categoría de insumo válida. */
 export function isValidCategory(raw: string): raw is ApuItemCategoryValue {
   return (APU_ITEM_CATEGORIES as readonly { value: string }[]).some(
     (option) => option.value === raw,
   );
 }
 
+/** Comprueba que un texto sea un estado de cotización válido. */
 export function isValidStatus(raw: string): raw is QuoteStatusValue {
   return (QUOTE_STATUSES as readonly { value: string }[]).some(
     (option) => option.value === raw,
   );
 }
 
+/** Comprueba que un texto sea una unidad de medida válida del APU. */
 export function isValidUnit(raw: string): raw is ApuUnitValue {
   return (APU_UNITS as readonly string[]).includes(raw);
 }
@@ -558,10 +563,12 @@ export const RESOURCE_TYPES = [
 ] as const;
 export type ResourceTypeValue = (typeof RESOURCE_TYPES)[number]["value"];
 
+/** Nombre para mostrar de un tipo de recurso. */
 export function resourceTypeLabel(type: ResourceTypeValue): string {
   return RESOURCE_TYPES.find((option) => option.value === type)?.label ?? type;
 }
 
+/** Comprueba que un texto sea un tipo de recurso válido. */
 export function isValidResourceType(raw: string): raw is ResourceTypeValue {
   return (RESOURCE_TYPES as readonly { value: string }[]).some(
     (option) => option.value === raw,

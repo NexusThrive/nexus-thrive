@@ -31,6 +31,7 @@ export const OPERATIONS: readonly OperationDefinition[] = Object.freeze([
   ...purchaseOperations,
 ]);
 
+/** Operación declarada con ese id, o `undefined`. */
 export const getOperation = (id: string) => OPERATIONS.find((op) => op.id === id);
 
 /** Operaciones que este contexto puede usar (módulo activo y permiso): las herramientas y alcances que ve una llave. */

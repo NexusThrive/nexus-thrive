@@ -15,6 +15,7 @@ export const BUSINESS_ROLES: { value: Exclude<BusinessRole, "SUPERADMIN" | "STAF
   { value: "ADVISOR", label: "Asesor", hint: "Clientes, agenda y WhatsApp. Sin dinero." },
 ];
 
+/** Nombre para mostrar de un rol del negocio; «NEXUS» para el superadministrador y «Equipo» si no se reconoce. */
 export function roleLabel(role: string) {
   return BUSINESS_ROLES.find((r) => r.value === role)?.label ?? (role === "SUPERADMIN" ? "NEXUS" : "Equipo");
 }

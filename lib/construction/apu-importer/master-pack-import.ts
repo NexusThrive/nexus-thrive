@@ -65,6 +65,9 @@ function nameKey(name: string, unit: string): string {
   return itemSourceKey(name, unit);
 }
 
+/**
+ * Escribe un pack APU completo en el catálogo del negocio en una sola transacción, con las reglas de la cabecera: no borra nada que el archivo no traiga, conserva lo creado a mano y las fotos, registra los cambios de precio y deja el registro de la importación con la huella del archivo.
+ */
 export async function executeMasterPackImport(input: {
   tenantId: string;
   parse: MasterPackParse;

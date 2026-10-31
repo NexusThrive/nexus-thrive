@@ -45,6 +45,9 @@ import {
   insertBaseline,
 } from "./shared";
 
+/**
+ * Repositorio de presupuestos de obra de un negocio: consultar o crear el presupuesto de un proyecto, capítulos y partidas (crear, editar, borrar, traer una actividad del catálogo), AIU, bloqueo, verificación de totales, líneas base y recursos. Todo acotado por `tenantId`.
+ */
 export function createBudgetsDb(tenantId: string) {
   return {
       /** Presupuesto del proyecto (con árbol completo) o `null` si no existe. */

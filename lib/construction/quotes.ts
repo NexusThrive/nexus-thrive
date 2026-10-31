@@ -24,6 +24,9 @@ import {
 } from "./shared";
 import { escapeLike } from "@/lib/sql-like";
 
+/**
+ * Repositorio de cotizaciones del negocio: listar con búsqueda, estado y paginación, métricas, consultar y registrar.
+ */
 export function createQuotesDb(tenantId: string) {
   return {
       list: async ({

@@ -96,6 +96,7 @@ export async function importProducts(tenantId: string, table: Table, opts: { dry
   return out;
 }
 
+/** Productos del negocio, por nombre, como texto CSV con los encabezados en español. */
 export async function exportProducts(tenantId: string): Promise<string> {
   const rows = await db.orm.public.Product.where({ tenantId }).orderBy((p) => p.name.asc()).all();
   const kinds: Record<string, string> = { PRODUCT: "Producto", SERVICE: "Servicio" };
@@ -112,6 +113,9 @@ export async function exportProducts(tenantId: string): Promise<string> {
 
 const sameTags = (a: readonly string[] | null | undefined, b: string[]) => (a ?? []).length === b.length && b.every((t) => (a ?? []).includes(t));
 
+/**
+ * Importa clientes desde una tabla: actualiza el que coincide por documento o correo y crea el resto, respetando el límite de clientes del acuerdo. Con `dryRun` solo informa lo que haría.
+ */
 export async function importCustomers(tenantId: string, table: Table, opts: { dryRun: boolean }): Promise<ImportReport> {
   const parsed = parseCustomers(table);
   const out = report("customers", opts.dryRun, parsed, table.rows.length);

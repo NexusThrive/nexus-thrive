@@ -26,6 +26,9 @@ import {
   resolveBudgetItemOfProject,
 } from "./shared";
 
+/**
+ * Repositorio del plan Lean de un negocio: consultar o crear el plan de un proyecto, crear tareas de la ventana móvil y compromisos semanales, cambiar el estado de un compromiso y avanzar la ventana.
+ */
 export function createPlanDb(tenantId: string) {
   return {
       /** Plan Lean del proyecto (con tareas y compromisos), o null. */

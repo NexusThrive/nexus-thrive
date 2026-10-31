@@ -77,6 +77,9 @@ async function ensureLevel(tx: MoneyTx, tenantId: string, warehouseId: string, p
   return created;
 }
 
+/**
+ * Registra un movimiento de inventario (entrada, salida, venta o ajuste) dentro de la transacción de quien llama: valida cantidad y costo, actualiza el saldo de la bodega y el costo promedio ponderado, y si es una venta o una devolución de venta pide la contabilización del costo. Lanza `StockError` si no hay existencias o los datos no son válidos.
+ */
 export async function applyStockMovement(tx: MoneyTx, tenantId: string, input: MovementInput): Promise<MovementResult> {
   const { kind } = input;
   if (!Number.isInteger(input.quantity) || input.quantity < 0 || (kind !== "ADJUST" && input.quantity === 0)) throw new StockError("La cantidad debe ser un número entero mayor que cero.");

@@ -20,6 +20,9 @@ export type ImportSource = {
   blobUrl: string | null;
 };
 
+/**
+ * Solo acepta enlaces HTTPS al almacenamiento público de importaciones (`/imports/`) del proveedor de archivos; evita que se pida leer una dirección arbitraria.
+ */
 export function isAllowedBlobUrl(raw: string): boolean {
   try {
     const url = new URL(raw);
@@ -33,6 +36,9 @@ export function isAllowedBlobUrl(raw: string): boolean {
   }
 }
 
+/**
+ * Obtiene el archivo a importar de un formulario: subido directamente o desde un enlace permitido del almacenamiento.
+ */
 export async function readImportSource(formData: FormData): Promise<ImportSource> {
   const file = formData.get("file");
   const blobUrl = formData.get("blobUrl");

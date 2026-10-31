@@ -16,6 +16,9 @@ export function isAvailable(op: Pick<OperationDefinition, "module" | "permission
   return true;
 }
 
+/**
+ * Ejecuta una operación por su id comprobando, en este orden: que exista, que su módulo esté activo, el permiso, la entrada (validada con su esquema) y finalmente su salida. Lanza `OperationError` con el código y el estado HTTP que corresponda.
+ */
 export async function runOperation(
   operations: readonly OperationDefinition[],
   ctx: OperationContext,

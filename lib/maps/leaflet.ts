@@ -7,6 +7,7 @@
 
 let leafletPromise: Promise<{ L: typeof import("leaflet") }> | null = null;
 
+/** Carga Leaflet bajo demanda en el navegador, una sola vez. Falla si se llama en el servidor. */
 export function loadLeaflet(): Promise<{ L: typeof import("leaflet") }> {
   if (typeof window === "undefined") {
     return Promise.reject(new Error("Leaflet solo está disponible en el navegador"));

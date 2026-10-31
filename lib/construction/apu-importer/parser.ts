@@ -158,6 +158,9 @@ function countBlockSignals(rows: string[][]): number {
   return hits;
 }
 
+/**
+ * Convierte el archivo subido (Excel o CSV) en una tabla de filas, detectando si tiene estructura de bloques de APU.
+ */
 export function parseFile(params: {
   buffer: ArrayBuffer;
   fileName: string;

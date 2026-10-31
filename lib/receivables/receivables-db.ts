@@ -34,6 +34,7 @@ function build(rows: Omit<CarteraRow, "balance" | "daysOverdue" | "bucket">[], t
   return { rows: full, aging: ageItems(full, today) };
 }
 
+/** Cartera por cobrar: cuentas de cobro emitidas con su saldo y antigüedad a la fecha. */
 export async function receivables(tenantId: string, today = todayCO()): Promise<Cartera> {
   const docs = await db.orm.public.Invoice.where({ tenantId, kind: "BILL", status: "ISSUED" }).all();
   return build(
@@ -42,6 +43,7 @@ export async function receivables(tenantId: string, today = todayCO()): Promise<
   );
 }
 
+/** Cartera por pagar: facturas de proveedores registradas con su saldo y antigüedad a la fecha. */
 export async function payables(tenantId: string, today = todayCO()): Promise<Cartera> {
   const docs = await db.orm.public.SupplierInvoice.where({ tenantId, status: "REGISTERED" }).all();
   const ids = [...new Set(docs.map((d) => d.supplierPartyId))];

@@ -7,6 +7,9 @@ import { db } from "@/prisma/db";
  */
 export type SetupState = { configured: boolean; hint: string; href: string };
 
+/**
+ * Estado de configuración de los módulos que requieren conexiones (pagos en línea, facturación electrónica, sitio, Google, contabilidad), para mostrar qué falta por configurar.
+ */
 export async function setupStates(tenantId: string): Promise<Partial<Record<ModuleValue, SetupState>>> {
   const [tenant, payment, einvoice, site, listing] = await Promise.all([
     db.orm.public.Tenant.where({ id: tenantId }).select("einvoiceEnabled", "accountingEnabled").first(),

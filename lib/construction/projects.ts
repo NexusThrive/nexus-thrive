@@ -26,6 +26,9 @@ import {
 } from "./shared";
 import { escapeLike } from "@/lib/sql-like";
 
+/**
+ * Repositorio de proyectos de obra de un negocio: listar, métricas, consultar, crear, actualizar y borrar, siempre acotado por `tenantId`.
+ */
 export function createProjectsDb(tenantId: string) {
   return {
       list: async ({

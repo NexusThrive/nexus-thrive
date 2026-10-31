@@ -89,6 +89,9 @@ export function itemSourceKey(description: string, unit: string): string {
   return `${collapse(description).toUpperCase()}|${collapse(unit).toUpperCase()}`;
 }
 
+/**
+ * Clave estable de origen de una actividad del paquete maestro (código del APU, o nombre y unidad si no tiene; los auxiliares llevan prefijo propio), para reconocerla en importaciones repetidas.
+ */
 export function activitySourceKey(apu: Pick<MasterPackApu, "code" | "name" | "unit">, auxiliary: boolean): string {
   return auxiliary
     ? `AUX:${itemSourceKey(apu.name, apu.unit)}`
@@ -132,6 +135,7 @@ export function categoryForSection(section: string | null): ApuItemCategoryValue
   return "OTRO";
 }
 
+/** ¿La unidad es un porcentaje (empieza por «%»)? */
 export function isPercentUnit(unit: string): boolean {
   return unit.trim().startsWith("%");
 }

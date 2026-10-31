@@ -18,6 +18,9 @@ import {
   loadLeanPlan,
 } from "./shared";
 
+/**
+ * Repositorio de informes de obra de un negocio: datos del Informe Cero, del informe semanal y de la explosión de compras (BOM), acotados por `tenantId`.
+ */
 export function createReportsDb(tenantId: string) {
   return {
       /**

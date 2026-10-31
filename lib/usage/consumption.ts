@@ -20,6 +20,9 @@ export type ConsumptionRow = {
 /** Se avisa al llegar al 80 % del límite. */
 export const NEAR_THRESHOLD = 0.8;
 
+/**
+ * Fila de consumo de un recurso: ilimitado, normal, cerca del límite o excedido, con el porcentaje usado (tope 100).
+ */
 export function consumptionRow(input: { key: string; label: string; used: number; limit: number | null; period?: string }): ConsumptionRow {
   const { used, limit } = input;
   if (limit === null) return { ...input, status: "unlimited", pct: 0 };
@@ -28,6 +31,7 @@ export function consumptionRow(input: { key: string; label: string; used: number
   return { ...input, status, pct: Math.min(100, Math.round(ratio * 100)) };
 }
 
+/** Filas de consumo del negocio: personas del equipo, clientes activos y cada medidor de uso del periodo. */
 export function buildConsumption(input: {
   seats: { used: number; limit: number | null };
   customers: { used: number; limit: number | null };

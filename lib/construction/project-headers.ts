@@ -12,6 +12,9 @@ import {
   serializeProjectHeader,
 } from "./shared";
 
+/**
+ * Repositorio de la ficha del proyecto (datos fiscales y de contacto del cliente): leerla solo si el proyecto es del negocio y actualizarla.
+ */
 export function createProjectHeadersDb(tenantId: string) {
   return {
       /** Lee la ficha solo si el proyecto pertenece a este tenant. */

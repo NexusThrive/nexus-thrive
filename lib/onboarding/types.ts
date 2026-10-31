@@ -29,6 +29,7 @@ export function isOnboardingTenantType(
 export const TEAM_SIZES = ["SOLO", "2-5", "6-20", "20+"] as const;
 export type TeamSizeValue = (typeof TEAM_SIZES)[number];
 
+/** Comprueba que un texto sea un tamaño de equipo conocido. */
 export function isTeamSize(value: string): value is TeamSizeValue {
   return (TEAM_SIZES as readonly string[]).includes(value);
 }

@@ -50,6 +50,9 @@ const toRow = (i: Record<string, unknown>, now = Date.now()): IntentRow => ({
   createdAt: String(i.createdAt),
 });
 
+/**
+ * Crea una intención de cobro con su referencia: valida valor y vigencia, que la cuenta de cobro vinculada esté emitida y que el cobro no supere su saldo, y que el cliente exista.
+ */
 export async function createIntent(tenantId: string, input: { amount: number; description: string; expiresInHours?: number; customerId?: string | null; invoiceId?: string | null; channel?: "LINK" | "QR"; provider?: string }, userId: string): Promise<{ ok: true; id: string; reference: string } | { ok: false; message: string }> {
   const hours = input.expiresInHours ?? 48;
   const problem = validateIntent({ amount: input.amount, description: input.description, expiresInHours: hours });
@@ -64,6 +67,7 @@ export async function createIntent(tenantId: string, input: { amount: number; de
   return { ok: true, id: created.id, reference: created.reference };
 }
 
+/** Intenciones de cobro del negocio, las más recientes primero (100 por defecto). */
 export async function listIntents(tenantId: string, limit = 100): Promise<IntentRow[]> {
   const rows = await db.orm.public.PaymentIntent.where({ tenantId }).orderBy((i) => i.createdAt.desc()).limit(limit).all();
   return rows.map((r) => toRow(r as unknown as Record<string, unknown>));
@@ -150,6 +154,7 @@ export async function confirmIntent(tenantId: string, reference: string, by: { k
   }
 }
 
+/** Cancela una intención pendiente de forma atómica. Devuelve `false` si no existe o ya no está pendiente. */
 export async function cancelIntent(tenantId: string, id: string): Promise<boolean> {
   const i = await db.orm.public.PaymentIntent.where({ tenantId, id }).first();
   if (!i || i.status !== "PENDING") return false;
@@ -217,6 +222,7 @@ export async function runReconciliation(tenantId: string, provider: string, day:
   return { ok: true, id: run.id, result };
 }
 
+/** Últimas conciliaciones con la pasarela (15 por defecto): día, valor esperado y valor reportado. */
 export async function listReconciliations(tenantId: string, limit = 15) {
   const rows = await db.orm.public.ReconciliationRun.where({ tenantId }).orderBy((r) => r.createdAt.desc()).limit(limit).all();
   return rows.map((r) => ({ id: r.id, provider: r.provider, day: r.day, expected: toNumber(r.expected), reported: toNumber(r.reported), matched: r.matched, differences: (r.differences ?? []) as unknown as Reconciliation["differences"] }));

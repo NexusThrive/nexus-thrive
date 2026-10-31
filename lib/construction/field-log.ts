@@ -14,6 +14,9 @@ import {
   resolveBudgetItemOfProject,
 } from "./shared";
 
+/**
+ * Repositorio de la bitácora de obra de un negocio: consultar o crear la bitácora de un proyecto y crear o borrar entradas.
+ */
 export function createFieldLogDb(tenantId: string) {
   return {
       /** Bitácora del proyecto (con sus entradas), o null. */

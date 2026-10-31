@@ -262,6 +262,7 @@ export async function createBenefitCode(
   return { ok: false, message: "No se pudo generar un código único. Inténtalo de nuevo." };
 }
 
+/** Activa o desactiva un código de beneficio. */
 export async function setBenefitActive(
   id: string,
   active: boolean,

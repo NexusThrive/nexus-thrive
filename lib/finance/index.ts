@@ -34,12 +34,14 @@ export const EXPENSE_CATEGORIES = [
 
 export type ExpenseCategory = (typeof EXPENSE_CATEGORIES)[number];
 
+/** Nombre para mostrar de un medio de pago. */
 export function paymentMethodLabel(method: PaymentMethodValue): string {
   return (
     PAYMENT_METHODS.find((option) => option.value === method)?.label ?? method
   );
 }
 
+/** Nombre para mostrar de un estado de pago. */
 export function paymentStatusLabel(status: PaymentStatusValue): string {
   return (
     PAYMENT_STATUSES.find((option) => option.value === status)?.label ?? status

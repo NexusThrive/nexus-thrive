@@ -46,6 +46,9 @@ function toolDescriptor(op: OperationDefinition) {
 const json = (status: number, body: unknown, requestId: string, headers: Record<string, string> = {}) =>
   new Response(body === null ? null : JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", "x-request-id": requestId, "cache-control": "no-store", ...headers } });
 
+/**
+ * Atiende una petición del servidor MCP: solo acepta POST (JSON-RPC), autentica con la llave de API y expone como herramientas las operaciones que el negocio, el rol y los alcances de la llave permiten.
+ */
 export async function handleMcp(request: Request, deps: ApiDeps): Promise<Response> {
   const started = Date.now();
   const requestId = `req_${randomUUID().replace(/-/g, "").slice(0, 16)}`;
