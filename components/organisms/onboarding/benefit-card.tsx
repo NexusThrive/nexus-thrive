@@ -1,5 +1,5 @@
 import { Check, Gift, Sparkles } from "lucide-react";
-import { benefitCopy } from "@/lib/benefits/benefits";
+import { benefitCopy } from "@/lib/platform/benefits/benefits";
 
 /**
  * Tarjeta del paso "Elige cómo empezar" cuando hay un código de acceso (de la

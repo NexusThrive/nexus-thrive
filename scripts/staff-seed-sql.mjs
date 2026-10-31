@@ -1,10 +1,10 @@
 // Imprime el SQL que deja el equipo del panel listo en una base nueva: los
-// roles del sistema (de lib/ops/permissions.ts, la misma lista que usa la
+// roles del sistema (de lib/platform/team/permissions.ts, la misma lista que usa la
 // app) y el Propietario por correo, sin cuenta de Clerk todavía. Se vincula
 // solo cuando esa persona entra con ese correo verificado.
 //
 //   node scripts/staff-seed-sql.mjs dueno@ejemplo.com | psql "$URL"
-import { OWNER_ROLE_KEY, SYSTEM_ROLES } from "../lib/ops/permissions.ts";
+import { OWNER_ROLE_KEY, SYSTEM_ROLES } from "../lib/platform/team/permissions.ts";
 
 const email = (process.argv[2] ?? "").trim().toLowerCase();
 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
