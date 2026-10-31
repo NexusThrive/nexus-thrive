@@ -7,7 +7,7 @@ import { getVerticalTerms, type VerticalTerms } from "@/lib/vertical-terms";
 import { can } from "@/lib/auth/permissions";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { withinLimit } from "@/lib/benefits/benefits";
-import { customerLimit } from "@/lib/business/customers-db";
+import { customerLimit } from "@/lib/tenant/customer-limit";
 
 /** Resultado de las acciones de fila / acciones masivas. */
 export type CustomerActionResult = {

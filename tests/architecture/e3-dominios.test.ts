@@ -53,3 +53,35 @@ describe("operaciones por dominio", () => {
     for (const dominio of ["@/lib/inventory/operations", "@/lib/purchasing/operations", "@/lib/presence/operations"]) expect(imports).toContain(dominio);
   });
 });
+
+describe("suscriptores de eventos", () => {
+  test("el despachador (Core) no importa ningún dominio", () => {
+    const dominios = importsOf("lib/events/dispatcher.ts").filter((i) => /@\/lib\/(presence|business|inventory|store|accounting)\b/.test(i));
+    expect(dominios).toEqual([]);
+  });
+
+  test("el suscriptor de presencia vive en su dominio y la ruta de cron lo entrega", () => {
+    expect(exists("lib/presence/subscribers.ts")).toBe(true);
+    expect(read("app/api/cron/webhooks/route.ts")).toContain("dispatchPending({ subscribers: [presenceSubscriber] })");
+  });
+
+  test("`subscribers` es obligatorio: no hay un valor por defecto que lo omita en silencio", () => {
+    expect(read("lib/events/dispatcher.ts")).toMatch(/export async function dispatchPending\(deps: DispatchDeps\)/);
+    expect(read("lib/events/dispatcher.ts")).toMatch(/subscribers: readonly EventSubscriber\[\];/);
+  });
+});
+
+describe("límite de clientes del plan", () => {
+  test("la política vive en Core, junto a la de usuarios, y Business no la define", () => {
+    expect(exists("lib/tenant/customer-limit.ts")).toBe(true);
+    expect(read("lib/business/customers-db.ts")).not.toMatch(/export async function customerLimit/);
+    expect(importsOf("lib/usage/consumption-db.ts").some((i) => i.startsWith("@/lib/business/"))).toBe(false);
+  });
+});
+
+describe("excepciones de la etapa E3", () => {
+  test("no queda ninguna", () => {
+    const exc = JSON.parse(read("docs/architecture/exceptions.json")) as { exceptions: { etapa: string }[] };
+    expect(exc.exceptions.filter((e) => /^E3\b/.test(e.etapa))).toEqual([]);
+  });
+});
