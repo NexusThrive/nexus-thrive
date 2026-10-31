@@ -10,8 +10,8 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
 import { setAccountingEnabled } from "@/lib/accounting/ledger-db";
-import { createDocument, documentView } from "@/lib/business/documents-db";
-import { listInvoices } from "@/lib/business/invoices-db";
+import { createDocument, documentView } from "@/lib/business/sales/documents-db";
+import { listInvoices } from "@/lib/business/sales/invoices-db";
 import { setFiscalEnabled } from "@/lib/einvoice/einvoice-db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 

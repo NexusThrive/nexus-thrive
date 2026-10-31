@@ -2,12 +2,12 @@
 
 import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
-import { paymentRefTaken } from "@/lib/business/finance-db";
+import { paymentRefTaken } from "@/lib/business/sales/finance-db";
 import { getAppBaseUrl } from "@/lib/app-url";
 import { formatCurrency } from "@/lib/format";
-import { receiptCode } from "@/lib/business/invoice";
+import { receiptCode } from "@/lib/business/sales/invoice";
 import { canHandleCash } from "@/lib/auth/roles";
-import { addAttachment, addCashMovement, checkAttachment, currentCashSession, receiptToken } from "@/lib/business/finance-db";
+import { addAttachment, addCashMovement, checkAttachment, currentCashSession, receiptToken } from "@/lib/business/sales/finance-db";
 import {
   validateExpense,
   validatePayment,
@@ -16,7 +16,7 @@ import {
   type PaymentFieldErrors,
   type PaymentFormValues,
 } from "./validators";
-import { recordIncomeNow } from "@/lib/business/money-service";
+import { recordIncomeNow } from "@/lib/business/sales/money-service";
 
 export type PaymentFormState = {
   status: "idle" | "error" | "ok";
@@ -104,7 +104,7 @@ export async function createPaymentAction(
   }
 
   // Pago, recibo consecutivo y (en efectivo con caja abierta) la caja, en una
-  // sola transacción: ver lib/business/money-service.ts.
+  // sola transacción: ver lib/business/sales/money-service.ts.
   const created = await recordIncomeNow(
     context.tenantId,
     { amount, method: provider, status, providerRefId: providerRefId || null, description: description || null, customerId: customerId || null },

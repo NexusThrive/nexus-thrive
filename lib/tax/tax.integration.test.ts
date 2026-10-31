@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
-import { createDocument } from "@/lib/business/documents-db";
+import { createDocument } from "@/lib/business/sales/documents-db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { NumberingError, createResolution, createTaxRate, ensureDefaultTaxes, listResolutions, listTaxRates, setResolutionActive, updateTaxRate } from "./tax-db";
 

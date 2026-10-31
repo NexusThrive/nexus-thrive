@@ -87,7 +87,7 @@ describe("dependencias entre áreas", () => {
 
   test("los archivos reales están donde dice su ruta (ninguna ubicación incoherente)", () => {
     expect(c("lib/runtime/ports.ts")?.layer).toBe("runtime");
-    expect(c("lib/business/money-service.ts")?.layer).toBe("business");
+    expect(c("lib/business/sales/money-service.ts")?.layer).toBe("business");
     expect(c("lib/industry/gym/gym-db.ts")).toMatchObject({ layer: "industry", industry: "gym" });
   });
 });

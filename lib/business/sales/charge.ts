@@ -5,7 +5,7 @@ import { moneyTransaction, recordIncome, type MoneyTx } from "./money-service";
  * hay un turno de caja abierto, el dinero entra a esa caja. Es el mismo
  * camino de la venta directa, para taquilla, salidas, renovaciones, etc.
  *
- * Todo pasa en una transacción (`lib/business/money-service.ts`). Con `tx`, el cobro
+ * Todo pasa en una transacción (`lib/business/sales/money-service.ts`). Con `tx`, el cobro
  * se suma a la transacción de quien llama (por ejemplo, junto con la
  * membresía que se vende).
  */

@@ -1,7 +1,7 @@
 "use client";
 
 import { MoneyInput } from "@/components/molecules/money-input";
-import { parseMoney } from "@/lib/business/money";
+import { parseMoney } from "@/lib/business/sales/money";
 import { useEffect, useActionState, useMemo, useState } from "react";
 import { Check, Plus } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";

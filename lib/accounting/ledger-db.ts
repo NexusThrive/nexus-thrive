@@ -1,4 +1,4 @@
-import { MoneyError } from "@/lib/business/money-error";
+import { MoneyError } from "@/lib/business/sales/money-error";
 import { toNumber } from "@/lib/format";
 import { todayCO } from "@/lib/tax/tax";
 import { db } from "@/prisma/db";

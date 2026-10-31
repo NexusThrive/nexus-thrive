@@ -2,12 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { customerNameIn } from "@/lib/business/customers/customers-db";
-import { validateLines, type InvoiceKind, type LineInput } from "@/lib/business/invoice";
-import { documentView, issueAdjustmentNote, type DocumentView } from "@/lib/business/documents-db";
-import { createInvoice, payInvoice, voidInvoice, invoiceStatus } from "@/lib/business/invoices-db";
-import { MoneyError } from "@/lib/business/money-error";
+import { validateLines, type InvoiceKind, type LineInput } from "@/lib/business/sales/invoice";
+import { documentView, issueAdjustmentNote, type DocumentView } from "@/lib/business/sales/documents-db";
+import { createInvoice, payInvoice, voidInvoice, invoiceStatus } from "@/lib/business/sales/invoices-db";
+import { MoneyError } from "@/lib/business/sales/money-error";
 import { canHandleCash, canManage } from "@/lib/auth/roles";
-import { receiptCode } from "@/lib/business/invoice";
+import { receiptCode } from "@/lib/business/sales/invoice";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { logTenantAction } from "@/lib/tenant/audit";

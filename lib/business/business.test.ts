@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { arqueo, expectedCash, replenishNeeded, validateCashMovement } from "./cash";
+import { arqueo, expectedCash, replenishNeeded, validateCashMovement } from "./sales/cash";
 import { applyStock, stockLevel, validateStockMove } from "./inventory";
-import { amountInWords, invoiceCode, invoiceTotal, validateLines } from "./invoice";
-import { formatMoneyInput, liveFormat, parseMoney } from "./money";
+import { amountInWords, invoiceCode, invoiceTotal, validateLines } from "./sales/invoice";
+import { formatMoneyInput, liveFormat, parseMoney } from "./sales/money";
 
 describe("dinero en formato colombiano", () => {
   it("lee lo que escribe la persona", () => {

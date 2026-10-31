@@ -85,7 +85,7 @@ export async function createInvoice(tenantId: string, v: { kind: InvoiceKind; cu
 
 /**
  * Marca la cuenta como pagada creando el cobro (con recibo y caja si es
- * efectivo), una sola vez y en una transacción: ver `lib/business/money-service.ts`.
+ * efectivo), una sola vez y en una transacción: ver `lib/business/sales/money-service.ts`.
  */
 export { payInvoice } from "./money-service";
 

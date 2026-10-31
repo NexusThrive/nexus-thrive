@@ -5,8 +5,8 @@ import { Printer } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { DOCUMENT_LABELS, type DocumentKind } from "@/lib/business/commercial-document";
-import type { DocumentView } from "@/lib/business/documents-db";
+import { DOCUMENT_LABELS, type DocumentKind } from "@/lib/business/sales/commercial-document";
+import type { DocumentView } from "@/lib/business/sales/documents-db";
 import { formatCurrency } from "@/lib/format";
 
 /**

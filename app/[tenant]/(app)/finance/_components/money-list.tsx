@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { EmptyState } from "@/components/molecules/empty-state";
 import PaginationLinks from "@/components/molecules/pagination-links";
-import { receiptCode } from "@/lib/business/invoice";
+import { receiptCode } from "@/lib/business/sales/invoice";
 import { paymentMethodLabel } from "@/lib/finance";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";

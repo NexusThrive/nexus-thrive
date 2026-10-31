@@ -10,10 +10,10 @@ import { afterAll, beforeAll, afterEach, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
 import { setAccountingEnabled } from "@/lib/accounting/ledger-db";
-import { accountingPort, type AccountingFact, type AccountingPort } from "@/lib/business/accounting-port";
-import { createDocument } from "@/lib/business/documents-db";
-import { voidInvoice } from "@/lib/business/invoices-db";
-import { recordIncomeNow, voidPayment } from "@/lib/business/money-service";
+import { accountingPort, type AccountingFact, type AccountingPort } from "@/lib/business/sales/accounting-port";
+import { createDocument } from "@/lib/business/sales/documents-db";
+import { voidInvoice } from "@/lib/business/sales/invoices-db";
+import { recordIncomeNow, voidPayment } from "@/lib/business/sales/money-service";
 import { PortNotProvidedError } from "@/lib/ports";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 

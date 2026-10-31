@@ -3,9 +3,9 @@ import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
 import { bogotaDayKey } from "@/lib/finance/series";
 import { addDaysKey, bogotaToMs } from "@/lib/business/scheduling/calendar";
-import { recordCharge } from "@/lib/business/charge";
-import { payTicketSale as payTicketSaleOnce } from "@/lib/business/money-service";
-import { voidPayment, withNextNumber } from "@/lib/business/finance-db";
+import { recordCharge } from "@/lib/business/sales/charge";
+import { payTicketSale as payTicketSaleOnce } from "@/lib/business/sales/money-service";
+import { voidPayment, withNextNumber } from "@/lib/business/sales/finance-db";
 import { listProducts } from "@/lib/business/catalog/products-db";
 import { museumSettings, saleKindLabel, slotLoads, ticketCode, validateTicketSale, type MuseumSettings, type SaleLike, type TicketLineInput } from "./museum";
 
@@ -153,7 +153,7 @@ export async function createTicketSale(tenantId: string, input: NewSale, userId:
 
 /** Cobra una reserva de grupo (pasa a pagada y confirma la visita en la agenda). */
 export async function payTicketSale(tenantId: string, id: string, method: string, userId: string) {
-  // Una sola vez y en una transacción (lib/business/money-service.ts): dos clics no cobran dos veces.
+  // Una sola vez y en una transacción (lib/business/sales/money-service.ts): dos clics no cobran dos veces.
   return payTicketSaleOnce(tenantId, id, method, userId, (s) => `Taquilla ${ticketCode(s.number)} · ${s.visitors} entradas · ${s.slot}`);
 }
 

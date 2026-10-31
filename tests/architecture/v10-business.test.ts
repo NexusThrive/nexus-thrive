@@ -29,6 +29,23 @@ const MODULES: Record<string, Record<string, string>> = {
     "lib/business/catalog/catalog-db.ts": "lib/catalog/catalog-db.ts",
     "lib/business/catalog/barcode.ts": "lib/catalog/barcode.ts",
   },
+  sales: {
+    "lib/business/sales/commercial-document.ts": "lib/business/commercial-document.ts",
+    "lib/business/sales/documents-db.ts": "lib/business/documents-db.ts",
+    "lib/business/sales/invoice.ts": "lib/business/invoice.ts",
+    "lib/business/sales/invoices-db.ts": "lib/business/invoices-db.ts",
+    "lib/business/sales/charge.ts": "lib/business/charge.ts",
+    "lib/business/sales/receipt-qr.ts": "lib/business/receipt-qr.ts",
+    "lib/business/sales/receipt-share.ts": "lib/business/receipt-share.ts",
+    "lib/business/sales/accounting-port.ts": "lib/business/accounting-port.ts",
+    "lib/business/sales/fiscal-port.ts": "lib/business/fiscal-port.ts",
+    "lib/business/sales/numbering-port.ts": "lib/business/numbering-port.ts",
+    "lib/business/sales/money-service.ts": "lib/business/money-service.ts",
+    "lib/business/sales/money.ts": "lib/business/money.ts",
+    "lib/business/sales/money-error.ts": "lib/business/money-error.ts",
+    "lib/business/sales/cash.ts": "lib/business/cash.ts",
+    "lib/business/sales/finance-db.ts": "lib/business/finance-db.ts",
+  },
   customers: {
     "lib/business/customers/customers-db.ts": "lib/business/customers-db.ts",
     "lib/business/customers/customer-fields.ts": "lib/business/customer-fields.ts",
@@ -92,3 +109,11 @@ describe("módulos de lib/business (M3)", () => {
   });
 });
 
+describe("referencias de configuración a módulos movidos (M3)", () => {
+  test("la regla de ESLint que prohíbe moneyTransaction en app/ apunta al archivo real", () => {
+    const config = read("eslint.config.mjs");
+    const names = [...config.matchAll(/name:\s*"(@\/lib\/[^"]+)"/g)].map((m) => m[1]);
+    expect(names).toContain("@/lib/business/sales/money-service");
+    for (const name of names) expect(exists(name.slice(2) + ".ts"), name).toBe(true);
+  });
+});

@@ -10,7 +10,7 @@ import { Field } from "@/components/molecules/field";
 import { MoneyInput } from "@/components/molecules/money-input";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { arqueo, CASH_KIND_LABELS, CASH_SIGN, replenishNeeded, type CashKind } from "@/lib/business/cash";
+import { arqueo, CASH_KIND_LABELS, CASH_SIGN, replenishNeeded, type CashKind } from "@/lib/business/sales/cash";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { cashMovementAction, closeCashAction, openCashAction, saveCashBoxAction } from "../money-actions";

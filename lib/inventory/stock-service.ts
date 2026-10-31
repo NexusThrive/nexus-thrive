@@ -1,5 +1,5 @@
-import type { MoneyTx } from "@/lib/business/money-service";
-import { accountingPort } from "@/lib/business/accounting-port";
+import type { MoneyTx } from "@/lib/business/sales/money-service";
+import { accountingPort } from "@/lib/business/sales/accounting-port";
 import { toNumber } from "@/lib/format";
 import { todayCO } from "@/lib/plain-date";
 

@@ -1,4 +1,4 @@
-import { MoneyError } from "@/lib/business/money-error";
+import { MoneyError } from "@/lib/business/sales/money-error";
 import { db } from "@/prisma/db";
 import { todayCO } from "@/lib/tax/tax";
 import { DEFAULT_RULES, PUC_TEMPLATE, natureOf, periodOfDate, typeOf, validateAccount, validateRule, type AccountType, type RuleLine } from "./puc";

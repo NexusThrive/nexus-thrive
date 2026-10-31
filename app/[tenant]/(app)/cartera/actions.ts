@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { receiveInvoicePayment } from "@/lib/business/money-service";
+import { receiveInvoicePayment } from "@/lib/business/sales/money-service";
 import { can } from "@/lib/auth/permissions";
 import { paySupplierInvoice } from "@/lib/receivables/receivables-db";
 import { PAYMENT_METHODS } from "@/lib/finance";

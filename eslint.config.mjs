@@ -31,7 +31,7 @@ const eslintConfig = defineConfig([
                 "Las pantallas y acciones no consultan la base directo: usa (o crea) un repositorio en lib/ que reciba el contexto del negocio (ARCH-04).",
             },
             {
-              name: "@/lib/business/money-service",
+              name: "@/lib/business/sales/money-service",
               importNames: ["moneyTransaction"],
               message:
                 "Las transacciones de dinero viven en lib/ (un repositorio que llama a moneyTransaction); app/ llama a esa función.",

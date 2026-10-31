@@ -1,6 +1,6 @@
-import { insertDocument } from "@/lib/business/documents-db";
-import { closeCashSession, openCashSession } from "@/lib/business/finance-db";
-import { MoneyError, moneyTransaction, recordIncome } from "@/lib/business/money-service";
+import { insertDocument } from "@/lib/business/sales/documents-db";
+import { closeCashSession, openCashSession } from "@/lib/business/sales/finance-db";
+import { MoneyError, moneyTransaction, recordIncome } from "@/lib/business/sales/money-service";
 import { toNumber } from "@/lib/format";
 import { emitEvent } from "@/lib/events/outbox";
 import { StockError, applyStockMovement } from "@/lib/inventory/stock-service";

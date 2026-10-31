@@ -113,7 +113,7 @@ export function verifyReceiptToken(token: string): string | null {
 
 /**
  * Anula un pago (no se borra), una sola vez. Si entró en efectivo a una caja
- * abierta, la caja lo devuelve. Transaccional: ver `lib/business/money-service.ts`.
+ * abierta, la caja lo devuelve. Transaccional: ver `lib/business/sales/money-service.ts`.
  */
 export { voidPayment } from "./money-service";
 

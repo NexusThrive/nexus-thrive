@@ -7,8 +7,8 @@
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
-import { fiscalQueuePort, type FiscalQueuePort } from "@/lib/business/fiscal-port";
-import { createDocument } from "@/lib/business/documents-db";
+import { fiscalQueuePort, type FiscalQueuePort } from "@/lib/business/sales/fiscal-port";
+import { createDocument } from "@/lib/business/sales/documents-db";
 import { setFiscalEnabled } from "@/lib/einvoice/einvoice-db";
 import { connectGoogle } from "@/lib/google/google-db";
 import { checkoutPort, type CheckoutPort } from "@/lib/payments/checkout-port";

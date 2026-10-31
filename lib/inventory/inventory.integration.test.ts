@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
-import { moneyTransaction, sellProduct } from "@/lib/business/money-service";
+import { moneyTransaction, sellProduct } from "@/lib/business/sales/money-service";
 import { moveStock } from "@/lib/business/catalog/products-db";
 import { runOperation } from "@/lib/operations/engine";
 import { OPERATIONS } from "@/lib/runtime/operations";

@@ -1,4 +1,4 @@
-import type { DocumentKind, DocumentLineInput } from "@/lib/business/commercial-document";
+import type { DocumentKind, DocumentLineInput } from "@/lib/business/sales/commercial-document";
 import type { DbWriter } from "@/lib/db-transaction";
 import { definePort } from "@/lib/ports";
 
