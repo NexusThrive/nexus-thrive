@@ -160,3 +160,42 @@ describe("módulos de lib/platform (M4)", () => {
     for (const [a, set] of edges) for (const b of set) expect(edges.get(b)?.has(a) ?? false, `ciclo ${a} ⇄ ${b}`).toBe(false);
   });
 });
+
+describe("estructura final de platform (M4)", () => {
+  test("lib/ops y lib/benefits ya no existen y lib/admin solo conserva lo que no es administración de la plataforma", () => {
+    expect(exists("lib/ops")).toBe(false);
+    expect(exists("lib/benefits")).toBe(false);
+    expect(readdirSync(join(ROOT, "lib/admin")).sort()).toEqual(["catalogs.ts", "vertical-icons.ts"]);
+    expect(readdirSync(join(ROOT, "lib/platform")).sort()).toEqual(["accounts", "admin", "benefits", "billing", "crm", "inbox", "presence", "support", "team"]);
+  });
+
+  test("las dependencias entre los módulos de platform son exactamente estas (accounts es la cima; admin es la base)", () => {
+    const moduleOf = (f: string) => /^lib\/platform\/([^/]+)\//.exec(f)?.[1] ?? null;
+    const found = new Set<string>();
+    for (const f of files("lib/platform").filter((x) => !/\.test\./.test(x))) {
+      const from = moduleOf(f);
+      for (const { spec } of parseImports(read(f))) {
+        const to = moduleOf(resolveImport(f, spec, ROOT, exists) ?? "");
+        if (from && to && to !== from) found.add(`${from}→${to}`);
+      }
+    }
+    expect([...found].sort()).toEqual(["accounts→billing", "accounts→crm", "accounts→inbox", "accounts→support", "benefits→admin", "billing→admin", "inbox→support", "team→admin"]);
+  });
+
+  test("ningún módulo de lib fuera de platform, experience y runtime importa platform; los negocios solo en benefits-db", () => {
+    const allowedAreas = new Set(["platform", "experience", "runtime"]);
+    const offenders = files("lib")
+      .filter((f) => !/\.test\./.test(f) && !f.startsWith("lib/platform/"))
+      .filter((f) => !allowedAreas.has(classify(f, layers)?.layer ?? ""))
+      .filter((f) => importsOf(f).some((s: string) => /^@\/lib\/platform\b/.test(s)));
+    expect(offenders).toEqual([]);
+  });
+
+  test("la prueba de aislamiento por negocio sigue vigilando benefits y excluye solo las ocho carpetas del panel", () => {
+    const text = read("lib/tenant/tenant-scope.test.ts");
+    const dirs = /const PLATFORM_DIRS = \[(.*?)\];/.exec(text)![1].match(/"[^"]+"/g)!.map((d) => d.slice(1, -1)).sort();
+    expect(dirs).toEqual(["accounts", "admin", "billing", "crm", "inbox", "presence", "support", "team"].map((m) => `lib/platform/${m}/`));
+    expect(dirs).not.toContain("lib/platform/benefits/");
+  });
+});
+
