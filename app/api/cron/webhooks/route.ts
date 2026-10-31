@@ -3,7 +3,7 @@ import { markAbandonedOrders } from "@/lib/store/store-db";
 import { sendWeeklyReports } from "@/lib/presence/pillars-db";
 import { dispatchPending } from "@/lib/events/dispatcher";
 import { presenceSubscriber } from "@/lib/presence/subscribers";
-import { processPendingProviderEvents } from "@/lib/providers/inbound";
+import { processPendingProviderEvents } from "@/lib/integrations/providers/inbound";
 
 /**
  * Reintenta eventos de proveedores sin procesar y despacha el outbox: reparte eventos nuevos y envía/reintenta webhooks.

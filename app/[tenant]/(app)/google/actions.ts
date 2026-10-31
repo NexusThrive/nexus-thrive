@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { connectGoogle, disconnectGoogle, syncGoogle } from "@/lib/google/google-db";
+import { connectGoogle, disconnectGoogle, syncGoogle } from "@/lib/integrations/google/google-db";
 import { refreshPresence } from "@/lib/presence/pillars-db";
 import { can } from "@/lib/auth/permissions";
 import { logTenantAction } from "@/lib/tenant/audit";

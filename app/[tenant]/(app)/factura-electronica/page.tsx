@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
 import { can } from "@/lib/auth/permissions";
-import { fiscalSettings, listFiscal } from "@/lib/einvoice/einvoice-db";
+import { fiscalSettings, listFiscal } from "@/lib/integrations/einvoice/einvoice-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import FiscalView from "./_components/fiscal-view";
 import { routeCategory } from "@/lib/navigation/tenant-nav";

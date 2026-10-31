@@ -12,8 +12,8 @@ import { FormDialog } from "@/components/organisms/form-sheet";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { useToast } from "@/components/molecules/toast";
 import { connectHttpAction, connectSandboxAction, retryAction, setEnabledAction, submitAction, type FiscalResult } from "@/app/[tenant]/(app)/factura-electronica/actions";
-import { FISCAL_LABELS } from "@/lib/einvoice/port";
-import type { FiscalRow } from "@/lib/einvoice/einvoice-db";
+import { FISCAL_LABELS } from "@/lib/integrations/einvoice/port";
+import type { FiscalRow } from "@/lib/integrations/einvoice/einvoice-db";
 import { formatCurrency } from "@/lib/format";
 
 const STATUS = { PENDING_PROVIDER: { label: "En cola", tone: "warning" }, SUBMITTED: { label: "Enviado", tone: "secondary" }, ACCEPTED: { label: "Aceptado", tone: "success" }, REJECTED: { label: "Rechazado", tone: "destructive" } } as const;

@@ -61,10 +61,6 @@
     { "path": "lib/presence", "layer": "business" },
 
 
-    { "path": "lib/providers", "layer": "integrations" },
-    { "path": "lib/einvoice", "layer": "integrations" },
-    { "path": "lib/google", "layer": "integrations" },
-    { "path": "lib/maps", "layer": "integrations" },
     { "path": "lib/api", "layer": "integrations" },
     { "path": "lib/mcp", "layer": "integrations" },
 

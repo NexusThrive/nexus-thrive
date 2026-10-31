@@ -1,9 +1,9 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
-import { encryptCredentials } from "@/lib/providers/connections";
-import { receiveProviderWebhook } from "@/lib/providers/inbound";
-import { wompiChecksum } from "@/lib/providers/wompi";
+import { encryptCredentials } from "@/lib/integrations/providers/connections";
+import { receiveProviderWebhook } from "@/lib/integrations/providers/inbound";
+import { wompiChecksum } from "@/lib/integrations/providers/wompi";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { createIntent, listIntents, publicIntent, runReconciliation } from "./intents-db";

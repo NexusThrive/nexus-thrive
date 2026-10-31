@@ -15,7 +15,7 @@ import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { setAccountingEnabled } from "@/lib/domains/finance/accounting/ledger-db";
 import { createDocument } from "@/lib/business/sales/documents-db";
-import { setFiscalEnabled } from "@/lib/einvoice/einvoice-db";
+import { setFiscalEnabled } from "@/lib/integrations/einvoice/einvoice-db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 
 const TEST_URL = process.env.TEST_DATABASE_URL;

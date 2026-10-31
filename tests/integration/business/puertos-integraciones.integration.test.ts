@@ -9,13 +9,13 @@ import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { fiscalQueuePort, type FiscalQueuePort } from "@/lib/business/sales/fiscal-port";
 import { createDocument } from "@/lib/business/sales/documents-db";
-import { setFiscalEnabled } from "@/lib/einvoice/einvoice-db";
-import { connectGoogle } from "@/lib/google/google-db";
+import { setFiscalEnabled } from "@/lib/integrations/einvoice/einvoice-db";
+import { connectGoogle } from "@/lib/integrations/google/google-db";
 import { checkoutPort, type CheckoutPort } from "@/lib/domains/finance/payments/checkout-port";
 import { createIntent, publicIntent } from "@/lib/domains/finance/payments/intents-db";
 import { PortNotProvidedError } from "@/lib/ports";
 import { listingPort, type ListingPort } from "@/lib/presence/listing-port";
-import { encryptCredentials } from "@/lib/providers/connections";
+import { encryptCredentials } from "@/lib/integrations/providers/connections";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 
 const TEST_URL = process.env.TEST_DATABASE_URL;

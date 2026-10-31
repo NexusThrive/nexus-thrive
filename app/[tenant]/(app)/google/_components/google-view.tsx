@@ -11,7 +11,7 @@ import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { connectGoogleAction, disconnectGoogleAction, syncGoogleAction, type GoogleResult } from "@/app/[tenant]/(app)/google/actions";
-import type { ListingView } from "@/lib/google/google-db";
+import type { ListingView } from "@/lib/integrations/google/google-db";
 
 export default function GoogleView({ slug, listing }: { slug: string; listing: ListingView }) {
   const router = useRouter();

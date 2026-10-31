@@ -171,7 +171,7 @@ describe("M5.6 · domains/finance/payments", () => {
 
   test("solo lo importan app, runtime (puerto de cobro) e integrations (webhook entrante)", () => {
     const ofensores = libSources().filter(
-      (f) => !f.startsWith("lib/domains/") && !/^lib\/(runtime|providers)\//.test(f) && importsOf(f).some((s) => s.startsWith("@/lib/domains/finance/payments")),
+      (f) => !f.startsWith("lib/domains/") && !/^lib\/(runtime|integrations)\//.test(f) && importsOf(f).some((s) => s.startsWith("@/lib/domains/finance/payments")),
     );
     expect(ofensores).toEqual([]);
   });
