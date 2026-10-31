@@ -1,7 +1,7 @@
 import { customerLimit } from "@/lib/tenant/customer-limit";
 import { syncCustomerParty } from "@/lib/parties/parties-db";
 import { db } from "@/prisma/db";
-import { withinLimit } from "@/lib/benefits/benefits";
+import { withinLimit } from "@/lib/foundation/limits";
 
 /**
  * Clientes activos del negocio para elegir en un formulario (cobro, cuenta de

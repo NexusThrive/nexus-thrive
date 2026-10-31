@@ -175,8 +175,3 @@ export function redemptionTerms(terms: ContractTerms, planModules: readonly stri
     maxCustomers: terms.maxCustomers,
   };
 }
-
-/** ¿Se puede agregar uno más? `null` = sin límite propio. */
-export function withinLimit(limit: number | null, used: number): boolean {
-  return limit == null || used < limit;
-}

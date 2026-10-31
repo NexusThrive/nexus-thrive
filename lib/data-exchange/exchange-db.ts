@@ -1,4 +1,4 @@
-import { withinLimit } from "@/lib/benefits/benefits";
+import { withinLimit } from "@/lib/foundation/limits";
 import { customerLimit } from "@/lib/tenant/customer-limit";
 import { syncCustomerParty } from "@/lib/parties/parties-db";
 import { db } from "@/prisma/db";

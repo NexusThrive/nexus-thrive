@@ -4,7 +4,6 @@ import {
   NO_CONTRACT,
   redemptionTerms,
   validateContractTerms,
-  withinLimit,
   benefitCopy,
   benefitEndMs,
   benefitStatus,
@@ -171,11 +170,5 @@ describe("contrato a medida", () => {
   test("sin precio: prueba gratis con los módulos del plan", () => {
     const r = redemptionTerms(NO_CONTRACT, ["dashboard", "finance"]);
     expect(r).toMatchObject({ modules: ["dashboard", "finance"], subscriptionStatus: "TRIAL", priceUsdCents: 0 });
-  });
-
-  test("límites", () => {
-    expect(withinLimit(null, 10_000)).toBe(true);
-    expect(withinLimit(3, 2)).toBe(true);
-    expect(withinLimit(3, 3)).toBe(false);
   });
 });
