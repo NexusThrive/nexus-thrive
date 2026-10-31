@@ -23,6 +23,12 @@ const MODULES: Record<string, Record<string, string>> = {
     "lib/business/scheduling/bookings-db.ts": "lib/business/bookings-db.ts",
     "lib/business/scheduling/calendar.ts": "lib/business/calendar.ts",
   },
+  catalog: {
+    "lib/business/catalog/products-db.ts": "lib/business/products-db.ts",
+    "lib/business/catalog/catalog-kinds.ts": "lib/business/catalog-kinds.ts",
+    "lib/business/catalog/catalog-db.ts": "lib/catalog/catalog-db.ts",
+    "lib/business/catalog/barcode.ts": "lib/catalog/barcode.ts",
+  },
   customers: {
     "lib/business/customers/customers-db.ts": "lib/business/customers-db.ts",
     "lib/business/customers/customer-fields.ts": "lib/business/customer-fields.ts",

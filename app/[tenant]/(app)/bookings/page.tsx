@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
 import { addDaysKey, bogotaToMs, monthGrid, weekStart } from "@/lib/business/scheduling/calendar";
-import { listProducts } from "@/lib/business/products-db";
+import { listProducts } from "@/lib/business/catalog/products-db";
 import { todayBogota } from "@/lib/ops/leads";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";

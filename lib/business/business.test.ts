@@ -66,7 +66,7 @@ describe("recibos y cuentas de cobro", () => {
   });
 });
 
-import { kindsForVertical, validateProduct } from "./catalog-kinds";
+import { kindsForVertical, validateProduct } from "./catalog/catalog-kinds";
 
 describe("catálogo por rubro", () => {
   const base = { kind: "PRODUCT" as const, name: "Proteína", description: "", sku: "", category: "", price: 120000, cost: 80000, trackStock: true, initialStock: 10, minStock: 3, unit: "", durationMinutes: null, durationDays: null, capacity: null, active: true };

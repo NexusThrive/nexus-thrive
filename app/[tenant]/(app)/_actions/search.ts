@@ -1,6 +1,6 @@
 "use server";
 
-import { listProducts } from "@/lib/business/products-db";
+import { listProducts } from "@/lib/business/catalog/products-db";
 import { formatCurrency } from "@/lib/format";
 import { requireTenantContext } from "@/lib/tenant/context";
 

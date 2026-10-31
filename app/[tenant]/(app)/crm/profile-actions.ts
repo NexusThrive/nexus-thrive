@@ -5,7 +5,7 @@ import { cleanProfile, profileFor } from "@/lib/business/customers/customer-fiel
 import { getCustomer, saveCustomer, setCustomerPhoto } from "@/lib/business/customers/customers-db";
 import { enrollInPlan } from "@/lib/industry/gym/enrollment-db";
 import { addAttachment, checkAttachment } from "@/lib/business/finance-db";
-import { getProduct, planOptions } from "@/lib/business/products-db";
+import { getProduct, planOptions } from "@/lib/business/catalog/products-db";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { can } from "@/lib/auth/permissions";

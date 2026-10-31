@@ -27,7 +27,7 @@ import { PullToRefresh } from "@/components/molecules/pull-to-refresh";
 import RecentActivity from "@/components/organisms/recent-activity";
 import { CustomizableDashboard, DashboardMenu, type DashboardWidget } from "@/components/organisms/customizable-dashboard";
 import { WelcomeChecklist, type WelcomeStep } from "@/components/organisms/welcome-checklist";
-import { listProducts } from "@/lib/business/products-db";
+import { listProducts } from "@/lib/business/catalog/products-db";
 import { loadPresence } from "@/lib/presence/load";
 import PresenceSummary from "./_components/presence-summary";
 import { StatTile } from "@/components/molecules/stat-tile";

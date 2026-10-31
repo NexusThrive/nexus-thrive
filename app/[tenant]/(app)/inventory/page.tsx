@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
-import { kindsForVertical, KIND_LABELS } from "@/lib/business/catalog-kinds";
-import { listProducts } from "@/lib/business/products-db";
+import { kindsForVertical, KIND_LABELS } from "@/lib/business/catalog/catalog-kinds";
+import { listProducts } from "@/lib/business/catalog/products-db";
 import { canManage } from "@/lib/auth/roles";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { customerOptions } from "@/lib/business/customers/customers-db";

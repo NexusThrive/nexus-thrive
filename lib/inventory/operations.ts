@@ -28,7 +28,7 @@ export const inventoryOperations: OperationDefinition[] = [
     input: z.object({ q: z.string().trim().min(2).max(80), limit: z.number().int().min(1).max(25).default(10) }),
     output: z.object({ items: z.array(productSummary) }),
     handler: async (ctx, input) => {
-      const { listProducts } = await import("@/lib/business/products-db");
+      const { listProducts } = await import("@/lib/business/catalog/products-db");
       const rows = await listProducts(ctx.tenantId, { q: input.q, activeOnly: true, limit: input.limit });
       return {
         items: rows.map((p) => ({
@@ -54,7 +54,7 @@ export const inventoryOperations: OperationDefinition[] = [
     input: z.object({ productId: z.string().min(1) }),
     output: z.object({ id: z.string(), name: z.string(), trackStock: z.boolean(), stock: z.number().nullable(), minStock: z.number(), low: z.boolean() }),
     handler: async (ctx, input) => {
-      const { getProduct } = await import("@/lib/business/products-db");
+      const { getProduct } = await import("@/lib/business/catalog/products-db");
       const p = await getProduct(ctx.tenantId, input.productId);
       if (!p) throw new OperationError("invalid_input", "El producto no existe en este negocio.", 404);
       return {
@@ -83,7 +83,7 @@ export const inventoryOperations: OperationDefinition[] = [
       priceSource: z.enum(["list_variant", "list_product", "variant", "product"]),
     }),
     handler: async (ctx, input) => {
-      const { findByBarcode } = await import("@/lib/catalog/catalog-db");
+      const { findByBarcode } = await import("@/lib/business/catalog/catalog-db");
       const hit = await findByBarcode(ctx.tenantId, input.code, input.priceListId);
       if (!hit) throw new OperationError("invalid_input", "No hay un producto con ese código.", 404);
       return hit;
@@ -103,7 +103,7 @@ export const inventoryOperations: OperationDefinition[] = [
       byWarehouse: z.array(z.object({ warehouse: z.string(), quantity: z.number(), avgCost: z.number(), value: z.number() })),
     }),
     handler: async (ctx, input) => {
-      const { getProduct } = await import("@/lib/business/products-db");
+      const { getProduct } = await import("@/lib/business/catalog/products-db");
       if (!(await getProduct(ctx.tenantId, input.productId))) throw new OperationError("invalid_input", "El producto no existe en este negocio.", 404);
       const { kardex, stockByWarehouse } = await import("@/lib/inventory/kardex");
       const [lines, levels] = await Promise.all([kardex(ctx.tenantId, input.productId, { warehouseId: input.warehouseId, limit: input.limit }), stockByWarehouse(ctx.tenantId, input.productId)]);

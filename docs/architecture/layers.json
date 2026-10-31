@@ -56,7 +56,6 @@
     { "path": "lib/files", "layer": "core" },
 
     { "path": "lib/business", "layer": "business" },
-    { "path": "lib/catalog", "layer": "business" },
     { "path": "lib/inventory", "layer": "business" },
     { "path": "lib/purchasing", "layer": "business" },
     { "path": "lib/pos", "layer": "business" },

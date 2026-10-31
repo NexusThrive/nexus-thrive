@@ -10,9 +10,9 @@ import { MoneyInput } from "@/components/molecules/money-input";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { KIND_LABELS, type ProductDraft } from "@/lib/business/catalog-kinds";
+import { KIND_LABELS, type ProductDraft } from "@/lib/business/catalog/catalog-kinds";
 import { margin } from "@/lib/business/inventory";
-import type { ProductKindValue, ProductRow } from "@/lib/business/products-db";
+import type { ProductKindValue, ProductRow } from "@/lib/business/catalog/products-db";
 import { saveProductAction } from "../actions";
 
 const num = (v: string) => (v.trim() === "" ? null : Number(v));

@@ -6,7 +6,7 @@ import { addDaysKey, bogotaToMs } from "@/lib/business/scheduling/calendar";
 import { recordCharge } from "@/lib/business/charge";
 import { payTicketSale as payTicketSaleOnce } from "@/lib/business/money-service";
 import { voidPayment, withNextNumber } from "@/lib/business/finance-db";
-import { listProducts } from "@/lib/business/products-db";
+import { listProducts } from "@/lib/business/catalog/products-db";
 import { museumSettings, saleKindLabel, slotLoads, ticketCode, validateTicketSale, type MuseumSettings, type SaleLike, type TicketLineInput } from "./museum";
 
 /**

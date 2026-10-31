@@ -3,10 +3,10 @@
 import { StockError } from "@/lib/inventory/stock-service";
 import { revalidatePath } from "next/cache";
 import { customerBelongs } from "@/lib/business/customers/customers-db";
-import { kindsForVertical, validateProduct, type ProductDraft } from "@/lib/business/catalog-kinds";
+import { kindsForVertical, validateProduct, type ProductDraft } from "@/lib/business/catalog/catalog-kinds";
 import { sellProduct } from "@/lib/business/money-service";
 import { validateStockMove, type StockKind } from "@/lib/business/inventory";
-import { getProduct, moveStock, saveProduct, stockHistory } from "@/lib/business/products-db";
+import { getProduct, moveStock, saveProduct, stockHistory } from "@/lib/business/catalog/products-db";
 import { canHandleCash, canManage } from "@/lib/auth/roles";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import { requireTenantContext } from "@/lib/tenant/context";

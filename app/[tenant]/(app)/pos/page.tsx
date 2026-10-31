@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
 import { can } from "@/lib/auth/permissions";
-import { listProducts } from "@/lib/business/products-db";
+import { listProducts } from "@/lib/business/catalog/products-db";
 import { listTerminals, myTurn } from "@/lib/pos/pos-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import PosView from "./_components/pos-view";
