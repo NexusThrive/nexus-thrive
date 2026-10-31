@@ -1,7 +1,8 @@
 /**
  * V10 · M5 · Finance como familia de dominios.
  *
- * Se amplía etapa a etapa. M5.5: `receivables` vive en `lib/domains/finance/receivables` y solo la importa `app/`. M5.4: `accounting` vive en `lib/domains/finance/accounting`, depende de Foundation, de Business
+ * Se amplía etapa a etapa. M5.6: `payments` vive en `lib/domains/finance/payments`; lo consumen `app/`, `runtime` (puerto de cobro) e
+ * `integrations` (webhook entrante). M5.5: `receivables` vive en `lib/domains/finance/receivables` y solo la importa `app/`. M5.4: `accounting` vive en `lib/domains/finance/accounting`, depende de Foundation, de Business
  * (error y servicio de dinero, tabla de intercambio) y de `tax`, y nadie por debajo de Experience lo importa. M5.3: `tax` vive en `lib/domains/finance/tax` (área `domains` por ruta, sin unidad
  * en `layers.json`) y solo depende de Foundation. M5.2: las ayudas de captura de pagos en pantalla (teclado numérico y lectura
  * de un QR de cobro) viven en `lib/payment-input` (Experience), solo dependen del kernel de Foundation y
@@ -137,6 +138,46 @@ describe("M5.5 · domains/finance/receivables", () => {
   test("ninguna capa de lib/ por debajo de domains la importa", () => {
     const ofensores = libSources().filter(
       (f) => /^lib\/(foundation|core|business|events|operations|tenant|auth)\//.test(f) && importsOf(f).some((s) => s.startsWith("@/lib/domains/finance/receivables")),
+    );
+    expect(ofensores).toEqual([]);
+  });
+});
+
+describe("M5.6 · domains/finance/payments", () => {
+  const dir = "lib/domains/finance/payments";
+  const produccion = ["checkout-port.ts", "intents-db.ts", "intents.ts"];
+
+  test("contiene exactamente los tres módulos de producción, y lib/payments ya no existe", () => {
+    const hoy = readdirSync(join(ROOT, dir)).filter((n) => n.endsWith(".ts") && !n.endsWith(".test.ts"));
+    expect(hoy.sort()).toEqual(produccion);
+    expect(existsSync(join(ROOT, "lib/payments"))).toBe(false);
+  });
+
+  test.each(produccion)("%s está en el área domains por su ruta, sin unidad propia", (name) => {
+    const c = classify(`${dir}/${name}`, layers);
+    expect(c?.layer).toBe("domains");
+    expect(c?.byPath).toBe(true);
+  });
+
+  test("solo depende de Foundation, del kernel, de Business (dinero y liquidación de la tienda), de tax y de sí mismo", () => {
+    const permitidos = new RegExp(
+      "^(node:crypto|@/prisma/db|@/lib/ports|@/lib/format|@/lib/foundation/kernel/aging|@/lib/business/sales/money-service|@/lib/store/store-settle|@/lib/domains/finance/tax/tax|\\./(checkout-port|intents))$",
+    );
+    for (const name of produccion) {
+      for (const spec of importsOf(`${dir}/${name}`)) expect(spec, name).toMatch(permitidos);
+    }
+  });
+
+  test("solo lo importan app, runtime (puerto de cobro) e integrations (webhook entrante)", () => {
+    const ofensores = libSources().filter(
+      (f) => !f.startsWith("lib/domains/") && !/^lib\/(runtime|providers)\//.test(f) && importsOf(f).some((s) => s.startsWith("@/lib/domains/finance/payments")),
+    );
+    expect(ofensores).toEqual([]);
+  });
+
+  test("ninguna capa de lib/ por debajo de domains lo importa", () => {
+    const ofensores = libSources().filter(
+      (f) => /^lib\/(foundation|core|business|events|operations|tenant|auth)\//.test(f) && importsOf(f).some((s) => s.startsWith("@/lib/domains/finance/payments")),
     );
     expect(ofensores).toEqual([]);
   });

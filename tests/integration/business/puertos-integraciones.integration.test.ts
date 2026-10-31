@@ -11,8 +11,8 @@ import { fiscalQueuePort, type FiscalQueuePort } from "@/lib/business/sales/fisc
 import { createDocument } from "@/lib/business/sales/documents-db";
 import { setFiscalEnabled } from "@/lib/einvoice/einvoice-db";
 import { connectGoogle } from "@/lib/google/google-db";
-import { checkoutPort, type CheckoutPort } from "@/lib/payments/checkout-port";
-import { createIntent, publicIntent } from "@/lib/payments/intents-db";
+import { checkoutPort, type CheckoutPort } from "@/lib/domains/finance/payments/checkout-port";
+import { createIntent, publicIntent } from "@/lib/domains/finance/payments/intents-db";
 import { PortNotProvidedError } from "@/lib/ports";
 import { listingPort, type ListingPort } from "@/lib/presence/listing-port";
 import { encryptCredentials } from "@/lib/providers/connections";

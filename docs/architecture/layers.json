@@ -60,7 +60,6 @@
     { "path": "lib/data-exchange", "layer": "business" },
     { "path": "lib/presence", "layer": "business" },
 
-    { "path": "lib/payments", "layer": "domains" },
 
     { "path": "lib/providers", "layer": "integrations" },
     { "path": "lib/einvoice", "layer": "integrations" },

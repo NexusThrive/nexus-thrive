@@ -2,9 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { can } from "@/lib/auth/permissions";
-import { cancelIntent, connectedGateways, confirmIntent, createIntent, refundIntent, runReconciliation, type IntentRow } from "@/lib/payments/intents-db";
-import { parseReport } from "@/lib/payments/intents";
-import type { Reconciliation } from "@/lib/payments/intents";
+import { cancelIntent, connectedGateways, confirmIntent, createIntent, refundIntent, runReconciliation, type IntentRow } from "@/lib/domains/finance/payments/intents-db";
+import { parseReport } from "@/lib/domains/finance/payments/intents";
+import type { Reconciliation } from "@/lib/domains/finance/payments/intents";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";
 

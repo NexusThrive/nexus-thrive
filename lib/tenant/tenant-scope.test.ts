@@ -33,7 +33,7 @@ const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
   { file: "lib/tenant/membership.ts", model: "User", why: "Resuelve el negocio de una cuenta de la sesión (clerkUserId)." },
   { file: "lib/onboarding/prefill.ts", model: "User", why: "Membresías de la cuenta de la sesión para reanudar el alta." },
   { file: "lib/api/keys.ts", model: "ApiKey", why: "Autenticar: se busca por el hash de la llave (única en la plataforma); de ahí sale el negocio." },
-  { file: "lib/payments/intents-db.ts", model: "PaymentIntent", why: "Enlace público de cobro: se busca por su código aleatorio (único en la plataforma) y solo devuelve negocio, valor, descripción y estado." },
+  { file: "lib/domains/finance/payments/intents-db.ts", model: "PaymentIntent", why: "Enlace público de cobro: se busca por su código aleatorio (único en la plataforma) y solo devuelve negocio, valor, descripción y estado." },
   { file: "lib/presence/pillars-db.ts", model: "Tenant", why: "Cron semanal: recorre los negocios activos y trabaja cada uno con su propio tenantId." },
   { file: "lib/growth/growth-db.ts", model: "TrackedLink", why: "Enlace corto público: se resuelve por su código aleatorio (único en la plataforma) y solo da la dirección del sitio y los UTM." },
   { file: "lib/growth/growth-db.ts", model: "SiteConfig", why: "Formularios públicos: el negocio se resuelve por la dirección del sitio (única en la plataforma)." },

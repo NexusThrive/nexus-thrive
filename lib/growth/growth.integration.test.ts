@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
-import { confirmIntent } from "@/lib/payments/intents-db";
+import { confirmIntent } from "@/lib/domains/finance/payments/intents-db";
 import { presenceV2 } from "@/lib/presence/pillars-db";
 import { saveSite } from "@/lib/site/site-db";
 import { placeOrder } from "@/lib/store/store-db";
