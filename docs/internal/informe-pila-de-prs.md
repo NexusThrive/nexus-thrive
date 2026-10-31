@@ -1,52 +1,70 @@
 # Informe de la pila de PR
 
-Fecha: 2026-10-31. Complementa el [plan de PR](plan-de-prs.md). **Ninguna rama se subió y no hay PR abiertos.** `main` (`97eb497`) no ha avanzado: las siete ramas cuelgan de él sin necesidad de rebase.
+Fecha: 2026-10-31. Complementa el [plan de PR](plan-de-prs.md). **Ninguna rama se subió y no hay PR abiertos.** `main` (`97eb497`) no ha avanzado: las ramas cuelgan de él sin necesidad de rebase.
 
-## 1. Grafo de dependencias
+## 1. Grafo y cambios respecto al plan anterior
 
 ```mermaid
 flowchart LR
-  main["origin/main<br/>97eb497"] --> P1["PR 1 · pr/01-prisma-capas-e1<br/>b709905 · 14 commits"]
-  P1 --> P2["PR 2 · pr/02-dependencias-e2-e9<br/>f0b49cc · 29 commits"]
-  P2 --> P3["PR 3 · pr/03-v10-m0-m2<br/>3d43dcd · 6"]
-  P3 --> P4["PR 4 · pr/04-v10-m3-m4<br/>aa8e36a · 26"]
-  P4 --> P5["PR 5 · pr/05-v10-m5-cierre<br/>b6a3039 · 17"]
-  P5 --> P6["PR 6 · pr/06-favicon-y-tests<br/>1e0297e · 2"]
-  P6 --> P7["PR 7 · pr/07-wiki<br/>HEAD · 6"]
+  main["origin/main<br/>97eb497"] --> P1["PR 1 · stack/01-prisma-capas-e1<br/>14 commits"]
+  P1 --> P2["PR 2 · stack/02-fechas-bogota<br/>2 commits · CAMBIO FUNCIONAL"]
+  P2 --> P3["PR 3 · stack/03-reubicaciones-e2-e9<br/>26"]
+  P3 --> P4["PR 4 · stack/04-v10-m0-m2<br/>6"]
+  P4 --> P5["PR 5 · stack/05-v10-m3-m4<br/>26"]
+  P5 --> P6["PR 6 · stack/06-v10-m5-cierre<br/>17"]
+  P6 --> P7["PR 7 · stack/07-favicon-y-tests<br/>3"]
+  P7 --> P8["PR 8 · stack/08-wiki<br/>8"]
 ```
 
-Cadena lineal: cada rama es un prefijo del historial de la siguiente (`git merge-base --is-ancestor` verdadero en todos los pares) y ninguna está «detrás» de su base. **Dependencias de contenido** (por qué no se pueden reordenar):
+Cadena lineal: cada rama es un prefijo de la siguiente (`git merge-base --is-ancestor` verdadero en los 8 pares) y ninguna queda «detrás» de su base. Las ramas `stack/*` se reconstruyeron con `git cherry-pick` a partir de la rama de trabajo, que no se modificó. Los dos cambios pedidos:
 
-| PR | Depende de | Razón (inferida del contenido de cada tramo; no demostrada) |
+| Cambio | Antes | Ahora |
 |---|---|---|
-| 2 | 1 | Usa `check-layers` y `layers.json` creados en el PR 1 y el contrato ya dividido |
-| 3 | 2 | El verificador por áreas parte de las reubicaciones de E2–E9 |
-| 4 | 3 | `business/*` y `platform/*` usan la raíz de composición de `lib/runtime` |
-| 5 | 4 | finance a `domains` presupone `platform` y `business` ya modulares |
-| 6 | 5 | Las pruebas se mueven a su ruta final bajo `tests/<área>/<módulo>` de la estructura del PR 5 |
-| 7 | 6 | La wiki cita rutas de `tests/` y las áreas finales |
+| **Fechas** | Un commit dentro del PR 2 (29 commits de refactor) | **PR 2 propio**: 2 commits, 8 archivos, justo tras el PR 1 |
+| **`app/icon.svg`** | Dentro del commit de cierre de `lib/` (PR 5) | **PR 7**, en un commit propio junto al resto del favicon. El cierre de `lib/` (PR 6) ya no toca nada visual |
 
-Archivos tocados en más de un PR: 370 (esperable en una cadena de refactor: p. ej. 78 archivos de `app/` cambian de import en el PR 4 y otra vez en el PR 5). No hay archivos de un PR revertidos por otro.
+### Dónde queda el cambio de fechas
 
-## 2. Estado de cada rama
+PR 2 (`stack/02-fechas-bogota`). Contiene: la corrección (`dbe79e3`: `documents-db.ts`, `invoices-db.ts`, `plain-date.ts`, sus pruebas unitarias y de integración) y un commit de documentación y diagnóstico (`3552ede`: hallazgo, SQL de solo lectura y su prueba). Se colocó **antes** de la reorganización para que se revise sin ruido; ninguno de sus archivos de código se mueve de lugar dentro de ese PR. Detalle: [informe del cambio de fechas](informe-cambio-fechas-pr2.md).
 
-| Rama | Base | Commits | Archivos | Cambios fuera de su tema |
-|---|---|---|---|---|
-| `pr/01-prisma-capas-e1` | `main` | 14 | 143 | Ninguno (`prisma/contract.json` y `contract.d.ts` sin cambios; 0 migraciones) |
-| `pr/02-dependencias-e2-e9` | PR 1 | 29 | 335 | El arreglo de fechas (`acebe5f`) es un cambio de comportamiento dentro de refactors |
-| `pr/03-v10-m0-m2` | PR 2 | 6 | 127 | Ninguno |
-| `pr/04-v10-m3-m4` | PR 3 | 26 | 298 | Ninguno |
-| `pr/05-v10-m5-cierre` | PR 4 | 17 | 772 | **`app/icon.svg`** (ver §3); `app/layout.tsx` solo cambia imports |
-| `pr/06-favicon-y-tests` | PR 5 | 2 | 172 | Mezcla dos asuntos sin relación (marca y pruebas): ver recomendación |
-| `pr/07-wiki` | PR 6 | 6 | 317 | 9 archivos fuera de `docs/` con cambios **solo de comentarios** (rutas citadas): `lib/` ×7, `app/api/v1/…/route.ts`, `components/organisms/responsive-sheet.tsx` |
+## 2. Verificación completa de cada PR
 
-Comprobaciones por rama (árbol de trabajo aislado, sin base de datos): ver §5.
+Cada rama se verificó **en su propio estado** (árbol de trabajo aislado, base PostgreSQL 17 desechable con `pg_trgm`, migraciones aplicadas de cero): `pnpm verify` completo (lint, `tsc`, `check:layers`, unitarias sin base, integración, `next build`).
 
-## 3. Diferencia exacta del favicon
+| PR | Base | Build | Unitarias (archivos / pruebas) | Integración (archivos / pruebas) | `verify` | Estado |
+|---|---|---|---|---|---|---|
+| 01 · prisma y capas | `main` | ✓ | 100 / 1 445 | 58 / 343 | verde | Verificada |
+| 02 · **fechas** | PR 1 | ✓ | 101 / 1 462 | 60 / 366 | verde | Verificada |
+| 03 · E2–E9 | PR 2 | ✓ | 109 / 1 649 | 66 / 413 | verde | Verificada |
+| 04 · V10 M0–M2 | PR 3 | ✓ | 113 / 1 711 | 66 / 413 | verde | Verificada |
+| 05 · V10 M3–M4 | PR 4 | ✓ | 116 / 1 747 | 66 / 413 | verde | Verificada |
+| 06 · V10 M5 y cierre | PR 5 | ✓ | 124 / 1 907 | 66 / 413 | verde | Verificada |
+| 07 · favicon y `tests/` | PR 6 | ✓ | 125 / 1 912 | 66 / 413 | verde | Verificada |
+| 08 · wiki | PR 7 | ✓ | 127 / 1 924 | 66 / 413 | verde | Verificada |
 
-El cambio de `app/icon.svg` está en el commit `b6a3039` (**PR 5**, etapa Z de V10); la eliminación de `app/favicon.ico` y el resto de la marca, en `53445b8` (**PR 6**).
+Cómo leer la tabla: «Unitarias» son las que pasan **sin** base de datos (las de integración quedan omitidas en ese paso y se cuentan aparte); «Integración» es `pnpm test:integration` completo. El PR 2 suma 23 pruebas de integración (9 de fechas y 14 del SQL de diagnóstico) y 13 unitarias.
 
-**PR 5 · `app/icon.svg`** — se quitó el rectángulo negro de fondo y se reformateó el archivo (el cambio lo hizo la persona dueña del repositorio en su árbol de trabajo y el commit lo arrastró con `git add -A`):
+Comprobaciones adicionales, iguales en las 8 ramas:
+
+| Comprobación | Resultado |
+|---|---|
+| Migraciones y contrato Prisma compilado frente a `main` | **0 archivos cambiados** en las 8 |
+| Guardián de SQL de producción (`scripts/check-prod-sql.sh origin/main`) | Pasa en las 8 |
+| `prisma migration status` sobre la base migrada de cero | Sin pendientes en las 8 |
+| Contrato público (15 operaciones + OpenAPI) frente a la línea base | **Idéntico** en las 8 |
+| `tsc --noEmit` y `check:layers` | 0 errores; 0 violaciones (el PR 1 conserva sus excepciones abiertas de E0) |
+
+Limitaciones: la verificación se hizo con el reloj de Bogotá antes de las 19:00 (la franja en la que el defecto de fechas haría fallar a `accounting/reports.integration` en las ramas sin el PR 2, es decir, en el PR 1). El contrato público se comparó con la captura anterior a V10 M1; en las ramas anteriores se leyó de `lib/operations/registry.ts`. Un árbol aislado no ejecuta el paso de Git de `test-integration.sh` (que solo corre con un `.git` de directorio), por eso el guardián de SQL se ejecutó aparte.
+
+## 3. Que no se pierde ni se duplica nada
+
+- **Árbol final idéntico**: `stack/08-wiki` frente a la rama de trabajo difiere solo en dos documentos que se editaron a propósito (el hallazgo de fechas y los resultados de E2, que ahora dicen que la corrección va en el PR 2) y en los documentos de entrega actualizados.
+- **Commits equivalentes** (comparación por `patch-id`): de los 101 commits de la rama de trabajo, 97 tienen un commit idéntico en la pila. Los 4 distintos son los previstos: `da534e8` (resultados de E2: la nota de fechas ya no dice «sin corregir»), `724229b` + `0cbcdca` (consolidados en `3552ede`, el commit de diagnóstico del PR 2) y `b6a3039` (cierre de `lib/` sin `app/icon.svg`, que pasa al commit nuevo `2189c91`).
+- Total de commits: 101 en la rama de trabajo y 101 en la pila (dos del diagnóstico de fechas se fusionaron en uno y se añadieron el commit del favicon y el de documentación final).
+
+## 4. Favicon
+
+El cambio de `app/icon.svg` ya no está en el PR 6 (cierre de `lib/`); está en el PR 7, en el commit `2189c91` (`fix(marca): app/icon.svg sin rectángulo de fondo`), junto con el commit que retira `favicon.ico` y el resto de la marca.
 
 ```diff
  <svg xmlns="http://www.w3.org/2000/svg" viewBox="362 157 800 800" width="512" height="512" role="img" aria-label="NEXUS THRIVE">
@@ -58,38 +76,14 @@ El cambio de `app/icon.svg` está en el commit `b6a3039` (**PR 5**, etapa Z de V
 \ No newline at end of file
 ```
 
-(El trazo del logotipo es idéntico; solo desaparece el fondo y el archivo pierde el salto de línea final.) El mensaje del commit no lo menciona.
+El trazo es idéntico; solo desaparece el fondo y el archivo pierde el salto de línea final. **Efecto visible:** el logotipo crema (`#F7F6F3`) se ve poco en pestañas de navegador claras. El cambio es de la persona dueña del repositorio; antes viajaba sin mencionarse dentro del commit de cierre de `lib/`.
 
-**PR 6 · `53445b8`** (`fix(marca)`): elimina `app/favicon.ico` (8 911 bytes); `app/layout.tsx` declara `icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }], apple: "/icons/apple-touch-icon.png" }`; `app/manifest.ts` pasa a un solo icono SVG; `public/sw.js` deja de precachear `/icons/icon-192.png` (VERSION v2); la historia `avatar.stories.tsx` usa `apple-touch-icon.png`; `docs/design/pwa.md` actualizado. Los PNG `icon-192`, `icon-512` y `maskable-512` se conservan sin referencias.
+## 5. Merge commit
 
-**Efecto visible:** sin fondo negro, el logotipo crema (`#F7F6F3`) se ve poco en pestañas de navegador claras.
-
-**Recomendación:** mover el cambio de `app/icon.svg` del PR 5 al PR 6 (donde está el resto del favicon) para que el PR 5 sea puramente `lib/`. Se haría con un commit nuevo y sin reescribir historial; no se hizo para no alterar las ramas sin tu decisión.
-
-## 4. Merge commit o rebase
-
-- Las bases están bien construidas (cadena lineal, 0 commits detrás). Con **«Create a merge commit»** cada PR conserva sus commits tal como están en las ramas, y las siguientes ramas siguen siendo descendientes sin retoques.
-- Con **«Rebase and merge»** GitHub reescribe los hashes de cada PR al integrarlo; los PR siguientes tendrían que rebasarse (lo pide GitHub al cambiar la base). Es viable pero añade pasos y riesgo de conflicto en archivos tocados por varios PR (370).
-- **Squash** queda descartado (pierde la base de los PR siguientes).
-- Recomendación: merge commit, tras decidir las dos separaciones sugeridas (fechas y `icon.svg`).
-
-## 5. Verificación independiente por rama
-
-Cada rama se comprobó en un árbol de trabajo aislado (`git worktree`) con `tsc --noEmit`, `pnpm check:layers` y `vitest run` **sin base de datos** (las pruebas de integración quedan omitidas). Resultados:
-
-| Rama | `tsc --noEmit` | `check:layers` | Pruebas de `tests/` (sin BD) |
-|---|---|---|---|
-| `pr/01-prisma-capas-e1` | 0 errores | 269 archivos; 45 dependencias y 6 rubros cubiertos por excepciones abiertas (estado de E0) | **Suite completa** (incluye `lib/`): 1 445 pasadas, 346 omitidas por falta de BD |
-| `pr/02-dependencias-e2-e9` | 0 | 283 archivos, 0 excepciones | 14 archivos / 287 pruebas |
-| `pr/03-v10-m0-m2` | 0 | 289 archivos, 0 excepciones | 18 / 349 |
-| `pr/04-v10-m3-m4` | 0 | 290 archivos, 0 excepciones | 20 / 385 |
-| `pr/05-v10-m5-cierre` | 0 | 290 archivos, 0 excepciones | 30 / 552 |
-| `pr/06-favicon-y-tests` | 0 | 289 archivos, 0 excepciones | 122 archivos / 1 900 (3 omitidas) |
-| `pr/07-wiki` | 0 | 289 archivos, 0 excepciones | 122 / 1 900 (3 omitidas) |
-
-Alcance honesto de esta tabla: en las ramas 2 a 5 las pruebas de `lib/` todavía no se habían movido a `tests/`, así que esta comprobación solo ejecutó las pruebas que ya estaban en `tests/` (arquitectura y unitarias de esa fecha); la suite completa de cada tramo la ejecutó `pnpm verify` en el momento de cada commit, no se repitió ahora. La integración (con base de datos) solo se ejecutó en el extremo final (`pr/07-wiki`/HEAD): 66 archivos y 413 pruebas.
+Con la cadena lineal verificada, «Create a merge commit» conserva los commits de cada PR tal como están en su rama, y las ramas siguientes siguen siendo descendientes sin retoques. «Rebase and merge» reescribe hashes y obliga a rebasar los PR restantes; el squash está descartado.
 
 ## 6. Qué no se hizo
 
-- No se subió ninguna rama ni se abrió ningún PR; el `pushurl = no_push` del remoto `github` no se tocó.
-- Las dos separaciones recomendadas (arreglo de fechas fuera del PR 2; `icon.svg` del PR 5 al PR 6) **no se ejecutaron**: requieren decisión.
+- No se subió ninguna rama ni se abrió ningún PR; el `pushurl = no_push` del remoto `github` no se tocó. No se publicó la Wiki ni se activó ningún workflow.
+- No se corrigieron fechas históricas ni el recibo del punto de venta.
+- Las ramas `pr/01…07` de la primera versión del plan siguen existiendo en local (no se borran ramas sin tu autorización); están **obsoletas**.

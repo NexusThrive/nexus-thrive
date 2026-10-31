@@ -1,6 +1,6 @@
 # Informe: cambio de fechas UTC → Bogotá (PR 2)
 
-Fecha: 2026-10-31. Alcance: el único cambio de comportamiento de la pila de PR. Commit `acebe5f` (rama `pr/02-dependencias-e2-e9`), más el SQL de diagnóstico `724229b`/`0cbcdca`. **No se aprueba solo porque `pnpm verify` esté en verde**: este informe separa lo que se comprobó de lo que queda por decidir.
+Fecha: 2026-10-31. Alcance: el único cambio de comportamiento de la pila de PR, **ahora separado en su propio PR 2** (`stack/02-fechas-bogota`: commit de la corrección `dbe79e3` y commit de diagnóstico `3552ede`, 8 archivos, justo después del PR 1). **No se aprueba solo porque `pnpm verify` esté en verde**: este informe separa lo que se comprobó de lo que queda por decidir.
 
 ## 1. Qué cambió
 
@@ -54,8 +54,12 @@ Además `toJsDate` entiende `Temporal.Instant` (antes lo trataba como inválido 
 3. Si algún proceso externo (contador, proveedor fiscal) ya concilió con las fechas UTC.
 4. Qué fecha esperan los clientes que reciben el documento fiscal de la franja nocturna.
 
-## 6. Recomendación
+## 6. Recibo del punto de venta (revisado)
 
-- **Separar este cambio en su propio PR.** Hoy viaja dentro de la pila de 29 commits del PR 2 junto a refactors mecánicos. Para aprobarlo con criterio conviene aislar `acebe5f`, `724229b` y `0cbcdca` (+ la documentación `da534e8`), que no dependen de los movimientos de E2.
-- Antes de fusionar: ejecutar el diagnóstico contra una **copia** y decidir con contabilidad cómo tratar el histórico.
-- Decidir si el recibo del POS (`pos-db.ts:155`) debe mostrar la hora de Bogotá; hoy sería la única vista que sigue en UTC.
+`receiptOf` (`lib/business/pos/pos-db.ts`) arma la fecha del tiquete con `String(doc.issueDate).slice(0, 16).replace("T", " ")`; `issueDate` es un instante UTC, así que el tiquete impreso (`receipt.ts`) muestra **fecha y hora en UTC**: una venta hecha a las 19:30 en Bogotá se imprime con la fecha y hora del día siguiente (00:30). Es la misma clase de defecto que el PR 2 corrige, pero **más visible**: lo lee el cliente final en el papel. **No se corrigió** porque no estaba autorizado ampliar el cambio funcional; hace falta su propia prueba (formato `YYYY-MM-DD HH:mm` en `America/Bogota`) y que producto confirme el formato. Hasta entonces, el PR 2 deja el recibo como estaba.
+
+## 7. Qué se decidió
+
+- El cambio va en un **PR independiente** (PR 2), con sus pruebas y su justificación, y se conserva el SQL de diagnóstico.
+- **No se corrigen fechas históricas** automáticamente.
+- **No se presenta como completamente validado** mientras se desconozca el número de documentos afectados: hay que ejecutar el diagnóstico contra una copia y decidir el tratamiento del histórico con contabilidad.
