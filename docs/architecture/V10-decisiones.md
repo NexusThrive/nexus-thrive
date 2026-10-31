@@ -54,7 +54,7 @@ Las resoluciones de esta tabla se tomaron al preparar M3 a partir de las recomen
 | **Q-4** ¿`money-service` pasa a Finance? | **No.** Queda en `business/sales` | Aprobada (**P-2**) | Hecho (M3) |
 | **Q-6** Enum `Vertical` | **Mantener el enum durante M7**; la opción B (texto + FK a `VerticalSetting`) es una dirección futura sujeta a la etapa Prisma | Aprobada (**P-6**) | Etapa Prisma P5 |
 | **Q-7a** `presence`, `growth` | **Se quedan en `business`** | Propuesta (recomendación del diseño) | Se reabre solo si aparece un segundo módulo de análisis |
-| **Q-7b** `benefits` | **`lib/platform/benefits/`** (ver §2.2) | **Implementada en M4**, con su prerrequisito (`withinLimit` → Foundation) | Hecho (`e32f894`, `0de8609`) |
+| **Q-7b** `benefits` | **`lib/platform/benefits/`** (ver §2.2) | **Implementada en M4**, con su prerrequisito (`withinLimit` → Foundation); **opción A confirmada por el dueño al cierre de M4** (§6) | Hecho (`e32f894`, `0de8609`) |
 | **Q-8** `extensions/` | **No se introduce** | Propuesta (recomendación del diseño) | Se reabre con un requisito real de código externo o por negocio |
 
 ### 2.1 Q-3 — `domains/finance/<módulo>`: qué es y qué no es
@@ -99,7 +99,7 @@ Las resoluciones de esta tabla se tomaron al preparar M3 a partir de las recomen
 | `withinLimit` | **`lib/foundation/limits.ts`** | Comparación pura genérica; la usaban Business, data-exchange y una acción de CRM. Prerrequisito de mover `benefits` |
 | `benefits.ts` | `platform/benefits/` | Lógica pura de los códigos de acceso de Nexus; consumida solo por puntos de entrada y por `benefits-db` |
 | `benefits-db.ts` (canje, alta y edición de códigos) | `platform/benefits/` | Programa comercial de Nexus; usa `createAdminDb` para auditar el canje |
-| `getTenantAccess` y `expireBenefitTrial` | **Se quedan en `benefits-db.ts`** | Dependen solo de Core, pero leen y escriben los datos de canje que el módulo posee, y todos sus consumidores (el layout y los ajustes del negocio, más la prueba) son puntos de entrada de la experiencia, que pueden importar platform. Separarlas exigiría partir `benefits-db.ts` y mover también `benefits.ts` a Core (necesitan `BenefitKind`/`normalizeBenefitKind`). Una prueba fija que `app/[tenant]` solo importa platform en esas tres referencias. **Opción futura, sin autorizar:** pasarlas a un módulo de acceso del negocio en Core si se quiere que las páginas de los negocios no importen platform en absoluto |
+| `getTenantAccess` y `expireBenefitTrial` | **Se quedan en `benefits-db.ts`** | Dependen solo de Core, pero leen y escriben los datos de canje que el módulo posee, y todos sus consumidores (el layout y los ajustes del negocio, más la prueba) son puntos de entrada de la experiencia, que pueden importar platform. Separarlas exigiría partir `benefits-db.ts` y mover también `benefits.ts` a Core (necesitan `BenefitKind`/`normalizeBenefitKind`). Una prueba fija que `app/[tenant]` solo importa platform en esas tres referencias. **Opción A adoptada** por el dueño al cierre de M4 (§6): se mantienen las tres referencias y se aclara el criterio de aceptación del diseño. La alternativa de un módulo de acceso del negocio en Core queda **descartada por ahora y no planificada**; solo se reabre con una decisión nueva |
 | `benefit-cookie.ts` | `platform/benefits/` | Cookie del alta y del canje (`/c/[code]`); depende de los dos archivos hermanos y solo lo usan esos dos flujos |
 
 ### 2.3 Q-7a y Q-8 — por qué no se crean áreas ni módulos
@@ -144,4 +144,16 @@ Tomadas bajo la autorización de M4 (2026-10-31); ninguna cambia contratos públ
 | `TenantAuditAction` (las 38 acciones `BIZ_*`) lo define Core y `AuditAction` lo compone; evita Core → Platform sin tocar los escritores (P-9) | **Implementada** (`6053359`) |
 | `lib/admin/catalogs.ts` y `vertical-icons.ts` **permanecen** en `lib/admin/` (no son administración de la plataforma) | **Implementada**; su destino definitivo queda **pendiente** (slug → Core en M6d; íconos → experiencia) |
 | `createAdminDb` se mantiene como infraestructura interna de `platform/admin` (incluida `createTenant`) | **Implementada**; mover el alta de negocios a Core es una **opción futura sin autorizar** |
+
+## 6. Decisiones de cierre de M4 (2026-10-31)
+
+Aprobadas por el dueño tras la auditoría final de M4 (solo lectura). Son **exclusivamente documentales**: no cambian código, configuración, pruebas, Prisma, migraciones ni `layers.json`, y no introducen excepciones en el verificador.
+
+| # | Decisión | Estado | Dónde queda registrada |
+|---|---|---|---|
+| **C-1** | **Historial de commits.** Se conservan los nueve commits intermedios de M4 que no compilan por separado (`0de8609`, `a39abba`, `2473f99`, `f2393ed`, `d98f878`, `aded2bc`, `2491db3`, `b01c604`, `0116c51`) y `ac71d60` como corrección. **No se reescribe, reorganiza ni modifica el historial.** | **Aprobada y vigente** (no requiere implementación) | Limitación y consecuencias para `git bisect` y los `revert` individuales: [`V10-M4-resultados.md`](V10-M4-resultados.md) §14.1 |
+| **C-2** | **Benefits: opción A.** Se mantienen las tres referencias de `app/[tenant]` a `platform/benefits/benefits-db`; no se mueven funciones ni se cambia comportamiento. Se **aclara el criterio de aceptación** de V10 para distinguir las dependencias entre módulos (prohibidas fuera de platform, experience y runtime) de las dependencias legítimas de Experience hacia Platform (puntos de entrada, lista cerrada fijada por prueba). | **Aprobada**; el criterio aclarado está **implementado en la documentación** | [`V10-arquitectura-fisica.md`](V10-arquitectura-fisica.md) §4.1 («Aclaración») y §7·M4 (fila «Aceptación») |
+| **C-3** | **Aislamiento y seguridad.** Se mantiene la prueba `lib/tenant/tenant-scope.test.ts` tal como está, sin debilitarla. La **auditoría de aislamiento por negocio** y la **revisión de las guardas de `app/admin`** se registran como **trabajo independiente fuera de V10**. | **Aprobada como registro; el trabajo NO está iniciado** | [`hoja-de-ruta.md`](hoja-de-ruta.md) §4 y [`V10-M4-resultados.md`](V10-M4-resultados.md) §14.7 |
+
+Alcance anotado para el trabajo independiente de C-3 (a definir y autorizar aparte): (a) los límites de la prueba actual, que solo ve consultas literales `.orm.public.<Modelo>.where({…})` y no las del constructor `.sql`, los filtros no literales ni las lecturas sin `where`; (b) las 54 consultas sin `tenantId` que la prueba excluye a propósito en seis módulos del panel; (c) las 14 páginas de `app/admin` que dependen de la guarda del layout y no tienen una propia. La explotabilidad de (c) **no se ha evaluado**.
 

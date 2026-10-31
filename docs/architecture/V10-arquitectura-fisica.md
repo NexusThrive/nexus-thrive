@@ -233,11 +233,19 @@ export const restaurant = defineSector({
 | `domains` | foundation, core, business | Entre **familias** (`finance` ↔ otra futura) solo por contrato. Dentro de una familia, import directo |
 | `integrations` | foundation, core, business, domains | Implementan puertos; los dominios no los importan |
 | `industry` | foundation, core, business, domains, integrations | Un sector no importa a otro (R2). Nadie lo importa salvo `runtime` y `experience` (R1) |
-| `platform` | foundation, core, business, domains, integrations | Ningún negocio la importa |
+| `platform` | foundation, core, business, domains, integrations | Ningún **módulo** de `foundation`, `core`, `business`, `domains`, `integrations` ni `industry` la importa; solo la importan `experience` (puntos de entrada) y `runtime`. *(Aclarado al cierre de M4; ver «Aclaración» bajo esta tabla. Redacción original: «Ningún negocio la importa».)* |
 | `experience` | todas excepto `runtime` | Sin reglas de negocio propias |
 | `runtime` | todas | Solo la importan los puntos de entrada y las pruebas |
 
 Difiere de hoy en que `automation` desaparece (H9) y `finance` pasa a `domains`; `api`/`mcp` pasan a Core (H10).
+
+> **Aclaración (cierre de M4, 2026-10-31).** Hay que distinguir dos tipos de dependencia hacia `platform`:
+>
+> 1. **Entre módulos de `lib/`.** Ningún módulo fuera de `platform`, `experience` y `runtime` puede importar `platform`. Lo comprueba `pnpm check:layers` (R3) y es la regla que protege la separación entre áreas.
+> 2. **De Experience hacia Platform.** `app/` y `components/` son la capa `experience`; la matriz les permite importar `platform`. Son legítimas cuando son **puntos de entrada** (páginas, layouts, acciones, rutas). El verificador solo escanea `lib/`, así que para los negocios (`app/[tenant]`) la lista de referencias permitidas es **cerrada y la fija una prueba** (`tests/architecture/v10-platform.test.ts`): hoy son **tres**, todas a `platform/benefits/benefits-db` (el layout del negocio, la página de ajustes y un tipo). Añadir una cuarta exige una decisión nueva.
+>
+> Por eso «Ningún negocio importa `platform`» se entiende como la regla 1; la regla 2 no se prohíbe, se limita y se vigila.
+
 
 ### 4.2 Cuándo corresponde cada herramienta
 
@@ -451,7 +459,7 @@ Justificación: H1. Riesgos: medio (muchos importadores; sin cambios de lógica)
 | Imports | `admin/db.ts` = 62 (11 desde `lib`); `ops/access.ts` = 39, `ops/leads.ts` = 17, todos desde `app/` (`ops` tiene 0 importadores en `lib`) |
 | Riesgos | Medio-bajo: solo `app/` importa `ops` |
 | Pruebas | Pruebas de `ops`, `admin`, panel `/admin` y `/ops` |
-| Aceptación | Ningún negocio (`app/[tenant]`) importa `platform` |
+| Aceptación | Ningún **módulo** de `lib/` fuera de `platform`, `experience` y `runtime` importa `platform` (lo comprueba `check:layers`); las páginas de los negocios (`app/[tenant]`) solo importan `platform` en la lista cerrada de referencias fijada por prueba (aclaración del cierre de M4, bajo la matriz de §4.1). *Redacción original: «Ningún negocio (`app/[tenant]`) importa `platform`».* |
 | Reversible | Sí |
 
 ### M5 — `finance` como familia de `domains` y `kernel`
