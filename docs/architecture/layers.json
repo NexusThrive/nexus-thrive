@@ -45,6 +45,7 @@
     { "path": "lib/usage", "layer": "core" },
     { "path": "lib/capabilities", "layer": "core" },
     { "path": "lib/operations", "layer": "core" },
+    { "path": "lib/operations/registry.ts", "layer": "integrations" },
     { "path": "lib/parties", "layer": "core" },
     { "path": "lib/files", "layer": "core" },
 

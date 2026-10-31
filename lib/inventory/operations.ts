@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { defineOperation, OperationError, type OperationDefinition } from "../types";
+import { defineOperation, OperationError, type OperationDefinition } from "@/lib/operations/types";
 
 const productSummary = z.object({
   id: z.string(),

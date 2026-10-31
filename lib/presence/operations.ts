@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { defineOperation, type OperationDefinition } from "../types";
+import { defineOperation, type OperationDefinition } from "@/lib/operations/types";
 
 /** Presencia del negocio (barra v2): pilares verificados, fase y tendencia. Solo lectura. */
 export const presenceOperations: OperationDefinition[] = [
