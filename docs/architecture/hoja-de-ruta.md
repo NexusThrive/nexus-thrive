@@ -32,8 +32,8 @@ confirmar si se **agrega** la descripción que falta (bajo riesgo) y qué hacer 
 
 ## 3. Pruebas
 
-- **Migrar las 151 pruebas** de `lib/` a `tests/` (`unit/` e `integration/`), en 6 olas ([`plan-migracion-tests.md`](plan-migracion-tests.md)). Ya hay 15 archivos nuevos en `tests/`.
-- **Pruebas de integración en CI:** el script ya las corre por patrón (58 → 62 archivos). Falta el fixture sintético de `master-pack-import.file` ([requisitos](auditoria-pruebas-integracion.md)).
+- **Migrar las 151 pruebas** de `lib/` a `tests/` (`unit/` e `integration/`), en 6 olas ([`plan-migracion-tests.md`](plan-migracion-tests.md)). Ya hay 15 archivos de prueba en `tests/`.
+- **Pruebas de integración en CI:** el script ya las corre por patrón (63 archivos y 385 pruebas al cierre de E3). Falta el fixture sintético de `master-pack-import.file` ([requisitos](auditoria-pruebas-integracion.md)).
 - El CI de GitHub no puede recibir cambios de `ci.yml` con el token actual; el script ya basta, pero conviene un paso propio en el workflow.
 
 ## 4. Estructura del código
