@@ -9,7 +9,7 @@ import { addDaysKey } from "@/lib/business/scheduling/calendar";
 import { slotLoads, visitorReport, weekdayOf, WEEKDAYS } from "@/lib/industry/museum/museum";
 import { getMuseumSettings, salesBetween, salesOn, ticketTypes } from "@/lib/industry/museum/museum-db";
 import { canHandleCash, canManage } from "@/lib/auth/roles";
-import { bogotaDayKey } from "@/lib/finance/series";
+import { bogotaDayKey } from "@/lib/foundation/kernel/finance-series";
 import { formatCurrency } from "@/lib/format";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { customerOptions } from "@/lib/business/customers/customers-db";

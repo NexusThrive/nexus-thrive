@@ -1,11 +1,12 @@
 /**
  * E5 · Lo que Business y Core comparten con Finance sin escribir en Finance.
  *
- * Tres módulos de Finance son puros (sin imports de Nexus, sin acceso a datos): el vocabulario de
- * medios y estados de pago, el cálculo de series del tablero y la antigüedad de cartera. Son
- * Foundation por esa propiedad, y estas pruebas impiden que dejen de serlo en silencio.
+ * Cuatro módulos de Finance son puros (sin imports de Nexus, sin acceso a datos): el vocabulario de
+ * medios y estados de pago, el cálculo de series del tablero, la antigüedad de cartera y el análisis
+ * de montos en pesos. Viven en `lib/foundation/kernel/` (V10 · M5.1) y estas pruebas impiden que
+ * dejen de ser puros en silencio.
  */
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -16,7 +17,12 @@ const ROOT = join(import.meta.dirname, "..", "..");
 const read = (rel: string) => readFileSync(join(ROOT, rel), "utf8");
 const layers = loadJson("docs/architecture/layers.json");
 
-const PUROS = ["lib/finance/index.ts", "lib/finance/series.ts", "lib/receivables/aging.ts"];
+const PUROS = [
+  "lib/foundation/kernel/payment-vocabulary.ts",
+  "lib/foundation/kernel/finance-series.ts",
+  "lib/foundation/kernel/aging.ts",
+  "lib/foundation/kernel/cop-amount.ts",
+];
 
 describe("módulos puros de Finance compartidos", () => {
   test.each(PUROS)("%s está en Foundation", (file) => {
@@ -29,8 +35,14 @@ describe("módulos puros de Finance compartidos", () => {
     expect(read(file)).not.toMatch(/\bprocess\.env\b|\bfetch\(|\bnode:/);
   });
 
+  test("la carpeta kernel contiene exactamente los módulos puros esperados", () => {
+    const dir = join(ROOT, "lib/foundation/kernel");
+    const produccion = readdirSync(dir).filter((n) => n.endsWith(".ts") && !n.endsWith(".test.ts")).map((n) => `lib/foundation/kernel/${n}`);
+    expect(produccion.sort()).toEqual([...PUROS].sort());
+  });
+
   test("el resto de Finance sigue en la capa domains: solo lo puro salió", () => {
-    for (const file of ["lib/finance/cop-amount.ts", "lib/accounting/ledger-db.ts", "lib/tax/tax-db.ts", "lib/receivables/receivables-db.ts"]) {
+    for (const file of ["lib/accounting/ledger-db.ts", "lib/tax/tax-db.ts", "lib/receivables/receivables-db.ts"]) {
       expect(classify(file, layers)?.layer, file).toBe("domains");
     }
   });

@@ -1,4 +1,4 @@
-import { copAmountExceeds, parseCopAmount } from "@/lib/finance/cop-amount";
+import { copAmountExceeds, parseCopAmount } from "@/lib/foundation/kernel/cop-amount";
 import {
   EXPENSE_CATEGORIES,
   PAYMENT_METHODS,
@@ -6,7 +6,7 @@ import {
   type ExpenseCategory,
   type PaymentMethodValue,
   type PaymentStatusValue,
-} from "@/lib/finance";
+} from "@/lib/foundation/kernel/payment-vocabulary";
 
 /** Tope por movimiento, en pesos enteros. */
 const MAX_AMOUNT_COP = BigInt(100_000_000);

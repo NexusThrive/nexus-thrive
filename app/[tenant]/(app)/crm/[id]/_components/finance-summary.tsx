@@ -1,6 +1,6 @@
 import { Card, CardHeader, CardTitle } from "@/components/molecules/card";
 import { formatCurrency, formatDateShort } from "@/lib/format";
-import { paymentMethodLabel } from "@/lib/finance";
+import { paymentMethodLabel } from "@/lib/foundation/kernel/payment-vocabulary";
 import type {
   Customer360Metrics,
   Customer360Payment,

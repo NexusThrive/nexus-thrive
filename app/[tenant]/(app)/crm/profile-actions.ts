@@ -6,7 +6,7 @@ import { getCustomer, saveCustomer, setCustomerPhoto } from "@/lib/business/cust
 import { enrollInPlan } from "@/lib/industry/gym/enrollment-db";
 import { addAttachment, checkAttachment } from "@/lib/business/sales/finance-db";
 import { getProduct, planOptions } from "@/lib/business/catalog/products-db";
-import { PAYMENT_METHODS } from "@/lib/finance";
+import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { can } from "@/lib/auth/permissions";
 

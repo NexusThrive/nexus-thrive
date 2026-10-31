@@ -11,7 +11,7 @@ import CashPanel from "./_components/cash-panel";
 import { cashHistory, listCashBoxes, sessionMovements } from "@/lib/business/sales/finance-db";
 import { canManage } from "@/lib/auth/roles";
 import { requireTenantContext } from "@/lib/tenant/context";
-import { EXPENSE_CATEGORIES, PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/finance";
+import { EXPENSE_CATEGORIES, PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/foundation/kernel/payment-vocabulary";
 import { PageHeader } from "@/components/molecules/page-header";
 import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
 import { BalanceCard } from "@/components/organisms/balance-card";

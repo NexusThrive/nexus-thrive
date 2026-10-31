@@ -3,7 +3,7 @@
 import { ExpenseSheet } from "@/components/organisms/expense-sheet";
 import { PaymentSheet } from "@/components/organisms/payment-sheet";
 import { requestNotificationsRefresh } from "@/lib/dashboard/notifications-client";
-import { EXPENSE_CATEGORIES, PAYMENT_METHODS } from "@/lib/finance";
+import { EXPENSE_CATEGORIES, PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { formatCurrency } from "@/lib/format";
 import { createExpenseAction, createPaymentAction } from "@/app/[tenant]/(app)/finance/actions";
 

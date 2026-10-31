@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Button } from "@/components/atoms/button";
 import { ToastProvider } from "@/components/molecules/toast";
-import { PAYMENT_METHODS } from "@/lib/finance";
+import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { PaymentSheet } from "./payment-sheet";
 
 function Demo({ fail = false, fullHref }: { fail?: boolean; fullHref?: string }) {

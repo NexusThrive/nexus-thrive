@@ -5,7 +5,7 @@ import { getAppBaseUrl } from "@/lib/app-url";
 import { publicReceipt, verifyReceiptToken } from "@/lib/business/sales/finance-db";
 import { receiptQrDataUrl, receiptQrPayload } from "@/lib/business/sales/receipt-qr";
 import { receiptCode } from "@/lib/business/sales/invoice";
-import { paymentMethodLabel, type PaymentMethodValue } from "@/lib/finance";
+import { paymentMethodLabel, type PaymentMethodValue } from "@/lib/foundation/kernel/payment-vocabulary";
 import { formatCurrency, toNumber } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Recibo de pago", robots: { index: false } };

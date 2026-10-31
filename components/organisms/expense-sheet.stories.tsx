@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Button } from "@/components/atoms/button";
-import { EXPENSE_CATEGORIES } from "@/lib/finance";
+import { EXPENSE_CATEGORIES } from "@/lib/foundation/kernel/payment-vocabulary";
 import { ExpenseSheet } from "./expense-sheet";
 
 function Demo({ fullHref }: { fullHref?: string }) {

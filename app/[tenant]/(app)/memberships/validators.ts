@@ -1,4 +1,4 @@
-import { PAYMENT_METHODS, type PaymentMethodValue } from "@/lib/finance";
+import { PAYMENT_METHODS, type PaymentMethodValue } from "@/lib/foundation/kernel/payment-vocabulary";
 import { MEMBERSHIP_TYPES, type MembershipTypeValue } from "@/lib/industry/gym/memberships";
 import { parsePlainDate } from "@/lib/plain-date";
 

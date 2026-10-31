@@ -12,7 +12,7 @@ import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { receiptCode } from "@/lib/business/sales/invoice";
 import { drawReceiptPng, shareReceiptOnWhatsapp } from "@/lib/business/sales/receipt-share";
-import { paymentMethodLabel, type PaymentMethodValue } from "@/lib/finance";
+import { paymentMethodLabel, type PaymentMethodValue } from "@/lib/foundation/kernel/payment-vocabulary";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { moneyDetailAction, uploadAttachmentAction, voidExpenseAction, voidPaymentAction } from "../money-actions";
 

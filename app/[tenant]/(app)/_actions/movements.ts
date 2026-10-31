@@ -1,6 +1,6 @@
 "use server";
 
-import { bogotaRange } from "@/lib/finance/series";
+import { bogotaRange } from "@/lib/foundation/kernel/finance-series";
 import type { MovementRow } from "@/lib/tenant/db";
 import { requireTenantContext } from "@/lib/tenant/context";
 

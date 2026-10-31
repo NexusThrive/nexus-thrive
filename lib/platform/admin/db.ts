@@ -11,7 +11,7 @@ import {
 import {
   paymentStatusLabel,
   type PaymentMethodValue,
-} from "@/lib/finance";
+} from "@/lib/foundation/kernel/payment-vocabulary";
 import { type VerticalValue } from "@/lib/core/sectors/verticals";
 import { MODULES, sortModules, type ModuleValue } from "@/lib/capabilities/modules";
 import type { OnboardingTenantType } from "@/lib/onboarding/types";

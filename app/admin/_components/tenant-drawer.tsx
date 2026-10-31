@@ -21,7 +21,7 @@ import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
 import { MODULE_LABELS } from "@/lib/capabilities/modules";
 import { TEAM_SIZE_LABELS, type TeamSizeValue } from "@/lib/onboarding/types";
-import { paymentMethodLabel } from "@/lib/finance";
+import { paymentMethodLabel } from "@/lib/foundation/kernel/payment-vocabulary";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import type { TenantDetail } from "@/lib/platform/admin/db";
 import { cn } from "@/lib/utils";

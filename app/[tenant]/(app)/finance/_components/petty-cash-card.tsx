@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Badge } from "@/components/atoms/badge";
 import { ProgressBar } from "@/components/atoms/progress-bar";
 import { formatCurrency } from "@/lib/format";
-import { paymentMethodLabel, type PaymentMethodValue } from "@/lib/finance";
+import { paymentMethodLabel, type PaymentMethodValue } from "@/lib/foundation/kernel/payment-vocabulary";
 
 /**
  * Gastos del periodo (al lado del balance, como el artefacto): lo gastado en el

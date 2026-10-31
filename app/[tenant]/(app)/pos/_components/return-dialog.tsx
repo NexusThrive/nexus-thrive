@@ -9,7 +9,7 @@ import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { findSaleAction, returnSaleAction } from "@/app/[tenant]/(app)/pos/actions";
-import { PAYMENT_METHODS } from "@/lib/finance";
+import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { formatCurrency } from "@/lib/format";
 import type { SaleToReturn } from "@/lib/pos/returns-db";
 

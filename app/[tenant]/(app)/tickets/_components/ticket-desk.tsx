@@ -14,7 +14,7 @@ import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { SALE_KINDS, saleKindLabel, type SlotLoad } from "@/lib/industry/museum/museum";
 import type { TicketSaleRow } from "@/lib/industry/museum/museum-db";
-import { PAYMENT_METHODS } from "@/lib/finance";
+import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { payTicketsAction, sellTicketsAction, voidTicketsAction, type TicketResult } from "../actions";

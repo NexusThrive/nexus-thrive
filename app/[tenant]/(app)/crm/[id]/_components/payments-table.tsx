@@ -1,6 +1,6 @@
 import type { Customer360Payment } from "@/lib/tenant/db";
 import { formatCurrency, formatDateTime } from "@/lib/format";
-import { paymentMethodLabel } from "@/lib/finance";
+import { paymentMethodLabel } from "@/lib/foundation/kernel/payment-vocabulary";
 import { PaymentStatusPill } from "./status-pills";
 
 /** Pestaña Pagos: historial limitado a los más recientes (acotado). */

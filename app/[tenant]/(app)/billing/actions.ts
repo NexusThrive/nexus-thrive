@@ -8,7 +8,7 @@ import { createInvoice, payInvoice, voidInvoice, invoiceStatus } from "@/lib/bus
 import { MoneyError } from "@/lib/business/sales/money-error";
 import { canHandleCash, canManage } from "@/lib/auth/roles";
 import { receiptCode } from "@/lib/business/sales/invoice";
-import { PAYMENT_METHODS } from "@/lib/finance";
+import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { logTenantAction } from "@/lib/tenant/audit";
 

@@ -12,7 +12,7 @@ import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { KIND_LABELS } from "@/lib/business/catalog/catalog-kinds";
 import { STOCK_KIND_LABELS, stockLevel, type StockKind } from "@/lib/inventory/inventory";
 import type { ProductRow } from "@/lib/business/catalog/products-db";
-import { PAYMENT_METHODS } from "@/lib/finance";
+import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 import { moveStockAction, sellProductAction, stockHistoryAction } from "../actions";
 import { Select } from "@/components/atoms/select";

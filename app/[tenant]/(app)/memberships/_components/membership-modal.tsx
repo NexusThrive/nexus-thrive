@@ -7,7 +7,7 @@ import {
   renewMembershipAction,
   type RenewalFormState,
 } from "../actions";
-import { PAYMENT_METHODS } from "@/lib/finance";
+import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { typeLabel } from "@/lib/industry/gym/memberships";
 import { formatDateShort, formatCurrency } from "@/lib/format";
 import type { MembershipViewRow } from "./membership-table";

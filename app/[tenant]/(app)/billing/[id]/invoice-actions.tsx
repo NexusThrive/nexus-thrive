@@ -6,7 +6,7 @@ import { Printer } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
 import { useToast } from "@/components/molecules/toast";
-import { PAYMENT_METHODS } from "@/lib/finance";
+import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { payInvoiceAction, voidInvoiceAction } from "../actions";
 import { Select } from "@/components/atoms/select";
 

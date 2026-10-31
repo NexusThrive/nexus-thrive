@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { parseMuseumSettings } from "@/lib/industry/museum/museum";
 import { createTicketSale, payTicketSale, saveMuseumSettings, seedTicketTypes, voidTicketSale, type NewSale } from "@/lib/industry/museum/museum-db";
 import { canHandleCash, canManage } from "@/lib/auth/roles";
-import { PAYMENT_METHODS } from "@/lib/finance";
+import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { logTenantAction } from "@/lib/tenant/audit";
 

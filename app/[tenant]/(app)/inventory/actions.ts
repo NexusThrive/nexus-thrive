@@ -8,7 +8,7 @@ import { sellProduct } from "@/lib/business/sales/money-service";
 import { validateStockMove, type StockKind } from "@/lib/inventory/inventory";
 import { getProduct, moveStock, saveProduct, stockHistory } from "@/lib/business/catalog/products-db";
 import { canHandleCash, canManage } from "@/lib/auth/roles";
-import { PAYMENT_METHODS } from "@/lib/finance";
+import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { requireTenantContext } from "@/lib/tenant/context";
 
 export type CatalogResult = { ok: true; message?: string; id?: string; receipt?: string } | { ok: false; message: string; errors?: Partial<Record<keyof ProductDraft, string>> };

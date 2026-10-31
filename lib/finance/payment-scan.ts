@@ -1,5 +1,5 @@
-import { parseCopAmount } from "@/lib/finance/cop-amount";
-import type { PaymentMethodValue } from "@/lib/finance";
+import { parseCopAmount } from "@/lib/foundation/kernel/cop-amount";
+import type { PaymentMethodValue } from "@/lib/foundation/kernel/payment-vocabulary";
 
 /**
  * Lectura de comprobantes de pago (FLU·05): la foto se interpreta en el

@@ -6,7 +6,7 @@ import { createTenantDb } from "@/lib/tenant/db";
 import { listTeam, seatLimit } from "@/lib/tenant/team-db";
 import type { BusinessModel } from "@/lib/tenant/business-context";
 import { canManageTeam } from "@/lib/auth/roles";
-import { paymentMethodLabel } from "@/lib/finance";
+import { paymentMethodLabel } from "@/lib/foundation/kernel/payment-vocabulary";
 import { getTenantAccess } from "@/lib/platform/benefits/benefits-db";
 import { type VerticalValue, VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
 import { MODULES, sortModules } from "@/lib/capabilities/modules";

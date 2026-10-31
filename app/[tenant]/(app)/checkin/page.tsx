@@ -4,7 +4,7 @@ import { StatTile } from "@/components/molecules/stat-tile";
 import { addDaysKey, bogotaToMs } from "@/lib/business/scheduling/calendar";
 import { attendanceBetween, attendanceCount, expiringSoon, unknownScansBetween } from "@/lib/industry/gym/gym-db";
 import { canHandleCash } from "@/lib/auth/roles";
-import { bogotaDayKey } from "@/lib/finance/series";
+import { bogotaDayKey } from "@/lib/foundation/kernel/finance-series";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import CheckinStation from "./_components/checkin-station";
