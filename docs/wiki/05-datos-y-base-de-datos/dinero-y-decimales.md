@@ -46,17 +46,17 @@ que se vende) y deben ocurrir **todas o ninguna**.
 
 | Qué | Dónde |
 |---|---|
-| Servicio de dinero | `lib/business/money-service.ts` |
+| Servicio de dinero | `lib/business/sales/money-service.ts` |
 | Decisión | `docs/decisions/arquitectura/0006-servicio-de-dinero.md` (estado «Propuesta») y `DATA-01` en `docs/internal/historico/nexus-architecture/technical-debt.md` |
-| Montos a mano | `lib/finance/cop-amount.ts`, prueba `lib/finance/cop-amount.test.ts` |
-| Motor de costos | `lib/construction/apu-engine.ts`, prueba `lib/construction/apu-engine.test.ts` |
-| Formato | `lib/format.ts` (`toNumber`, `formatCurrency`) |
-| Concurrencia del dinero | `lib/business/money-service.integration.test.ts` |
+| Montos a mano | `lib/foundation/kernel/cop-amount.ts`, prueba `tests/unit/foundation/kernel/cop-amount.test.ts` |
+| Motor de costos | `lib/industry/construction/apu-engine.ts`, prueba `tests/unit/industry/construction/apu-engine.test.ts` |
+| Formato | `lib/foundation/format.ts` (`toNumber`, `formatCurrency`) |
+| Concurrencia del dinero | `tests/integration/business/sales/money-service.integration.test.ts` |
 
 ## 4. Diferencias a tener presentes
 
-- **El ADR-0006 describe otra ubicación.** Habla de `lib/capabilities/money` con `recordIncome`/`recordExpense`; el servicio
-  real está en `lib/business/money-service.ts` y expone `recordIncome`, `payInvoice`, `receiveInvoicePayment`, `payTicketSale`,
+- **El ADR-0006 describe otra ubicación.** Habla de `lib/business/sales` con `recordIncome`/`recordExpense`; el servicio
+  real está en `lib/business/sales/money-service.ts` y expone `recordIncome`, `payInvoice`, `receiveInvoicePayment`, `payTicketSale`,
   `sellProduct`, `voidPayment` y `voidExpense`. El ADR sigue en «Propuesta».
 - **Capa:** `money-service` está clasificado como Business y llama a Finance (contabilización, impuestos, cartera). Son las
   excepciones de la etapa E5 en `docs/architecture/exceptions.json`.

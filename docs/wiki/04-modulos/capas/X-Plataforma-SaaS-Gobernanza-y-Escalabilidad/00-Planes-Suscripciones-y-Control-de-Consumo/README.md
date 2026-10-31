@@ -78,7 +78,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Facturas y recibos automáticos
 - [ ] Reintentos de cobro y periodo de gracia
 - [x] Panel de facturación — _hecho: `/admin/facturacion`_
-- [x] Códigos de activación con precio, módulos y límites propios (contrato a medida) _(objetivo 2026)_ — _hecho: `/admin/beneficios` → `lib/benefits` (canje con suscripción activa y límites de usuarios y clientes)_
+- [x] Códigos de activación con precio, módulos y límites propios (contrato a medida) _(objetivo 2026)_ — _hecho: `/admin/beneficios` → `lib/platform/benefits` (canje con suscripción activa y límites de usuarios y clientes)_
 - [x] Límite de negocios por persona, fijado desde el Operations Center _hecho: AccountLimit en prisma/contract.prisma · lib/admin/users-db.ts · /admin/usuarios · PR #107 · prueba lib/admin/users.integration.test.ts_
 
 #### Técnico

@@ -146,7 +146,7 @@ Hoy **Presence Thrive** puntúa de 0 a 100 qué tan visible es un negocio
 (identidad, WhatsApp, ubicación, Google, Instagram, catálogo, sitio activo y
 optimizado; sin sitio el techo es 60) y lo clasifica en `INVISIBLE`, `VISIBLE`,
 `CONECTADO` y `DOMINANTE`
-(`lib/presence/presence.ts`). Es determinista y distingue lo **declarado** de lo
+(`lib/business/presence/presence.ts`). Es determinista y distingue lo **declarado** de lo
 **verificado**. Esa base se conserva.
 
 El cambio de enfoque: la barra deja de ser «un número que sube» y pasa a ser

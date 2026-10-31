@@ -12,11 +12,11 @@ Regla aplicada: si una afirmación no se puede confirmar en el código, queda ma
 | 2 | `docs/nexus-architecture/user-journey.md` | 19 / 12 | 3 | **Reescribir contra el código.** Es el único recorrido de usuario y dice describir «el comportamiento actual»; sus rutas (`lib/tenant-db.ts`, `lib/ops/access.ts`…) ya no existen |
 | 3 | `docs/nexus-architecture/product-inventory.md` | 17 / 8 | 2 | **Fusionar** con `02-producto/mapa-de-capacidades.md` tras verificar cada fila; hoy se solapan |
 | 4 | `docs/nexus-architecture/onboarding-and-ux.md` | 4 / 2 | 4 | **Validar**: su lista de problemas (p. ej. «turismo lleva a un 404») puede estar resuelta; si lo está, archivar |
-| 5 | `docs/nexus-architecture/roadmap.md` | 4 / 1 | 5 | **Archivar**: sus etapas (contención de seguridad, aislamiento) las sustituyen V10 y la [hoja de ruta](../wiki/02-producto/hoja-de-ruta.md) |
+| 5 | `docs/nexus-architecture/roadmap.md` | 4 / 1 | 5 | **Archivar**: sus etapas (contención de seguridad, aislamiento) las sustituyen V10 y la [hoja de ruta](historico/v10-y-etapas/hoja-de-ruta-tras-E3.md) |
 | 6 | `docs/nexus-architecture/scaling-path.md` | 2 / 0 | 4 | **Conservar** como propuesta en `03-arquitectura`: complementa el ADR 0001 (monolito modular), que sigue en «propuesta» |
 | 7 | `docs/construction/test-integration.md` | 1 / 1 | 0 | **Archivar**: lo cubre [Pruebas](../wiki/10-pruebas-y-calidad/pruebas.md); cita `lib/tenant-db.integration.test.ts`, hoy `tests/integration/core/tenancy/db.integration.test.ts` |
 | 8 | `docs/construction/prisma8-queries.md` | 3 / 2 | 1 | **Promover** a `05-datos-y-base-de-datos` tras corregir dos rutas (`prisma/contract.prisma` → `prisma/schema/`; la prueba ahora es `tests/integration/prisma8-query-patterns.integration.test.ts`, que existe) |
-| 9 | `docs/construction/tabla-permisos-catalogo.md` | 3 / 2 | 3 | **Reescribir**: la matriz real es `BUSINESS_PERMISSIONS` (p. ej. `apu.edit` incluye ADMIN y la tabla no); `canEditApuCatalog` vive ahora en `lib/core/auth/authorization.ts` |
+| 9 | `docs/construction/tabla-permisos-catalogo.md` | 3 / 2 | 3 | **Marcada NO VÁLIDA** (contrastada: faltan ADMIN en `apu.edit` y `apu.destroy`). **Reescribir**: la matriz real es `BUSINESS_PERMISSIONS` (p. ej. `apu.edit` incluye ADMIN y la tabla no); `canEditApuCatalog` vive ahora en `lib/core/auth/authorization.ts` |
 | 10 | `docs/construction/convencion-semanas-lean.md` | 5 / 4 | 1 | **Promover** a `04-modulos` corrigiendo rutas (`lean-engine.ts` está en `lib/industry/construction/`); la convención de semanas es de dominio y sigue siendo válida |
 | 11 | `docs/PENDIENTES.md` | 14 / 7 | 3 | **Revisar con el dueño** y fusionar con la hoja de ruta; es lista viva, no se archiva. Rutas con equivalente: `money-service` → `lib/business/sales/`, `inbox-providers` → `lib/platform/inbox/`, `rate-limit` → `lib/core/api/` y `lib/foundation/`, `finance-db` → `lib/business/sales/`, `products-db` → `lib/business/catalog/` |
 | 12 | `docs/SIGUIENTE-PASO.md` | 1 / 0 (corregida) | 2 | **Fusionar** con la hoja de ruta cuando se decida el siguiente paso. Su enlace roto a `ARQUITECTURA-CORE-Y-RUBROS.md` ahora apunta a `B-core-y-compartidas.md` |
@@ -41,7 +41,7 @@ Lo que esas páginas contienen y **no** tiene equivalente vigente (por ejemplo, 
 - `06-seguridad-y-permisos/autenticacion-permisos-y-aislamiento.md` — autenticación, matriz de permisos, aislamiento por negocio y checklist; cada ruta citada existe.
 - `11-glosario/glosario.md` — 20 términos propios de Nexus.
 
-Entrada de la fase 5: [rutas citadas que ya no existen](rutas-citadas-inexistentes.md) (103 en `docs/wiki` y `docs/decisions`, muchas legítimas por ser históricas).
+Entrada de la fase 5: [rutas citadas que ya no existen](rutas-citadas-inexistentes.md) (clasificadas: de 103 quedan 30, todas históricas o intencionales).
 
 ## Lectores a los que sirve la wiki
 

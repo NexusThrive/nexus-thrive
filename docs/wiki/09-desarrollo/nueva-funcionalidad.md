@@ -138,7 +138,7 @@ texto validado (`isModule`): **no hace falta migración**.
 | 2 | `app/[tenant]/(app)/<ruta>/` | `page.tsx` + `actions.ts` siguiendo la receta A |
 | 3 | (opcional) `lib/core/sectors/catalog.ts` → `VERTICAL_RECIPES` | Si viene activado por defecto en algún rubro |
 
-`lib/core/capabilities/registry.test.ts` comprueba que cada ruta del menú tenga su
+`tests/unit/core/capabilities/registry.test.ts` comprueba que cada ruta del menú tenga su
 página y que los catálogos derivados no se desalineen. En una base que ya
 existe, la fila de precio (`ModuleSetting`) se crea sola al cargar el catálogo.
 
@@ -152,7 +152,7 @@ sirve la página ni las acciones si el negocio tiene el módulo apagado.
 
 ## 4. Si cambias el modelo de datos
 
-1. Edita `prisma/contract.prisma`.
+1. Edita `prisma/schema/`.
 2. `pnpm prisma contract emit`
 3. `pnpm prisma migration plan --name <nombre>`
 4. `pnpm exec prisma db migrate --db "$DATABASE_URL"` (desarrollo) y otra vez
@@ -173,7 +173,7 @@ durante el despliegue.
 - [ ] La página llama a `requirePageContext(tenant, "/<ruta>")`.
 - [ ] Cada acción llama a `requireTenantContext(slug, "/<ruta>")` y a `can(...)`.
 - [ ] Ningún archivo nuevo de `app/` importa `@/prisma/db`.
-- [ ] Todo `where` del repositorio lleva `tenantId` (lo exige `lib/core/tenancy/tenant-scope.test.ts`).
+- [ ] Todo `where` del repositorio lleva `tenantId` (lo exige `tests/architecture/tenant-scope.test.ts`).
 - [ ] El dinero pasa por `money-service.ts`.
 - [ ] Lo destructivo o sensible deja `logTenantAction`.
 - [ ] Hay prueba: unitaria para la regla; integración si toca datos (y está en

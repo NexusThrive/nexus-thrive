@@ -6,4 +6,5 @@ Unitarias, integración, E2E y pruebas de arquitectura.
 
 ## Contenido
 
+- [Pruebas de arquitectura](pruebas-de-arquitectura.md)
 - [Cómo correr y escribir pruebas](pruebas.md)

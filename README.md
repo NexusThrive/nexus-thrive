@@ -323,7 +323,7 @@ historial en [`CHANGELOG.md`](CHANGELOG.md).
 | --- | --- |
 | [`PRODUCT.md`](PRODUCT.md) | Qué es NEXUS, para quién y principios de producto |
 | [`DESIGN.md`](DESIGN.md) | Marca, tokens, componentes, movimiento y layout |
-| [`docs/nexus-architecture/`](docs/internal/historico/nexus-architecture/README.md) | Auditoría, arquitectura actual y objetivo, seguridad, deuda y roadmap |
+| [`docs/nexus-architecture/`](docs/internal/historico/nexus-architecture/README.md) | Auditoría del 22–23 oct de 2026 (histórica, pendiente de validación): seguridad, deuda y remediación |
 | [`docs/design/`](docs/design/interaction-patterns.md) | Patrones de interacción, accesibilidad y calidad |
 | [`docs/wiki/`](docs/wiki/Home.md) | **Manual vigente**: arquitectura, módulos, datos, pruebas, DevOps y nueva funcionalidad |
 | [`equipo-ingenieria.md`](docs/wiki/09-desarrollo/equipo-ingenieria.md) | Equipo de ingeniería: agentes, loops, conocimiento, automatización, seguridad y operación |

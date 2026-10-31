@@ -12,7 +12,7 @@ Estado a 2026-10-31: la rama tiene **99 commits y 1 236 archivos** sobre `main` 
 | 4 | `pr/04-v10-m3-m4` | PR 3 | `8f640dc`…`aa8e36a` (26) | 298 archivos | V10 M3 (business por módulos) y M4 (platform por módulos, fin de `lib/ops`) |
 | 5 | `pr/05-v10-m5-cierre` | PR 4 | `ceca542`…`b6a3039` (17) | 772 archivos | V10 M5 (finance a `domains/finance`) y cierre por etapas (I, B, N, X, C, F, Z): `lib/` queda en nueve áreas |
 | 6 | `pr/06-favicon-y-tests` | PR 5 | `53445b8`, `1e0297e` (2) | 172 archivos | Favicon solo SVG y las 150 pruebas de `lib/` a `tests/` (misma cobertura: 932 pruebas en 124 archivos antes y después) |
-| 7 | `pr/07-wiki` | PR 6 | `32b90e7`…último (6) | 316 archivos | Documentación unificada en `docs/wiki`, decisiones en `docs/decisions`, historial en `docs/internal` |
+| 7 | `pr/07-wiki` | PR 6 | `32b90e7`…último (7) | 316 archivos | Documentación unificada en `docs/wiki`, decisiones en `docs/decisions`, historial en `docs/internal` |
 
 ## Cómo fusionarlos
 

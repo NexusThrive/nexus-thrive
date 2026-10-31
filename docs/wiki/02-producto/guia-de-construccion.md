@@ -26,7 +26,7 @@ Esta carpeta es **la guía de qué construimos y en qué orden**. Las capas
 | [mapa-de-capacidades.md](mapa-de-capacidades.md) | Las 447 capacidades que usa una empresa contra las capas y el código: qué hay, qué falta y **qué sigue** |
 | [fuentes/](../../internal/fuentes/) | Material de origen de las capas (no se edita; se consulta) |
 | [`docs/PENDIENTES.md`](../../PENDIENTES.md) | Lista viva de tareas, decisiones abiertas y la ruta de automatizaciones y agentes de IA |
-| [`docs/nexus-architecture/`](../../internal/historico/nexus-architecture/README.md) | Arquitectura actual y objetivo, auditoría y decisiones técnicas |
+| [`docs/nexus-architecture/`](../../internal/historico/nexus-architecture/README.md) | Auditoría de arquitectura del 22–23 oct de 2026 (histórica; pendiente de validación) |
 
 ---
 

@@ -5,7 +5,7 @@ la llave del negocio. n8n **nunca toca la base de datos**: solo la API
 (`/api/v1`), el MCP (`/api/mcp`) y los eventos.
 
 > Estado: las plantillas y la lógica de «ponerse al día» están probadas con
-> n8n **simulado** (`lib/events/n8n-templates.test.ts`). **Falta probarlas en tu
+> n8n **simulado** (`tests/unit/core/events/n8n-templates.test.ts`). **Falta probarlas en tu
 > n8n real**: el paso 6 es esa prueba.
 
 ## 1. Qué usar y para qué
@@ -79,7 +79,7 @@ Telegram falla justo ahí, ese aviso no se reintenta (los datos siguen en NEXUS)
    eso, deja también la consulta de `/api/v1/events` como respaldo.**
 
 (Falta la pantalla para registrar webhooks; hoy se crean desde
-`lib/events/endpoints.ts`.)
+`lib/core/events/endpoints.ts`.)
 
 ## 6. Prueba de punta a punta (la que falta)
 

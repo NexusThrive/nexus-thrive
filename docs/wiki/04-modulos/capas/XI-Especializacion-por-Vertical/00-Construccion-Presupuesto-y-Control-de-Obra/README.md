@@ -112,6 +112,8 @@ Reglas derivadas:
 
 ## Estructura del árbol de docs
 
+**Pestañas del módulo:** [1 · Ficha y cliente](01-Tab1-Ficha-y-Cliente/README.md) · [2 · Presupuestador](02-Tab2-Presupuestador/README.md) · [3 · Planificador Lean](03-Tab3-Planificador-Lean/README.md) · [4 · Bitácora y campo](04-Tab4-Bitacora-y-Campo/README.md) · [5 · Informes y exportación](05-Tab5-Informes-y-Exportacion/README.md)
+
 ```
 00-Construccion-Presupuesto-y-Control-de-Obra/
 ├── README.md                  ← este archivo (índice)
@@ -140,7 +142,7 @@ plan original) y el catálogo APU en `/catalog`.
 | 5 · Informes y avance | `/projects/{id}/progress`, `/projects/{id}/reports` | ✅ Implementado (actas de avance, informes) |
 
 Permisos de la obra en la matriz única (`budget.*`, `apu.*`, `projects.*`,
-`fieldLog.*`, `lean.plan` en `lib/business/permissions.ts`).
+`fieldLog.*`, `lean.plan` en `lib/core/auth/permissions.ts`).
 
 **Pendiente:** separar esta suite del módulo genérico `quotes` (ARCH-01: hoy un
 mecánico o un guía turístico ve "Catálogo APU"), definir las capas II, IV, VI, X

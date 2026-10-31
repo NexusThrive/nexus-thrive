@@ -118,7 +118,7 @@ model Customer {
 6. **Escribe el SQL de producción** en `docs/prod-sql/`. La regla de oro del repositorio es que un cambio de modelo traiga su SQL; `scripts/check-prod-sql.sh` lo comprueba en el CI y falla si falta. Orden de ejecución en [prod-sql-orden](../08-operacion-y-despliegue/prod-sql-orden.md).
 7. **Escribe las pruebas** (ver [pruebas](../10-pruebas-y-calidad/pruebas.md)). Las de integración exigen una base aparte con `CREATE EXTENSION pg_trgm` antes de migrar.
 
-> No se edita `prisma/contract.json` ni `prisma/contract.d.ts` a mano, ni se tocan `migrations/snapshots/` o `migrations/refs/`. Tampoco se modifican migraciones ya aplicadas: se crea una nueva.
+> No se edita `prisma/contract.json` ni `prisma/contract.d.ts` a mano, ni se tocan `migrations/snapshots/` o `migrations/app/refs/`. Tampoco se modifican migraciones ya aplicadas: se crea una nueva.
 
 ## 5. Cómo se llega a la base en tiempo de ejecución
 
@@ -129,4 +129,4 @@ model Customer {
 ## 6. Lo que sigue pendiente
 
 - Hay comentarios en `prisma/schema/**` que todavía nombran rutas de antes de V10; se corrigen en una pasada aparte porque tocan el contrato.
-- La partición de `lib/core/tenancy/db.ts` y las fases P3–P6 del plan de esquema están en la [hoja de ruta](../02-producto/hoja-de-ruta.md).
+- La partición de `lib/core/tenancy/db.ts` y las fases P3–P6 del plan de esquema están en la [hoja de ruta](../../internal/historico/v10-y-etapas/hoja-de-ruta-tras-E3.md).

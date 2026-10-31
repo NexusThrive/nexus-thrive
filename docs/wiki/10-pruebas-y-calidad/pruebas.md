@@ -72,7 +72,7 @@ Las pruebas de integración tienen un tope de 20 s cada una
 una máquina cargada el tope por defecto da falsos fallos.
 
 `pnpm test:integration` también corre `scripts/check-prod-sql.sh`: si tu rama
-cambió `prisma/contract.prisma` sin traer un `.sql` nuevo en `docs/prod-sql/`,
+cambió `prisma/schema/` sin traer un `.sql` nuevo en `docs/prod-sql/`,
 falla. Ver [devops.md](../08-operacion-y-despliegue/devops.md#sql-de-producción).
 
 ---

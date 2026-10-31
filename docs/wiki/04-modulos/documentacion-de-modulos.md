@@ -35,14 +35,14 @@ Entre paréntesis, líneas del bloque de comentario (incluidas las vacías).
 
 | Archivo | Qué explica | ¿Trasladar? | Destino sugerido |
 |---|---|---|---|
-| `lib/business/money-service.ts` (14 líneas) | Un cobro son varias escrituras que pasan todas o ninguna | Resumen, **sí**: cruza caja, recibos, stock y documentos. Ya cita ADR-0006 y DATA-01 | Nota «Dinero» en `docs/architecture/` que enlace al ADR |
-| `lib/construction/apu-engine.ts` (14) + `lib/finance/cop-amount.ts` (16) | Los `Decimal` llegan como texto desde el driver de Prisma 8; los montos se normalizan sin pasar por `number` | **Sí**, en una sola nota: es una convención técnica que afecta a todo cálculo con dinero | La misma nota «Dinero y decimales» |
-| `lib/tenant/deletion.ts` (19) | Qué borra el borrado de raíz de un negocio y qué no es reversible | **Sí**: es una política de datos, útil para quien opere o audite | Nota «Borrado de un negocio» |
-| `lib/construction/lean-engine.ts` (19) | Semana relativa (1..6) frente a semana ISO-8601 en Bogotá | **Sí, pero en `docs/construction/`**, no en architecture: es convención de un rubro | `docs/construction/` |
-| `lib/motion/modal-morph.ts` (16) | Efecto de apertura de modales | No: ya está en `docs/design/movimiento.md` | — |
-| `lib/construction/apu-importer/confidence-score.ts`, `master-pack-plan.ts`, `master-pack-import.ts` (12–17) | Fórmula y pasos del importador | No: describen el algoritmo y deben quedar junto a él | — |
-| `lib/construction/report-engine.ts` (15) | Qué consolida el motor de informes | No: se lee mejor junto al código | — |
-| `lib/construction/budget.ts:233`, `lib/construction/projects.ts:211` | Comentarios de función interna | No: son locales | — |
+| `lib/business/sales/money-service.ts` (14 líneas) | Un cobro son varias escrituras que pasan todas o ninguna | Resumen, **sí**: cruza caja, recibos, stock y documentos. Ya cita ADR-0006 y DATA-01 | Nota «Dinero» en `docs/architecture/` que enlace al ADR |
+| `lib/industry/construction/apu-engine.ts` (14) + `lib/foundation/kernel/cop-amount.ts` (16) | Los `Decimal` llegan como texto desde el driver de Prisma 8; los montos se normalizan sin pasar por `number` | **Sí**, en una sola nota: es una convención técnica que afecta a todo cálculo con dinero | La misma nota «Dinero y decimales» |
+| `lib/core/tenancy/deletion.ts` (19) | Qué borra el borrado de raíz de un negocio y qué no es reversible | **Sí**: es una política de datos, útil para quien opere o audite | Nota «Borrado de un negocio» |
+| `lib/industry/construction/lean-engine.ts` (19) | Semana relativa (1..6) frente a semana ISO-8601 en Bogotá | **Sí, pero en `docs/construction/`**, no en architecture: es convención de un rubro | `docs/construction/` |
+| `lib/experience/motion/modal-morph.ts` (16) | Efecto de apertura de modales | No: ya está en `docs/design/movimiento.md` | — |
+| `lib/industry/construction/apu-importer/confidence-score.ts`, `master-pack-plan.ts`, `master-pack-import.ts` (12–17) | Fórmula y pasos del importador | No: describen el algoritmo y deben quedar junto a él | — |
+| `lib/industry/construction/report-engine.ts` (15) | Qué consolida el motor de informes | No: se lee mejor junto al código | — |
+| `lib/industry/construction/budget.ts`, `lib/industry/construction/projects.ts` | Comentarios de función interna | No: son locales | — |
 
 ## Notas creadas
 

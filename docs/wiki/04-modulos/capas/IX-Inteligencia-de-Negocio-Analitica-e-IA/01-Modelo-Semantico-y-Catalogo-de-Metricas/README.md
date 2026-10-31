@@ -60,7 +60,7 @@ tags: [capas, estructura, subcapa]
 - [ ] Modelo semántico / catálogo de métricas
 - [x] Eventos y cronología del cliente — _hecho: línea de tiempo en la ficha 360°_
 - [x] Aislamiento multi-tenant — _hecho: contexto del negocio en el servidor + FK a `Tenant` + RLS_
-- [x] Permisos sobre datos — _hecho: matriz `lib/business/permissions.ts`_
+- [x] Permisos sobre datos — _hecho: matriz `lib/core/auth/permissions.ts`_
 - [ ] Calidad de datos
 - [x] Motor de notificaciones — _hecho: avisos derivados en la barra (vencimientos, stock bajo, citas)_
 - [ ] Registro inmutable de eventos del sistema

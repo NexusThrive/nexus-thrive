@@ -107,7 +107,7 @@ Identificado en M3 y aceptado como excepción **temporal y puntual** al juntar l
 | `experience` importa `industry` | **Permitido** por R1 (la experiencia compone pantallas de sector) | `check:layers` |
 | `app/[tenant]` importa `platform` | Solo tres referencias, todas a `platform/benefits/benefits-db`: `app/[tenant]/layout.tsx`, `settings/page.tsx` y el tipo en `plan-tab.tsx`. No puede crecer sin una decisión (opción A, cierre de M4) | `v10-platform.test.ts` |
 | Ningún módulo de `lib/` fuera de `platform`, `experience` y `runtime` importa `platform` | Siempre | `check:layers` |
-| Aislamiento por negocio | Cada consulta a una tabla con `tenantId` lo filtra; **excluidos a propósito** (operan entre negocios con permiso del equipo): `platform/{admin,team,crm,billing,support,inbox,accounts,presence}` y los archivos `core/events/dispatcher.ts` e `integrations/providers/inbound.ts`; hay 18 excepciones puntuales con motivo escrito en la propia prueba. `platform/benefits` **no** está excluido | `lib/core/tenancy/tenant-scope.test.ts` |
+| Aislamiento por negocio | Cada consulta a una tabla con `tenantId` lo filtra; **excluidos a propósito** (operan entre negocios con permiso del equipo): `platform/{admin,team,crm,billing,support,inbox,accounts,presence}` y los archivos `core/events/dispatcher.ts` e `integrations/providers/inbound.ts`; hay 18 excepciones puntuales con motivo escrito en la propia prueba. `platform/benefits` **no** está excluido | `tests/architecture/tenant-scope.test.ts` |
 
 ## 6. Excepciones de la raíz de `lib/`
 
@@ -119,7 +119,7 @@ La raíz contiene exactamente las nueve áreas y **dos** archivos: `lib/utils.ts
 |---|---|
 | `pnpm check:layers` | R1, R2, R3, ciclos, huérfanas, incoherentes. Corre dentro de `pnpm verify` |
 | `tests/architecture/*.test.ts` | La forma de cada área (módulos exactos, carpetas antiguas inexistentes, área por ruta), aristas internas, puertos conectados, composición única, sectores registrados, reglas del sistema de diseño, raíz de `lib/` |
-| `lib/core/tenancy/tenant-scope.test.ts` y `data-access.test.ts` | `tenantId` en cada consulta y que `app/` no use la base directamente |
+| `tests/architecture/tenant-scope.test.ts` y `tests/architecture/data-access.test.ts` | `tenantId` en cada consulta y que `app/` no use la base directamente |
 | ESLint | Prohibiciones de imports concretas (p. ej. `moneyTransaction` no puede usarse desde `app/`) |
 | `test-integration.sh` + una prueba | Que las pruebas de integración se ejecuten y que las rutas escritas a mano en el script existan |
 

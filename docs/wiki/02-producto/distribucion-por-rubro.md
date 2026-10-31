@@ -14,8 +14,8 @@ tags: [rubros, funciones, navegacion, arquitectura, planes]
 | Capa | Qué es | Dónde vive |
 |---|---|---|
 | **1. Núcleo** | Lo que hace que todo sea un solo sistema: usuarios, permisos, clientes y terceros, catálogo, ventas y cobros, inventario, documentos, integraciones (API, MCP, webhooks), reportes. Se comparte; no se duplica por rubro. | `lib/` (tercero único, catálogo maestro, servicio de inventario, `money-service`, registro de operaciones) |
-| **2. Perfil del negocio** | El rubro dice qué hace el negocio: vocabulario (Socios, Pacientes, Obras…), qué funciones **empiezan encendidas**, plantillas y el tablero inicial. **Recomienda; no bloquea.** | `VERTICAL_RECIPES` en `lib/admin/catalogs.ts` |
-| **3. Funciones y experiencia** | Cada negocio enciende las funciones que necesita, sea cual sea su rubro. El menú muestra lo encendido; el resto se descubre en **Funciones**. | `lib/capabilities/registry.ts` + página `/functions` |
+| **2. Perfil del negocio** | El rubro dice qué hace el negocio: vocabulario (Socios, Pacientes, Obras…), qué funciones **empiezan encendidas**, plantillas y el tablero inicial. **Recomienda; no bloquea.** | `VERTICAL_RECIPES` en `lib/core/tenancy/catalogs.ts` |
+| **3. Funciones y experiencia** | Cada negocio enciende las funciones que necesita, sea cual sea su rubro. El menú muestra lo encendido; el resto se descubre en **Funciones**. | `lib/core/capabilities/registry.ts` + página `/functions` |
 
 ## 2. Reglas definitivas
 
@@ -67,8 +67,8 @@ tags: [rubros, funciones, navegacion, arquitectura, planes]
 | Una función nueva exista para todos | Una entrada en el registro; nada más. |
 | Un rubro la tenga encendida al empezar | Su receta en `VERTICAL_RECIPES` (sugerencia). |
 | Cambiar una palabra por rubro | `VerticalTerms` o la función `label` del menú (ej. «Compras de insumos»). |
-| Sugerir una función por lo que el negocio ya hace | Una regla en `lib/functions/suggestions.ts` (ej. compras si hay productos con inventario). |
-| Que una función avise que depende de otra | `NEEDS` en `lib/functions/functions.ts` y una `Alert` en su pantalla. |
+| Sugerir una función por lo que el negocio ya hace | Una regla en `lib/core/capabilities/discovery/suggestions.ts` (ej. compras si hay productos con inventario). |
+| Que una función avise que depende de otra | `NEEDS` en `lib/core/capabilities/discovery/functions.ts` y una `Alert` en su pantalla. |
 | Limitar el uso | El plan: usuarios, clientes, consumo. Nunca una función ni un rubro. |
 | Que solo gestione quien tiene permiso | El permiso del rol (`permissions.ts`), también en la API y el MCP. |
 

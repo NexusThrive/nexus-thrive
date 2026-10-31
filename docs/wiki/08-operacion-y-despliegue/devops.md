@@ -71,7 +71,7 @@ antes de investigar el código.
 Hoy la base de producción **no se migra sola**: Vercel despliega el código y el
 SQL se corre a mano en el SQL Editor de Supabase. Por eso:
 
-1. Todo cambio de `prisma/contract.prisma` trae un `.sql` en `docs/prod-sql/`,
+1. Todo cambio de `prisma/schema/` trae un `.sql` en `docs/prod-sql/`,
    aditivo e idempotente, anotado en `00-ORDEN.md`.
 2. El SQL se corre **antes** de mergear si la app nueva lee columnas o tablas
    nuevas.

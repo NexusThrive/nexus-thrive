@@ -256,4 +256,4 @@ lib/
 - **Deuda arquitectónica:** ciclo entre módulos `inventory ⇄ sales` (cuatro dependencias exactas), aceptado como excepción temporal y puntual y fijado por prueba ([`reglas-dependencias.md`](reglas-dependencias.md) §5.2).
 - **Sectores:** el registro por `sector.ts` existe pero ningún sector lo usa aún (M7, fuera de V10).
 - **El verificador solo escanea `lib/`** y no ve pruebas ni historias; `app/` y `components/` se vigilan con pruebas puntuales.
-- **Documentación antigua** con rutas anteriores a V10 (informes E0 a E9, `docs/nexus-architecture/*`, `.docs/*`): pasada documental P-12 pendiente.
+- **Documentación antigua** con rutas anteriores a V10: la wiki se unificó y se contrastó con el código (ver [mantener la wiki](../09-desarrollo/mantener-la-wiki.md)); quedan 13 documentos fuera de la wiki pendientes de revisión individual ([revisión](../../internal/revision-documentos-pendientes.md)) y los comentarios de `prisma/schema/**`, que exigen tocar el contrato.

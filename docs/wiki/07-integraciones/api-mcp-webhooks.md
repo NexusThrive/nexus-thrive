@@ -19,10 +19,10 @@ lleva su propia tabla «Superficie de integración» (recursos, eventos y
 herramientas MCP) y una casilla por pieza; aquí están las reglas comunes.
 Se apoya en lo ya decidido en [`docs/PENDIENTES.md` §5](../../PENDIENTES.md),
 en el outbox de [`scaling-path.md` Etapa 2](../../nexus-architecture/scaling-path.md)
-y en el registro de capacidades (ADR-0003, `lib/capabilities/registry.ts`).
+y en el registro de capacidades (ADR-0003, `lib/core/capabilities/registry.ts`).
 
 > Estado: **en construcción**. Ya existe el **registro de operaciones**
-> (`lib/operations/`: tipos, motor y 6 operaciones de lectura, PR-01). Todavía
+> (`lib/runtime/`: tipos, motor y 6 operaciones de lectura, PR-01). Todavía
 > no existen `/api/v1`, el servidor MCP ni el outbox (PR-02 a PR-04). Sí
 > existen los repositorios de `lib/` con `tenantId`, `can()`, `money-service` y
 > `logTenantAction`, que son lo que la API envuelve, y dos webhooks entrantes
@@ -45,7 +45,7 @@ flowchart LR
 ```
 
 **Registro de operaciones** (la pieza que lo hace posible, hermana de
-`lib/capabilities/registry.ts`). Cada operación se declara una vez:
+`lib/core/capabilities/registry.ts`). Cada operación se declara una vez:
 
 | Campo | Qué es |
 | --- | --- |

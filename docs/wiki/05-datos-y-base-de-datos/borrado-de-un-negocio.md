@@ -33,7 +33,7 @@ La autorización y la confirmación se deciden en esas acciones, no dentro de la
 ## Cómo se mantiene al día la lista de tablas
 
 `TENANT_DELETION_TABLES` (exportada) enumera las tablas que cubre el borrado. La prueba de integración
-`lib/tenant/deletion.integration.test.ts` la compara con las tablas que tienen `tenantId` según el contrato generado (`prisma/contract.json`): **si se agrega
+`tests/integration/core/tenancy/deletion.integration.test.ts` la compara con las tablas que tienen `tenantId` según el contrato generado (`prisma/contract.json`): **si se agrega
 una tabla nueva con `tenantId`, la prueba falla hasta incluirla**. Quien agregue un modelo en `prisma/schema/` debe revisar esa
 lista.
 
@@ -45,4 +45,4 @@ lista.
 
 ## Referencias
 
-`lib/tenant/deletion.ts` · `lib/tenant/deletion.integration.test.ts` · `app/admin/negocios/actions.ts` · `app/[tenant]/(app)/settings/actions.ts`
+`lib/core/tenancy/deletion.ts` · `tests/integration/core/tenancy/deletion.integration.test.ts` · `app/admin/negocios/actions.ts` · `app/[tenant]/(app)/settings/actions.ts`

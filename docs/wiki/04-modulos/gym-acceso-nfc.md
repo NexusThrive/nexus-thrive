@@ -8,7 +8,7 @@ qué el identificador **no** se cifra.
 ## 1. Los tres identificadores de un socio
 
 El control de acceso (`/{negocio}/checkin`) busca al socio por **cualquiera**
-de estos tres (`lib/business/gym-db.ts` → `findMemberByScan`):
+de estos tres (`lib/industry/gym/gym-db.ts` → `findMemberByScan`):
 
 | Identificador | Dónde está | Formato | Para qué sirve |
 |---|---|---|---|

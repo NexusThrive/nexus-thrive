@@ -7,5 +7,6 @@ Convenciones, cómo añadir funcionalidad y el equipo de ingeniería.
 ## Contenido
 
 - [Arquitectura del equipo de ingeniería](equipo-ingenieria.md)
+- [Mantener la wiki](mantener-la-wiki.md)
 - [Cómo agregar una funcionalidad](nueva-funcionalidad.md)
 - [Versionado y entregas](versionado.md)

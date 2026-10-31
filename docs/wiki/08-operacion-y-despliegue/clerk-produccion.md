@@ -131,7 +131,7 @@ dominio esté estable.
 NEXUS vincula personas por correo: invitaciones al negocio, la ficha del
 equipo NEXUS y el traspaso de cuenta en `/auth/callback`. Desde la PR #45 el
 código **solo** usa el correo principal si Clerk lo marca como verificado
-(`verifiedEmailOf` en `lib/auth/session-email.ts`); un correo sin verificar se
+(`verifiedEmailOf` en `lib/core/auth/session-email.ts`); un correo sin verificar se
 trata como si no hubiera correo. La configuración de Clerk es la segunda capa:
 
 | Dónde (Dashboard de Clerk, instancia de **producción**) | Qué dejar |

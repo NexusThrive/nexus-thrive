@@ -6,4 +6,5 @@ Qué es Nexus, cómo instalarlo y cómo hacer el primer cambio.
 
 ## Contenido
 
+- [Estructura del repositorio](estructura-del-repositorio.md)
 - [Instalación y primer día](instalacion-y-primer-dia.md)

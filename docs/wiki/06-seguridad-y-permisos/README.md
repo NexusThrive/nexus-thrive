@@ -7,3 +7,4 @@ Autenticación, roles y permisos, aislamiento por negocio.
 ## Contenido
 
 - [Autenticación, permisos y aislamiento por negocio](autenticacion-permisos-y-aislamiento.md)
+- [Matriz de permisos](matriz-de-permisos.md)
