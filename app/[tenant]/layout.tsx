@@ -1,7 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { loadActiveTenant } from "@/lib/tenant/context";
-import { expireBenefitTrial } from "@/lib/benefits/benefits-db";
+import { expireBenefitTrial } from "@/lib/platform/benefits/benefits-db";
 import { verifiedEmailOf } from "@/lib/auth/session-email";
 import { resolveTenantMembership } from "@/lib/tenant/membership";
 

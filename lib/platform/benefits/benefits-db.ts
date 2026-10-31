@@ -24,7 +24,7 @@ import {
   normalizeBenefitKind,
   redemptionTerms,
   type ContractTerms,
-} from "@/lib/benefits/benefits";
+} from "@/lib/platform/benefits/benefits";
 
 export const BENEFIT_COOKIE = "nx_benefit";
 

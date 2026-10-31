@@ -11,9 +11,9 @@ import {
   applyBenefitCookie,
   clearBenefitCookie,
   setBenefitCookie,
-} from "@/lib/benefits/benefit-cookie";
-import { getBenefitByCode } from "@/lib/benefits/benefits-db";
-import { normalizeBenefitCode, type BenefitKind } from "@/lib/benefits/benefits";
+} from "@/lib/platform/benefits/benefit-cookie";
+import { getBenefitByCode } from "@/lib/platform/benefits/benefits-db";
+import { normalizeBenefitCode, type BenefitKind } from "@/lib/platform/benefits/benefits";
 import { SHOW_PRICING } from "@/lib/onboarding/flags";
 import { allowAttempt, recordAttempt } from "@/lib/rate-limit";
 import type { PlanKey, Billing } from "@/lib/plans/catalog";

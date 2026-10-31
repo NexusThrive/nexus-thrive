@@ -19,7 +19,13 @@ const exists = (rel: string) => existsSync(join(ROOT, rel));
 const layers = loadJson("docs/architecture/layers.json");
 
 /** módulo → { archivo nuevo ← ubicación anterior } (solo producción; las pruebas colocadas viajan con su módulo). */
-const MODULES: Record<string, Record<string, string>> = {};
+const MODULES: Record<string, Record<string, string>> = {
+  benefits: {
+    "lib/platform/benefits/benefits.ts": "lib/benefits/benefits.ts",
+    "lib/platform/benefits/benefits-db.ts": "lib/benefits/benefits-db.ts",
+    "lib/platform/benefits/benefit-cookie.ts": "lib/benefits/benefit-cookie.ts",
+  },
+};
 
 const files = (dir: string): string[] =>
   readdirSync(join(ROOT, dir)).flatMap((n) => {
@@ -34,7 +40,7 @@ describe("piezas neutrales que antes colgaban de módulos de Nexus (M4)", () => 
     expect(exists("lib/foundation/limits.ts")).toBe(true);
     expect(classify("lib/foundation/limits.ts", layers)).toMatchObject({ layer: "foundation", byPath: true });
     expect(importsOf("lib/foundation/limits.ts")).toEqual([]);
-    expect(read("lib/benefits/benefits.ts") + (exists("lib/platform/benefits/benefits.ts") ? read("lib/platform/benefits/benefits.ts") : "")).not.toMatch(/export function withinLimit/);
+    expect(read("lib/platform/benefits/benefits.ts") + (exists("lib/platform/benefits/benefits.ts") ? read("lib/platform/benefits/benefits.ts") : "")).not.toMatch(/export function withinLimit/);
   });
 
   test("las páginas de los negocios (app/[tenant]) ya no importan Operaciones: el día de hoy sale de Foundation", () => {
@@ -54,6 +60,14 @@ describe("piezas neutrales que antes colgaban de módulos de Nexus (M4)", () => 
       .filter((f) => !/\.test\./.test(f))
       .filter((f) => importsOf(f).some((s: string) => /^@\/lib\/(admin\/(db|users-db|account-limits|audit-labels)|ops|benefits|platform)\b/.test(s)));
     expect(offenders).toEqual([]);
+  });
+
+  test("las páginas de los negocios solo importan platform en las tres referencias conocidas de beneficios (estado de acceso del negocio)", () => {
+    // getTenantAccess y expireBenefitTrial las consumen el layout y los ajustes del propio negocio. Se dejan en platform/benefits
+    // (cohesión con los datos de canje, y experiencia → platform está permitido); la lista no puede crecer sin una decisión.
+    const users = files("app/[tenant]").filter((f) => importsOf(f).some((s: string) => /^@\/lib\/platform\//.test(s)));
+    expect(users.sort()).toEqual(["app/[tenant]/(app)/settings/_components/plan-tab.tsx", "app/[tenant]/(app)/settings/page.tsx", "app/[tenant]/layout.tsx"]);
+    for (const f of users) for (const s of importsOf(f).filter((x: string) => x.startsWith("@/lib/platform/"))) expect(s, f).toBe("@/lib/platform/benefits/benefits-db");
   });
 
   test("ningún módulo de Business ni de Core importa el programa de beneficios", () => {

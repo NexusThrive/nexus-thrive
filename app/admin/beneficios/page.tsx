@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getStaffContext } from "@/lib/ops/access";
 import { getAppBaseUrl } from "@/lib/app-url";
-import { listBenefitCodes, FIXED_BENEFIT_CODE } from "@/lib/benefits/benefits-db";
+import { listBenefitCodes, FIXED_BENEFIT_CODE } from "@/lib/platform/benefits/benefits-db";
 import { receiptQrDataUrl } from "@/lib/business/sales/receipt-qr";
 import { createBenefitAction, toggleBenefitAction, updateBenefitAction } from "./actions";
 import { ContractFields, contractSummary } from "./_components/contract-fields";

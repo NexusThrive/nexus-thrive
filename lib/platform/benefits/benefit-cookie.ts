@@ -7,13 +7,13 @@
  */
 
 import { cookies } from "next/headers";
-import { normalizeBenefitCode } from "@/lib/benefits/benefits";
+import { normalizeBenefitCode } from "@/lib/platform/benefits/benefits";
 import {
   BENEFIT_COOKIE,
   getBenefitByCode,
   redeemBenefit,
   type RedeemResult,
-} from "@/lib/benefits/benefits-db";
+} from "@/lib/platform/benefits/benefits-db";
 import type { OnboardingBenefit } from "@/lib/onboarding/types";
 
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 14;

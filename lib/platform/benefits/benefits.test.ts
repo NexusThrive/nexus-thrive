@@ -11,7 +11,7 @@ import {
   generateBenefitCode,
   normalizeBenefitCode,
   normalizeBenefitKind,
-} from "@/lib/benefits/benefits";
+} from "@/lib/platform/benefits/benefits";
 
 describe("normalizeBenefitCode", () => {
   it("pasa a mayúsculas y quita espacios", () => {

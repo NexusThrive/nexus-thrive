@@ -3,9 +3,9 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { homeTenantFor } from "@/lib/tenant/membership";
-import { normalizeBenefitCode } from "@/lib/benefits/benefits";
-import { getBenefitByCode, redeemBenefit } from "@/lib/benefits/benefits-db";
-import { setBenefitCookie } from "@/lib/benefits/benefit-cookie";
+import { normalizeBenefitCode } from "@/lib/platform/benefits/benefits";
+import { getBenefitByCode, redeemBenefit } from "@/lib/platform/benefits/benefits-db";
+import { setBenefitCookie } from "@/lib/platform/benefits/benefit-cookie";
 
 /**
  * Acciones públicas de la tarjeta NFC/QR (`/c/{code}`).

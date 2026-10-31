@@ -3,8 +3,8 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { Wordmark } from "@/components/atoms/wordmark";
 import { homeTenantFor } from "@/lib/tenant/membership";
-import { normalizeBenefitCode } from "@/lib/benefits/benefits";
-import { getBenefitByCode } from "@/lib/benefits/benefits-db";
+import { normalizeBenefitCode } from "@/lib/platform/benefits/benefits";
+import { getBenefitByCode } from "@/lib/platform/benefits/benefits-db";
 import { claimBenefitAction, redeemBenefitAction } from "./actions";
 
 export const metadata: Metadata = {
