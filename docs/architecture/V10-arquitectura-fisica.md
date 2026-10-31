@@ -1,6 +1,6 @@
 # V10 — Arquitectura física extensible de `lib/`: auditoría y diseño
 
-**Estado: diseño aprobado (2026-10-31). Ejecutadas M0, M1 y M2 — ver [`V10-M0-M2-resultados.md`](V10-M0-M2-resultados.md) — M3 — ver [`V10-M3-resultados.md`](V10-M3-resultados.md) — y M4 — ver [`V10-M4-resultados.md`](V10-M4-resultados.md); M5–M8 siguen pendientes de autorización.** *Texto original del diseño:* **DISEÑO para revisión. No se implementó nada.** No se movió ningún archivo, no se cambió ningún import, contrato, `layers.json`, prueba, Prisma, migración ni dato.
+**Estado: diseño aprobado (2026-10-31). Ejecutadas M0, M1 y M2 — ver [`V10-M0-M2-resultados.md`](V10-M0-M2-resultados.md) — M3 — ver [`V10-M3-resultados.md`](V10-M3-resultados.md) — M4 — ver [`V10-M4-resultados.md`](V10-M4-resultados.md) — y M5 — ver [`V10-M5-resultados.md`](V10-M5-resultados.md); M6–M8 siguen pendientes de autorización.** *Texto original del diseño:* **DISEÑO para revisión. No se implementó nada.** No se movió ningún archivo, no se cambió ningún import, contrato, `layers.json`, prueba, Prisma, migración ni dato.
 Base: rama local `chore/HU-esquema-prisma-modular-01`, commit `f0b49cc` (E0–E5, E7, E9 y V cerradas; 0 excepciones; `pnpm verify` en verde; sin push, PR, merge ni despliegue).
 Las cifras salen de scripts de solo lectura sobre el código (método en el apéndice A); lo que no se pudo medir está marcado como **[no medido]**.
 
@@ -463,6 +463,8 @@ Justificación: H1. Riesgos: medio (muchos importadores; sin cambios de lógica)
 | Reversible | Sí |
 
 ### M5 — `finance` como familia de `domains` y `kernel`
+
+> **Ejecutada (2026-10-31).** Diseño detallado: [`V10-M5-diseno.md`](V10-M5-diseno.md); resultados: [`V10-M5-resultados.md`](V10-M5-resultados.md). Diferencias respecto de esta tabla: el kernel quedó con cuatro archivos (se añadió `cop-amount`), `keypad` y `payment-scan` están en `lib/payment-input` (Experience) y los conteos de importadores de abajo son los de antes de E5/M3/M4. El texto original se conserva.
 
 | Campo | Contenido |
 |---|---|

@@ -34,13 +34,13 @@ Estado de las nueve:
 | D | Aprobada | Implementada | Pendiente |
 |---|---|---|---|
 | D-V10-1 | Sí | Sí (M0 declara el cambio en `layers.json`; M1–M4 mueven archivos) | — |
-| D-V10-2 | Sí | Sí (áreas por ruta, capas `domains` y `runtime`, M0). `platform` ya tiene archivos (M4) | Materializar las áreas que aún no los tienen (`domains`) y completar `core` en sus etapas |
+| D-V10-2 | Sí | Sí (áreas por ruta, capas `domains` y `runtime`, M0). `platform` ya tiene archivos (M4) | `domains` ya tiene archivos (M5: `lib/domains/finance/`); completar `core` en sus etapas |
 | D-V10-3 | Sí | Sí (verificador de reglas, M0) | — |
 | D-V10-4 | Sí | Parcial: principio documentado y límites en `lexicon.ts` (M2) | Los procesos sectoriales llegan con M7 |
 | D-V10-5 | Sí | Sí (M2) | — |
 | D-V10-6 | Sí | Sí (se usaron en M1–M3; el reporte vive en `check-layers --report`) | — |
 | D-V10-7 | Sí | Sí (registro y `runtime/sectors.ts`, M2) | Primera industria con definición propia (M7) |
-| D-V10-8 | Sí | Parcial: M1–M4 | M5–M8 |
+| D-V10-8 | Sí | Parcial: M1–M5 | M6–M8 |
 | D-V10-9 | **Sí, solo la dirección** | **No** | Implementación en M7, tras la comprobación de solo lectura sobre una copia (P-8) |
 
 ## 2. Preguntas abiertas del diseño (Q-n) y su resolución
@@ -50,7 +50,7 @@ Las resoluciones de esta tabla se tomaron al preparar M3 a partir de las recomen
 | Pregunta | Resolución | Estado | Se confirma / implementa |
 |---|---|---|---|
 | **Q-1 / Q-2** Sustituir D-1; nombre y número de áreas | Resueltas por D-V10-1 y D-V10-2 | Aprobada | Hecho |
-| **Q-3** Anidación de `domains/finance` | **Propuesta conceptual futura:** cuando los módulos de Finanzas se muevan, quedarán en `domains/finance/<módulo>` | **Propuesta, no instrucción** | Al autorizar M5 |
+| **Q-3** Anidación de `domains/finance` | **`lib/domains/finance/<módulo>`** (confirmada al autorizar M5, D5-1) | **Implementada en M5** | Hecho (`b667c5d`, `16755cf`, `68e8e37`, `f50f951`; ver `V10-M5-resultados.md`) |
 | **Q-4** ¿`money-service` pasa a Finance? | **No.** Queda en `business/sales` | Aprobada (**P-2**) | Hecho (M3) |
 | **Q-6** Enum `Vertical` | **Mantener el enum durante M7**; la opción B (texto + FK a `VerticalSetting`) es una dirección futura sujeta a la etapa Prisma | Aprobada (**P-6**) | Etapa Prisma P5 |
 | **Q-7a** `presence`, `growth` | **Se quedan en `business`** | Propuesta (recomendación del diseño) | Se reabre solo si aparece un segundo módulo de análisis |
@@ -58,6 +58,8 @@ Las resoluciones de esta tabla se tomaron al preparar M3 a partir de las recomen
 | **Q-8** `extensions/` | **No se introduce** | Propuesta (recomendación del diseño) | Se reabre con un requisito real de código externo o por negocio |
 
 ### 2.1 Q-3 — `domains/finance/<módulo>`: qué es y qué no es
+
+> **Resuelta en M5 (2026-10-31).** El dueño autorizó M5 y aprobó D5-1: la anidación es `lib/domains/finance/{tax,accounting,receivables,payments}`. Lo que sigue es el texto previo a esa autorización, conservado como contexto; ya no es una propuesta.
 
 - Es una **propuesta conceptual futura** sobre dónde terminarán `accounting`, `tax`, `receivables` y `payments` cuando se autorice M5. Sirve para que la regla «entre familias solo por contrato» tenga un lugar donde aplicarse.
 - **No es una instrucción para crear directorios.** `lib/domains/` **no existe** y **no debe crearse vacío** ni antes de M5. No se crea ningún área, módulo ni carpeta por esta decisión.
@@ -156,4 +158,20 @@ Aprobadas por el dueño tras la auditoría final de M4 (solo lectura). Son **exc
 | **C-3** | **Aislamiento y seguridad.** Se mantiene la prueba `lib/tenant/tenant-scope.test.ts` tal como está, sin debilitarla. La **auditoría de aislamiento por negocio** y la **revisión de las guardas de `app/admin`** se registran como **trabajo independiente fuera de V10**. | **Aprobada como registro; el trabajo NO está iniciado** | [`hoja-de-ruta.md`](hoja-de-ruta.md) §4 y [`V10-M4-resultados.md`](V10-M4-resultados.md) §14.7 |
 
 Alcance anotado para el trabajo independiente de C-3 (a definir y autorizar aparte): (a) los límites de la prueba actual, que solo ve consultas literales `.orm.public.<Modelo>.where({…})` y no las del constructor `.sql`, los filtros no literales ni las lecturas sin `where`; (b) las 54 consultas sin `tenantId` que la prueba excluye a propósito en seis módulos del panel; (c) las 14 páginas de `app/admin` que dependen de la guarda del layout y no tienen una propia. La explotabilidad de (c) **no se ha evaluado**.
+
+## 7. Decisiones de M5 (2026-10-31)
+
+Aprobadas por el dueño al autorizar M5 con las recomendaciones del diseño ([`V10-M5-diseno.md`](V10-M5-diseno.md) §9). Ninguna cambia contratos públicos, comportamiento, datos, Prisma ni migraciones, y no hay excepciones nuevas en el verificador. Detalle de la ejecución en [`V10-M5-resultados.md`](V10-M5-resultados.md).
+
+| # | Decisión | Estado |
+|---|---|---|
+| **D5-1** | Anidación `lib/domains/finance/<módulo>` (cierra Q-3) | **Implementada** (M5.3 a M5.6) |
+| **D5-2** | `finance/index.ts` → `foundation/kernel/payment-vocabulary.ts` y `finance/series.ts` → `foundation/kernel/finance-series.ts` | **Implementada** (M5.1, `dc3ef22`) |
+| **D5-3** | `cop-amount` se queda en `foundation/kernel` (es puro; lo usan el servidor y la pantalla) | **Implementada** (M5.1) |
+| **D5-4** | `keypad` y `payment-scan` en la unidad nueva `lib/payment-input` (Experience) | **Implementada** (M5.2, `3bad057`) |
+| **D5-5** | Paso previo M5.0: reclasificar las unidades de `finance` como `domains` y retirar la capa `finance` | **Implementada** (M5.0, `259e684`) |
+| **D5-6** | No tocar informes históricos ni documentación viva con rutas antiguas; los absorbe la pasada P-12 | **Vigente** (pendiente P-12) |
+| **D5-7** | Verificación de integración con un contenedor Docker desechable propio, sin tocar `nexus-postgres` ni `nx-pg` | **Cumplida** en M5.1 a M5.6 |
+
+**Pendiente de decisión, fuera de M5:** el movimiento físico de las carpetas de `core`, `business`, `integrations` y `experience` que hoy siguen en la raíz de `lib/` y que V10 (M0–M8) no programa mover (`V10-M5-resultados.md` §9.4). Requiere un diseño propio y la aprobación del dueño; no está iniciado.
 

@@ -1,6 +1,6 @@
 # V10 · M5 — Diseño detallado: `finance` pasa a `domains/finance`
 
-Estado: **solo diseño, sin implementar.** Rama `chore/HU-esquema-prisma-modular-01`, base `aa8e36a`. Autorizado: M5 (mover `finance` a `domains/finance`). Pendiente de aprobación: las decisiones D5-1 a D5-7 de la §9. No se ha movido ningún archivo ni cambiado `layers.json`, pruebas, Prisma ni migraciones.
+Estado: **diseño aprobado y ejecutado** (D5-1 a D5-7 aprobadas con las recomendaciones; resultados en [`V10-M5-resultados.md`](V10-M5-resultados.md)). *Texto original del diseño:* **solo diseño, sin implementar.** Rama `chore/HU-esquema-prisma-modular-01`, base `aa8e36a`. Autorizado: M5 (mover `finance` a `domains/finance`). Pendiente de aprobación: las decisiones D5-1 a D5-7 de la §9. No se ha movido ningún archivo ni cambiado `layers.json`, pruebas, Prisma ni migraciones.
 
 Mediciones hechas con el codemod en modo simulación (`--dry`, no escribe), `check-layers` y búsquedas en todo el repositorio (`app/`, `components/`, `lib/`, `tests/`, `scripts/`, `e2e/`). Los conteos del diseño original (V10 §7·M5: «`finance/index` = 37; `tax` = 14…») eran de antes de E5/M3/M4 y ya no valen; los de abajo son los actuales.
 

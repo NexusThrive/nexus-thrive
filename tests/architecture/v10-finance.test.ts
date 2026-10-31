@@ -1,7 +1,8 @@
 /**
  * V10 · M5 · Finance como familia de dominios.
  *
- * Se amplía etapa a etapa. M5.6: `payments` vive en `lib/domains/finance/payments`; lo consumen `app/`, `runtime` (puerto de cobro) e
+ * Se amplía etapa a etapa. M5.7: pruebas de la familia completa (módulos, aristas internas sin ciclos, destinos permitidos y
+ * fin de la capa `finance`). M5.6: `payments` vive en `lib/domains/finance/payments`; lo consumen `app/`, `runtime` (puerto de cobro) e
  * `integrations` (webhook entrante). M5.5: `receivables` vive en `lib/domains/finance/receivables` y solo la importa `app/`. M5.4: `accounting` vive en `lib/domains/finance/accounting`, depende de Foundation, de Business
  * (error y servicio de dinero, tabla de intercambio) y de `tax`, y nadie por debajo de Experience lo importa. M5.3: `tax` vive en `lib/domains/finance/tax` (área `domains` por ruta, sin unidad
  * en `layers.json`) y solo depende de Foundation. M5.2: las ayudas de captura de pagos en pantalla (teclado numérico y lectura
@@ -12,7 +13,7 @@ import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 
-import { classify, loadJson } from "../../scripts/check-layers.mjs";
+import { classify, loadJson, parseImports, resolveImport } from "../../scripts/check-layers.mjs";
 
 const ROOT = join(import.meta.dirname, "..", "..");
 const layers = loadJson("docs/architecture/layers.json");
@@ -180,5 +181,63 @@ describe("M5.6 · domains/finance/payments", () => {
       (f) => /^lib\/(foundation|core|business|events|operations|tenant|auth)\//.test(f) && importsOf(f).some((s) => s.startsWith("@/lib/domains/finance/payments")),
     );
     expect(ofensores).toEqual([]);
+  });
+});
+
+describe("M5.7 · la familia domains/finance completa", () => {
+  const MODULOS = ["accounting", "payments", "receivables", "tax"];
+  const familia = libSources("lib/domains");
+
+  const modulo = (f: string) => /^lib\/domains\/finance\/([^/]+)\//.exec(f)?.[1];
+
+  test("lib/domains solo contiene la familia finance, con sus cuatro módulos", () => {
+    expect(readdirSync(join(ROOT, "lib/domains"))).toEqual(["finance"]);
+    expect(readdirSync(join(ROOT, "lib/domains/finance")).sort()).toEqual(MODULOS);
+  });
+
+  test("la capa finance y sus unidades ya no existen en layers.json", () => {
+    expect(Object.keys(layers.layers)).not.toContain("finance");
+    for (const u of layers.units) {
+      expect(u.layer, u.path).not.toBe("finance");
+      expect(u.path, "el área se deduce de la ruta: sin unidades para domains/finance").not.toMatch(/^lib\/(finance|tax|accounting|receivables|payments|domains)\b/);
+    }
+    for (const [capa, regla] of Object.entries(layers.layers) as [string, { mayImport: string[] }][]) {
+      expect(regla.mayImport, capa).not.toContain("finance");
+    }
+  });
+
+  test("las aristas entre módulos son exactamente las esperadas y no hay ciclos", () => {
+    const aristas = new Set<string>();
+    for (const f of familia) {
+      for (const { spec } of parseImports(readFileSync(join(ROOT, f), "utf8"))) {
+        const destino = resolveImport(f, spec);
+        const a = modulo(f);
+        const b = destino ? modulo(destino) : undefined;
+        if (a && b && a !== b) aristas.add(`${a} → ${b}`);
+      }
+    }
+    expect([...aristas].sort()).toEqual(["accounting → tax", "payments → tax", "receivables → accounting", "receivables → tax"]);
+    for (const e of aristas) {
+      const [a, b] = e.split(" → ");
+      expect(aristas.has(`${b} → ${a}`), e).toBe(false);
+    }
+  });
+
+  test("ningún archivo de la familia importa industry, platform, experience, integrations ni runtime", () => {
+    const ofensores: string[] = [];
+    for (const f of familia) {
+      for (const { spec } of parseImports(readFileSync(join(ROOT, f), "utf8"))) {
+        const destino = resolveImport(f, spec);
+        const capa = destino ? classify(destino, layers)?.layer : undefined;
+        if (capa && !["foundation", "business", "domains"].includes(capa)) ofensores.push(`${f} → ${destino} (${capa})`);
+      }
+    }
+    expect(ofensores).toEqual([]);
+  });
+
+  test("las carpetas de origen de Finance ya no existen", () => {
+    for (const d of ["lib/finance", "lib/tax", "lib/accounting", "lib/receivables", "lib/payments"]) {
+      expect(existsSync(join(ROOT, d)), d).toBe(false);
+    }
   });
 });
