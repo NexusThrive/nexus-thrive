@@ -1,6 +1,6 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { acceptInvitesFor } from "@/lib/business/team-db";
+import { acceptInvitesFor } from "@/lib/tenant/team-db";
 import { homeTenantFor } from "@/lib/tenant/membership";
 import { findStaffByEmail, getStaffContext } from "@/lib/ops/access";
 import { StaffAccessNotice } from "@/components/molecules/staff-access-notice";

@@ -28,7 +28,7 @@ const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
   { file: "lib/files/stored-files.ts", model: "Attachment", why: "Se pide por id desde una URL; después se exige membresía del negocio del archivo." },
   { file: "lib/files/stored-files.ts", model: "ApuImage", why: "Igual que Attachment." },
   { file: "lib/business/finance-db.ts", model: "Payment", why: "Recibo público por token firmado y referencia del proveedor, única en toda la plataforma (solo sí/no)." },
-  { file: "lib/business/team-db.ts", model: "TenantInvite", why: "Invitaciones a un correo en cualquier negocio, al entrar con ese correo verificado." },
+  { file: "lib/tenant/team-db.ts", model: "TenantInvite", why: "Invitaciones a un correo en cualquier negocio, al entrar con ese correo verificado." },
   { file: "lib/tenant/membership.ts", model: "User", why: "Resuelve el negocio de una cuenta de la sesión (clerkUserId)." },
   { file: "lib/onboarding/prefill.ts", model: "User", why: "Membresías de la cuenta de la sesión para reanudar el alta." },
   { file: "lib/api/keys.ts", model: "ApiKey", why: "Autenticar: se busca por el hash de la llave (única en la plataforma); de ahí sale el negocio." },

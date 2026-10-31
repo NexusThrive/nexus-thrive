@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { BUSINESS_ROLES, canManageTeam, type BusinessRole } from "@/lib/auth/roles";
-import { activeOwners, createInvite, revokeInvite, seatLimit, setMemberActive, setMemberRole, updateMemberProfile, activeMemberWithEmail, memberRoleOf } from "@/lib/business/team-db";
+import { activeOwners, createInvite, revokeInvite, seatLimit, setMemberActive, setMemberRole, updateMemberProfile, activeMemberWithEmail, memberRoleOf } from "@/lib/tenant/team-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { logTenantAction } from "@/lib/tenant/audit";
 

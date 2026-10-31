@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import type { ModuleValue } from "@/lib/admin/catalogs";
 import ProfileTab from "./profile-tab";
 import TeamTab, { type Seats } from "./team-tab";
-import type { PendingInvite, TeamMember as BusinessMember } from "@/lib/business/team-db";
+import type { PendingInvite, TeamMember as BusinessMember } from "@/lib/tenant/team-db";
 import PlanTab, { type PlanInfo } from "./plan-tab";
 import DangerTab from "./danger-tab";
 import AccountTab, { type MyAccount } from "./account-tab";

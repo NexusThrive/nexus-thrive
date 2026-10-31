@@ -1,6 +1,6 @@
 {
   "descripcion": "Excepciones de E0 a las reglas de dependencia (scripts/check-layers.mjs). Cada una registra origen, destino, regla, justificación, etapa prevista de resolución y estado. La lista solo puede reducirse: una excepción nueva o una que sobra hace fallar la comprobación, y maxAbiertas solo baja. Ampliarla requiere justificación y aprobación explícita del dueño.",
-  "maxAbiertas": 43,
+  "maxAbiertas": 41,
   "etapasPrevistas": {
     "E1": "E1 · Core deja de importar rubros (registro de repositorios por rubro)",
     "E2": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
@@ -454,19 +454,6 @@
       "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
     },
     {
-      "id": "EX-056",
-      "tipo": "import",
-      "origen": "lib/tenant/membership.ts",
-      "destino": "lib/business/team-db.ts",
-      "regla": "R3-core-no-importa-business",
-      "importaciones": 1,
-      "soloTipos": false,
-      "justificacion": "La membresía del equipo es de Core pero su repositorio está en lib/business/.",
-      "etapa": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
       "id": "EX-057",
       "tipo": "import",
       "origen": "lib/usage/consumption-db.ts",
@@ -476,19 +463,6 @@
       "soloTipos": false,
       "justificacion": "El medidor de consumo cuenta clientes para aplicar límites del plan. Core consulta a Business; debe hacerlo por un contrato.",
       "etapa": "E3 · Operaciones y suscriptores de eventos por dominio (cada dominio se registra; Core no los conoce)",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-058",
-      "tipo": "import",
-      "origen": "lib/usage/consumption-db.ts",
-      "destino": "lib/business/team-db.ts",
-      "regla": "R3-core-no-importa-business",
-      "importaciones": 1,
-      "soloTipos": false,
-      "justificacion": "El medidor de consumo cuenta usuarios del equipo, repositorio ubicado en Business.",
-      "etapa": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
       "estado": "abierta",
       "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
     },

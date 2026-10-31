@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { tenantWithModules } from "@/lib/tenant/membership";
 import { createTenantDb } from "@/lib/tenant/db";
-import { listTeam, seatLimit } from "@/lib/business/team-db";
+import { listTeam, seatLimit } from "@/lib/tenant/team-db";
 import type { BusinessModel } from "@/lib/tenant/business-context";
 import { canManageTeam } from "@/lib/auth/roles";
 import { paymentMethodLabel } from "@/lib/finance";

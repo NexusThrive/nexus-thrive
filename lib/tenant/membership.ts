@@ -1,5 +1,5 @@
 import { db } from "@/prisma/db";
-import { acceptInvitesFor } from "@/lib/business/team-db";
+import { acceptInvitesFor } from "@/lib/tenant/team-db";
 
 /**
  * Membresía activa de una cuenta en un negocio, o `null` si no puede entrar.
