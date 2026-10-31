@@ -25,6 +25,12 @@ const MODULES: Record<string, Record<string, string>> = {
     "lib/platform/benefits/benefits-db.ts": "lib/benefits/benefits-db.ts",
     "lib/platform/benefits/benefit-cookie.ts": "lib/benefits/benefit-cookie.ts",
   },
+  admin: {
+    "lib/platform/admin/db.ts": "lib/admin/db.ts",
+    "lib/platform/admin/users-db.ts": "lib/admin/users-db.ts",
+    "lib/platform/admin/account-limits.ts": "lib/admin/account-limits.ts",
+    "lib/platform/admin/audit-labels.ts": "lib/admin/audit-labels.ts",
+  },
 };
 
 const files = (dir: string): string[] =>
@@ -53,7 +59,7 @@ describe("piezas neutrales que antes colgaban de módulos de Nexus (M4)", () => 
     const tenant = read("lib/tenant/audit.ts");
     expect(tenant).not.toMatch(/@\/lib\/(admin|platform)\b/);
     expect(tenant).toMatch(/export type TenantAuditAction =\s*\n\s*\| "BIZ_PAYMENT_VOID"/);
-    const admin = exists("lib/platform/admin/db.ts") ? read("lib/platform/admin/db.ts") : read("lib/admin/db.ts");
+    const admin = exists("lib/platform/admin/db.ts") ? read("lib/platform/admin/db.ts") : read("lib/platform/admin/db.ts");
     expect(admin).toContain('import type { TenantAuditAction } from "@/lib/tenant/audit"');
     expect(admin).not.toMatch(/\| "BIZ_/);
     const offenders = [...files("lib/tenant"), ...files("lib/auth"), ...files("lib/core"), ...files("lib/plans"), ...files("lib/operations"), ...files("lib/events")]

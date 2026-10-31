@@ -8,7 +8,7 @@
  */
 import { afterAll, beforeAll, afterEach, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createAdminDb } from "@/lib/admin/db";
+import { createAdminDb } from "@/lib/platform/admin/db";
 import { setAccountingEnabled } from "@/lib/accounting/ledger-db";
 import { accountingPort, type AccountingFact, type AccountingPort } from "@/lib/business/sales/accounting-port";
 import { createDocument } from "@/lib/business/sales/documents-db";

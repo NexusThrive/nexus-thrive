@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createAdminDb } from "@/lib/admin/db";
+import { createAdminDb } from "@/lib/platform/admin/db";
 import { confirmIntent } from "@/lib/payments/intents-db";
 import { saveSite } from "@/lib/site/site-db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";

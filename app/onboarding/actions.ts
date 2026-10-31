@@ -1,7 +1,7 @@
 "use server";
 
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { organizationLimitProblem } from "@/lib/admin/users-db";
+import { organizationLimitProblem } from "@/lib/platform/admin/users-db";
 import { completeExistingTenant, createTenantWithOwner, onboardingMembership, onboardingTenant, slugInUse } from "@/lib/onboarding/onboarding-db";
 import { validateAdaptiveOnboarding } from "@/lib/onboarding/validation";
 import { suggestSlug } from "@/lib/onboarding/slug";

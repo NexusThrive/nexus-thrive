@@ -23,7 +23,7 @@ import { MODULE_LABELS } from "@/lib/capabilities/modules";
 import { TEAM_SIZE_LABELS, type TeamSizeValue } from "@/lib/onboarding/types";
 import { paymentMethodLabel } from "@/lib/finance";
 import { formatCurrency, formatDateTime } from "@/lib/format";
-import type { TenantDetail } from "@/lib/admin/db";
+import type { TenantDetail } from "@/lib/platform/admin/db";
 import { cn } from "@/lib/utils";
 import {
   activateTenantAction,

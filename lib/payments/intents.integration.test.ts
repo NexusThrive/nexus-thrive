@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createAdminDb } from "@/lib/admin/db";
+import { createAdminDb } from "@/lib/platform/admin/db";
 import { createDocument } from "@/lib/business/sales/documents-db";
 import { encryptCredentials } from "@/lib/providers/connections";
 import { receiveProviderWebhook } from "@/lib/providers/inbound";

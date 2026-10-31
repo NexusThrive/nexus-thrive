@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createAdminDb } from "@/lib/admin/db";
+import { createAdminDb } from "@/lib/platform/admin/db";
 import { presenceV2 } from "@/lib/presence/pillars-db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { connectGoogle, disconnectGoogle, listingView, syncGoogle } from "./google-db";

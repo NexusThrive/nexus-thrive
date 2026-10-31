@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createAdminDb } from "@/lib/admin/db";
+import { createAdminDb } from "@/lib/platform/admin/db";
 import { authenticateApiKey, createApiKey } from "@/lib/api/keys";
 import type { ApiDeps } from "@/lib/api/handler";
 import { resetRateLimits } from "@/lib/api/rate-limit";

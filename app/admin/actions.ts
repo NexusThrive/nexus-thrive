@@ -9,8 +9,8 @@ import { headers } from "next/headers";
 import { requireStaff } from "@/lib/ops/access";
 import type { PermissionKey } from "@/lib/ops/permissions";
 import { revalidatePath } from "next/cache";
-import { organizationLimitProblem } from "@/lib/admin/users-db";
-import { createAdminDb, type AuditLogInput } from "@/lib/admin/db";
+import { organizationLimitProblem } from "@/lib/platform/admin/users-db";
+import { createAdminDb, type AuditLogInput } from "@/lib/platform/admin/db";
 import { validateSlug, type SlugValidation } from "@/lib/admin/catalogs";
 import {
   validateSuspendTenant,

@@ -6,7 +6,7 @@ import type { TenantContext } from "./context";
  * docs/nexus-architecture/security-audit.md): anular dinero, borrar clientes,
  * cambiar roles, retirar personas, activar módulos o borrar el negocio.
  *
- * Las acciones de este tipo son la parte `BIZ_*` del tipo `AuditAction` del panel (`lib/admin/db.ts`), que lo compone con las suyas:
+ * Las acciones de este tipo son la parte `BIZ_*` del tipo `AuditAction` del panel (`lib/platform/admin/db.ts`), que lo compone con las suyas:
  * Core define las de los negocios y la plataforma las importa, nunca al revés.
  *
  * Usa el mismo `AuditLog` que el panel, con el negocio como destino, así que

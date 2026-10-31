@@ -6,7 +6,7 @@
  */
 
 import { db } from "@/prisma/db";
-import { createAdminDb } from "@/lib/admin/db";
+import { createAdminDb } from "@/lib/platform/admin/db";
 import { loadPricingConfig } from "@/lib/plans/settings";
 import { resolveModules } from "@/lib/plans/pricing";
 import { PLANS, type PlanKey } from "@/lib/plans/catalog";

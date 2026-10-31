@@ -1,6 +1,6 @@
 import { requireStaff } from "@/lib/ops/access";
 import { headers } from "next/headers";
-import { createAdminDb, type TenantListRow } from "@/lib/admin/db";
+import { createAdminDb, type TenantListRow } from "@/lib/platform/admin/db";
 import { isVertical } from "@/lib/core/sectors/verticals";
 
 export const dynamic = "force-dynamic";

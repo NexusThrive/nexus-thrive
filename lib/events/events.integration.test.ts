@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createAdminDb } from "@/lib/admin/db";
+import { createAdminDb } from "@/lib/platform/admin/db";
 import { moneyTransaction, recordIncome, recordIncomeNow } from "@/lib/business/sales/money-service";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { AUTO_DISABLE_AFTER, MAX_ATTEMPTS, dispatchPending } from "./dispatcher";

@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { cache } from "react";
 import { db } from "@/prisma/db";
-import { createAdminDb } from "@/lib/admin/db";
+import { createAdminDb } from "@/lib/platform/admin/db";
 import { bogotaDay } from "@/lib/plain-date";
 import {
   DEFAULT_POLICY,

@@ -8,7 +8,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
 import { VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
-import { createAdminDb } from "@/lib/admin/db";
+import { createAdminDb } from "@/lib/platform/admin/db";
 import { getAccountExtras, listManagers, ACCOUNT_STAGES } from "@/lib/ops/accounts";
 import { getStaffContext } from "@/lib/ops/access";
 import { moduleStatusRow } from "@/lib/plans/compat";
