@@ -15,6 +15,7 @@ export async function slugTakenByOther(slug: string, tenantId: string): Promise<
   return existing !== null && existing.id !== tenantId;
 }
 
+/** Actualiza el nombre, el identificador de URL y los datos de contacto del negocio. */
 export async function updateTenantProfile(
   tenantId: string,
   fields: { name: string; slug: string | undefined; city?: string; address?: string; taxId?: string; whatsappNumber?: string },

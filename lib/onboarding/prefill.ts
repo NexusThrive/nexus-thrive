@@ -66,6 +66,9 @@ function tenantToDraft(tenant: TenantForDraft): OnboardingDraft {
   };
 }
 
+/**
+ * Datos con los que se prellena el alta de un negocio para una persona: sus organizaciones actuales, el identificador de URL sugerido y, si ya tiene negocio y no pide uno nuevo, el negocio existente.
+ */
 export async function getOnboardingPrefill(
   clerkUserId: string,
   preferredSlug?: string,

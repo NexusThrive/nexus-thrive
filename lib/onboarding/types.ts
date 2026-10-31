@@ -17,6 +17,7 @@ export type OnboardingTenantType = "INDIVIDUAL" | "COMPANY";
 
 export const ONBOARDING_TENANT_TYPES = ["INDIVIDUAL", "COMPANY"] as const;
 
+/** Comprueba que un texto sea un tipo de negocio del alta (individual o empresa). */
 export function isOnboardingTenantType(
   value: string,
 ): value is OnboardingTenantType {

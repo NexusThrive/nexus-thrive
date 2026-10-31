@@ -473,6 +473,9 @@ async function load360Base(tenantId: string, customerId: string): Promise<Custom
 
 
 
+/**
+ * Crea el repositorio de datos de un negocio. Exige un `tenantId` no vacío; todas las consultas que devuelve quedan acotadas a ese negocio.
+ */
 export function createTenantDb(tenantId: string) {
   if (!tenantId || tenantId.trim() === "") {
     throw new Error(

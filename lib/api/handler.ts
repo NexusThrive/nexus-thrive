@@ -154,6 +154,9 @@ export async function guardRequest(request: Request, deps: ApiDeps, meta: { requ
   return { key, ctx, rateHeaders: { ...rateHeaders, ...quotaHeaders }, record };
 }
 
+/**
+ * Atiende una petición a `/api/v1` de principio a fin (ver el orden arriba) y devuelve siempre una respuesta, con un id de petición y los errores en formato de problema.
+ */
 export async function handleApi(request: Request, deps: ApiDeps): Promise<Response> {
   const started = Date.now();
   const requestId = `req_${randomUUID().replace(/-/g, "").slice(0, 16)}`;

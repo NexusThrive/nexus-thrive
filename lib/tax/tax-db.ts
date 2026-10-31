@@ -29,11 +29,15 @@ const toRate = (r: Record<string, unknown>): TaxRateRow => ({
   active: Boolean(r.active),
 });
 
+/** Tarifas de impuestos y retenciones del negocio, ordenadas por tipo y código. */
 export async function listTaxRates(tenantId: string): Promise<TaxRateRow[]> {
   const rows = await db.orm.public.TaxRate.where({ tenantId }).all();
   return rows.map((r) => toRate(r as unknown as Record<string, unknown>)).sort((a, b) => a.kind.localeCompare(b.kind) || a.code.localeCompare(b.code) || b.validFrom.localeCompare(a.validFrom));
 }
 
+/**
+ * Crea una tarifa con vigencia (código en mayúsculas, tipo, porcentaje, base mínima, desde y hasta). Valida los datos y que no se cruce con otra vigencia del mismo código.
+ */
 export async function createTaxRate(tenantId: string, input: { code: string; name: string; kind: string; ratePct: number; minBase?: number; validFrom: string; validTo?: string | null }): Promise<TaxResult<{ id: string }>> {
   const code = input.code.trim().toUpperCase();
   const minBase = input.minBase ?? 0;
@@ -118,11 +122,17 @@ const toResolution = (r: Record<string, unknown>, today: string): ResolutionRow 
   return { ...base, status: resolutionStatus(base, today) };
 };
 
+/**
+ * Resoluciones de numeración del negocio con su estado a la fecha (vigente, por vencer, agotada…), ordenadas por tipo de documento.
+ */
 export async function listResolutions(tenantId: string, today = todayCO()): Promise<ResolutionRow[]> {
   const rows = await db.orm.public.NumberingResolution.where({ tenantId }).all();
   return rows.map((r) => toResolution(r as unknown as Record<string, unknown>, today)).sort((a, b) => a.documentKind.localeCompare(b.documentKind) || b.validFrom.localeCompare(a.validFrom));
 }
 
+/**
+ * Crea una resolución de numeración (tipo, prefijo, rango y vigencia). Valida los datos y que el rango no se cruce con otra resolución activa del mismo tipo y prefijo.
+ */
 export async function createResolution(tenantId: string, input: { documentKind: string; prefix?: string; resolutionNumber: string; rangeFrom: number; rangeTo: number; validFrom: string; validTo: string }): Promise<TaxResult<{ id: string; nextNumber: number }>> {
   const prefix = (input.prefix ?? "").trim().toUpperCase();
   const problem = validateResolution({ ...input, prefix }, NUMBERED_KINDS);
@@ -149,6 +159,7 @@ export async function createResolution(tenantId: string, input: { documentKind: 
   return { ok: true, id: created.id, nextNumber };
 }
 
+/** Activa o desactiva una resolución. Devuelve `false` si no existe. */
 export async function setResolutionActive(tenantId: string, id: string, active: boolean): Promise<boolean> {
   const row = await db.orm.public.NumberingResolution.where({ tenantId, id }).select("id").first();
   if (!row) return false;

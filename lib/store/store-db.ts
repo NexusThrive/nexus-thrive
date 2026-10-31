@@ -10,6 +10,9 @@ export type PlaceResult =
   | { ok: true; code: string; reference: string; total: number; whatsappText: string; whatsapp: string | null; business: string }
   | { ok: false; message: string; fields?: Partial<Record<keyof CustomerData, string>> };
 
+/**
+ * Crea un pedido de la tienda en línea desde el sitio público: valida la tienda y los productos, guarda el pedido y sus líneas y crea el cobro en línea. Si el cobro no se puede crear, cancela el pedido con el motivo.
+ */
 export async function placeOrder(siteSlug: string, input: { customer: CustomerData; lines: CartLine[]; origin?: unknown }): Promise<PlaceResult> {
   const cfg = await db.orm.public.SiteConfig.where({ siteSlug, enabled: true }).first();
   if (!cfg || !cfg.showCatalog) return { ok: false, message: "Esta tienda no está disponible." };
@@ -61,6 +64,7 @@ export async function placeOrder(siteSlug: string, input: { customer: CustomerDa
 
 export type OrderRow = { id: string; code: string; status: string; customerName: string; phone: string; email: string | null; address: string | null; city: string | null; notes: string | null; total: number; review: string | null; createdAt: string; reference: string | null; lines: { name: string; quantity: number; unitPrice: number }[] };
 
+/** Pedidos de la tienda, del más reciente al más antiguo (100 por defecto), con sus líneas y el estado del cobro. */
 export async function listOrders(tenantId: string, limit = 100): Promise<OrderRow[]> {
   const orders = await db.orm.public.StoreOrder.where({ tenantId }).orderBy((o) => o.number.desc()).limit(limit).all();
   if (!orders.length) return [];

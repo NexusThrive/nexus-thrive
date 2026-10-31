@@ -24,11 +24,15 @@ export async function seedAccounting(tenantId: string, tx: Writer = { orm: db.or
 
 export type AccountRow = { id: string; code: string; name: string; type: AccountType; nature: "D" | "C"; postable: boolean; active: boolean };
 
+/** Plan de cuentas del negocio, con tipo, naturaleza y si recibe movimientos. */
 export async function listAccounts(tenantId: string): Promise<AccountRow[]> {
   const rows = await db.orm.public.Account.where({ tenantId }).all();
   return rows.map((a) => ({ id: a.id, code: a.code, name: a.name, type: a.type as AccountType, nature: a.nature as "D" | "C", postable: a.postable, active: a.active })).sort((x, y) => x.code.localeCompare(y.code));
 }
 
+/**
+ * Crea una cuenta propia con un código y un nombre. Valida el código contra las cuentas existentes y deduce el tipo y la naturaleza del primer dígito (clase del PUC).
+ */
 export async function createAccount(tenantId: string, input: { code: string; name: string }): Promise<{ ok: true; id: string } | { ok: false; message: string }> {
   const code = input.code.trim();
   const problem = validateAccount({ code, name: input.name }, (await listAccounts(tenantId)).map((a) => a.code));
@@ -48,6 +52,7 @@ export async function setAccountActive(tenantId: string, id: string, active: boo
 
 export type RuleRow = { id: string; event: string; name: string; active: boolean; lines: RuleLine[] };
 
+/** Reglas contables del negocio (qué asiento genera cada evento), en el orden de las reglas de partida. */
 export async function listRules(tenantId: string): Promise<RuleRow[]> {
   const rows = await db.orm.public.AccountingRule.where({ tenantId }).all();
   return rows.map((r) => ({ id: r.id, event: r.event, name: r.name, active: r.active, lines: r.lines as unknown as RuleLine[] })).sort((a, b) => DEFAULT_RULES.findIndex((d) => d.event === a.event) - DEFAULT_RULES.findIndex((d) => d.event === b.event));
@@ -68,11 +73,15 @@ export async function setRuleActive(tenantId: string, id: string, active: boolea
 
 export type CostCenterRow = { id: string; code: string; name: string; kind: "CENTER" | "BRANCH"; active: boolean };
 
+/** Centros de costo y sucursales del negocio. */
 export async function listCostCenters(tenantId: string): Promise<CostCenterRow[]> {
   const rows = await db.orm.public.CostCenter.where({ tenantId }).all();
   return rows.map((c) => ({ id: c.id, code: c.code, name: c.name, kind: c.kind as CostCenterRow["kind"], active: c.active })).sort((a, b) => a.code.localeCompare(b.code));
 }
 
+/**
+ * Crea un centro de costo o sucursal. El código va en mayúsculas, de 2 a 12 letras, números o guiones, y no se repite.
+ */
 export async function createCostCenter(tenantId: string, input: { code: string; name: string; kind: "CENTER" | "BRANCH" }): Promise<{ ok: true; id: string } | { ok: false; message: string }> {
   const code = input.code.trim().toUpperCase();
   if (!/^[A-Z0-9-]{2,12}$/.test(code)) return { ok: false, message: "El código usa de 2 a 12 letras, números o guiones." };
@@ -82,6 +91,7 @@ export async function createCostCenter(tenantId: string, input: { code: string; 
   return { ok: true, id: c.id };
 }
 
+/** Activa o desactiva un centro de costo. Devuelve `false` si no existe. */
 export async function setCostCenterActive(tenantId: string, id: string, active: boolean): Promise<boolean> {
   if (!(await db.orm.public.CostCenter.where({ tenantId, id }).select("id").first())) return false;
   await db.orm.public.CostCenter.where({ tenantId, id }).update({ active });
@@ -92,6 +102,7 @@ export async function setCostCenterActive(tenantId: string, id: string, active: 
 
 export type PeriodRow = { year: number; month: number; status: "OPEN" | "CLOSED"; closedAt: string | null };
 
+/** Periodos contables (año y mes) con su estado y la fecha de cierre. */
 export async function listPeriods(tenantId: string): Promise<PeriodRow[]> {
   const rows = await db.orm.public.AccountingPeriod.where({ tenantId }).all();
   return rows.map((p) => ({ year: p.year, month: p.month, status: p.status as PeriodRow["status"], closedAt: p.closedAt ? String(p.closedAt) : null })).sort((a, b) => b.year - a.year || b.month - a.month);

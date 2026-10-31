@@ -17,11 +17,15 @@ import { museumSettings, saleKindLabel, slotLoads, ticketCode, validateTicketSal
 
 const instant = (ms: number) => Temporal.Instant.fromEpochMilliseconds(ms);
 
+/**
+ * Configuración del museo (franjas, aforo, tarifas…) guardada en los ajustes del negocio, con valores por defecto.
+ */
 export async function getMuseumSettings(tenantId: string): Promise<MuseumSettings> {
   const t = await db.orm.public.Tenant.where({ id: tenantId }).select("settings").first();
   return museumSettings(t?.settings);
 }
 
+/** Guarda la configuración del museo dentro de los ajustes del negocio sin tocar los demás ajustes. */
 export async function saveMuseumSettings(tenantId: string, value: MuseumSettings) {
   const t = await db.orm.public.Tenant.where({ id: tenantId }).select("settings").first();
   const current = t?.settings && typeof t.settings === "object" ? (t.settings as Record<string, unknown>) : {};
@@ -63,6 +67,7 @@ export async function salesBetween(tenantId: string, fromDay: string, toDay: str
   return rows.map((r) => toRow(r, names));
 }
 
+/** Ventas de entradas de un día. */
 export const salesOn = (tenantId: string, day: string) => salesBetween(tenantId, day, addDaysKey(day, 1));
 
 /** Tipos de entrada activos (productos TICKET) con su precio. */

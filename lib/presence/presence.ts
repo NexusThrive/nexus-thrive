@@ -72,6 +72,7 @@ export function digitsOf(value: string | null | undefined): string {
   return (value ?? "").replace(/\D+/g, "");
 }
 
+/** Usuario de red social sin arroba inicial, recortado y en minúsculas. */
 export function normalizeHandle(value: string | null | undefined): string {
   return (value ?? "").trim().replace(/^@+/, "").toLowerCase();
 }

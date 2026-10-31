@@ -8,6 +8,7 @@ const DAY = 86_400_000;
 export type MembershipLike = { id: string; start: number; end: number; frozenFrom: number | null; frozenUntil: number | null; cancelledAt: number | null };
 export type MembershipState = "active" | "frozen" | "expired" | "cancelled" | "upcoming";
 
+/** Estado de una membresía en un instante: cancelada, congelada, por comenzar, activa o vencida. */
 export function membershipState(m: MembershipLike, now: number): MembershipState {
   if (m.cancelledAt && m.cancelledAt <= now) return "cancelled";
   if (m.frozenFrom != null && m.frozenUntil != null && now >= m.frozenFrom && now < m.frozenUntil) return "frozen";

@@ -67,6 +67,9 @@ const T: readonly PucRow[] = [
 
 /** Naturaleza normal por tipo: activo, gasto y costo aumentan por el débito; el resto, por el crédito. */
 export const natureOf = (type: AccountType): "D" | "C" => (type === "ASSET" || type === "EXPENSE" || type === "COST" ? "D" : "C");
+/**
+ * Tipo de cuenta que corresponde al primer dígito del código (clase del PUC), o `null` si no es una clase válida.
+ */
 export const typeOf = (code: string): AccountType | null => CLASS_TYPE[code[0] ?? ""] ?? null;
 
 /** La plantilla completa lista para guardar. */
@@ -115,4 +118,5 @@ export function validateRule(lines: readonly RuleLine[], accountCodes: readonly 
 /* ------------------------------- Períodos ------------------------------- */
 
 export const periodOfDate = (isoDate: string): { year: number; month: number } => ({ year: Number(isoDate.slice(0, 4)), month: Number(isoDate.slice(5, 7)) });
+/** Nombre del periodo en español, por ejemplo «octubre 2026». */
 export const periodLabel = (year: number, month: number) => `${["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"][month - 1]} de ${year}`;

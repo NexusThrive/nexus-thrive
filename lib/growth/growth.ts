@@ -16,7 +16,9 @@ export function originFromParams(p: { get(name: string): string | null }): Origi
   return { source, medium: clean(p.get("utm_medium")) || "ninguno", campaign: clean(p.get("utm_campaign")) };
 }
 
+/** ¿Dos orígenes de tráfico tienen el mismo medio, fuente y campaña? */
 export const sameOrigin = (a: Origin, b: Origin) => a.source === b.source && a.medium === b.medium && a.campaign === b.campaign;
+/** Texto del origen de una visita: «Directo» o «fuente / medio / campaña». */
 export const originLabel = (o: Origin) => (o.source === DIRECT.source ? "Directo" : `${o.source} / ${o.medium}${o.campaign ? ` / ${o.campaign}` : ""}`);
 
 /** Lo que llega del navegador como origen: se vuelve a limpiar (nunca se confía). */
@@ -33,6 +35,9 @@ export function newShortCode(): string {
   return [...randomBytes(7)].map((b) => ALPHABET[b % ALPHABET.length]).join("");
 }
 
+/**
+ * Valida un enlace de campaña: nombre, fuente, medio y campaña obligatorios y una inversión entre 0 y 10 000 millones. Devuelve el mensaje de error o `null`.
+ */
 export function validateLink(i: { name: string; utmSource: string; utmMedium: string; utmCampaign: string; spend: number; path: string }): string | null {
   if (i.name.trim().length < 3) return "Ponle un nombre a la campaña.";
   if (!clean(i.utmSource)) return "Indica el origen (por ejemplo «instagram»).";
@@ -88,8 +93,12 @@ export function originReport(input: {
 /* ------------------------------- Reseñas ------------------------------- */
 
 export const LOW_RATING = 2;
+/** ¿Es una calificación baja (1 o 2 estrellas)? */
 export const isLowRating = (rating: number) => rating >= 1 && rating <= LOW_RATING;
 
+/**
+ * Valida una reseña: de 1 a 5 estrellas y comentario de hasta 600 caracteres. Devuelve el mensaje de error o `null`.
+ */
 export function validateReview(i: { rating: number; comment: string }): string | null {
   if (!Number.isInteger(i.rating) || i.rating < 1 || i.rating > 5) return "Elige de 1 a 5 estrellas.";
   if (i.comment.length > 600) return "El comentario es muy largo (máximo 600 caracteres).";

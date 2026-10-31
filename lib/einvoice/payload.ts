@@ -17,6 +17,9 @@ export function fiscalKindOf(kind: string): FiscalKind | null {
   }
 }
 
+/**
+ * Arma el documento que se envía al proveedor fiscal a partir del documento comercial: tipo, código, número, prefijo, fecha, emisor, adquirente, líneas y totales.
+ */
 export function buildFiscalPayload(input: {
   kind: FiscalKind;
   documentKind: DocumentKind;

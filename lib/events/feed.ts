@@ -12,6 +12,9 @@ export const MAX_FEED_LIMIT = 100;
 export type FeedEvent = { id: string; type: string; version: number; createdAt: string; data: unknown };
 export type Feed = { events: FeedEvent[]; next: string | null };
 
+/**
+ * Eventos del negocio en orden estable (fecha, id) para ponerse al día. Continúa después del evento `after` o desde la fecha `since`, con filtro por tipo y límite (máximo 100). Devuelve un error si la referencia no existe.
+ */
 export async function listEvents(tenantId: string, opts: { after?: string; since?: string; type?: string; limit?: number } = {}): Promise<Feed | { error: string }> {
   const limit = Math.min(MAX_FEED_LIMIT, Math.max(1, Math.trunc(opts.limit ?? 50)));
   let fromMs: number | null = null;

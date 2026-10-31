@@ -15,6 +15,9 @@ export const NOTIFICATIONS_REFRESH = "nx:notifications-refresh";
 
 export type NotificationArrival = Pick<AppNotification, "kind" | "title" | "detail" | "href">;
 
+/**
+ * Pide al navegador que recargue las notificaciones (evento de ventana), opcionalmente con el aviso de lo que acaba de llegar. No hace nada en el servidor.
+ */
 export function requestNotificationsRefresh(arrival?: NotificationArrival): void {
   if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent<NotificationArrival | undefined>(NOTIFICATIONS_REFRESH, { detail: arrival }));
 }

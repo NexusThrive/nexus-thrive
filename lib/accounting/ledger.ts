@@ -9,7 +9,9 @@ import type { RuleAmount, RuleLine } from "./puc";
 export type Amounts = Partial<Record<RuleAmount, number>>;
 export type EntryLine = { account: string; debit: number; credit: number; label?: string; partyId?: string | null; costCenterId?: string | null };
 
+/** Convierte un importe en pesos a centavos enteros, para sumar sin errores de redondeo. */
 export const cents = (n: number) => Math.round(n * 100);
+/** Convierte centavos enteros a pesos. */
 export const fromCents = (c: number) => c / 100;
 
 /** Líneas del asiento de una regla con los montos dados; las de monto cero no se escriben. */
@@ -23,6 +25,7 @@ export function linesFromRule(rule: readonly RuleLine[], amounts: Amounts, dims:
   return out;
 }
 
+/** Suma de débitos y créditos de las líneas de un asiento (calculada en centavos). */
 export function totals(lines: readonly EntryLine[]): { debit: number; credit: number } {
   return { debit: fromCents(lines.reduce((s, l) => s + cents(l.debit), 0)), credit: fromCents(lines.reduce((s, l) => s + cents(l.credit), 0)) };
 }

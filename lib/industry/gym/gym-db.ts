@@ -37,6 +37,7 @@ export async function findMemberByScan(tenantId: string, raw: string): Promise<M
   return row ?? null;
 }
 
+/** Ficha de un socio activo del gimnasio, o `null` si el id no tiene formato válido o no existe. */
 export async function getMember(tenantId: string, id: string): Promise<MemberCard | null> {
   if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
   return (await db.orm.public.Customer.where({ tenantId, id, active: true }).select(...MEMBER_FIELDS).first()) ?? null;
@@ -224,6 +225,7 @@ export async function unfreezeMembership(tenantId: string, id: string) {
   return { ok: true as const };
 }
 
+/** Cancela una membresía con su motivo (hasta 200 caracteres). Falla si no existe o ya estaba cancelada. */
 export async function cancelMembership(tenantId: string, id: string, reason: string) {
   const r = await db.orm.public.Membership.where({ tenantId, id }).select("cancelledAt").first();
   if (!r) return { ok: false as const, message: "La membresía no existe." };

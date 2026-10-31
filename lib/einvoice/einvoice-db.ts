@@ -63,11 +63,15 @@ const toRow = (d: Record<string, unknown>): FiscalRow => {
   return { id: String(d.id), kind: String(d.kind) as FiscalKind, code: p.code, status: String(d.status), provider: (d.provider as string | null) ?? null, cufe: (d.cufe as string | null) ?? null, rejectReason: (d.rejectReason as string | null) ?? null, attempts: Number(d.attempts), total: p.total, acquirer: p.acquirer.name, createdAt: String(d.createdAt) };
 };
 
+/** Documentos fiscales del negocio, los más recientes primero (100 por defecto). */
 export async function listFiscal(tenantId: string, limit = 100): Promise<FiscalRow[]> {
   const rows = await db.orm.public.FiscalDocument.where({ tenantId }).orderBy((d) => d.createdAt.desc()).limit(limit).all();
   return rows.map((r) => toRow(r as unknown as Record<string, unknown>));
 }
 
+/**
+ * Configuración de facturación electrónica del negocio: si está activa, el proveedor conectado y cuántos documentos esperan al proveedor.
+ */
 export async function fiscalSettings(tenantId: string): Promise<{ enabled: boolean; provider: string | null; connected: boolean; pending: number }> {
   const [t, conn, pending] = await Promise.all([
     db.orm.public.Tenant.where({ id: tenantId }).select("einvoiceEnabled").first(),
@@ -77,6 +81,7 @@ export async function fiscalSettings(tenantId: string): Promise<{ enabled: boole
   return { enabled: Boolean(t?.einvoiceEnabled), provider: conn?.provider ?? null, connected: Boolean(conn), pending: Number(pending.n) };
 }
 
+/** Activa o desactiva la facturación electrónica del negocio. */
 export async function setFiscalEnabled(tenantId: string, enabled: boolean): Promise<void> {
   await db.orm.public.Tenant.where({ id: tenantId }).update({ einvoiceEnabled: enabled });
 }

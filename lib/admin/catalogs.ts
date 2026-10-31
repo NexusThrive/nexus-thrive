@@ -517,14 +517,17 @@ export function validateSlug(raw: string): SlugValidation {
   return { ok: true, slug };
 }
 
+/** Comprueba que un texto sea un rubro conocido. */
 export function isVertical(value: string): value is VerticalValue {
   return (VERTICALS as readonly string[]).includes(value);
 }
 
+/** Comprueba que un texto sea un módulo conocido. */
 export function isModule(value: string): value is ModuleValue {
   return (MODULES as readonly string[]).includes(value);
 }
 
+/** Comprueba que un texto sea un medio de pago conocido. */
 export function isPaymentMethod(value: string): value is PaymentMethodValue {
   return (PAYMENT_METHODS as readonly string[]).includes(value);
 }

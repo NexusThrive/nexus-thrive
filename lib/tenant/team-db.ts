@@ -13,6 +13,9 @@ const INVITE_DAYS = 14;
 export type TeamMember = { id: string; name: string; email: string; role: BusinessRole; title: string | null; phone: string | null; active: boolean; isMe: boolean; createdAt: string };
 export type PendingInvite = { id: string; email: string; name: string | null; role: BusinessRole; createdAt: string; expiresAt: string };
 
+/**
+ * Equipo del negocio: miembros con su rol y estado (marcando a quien consulta) e invitaciones pendientes que aún no vencen.
+ */
 export async function listTeam(tenantId: string, meId: string) {
   const [users, invites] = await Promise.all([
     db.orm.public.User.where({ tenantId }).orderBy((u) => u.createdAt.asc()).all(),
@@ -40,6 +43,9 @@ export async function seatLimit(tenantId: string): Promise<{ limit: number | nul
   return { limit: plan?.maxUsers ?? null, used: active.n + pending.n, planName: plan?.name ?? t?.plan ?? "" };
 }
 
+/**
+ * Invita a una persona al negocio con un rol. Reemplaza cualquier invitación pendiente al mismo correo y la deja vigente por los días configurados.
+ */
 export async function createInvite(tenantId: string, v: { email: string; name: string | null; role: BusinessRole }, invitedById: string) {
   const expires = Temporal.Instant.fromEpochMilliseconds(Date.now() + INVITE_DAYS * 86_400_000);
   // Reemplaza una invitación pendiente al mismo correo.
@@ -47,6 +53,7 @@ export async function createInvite(tenantId: string, v: { email: string; name: s
   return (await db.orm.public.TenantInvite.create({ tenantId, email: v.email, name: v.name, role: v.role, invitedById, expiresAt: expires })).id;
 }
 
+/** Revoca una invitación pendiente. */
 export async function revokeInvite(tenantId: string, id: string) {
   await db.orm.public.TenantInvite.where({ tenantId, id }).update({ revokedAt: now() });
 }
@@ -73,18 +80,22 @@ export async function acceptInvitesFor(clerkUserId: string, email: string, name:
   return slugs;
 }
 
+/** Cuántos dueños activos tiene el negocio (para no dejarlo sin ninguno). */
 export async function activeOwners(tenantId: string) {
   return (await db.orm.public.User.where({ tenantId, role: "OWNER", active: true }).aggregate((a) => ({ n: a.count() }))).n;
 }
 
+/** Cambia el rol de un miembro del negocio. */
 export async function setMemberRole(tenantId: string, userId: string, role: BusinessRole) {
   await db.orm.public.User.where({ tenantId, id: userId }).update({ role });
 }
 
+/** Activa o retira a un miembro; al retirarlo guarda la fecha. */
 export async function setMemberActive(tenantId: string, userId: string, active: boolean) {
   await db.orm.public.User.where({ tenantId, id: userId }).update({ active, removedAt: active ? null : now() });
 }
 
+/** Actualiza los datos de perfil de un miembro (nombre, cargo, teléfono…). */
 export async function updateMemberProfile(tenantId: string, userId: string, v: { name?: string; title?: string | null; phone?: string | null }) {
   await db.orm.public.User.where({ tenantId, id: userId }).update(v);
 }

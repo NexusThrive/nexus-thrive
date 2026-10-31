@@ -11,6 +11,9 @@ const hits = new Map<string, number[]>();
 
 export type RateLimitResult = { allowed: boolean; limit: number; remaining: number; resetSeconds: number };
 
+/**
+ * Cuenta una petición contra el límite por minuto de una llave (ventana deslizante en memoria). Devuelve si se permite y los datos para las cabeceras de límite.
+ */
 export function consume(key: string, limit = DEFAULT_LIMIT_PER_MINUTE, nowMs = Date.now()): RateLimitResult {
   const recent = (hits.get(key) ?? []).filter((at) => nowMs - at < WINDOW_MS);
   const allowed = recent.length < limit;

@@ -3,4 +3,5 @@ import type { EInvoicePort } from "./port";
 
 /** Proveedores tecnológicos disponibles. El real (PR-20) se agrega aquí cuando se elija. */
 export const EINVOICE_PORTS: readonly EInvoicePort[] = [sandboxEInvoice];
+/** Puerto de facturación electrónica de un proveedor por su nombre, o `undefined`. */
 export const einvoicePort = (provider: string) => EINVOICE_PORTS.find((p) => p.provider === provider);

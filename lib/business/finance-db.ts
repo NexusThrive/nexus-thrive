@@ -31,6 +31,7 @@ export async function withNextNumber<T>(current: () => Promise<number | null>, w
 export const ATTACHMENT_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp"] as const;
 export const ATTACHMENT_MAX = 8 * 1024 * 1024;
 
+/** Valida un adjunto (PDF, JPG, PNG o WEBP, no vacío, hasta 8 MB). Devuelve el mensaje de error o `null`. */
 export function checkAttachment(f: { type: string; size: number }): string | null {
   if (!(ATTACHMENT_TYPES as readonly string[]).includes(f.type)) return "El archivo debe ser PDF, JPG, PNG o WEBP.";
   if (f.size <= 0) return "El archivo está vacío.";
@@ -38,6 +39,9 @@ export function checkAttachment(f: { type: string; size: number }): string | nul
   return null;
 }
 
+/**
+ * Guarda un adjunto de un registro del negocio (gasto, pago…) con su tamaño, tipo y huella SHA-256. Lanza un error si el archivo no es válido.
+ */
 export async function addAttachment(tenantId: string, kind: string, ownerId: string, file: File, userId: string | null) {
   const err = checkAttachment(file);
   if (err) throw new Error(err);
@@ -56,6 +60,7 @@ export async function addAttachment(tenantId: string, kind: string, ownerId: str
   return row.id;
 }
 
+/** Adjuntos (sin el contenido) de un tipo para varios registros, del más antiguo al más reciente. */
 export async function listAttachments(tenantId: string, kind: string, ownerIds: string[]) {
   if (!ownerIds.length) return [];
   const rows = await db.orm.public.Attachment.where({ tenantId, kind })
@@ -66,6 +71,7 @@ export async function listAttachments(tenantId: string, kind: string, ownerIds: 
   return rows.map((r) => ({ id: r.id, ownerId: r.ownerId, fileName: r.fileName, mimeType: r.mimeType, byteSize: r.byteSize, createdAt: String(r.createdAt) }));
 }
 
+/** Un adjunto del negocio con su contenido, o `null`. */
 export async function getAttachment(tenantId: string, id: string) {
   return db.orm.public.Attachment.where({ tenantId, id }).select("fileName", "mimeType", "sha256", "data", "kind").first();
 }
@@ -90,11 +96,15 @@ function receiptSecret() {
   return s;
 }
 
+/**
+ * Token firmado (HMAC) para el enlace público de un recibo: el id del pago y una firma corta. Usa `RECEIPT_LINK_SECRET`.
+ */
 export function receiptToken(paymentId: string) {
   const sig = createHmac("sha256", receiptSecret()).update(`receipt:${paymentId}`).digest("base64url").slice(0, 22);
   return `${paymentId}.${sig}`;
 }
 
+/** Verifica el token de un recibo y devuelve el id del pago, o `null` si el formato o la firma no son válidos. */
 export function verifyReceiptToken(token: string): string | null {
   const [id, sig] = token.split(".");
   if (!id || !sig || !/^[0-9a-f-]{36}$/i.test(id)) return null;
@@ -111,6 +121,7 @@ export { voidPayment } from "./money-service";
 
 export type CashBoxRow = { id: string; name: string; fundAmount: number; responsibleUserId: string | null; active: boolean; openSession: { id: string; openedAt: string; openingAmount: number; expected: number } | null };
 
+/** Cajas activas del negocio con su turno abierto, si lo tienen. */
 export async function listCashBoxes(tenantId: string): Promise<CashBoxRow[]> {
   const boxes = await db.orm.public.CashBox.where({ tenantId, active: true }).orderBy((b) => b.createdAt.asc()).all();
   const open = boxes.length
@@ -132,10 +143,12 @@ export async function listCashBoxes(tenantId: string): Promise<CashBoxRow[]> {
   return result;
 }
 
+/** Crea una caja con su fondo base y su responsable; devuelve su id. */
 export async function createCashBox(tenantId: string, name: string, fundAmount: number, responsibleUserId: string | null) {
   return (await db.orm.public.CashBox.create({ tenantId, name, fundAmount: dec(fundAmount), responsibleUserId })).id;
 }
 
+/** Cambia el nombre, el fondo base o el responsable de una caja. */
 export async function updateCashBox(tenantId: string, id: string, fields: { name?: string; fundAmount?: number; responsibleUserId?: string | null; active?: boolean }) {
   const { fundAmount, ...rest } = fields;
   await db.orm.public.CashBox.where({ tenantId, id }).update({ ...rest, ...(fundAmount != null ? { fundAmount: dec(fundAmount) } : {}) });
@@ -148,6 +161,9 @@ export async function currentCashSession(tenantId: string) {
   return box ? { boxId: box.id, sessionId: box.openSession!.id, available: box.openSession!.expected } : null;
 }
 
+/**
+ * Abre un turno de caja con su monto inicial y registra el movimiento de apertura. Falla si la caja ya tiene un turno abierto.
+ */
 export async function openCashSession(tenantId: string, boxId: string, openingAmount: number, userId: string) {
   const already = await db.orm.public.CashSession.where({ tenantId, boxId }).where((s) => s.closedAt.isNull()).select("id").first();
   if (already) return { ok: false as const, message: "La caja ya tiene un turno abierto." };
@@ -156,15 +172,20 @@ export async function openCashSession(tenantId: string, boxId: string, openingAm
   return { ok: true as const, id: s.id };
 }
 
+/** Registra un movimiento (ingreso, egreso, vale, reposición o ajuste) en un turno de caja. */
 export async function addCashMovement(tenantId: string, m: { sessionId: string; kind: CashKind; amount: number; description: string; beneficiary?: string | null; paymentId?: string | null; expenseId?: string | null }, userId: string) {
   await db.orm.public.CashMovement.create({ tenantId, ...m, amount: dec(m.amount), beneficiary: m.beneficiary ?? null, paymentId: m.paymentId ?? null, expenseId: m.expenseId ?? null, createdById: userId });
 }
 
+/** Movimientos de un turno de caja en orden cronológico, con los montos como números. */
 export async function sessionMovements(tenantId: string, sessionId: string) {
   const rows = await db.orm.public.CashMovement.where({ tenantId, sessionId }).orderBy((m) => m.createdAt.asc()).all();
   return rows.map((m) => ({ id: m.id, kind: m.kind as CashKind, amount: toNumber(m.amount), description: m.description, beneficiary: m.beneficiary, paymentId: m.paymentId, expenseId: m.expenseId, createdAt: String(m.createdAt) }));
 }
 
+/**
+ * Cierra un turno: calcula el efectivo esperado con sus movimientos, guarda lo contado y la diferencia. Falla si el turno no está abierto.
+ */
 export async function closeCashSession(tenantId: string, sessionId: string, counted: number, notes: string | null, userId: string) {
   const s = await db.orm.public.CashSession.where({ tenantId, id: sessionId }).first();
   if (!s || s.closedAt) return { ok: false as const, message: "El turno no está abierto." };
@@ -174,6 +195,7 @@ export async function closeCashSession(tenantId: string, sessionId: string, coun
   return { ok: true as const, expected };
 }
 
+/** Turnos de caja ya cerrados, los más recientes primero (20 por defecto). */
 export async function cashHistory(tenantId: string, limit = 20) {
   const rows = await db.orm.public.CashSession.where({ tenantId }).where((s) => s.closedAt.isNotNull()).orderBy((s) => s.closedAt.desc()).limit(limit).all();
   return rows.map((s) => ({ id: s.id, boxId: s.boxId, openedAt: String(s.openedAt), closedAt: String(s.closedAt), openingAmount: toNumber(s.openingAmount), expected: toNumber(s.expectedAmount), counted: toNumber(s.countedAmount), difference: toNumber(s.difference), notes: s.closingNotes }));

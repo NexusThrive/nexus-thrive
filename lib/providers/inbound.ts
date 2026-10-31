@@ -20,6 +20,9 @@ export const MAX_BODY_BYTES = 256 * 1024;
 
 export type InboundResult = { status: number; body: Record<string, unknown> };
 
+/**
+ * Recibe el evento de un proveedor: rechaza cuerpos grandes, conexiones inexistentes o desconectadas y firmas inválidas; guarda el evento y confirma o falla el cobro en línea que referencia. Es idempotente ante reenvíos del proveedor.
+ */
 export async function receiveProviderWebhook(input: { provider: string; connectionId: string; rawBody: string; headers: Headers }): Promise<InboundResult> {
   if (Buffer.byteLength(input.rawBody) > MAX_BODY_BYTES) return { status: 413, body: { error: "Cuerpo demasiado grande." } };
   const adapter = adapterFor(input.provider);

@@ -34,6 +34,9 @@ const toRow = (e: Record<string, unknown>): EndpointRow => ({
 
 export type EndpointResult<T> = ({ ok: true } & T) | { ok: false; message: string };
 
+/**
+ * Registra un webhook del negocio: valida que la URL sea HTTPS pública, que los eventos existan y que no se pase del máximo. Genera el secreto de firma, lo guarda cifrado y lo devuelve una sola vez.
+ */
 export async function createEndpoint(
   tenantId: string,
   input: { url: string; description?: string; eventTypes?: string[]; createdById?: string | null },
@@ -58,11 +61,13 @@ export async function createEndpoint(
   return { ok: true, row: toRow(created as unknown as Record<string, unknown>), secret };
 }
 
+/** Webhooks del negocio, del más reciente al más antiguo (sin el secreto). */
 export async function listEndpoints(tenantId: string): Promise<EndpointRow[]> {
   const rows = await db.orm.public.WebhookEndpoint.where({ tenantId }).orderBy((e) => e.createdAt.desc()).all();
   return rows.map((r) => toRow(r as unknown as Record<string, unknown>));
 }
 
+/** Activa o desactiva un webhook y reinicia su contador de fallos. Devuelve `false` si no existe. */
 export async function setEndpointActive(tenantId: string, id: string, active: boolean): Promise<boolean> {
   const found = await db.orm.public.WebhookEndpoint.where({ id, tenantId }).first();
   if (!found) return false;
@@ -75,6 +80,7 @@ export async function setEndpointActive(tenantId: string, id: string, active: bo
   return true;
 }
 
+/** Elimina un webhook. Devuelve `false` si no existe. */
 export async function deleteEndpoint(tenantId: string, id: string): Promise<boolean> {
   const found = await db.orm.public.WebhookEndpoint.where({ id, tenantId }).first();
   if (!found) return false;
@@ -114,6 +120,9 @@ export type DeliveryRow = {
   createdAt: string;
 };
 
+/**
+ * Entregas de webhooks del negocio, las más recientes primero (50 por defecto, máximo 100), con filtro opcional por estado.
+ */
 export async function listDeliveries(tenantId: string, opts: { status?: "PENDING" | "SUCCESS" | "FAILED"; limit?: number } = {}): Promise<DeliveryRow[]> {
   const base = db.orm.public.WebhookDelivery.where({ tenantId });
   const rows = await (opts.status ? base.where({ status: opts.status }) : base)

@@ -57,10 +57,16 @@ export type DispatchDeps = {
 
 export type DispatchResult = { fannedOut: number; sent: number; succeeded: number; failed: number; deadLettered: number };
 
+/**
+ * Espera antes del siguiente reintento de un webhook según los intentos ya hechos (de 1 minuto hasta 24 horas; el último valor se repite).
+ */
 export function backoffMs(attemptsDone: number): number {
   return BACKOFF_MS[Math.min(attemptsDone, BACKOFF_MS.length) - 1] ?? BACKOFF_MS[0];
 }
 
+/**
+ * Un ciclo del despachador: reparte los eventos nuevos del outbox a los webhooks activos que los piden, entrega los suscriptores de dominio, envía las entregas pendientes firmadas (con tiempo límite y reintentos con espera creciente) y desactiva el webhook tras demasiados fallos seguidos. Devuelve cuántos repartió, envió, acertaron, fallaron o quedaron muertos.
+ */
 export async function dispatchPending(deps: DispatchDeps): Promise<DispatchResult> {
   const doFetch = deps.fetchImpl ?? fetch;
   const nowMs = deps.now ?? Date.now;

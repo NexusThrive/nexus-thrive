@@ -21,6 +21,9 @@ const COLOMBIA: Country = { iso: "CO", name: "Colombia", dial: "57", flag: "🇨
 /** Colombia primero; el resto por nombre (es). */
 export const COUNTRIES: Country[] = [COLOMBIA, ...LIST.sort((a, b) => a.name.localeCompare(b.name, "es"))];
 
+/**
+ * Países cuyo nombre contiene el texto o cuyo indicativo empieza por él, sin distinguir mayúsculas ni tildes. Sin texto devuelve todos.
+ */
 export function searchCountries(q: string): Country[] {
   const t = q.trim().toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(/^\+/, "");
   if (!t) return COUNTRIES;
@@ -39,6 +42,7 @@ export function splitPhone(value: string): { country: Country; number: string } 
   return { country: COLOMBIA, number: v.replace(/[^\d]/g, "") };
 }
 
+/** Une el indicativo del país con los dígitos del número ("+57 3001234567"); vacío si no hay número. */
 export function joinPhone(country: Country, number: string) {
   const n = number.replace(/\D/g, "");
   return n ? `+${country.dial} ${n}` : "";

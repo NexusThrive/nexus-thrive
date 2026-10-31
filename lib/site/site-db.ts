@@ -54,6 +54,9 @@ export async function siteForEditor(tenantId: string): Promise<SiteEditor> {
 
 export type SiteInput = { enabled: boolean; siteSlug: string; template: string; title: string; description: string; heroTitle: string; heroSubtitle: string; about: string; accent: string; showCatalog: boolean; showMap: boolean };
 
+/**
+ * Guarda la configuración del sitio público (dirección, plantilla, color, textos). Valida cada campo y devuelve el que falla.
+ */
 export async function saveSite(tenantId: string, input: SiteInput): Promise<{ ok: true } | { ok: false; message: string; field?: string }> {
   const slug = validateSiteSlug(input.siteSlug);
   if (!slug.ok) return { ok: false, message: slug.message, field: "siteSlug" };

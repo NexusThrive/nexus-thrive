@@ -27,6 +27,9 @@ export type PillarInput = {
 
 const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)));
 
+/**
+ * Calcula los pilares de presencia (sitio web, ventas en línea, Google, reputación, atribución y datos básicos) con su puntaje, su peso y si está medido. Es puro: mismas entradas, mismo resultado.
+ */
 export function computePillars(i: PillarInput): Pillar[] {
   const web = i.presence.checks.filter((c) => c.key === "webActive" || c.key === "webOptimized");
   const webMax = web.reduce((s, c) => s + c.weight, 0);

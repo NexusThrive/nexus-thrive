@@ -9,6 +9,7 @@ const DAY_MS = 86_400_000;
 const toDate = (key: string) => new Date(`${key}T12:00:00Z`);
 const toKey = (d: Date) => d.toISOString().slice(0, 10);
 
+/** Suma `n` días a un día "YYYY-MM-DD". */
 export function addDays(key: string, n: number): string {
   return toKey(new Date(toDate(key).getTime() + n * DAY_MS));
 }
@@ -19,6 +20,7 @@ export function weekStart(key: string): string {
   return addDays(key, -wd);
 }
 
+/** Los siete días de la semana (empezando el lunes) que contiene el día dado. */
 export function weekDays(key: string): string[] {
   const start = weekStart(key);
   return Array.from({ length: 7 }, (_, i) => addDays(start, i));
@@ -31,10 +33,12 @@ export function monthGrid(key: string): string[] {
   return Array.from({ length: 42 }, (_, i) => addDays(start, i));
 }
 
+/** ¿Dos días "YYYY-MM-DD" son del mismo mes? */
 export function sameMonth(a: string, b: string): boolean {
   return a.slice(0, 7) === b.slice(0, 7);
 }
 
+/** Primer día del mes que queda `n` meses después (o antes) del mes del día dado. */
 export function addMonths(key: string, n: number): string {
   const d = toDate(`${key.slice(0, 7)}-01`);
   d.setUTCMonth(d.getUTCMonth() + n);
@@ -47,8 +51,11 @@ const weekdayLong = fmt({ weekday: "long", day: "numeric", month: "long" });
 const monthYear = fmt({ month: "long", year: "numeric" });
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
+/** Número del día del mes. */
 export const dayNumber = (key: string) => toDate(key).getUTCDate();
+/** Día de la semana abreviado en español. */
 export const weekdayLabel = (key: string) => weekdayShort.format(toDate(key)).replace(".", "");
+/** Mes y año en español, con la inicial en mayúscula. */
 export const monthLabel = (key: string) => cap(monthYear.format(toDate(key)));
 
 /** "Hoy", "Mañana", "Ayer" o "Jueves, 16 de octubre". */

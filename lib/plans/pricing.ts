@@ -148,22 +148,27 @@ export function defaultPricingConfig(): PricingConfig {
 
 const byOrder = <T extends { order: number }>(list: T[]) => [...list].sort((a, b) => a.order - b.order);
 
+/** Configuración de un plan por su clave, o `undefined`. */
 export function planOf(config: PricingConfig, key: PlanKey): PlanConfig | undefined {
   return config.plans.find((p) => p.key === key);
 }
 
+/** Configuración de un rubro, o `undefined`. */
 export function verticalOf(config: PricingConfig, vertical: VerticalValue): VerticalConfig | undefined {
   return config.verticals.find((v) => v.vertical === vertical);
 }
 
+/** Configuración de un módulo, o `undefined`. */
 export function moduleOf(config: PricingConfig, module: ModuleValue): ModuleConfig | undefined {
   return config.modules.find((m) => m.module === module);
 }
 
+/** Planes activos, en el orden configurado. */
 export function activePlans(config: PricingConfig): PlanConfig[] {
   return byOrder(config.plans.filter((p) => p.active));
 }
 
+/** Rubros que se ofrecen al registrarse, en el orden configurado. */
 export function signupVerticals(config: PricingConfig): VerticalConfig[] {
   return byOrder(config.verticals.filter((v) => v.signupEnabled));
 }
@@ -222,6 +227,9 @@ export type Quote = {
   yearlyCents: number;
 };
 
+/**
+ * Cotiza una suscripción en centavos de dólar: precio base del plan ajustado por el factor del rubro, más cada módulo con costo y el nivel de cliente. Con facturación anual aplica el descuento del plan. Devuelve las líneas, el subtotal y el valor mensual y anual.
+ */
 export function quote(
   config: PricingConfig,
   input: { plan: PlanKey; vertical: VerticalValue; billing: Billing; selected: readonly ModuleValue[]; tierId?: string | null },

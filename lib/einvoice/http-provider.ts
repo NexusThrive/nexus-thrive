@@ -16,6 +16,9 @@ import type { EInvoicePort, FiscalPayload, SubmitResult } from "./port";
  */
 export class ProviderUnavailable extends Error {}
 
+/**
+ * Puerto de facturación electrónica por HTTP: envía el documento al proveedor tecnológico con su llave de idempotencia y token, tras comprobar que la dirección sea pública, y entiende las respuestas aceptado, rechazado o recibido.
+ */
 export function httpEInvoice(config: { url: string; token: string; label?: string }, fetchImpl: typeof fetch = fetch): EInvoicePort {
   return {
     provider: "http",

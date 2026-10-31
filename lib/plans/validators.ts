@@ -22,6 +22,9 @@ function pct(v: unknown, label: string): number | string {
   return n;
 }
 
+/**
+ * Valida un plan: nombre de 2 a 30 caracteres, descripción hasta 140, hasta 8 características y precios válidos. Devuelve el plan limpio o un mensaje.
+ */
 export function validatePlan(raw: PlanConfig): Result<PlanConfig> {
   const name = clean(raw.name);
   const tagline = clean(raw.tagline);
@@ -43,6 +46,9 @@ export function validatePlan(raw: PlanConfig): Result<PlanConfig> {
   };
 }
 
+/**
+ * Valida un módulo: debe existir, con nombre de 2 a 40 caracteres, descripción hasta 160 y precio válido. Devuelve el módulo limpio o un mensaje.
+ */
 export function validateModule(raw: ModuleConfig): Result<ModuleConfig> {
   if (!isModule(raw.module)) return { ok: false, message: "Módulo desconocido." };
   const label = clean(raw.label);
@@ -56,6 +62,9 @@ export function validateModule(raw: ModuleConfig): Result<ModuleConfig> {
   return { ok: true, value: { ...raw, label, description, priceUsdCents: price, status, included: !!raw.included } };
 }
 
+/**
+ * Valida un rubro: nombre de 2 a 40 caracteres, factor de precio entre 10 % y 500 %, y solo módulos conocidos. Devuelve el rubro limpio o un mensaje.
+ */
 export function validateVertical(raw: VerticalConfig): Result<VerticalConfig> {
   const label = clean(raw.label);
   if (label.length < 2 || label.length > 40) return { ok: false, message: "El nombre del rubro debe tener entre 2 y 40 caracteres." };

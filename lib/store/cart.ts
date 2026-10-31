@@ -35,11 +35,14 @@ export function normalizeCart(lines: readonly CartLine[]): { ok: true; lines: Ca
   return { ok: true, lines: [...by].map(([productId, quantity]) => ({ productId, quantity })) };
 }
 
+/** Totales de un pedido de la tienda con las mismas reglas de los documentos comerciales. */
 export const orderTotals = (lines: readonly DocumentLineInput[]) => documentTotals(lines);
+/** Código legible de un pedido de la tienda («T-0012»). */
 export const orderCode = (n: number) => `T-${String(n).padStart(4, "0")}`;
 
 /** Un pedido sin pagar tras este tiempo se considera abandonado. */
 export const ABANDON_AFTER_MINUTES = 60;
+/** ¿Un pedido sin pagar superó el tiempo para considerarse abandonado (60 minutos por defecto)? */
 export const isAbandoned = (createdAtMs: number, nowMs: number, minutes = ABANDON_AFTER_MINUTES) => nowMs - createdAtMs >= minutes * 60_000;
 
 const peso = (n: number) => n.toLocaleString("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 });

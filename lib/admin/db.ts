@@ -500,6 +500,9 @@ async function countUsersByTenant(
   return map;
 }
 
+/**
+ * Repositorio de la plataforma (SuperAdmin): autorización global, alta y administración de negocios y sus módulos. A diferencia del repositorio de un negocio, no está acotado a un `tenantId`.
+ */
 export function createAdminDb() {
   return {
     /**

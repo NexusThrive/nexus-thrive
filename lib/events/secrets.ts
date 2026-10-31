@@ -12,6 +12,9 @@ function key(): Buffer {
   return Buffer.from(hex, "hex");
 }
 
+/**
+ * Cifra un secreto con AES-256-GCM usando `WEBHOOK_ENCRYPTION_KEY`. Devuelve un texto versionado («v1») con el vector, la etiqueta y el contenido.
+ */
 export function encryptSecret(plain: string): string {
   const iv = randomBytes(12);
   const cipher = createCipheriv("aes-256-gcm", key(), iv);
@@ -19,6 +22,7 @@ export function encryptSecret(plain: string): string {
   return ["v1", iv.toString("base64url"), cipher.getAuthTag().toString("base64url"), text.toString("base64url")].join(".");
 }
 
+/** Descifra un secreto producido por `encryptSecret`. Falla si el formato o la clave no coinciden. */
 export function decryptSecret(stored: string): string {
   const [version, iv, tag, text] = stored.split(".");
   if (version !== "v1" || !iv || !tag || !text) throw new Error("Secreto cifrado con formato desconocido.");

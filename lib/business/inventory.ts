@@ -10,12 +10,16 @@ export function applyStock(current: number, kind: StockKind, quantity: number): 
   return kind === "IN" ? current + quantity : current - quantity;
 }
 
+/**
+ * Valida un movimiento de inventario: cantidad entera no negativa (y mayor que cero salvo en ajustes) y que una salida o venta no supere lo que hay. Devuelve el mensaje de error o `null`.
+ */
 export function validateStockMove(current: number, kind: StockKind, quantity: number): string | null {
   if (!Number.isInteger(quantity) || quantity < 0 || (kind !== "ADJUST" && quantity === 0)) return "La cantidad debe ser un número entero mayor que cero.";
   if ((kind === "OUT" || kind === "SALE") && quantity > current) return `Solo hay ${current} en inventario.`;
   return null;
 }
 
+/** Nivel de existencias de un producto: sin control, agotado, bajo (en o debajo del mínimo) u ok. */
 export function stockLevel(p: { trackStock: boolean; stock: number; minStock: number }): "ok" | "low" | "out" | "untracked" {
   if (!p.trackStock) return "untracked";
   if (p.stock <= 0) return "out";

@@ -24,6 +24,9 @@ export function isPrivateIp(ip: string): boolean {
 
 const BLOCKED_HOST = /(^|\.)(localhost|local|internal|localdomain|home\.arpa)$/;
 
+/**
+ * Valida la URL de un webhook: HTTPS, sin usuario ni contraseña, y que no sea localhost, una red interna ni una dirección privada.
+ */
 export function checkWebhookUrl(raw: string): { ok: true; url: URL } | { ok: false; reason: string } {
   let url: URL;
   try {

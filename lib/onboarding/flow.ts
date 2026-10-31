@@ -32,11 +32,13 @@ export const FLOW_META: Record<FlowStep, { label: string; title: string; descrip
   },
 };
 
+/** Paso siguiente del recorrido de bienvenida (el último se queda). */
 export function nextStep(step: FlowStep): FlowStep {
   const i = FLOW_STEPS.indexOf(step);
   return FLOW_STEPS[Math.min(FLOW_STEPS.length - 1, i + 1)];
 }
 
+/** Paso anterior del recorrido, sin pasar del primero indicado. */
 export function previousStep(step: FlowStep, firstStep: FlowStep = "intro"): FlowStep {
   const i = FLOW_STEPS.indexOf(step);
   return FLOW_STEPS[Math.max(FLOW_STEPS.indexOf(firstStep), i - 1)];

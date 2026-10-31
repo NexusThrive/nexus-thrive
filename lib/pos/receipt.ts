@@ -28,6 +28,9 @@ const pair = (left: string, right: string, w: number) => {
   return `${left.length > room ? left.slice(0, Math.max(0, room)) : left.padEnd(room)} ${right}`;
 };
 
+/**
+ * Líneas de texto del recibo de punto de venta para impresora térmica de 32 o 42 caracteres: negocio, código, fecha, cajero, productos, totales y pagos.
+ */
 export function receiptLines(r: ReceiptData, width: 32 | 42 = 42): string[] {
   const rule = "-".repeat(width);
   const out: string[] = [center(r.business, width)];
