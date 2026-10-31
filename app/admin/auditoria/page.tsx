@@ -4,8 +4,8 @@ import { notFound } from "next/navigation";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { PageHeader } from "@/components/molecules/page-header";
 import { AUDIT_ACTION_LABELS, createAdminDb } from "@/lib/platform/admin/db";
-import { getStaffContext } from "@/lib/ops/access";
-import { listStaff } from "@/lib/ops/team";
+import { getStaffContext } from "@/lib/platform/team/access";
+import { listStaff } from "@/lib/platform/team/team";
 import AuditLog from "../_components/audit-log";
 import AuditFilters from "./audit-filters";
 

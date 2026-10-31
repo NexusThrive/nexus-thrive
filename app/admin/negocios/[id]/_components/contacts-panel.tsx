@@ -12,7 +12,7 @@ import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import type { ContactRow } from "@/lib/ops/accounts";
-import { CONTACT_CHANNELS, CONTACT_PURPOSES } from "@/lib/ops/validators";
+import { CONTACT_CHANNELS, CONTACT_PURPOSES } from "@/lib/platform/team/validators";
 import { cn } from "@/lib/utils";
 import { deleteContactAction, saveContactAction } from "../../actions";
 

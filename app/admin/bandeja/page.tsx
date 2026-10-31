@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/atoms/badge";
 import { PageHeader } from "@/components/molecules/page-header";
-import { getStaffContext } from "@/lib/ops/access";
+import { getStaffContext } from "@/lib/platform/team/access";
 import { listManagers } from "@/lib/ops/accounts";
 import { listConversations, listInboxMessages } from "@/lib/ops/inbox";
 import { providers } from "@/lib/ops/inbox-providers";

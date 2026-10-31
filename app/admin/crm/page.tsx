@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
-import { getStaffContext } from "@/lib/ops/access";
+import { getStaffContext } from "@/lib/platform/team/access";
 import { listManagers } from "@/lib/ops/accounts";
 import { listLeads, tenantOptions } from "@/lib/ops/leads";
 import CrmView from "./_components/crm-view";

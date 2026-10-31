@@ -7,7 +7,7 @@ import { ProgressBar } from "@/components/atoms/progress-bar";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { PageHeader } from "@/components/molecules/page-header";
 import { isVertical, VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
-import { getStaffContext } from "@/lib/ops/access";
+import { getStaffContext } from "@/lib/platform/team/access";
 import { onboardingBoard } from "@/lib/ops/onboarding-board";
 import { CHECKLIST_STEPS } from "@/lib/ops/onboarding-checklist";
 import { cn } from "@/lib/utils";

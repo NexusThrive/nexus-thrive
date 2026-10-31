@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireStaff } from "@/lib/ops/access";
-import { logOps } from "@/lib/ops/audit";
+import { requireStaff } from "@/lib/platform/team/access";
+import { logOps } from "@/lib/platform/team/audit";
 import { dropRule, isLeadStage, LEAD_ACTIVITY_KINDS, stageMeta, validateLead, type LeadInput } from "@/lib/ops/crm-rules";
 import { assignManagerIfMissing } from "@/lib/ops/accounts";
 import { addLeadActivity, createLead, deleteLead, getLead, touchLead, updateLead } from "@/lib/ops/leads";
-import { isActiveStaff } from "@/lib/ops/team";
+import { isActiveStaff } from "@/lib/platform/team/team";
 
 export type LeadResult = { ok: true; id: string } | { ok: false; message: string; errors?: Partial<Record<keyof LeadInput, string>> };
 const DENIED = { ok: false as const, message: "No tienes permiso para esta acción." };

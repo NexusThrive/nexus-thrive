@@ -3,7 +3,7 @@ import type { ModuleValue } from "@/lib/capabilities/modules";
 
 /**
  * Forma de los elementos y grupos del menú lateral. Es solo un contrato de tipos: lo comparten el menú del negocio
- * (`tenant-nav.ts`) y el del panel de operaciones (`lib/ops/nav.ts`) sin que uno dependa del otro.
+ * (`tenant-nav.ts`) y el del panel de operaciones (`lib/platform/team/nav.ts`) sin que uno dependa del otro.
  */
 
 export type NavItem = {

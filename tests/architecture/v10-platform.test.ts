@@ -31,6 +31,14 @@ const MODULES: Record<string, Record<string, string>> = {
     "lib/platform/admin/account-limits.ts": "lib/admin/account-limits.ts",
     "lib/platform/admin/audit-labels.ts": "lib/admin/audit-labels.ts",
   },
+  team: {
+    "lib/platform/team/access.ts": "lib/ops/access.ts",
+    "lib/platform/team/permissions.ts": "lib/ops/permissions.ts",
+    "lib/platform/team/team.ts": "lib/ops/team.ts",
+    "lib/platform/team/audit.ts": "lib/ops/audit.ts",
+    "lib/platform/team/nav.ts": "lib/ops/nav.ts",
+    "lib/platform/team/validators.ts": "lib/ops/validators.ts",
+  },
 };
 
 const files = (dir: string): string[] =>

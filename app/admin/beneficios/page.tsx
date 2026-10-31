@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
-import { getStaffContext } from "@/lib/ops/access";
+import { getStaffContext } from "@/lib/platform/team/access";
 import { getAppBaseUrl } from "@/lib/app-url";
 import { listBenefitCodes, FIXED_BENEFIT_CODE } from "@/lib/platform/benefits/benefits-db";
 import { receiptQrDataUrl } from "@/lib/business/sales/receipt-qr";

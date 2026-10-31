@@ -5,7 +5,7 @@ import { Badge } from "@/components/atoms/badge";
 import { KpiCard } from "@/components/molecules/kpi-card";
 import { PageHeader } from "@/components/molecules/page-header";
 import { formatDateTime } from "@/lib/format";
-import { getStaffContext } from "@/lib/ops/access";
+import { getStaffContext } from "@/lib/platform/team/access";
 import { listSurveys } from "@/lib/ops/satisfaction";
 import { csat, nps, SCORE_LABELS } from "@/lib/ops/satisfaction-rules";
 import { cn } from "@/lib/utils";

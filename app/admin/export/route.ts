@@ -1,4 +1,4 @@
-import { requireStaff } from "@/lib/ops/access";
+import { requireStaff } from "@/lib/platform/team/access";
 import { headers } from "next/headers";
 import { createAdminDb, type TenantListRow } from "@/lib/platform/admin/db";
 import { isVertical } from "@/lib/core/sectors/verticals";
@@ -57,7 +57,7 @@ function toCsv(rows: TenantListRow[]): string {
  * panel). Requiere el permiso accounts.view: no es un endpoint público. Queda auditado.
  */
 export async function GET(request: Request): Promise<Response> {
-  // Integrante del equipo NEXUS con acceso a cuentas (lib/ops/access.ts).
+  // Integrante del equipo NEXUS con acceso a cuentas (lib/platform/team/access.ts).
   const staff = await requireStaff("accounts.view");
   if (!staff) {
     return new Response("No autorizado.", { status: 403 });

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { PageHeader } from "@/components/molecules/page-header";
 import { isVertical, VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
-import { getStaffContext } from "@/lib/ops/access";
+import { getStaffContext } from "@/lib/platform/team/access";
 import { listManagers } from "@/lib/ops/accounts";
 import { getLead, listLeadActivity, tenantOptions } from "@/lib/ops/leads";
 import LeadDetail from "./_components/lead-detail";

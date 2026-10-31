@@ -10,7 +10,7 @@ import { VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { getAccountExtras, listManagers, ACCOUNT_STAGES } from "@/lib/ops/accounts";
-import { getStaffContext } from "@/lib/ops/access";
+import { getStaffContext } from "@/lib/platform/team/access";
 import { moduleStatusRow } from "@/lib/plans/compat";
 import { planOf, formatUsdCents } from "@/lib/plans/pricing";
 import { loadPricingConfig } from "@/lib/plans/settings";

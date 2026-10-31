@@ -41,7 +41,7 @@ describe("tipos y reglas que dejaron de ser de experiencia", () => {
   });
 
   test("el servidor (tenant/context) y el panel de operaciones ya no importan de tenant-nav", () => {
-    for (const file of ["lib/tenant/context.ts", "lib/ops/nav.ts"]) {
+    for (const file of ["lib/tenant/context.ts", "lib/platform/team/nav.ts"]) {
       expect(read(file), file).not.toContain("navigation/tenant-nav");
     }
   });

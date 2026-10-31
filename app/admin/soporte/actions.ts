@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireStaff } from "@/lib/ops/access";
-import { logOps } from "@/lib/ops/audit";
+import { requireStaff } from "@/lib/platform/team/access";
+import { logOps } from "@/lib/platform/team/audit";
 import { checkTransition, isTicketPriority, isTicketStatus, statusMeta, TICKET_CATEGORIES, validateTicket, type TicketInput } from "@/lib/ops/support-rules";
 import { ensureSurvey } from "@/lib/ops/satisfaction";
 import { addTicketMessage, createTicket, getTicket, markFirstResponse, setTicketStatus, updateTicketFields } from "@/lib/ops/tickets";

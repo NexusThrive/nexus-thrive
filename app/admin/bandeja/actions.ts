@@ -1,9 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireStaff } from "@/lib/ops/access";
+import { requireStaff } from "@/lib/platform/team/access";
 import { tenantName } from "@/lib/ops/accounts";
-import { logOps } from "@/lib/ops/audit";
+import { logOps } from "@/lib/platform/team/audit";
 import { addInboxNote, conversationToTicket, markRead, reply, updateConversation } from "@/lib/ops/inbox";
 
 export type InboxResult = { ok: true; message?: string; delivery?: string; id?: string } | { ok: false; message: string };

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ensureSystemRoles, getStaffContext } from "@/lib/ops/access";
-import { listRoles, listStaff } from "@/lib/ops/team";
+import { ensureSystemRoles, getStaffContext } from "@/lib/platform/team/access";
+import { listRoles, listStaff } from "@/lib/platform/team/team";
 import TeamView from "./_components/team-view";
 
 export const metadata: Metadata = { title: "Equipo y permisos · NEXUS Operations Center" };

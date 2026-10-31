@@ -1,4 +1,4 @@
-import { getStaffContext } from "@/lib/ops/access";
+import { getStaffContext } from "@/lib/platform/team/access";
 import { getEvidenceFile } from "@/lib/ops/billing";
 
 /**

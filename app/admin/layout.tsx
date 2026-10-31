@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
-import { getStaffContext } from "@/lib/ops/access";
+import { getStaffContext } from "@/lib/platform/team/access";
 import OpsShell from "./_components/ops-shell";
 
 /**
@@ -9,7 +9,7 @@ import OpsShell from "./_components/ops-shell";
  * - Sin sesión → iniciar sesión, con retorno al panel.
  * - Sesión que no es integrante activo del equipo NEXUS → 404: el panel no
  *   se revela. El primer acceso del SUPERADMIN heredado crea el equipo y lo
- *   deja como Propietario (lib/ops/access.ts).
+ *   deja como Propietario (lib/platform/team/access.ts).
  *
  * Cada acción vuelve a verificar su permiso en el servidor.
  */

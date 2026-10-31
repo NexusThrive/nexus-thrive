@@ -6,7 +6,7 @@ import { KpiCard } from "@/components/molecules/kpi-card";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { isVertical } from "@/lib/core/sectors/verticals";
-import { getStaffContext } from "@/lib/ops/access";
+import { getStaffContext } from "@/lib/platform/team/access";
 import { accountHealth } from "@/lib/ops/health";
 import { HEALTH_LEVELS } from "@/lib/ops/health-rules";
 import { cn } from "@/lib/utils";

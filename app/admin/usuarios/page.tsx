@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
 import { listPlatformUsers } from "@/lib/platform/admin/users-db";
-import { getStaffContext } from "@/lib/ops/access";
+import { getStaffContext } from "@/lib/platform/team/access";
 import UsersView from "./_components/users-view";
 
 export const metadata: Metadata = { title: "Usuarios · NEXUS Operations Center" };

@@ -17,7 +17,7 @@ import { describe, expect, test } from "vitest";
  */
 
 const ROOT = process.cwd();
-const PLATFORM_DIRS = ["lib/ops/", "lib/platform/admin/"];
+const PLATFORM_DIRS = ["lib/ops/", "lib/platform/admin/", "lib/platform/team/"];
 
 /**
  * Procesos de plataforma que por diseño cruzan negocios: el despachador del

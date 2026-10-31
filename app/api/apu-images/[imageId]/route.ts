@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { readApuImageFor } from "@/lib/files/stored-files";
-import { staffCanViewAccounts } from "@/lib/ops/access";
+import { staffCanViewAccounts } from "@/lib/platform/team/access";
 
 /**
  * Sirve la foto de un insumo guardada en la base (`ApuImage`). Solo para

@@ -1,11 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireStaff } from "@/lib/ops/access";
+import { requireStaff } from "@/lib/platform/team/access";
 import { ACCOUNT_STAGES, deleteContact, saveContact, tenantName, updateAccount, type AccountStageValue } from "@/lib/ops/accounts";
-import { logOps } from "@/lib/ops/audit";
-import { validateContact } from "@/lib/ops/validators";
-import { isActiveStaff } from "@/lib/ops/team";
+import { logOps } from "@/lib/platform/team/audit";
+import { validateContact } from "@/lib/platform/team/validators";
+import { isActiveStaff } from "@/lib/platform/team/team";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 
 export type ActionResult = { ok: true } | { ok: false; message: string; errors?: Record<string, string> };

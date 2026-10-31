@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { updatePresenceRequest } from "@/lib/ops/presence";
-import { requireStaff } from "@/lib/ops/access";
+import { requireStaff } from "@/lib/platform/team/access";
 import { scanTenantPresence } from "@/lib/presence/scan";
 
 /**

@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireStaff } from "@/lib/ops/access";
-import { logOps } from "@/lib/ops/audit";
+import { requireStaff } from "@/lib/platform/team/access";
+import { logOps } from "@/lib/platform/team/audit";
 import {
   addEvidence,
   confirmCharge,

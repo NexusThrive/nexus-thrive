@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
-import { getStaffContext } from "@/lib/ops/access";
+import { getStaffContext } from "@/lib/platform/team/access";
 import { billingSummary, getPolicy, listCharges, listSubscriptions, tenantsWithoutSubscription } from "@/lib/ops/billing";
 import BillingView from "./_components/billing-view";
 import { bogotaDay } from "@/lib/plain-date";
