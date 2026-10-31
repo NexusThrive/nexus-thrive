@@ -43,6 +43,10 @@ const MODULES: Record<string, Record<string, string>> = {
     "lib/platform/crm/leads.ts": "lib/ops/leads.ts",
     "lib/platform/crm/crm-rules.ts": "lib/ops/crm-rules.ts",
   },
+  billing: {
+    "lib/platform/billing/billing.ts": "lib/ops/billing.ts",
+    "lib/platform/billing/billing-rules.ts": "lib/ops/billing-rules.ts",
+  },
 };
 
 const files = (dir: string): string[] =>

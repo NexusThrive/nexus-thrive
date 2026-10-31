@@ -1,5 +1,5 @@
 import { getStaffContext } from "@/lib/platform/team/access";
-import { getEvidenceFile } from "@/lib/ops/billing";
+import { getEvidenceFile } from "@/lib/platform/billing/billing";
 
 /**
  * Comprobante de pago guardado en el sistema. Solo para el equipo NEXUS con

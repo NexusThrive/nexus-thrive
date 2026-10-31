@@ -1,8 +1,8 @@
 import type { PriorityItem } from "./accounts";
-import { listCharges } from "./billing";
+import { listCharges } from "../platform/billing/billing";
 import { accountHealth } from "./health";
 import { listConversations } from "./inbox";
-import { dunningLabel } from "./billing-rules";
+import { dunningLabel } from "../platform/billing/billing-rules";
 import { followUpState, stageMeta } from "../platform/crm/crm-rules";
 import { listLeads } from "../platform/crm/leads";
 import { priorityMeta, slaState } from "./support-rules";

@@ -1,7 +1,7 @@
 import { db } from "@/prisma/db";
-import { listCharges, listSubscriptions } from "./billing";
+import { listCharges, listSubscriptions } from "../platform/billing/billing";
 import { healthScore, type HealthFacts } from "./health-rules";
-import { daysBetween } from "./billing-rules";
+import { daysBetween } from "../platform/billing/billing-rules";
 import { onboardingBoardFor } from "./onboarding-board";
 import { listSurveys } from "./satisfaction";
 import { isOpenStatus, slaState } from "./support-rules";

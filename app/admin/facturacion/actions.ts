@@ -18,8 +18,8 @@ import {
   suspendForNonPayment,
   updateSubscription,
   voidCharge,
-} from "@/lib/ops/billing";
-import { checkConfirm, checkEvidence, PAYMENT_METHODS, validatePolicy, type BillingPolicyValues, type Cycle, type SubscriptionStatusValue } from "@/lib/ops/billing-rules";
+} from "@/lib/platform/billing/billing";
+import { checkConfirm, checkEvidence, PAYMENT_METHODS, validatePolicy, type BillingPolicyValues, type Cycle, type SubscriptionStatusValue } from "@/lib/platform/billing/billing-rules";
 import { tenantName } from "@/lib/ops/accounts";
 
 export type BillingResult = { ok: true; message?: string } | { ok: false; message: string };
