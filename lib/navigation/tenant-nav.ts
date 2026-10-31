@@ -1,3 +1,7 @@
+/**
+ * Menú lateral del negocio: arma los grupos de navegación según el rubro y los módulos activos, resuelve la ruta
+ * relativa al negocio, el elemento activo y la categoría de una ruta.
+ */
 import type { LucideIcon } from "lucide-react";
 import { Blocks, FileSpreadsheet, Receipt, Settings } from "lucide-react";
 import { MODULES, type ModuleValue, type VerticalValue } from "@/lib/admin/catalogs";

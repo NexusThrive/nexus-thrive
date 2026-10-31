@@ -5,6 +5,9 @@ export function csat(scores: number[]): number | null {
   return v.length ? Math.round((v.filter((s) => s >= 4).length / v.length) * 100) : null;
 }
 
+/**
+ * NPS de una lista de respuestas de 0 a 10: % de promotores (9–10) menos % de detractores (0–6), redondeado. `null` sin respuestas válidas.
+ */
 export function nps(scores: number[]): number | null {
   const v = scores.filter((s) => s >= 0 && s <= 10);
   if (!v.length) return null;
@@ -13,6 +16,9 @@ export function nps(scores: number[]): number | null {
   return Math.round(((pro - det) / v.length) * 100);
 }
 
+/**
+ * Valida la respuesta a una encuesta: calificación entera de 1 a 5, recomendación opcional de 0 a 10 y comentario recortado a 1 000 caracteres.
+ */
 export function validateAnswer(raw: { score: unknown; nps?: unknown; comment?: unknown }): { ok: true; value: { score: number; nps: number | null; comment: string | null } } | { ok: false; message: string } {
   const score = Number(raw.score);
   if (!Number.isInteger(score) || score < 1 || score > 5) return { ok: false, message: "Elige una calificación de 1 a 5." };

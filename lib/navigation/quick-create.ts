@@ -1,3 +1,7 @@
+/**
+ * Acciones de «crear rápido» del negocio (cobro, gasto, cliente, documento…): cuáles se ofrecen según el rubro, los
+ * módulos activos y los permisos de quien navega, y qué panel abre cada una.
+ */
 import type { LucideIcon } from "lucide-react";
 import { Building2, CalendarPlus, FileText, HandCoins, Receipt, UserPlus } from "lucide-react";
 import type { ModuleValue, VerticalValue } from "@/lib/admin/catalogs";

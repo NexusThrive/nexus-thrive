@@ -38,9 +38,13 @@ export const TICKET_CATEGORIES = [
 
 export const TICKET_CHANNELS = ["WhatsApp", "Correo", "Llamada", "Chat en la app", "Interno"] as const;
 
+/** Comprueba que un valor sea un estado de ticket válido. */
 export const isTicketStatus = (v: unknown): v is TicketStatusValue => typeof v === "string" && TICKET_STATUSES.some((s) => s.value === v);
+/** Comprueba que un valor sea una prioridad de ticket válida. */
 export const isTicketPriority = (v: unknown): v is TicketPriorityValue => typeof v === "string" && TICKET_PRIORITIES.some((s) => s.value === v);
+/** Nombre y color de un estado de ticket. */
 export const statusMeta = (s: TicketStatusValue) => TICKET_STATUSES.find((x) => x.value === s)!;
+/** Nombre y color de una prioridad de ticket. */
 export const priorityMeta = (p: TicketPriorityValue) => TICKET_PRIORITIES.find((x) => x.value === p)!;
 
 /** SUP-2026-00124 */
@@ -48,6 +52,7 @@ export function ticketCode(year: number, seq: number) {
   return `SUP-${year}-${String(seq).padStart(5, "0")}`;
 }
 
+/** Un ticket está abierto mientras no esté resuelto ni cerrado. */
 export const isOpenStatus = (s: TicketStatusValue) => s !== "RESOLVED" && s !== "CLOSED";
 
 const NEXT: Record<TicketStatusValue, TicketStatusValue[]> = {
@@ -60,10 +65,14 @@ const NEXT: Record<TicketStatusValue, TicketStatusValue[]> = {
   CLOSED: ["OPEN"],
 };
 
+/** Estados a los que puede pasar un ticket desde el estado actual. */
 export function allowedTransitions(from: TicketStatusValue): TicketStatusValue[] {
   return NEXT[from];
 }
 
+/**
+ * Valida un cambio de estado de ticket: debe ser distinto, estar permitido y, para resolver, llevar la solución escrita.
+ */
 export function checkTransition(from: TicketStatusValue, to: TicketStatusValue, solution: string | null | undefined): { ok: true } | { ok: false; message: string } {
   if (from === to) return { ok: false, message: "El ticket ya está en ese estado." };
   if (!NEXT[from].includes(to)) return { ok: false, message: `No se puede pasar de "${statusMeta(from).label}" a "${statusMeta(to).label}".` };
@@ -105,6 +114,9 @@ export type TicketInput = {
   assigneeId?: string | null;
 };
 
+/**
+ * Valida un ticket nuevo: asunto (4 a 140 caracteres), descripción (4 a 5 000), categoría, prioridad y canal válidos. Devuelve los datos limpios o un error por campo.
+ */
 export function validateTicket(raw: TicketInput):
   | { ok: true; value: { tenantId: string | null; subject: string; description: string; category: string; priority: TicketPriorityValue; channel: string; requesterName: string | null; requesterContact: string | null; assigneeId: string | null } }
   | { ok: false; errors: Partial<Record<keyof TicketInput, string>> } {

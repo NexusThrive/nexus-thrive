@@ -28,6 +28,9 @@ export type ConversationRow = {
 
 export type InboxMessageRow = { id: string; direction: "IN" | "OUT" | "NOTE"; body: string; delivery: string; error: string | null; authorName: string | null; createdAt: number };
 
+/**
+ * Conversaciones de la bandeja, de la más reciente a la más antigua, con el negocio, la persona asignada y los mensajes sin leer.
+ */
 export async function listConversations(): Promise<ConversationRow[]> {
   const [rows, tenants, staff] = await Promise.all([
     db.orm.public.InboxConversation.orderBy((c) => c.lastMessageAt.desc()).all(),
@@ -59,6 +62,7 @@ export async function listConversations(): Promise<ConversationRow[]> {
   }));
 }
 
+/** Mensajes de una conversación en orden cronológico. */
 export async function listInboxMessages(conversationId: string): Promise<InboxMessageRow[]> {
   const rows = await db.orm.public.InboxMessage.where({ conversationId }).orderBy((m) => m.createdAt.asc()).all();
   return rows.map((m) => ({ id: m.id, direction: m.direction as InboxMessageRow["direction"], body: m.body, delivery: m.delivery, error: m.error, authorName: m.authorName, createdAt: ms(m.createdAt)! }));
@@ -117,14 +121,17 @@ export async function reply(conversationId: string, body: string, author: { staf
   return r;
 }
 
+/** Agrega una nota interna a la conversación (no se envía a nadie). */
 export async function addInboxNote(conversationId: string, body: string, author: { staffId: string; name: string | null; email: string }) {
   await db.orm.public.InboxMessage.create({ conversationId, direction: "NOTE", body, delivery: "manual", authorStaffId: author.staffId, authorName: author.name ?? author.email });
 }
 
+/** Pone en cero los mensajes sin leer de una conversación. */
 export async function markRead(conversationId: string) {
   await db.orm.public.InboxConversation.where({ id: conversationId }).update({ unread: 0 });
 }
 
+/** Cambia el estado, la persona asignada o el negocio vinculado de una conversación. */
 export async function updateConversation(id: string, fields: { status?: "OPEN" | "PENDING" | "CLOSED"; assigneeId?: string | null; tenantId?: string | null }) {
   await db.orm.public.InboxConversation.where({ id }).update(fields);
 }

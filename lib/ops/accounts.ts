@@ -90,6 +90,9 @@ export type AccountExtras = {
   contacts: ContactRow[];
 };
 
+/**
+ * Datos de cuenta de un negocio para el panel de operaciones: etapa comercial, gerente asignado, plan, ciclo de cobro, nivel de cliente, módulos contratados y contactos. `null` si el negocio no existe.
+ */
 export async function getAccountExtras(tenantId: string): Promise<AccountExtras | null> {
   const t = await db.orm.public.Tenant.where({ id: tenantId })
     .select("accountStage", "accountManagerId", "plan", "billingCycle", "planMonthlyUsdCents", "customerTierId", "contractedModules")
@@ -122,15 +125,18 @@ export async function getAccountExtras(tenantId: string): Promise<AccountExtras 
   };
 }
 
+/** Personal activo que puede ser gerente de cuenta (nombre, o correo si no tiene nombre). */
 export async function listManagers(): Promise<{ id: string; name: string }[]> {
   const rows = await db.orm.public.StaffMember.where({ active: true }).select("id", "name", "email").all();
   return rows.map((r) => ({ id: r.id, name: r.name ?? r.email }));
 }
 
+/** Cambia la etapa comercial y el gerente de cuenta de un negocio. */
 export async function updateAccount(tenantId: string, data: { accountStage: AccountStageValue; accountManagerId: string | null }) {
   await db.orm.public.Tenant.where({ id: tenantId }).update(data);
 }
 
+/** Crea (sin `id`) o actualiza un contacto del negocio y devuelve su id. */
 export async function saveContact(tenantId: string, id: string | undefined, data: Omit<ContactRow, "id">) {
   if (id) {
     await db.orm.public.TenantContact.where({ id, tenantId }).update(data);
@@ -140,6 +146,7 @@ export async function saveContact(tenantId: string, id: string | undefined, data
   return created.id;
 }
 
+/** Elimina un contacto del negocio. */
 export async function deleteContact(tenantId: string, id: string) {
   await db.orm.public.TenantContact.where({ id, tenantId }).delete();
 }
@@ -150,6 +157,7 @@ export async function assignManagerIfMissing(tenantId: string, staffId: string) 
   if (t && !t.accountManagerId) await db.orm.public.Tenant.where({ id: tenantId }).update({ accountManagerId: staffId });
 }
 
+/** Nombre del negocio, o `null` si no existe. */
 export async function tenantName(tenantId: string): Promise<string | null> {
   const t = await db.orm.public.Tenant.where({ id: tenantId }).select("name").first();
   return t?.name ?? null;

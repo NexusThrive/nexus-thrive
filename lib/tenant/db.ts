@@ -1,3 +1,8 @@
+/**
+ * Acceso a datos del negocio (Core): `createTenantDb(tenantId)` devuelve el repositorio con las consultas y escrituras
+ * de clientes, gastos, ficha 360° y demás datos del negocio, siempre acotadas por `tenantId`. Es el archivo más grande
+ * de `lib/` y está pendiente de dividirse por dominio.
+ */
 import { bogotaDayKey, buildFinanceSeries, cumulativeByDay, lastBogotaDays, type FinanceSeries } from "@/lib/finance/series";
 import {
   and,

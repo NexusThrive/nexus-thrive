@@ -1,3 +1,7 @@
+/**
+ * Outbox de eventos de dominio: catálogo de tipos (`EVENT_TYPES`) y `emitEvent`, que anota el hecho dentro de la
+ * transacción que lo causó. El envío a suscriptores y webhooks lo hace el despachador (`dispatcher.ts`), no este archivo.
+ */
 import type { DbTransaction } from "@/lib/db-transaction";
 
 type Json = string | number | boolean | null | Json[] | { [key: string]: Json };

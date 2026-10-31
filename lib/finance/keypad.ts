@@ -1,3 +1,6 @@
+/**
+ * Lógica pura del teclado numérico de cobro: cómo cambia una cifra entera al pulsar una tecla (dígito, «000» o borrar).
+ */
 export type KeypadKey = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "000" | "0" | "back";
 
 /** Aplica una tecla del teclado de cobro a una cifra entera (tope 99.999.999). */

@@ -63,6 +63,9 @@ export async function updatePresenceRequest(
   });
 }
 
+/**
+ * Vista general de presencia en línea de todos los negocios (datos de ficha, enlaces, escaneos y catálogo) y las solicitudes de servicio de presencia.
+ */
 export async function presenceOverview(): Promise<{
   rows: PresenceOverviewRow[];
   requests: PresenceRequestRow[];

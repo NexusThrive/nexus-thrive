@@ -1,3 +1,7 @@
+/**
+ * Operación `parties.search`: busca personas y empresas del negocio (clientes, proveedores…) por nombre, documento o
+ * correo, con filtro opcional por rol.
+ */
 import { z } from "zod";
 import { defineOperation, type OperationDefinition } from "../types";
 

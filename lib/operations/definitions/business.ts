@@ -1,3 +1,7 @@
+/**
+ * Operación `business.get_summary`: nombre, rubro y módulos activos del negocio, y los totales de 7 días solo si
+ * quien llama puede ver dinero.
+ */
 import { z } from "zod";
 import { can } from "@/lib/auth/permissions";
 import { defineOperation, OperationError, type OperationDefinition } from "../types";

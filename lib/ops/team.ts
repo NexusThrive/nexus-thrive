@@ -33,6 +33,7 @@ export type RoleRow = {
 
 const iso = (v: unknown) => (v == null ? null : String(v));
 
+/** Personal de la plataforma con su rol, del más antiguo al más reciente. */
 export async function listStaff(): Promise<StaffRow[]> {
   const rows = await db.orm.public.StaffMember.include("role", (r) => r.select("key", "name"))
     .orderBy((m) => m.createdAt.asc())
@@ -53,6 +54,7 @@ export async function listStaff(): Promise<StaffRow[]> {
   }));
 }
 
+/** Roles del personal con el número de miembros activos de cada uno. */
 export async function listRoles(): Promise<RoleRow[]> {
   const [roles, members] = await Promise.all([
     db.orm.public.StaffRole.orderBy((r) => r.createdAt.asc()).all(),
@@ -71,10 +73,12 @@ export async function listRoles(): Promise<RoleRow[]> {
   }));
 }
 
+/** Un rol por su id, o `null`. */
 export async function getRole(id: string) {
   return db.orm.public.StaffRole.where({ id }).first();
 }
 
+/** Un miembro del personal por su id, con su rol, o `null`. */
 export async function getMember(id: string) {
   return db.orm.public.StaffMember.where({ id }).include("role", (r) => r.select("key", "name")).first();
 }
@@ -87,18 +91,22 @@ export async function activeOwnerCount(): Promise<number> {
   return total;
 }
 
+/** ¿Ya hay un miembro del personal con ese correo? */
 export async function emailTaken(email: string): Promise<boolean> {
   return (await db.orm.public.StaffMember.where({ email }).first()) !== null;
 }
 
+/** Crea un miembro del personal activo, invitado por otra persona, con el rol indicado. */
 export async function inviteStaff(input: { email: string; name: string | null; title: string | null; roleId: string; invitedById: string }) {
   return db.orm.public.StaffMember.create({ ...input, active: true });
 }
 
+/** Cambia el rol de un miembro del personal. */
 export async function setStaffRole(id: string, roleId: string) {
   await db.orm.public.StaffMember.where({ id }).update({ roleId });
 }
 
+/** Activa o desactiva a un miembro del personal. */
 export async function setStaffActive(id: string, active: boolean) {
   await db.orm.public.StaffMember.where({ id }).update({ active });
 }
@@ -131,22 +139,27 @@ export async function linkStaffAccount(id: string, clerkUserId: string) {
   });
 }
 
+/** ¿Ya existe un rol con esa clave? */
 export async function roleKeyTaken(key: string): Promise<boolean> {
   return (await db.orm.public.StaffRole.where({ key }).first()) !== null;
 }
 
+/** Crea un rol propio (no de sistema) con sus permisos. */
 export async function createRole(input: { key: string; name: string; description: string | null; permissions: PermissionKey[] }) {
   return db.orm.public.StaffRole.create({ ...input, system: false });
 }
 
+/** Cambia el nombre, la descripción y los permisos de un rol. */
 export async function updateRole(id: string, input: { name: string; description: string | null; permissions: PermissionKey[] }) {
   await db.orm.public.StaffRole.where({ id }).update(input);
 }
 
+/** Elimina un rol. Quien llama debe comprobar antes que no tenga miembros (`roleMemberCount`). */
 export async function deleteRole(id: string) {
   await db.orm.public.StaffRole.where({ id }).delete();
 }
 
+/** Cuántos miembros del personal tienen el rol, activos o no. */
 export async function roleMemberCount(id: string): Promise<number> {
   const { total } = await db.orm.public.StaffMember.where({ roleId: id }).aggregate((a) => ({ total: a.count() }));
   return total;

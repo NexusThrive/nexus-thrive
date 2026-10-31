@@ -31,14 +31,17 @@ export type LeadActivityKind = (typeof LEAD_ACTIVITY_KINDS)[number]["value"] | "
 
 export const LOST_REASONS = ["Precio", "Eligió otra solución", "No es el momento", "Sin respuesta", "No encaja con su rubro", "Otro"] as const;
 
+/** Comprueba que un valor sea una etapa válida del embudo de ventas. */
 export function isLeadStage(v: unknown): v is LeadStageValue {
   return typeof v === "string" && LEAD_STAGES.some((s) => s.value === v);
 }
 
+/** Nombre y color de una etapa del embudo. */
 export function stageMeta(stage: LeadStageValue) {
   return LEAD_STAGES.find((s) => s.value === stage)!;
 }
 
+/** Una etapa está activa mientras la oportunidad no esté ganada ni perdida. */
 export function isActiveStage(stage: LeadStageValue) {
   return stage !== "WON" && stage !== "LOST";
 }

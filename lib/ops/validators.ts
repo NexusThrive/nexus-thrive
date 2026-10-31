@@ -6,6 +6,9 @@ export type Validation<T, K extends string> = { ok: true; value: T } | { ok: fal
 const clean = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+/**
+ * Valida la invitación de personal: correo válido (en minúsculas), nombre hasta 80 caracteres, cargo hasta 60 y rol obligatorio.
+ */
 export function validateInvite(raw: { email?: unknown; name?: unknown; title?: unknown; roleId?: unknown }): Validation<
   { email: string; name: string | null; title: string | null; roleId: string },
   "email" | "name" | "title" | "roleId"
@@ -34,6 +37,9 @@ export function roleKeyFrom(name: string): string {
     .slice(0, 40);
 }
 
+/**
+ * Valida un rol: nombre de 2 a 40 caracteres que dé una clave válida, descripción hasta 200 y al menos un permiso.
+ */
 export function validateRole(raw: { name?: unknown; description?: unknown; permissions?: unknown }): Validation<
   { name: string; description: string | null; permissions: string[] },
   "name" | "description" | "permissions"
@@ -53,6 +59,9 @@ export function validateRole(raw: { name?: unknown; description?: unknown; permi
 export const CONTACT_PURPOSES = ["Dueño", "Administrativo", "Técnico", "Comercial", "Facturación", "Otro"] as const;
 export const CONTACT_CHANNELS = ["WhatsApp", "Llamada", "Correo"] as const;
 
+/**
+ * Valida un contacto del negocio: nombre, propósito de la lista, y al menos un teléfono, WhatsApp o correo válidos. Limpia los teléfonos de caracteres no numéricos.
+ */
 export function validateContact(raw: Record<string, unknown>): Validation<
   {
     name: string;

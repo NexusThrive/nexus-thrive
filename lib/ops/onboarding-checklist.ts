@@ -25,6 +25,9 @@ export const CHECKLIST_STEPS = [
   { key: "equipo", label: "Equipo invitado", hint: "Hay más de un usuario", done: (f: ChecklistFacts) => f.users > 1 },
 ] as const;
 
+/**
+ * Evalúa los pasos de incorporación de un cliente: cuáles están hechos, el porcentaje de avance y el siguiente paso.
+ */
 export function checklist(f: ChecklistFacts) {
   const steps = CHECKLIST_STEPS.map((s) => ({ key: s.key, label: s.label, hint: s.hint, done: s.done(f) }));
   const done = steps.filter((s) => s.done).length;

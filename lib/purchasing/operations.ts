@@ -1,3 +1,7 @@
+/**
+ * Operaciones de compras expuestas por API, MCP y webhooks: listar órdenes de compra (con lo pendiente de recibir)
+ * y consultar una orden. Son de solo lectura.
+ */
 import { z } from "zod";
 import { defineOperation, OperationError, type OperationDefinition } from "@/lib/operations/types";
 

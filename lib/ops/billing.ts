@@ -31,6 +31,7 @@ export const getPolicy = cache(async (): Promise<BillingPolicyValues> => {
   return { ...DEFAULT_POLICY };
 });
 
+/** Guarda la política de cobranza de la plataforma (una sola fila, `default`). */
 export async function savePolicy(p: BillingPolicyValues) {
   await getPolicy();
   await db.orm.public.BillingPolicy.where({ id: "default" }).update(p);
@@ -89,6 +90,9 @@ async function names() {
   };
 }
 
+/**
+ * Cargos de suscripción, del que vence más reciente al más antiguo, con su estado de cobranza y el número de comprobantes. Se puede acotar a un negocio o a un cargo.
+ */
 export async function listCharges(filter: { tenantId?: string; chargeId?: string } = {}): Promise<ChargeRow[]> {
   let q = db.orm.public.Charge.orderBy((c) => c.dueAt.desc());
   if (filter.tenantId) q = q.where({ tenantId: filter.tenantId });
@@ -128,12 +132,16 @@ export async function listCharges(filter: { tenantId?: string; chargeId?: string
   });
 }
 
+/** Un cargo con el mismo detalle de `listCharges`, o `null`. */
 export async function getCharge(id: string) {
   return (await listCharges({ chargeId: id }))[0] ?? null;
 }
 
 const OVERDUE = new Set(["grace", "notice_needed", "notice_running", "suspend_eligible"]);
 
+/**
+ * Suscripciones ordenadas por fin de periodo, con el estado efectivo (marcando las que tienen cargos vencidos) y los días restantes.
+ */
 export async function listSubscriptions(): Promise<SubscriptionRow[]> {
   const [subs, n, charges] = await Promise.all([db.orm.public.Subscription.orderBy((s) => s.currentPeriodEnd.asc()).all(), names(), listCharges()]);
   return subs.map((s) => {
@@ -169,6 +177,7 @@ export async function hasSubscription(tenantId: string): Promise<boolean> {
   return (await db.orm.public.Subscription.where({ tenantId }).select("id").first()) !== null;
 }
 
+/** La suscripción de un negocio, o `null` si no tiene. */
 export async function getSubscriptionByTenant(tenantId: string) {
   return (await listSubscriptions()).find((s) => s.tenantId === tenantId) ?? null;
 }
@@ -213,6 +222,7 @@ export async function createSubscription(input: { tenantId: string; plan: string
   });
 }
 
+/** Cambia precio, ciclo, plan o estado de una suscripción; al cancelarla registra la fecha de cancelación. */
 export async function updateSubscription(id: string, fields: { priceUsdCents?: number; billingCycle?: Cycle; plan?: string; status?: SubscriptionStatusValue; notes?: string | null; cancelReason?: string | null }) {
   await db.orm.public.Subscription.where({ id }).update({ ...fields, ...(fields.status === "CANCELLED" ? { cancelledAt: now() } : {}) });
 }
@@ -237,6 +247,7 @@ export async function generateRenewal(subscriptionId: string, staffId: string): 
   return c.id;
 }
 
+/** Guarda un comprobante de pago de un cargo junto con su tamaño, tipo y huella SHA-256, y quién lo subió. */
 export async function addEvidence(chargeId: string, file: { name: string; type: string; bytes: Uint8Array }, staffId: string) {
   await db.orm.public.ChargeEvidence.create({
     chargeId,
@@ -249,6 +260,7 @@ export async function addEvidence(chargeId: string, file: { name: string; type: 
   });
 }
 
+/** Registra el método, la referencia, la fecha y las notas del pago de un cargo (antes de confirmarlo). */
 export async function recordPaymentDetails(chargeId: string, d: { method: string; reference: string | null; paidDate: string; notes: string | null }, staffId: string) {
   await db.orm.public.Charge.where({ id: chargeId }).update({ method: d.method, reference: d.reference, paidAt: at(d.paidDate), notes: d.notes, recordedById: staffId });
 }
@@ -287,14 +299,17 @@ export async function confirmCharge(chargeId: string, staffId: string): Promise<
   return { reactivated };
 }
 
+/** Anula un cargo con su motivo. */
 export async function voidCharge(chargeId: string, reason: string) {
   await db.orm.public.Charge.where({ id: chargeId }).update({ status: "VOID", voidReason: reason });
 }
 
+/** Marca un cargo como reembolsado, con su motivo y la fecha. */
 export async function refundCharge(chargeId: string, reason: string) {
   await db.orm.public.Charge.where({ id: chargeId }).update({ status: "REFUNDED", refundReason: reason, refundedAt: now() });
 }
 
+/** Marca que ya se envió el aviso previo de cobro de un cargo. */
 export async function markNotice(chargeId: string) {
   await db.orm.public.Charge.where({ id: chargeId }).update({ noticeSentAt: now() });
 }
@@ -305,6 +320,7 @@ export async function suspendForNonPayment(c: ChargeRow) {
   await db.orm.public.Subscription.where({ id: c.subscriptionId }).update({ status: "SUSPENDED" });
 }
 
+/** Archivo de un comprobante (nombre, tipo, huella y contenido), o `null`. */
 export async function getEvidenceFile(id: string) {
   return db.orm.public.ChargeEvidence.where({ id }).select("fileName", "mimeType", "sha256", "data").first();
 }
