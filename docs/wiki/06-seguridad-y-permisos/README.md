@@ -6,4 +6,4 @@ Autenticación, roles y permisos, aislamiento por negocio.
 
 ## Contenido
 
-_Pendiente: esta sección se escribe en la fase 4._
+- [Autenticación, permisos y aislamiento por negocio](autenticacion-permisos-y-aislamiento.md)

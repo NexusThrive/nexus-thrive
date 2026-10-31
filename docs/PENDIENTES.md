@@ -1,5 +1,7 @@
 # Pendientes de NEXUS
 
+> **Pendiente de validación (revisión del 31 oct 2026).** Cita 14 rutas del código y 7 ya no existen: el contenido se escribió antes de V10. No lo tomes como vigente sin comprobarlo en el código. Veredicto y siguiente paso: [revisión de documentos pendientes](internal/revision-documentos-pendientes.md).
+
 > **Siguiente paso:** [SIGUIENTE-PASO.md](SIGUIENTE-PASO.md) (sistema y orden de restaurantes).
 
 Lista viva de lo que falta, en orden de prioridad. Cuando algo se termina, se

@@ -1,5 +1,7 @@
 # 09 · Onboarding y experiencia objetivo
 
+> **Pendiente de validación (revisión del 31 oct 2026).** Cita 4 rutas del código y 2 ya no existen: el contenido se escribió antes de V10. No lo tomes como vigente sin comprobarlo en el código. Veredicto y siguiente paso: [revisión de documentos pendientes](../internal/revision-documentos-pendientes.md).
+
 [← Índice](../internal/historico/nexus-architecture/README.md) · **Propuesta.** El flujo actual está en
 [user-journey.md](user-journey.md#3-onboarding-real).
 

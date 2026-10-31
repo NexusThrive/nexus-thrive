@@ -1,5 +1,7 @@
 # 01 · Inventario del producto
 
+> **Pendiente de validación (revisión del 31 oct 2026).** Cita 17 rutas del código y 8 ya no existen: el contenido se escribió antes de V10. No lo tomes como vigente sin comprobarlo en el código. Veredicto y siguiente paso: [revisión de documentos pendientes](../internal/revision-documentos-pendientes.md).
+
 [← Índice](../internal/historico/nexus-architecture/README.md) · Estados según la leyenda del [README](../internal/historico/nexus-architecture/README.md#cómo-leer-este-artefacto).
 
 Regla seguida: una funcionalidad cuenta como existente solo si se siguió desde la

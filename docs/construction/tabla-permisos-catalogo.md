@@ -1,5 +1,7 @@
 # Tabla de permisos — acciones del catálogo APU
 
+> **Pendiente de validación (revisión del 31 oct 2026).** Cita 3 rutas del código y 2 ya no existen: el contenido se escribió antes de V10. No lo tomes como vigente sin comprobarlo en el código. Veredicto y siguiente paso: [revisión de documentos pendientes](../internal/revision-documentos-pendientes.md).
+
 Basado en: `lib/authorization.ts` (`canEditApuCatalog`, `canManageApuCatalogDestructive`), `lib/tenant-context.ts` (`requireTenantContext`), `app/[tenant]/(app)/quotes/actions.ts` (cadena D7: sesión → tenant → rol → pertenencia → validación → transacción → resultado tipado → revalidatePath).
 
 | Acción | Sesión | Tenant | Rol (via lib/authorization) | Pertenencia (member) | Validación | Resultado tipado | Revalida | Notas |

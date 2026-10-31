@@ -1,5 +1,7 @@
 # Convención de semanas del módulo Lean
 
+> **Pendiente de validación (revisión del 31 oct 2026).** Cita 5 rutas del código y 4 ya no existen: el contenido se escribió antes de V10. No lo tomes como vigente sin comprobarlo en el código. Veredicto y siguiente paso: [revisión de documentos pendientes](../internal/revision-documentos-pendientes.md).
+
 Resumen de la convención de dominio del motor Lean (Last Planner System, nivel 1). El detalle y los comentarios originales siguen
 en `lib/construction/lean-engine.ts`.
 

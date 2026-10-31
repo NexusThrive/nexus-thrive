@@ -6,4 +6,4 @@ Qué es Nexus, cómo instalarlo y cómo hacer el primer cambio.
 
 ## Contenido
 
-_Pendiente: esta sección se escribe en la fase 4._
+- [Instalación y primer día](instalacion-y-primer-dia.md)

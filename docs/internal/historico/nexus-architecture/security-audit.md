@@ -151,7 +151,7 @@ Gravedad: **Crítica · Alta · Media · Baja**. Prioridad según [technical-deb
   en 36 tablas **sin políticas**: bloquea la API REST de Supabase (bien), pero no
   protege nada del acceso de la app.
 - FK simples sin `tenantId` y 22 tablas sin FK a `Tenant`
-  ([domain-and-data-model.md](../../../wiki/03-arquitectura/anterior-a-v10/domain-and-data-model.md#4-integridad-referencial-y-aislamiento-a-nivel-de-base)).
+  ([domain-and-data-model.md](domain-and-data-model.md#4-integridad-referencial-y-aislamiento-a-nivel-de-base)).
 - Recomendación: no introducir RLS completa todavía (coste alto con un ORM y un
   rol único); sí activar RLS sin políticas en **todas** las tablas para cerrar
   PostgREST, revisar que la clave `anon` no se use, y añadir FK compuestas

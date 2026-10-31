@@ -1,5 +1,7 @@
 # Prisma 8 — Guía de consultas verificadas (lane ORM + lane SQL)
 
+> **Pendiente de validación (revisión del 31 oct 2026).** Cita 3 rutas del código y 2 ya no existen: el contenido se escribió antes de V10. No lo tomes como vigente sin comprobarlo en el código. Veredicto y siguiente paso: [revisión de documentos pendientes](../internal/revision-documentos-pendientes.md).
+
 > Verificado contra `@prisma/orm-postgres` **8.0.0-rc.14** con el target **postgres** y el
 > contrato de este repo (`prisma/contract.prisma` → `prisma/contract.d.ts`).
 > Cada patrón tiene una prueba corta en `lib/prisma8-query-patterns.integration.test.ts`

@@ -1,8 +1,9 @@
 # 03 · Arquitectura técnica actual
 
-> **Estado: anterior a V10 (auditoría del 22 oct 2026).** Describe Nexus **antes** de la reorganización de `lib/` en nueve áreas; rutas y nombres pueden estar desfasados. Para lo vigente, consulta [arquitectura-objetivo](../arquitectura-objetivo.md), [guía de implementación de `lib/`](../guia-implementacion-lib.md) y [reglas de dependencias](../reglas-dependencias.md). Se conserva porque contiene análisis y evidencia que aún no están reescritos; su fusión con las páginas vigentes es la tarea de la fase 4.
 
-[← Índice](../../../internal/historico/nexus-architecture/README.md) · Describe lo que **existe**. Las propuestas están en
+> **Pendiente de validación · anterior a V10.** Auditoría del 22 oct 2026, escrita antes de la reorganización de `lib/` en nueve áreas. Al contrastarla con el código actual (31 oct), **39 de las 59 rutas que cita ya no existen** (por ejemplo `lib/tenant-db.ts`, `prisma/contract.prisma`, `lib/ops/*`). Sus análisis de producto y riesgos pueden seguir siendo útiles, pero **ninguna afirmación de esta página debe tomarse como vigente** sin comprobarla en el código. Para lo vigente: [arquitectura objetivo](../../../wiki/03-arquitectura/arquitectura-objetivo.md), [guía de `lib/`](../../../wiki/03-arquitectura/guia-implementacion-lib.md), [reglas de dependencias](../../../wiki/03-arquitectura/reglas-dependencias.md), [estructura de Prisma](../../../wiki/05-datos-y-base-de-datos/prisma-estructura.md) y [documentación de módulos](../../../wiki/04-modulos/documentacion-de-modulos.md).
+
+[← Índice](README.md) · Describe lo que **existe**. Las propuestas están en
 [target-architecture.md](target-architecture.md).
 
 ## 1. Stack verificado
@@ -159,7 +160,7 @@ Detalle del modelo en [domain-and-data-model.md](domain-and-data-model.md).
 1. **Páginas ↔ base de datos**: lectura directa sin capa intermedia ni
    autorización propia en 17 páginas.
 2. **Módulo `quotes` ↔ construcción**: un valor de enum activa tres pantallas de
-   construcción ([ARCH-01](../../../internal/historico/nexus-architecture/technical-debt.md#arch-01)).
+   construcción ([ARCH-01](technical-debt.md#arch-01)).
 3. **Menú ↔ rubro**: entradas condicionadas por `vertical` dentro de
    `MODULE_NAV` (taquilla, salidas, check-in).
 4. **`lib/tenant-db.ts`**: un objeto de 1.563 líneas que importa construcción,

@@ -1,5 +1,7 @@
 # 10 · Plan de evolución
 
+> **Pendiente de validación (revisión del 31 oct 2026).** Cita 4 rutas del código y 1 ya no existen: el contenido se escribió antes de V10. No lo tomes como vigente sin comprobarlo en el código. Veredicto y siguiente paso: [revisión de documentos pendientes](../internal/revision-documentos-pendientes.md).
+
 [← Índice](../internal/historico/nexus-architecture/README.md) · Etapas en orden de dependencia. Cada etapa deja `main`
 desplegable y termina con criterios verificables.
 

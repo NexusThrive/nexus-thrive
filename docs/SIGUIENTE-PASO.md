@@ -10,7 +10,7 @@ Estado al 2026-10-30. Este archivo existe para retomar el trabajo sin depender d
 - Quedan **abiertos a propósito** los dos PR de restaurante, que son el siguiente trabajo:
   - **Investigación de Colega Menus** (`NexusRestaurant/`): arquitectura observada, mapa del panel, módulos, modelo de
     datos inferido y propuesta de integración hueco por hueco (RST-3 a RST-9), con decisiones D1–D6.
-  - **Arquitectura Core, compartido y rubros** (`docs/wiki/04-modulos/capas/ARQUITECTURA-CORE-Y-RUBROS.md`): tres anillos, reglas de
+  - **Arquitectura Core, compartido y rubros** ([`B-core-y-compartidas.md`](internal/historico/arquitectura-v2/B-core-y-compartidas.md)): tres anillos, reglas de
     dependencia F1–F7, fases F0–F9 y decisiones D-1 a D-8.
 
 ## Qué sigue, en orden

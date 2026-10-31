@@ -7,7 +7,7 @@
 Un solo despliegue Next.js en Vercel con una base Postgres. ~87 mil líneas, un
 equipo pequeño, piloto sin carga relevante. El dolor actual es de **límites**
 (catálogo disperso, acceso a datos sin capa), no de escala
-([modules-and-dependencies.md](../../wiki/03-arquitectura/anterior-a-v10/modules-and-dependencies.md)).
+([modules-and-dependencies.md](../../internal/historico/nexus-architecture/modules-and-dependencies.md)).
 
 ## Decisión
 

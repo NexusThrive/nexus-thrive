@@ -22,7 +22,7 @@ flowchart LR
 | `prisma.config.ts` | Le dice a Prisma dónde está el contrato (`prisma/schema/**/*.prisma`), dónde escribir (`output: "prisma"`) y la conexión | Rara vez |
 | `migrations/app/<fecha>_<nombre>/` | Una migración: `migration.json`, `migration.ts` y `ops.json` | Se generan con `migration plan` |
 | `migrations/snapshots/<hash>` | Instantáneas del contrato direccionadas por hash | **No** |
-| `migrations/refs/db.json` | Referencia a la migración actual | **No** |
+| `migrations/app/refs/db.json` | Referencia a la migración actual | **No** |
 
 Prisma lee **todos** los `.prisma` como un único esquema. Dividirlo por carpetas no cambia las tablas ni el contrato resultante: es solo organización.
 

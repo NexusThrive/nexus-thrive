@@ -6,4 +6,4 @@ Términos propios de Nexus.
 
 ## Contenido
 
-_Pendiente: esta sección se escribe en la fase 4._
+- [Glosario](glosario.md)

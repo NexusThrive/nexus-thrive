@@ -1,5 +1,7 @@
 # 02 · Recorrido completo del usuario
 
+> **Pendiente de validación (revisión del 31 oct 2026).** Cita 19 rutas del código y 12 ya no existen: el contenido se escribió antes de V10. No lo tomes como vigente sin comprobarlo en el código. Veredicto y siguiente paso: [revisión de documentos pendientes](../internal/revision-documentos-pendientes.md).
+
 [← Índice](../internal/historico/nexus-architecture/README.md) · Todo lo descrito aquí es el comportamiento **actual** según
 el código. La propuesta de experiencia está en [onboarding-and-ux.md](onboarding-and-ux.md).
 
@@ -166,4 +168,4 @@ escrituras son atómicas.
 | Activar rubro especial | No existe un flujo: el rubro se fija en el onboarding y el panel; cambiarlo no migra datos | — | `Tenant.vertical` | — | Pantallas condicionadas por `vertical` en el menú |
 | Automatización | NO ENCONTRADO | — | — | — | — |
 
-Siguiente: [current-architecture.md](../wiki/03-arquitectura/anterior-a-v10/current-architecture.md).
+Siguiente: [current-architecture.md](../internal/historico/nexus-architecture/current-architecture.md).

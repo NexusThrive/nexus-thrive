@@ -107,7 +107,7 @@ con el formato completo.
 
 | Campo | Contenido |
 |---|---|
-| Evidencia | Cinco catálogos ([modules-and-dependencies.md](../../../wiki/03-arquitectura/anterior-a-v10/modules-and-dependencies.md#1-qué-es-hoy-un-módulo)); `/departures` en el menú sin página, y `tourism_agency` tiene registro abierto; `orders` placeholder en la receta de `restaurant` |
+| Evidencia | Cinco catálogos ([modules-and-dependencies.md](modules-and-dependencies.md#1-qué-es-hoy-un-módulo)); `/departures` en el menú sin página, y `tourism_agency` tiene registro abierto; `orders` placeholder en la receta de `restaurant` |
 | Impacto | Agencias de turismo llegan a un 404; cada módulo nuevo toca 6–8 archivos |
 | Recomendación | Registro de capacidades en código ([ADR-0003](../../../decisions/arquitectura/0003-registro-de-capacidades.md)); retirar del menú lo que no tiene página |
 | Aceptación | Prueba que recorre `buildTenantNav` para cada rubro y comprueba que cada `href` tiene `page.tsx` |
@@ -179,4 +179,4 @@ porque `pnpm verify` es la puerta de `pnpm release`.
 `.docs/` (oculta) y estado en `docs/`, `IDEAS-…md`, `CHANGELOG.md`; skills de Prisma
 duplicadas en `.agents/`, `.claude/`, `.cursor/`, `.devin/`. P3.
 
-Siguiente: [target-architecture.md](../../../wiki/03-arquitectura/anterior-a-v10/target-architecture.md).
+Siguiente: [target-architecture.md](target-architecture.md).

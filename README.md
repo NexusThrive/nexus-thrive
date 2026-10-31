@@ -214,7 +214,7 @@ dinero usan el servicio transaccional de dinero y las reglas puras viven junto a
 sus pruebas. La auditoría completa, con hallazgos y deuda técnica, está en
 [`docs/internal/historico/nexus-architecture/README.md`](docs/internal/historico/nexus-architecture/README.md) y la
 arquitectura objetivo en
-[`docs/wiki/03-arquitectura/anterior-a-v10/target-architecture.md`](docs/wiki/03-arquitectura/anterior-a-v10/target-architecture.md).
+[`docs/internal/historico/nexus-architecture/target-architecture.md`](docs/internal/historico/nexus-architecture/target-architecture.md).
 
 ## Puesta en marcha
 

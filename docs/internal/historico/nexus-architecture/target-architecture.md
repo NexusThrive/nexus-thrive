@@ -1,8 +1,9 @@
 # 08 · Arquitectura objetivo propuesta
 
-> **Estado: anterior a V10 (auditoría del 22 oct 2026).** Describe Nexus **antes** de la reorganización de `lib/` en nueve áreas; rutas y nombres pueden estar desfasados. Para lo vigente, consulta [arquitectura-objetivo](../arquitectura-objetivo.md), [guía de implementación de `lib/`](../guia-implementacion-lib.md) y [reglas de dependencias](../reglas-dependencias.md). Se conserva porque contiene análisis y evidencia que aún no están reescritos; su fusión con las páginas vigentes es la tarea de la fase 4.
 
-[← Índice](../../../internal/historico/nexus-architecture/README.md) · **Nada de esto está implementado.** Cada propuesta indica qué
+> **Pendiente de validación · anterior a V10.** Auditoría del 22 oct 2026, escrita antes de la reorganización de `lib/` en nueve áreas. Al contrastarla con el código actual (31 oct), **39 de las 59 rutas que cita ya no existen** (por ejemplo `lib/tenant-db.ts`, `prisma/contract.prisma`, `lib/ops/*`). Sus análisis de producto y riesgos pueden seguir siendo útiles, pero **ninguna afirmación de esta página debe tomarse como vigente** sin comprobarla en el código. Para lo vigente: [arquitectura objetivo](../../../wiki/03-arquitectura/arquitectura-objetivo.md), [guía de `lib/`](../../../wiki/03-arquitectura/guia-implementacion-lib.md), [reglas de dependencias](../../../wiki/03-arquitectura/reglas-dependencias.md), [estructura de Prisma](../../../wiki/05-datos-y-base-de-datos/prisma-estructura.md) y [documentación de módulos](../../../wiki/04-modulos/documentacion-de-modulos.md).
+
+[← Índice](README.md) · **Nada de esto está implementado.** Cada propuesta indica qué
 pieza actual reutiliza. Las decisiones están como *propuestas* en
 [decisions/](../../../decisions/arquitectura/README.md).
 
