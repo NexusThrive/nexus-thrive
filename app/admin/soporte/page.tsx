@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getStaffContext } from "@/lib/platform/team/access";
 import { listManagers } from "@/lib/ops/accounts";
-import { tenantOptions } from "@/lib/ops/leads";
+import { tenantOptions } from "@/lib/platform/crm/leads";
 import { listTickets } from "@/lib/ops/tickets";
 import SupportView from "./_components/support-view";
 

@@ -113,7 +113,7 @@ describe("todayCO (el día de Bogotá de un instante en milisegundos)", () => {
 });
 
 describe("bogotaDay() equivale al antiguo todayBogota() de Operaciones (V10 · M4)", () => {
-  /** La fórmula que tenía lib/ops/leads.ts: formato en-CA con la zona de Bogotá. */
+  /** La fórmula que tenía lib/platform/crm/leads.ts: formato en-CA con la zona de Bogotá. */
   const anterior = (ms: number) => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Bogota" }).format(new Date(ms));
 
   test("da el mismo día en los límites de día, mes y año y en una barrida de cuatro años", () => {

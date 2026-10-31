@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getStaffContext } from "@/lib/platform/team/access";
 import { listManagers } from "@/lib/ops/accounts";
-import { listLeads, tenantOptions } from "@/lib/ops/leads";
+import { listLeads, tenantOptions } from "@/lib/platform/crm/leads";
 import CrmView from "./_components/crm-view";
 import { bogotaDay } from "@/lib/plain-date";
 

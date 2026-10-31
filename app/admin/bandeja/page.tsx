@@ -6,7 +6,7 @@ import { getStaffContext } from "@/lib/platform/team/access";
 import { listManagers } from "@/lib/ops/accounts";
 import { listConversations, listInboxMessages } from "@/lib/ops/inbox";
 import { providers } from "@/lib/ops/inbox-providers";
-import { tenantOptions } from "@/lib/ops/leads";
+import { tenantOptions } from "@/lib/platform/crm/leads";
 import InboxView from "./_components/inbox-view";
 
 export const metadata: Metadata = { title: "Bandeja · NEXUS Operations Center" };

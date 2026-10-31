@@ -9,10 +9,10 @@ import { EmptyState } from "@/components/molecules/empty-state";
 import { KpiCard } from "@/components/molecules/kpi-card";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
-import { followUpState, isActiveStage, LEAD_STAGES, pipelineSummary, stageMeta, type LeadStageValue } from "@/lib/ops/crm-rules";
+import { followUpState, isActiveStage, LEAD_STAGES, pipelineSummary, stageMeta, type LeadStageValue } from "@/lib/platform/crm/crm-rules";
 import { formatUsdCents } from "@/lib/plans/pricing";
 import { moveLeadAction } from "../actions";
-import type { LeadRow } from "@/lib/ops/leads";
+import type { LeadRow } from "@/lib/platform/crm/leads";
 import LeadBoard, { LeadCard } from "./lead-board";
 import LeadSheet, { type Option } from "./lead-sheet";
 

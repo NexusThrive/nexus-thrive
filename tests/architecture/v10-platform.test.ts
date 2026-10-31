@@ -39,6 +39,10 @@ const MODULES: Record<string, Record<string, string>> = {
     "lib/platform/team/nav.ts": "lib/ops/nav.ts",
     "lib/platform/team/validators.ts": "lib/ops/validators.ts",
   },
+  crm: {
+    "lib/platform/crm/leads.ts": "lib/ops/leads.ts",
+    "lib/platform/crm/crm-rules.ts": "lib/ops/crm-rules.ts",
+  },
 };
 
 const files = (dir: string): string[] =>
@@ -60,7 +64,7 @@ describe("piezas neutrales que antes colgaban de módulos de Nexus (M4)", () => 
   test("las páginas de los negocios (app/[tenant]) ya no importan Operaciones: el día de hoy sale de Foundation", () => {
     const offenders = files("app/[tenant]").filter((f) => importsOf(f).some((s: string) => /^@\/lib\/(ops|platform\/(?!benefits\b))/.test(s)));
     expect(offenders).toEqual([]);
-    expect(read("lib/ops/leads.ts") + (exists("lib/platform/crm/leads.ts") ? read("lib/platform/crm/leads.ts") : "")).not.toMatch(/todayBogota/);
+    expect(read("lib/platform/crm/leads.ts") + (exists("lib/platform/crm/leads.ts") ? read("lib/platform/crm/leads.ts") : "")).not.toMatch(/todayBogota/);
   });
 
   test("Core no importa la administración de la plataforma: las acciones BIZ_* las define Core (lib/tenant/audit.ts) y la plataforma las compone", () => {
