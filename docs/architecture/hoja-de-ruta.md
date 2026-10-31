@@ -38,7 +38,7 @@ confirmar si se **agrega** la descripción que falta (bajo riesgo) y qué hacer 
 
 ## 4. Estructura del código
 
-- **V10 · arquitectura física extensible de `lib/`:** diseño entregado, **pendiente de aprobación** (no implementado): [`V10-arquitectura-fisica.md`](V10-arquitectura-fisica.md).
+- **V10 · arquitectura física extensible de `lib/`:** diseño aprobado ([`V10-arquitectura-fisica.md`](V10-arquitectura-fisica.md)). **M0–M2 ejecutadas** ([`V10-M0-M2-resultados.md`](V10-M0-M2-resultados.md)); **M3–M8 pendientes de autorización**.
 - **Mover `lib/construction/` a `lib/industry/construction/`** (~56 archivos y ~100 importadores): etapa independiente, sin decidir.
 - **`lib/tenant/db.ts` sigue grande:** conserva clientes, pagos, reservas, gastos y finanzas, que la regla de capas no ve.
 - La ficha 360° consulta al gimnasio aunque su módulo esté inactivo (mismo comportamiento de antes; se puede omitir).
