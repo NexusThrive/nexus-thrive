@@ -224,7 +224,8 @@ Dejó la raíz de `lib/` con **solo lo importante** y escribió la documentació
 2. **Subcarpeta `core/tenancy/onboarding/`.** Los cuatro archivos de reglas del alta (`types`, `validation`, `presets`, `slug`) no se mezclaron con los de `core/tenancy` para evitar nombres ambiguos como `types.ts`; forman una subcarpeta con cuatro archivos relacionados (criterio E-2).
 3. **Pruebas de etapas anteriores que describían estados intermedios** («`lib/admin` conserva dos archivos», «`navigation` solo conserva `nav-types`», «la raíz conserva cuatro archivos»): actualizadas al estado final sin debilitarlas.
 4. **Guía existente desfasada.** `docs/guias/nueva-funcionalidad.md` citaba rutas anteriores incluso a V10 (por ejemplo `lib/business/permissions.ts`); se actualizaron y se enlazó la guía nueva.
-5. **No se tocaron** (por reglas): los comentarios de `prisma/schema/**` que nombran rutas antiguas, los informes históricos E0 a E9 y los demás documentos de `docs/` y `.docs/` (pasada P-12).
+5. **El commit de la etapa Z incluye, por error mío, un cambio de `app/icon.svg` que no era de V10** (el dueño quitó el rectángulo negro de fondo del SVG mientras se trabajaba y mi `git add -A` lo recogió). No cambia ninguna regla ni comportamiento de `lib/`; no se reescribió el historial. Los cambios de favicon y manifiesto posteriores van en su propio commit.
+6. **No se tocaron** (por reglas): los comentarios de `prisma/schema/**` que nombran rutas antiguas, los informes históricos E0 a E9 y los demás documentos de `docs/` y `.docs/` (pasada P-12).
 
 ## 8. Estado final de V10
 

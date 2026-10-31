@@ -19,10 +19,8 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: "#000000",
     theme_color: "#000000",
     categories: ["business", "productivity"],
-    icons: [
-      { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
-      { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
-      { src: "/icons/maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
-    ],
+    // Un solo icono: el SVG de la marca (`app/icon.svg`, sin fondo). Sin PNG ni `favicon.ico`.
+    // iOS no admite SVG y usa `apple-touch-icon.png` (declarado en `app/layout.tsx`).
+    icons: [{ src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" }],
   };
 }

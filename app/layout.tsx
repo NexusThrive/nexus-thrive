@@ -18,7 +18,8 @@ export const metadata: Metadata = {
     "NEXUS THRIVE — el sistema operativo del negocio: vende, cobra, controla caja e inventario y atiende a tus clientes en un solo lugar.",
   applicationName: "NEXUS THRIVE",
   appleWebApp: { capable: true, title: "NEXUS", statusBarStyle: "black-translucent" },
-  icons: { apple: "/icons/apple-touch-icon.png" },
+  // Pestaña del navegador: solo el SVG de la marca (`app/icon.svg`, sin fondo). No hay `favicon.ico`.
+  icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }], apple: "/icons/apple-touch-icon.png" },
 };
 
 export const viewport: Viewport = {
