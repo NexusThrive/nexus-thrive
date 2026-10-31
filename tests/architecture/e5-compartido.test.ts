@@ -42,7 +42,7 @@ describe("módulos puros de Finance compartidos", () => {
   });
 
   test("el resto de Finance sigue en la capa domains: solo lo puro salió", () => {
-    for (const file of ["lib/domains/finance/accounting/ledger-db.ts", "lib/domains/finance/tax/tax-db.ts", "lib/receivables/receivables-db.ts"]) {
+    for (const file of ["lib/domains/finance/accounting/ledger-db.ts", "lib/domains/finance/tax/tax-db.ts", "lib/domains/finance/receivables/receivables-db.ts"]) {
       expect(classify(file, layers)?.layer, file).toBe("domains");
     }
   });

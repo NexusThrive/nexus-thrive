@@ -1,7 +1,7 @@
 /**
  * V10 · M5 · Finance como familia de dominios.
  *
- * Se amplía etapa a etapa. M5.4: `accounting` vive en `lib/domains/finance/accounting`, depende de Foundation, de Business
+ * Se amplía etapa a etapa. M5.5: `receivables` vive en `lib/domains/finance/receivables` y solo la importa `app/`. M5.4: `accounting` vive en `lib/domains/finance/accounting`, depende de Foundation, de Business
  * (error y servicio de dinero, tabla de intercambio) y de `tax`, y nadie por debajo de Experience lo importa. M5.3: `tax` vive en `lib/domains/finance/tax` (área `domains` por ruta, sin unidad
  * en `layers.json`) y solo depende de Foundation. M5.2: las ayudas de captura de pagos en pantalla (teclado numérico y lectura
  * de un QR de cobro) viven en `lib/payment-input` (Experience), solo dependen del kernel de Foundation y
@@ -108,6 +108,35 @@ describe("M5.4 · domains/finance/accounting", () => {
   test("ningún módulo de foundation, core, business ni de automatización importa accounting", () => {
     const ofensores = libSources().filter(
       (f) => /^lib\/(foundation|core|business|events|operations|tenant|auth)\//.test(f) && importsOf(f).some((s) => s.startsWith("@/lib/domains/finance/accounting")),
+    );
+    expect(ofensores).toEqual([]);
+  });
+});
+
+describe("M5.5 · domains/finance/receivables", () => {
+  const file = "lib/domains/finance/receivables/receivables-db.ts";
+
+  test("contiene solo receivables-db.ts, y lib/receivables ya no existe", () => {
+    const hoy = readdirSync(join(ROOT, "lib/domains/finance/receivables")).filter((n) => n.endsWith(".ts") && !n.endsWith(".test.ts"));
+    expect(hoy).toEqual(["receivables-db.ts"]);
+    expect(existsSync(join(ROOT, "lib/receivables"))).toBe(false);
+  });
+
+  test("está en el área domains por su ruta, sin unidad propia", () => {
+    const c = classify(file, layers);
+    expect(c?.layer).toBe("domains");
+    expect(c?.byPath).toBe(true);
+  });
+
+  test("solo depende de Foundation, del kernel, de Business (dinero), de accounting y de tax", () => {
+    const permitidos =
+      /^(@\/prisma\/db|@\/lib\/format|@\/lib\/foundation\/kernel\/aging|@\/lib\/business\/sales\/money-service|@\/lib\/domains\/finance\/(accounting\/ledger-db|tax\/tax))$/;
+    for (const spec of importsOf(file)) expect(spec).toMatch(permitidos);
+  });
+
+  test("ninguna capa de lib/ por debajo de domains la importa", () => {
+    const ofensores = libSources().filter(
+      (f) => /^lib\/(foundation|core|business|events|operations|tenant|auth)\//.test(f) && importsOf(f).some((s) => s.startsWith("@/lib/domains/finance/receivables")),
     );
     expect(ofensores).toEqual([]);
   });

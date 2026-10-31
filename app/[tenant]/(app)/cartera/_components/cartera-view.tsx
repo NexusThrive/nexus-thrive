@@ -15,7 +15,7 @@ import { paySupplierAction, receivePaymentAction } from "@/app/[tenant]/(app)/ca
 import { formatCurrency } from "@/lib/format";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { BUCKETS, BUCKET_LABELS } from "@/lib/foundation/kernel/aging";
-import type { Cartera, CarteraRow } from "@/lib/receivables/receivables-db";
+import type { Cartera, CarteraRow } from "@/lib/domains/finance/receivables/receivables-db";
 
 type Side = "in" | "out";
 

@@ -12,7 +12,7 @@ import { sortModules, isModule } from "@/lib/capabilities/modules";
 import { quickCreateActions } from "@/lib/navigation/quick-create";
 import { CHART_CATALOG } from "@/lib/dashboard/chart-catalog";
 import { cashFlow, comparison, countLabel, daysUntil, updatedLabel } from "@/lib/dashboard/insights";
-import { receivables } from "@/lib/receivables/receivables-db";
+import { receivables } from "@/lib/domains/finance/receivables/receivables-db";
 import { typeLabel } from "@/lib/industry/gym/memberships";
 import { paymentMethodLabel } from "@/lib/foundation/kernel/payment-vocabulary";
 import { Delta } from "@/components/atoms/delta";

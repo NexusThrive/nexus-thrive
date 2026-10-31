@@ -41,7 +41,7 @@ describe("operaciones por dominio", () => {
   test("el motor, los tipos y las definiciones de Core no importan ningún dominio", () => {
     const core = ["lib/operations/engine.ts", "lib/operations/types.ts", "lib/operations/audit.ts", "lib/operations/definitions/business.ts", "lib/operations/definitions/customers.ts", "lib/operations/definitions/events.ts", "lib/operations/definitions/finance.ts", "lib/operations/definitions/parties.ts"];
     for (const file of core) {
-      const dominios = importsOf(file).filter((s) => /@\/lib\/(inventory|purchasing|presence|catalog|business|receivables|domains\/finance)\b/.test(s));
+      const dominios = importsOf(file).filter((s) => /@\/lib\/(inventory|purchasing|presence|catalog|business|domains\/finance)\b/.test(s));
       expect(dominios, file).toEqual([]);
     }
   });

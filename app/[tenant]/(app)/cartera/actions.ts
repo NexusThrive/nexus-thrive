@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { receiveInvoicePayment } from "@/lib/business/sales/money-service";
 import { can } from "@/lib/auth/permissions";
-import { paySupplierInvoice } from "@/lib/receivables/receivables-db";
+import { paySupplierInvoice } from "@/lib/domains/finance/receivables/receivables-db";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";

@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
 import { can } from "@/lib/auth/permissions";
-import { payables, receivables } from "@/lib/receivables/receivables-db";
+import { payables, receivables } from "@/lib/domains/finance/receivables/receivables-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import CarteraView from "./_components/cartera-view";
 import { routeCategory } from "@/lib/navigation/tenant-nav";
