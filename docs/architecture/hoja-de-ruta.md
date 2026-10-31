@@ -8,7 +8,7 @@ Estado al cierre de E3 (rama local `chore/HU-esquema-prisma-modular-01`, sin pus
 | Punto | Excep. | De qué trata |
 |---|---|---|
 | **E5** ✅ | 0 (era 17) | Business hacia Finance por **eventos de dominio**: contabilizar, calcular impuestos y cartera sin que Business llame a Finance directamente (`documents-db`, `money-service`, `invoices-db`, `stock-service`, `purchases-db`, `store-db`, `pillars-db`, `admin/db`, `tenant/db`). Toca dinero y contabilidad: la más delicada | Resuelta con puertos: ver [`E5-resultados.md`](E5-resultados.md).
-| **E7** | 4 | **Puertos y adaptadores** de proveedores: que pagos, facturación electrónica y Google dependan de un puerto y no de Wompi, del proveedor fiscal o de Google |
+| **E7** ✅ | 0 (era 4) | **Puertos y adaptadores** de proveedores: que pagos, facturación electrónica y Google dependan de un puerto y no de Wompi, del proveedor fiscal o de Google | Resuelta con puertos: ver [`E7-resultados.md`](E7-resultados.md).
 | **E9** | 4 | **Tipos de interfaz** fuera de Core y Platform (`onboarding/types`, `tenant-nav`) |
 | **V** | 6 | **Vocabulario y capacidades por rubro** en `VERTICAL_RECIPES`, sin comparar `vertical === "gym"` en el código (ficha del cliente, compras, registro de capacidades y menú «Crear») |
 
