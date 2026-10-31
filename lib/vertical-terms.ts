@@ -38,6 +38,14 @@ export function getVerticalTerms(vertical: string): VerticalTerms {
 }
 
 /**
+ * ¿El rubro lleva control de acceso de socios (QR y estado de la membresía en la ficha del cliente)? Se lee de la receta del
+ * rubro, sin normalizar: un valor desconocido no lo tiene (así el código no compara rubros).
+ */
+export function hasMemberAccess(vertical: string): boolean {
+  return (VERTICAL_RECIPES as Record<string, { memberAccess?: boolean } | undefined>)[vertical]?.memberAccess === true;
+}
+
+/**
  * Terminología del módulo Cotizaciones / APU (Presupuesto, Actividad/APU,
  * Insumo…). Construcción y carpintería la personalizan; el resto usa los
  * defaults del catálogo.

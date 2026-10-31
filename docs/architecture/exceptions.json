@@ -1,6 +1,6 @@
 {
   "descripcion": "Excepciones de E0 a las reglas de dependencia (scripts/check-layers.mjs). Cada una registra origen, destino, regla, justificación, etapa prevista de resolución y estado. La lista solo puede reducirse: una excepción nueva o una que sobra hace fallar la comprobación, y maxAbiertas solo baja. Ampliarla requiere justificación y aprobación explícita del dueño.",
-  "maxAbiertas": 6,
+  "maxAbiertas": 0,
   "etapasPrevistas": {
     "E1": "E1 · Core deja de importar rubros (registro de repositorios por rubro)",
     "E2": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
@@ -10,86 +10,7 @@
     "E9": "E9 · Limpieza posterior: tipos de interfaz fuera de Core/Platform",
     "V": "V · Vocabulario y capacidades por rubro en VERTICAL_RECIPES (sin comparar rubros en código)"
   },
-  "exceptions": [
-    {
-      "id": "EX-059",
-      "tipo": "vertical-literal",
-      "origen": "app/[tenant]/(app)/crm/[id]/page.tsx",
-      "destino": "gym",
-      "linea": "const isGym = tenantRecord.vertical === \"gym\" && showMemberships;",
-      "regla": "R4-vertical-literal",
-      "categoria": "Lógica de negocio",
-      "justificacion": "Decide si se carga el estado de acceso del socio (membresía) en la ficha 360°. Es una decisión de gimnasio dentro de una pantalla general; debe depender de que el módulo de membresías esté activo.",
-      "etapa": "V · Vocabulario y capacidades por rubro en VERTICAL_RECIPES (sin comparar rubros en código)",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-060",
-      "tipo": "vertical-literal",
-      "origen": "app/[tenant]/(app)/crm/[id]/page.tsx",
-      "destino": "gym",
-      "linea": "tenantRecord.vertical === \"gym\"",
-      "regla": "R4-vertical-literal",
-      "categoria": "Presentación",
-      "justificacion": "Cambia el título de la sección de datos físicos para el gimnasio. Debe salir del vocabulario del rubro.",
-      "etapa": "V · Vocabulario y capacidades por rubro en VERTICAL_RECIPES (sin comparar rubros en código)",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-061",
-      "tipo": "vertical-literal",
-      "origen": "app/[tenant]/(app)/purchases/page.tsx",
-      "destino": "restaurant",
-      "linea": "const title = ctx.vertical === \"restaurant\" ? \"Compras de insumos\" : \"Compras\";",
-      "regla": "R4-vertical-literal",
-      "categoria": "Presentación",
-      "justificacion": "Título «Compras de insumos» para restaurante. Debe salir de VerticalTerms.",
-      "etapa": "V · Vocabulario y capacidades por rubro en VERTICAL_RECIPES (sin comparar rubros en código)",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-062",
-      "tipo": "vertical-literal",
-      "origen": "lib/capabilities/registry.ts",
-      "destino": "restaurant",
-      "linea": "nav: [{ href: \"/purchases\", icon: Truck, label: (_terms, vertical) => (vertical === \"restaurant\" ? \"Compras de insumos\" : \"Compras\") }],",
-      "regla": "R4-vertical-literal",
-      "categoria": "Navegación",
-      "justificacion": "Etiqueta del menú «Compras de insumos» para restaurante, escrita en el registro de capacidades.",
-      "etapa": "V · Vocabulario y capacidades por rubro en VERTICAL_RECIPES (sin comparar rubros en código)",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-063",
-      "tipo": "vertical-literal",
-      "origen": "lib/capabilities/registry.ts",
-      "destino": "construction",
-      "linea": "label: (_terms, vertical) => (vertical === \"construction\" ? \"Obras\" : \"Proyectos\"),",
-      "regla": "R4-vertical-literal",
-      "categoria": "Navegación",
-      "justificacion": "Etiqueta del menú «Obras» para construcción, escrita en el registro de capacidades.",
-      "etapa": "V · Vocabulario y capacidades por rubro en VERTICAL_RECIPES (sin comparar rubros en código)",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-064",
-      "tipo": "vertical-literal",
-      "origen": "lib/navigation/quick-create.ts",
-      "destino": "construction",
-      "linea": "label: vertical === \"construction\" ? \"Nueva obra\" : \"Nuevo proyecto\",",
-      "regla": "R4-vertical-literal",
-      "categoria": "Navegación",
-      "justificacion": "Etiqueta de «Crear»: «Nueva obra» para construcción.",
-      "etapa": "V · Vocabulario y capacidades por rubro en VERTICAL_RECIPES (sin comparar rubros en código)",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    }
-  ],
+  "exceptions": [],
   "comparacionesVertical": [
     {
       "n": 1,
@@ -116,7 +37,8 @@
       "codigo": "tenantRecord.vertical === \"gym\" && showMemberships",
       "categoria": "Lógica de negocio",
       "esDependenciaSectorial": true,
-      "nota": "Decide si se carga el estado de acceso del socio. Excepción EX-registrada."
+      "nota": "Decide si se carga el estado de acceso del socio. Excepción EX-registrada.",
+      "resuelta": "V (2026-10-31): el control de acceso de socios sale de la receta del rubro (`memberAccess`, `hasMemberAccess`)"
     },
     {
       "n": 4,
@@ -125,7 +47,8 @@
       "codigo": "tenantRecord.vertical === \"gym\"",
       "categoria": "Presentación",
       "esDependenciaSectorial": true,
-      "nota": "Cambia el título de la sección de datos físicos. Excepción registrada."
+      "nota": "Cambia el título de la sección de datos físicos. Excepción registrada.",
+      "resuelta": "V (2026-10-31): el título sale del vocabulario del rubro (`VerticalTerms.profileTitle`)"
     },
     {
       "n": 5,
@@ -134,7 +57,8 @@
       "codigo": "ctx.vertical === \"restaurant\"",
       "categoria": "Presentación",
       "esDependenciaSectorial": true,
-      "nota": "Título «Compras de insumos». Excepción registrada."
+      "nota": "Título «Compras de insumos». Excepción registrada.",
+      "resuelta": "V (2026-10-31): el título sale del vocabulario del rubro (`VerticalTerms.purchases`)"
     },
     {
       "n": 6,
@@ -143,7 +67,8 @@
       "codigo": "vertical === \"restaurant\"",
       "categoria": "Navegación",
       "esDependenciaSectorial": true,
-      "nota": "Etiqueta del menú de compras. Excepción registrada."
+      "nota": "Etiqueta del menú de compras. Excepción registrada.",
+      "resuelta": "V (2026-10-31): la etiqueta sale del vocabulario del rubro (`VerticalTerms.purchases`)"
     },
     {
       "n": 7,
@@ -152,7 +77,8 @@
       "codigo": "vertical === \"construction\"",
       "categoria": "Navegación",
       "esDependenciaSectorial": true,
-      "nota": "Etiqueta del menú «Obras»/«Proyectos». Excepción registrada."
+      "nota": "Etiqueta del menú «Obras»/«Proyectos». Excepción registrada.",
+      "resuelta": "V (2026-10-31): la etiqueta sale del vocabulario del rubro (`VerticalTerms.projects`)"
     },
     {
       "n": 8,
@@ -179,7 +105,8 @@
       "codigo": "vertical === \"construction\"",
       "categoria": "Navegación",
       "esDependenciaSectorial": true,
-      "nota": "Etiqueta «Nueva obra»/«Nuevo proyecto» del menú Crear. Excepción registrada."
+      "nota": "Etiqueta «Nueva obra»/«Nuevo proyecto» del menú Crear. Excepción registrada.",
+      "resuelta": "V (2026-10-31): el texto sale del vocabulario del rubro (`VerticalTerms.newProject`)"
     },
     {
       "n": 11,

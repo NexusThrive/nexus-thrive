@@ -11,6 +11,7 @@ import { tenantWithModules } from "@/lib/tenant/membership";
 import { requireTenantContext } from "@/lib/tenant/context";
 import PurchasesView from "./_components/purchases-view";
 import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { getVerticalTerms } from "@/lib/vertical-terms";
 
 /**
  * Compras a proveedores: órdenes, recepción de mercancía al inventario y
@@ -23,7 +24,7 @@ export default async function PurchasesPage({ params }: { params: Promise<{ tena
   if (!ctx) notFound();
   const record = await tenantWithModules(ctx.tenantId);
   const inventoryActive = !!record?.modules.some((m) => m.active && String(m.moduleName) === "inventory");
-  const title = ctx.vertical === "restaurant" ? "Compras de insumos" : "Compras";
+  const title = getVerticalTerms(ctx.vertical).purchases ?? "Compras";
 
   if (!canManage(ctx.role)) {
     return (

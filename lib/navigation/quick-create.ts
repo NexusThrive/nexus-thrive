@@ -38,7 +38,7 @@ export function quickCreateActions(
   if (has("construction")) {
     actions.push({
       key: "new-project",
-      label: vertical === "construction" ? "Nueva obra" : "Nuevo proyecto",
+      label: terms.newProject ?? "Nuevo proyecto",
       hint: "Presupuesto y cotización",
       href: "/projects",
       icon: Building2,

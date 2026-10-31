@@ -144,10 +144,15 @@ describe("la lista de excepciones solo puede encogerse", () => {
   });
 
   test("una excepción sin justificación, etapa o aprobación es inválida", () => {
+    // La lista real ya está vacía: se fabrican tres excepciones de import incompletas.
+    const base = { tipo: "import", origen: "lib/a.ts", destino: "lib/b.ts", regla: "R3-core-no-importa-finance", importaciones: 1, soloTipos: false, estado: "abierta" };
     const bad = structuredClone(exceptions);
-    bad.exceptions[0].justificacion = "";
-    bad.exceptions[1].etapa = "  ";
-    bad.exceptions[2].aprobacion = "";
+    bad.exceptions = [
+      { ...base, id: "EX-T1", justificacion: "", etapa: "x", aprobacion: "x" },
+      { ...base, id: "EX-T2", justificacion: "x", etapa: "  ", aprobacion: "x" },
+      { ...base, id: "EX-T3", justificacion: "x", etapa: "x", aprobacion: "" },
+    ];
+    bad.maxAbiertas = 3;
     const p = problemsWith({}, bad);
     for (const campo of ["justificacion", "etapa", "aprobacion"]) expect(p.some((m) => m.includes(`«${campo}»`))).toBe(true);
   });
@@ -165,8 +170,9 @@ describe("la lista de excepciones solo puede encogerse", () => {
     const list = exceptions.comparacionesVertical;
     expect(list).toHaveLength(11);
     for (const c of list) expect(["Lógica de negocio", "Configuración", "Navegación", "Presentación", "Prueba"]).toContain(c.categoria);
-    const sectoriales = list.filter((c: { esDependenciaSectorial: boolean }) => c.esDependenciaSectorial).length;
-    expect(sectoriales).toBe(exceptions.exceptions.filter((e: { tipo: string }) => e.tipo === "vertical-literal").length);
+    // Las sectoriales se resolvieron en V (cada una anota cómo); las que sigan sin resolver deben tener excepción abierta.
+    const sectoriales = list.filter((c: { esDependenciaSectorial: boolean; resuelta?: string }) => c.esDependenciaSectorial && !c.resuelta).length;
+    expect(sectoriales).toBe(exceptions.exceptions.filter((e: { tipo: string; estado: string }) => e.tipo === "vertical-literal" && e.estado !== "resuelta").length);
   });
 });
 
