@@ -5,8 +5,8 @@ import { listConversations } from "./inbox";
 import { dunningLabel } from "../platform/billing/billing-rules";
 import { followUpState, stageMeta } from "../platform/crm/crm-rules";
 import { listLeads } from "../platform/crm/leads";
-import { priorityMeta, slaState } from "./support-rules";
-import { listTickets } from "./tickets";
+import { priorityMeta, slaState } from "../platform/support/support-rules";
+import { listTickets } from "../platform/support/tickets";
 import { bogotaDay } from "@/lib/plain-date";
 
 /** Prioridades comerciales: seguimientos vencidos o para hoy. */

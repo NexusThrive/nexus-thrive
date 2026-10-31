@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/molecules/page-header";
 import { getStaffContext } from "@/lib/platform/team/access";
 import { listManagers } from "@/lib/ops/accounts";
 import { tenantOptions } from "@/lib/platform/crm/leads";
-import { listTickets } from "@/lib/ops/tickets";
+import { listTickets } from "@/lib/platform/support/tickets";
 import SupportView from "./_components/support-view";
 
 export const metadata: Metadata = { title: "Soporte · NEXUS Operations Center" };

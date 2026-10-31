@@ -3,9 +3,9 @@ import { listCharges, listSubscriptions } from "../platform/billing/billing";
 import { healthScore, type HealthFacts } from "./health-rules";
 import { daysBetween } from "../platform/billing/billing-rules";
 import { onboardingBoardFor } from "./onboarding-board";
-import { listSurveys } from "./satisfaction";
-import { isOpenStatus, slaState } from "./support-rules";
-import { listTickets } from "./tickets";
+import { listSurveys } from "../platform/support/satisfaction";
+import { isOpenStatus, slaState } from "../platform/support/support-rules";
+import { listTickets } from "../platform/support/tickets";
 import { bogotaDay } from "@/lib/plain-date";
 
 /** Salud de cada cuenta viva con su explicación (servidor). */

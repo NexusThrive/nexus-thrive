@@ -5,7 +5,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getStaffContext } from "@/lib/platform/team/access";
 import { listManagers } from "@/lib/ops/accounts";
-import { getTicket, listTicketMessages } from "@/lib/ops/tickets";
+import { getTicket, listTicketMessages } from "@/lib/platform/support/tickets";
 import TicketDetail from "./_components/ticket-detail";
 
 export const metadata: Metadata = { title: "Ticket · NEXUS Operations Center" };

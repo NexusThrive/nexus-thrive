@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/atoms/badge";
 import { useMinute } from "@/lib/hooks/use-minute";
-import { slaState, type TicketPriorityValue, type TicketStatusValue } from "@/lib/ops/support-rules";
+import { slaState, type TicketPriorityValue, type TicketStatusValue } from "@/lib/platform/support/support-rules";
 
 function left(ms: number) {
   const abs = Math.abs(ms);

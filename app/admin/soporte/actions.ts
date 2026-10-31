@@ -3,9 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/platform/team/access";
 import { logOps } from "@/lib/platform/team/audit";
-import { checkTransition, isTicketPriority, isTicketStatus, statusMeta, TICKET_CATEGORIES, validateTicket, type TicketInput } from "@/lib/ops/support-rules";
-import { ensureSurvey } from "@/lib/ops/satisfaction";
-import { addTicketMessage, createTicket, getTicket, markFirstResponse, setTicketStatus, updateTicketFields } from "@/lib/ops/tickets";
+import { checkTransition, isTicketPriority, isTicketStatus, statusMeta, TICKET_CATEGORIES, validateTicket, type TicketInput } from "@/lib/platform/support/support-rules";
+import { ensureSurvey } from "@/lib/platform/support/satisfaction";
+import { addTicketMessage, createTicket, getTicket, markFirstResponse, setTicketStatus, updateTicketFields } from "@/lib/platform/support/tickets";
 
 export type TicketResult = { ok: true; id: string; code?: string } | { ok: false; message: string; errors?: Partial<Record<keyof TicketInput, string>> };
 const DENIED = { ok: false as const, message: "No tienes permiso para esta acción." };

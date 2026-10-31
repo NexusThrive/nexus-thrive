@@ -1,7 +1,7 @@
 "use server";
 
-import { answerSurvey, getSurveyByToken } from "@/lib/ops/satisfaction";
-import { validateAnswer } from "@/lib/ops/satisfaction-rules";
+import { answerSurvey, getSurveyByToken } from "@/lib/platform/support/satisfaction";
+import { validateAnswer } from "@/lib/platform/support/satisfaction-rules";
 
 /** Respuesta pública de la encuesta (solo con el token; una sola vez). */
 export async function answerSurveyAction(token: string, input: { score: number; nps: string; comment: string }): Promise<{ ok: boolean; message?: string }> {

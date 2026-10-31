@@ -1,7 +1,7 @@
 import { db } from "@/prisma/db";
 import { normalizeHandle, samePhone, type Channel } from "./inbox-rules";
 import { sendEmail, sendWhatsapp, type SendResult } from "./inbox-providers";
-import { createTicket } from "./tickets";
+import { createTicket } from "../platform/support/tickets";
 
 /** Bandeja de NEXUS: conversaciones de WhatsApp y correo (servidor). */
 

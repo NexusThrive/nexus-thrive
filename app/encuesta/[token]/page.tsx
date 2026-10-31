@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Wordmark } from "@/components/atoms/wordmark";
-import { getSurveyByToken } from "@/lib/ops/satisfaction";
+import { getSurveyByToken } from "@/lib/platform/support/satisfaction";
 import SurveyForm from "./survey-form";
 
 export const metadata: Metadata = { title: "¿Cómo te atendimos? · NEXUS THRIVE", robots: { index: false } };
