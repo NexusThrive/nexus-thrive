@@ -1,6 +1,6 @@
 import { MoneyError } from "@/lib/business/sales/money-error";
 import { db } from "@/prisma/db";
-import { todayCO } from "@/lib/tax/tax";
+import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { DEFAULT_RULES, PUC_TEMPLATE, natureOf, periodOfDate, typeOf, validateAccount, validateRule, type AccountType, type RuleLine } from "./puc";
 
 /**

@@ -15,8 +15,8 @@ import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { createResolutionAction, createTaxRateAction, loadDefaultTaxesAction, toggleResolutionAction, updateTaxRateAction, type TaxActionResult } from "@/app/[tenant]/(app)/taxes/actions";
 import { DOCUMENT_LABELS, type DocumentKind } from "@/lib/business/sales/commercial-document";
-import { TAX_KINDS, TAX_KIND_LABELS, NUMBERED_KINDS, todayCO, type TaxRateRow } from "@/lib/tax/tax";
-import type { ResolutionRow } from "@/lib/tax/tax-db";
+import { TAX_KINDS, TAX_KIND_LABELS, NUMBERED_KINDS, todayCO, type TaxRateRow } from "@/lib/domains/finance/tax/tax";
+import type { ResolutionRow } from "@/lib/domains/finance/tax/tax-db";
 
 type Tab = "taxes" | "numbering";
 const STATE_LABEL = { ok: "Vigente", inactive: "Desactivada", not_started: "Aún no rige", expired: "Vencida", exhausted: "Agotada" } as const;

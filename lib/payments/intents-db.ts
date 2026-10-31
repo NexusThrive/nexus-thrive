@@ -1,7 +1,7 @@
 import { MoneyError, moneyTransaction, recordIncome, type MoneyTx } from "@/lib/business/sales/money-service";
 import { toNumber } from "@/lib/format";
 import { balanceOf } from "@/lib/foundation/kernel/aging";
-import { todayCO } from "@/lib/tax/tax";
+import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { checkoutPort } from "./checkout-port";
 import { settleStoreOrder, storeOrderLines } from "@/lib/store/store-settle";
 import { db } from "@/prisma/db";

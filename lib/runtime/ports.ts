@@ -12,7 +12,7 @@ import { listingView } from "@/lib/google/google-db";
 import { decryptCredentials } from "@/lib/providers/connections";
 import { wompiCheckoutUrl } from "@/lib/providers/wompi";
 import { providedPorts } from "@/lib/ports";
-import { allocateNumber, commitNumber, withholdingsFor } from "@/lib/tax/tax-db";
+import { allocateNumber, commitNumber, withholdingsFor } from "@/lib/domains/finance/tax/tax-db";
 import { tenantProvisioningPort } from "@/lib/tenant/provisioning-port";
 
 /**

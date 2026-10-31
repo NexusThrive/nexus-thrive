@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/molecules/page-header";
 import { getAppBaseUrl } from "@/lib/app-url";
 import { can } from "@/lib/auth/permissions";
 import { connectedGateways, listIntents, listReconciliations } from "@/lib/payments/intents-db";
-import { todayCO } from "@/lib/tax/tax";
+import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { requireTenantContext } from "@/lib/tenant/context";
 import CobrosView from "./_components/cobros-view";
 import { routeCategory } from "@/lib/navigation/tenant-nav";

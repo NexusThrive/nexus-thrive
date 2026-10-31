@@ -1,6 +1,6 @@
 import { MoneyError } from "@/lib/business/sales/money-error";
 import { toNumber } from "@/lib/format";
-import { todayCO } from "@/lib/tax/tax";
+import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { db } from "@/prisma/db";
 import { PeriodClosedError, assertPeriodOpen } from "./accounting-db";
 import { GENESIS, cents, entryHash, linesFromRule, reverseLines, totals, validateEntry, type Amounts, type EntryLine } from "./ledger";

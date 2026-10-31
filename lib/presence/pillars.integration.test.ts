@@ -7,7 +7,7 @@ import { runOperation } from "@/lib/operations/engine";
 import { OPERATIONS } from "@/lib/runtime/operations";
 import { confirmIntent, createIntent } from "@/lib/payments/intents-db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
-import { todayCO } from "@/lib/tax/tax";
+import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { maturityInput, presenceV2, refreshPresence, sendWeeklyReport } from "./pillars-db";
 
 import { presenceSubscriber } from "./subscribers";

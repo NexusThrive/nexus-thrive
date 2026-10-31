@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { can } from "@/lib/auth/permissions";
-import { createResolution, createTaxRate, ensureDefaultTaxes, setResolutionActive, updateTaxRate } from "@/lib/tax/tax-db";
+import { createResolution, createTaxRate, ensureDefaultTaxes, setResolutionActive, updateTaxRate } from "@/lib/domains/finance/tax/tax-db";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";
 

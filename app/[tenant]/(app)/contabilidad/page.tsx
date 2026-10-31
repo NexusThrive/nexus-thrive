@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/molecules/page-header";
 import { listEntries } from "@/lib/accounting/ledger-db";
 import { listAccounts, listCostCenters, listPeriods, listRules } from "@/lib/accounting/accounting-db";
 import { can } from "@/lib/auth/permissions";
-import { todayCO } from "@/lib/tax/tax";
+import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { tenantWithModules } from "@/lib/tenant/membership";
 import AccountingView from "./_components/accounting-view";

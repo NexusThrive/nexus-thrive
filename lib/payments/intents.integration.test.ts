@@ -6,7 +6,7 @@ import { encryptCredentials } from "@/lib/providers/connections";
 import { receiveProviderWebhook } from "@/lib/providers/inbound";
 import { sandboxSignature } from "@/lib/providers/sandbox";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
-import { todayCO } from "@/lib/tax/tax";
+import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { cancelIntent, confirmIntent, createIntent, listIntents, listReconciliations, publicIntent, refundIntent, runReconciliation } from "./intents-db";
 
 /** Cobros en línea contra Postgres real y DOS negocios, con webhook sandbox firmado. */

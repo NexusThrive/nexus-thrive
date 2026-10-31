@@ -5,7 +5,7 @@ import { encryptCredentials } from "@/lib/providers/connections";
 import { receiveProviderWebhook } from "@/lib/providers/inbound";
 import { wompiChecksum } from "@/lib/providers/wompi";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
-import { todayCO } from "@/lib/tax/tax";
+import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { createIntent, listIntents, publicIntent, runReconciliation } from "./intents-db";
 
 /** Wompi de punta a punta (webhook firmado → cobro confirmado → conciliación), contra Postgres real. */
