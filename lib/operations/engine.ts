@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import { OperationError, type OperationContext, type OperationDefinition } from "./types";
 
 /**

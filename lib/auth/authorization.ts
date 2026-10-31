@@ -2,12 +2,12 @@
  * Guardia de autorización de construcción (Etapa 1, D7).
  *
  * Recibe el contexto del tenant y devuelve una verificación por acción. Las
- * reglas viven en la matriz única `lib/business/permissions.ts`; esto solo
+ * reglas viven en la matriz única `lib/auth/permissions.ts`; esto solo
  * les da nombres de acción para que las actions importen un módulo.
  */
 
-import type { BusinessRole } from "@/lib/business/roles";
-import { can, type BusinessPermission } from "@/lib/business/permissions";
+import type { BusinessRole } from "@/lib/auth/roles";
+import { can, type BusinessPermission } from "@/lib/auth/permissions";
 
 /** Rol del usuario en el negocio (alias del único tipo, `BusinessRole`). */
 export type NexusRole = BusinessRole;
@@ -26,7 +26,7 @@ export type AuthResult =
 
 /**
  * Crea las funciones de autorización a partir del contexto. Cada una consulta
- * la matriz única (`lib/business/permissions.ts`).
+ * la matriz única (`lib/auth/permissions.ts`).
  * Uso típico en una action:
  *   const { canApproveBaseline, canEditBudget, canChangeProjectStatus } = createAuth(context);
  *   if (!canApproveBaseline().ok) return { ok: false, message: "Solo OWNER" };

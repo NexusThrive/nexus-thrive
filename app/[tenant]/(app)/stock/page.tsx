@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
-import { canManage } from "@/lib/business/roles";
+import { canManage } from "@/lib/auth/roles";
 import { listProducts } from "@/lib/business/products-db";
 import { listWarehouses } from "@/lib/inventory/kardex";
 import { listCounts, listTransfers, reorderOverview, stockOverview } from "@/lib/inventory/stock-docs-db";

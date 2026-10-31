@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import { defineOperation, OperationError, type OperationDefinition } from "../types";
 
 export const businessOperations: OperationDefinition[] = [

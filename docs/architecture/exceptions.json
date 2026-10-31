@@ -1,6 +1,6 @@
 {
   "descripcion": "Excepciones de E0 a las reglas de dependencia (scripts/check-layers.mjs). Cada una registra origen, destino, regla, justificación, etapa prevista de resolución y estado. La lista solo puede reducirse: una excepción nueva o una que sobra hace fallar la comprobación, y maxAbiertas solo baja. Ampliarla requiere justificación y aprobación explícita del dueño.",
-  "maxAbiertas": 50,
+  "maxAbiertas": 43,
   "etapasPrevistas": {
     "E1": "E1 · Core deja de importar rubros (registro de repositorios por rubro)",
     "E2": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
@@ -47,32 +47,6 @@
       "soloTipos": true,
       "justificacion": "Importa solo tipos del onboarding (Experience). Mover los tipos a Core.",
       "etapa": "E9 · Limpieza posterior: tipos de interfaz fuera de Core/Platform",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-004",
-      "tipo": "import",
-      "origen": "lib/auth/authorization.ts",
-      "destino": "lib/business/permissions.ts",
-      "regla": "R3-core-no-importa-business",
-      "importaciones": 1,
-      "soloTipos": false,
-      "justificacion": "Permisos y roles son de Core pero viven en lib/business/. Core los importa desde donde están hoy.",
-      "etapa": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-005",
-      "tipo": "import",
-      "origen": "lib/auth/authorization.ts",
-      "destino": "lib/business/roles.ts",
-      "regla": "R3-core-no-importa-business",
-      "importaciones": 1,
-      "soloTipos": true,
-      "justificacion": "Permisos y roles son de Core pero viven en lib/business/. Core los importa desde donde están hoy.",
-      "etapa": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
       "estado": "abierta",
       "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
     },
@@ -272,19 +246,6 @@
       "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
     },
     {
-      "id": "EX-023",
-      "tipo": "import",
-      "origen": "lib/operations/definitions/business.ts",
-      "destino": "lib/business/permissions.ts",
-      "regla": "R3-core-no-importa-business",
-      "importaciones": 1,
-      "soloTipos": false,
-      "justificacion": "Permisos y roles son de Core pero viven en lib/business/. Core los importa desde donde están hoy.",
-      "etapa": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
       "id": "EX-024",
       "tipo": "import",
       "origen": "lib/operations/definitions/inventory.ts",
@@ -359,32 +320,6 @@
       "soloTipos": false,
       "justificacion": "Las definiciones de operaciones (Core) importan los repositorios de cada dominio. Cada dominio debe registrar sus propias operaciones.",
       "etapa": "E3 · Operaciones y suscriptores de eventos por dominio (cada dominio se registra; Core no los conoce)",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-030",
-      "tipo": "import",
-      "origen": "lib/operations/engine.ts",
-      "destino": "lib/business/permissions.ts",
-      "regla": "R3-core-no-importa-business",
-      "importaciones": 1,
-      "soloTipos": false,
-      "justificacion": "Permisos y roles son de Core pero viven en lib/business/. Core los importa desde donde están hoy.",
-      "etapa": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-031",
-      "tipo": "import",
-      "origen": "lib/operations/types.ts",
-      "destino": "lib/business/permissions.ts",
-      "regla": "R3-core-no-importa-business",
-      "importaciones": 1,
-      "soloTipos": true,
-      "justificacion": "Permisos y roles son de Core pero viven en lib/business/. Core los importa desde donde están hoy.",
-      "etapa": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
       "estado": "abierta",
       "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
     },
@@ -476,32 +411,6 @@
       "soloTipos": false,
       "justificacion": "La tienda en línea crea la intención de pago directamente. Debe usar el contrato de pagos de Finance por evento o puerto.",
       "etapa": "E5 · Business→Finance por eventos de dominio y contabilización fuera de Business",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-039",
-      "tipo": "import",
-      "origen": "lib/tenant/context.ts",
-      "destino": "lib/business/permissions.ts",
-      "regla": "R3-core-no-importa-business",
-      "importaciones": 1,
-      "soloTipos": false,
-      "justificacion": "Permisos y roles son de Core pero viven en lib/business/. Core los importa desde donde están hoy.",
-      "etapa": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-040",
-      "tipo": "import",
-      "origen": "lib/tenant/context.ts",
-      "destino": "lib/business/roles.ts",
-      "regla": "R3-core-no-importa-business",
-      "importaciones": 1,
-      "soloTipos": true,
-      "justificacion": "Permisos y roles son de Core pero viven en lib/business/. Core los importa desde donde están hoy.",
-      "etapa": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
       "estado": "abierta",
       "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
     },

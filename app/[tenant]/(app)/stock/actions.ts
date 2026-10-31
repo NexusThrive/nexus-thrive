@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { canManage } from "@/lib/business/roles";
+import { canManage } from "@/lib/auth/roles";
 import { createWarehouse } from "@/lib/inventory/kardex";
 import { cancelCount, createCount, createTransfer, finalizeCount, getCount, saveCountLines, setReorderLevels, type CountDetail, type TransferInput } from "@/lib/inventory/stock-docs-db";
 import { logTenantAction } from "@/lib/tenant/audit";

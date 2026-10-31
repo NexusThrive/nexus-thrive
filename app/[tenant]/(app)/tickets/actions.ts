@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { parseMuseumSettings } from "@/lib/business/museum";
 import { createTicketSale, payTicketSale, saveMuseumSettings, seedTicketTypes, voidTicketSale, type NewSale } from "@/lib/business/museum-db";
-import { canHandleCash, canManage } from "@/lib/business/roles";
+import { canHandleCash, canManage } from "@/lib/auth/roles";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { logTenantAction } from "@/lib/tenant/audit";

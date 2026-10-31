@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { BusinessPermission } from "@/lib/business/permissions";
+import type { BusinessPermission } from "@/lib/auth/permissions";
 import type { ModuleValue } from "@/lib/admin/catalogs";
 
 /**

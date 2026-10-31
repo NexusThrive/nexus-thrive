@@ -1,4 +1,4 @@
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import { exportCustomers, exportProducts } from "@/lib/data-exchange/exchange-db";
 import { CUSTOMER_EXAMPLE, CUSTOMER_HEADERS, PRODUCT_EXAMPLE, PRODUCT_HEADERS } from "@/lib/data-exchange/rows";
 import { toCsv } from "@/lib/data-exchange/table";

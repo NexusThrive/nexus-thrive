@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import { connectHttpProvider, connectSandboxProvider, createSupportDocument, retryFiscal, setFiscalEnabled, submitPending } from "@/lib/einvoice/einvoice-db";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";

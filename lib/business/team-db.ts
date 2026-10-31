@@ -1,6 +1,6 @@
 import { db } from "@/prisma/db";
 import { loadPricingConfig } from "@/lib/plans/settings";
-import type { BusinessRole } from "./roles";
+import type { BusinessRole } from "@/lib/auth/roles";
 
 /**
  * Equipo de un negocio (servidor): invitaciones por correo, roles, retiro

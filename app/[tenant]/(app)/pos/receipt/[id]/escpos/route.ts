@@ -1,4 +1,4 @@
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import { receiptOf } from "@/lib/pos/pos-db";
 import { escposBytes, receiptLines } from "@/lib/pos/receipt";
 import { requireTenantContext } from "@/lib/tenant/context";

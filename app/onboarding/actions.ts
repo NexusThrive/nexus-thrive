@@ -18,7 +18,7 @@ import { SHOW_PRICING } from "@/lib/onboarding/flags";
 import { allowAttempt, recordAttempt } from "@/lib/rate-limit";
 import type { PlanKey, Billing } from "@/lib/plans/catalog";
 import { resolveModules } from "@/lib/plans/pricing";
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import type {
   AdaptiveOnboardingInput,
   OnboardingActionResult,

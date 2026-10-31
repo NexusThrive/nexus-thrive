@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { amountInWords, INVOICE_KIND_LABELS, invoiceCode } from "@/lib/business/invoice";
 import { getInvoice } from "@/lib/business/invoices-db";
-import { canManage } from "@/lib/business/roles";
+import { canManage } from "@/lib/auth/roles";
 import { formatCurrency } from "@/lib/format";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { tenantLetterhead } from "@/lib/tenant/membership";

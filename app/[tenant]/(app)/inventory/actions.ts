@@ -7,7 +7,7 @@ import { kindsForVertical, validateProduct, type ProductDraft } from "@/lib/busi
 import { sellProduct } from "@/lib/business/money-service";
 import { validateStockMove, type StockKind } from "@/lib/business/inventory";
 import { getProduct, moveStock, saveProduct, stockHistory } from "@/lib/business/products-db";
-import { canHandleCash, canManage } from "@/lib/business/roles";
+import { canHandleCash, canManage } from "@/lib/auth/roles";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import { requireTenantContext } from "@/lib/tenant/context";
 

@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/prisma/db";
 import { createTenantDb } from "@/lib/tenant/db";
-import type { BusinessRole } from "@/lib/business/roles";
-import { can } from "@/lib/business/permissions";
+import type { BusinessRole } from "@/lib/auth/roles";
+import { can } from "@/lib/auth/permissions";
 import { modulesForRoute } from "@/lib/navigation/tenant-nav";
 
 /**

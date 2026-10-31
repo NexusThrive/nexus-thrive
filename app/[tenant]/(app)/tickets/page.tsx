@@ -8,7 +8,7 @@ import { UrlSegmentedControl } from "@/components/molecules/url-segmented-contro
 import { addDaysKey } from "@/lib/business/calendar";
 import { slotLoads, visitorReport, weekdayOf, WEEKDAYS } from "@/lib/business/museum";
 import { getMuseumSettings, salesBetween, salesOn, ticketTypes } from "@/lib/business/museum-db";
-import { canHandleCash, canManage } from "@/lib/business/roles";
+import { canHandleCash, canManage } from "@/lib/auth/roles";
 import { bogotaDayKey } from "@/lib/finance/series";
 import { formatCurrency } from "@/lib/format";
 import { requireTenantContext } from "@/lib/tenant/context";

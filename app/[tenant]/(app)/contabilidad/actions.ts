@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { closePeriod, createAccount, createCostCenter, reopenPeriod, seedAccounting, setAccountActive, setCostCenterActive, setRuleActive } from "@/lib/accounting/accounting-db";
 import { listEntries, setAccountingEnabled, verifyLedger } from "@/lib/accounting/ledger-db";
 import { REPORTS, buildReport, ledgerRows, type ReportKind, type ReportResult } from "@/lib/accounting/reports-db";
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";
 

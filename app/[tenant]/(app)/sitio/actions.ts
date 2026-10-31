@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getAppBaseUrl } from "@/lib/app-url";
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import { adoptAsWebsite, saveSite, setPublished, type SiteInput } from "@/lib/site/site-db";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";

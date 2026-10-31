@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import { listingView } from "@/lib/google/google-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import GoogleView from "./_components/google-view";

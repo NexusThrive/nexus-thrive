@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { Building2, CalendarPlus, FileText, HandCoins, Receipt, UserPlus } from "lucide-react";
 import type { ModuleValue, VerticalValue } from "@/lib/admin/catalogs";
-import { can, type BusinessPermission } from "@/lib/business/permissions";
+import { can, type BusinessPermission } from "@/lib/auth/permissions";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 
 export type QuickCreateAction = {

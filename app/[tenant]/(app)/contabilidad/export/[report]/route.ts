@@ -1,5 +1,5 @@
 import { REPORTS, ledgerRows, reportCsv, type ReportKind } from "@/lib/accounting/reports-db";
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";
 

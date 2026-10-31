@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import { cancelIntent, connectedGateways, confirmIntent, createIntent, refundIntent, runReconciliation, type IntentRow } from "@/lib/payments/intents-db";
 import { parseReport } from "@/lib/payments/intents";
 import type { Reconciliation } from "@/lib/payments/intents";

@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createTenantDb } from "@/lib/tenant/db";
 import { formatDateShort } from "@/lib/format";
 import { createMembershipWithCharge, renewMembershipWithCharge } from "@/lib/business/memberships-db";
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import {
   bogotaEndOfDay,
   bogotaStartOfDay,

@@ -16,7 +16,7 @@ import {
 } from "./_components/membership-form";
 import { PageHeader } from "@/components/molecules/page-header";
 import { requirePageContext } from "@/lib/tenant/context";
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import { routeCategory } from "@/lib/navigation/tenant-nav";
 
 import { createMembershipsDb } from "@/lib/business/memberships-repo";

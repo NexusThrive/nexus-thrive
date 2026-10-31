@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/molecules/page-header";
 import { StatTile } from "@/components/molecules/stat-tile";
 import { addDaysKey, bogotaToMs } from "@/lib/business/calendar";
 import { attendanceBetween, attendanceCount, expiringSoon, unknownScansBetween } from "@/lib/business/gym-db";
-import { canHandleCash } from "@/lib/business/roles";
+import { canHandleCash } from "@/lib/auth/roles";
 import { bogotaDayKey } from "@/lib/finance/series";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { getVerticalTerms } from "@/lib/vertical-terms";

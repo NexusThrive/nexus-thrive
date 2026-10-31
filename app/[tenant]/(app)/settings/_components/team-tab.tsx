@@ -10,7 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { BUSINESS_ROLES, roleLabel } from "@/lib/business/roles";
+import { BUSINESS_ROLES, roleLabel } from "@/lib/auth/roles";
 import type { PendingInvite, TeamMember } from "@/lib/business/team-db";
 import { cn } from "@/lib/utils";
 import { changeMemberRoleAction, inviteMemberAction, revokeInviteAction, setMemberActiveAction } from "../team-actions";

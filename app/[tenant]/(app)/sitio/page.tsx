@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getAppBaseUrl } from "@/lib/app-url";
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import { siteForEditor } from "@/lib/site/site-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import SiteEditor from "./_components/site-editor";
