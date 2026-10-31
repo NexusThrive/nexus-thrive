@@ -10,7 +10,8 @@ import { createAdminDb } from "@/lib/admin/db";
 import { loadPricingConfig } from "@/lib/plans/settings";
 import { resolveModules } from "@/lib/plans/pricing";
 import { PLANS, type PlanKey } from "@/lib/plans/catalog";
-import type { ModuleValue, VerticalValue } from "@/lib/admin/catalogs";
+import type { VerticalValue } from "@/lib/core/sectors/verticals";
+import type { ModuleValue } from "@/lib/capabilities/modules";
 import {
   type BenefitKind,
   type BenefitStatus,

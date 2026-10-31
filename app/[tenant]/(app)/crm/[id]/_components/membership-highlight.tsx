@@ -7,7 +7,7 @@ import { formatCurrency, formatDateShort } from "@/lib/format";
 import { typeLabel } from "@/lib/industry/gym/memberships";
 import { useMinute } from "@/lib/hooks/use-minute";
 import type { Customer360Membership } from "@/lib/industry/gym/memberships";
-import type { VerticalTerms } from "@/lib/vertical-terms";
+import type { VerticalTerms } from "@/lib/core/sectors/terms";
 import { cn } from "@/lib/utils";
 import { MembershipStatusPill } from "./status-pills";
 

@@ -4,7 +4,7 @@ import { addDaysKey, bogotaToMs, monthGrid, weekStart } from "@/lib/business/cal
 import { listProducts } from "@/lib/business/products-db";
 import { todayBogota } from "@/lib/ops/leads";
 import { requireTenantContext } from "@/lib/tenant/context";
-import { getVerticalTerms } from "@/lib/vertical-terms";
+import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import { activeTeam, bookingsBetween, customerPhoneOptions, customersByIds } from "@/lib/business/bookings-db";
 import AgendaCalendar from "./_agenda/agenda-calendar";
 import type { AgendaBooking } from "./_agenda/types";

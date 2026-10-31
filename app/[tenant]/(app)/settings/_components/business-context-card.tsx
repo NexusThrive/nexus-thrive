@@ -7,7 +7,7 @@ import { inputClasses } from "@/components/atoms/input";
 import { Select } from "@/components/atoms/select";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
-import { VERTICAL_LABELS, VERTICALS, type VerticalValue } from "@/lib/admin/catalogs";
+import { VERTICAL_LABELS, VERTICALS, type VerticalValue } from "@/lib/core/sectors/verticals";
 import { BUSINESS_MODELS, MAX_ACTIVITY, type BusinessModel } from "@/lib/tenant/business-context";
 import { updateBusinessContextAction } from "@/app/[tenant]/(app)/settings/context-actions";
 

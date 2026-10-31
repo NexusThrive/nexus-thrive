@@ -1,7 +1,7 @@
 import type { Customer360Membership } from "@/lib/industry/gym/memberships";
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import { typeLabel } from "@/lib/industry/gym/memberships";
-import type { VerticalTerms } from "@/lib/vertical-terms";
+import type { VerticalTerms } from "@/lib/core/sectors/terms";
 import { MembershipStatusPill } from "./status-pills";
 
 /**

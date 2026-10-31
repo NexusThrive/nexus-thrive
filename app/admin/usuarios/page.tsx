@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { VERTICAL_LABELS } from "@/lib/admin/catalogs";
+import { VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
 import { listPlatformUsers } from "@/lib/admin/users-db";
 import { getStaffContext } from "@/lib/ops/access";
 import UsersView from "./_components/users-view";

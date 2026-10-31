@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { PlanPicker, type PlanSelection } from "@/components/organisms/onboarding/plan-picker";
-import type { VerticalValue } from "@/lib/admin/catalogs";
+import type { VerticalValue } from "@/lib/core/sectors/verticals";
 import { signupVerticals, type PricingConfig } from "@/lib/plans/pricing";
 import { Select } from "@/components/atoms/select";
 

@@ -4,7 +4,7 @@ import { Badge } from "@/components/atoms/badge";
 import type { Customer360Profile, CustomerAccountStatus } from "@/lib/tenant/db";
 import { typeLabel, type Customer360Membership } from "@/lib/industry/gym/memberships";
 import { formatDateShort } from "@/lib/format";
-import type { VerticalTerms } from "@/lib/vertical-terms";
+import type { VerticalTerms } from "@/lib/core/sectors/terms";
 import { AccountStatusPill, MembershipStatusPill } from "./status-pills";
 import CustomerActions from "./customer-actions";
 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 
-import type { ModuleValue } from "@/lib/admin/catalogs";
+import type { ModuleValue } from "@/lib/capabilities/modules";
 import ProfileTab from "./profile-tab";
 import TeamTab, { type Seats } from "./team-tab";
 import type { PendingInvite, TeamMember as BusinessMember } from "@/lib/tenant/team-db";
@@ -13,7 +13,7 @@ import AccountTab, { type MyAccount } from "./account-tab";
 import { CreditCard, Palette, Store, TriangleAlert, UserRound, Users } from "lucide-react";
 import { SectionNav } from "@/components/molecules/section-nav";
 import { PageHeader } from "@/components/molecules/page-header";
-import type { VerticalValue } from "@/lib/admin/catalogs";
+import type { VerticalValue } from "@/lib/core/sectors/verticals";
 import type { BusinessModel } from "@/lib/tenant/business-context";
 import { AppearanceSettings } from "@/components/organisms/appearance-settings";
 

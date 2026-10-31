@@ -33,14 +33,15 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
-import type { VerticalTerms, VerticalValue } from "@/lib/admin/catalogs";
+import type { VerticalValue } from "@/lib/core/sectors/verticals";
+import type { VerticalTerms } from "@/lib/core/sectors/lexicon";
 
 /**
  * Registro de capacidades (ADR-0003): la ÚNICA declaración de cada módulo.
  *
- * De aquí salen la lista de módulos y sus nombres (`lib/admin/catalogs.ts`),
+ * De aquí salen la lista de módulos y sus nombres (`lib/capabilities/modules.ts`),
  * el menú del negocio y las rutas que el servidor exige
- * (`lib/navigation/tenant-nav.ts` → `modulesForRoute`), los iconos y textos
+ * (`lib/capabilities/route-modules.ts` → `modulesForRoute`), los iconos y textos
  * del onboarding (`lib/onboarding/module-meta.ts`) y el catálogo inicial de
  * precios y estados (`lib/plans/pricing.ts`, `lib/plans/catalog.ts`).
  *

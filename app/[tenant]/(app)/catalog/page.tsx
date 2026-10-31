@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { BookOpen, ImageIcon, Layers, Package, Upload } from "lucide-react";
 import { createTenantDb } from "@/lib/tenant/db";
 import { canGovernBudget, type TenantRole } from "@/lib/tenant/context";
-import { getQuoteTerms } from "@/lib/vertical-terms";
+import { getQuoteTerms } from "@/lib/core/sectors/terms";
 import { formatDateShort } from "@/lib/format";
 import { isValidCategory } from "@/lib/construction/apu-engine";
 import TabNav from "@/components/molecules/tab-nav";

@@ -10,7 +10,7 @@ import { PhoneInput } from "@/components/molecules/phone-input";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { updateTenantProfileAction, type ProfileFormState } from "@/app/[tenant]/(app)/settings/actions";
-import type { VerticalValue } from "@/lib/admin/catalogs";
+import type { VerticalValue } from "@/lib/core/sectors/verticals";
 import type { BusinessModel } from "@/lib/tenant/business-context";
 import BusinessContextCard from "./business-context-card";
 import type { ProfileInitialValues, SystemInfoItem } from "./settings-shell";

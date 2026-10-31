@@ -4,7 +4,7 @@ import { Button } from "@/components/atoms/button";
 import { KpiCard } from "@/components/molecules/kpi-card";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { VerticalTermsProvider } from "@/app/[tenant]/(app)/vertical-terms-context";
-import { getVerticalTerms } from "@/lib/vertical-terms";
+import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import { TenantShell } from "./tenant-shell";
 
 const meta = {

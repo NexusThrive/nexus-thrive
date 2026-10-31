@@ -6,11 +6,7 @@ import { Download, TriangleAlert } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
 import SearchInput from "@/components/molecules/search-input";
 import FilterSelect from "@/components/molecules/filter-select";
-import {
-  VERTICAL_LABELS,
-  VERTICALS,
-  type VerticalValue,
-} from "@/lib/admin/catalogs";
+import { VERTICAL_LABELS, VERTICALS, type VerticalValue } from "@/lib/core/sectors/verticals";
 import type { TenantSortKey } from "@/lib/admin/db";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { cn } from "@/lib/utils";

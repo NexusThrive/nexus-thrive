@@ -11,12 +11,8 @@ import {
   paymentStatusLabel,
   type PaymentMethodValue,
 } from "@/lib/finance";
-import {
-  MODULES,
-  sortModules,
-  type ModuleValue,
-  type VerticalValue,
-} from "@/lib/admin/catalogs";
+import { type VerticalValue } from "@/lib/core/sectors/verticals";
+import { MODULES, sortModules, type ModuleValue } from "@/lib/capabilities/modules";
 import type { OnboardingTenantType } from "@/lib/onboarding/types";
 
 /** Vigencia de la invitación al dueño de un negocio creado desde el panel. */

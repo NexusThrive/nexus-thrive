@@ -6,7 +6,7 @@ import { attendanceBetween, attendanceCount, expiringSoon, unknownScansBetween }
 import { canHandleCash } from "@/lib/auth/roles";
 import { bogotaDayKey } from "@/lib/finance/series";
 import { requireTenantContext } from "@/lib/tenant/context";
-import { getVerticalTerms } from "@/lib/vertical-terms";
+import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import CheckinStation from "./_components/checkin-station";
 import ExpiringList from "./_components/expiring-list";
 

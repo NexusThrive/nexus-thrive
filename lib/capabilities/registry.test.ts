@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
-import { MODULES, MODULE_LABELS, isModule } from "@/lib/admin/catalogs";
+import { MODULES, MODULE_LABELS, isModule } from "@/lib/capabilities/modules";
 import { MODULE_DESCRIPTIONS, MODULE_ICONS } from "@/lib/onboarding/module-meta";
 import { defaultPricingConfig } from "@/lib/plans/pricing";
 import { CAPABILITIES, CAPABILITY_CATEGORIES, CHILDREN_OF } from "./registry";

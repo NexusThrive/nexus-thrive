@@ -1,4 +1,4 @@
-import type { ModuleValue } from "@/lib/admin/catalogs";
+import type { ModuleValue } from "@/lib/capabilities/modules";
 
 /**
  * Sugerencias de funciones por USO (no por rubro): mira lo que el negocio ya

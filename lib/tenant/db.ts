@@ -12,10 +12,8 @@ import {
   db,
 } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
-import {
-  DEFAULT_MODULES_BY_VERTICAL,
-  type VerticalValue,
-} from "@/lib/admin/catalogs";
+import { type VerticalValue } from "@/lib/core/sectors/verticals";
+import { DEFAULT_MODULES_BY_VERTICAL } from "@/lib/core/sectors/catalog";
 import {
   paymentMethodLabel,
   paymentStatusLabel,

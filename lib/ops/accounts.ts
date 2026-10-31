@@ -1,5 +1,5 @@
 import { db } from "@/prisma/db";
-import type { VerticalValue } from "@/lib/admin/catalogs";
+import type { VerticalValue } from "@/lib/core/sectors/verticals";
 
 /** Cuentas (negocios) vistas desde el Operations Center. */
 

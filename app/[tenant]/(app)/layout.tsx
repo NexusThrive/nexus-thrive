@@ -1,8 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 import { rememberBusinessAction } from "./_actions/business";
 import { activeTenantWithModules, businessesOfMember, memberTheme } from "@/lib/tenant/membership";
-import { sortModules, isModule } from "@/lib/admin/catalogs";
-import { getVerticalTerms } from "@/lib/vertical-terms";
+import { sortModules, isModule } from "@/lib/capabilities/modules";
+import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import { TenantShell } from "@/components/templates/tenant-shell";
 import { VerticalTermsProvider } from "./vertical-terms-context";
 import TenantNotifications from "./_components/tenant-notifications";

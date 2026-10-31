@@ -1,4 +1,4 @@
-import type { ModuleValue } from "@/lib/admin/catalogs";
+import type { ModuleValue } from "@/lib/capabilities/modules";
 import { db } from "@/prisma/db";
 
 /**

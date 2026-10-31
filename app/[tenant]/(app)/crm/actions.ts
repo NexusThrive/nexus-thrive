@@ -3,7 +3,7 @@
 import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
 import { createTenantDb } from "@/lib/tenant/db";
-import { getVerticalTerms, type VerticalTerms } from "@/lib/vertical-terms";
+import { getVerticalTerms, type VerticalTerms } from "@/lib/core/sectors/terms";
 import { can } from "@/lib/auth/permissions";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { withinLimit } from "@/lib/benefits/benefits";
