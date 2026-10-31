@@ -9,15 +9,15 @@ import { describe, expect, test } from "vitest";
  * línea y la tabla si una consulta nueva lo olvida.
  *
  * Quedan fuera, con motivo:
- * - `lib/ops/` y `lib/platform/admin/` (y, a medida que se mueven, los demás módulos del panel
- *   dentro de `lib/platform/`; NO `lib/platform/benefits/`, que sigue vigilado): el panel de NEXUS
+ * - Los módulos del panel dentro de `lib/platform/` (`admin`, `team`, `billing`, `crm`, `support`, `inbox`, `accounts` y `presence`;
+ *   NO `lib/platform/benefits/`, que sigue vigilado): el panel de NEXUS
  *   opera entre negocios a propósito y cada acción exige un permiso del equipo (`requireStaff`).
  * - `SCOPED_ELSEWHERE`: consultas donde el negocio todavía no se conoce o ya
  *   se validó antes. Esta lista solo se achica.
  */
 
 const ROOT = process.cwd();
-const PLATFORM_DIRS = ["lib/ops/", "lib/platform/admin/", "lib/platform/team/", "lib/platform/crm/", "lib/platform/billing/", "lib/platform/support/", "lib/platform/inbox/", "lib/platform/accounts/"];
+const PLATFORM_DIRS = ["lib/platform/admin/", "lib/platform/team/", "lib/platform/crm/", "lib/platform/billing/", "lib/platform/support/", "lib/platform/inbox/", "lib/platform/accounts/", "lib/platform/presence/"];
 
 /**
  * Procesos de plataforma que por diseño cruzan negocios: el despachador del

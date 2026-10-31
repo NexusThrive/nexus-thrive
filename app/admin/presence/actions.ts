@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { updatePresenceRequest } from "@/lib/ops/presence";
+import { updatePresenceRequest } from "@/lib/platform/presence/presence";
 import { requireStaff } from "@/lib/platform/team/access";
 import { scanTenantPresence } from "@/lib/presence/scan";
 

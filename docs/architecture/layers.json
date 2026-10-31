@@ -80,7 +80,6 @@
     { "path": "lib/events", "layer": "core" },
     { "path": "lib/functions", "layer": "automation" },
 
-    { "path": "lib/ops", "layer": "platform" },
 
     { "path": "lib/fonts.ts", "layer": "experience" },
     { "path": "lib/navigation/nav-types.ts", "layer": "core" },
