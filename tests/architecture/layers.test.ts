@@ -129,7 +129,7 @@ describe("la lista de excepciones solo puede encogerse", () => {
     const sources = libSources();
     const origen = Object.keys(sources).find((f) => f.startsWith("lib/business/"))!;
     const sobrante = {
-      id: "EX-TEST", tipo: "import", origen, destino: "lib/accounting/ledger-db.ts", regla: "R3-business-no-importa-finance", importaciones: 1, soloTipos: false,
+      id: "EX-TEST", tipo: "import", origen, destino: "lib/accounting/ledger-db.ts", regla: "R3-business-no-importa-domains", importaciones: 1, soloTipos: false,
       justificacion: "prueba", etapa: "prueba", estado: "abierta", aprobacion: "prueba",
     };
     const conSobrante = { ...exceptions, maxAbiertas: exceptions.maxAbiertas + 1, exceptions: [...exceptions.exceptions, sobrante] };
@@ -145,7 +145,7 @@ describe("la lista de excepciones solo puede encogerse", () => {
 
   test("una excepción sin justificación, etapa o aprobación es inválida", () => {
     // La lista real ya está vacía: se fabrican tres excepciones de import incompletas.
-    const base = { tipo: "import", origen: "lib/a.ts", destino: "lib/b.ts", regla: "R3-core-no-importa-finance", importaciones: 1, soloTipos: false, estado: "abierta" };
+    const base = { tipo: "import", origen: "lib/a.ts", destino: "lib/b.ts", regla: "R3-core-no-importa-domains", importaciones: 1, soloTipos: false, estado: "abierta" };
     const bad = structuredClone(exceptions);
     bad.exceptions = [
       { ...base, id: "EX-T1", justificacion: "", etapa: "x", aprobacion: "x" },

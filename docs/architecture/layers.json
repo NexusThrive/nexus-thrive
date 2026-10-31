@@ -6,14 +6,13 @@
     "foundation": { "mayImport": [], "descripcion": "Utilidades y acceso a la base. No depende de nada de Nexus." },
     "core": { "mayImport": ["foundation"], "descripcion": "Identidad, organizaciones, tenant, permisos, planes, terceros, archivos, API de operaciones." },
     "business": { "mayImport": ["foundation", "core"], "descripcion": "Capacidades empresariales generales: clientes, catálogo, inventario, ventas, compras, POS, tienda." },
-    "finance": { "mayImport": ["foundation", "core", "business"], "descripcion": "Pagos, caja, impuestos, contabilidad, cartera." },
-    "domains": { "mayImport": ["foundation", "core", "business"], "descripcion": "Familias de dominios especializados (hoy ninguna con archivos: `finance` pasará aquí en M5). Entre familias solo por contrato." },
-    "integrations": { "mayImport": ["foundation", "core", "business", "finance", "domains"], "descripcion": "Puertos y adaptadores hacia proveedores y superficies externas (API, MCP, Google, facturación electrónica)." },
+    "domains": { "mayImport": ["foundation", "core", "business"], "descripcion": "Familias de dominios especializados (hoy `finance`, todavía en sus carpetas de origen mientras avanza M5; al terminar vive en `lib/domains/finance/`). Entre familias solo por contrato." },
+    "integrations": { "mayImport": ["foundation", "core", "business", "domains"], "descripcion": "Puertos y adaptadores hacia proveedores y superficies externas (API, MCP, Google, facturación electrónica)." },
     "automation": { "mayImport": ["foundation", "core"], "descripcion": "Eventos, outbox, webhooks internos y funciones automáticas." },
-    "platform": { "mayImport": ["foundation", "core", "business", "finance", "domains", "integrations", "automation"], "descripcion": "Operación global de Nexus como SaaS (Operations Center). No es un segundo Core." },
-    "industry": { "mayImport": ["foundation", "core", "business", "finance", "domains", "integrations", "automation"], "descripcion": "Extensiones sectoriales. Cada industria solo puede importarse a sí misma." },
-    "experience": { "mayImport": ["foundation", "core", "business", "finance", "domains", "integrations", "automation", "platform", "industry"], "descripcion": "Navegación, onboarding, dashboard, presencia, sitio y utilidades de interfaz." },
-    "runtime": { "mayImport": ["foundation", "core", "business", "finance", "domains", "integrations", "automation", "platform", "industry", "experience"], "descripcion": "Raíz de composición: conecta puertos y registros. Puede importarlo todo; solo la importan los puntos de entrada (instrumentation.ts) y las pruebas." }
+    "platform": { "mayImport": ["foundation", "core", "business", "domains", "integrations", "automation"], "descripcion": "Operación global de Nexus como SaaS (Operations Center). No es un segundo Core." },
+    "industry": { "mayImport": ["foundation", "core", "business", "domains", "integrations", "automation"], "descripcion": "Extensiones sectoriales. Cada industria solo puede importarse a sí misma." },
+    "experience": { "mayImport": ["foundation", "core", "business", "domains", "integrations", "automation", "platform", "industry"], "descripcion": "Navegación, onboarding, dashboard, presencia, sitio y utilidades de interfaz." },
+    "runtime": { "mayImport": ["foundation", "core", "business", "domains", "integrations", "automation", "platform", "industry", "experience"], "descripcion": "Raíz de composición: conecta puertos y registros. Puede importarlo todo; solo la importan los puntos de entrada (instrumentation.ts) y las pruebas." }
   },
   "reglas": {
     "R1-nadie-importa-industry": "Solo experience puede importar una industria (y la propia industria su código).",
@@ -64,11 +63,11 @@
     { "path": "lib/data-exchange", "layer": "business" },
     { "path": "lib/presence", "layer": "business" },
 
-    { "path": "lib/finance", "layer": "finance" },
-    { "path": "lib/accounting", "layer": "finance" },
-    { "path": "lib/tax", "layer": "finance" },
-    { "path": "lib/receivables", "layer": "finance" },
-    { "path": "lib/payments", "layer": "finance" },
+    { "path": "lib/finance", "layer": "domains" },
+    { "path": "lib/accounting", "layer": "domains" },
+    { "path": "lib/tax", "layer": "domains" },
+    { "path": "lib/receivables", "layer": "domains" },
+    { "path": "lib/payments", "layer": "domains" },
 
     { "path": "lib/providers", "layer": "integrations" },
     { "path": "lib/einvoice", "layer": "integrations" },

@@ -29,9 +29,9 @@ describe("módulos puros de Finance compartidos", () => {
     expect(read(file)).not.toMatch(/\bprocess\.env\b|\bfetch\(|\bnode:/);
   });
 
-  test("el resto de Finance sigue en Finance: solo lo puro salió", () => {
+  test("el resto de Finance sigue en la capa domains: solo lo puro salió", () => {
     for (const file of ["lib/finance/cop-amount.ts", "lib/accounting/ledger-db.ts", "lib/tax/tax-db.ts", "lib/receivables/receivables-db.ts"]) {
-      expect(classify(file, layers)?.layer, file).toBe("finance");
+      expect(classify(file, layers)?.layer, file).toBe("domains");
     }
   });
 });
