@@ -2,8 +2,7 @@ import { MoneyError, moneyTransaction, recordIncome, type MoneyTx } from "@/lib/
 import { toNumber } from "@/lib/format";
 import { balanceOf } from "@/lib/receivables/aging";
 import { todayCO } from "@/lib/tax/tax";
-import { decryptCredentials } from "@/lib/providers/connections";
-import { wompiCheckoutUrl } from "@/lib/providers/wompi";
+import { checkoutPort } from "./checkout-port";
 import { settleStoreOrder, storeOrderLines } from "@/lib/store/store-settle";
 import { db } from "@/prisma/db";
 import { effectiveStatus, newReference, reconcile, validateIntent, type IntentStatus, type Reconciliation, type ReportRow } from "./intents";
@@ -89,8 +88,7 @@ async function checkoutUrlOf(tenantId: string, row: IntentRow): Promise<string |
   const conn = await db.orm.public.ExternalConnection.where({ tenantId, kind: "PAYMENT", provider: "wompi", status: "CONNECTED" }).first();
   if (!conn?.credentialsEnc) return null;
   try {
-    const c = decryptCredentials(conn.credentialsEnc);
-    return wompiCheckoutUrl({ publicKey: c.publicKey ?? "", integritySecret: c.integritySecret ?? "", reference: row.reference, amount: row.amount });
+    return checkoutPort.use().hostedCheckoutUrl({ provider: row.provider, credentialsEnc: conn.credentialsEnc, reference: row.reference, amount: row.amount });
   } catch {
     return null;
   }

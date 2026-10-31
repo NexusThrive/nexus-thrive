@@ -1,7 +1,7 @@
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
 import { accountingPort, type AccountingEvent } from "./accounting-port";
-import { enqueueFiscal } from "@/lib/einvoice/einvoice-db";
+import { fiscalQueuePort } from "./fiscal-port";
 import { numberingPort } from "./numbering-port";
 import { bogotaDay, todayCO } from "@/lib/plain-date";
 import {
@@ -128,7 +128,7 @@ export async function insertDocument(tx: Writer, tenantId: string, doc: NewDocum
       userId,
     );
   }
-  await enqueueFiscal(tx, tenantId, { id: created.id, kind: doc.kind, number, prefix: allocation?.prefix || null, issueDate: bogotaDay(issueDate), customerName: doc.customerName, customerDoc: doc.customerDoc ?? null, lines: createdLines, totals, relatedCode, notes: doc.notes ?? null });
+  await fiscalQueuePort.use().enqueue(tx, tenantId, { id: created.id, kind: doc.kind, number, prefix: allocation?.prefix || null, issueDate: bogotaDay(issueDate), customerName: doc.customerName, customerDoc: doc.customerDoc ?? null, lines: createdLines, totals, relatedCode, notes: doc.notes ?? null });
   return { id: created.id, number, total: totals.total };
 }
 

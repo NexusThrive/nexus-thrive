@@ -27,7 +27,7 @@ const declarados = sources("lib").flatMap((file) => [...read(file).matchAll(/def
 
 describe("puertos entre dominios", () => {
   test("hay puertos declarados y cada uno tiene un nombre único", () => {
-    expect(declarados.length).toBeGreaterThanOrEqual(4);
+    expect(declarados.length).toBeGreaterThanOrEqual(7);
     const nombres = declarados.map((p) => p.name);
     expect(new Set(nombres).size).toBe(nombres.length);
   });
@@ -42,7 +42,7 @@ describe("puertos entre dominios", () => {
     expect(providedPorts()).toEqual(expect.arrayContaining(declarados.map((p) => p.name)));
   });
 
-  test.each(["accounting", "numbering", "payment-gateway", "tenant-provisioning"])("el puerto «%s» está declarado", (name) => {
+  test.each(["accounting", "numbering", "payment-gateway", "tenant-provisioning", "fiscal-queue", "payment-checkout", "google-listing"])("el puerto «%s» está declarado", (name) => {
     expect(declarados.map((p) => p.name)).toContain(name);
   });
 });

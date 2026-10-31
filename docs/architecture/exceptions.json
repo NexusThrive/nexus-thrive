@@ -1,6 +1,6 @@
 {
   "descripcion": "Excepciones de E0 a las reglas de dependencia (scripts/check-layers.mjs). Cada una registra origen, destino, regla, justificación, etapa prevista de resolución y estado. La lista solo puede reducirse: una excepción nueva o una que sobra hace fallar la comprobación, y maxAbiertas solo baja. Ampliarla requiere justificación y aprobación explícita del dueño.",
-  "maxAbiertas": 14,
+  "maxAbiertas": 10,
   "etapasPrevistas": {
     "E1": "E1 · Core deja de importar rubros (registro de repositorios por rubro)",
     "E2": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
@@ -38,19 +38,6 @@
       "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
     },
     {
-      "id": "EX-008",
-      "tipo": "import",
-      "origen": "lib/business/documents-db.ts",
-      "destino": "lib/einvoice/einvoice-db.ts",
-      "regla": "R3-business-no-importa-integrations",
-      "importaciones": 1,
-      "soloTipos": false,
-      "justificacion": "Al emitir un documento, Business llama a la facturación electrónica (Integrations). Debe pasar por un puerto o evento.",
-      "etapa": "E7 · Separar puertos de adaptadores en providers/google/einvoice",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
       "id": "EX-032",
       "tipo": "import",
       "origen": "lib/ops/nav.ts",
@@ -60,45 +47,6 @@
       "soloTipos": true,
       "justificacion": "Importa solo tipos de navegación (Experience).",
       "etapa": "E9 · Limpieza posterior: tipos de interfaz fuera de Core/Platform",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-033",
-      "tipo": "import",
-      "origen": "lib/payments/intents-db.ts",
-      "destino": "lib/providers/connections.ts",
-      "regla": "R3-finance-no-importa-integrations",
-      "importaciones": 1,
-      "soloTipos": false,
-      "justificacion": "Payments (Finance) usa el registro y el adaptador de Wompi de providers. El puerto debe vivir en Finance y los adaptadores en Integrations.",
-      "etapa": "E7 · Separar puertos de adaptadores en providers/google/einvoice",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-034",
-      "tipo": "import",
-      "origen": "lib/payments/intents-db.ts",
-      "destino": "lib/providers/wompi.ts",
-      "regla": "R3-finance-no-importa-integrations",
-      "importaciones": 1,
-      "soloTipos": false,
-      "justificacion": "Payments (Finance) usa el registro y el adaptador de Wompi de providers. El puerto debe vivir en Finance y los adaptadores en Integrations.",
-      "etapa": "E7 · Separar puertos de adaptadores en providers/google/einvoice",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-035",
-      "tipo": "import",
-      "origen": "lib/presence/pillars-db.ts",
-      "destino": "lib/google/google-db.ts",
-      "regla": "R3-business-no-importa-integrations",
-      "importaciones": 1,
-      "soloTipos": false,
-      "justificacion": "Presencia digital lee la ficha de Google (Integrations) directamente. Debe usar un puerto.",
-      "etapa": "E7 · Separar puertos de adaptadores en providers/google/einvoice",
       "estado": "abierta",
       "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
     },

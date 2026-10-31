@@ -1,6 +1,6 @@
 import { todayCO } from "@/lib/plain-date";
 import { db } from "@/prisma/db";
-import { listingView } from "@/lib/google/google-db";
+import { listingPort } from "./listing-port";
 import { attributionStats, reputationOf } from "@/lib/growth/growth-db";
 import { loadPresence } from "./load";
 import { emitEvent } from "@/lib/events/outbox";
@@ -35,7 +35,7 @@ async function pillarsFor(tenantId: string): Promise<{ pillars: Pillar[]; phase:
     db.orm.public.Product.where({ tenantId, active: true, publishedOnline: true }).aggregate((a) => ({ n: a.count() })),
     db.orm.public.ExternalConnection.where({ tenantId, kind: "PAYMENT", status: "CONNECTED" }).select("id").first(),
     db.orm.public.PaymentIntent.where({ tenantId, status: "PAID" }).where((i) => i.paidAt.gte(since)).aggregate((a) => ({ n: a.count() })),
-    listingView(tenantId),
+    listingPort.use().summary(tenantId),
     reputationOf(tenantId),
     attributionStats(tenantId),
   ]);
