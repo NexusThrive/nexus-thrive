@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
 import { createDocument } from "@/lib/business/documents-db";
@@ -10,7 +10,11 @@ import { buildReport, ledgerRows, reportCsv } from "./reports-db";
 /** Informes contables sobre el libro real, con DOS negocios. */
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const normalize = (url: string | undefined) => (url ?? "").replace(/\?.*$/, "");
-const today = () => new Date(Date.now() - 5 * 3_600_000).toISOString().slice(0, 10);
+// El libro se escribe con el reloj FIJO a las 12:00 de Bogotá (17:00 UTC): a esa hora el día UTC y el de Bogotá
+// coinciden, así que la prueba da el mismo resultado a cualquier hora a la que corra el CI. Antes usaba la hora
+// real y fallaba entre las 19:00 y las 24:00 de Bogotá (el defecto de fechas está cubierto aparte, con instantes fijos).
+const FIXED_NOW = new Date("2026-10-15T17:00:00Z");
+const FIXED_DAY = "2026-10-15";
 
 describe.skipIf(!TEST_URL)("informes contables (integración)", () => {
   const suffix = Date.now().toString(36);
@@ -19,17 +23,23 @@ describe.skipIf(!TEST_URL)("informes contables (integración)", () => {
 
   beforeAll(async () => {
     if (normalize(process.env.DATABASE_URL) !== normalize(TEST_URL)) throw new Error("DATABASE_URL debe ser igual a TEST_DATABASE_URL.");
-    const make = (name: string, slug: string) => createAdminDb().createTenant({ name, slug, vertical: "retail", modules: ["finance"], tenantType: "COMPANY", ownerEmail: `${slug}@ejemplo.com` });
-    a = String((await make("Empresa A", `rp-a-${suffix}`)).id);
-    b = String((await make("Empresa B", `rp-b-${suffix}`)).id);
-    await setAccountingEnabled(a, true);
-    await setAccountingEnabled(b, true);
-    const party = await db.orm.public.Party.create({ tenantId: a, legalName: "Gimnasio Atlas", documentNumber: "9005", kind: "COMPANY" });
-    const customer = await db.orm.public.Customer.create({ tenantId: a, name: "Gimnasio Atlas", partyId: party.id });
-    // Cuenta de cobro de 1.190.000 (IVA 19 %) y un abono de 400.000 por transferencia.
-    const bill = await createDocument(a, { kind: "BILL", customerId: customer.id, customerName: "Gimnasio Atlas", lines: [{ description: "Asesoría", quantity: 1, unitPrice: 1_000_000, taxRatePct: 19 }] }, null);
-    await recordIncomeNow(a, { amount: 400_000, method: "TRANSFER", description: "Abono", customerId: customer.id, invoiceId: bill.id, sourceType: "INVOICE", sourceId: bill.id }, "u");
-    await createDocument(b, { kind: "BILL", customerId: null, customerName: "Otro", lines: [{ description: "Algo", quantity: 1, unitPrice: 5_000 }] }, null);
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(FIXED_NOW);
+    try {
+      const make = (name: string, slug: string) => createAdminDb().createTenant({ name, slug, vertical: "retail", modules: ["finance"], tenantType: "COMPANY", ownerEmail: `${slug}@ejemplo.com` });
+      a = String((await make("Empresa A", `rp-a-${suffix}`)).id);
+      b = String((await make("Empresa B", `rp-b-${suffix}`)).id);
+      await setAccountingEnabled(a, true);
+      await setAccountingEnabled(b, true);
+      const party = await db.orm.public.Party.create({ tenantId: a, legalName: "Gimnasio Atlas", documentNumber: "9005", kind: "COMPANY" });
+      const customer = await db.orm.public.Customer.create({ tenantId: a, name: "Gimnasio Atlas", partyId: party.id });
+      // Cuenta de cobro de 1.190.000 (IVA 19 %) y un abono de 400.000 por transferencia.
+      const bill = await createDocument(a, { kind: "BILL", customerId: customer.id, customerName: "Gimnasio Atlas", lines: [{ description: "Asesoría", quantity: 1, unitPrice: 1_000_000, taxRatePct: 19 }] }, null);
+      await recordIncomeNow(a, { amount: 400_000, method: "TRANSFER", description: "Abono", customerId: customer.id, invoiceId: bill.id, sourceType: "INVOICE", sourceId: bill.id }, "u");
+      await createDocument(b, { kind: "BILL", customerId: null, customerName: "Otro", lines: [{ description: "Algo", quantity: 1, unitPrice: 5_000 }] }, null);
+    } finally {
+      vi.useRealTimers();
+    }
   });
   afterAll(async () => {
     for (const id of [a, b]) if (id) await deleteTenantCompletely(id);
@@ -58,7 +68,7 @@ describe.skipIf(!TEST_URL)("informes contables (integración)", () => {
     const mayor = buildReport("ledger", rows, "1305");
     expect(mayor.kind === "ledger" && mayor.data.balance).toBe(790_000);
     expect(await ledgerRows(a, "2000-01-01", "2000-12-31")).toEqual([]);
-    expect((await ledgerRows(a, today(), today())).length).toBe(rows.length);
+    expect((await ledgerRows(a, FIXED_DAY, FIXED_DAY)).length).toBe(rows.length);
   });
 
   test("los CSV para el contador salen con sus datos y no mezclan negocios", async () => {
