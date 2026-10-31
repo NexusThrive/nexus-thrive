@@ -43,6 +43,19 @@ describe("piezas neutrales que antes colgaban de módulos de Nexus (M4)", () => 
     expect(read("lib/ops/leads.ts") + (exists("lib/platform/crm/leads.ts") ? read("lib/platform/crm/leads.ts") : "")).not.toMatch(/todayBogota/);
   });
 
+  test("Core no importa la administración de la plataforma: las acciones BIZ_* las define Core (lib/tenant/audit.ts) y la plataforma las compone", () => {
+    const tenant = read("lib/tenant/audit.ts");
+    expect(tenant).not.toMatch(/@\/lib\/(admin|platform)\b/);
+    expect(tenant).toMatch(/export type TenantAuditAction =\s*\n\s*\| "BIZ_PAYMENT_VOID"/);
+    const admin = exists("lib/platform/admin/db.ts") ? read("lib/platform/admin/db.ts") : read("lib/admin/db.ts");
+    expect(admin).toContain('import type { TenantAuditAction } from "@/lib/tenant/audit"');
+    expect(admin).not.toMatch(/\| "BIZ_/);
+    const offenders = [...files("lib/tenant"), ...files("lib/auth"), ...files("lib/core"), ...files("lib/plans"), ...files("lib/operations"), ...files("lib/events")]
+      .filter((f) => !/\.test\./.test(f))
+      .filter((f) => importsOf(f).some((s: string) => /^@\/lib\/(admin\/(db|users-db|account-limits|audit-labels)|ops|benefits|platform)\b/.test(s)));
+    expect(offenders).toEqual([]);
+  });
+
   test("ningún módulo de Business ni de Core importa el programa de beneficios", () => {
     const offenders = [...files("lib/business"), ...files("lib/data-exchange"), ...files("lib/tenant"), ...files("lib/plans")]
       .filter((f) => !/\.test\./.test(f))

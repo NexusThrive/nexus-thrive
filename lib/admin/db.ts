@@ -1,3 +1,4 @@
+import type { TenantAuditAction } from "@/lib/tenant/audit";
 import { and, or } from "@prisma/orm-postgres/orm-client";
 import { tenantProvisioningPort } from "@/lib/tenant/provisioning-port";
 import { db } from "@/prisma/db";
@@ -291,45 +292,8 @@ export type AuditAction =
   | "BENEFIT_UPDATE"
   | "BENEFIT_REDEEM"
   | "TENANT_DELETE"
-  // Dentro de un negocio (lib/tenant/audit.ts)
-  | "BIZ_PAYMENT_VOID"
-  | "BIZ_EXPENSE_VOID"
-  | "BIZ_INVOICE_VOID"
-  | "BIZ_TICKETS_VOID"
-  | "BIZ_CUSTOMER_ARCHIVE"
-  | "BIZ_CUSTOMER_RESTORE"
-  | "BIZ_CUSTOMERS_DELETE"
-  | "BIZ_MEMBER_INVITE"
-  | "BIZ_INVITE_REVOKE"
-  | "BIZ_MEMBER_ROLE"
-  | "BIZ_MEMBER_ACTIVE"
-  | "BIZ_MODULE_TOGGLE"
-  | "BIZ_API_KEY_CREATE"
-  | "BIZ_API_KEY_REVOKE"
-  | "BIZ_API_OPERATION"
-  | "BIZ_PROFILE_UPDATE"
-  | "BIZ_GROWTH"
-  | "BIZ_GOOGLE"
-  | "BIZ_STORE_ORDER"
-  | "BIZ_SITE"
-  | "BIZ_ACCOUNTING"
-  | "BIZ_EINVOICE"
-  | "BIZ_ONLINE_PAYMENT"
-  | "BIZ_INVOICE_NOTE"
-  | "BIZ_POS_TURN"
-  | "BIZ_CARTERA_PAYMENT"
-  | "BIZ_TAX_CHANGE"
-  | "BIZ_NUMBERING_CHANGE"
-  | "BIZ_DATA_IMPORT"
-  | "BIZ_DATA_EXPORT"
-  | "BIZ_STOCK_TRANSFER"
-  | "BIZ_STOCK_COUNT"
-  | "BIZ_WAREHOUSE_CREATE"
-  | "BIZ_PURCHASE_CREATE"
-  | "BIZ_PURCHASE_RECEIVE"
-  | "BIZ_PURCHASE_CANCEL"
-  | "BIZ_SUPPLIER_CREATE"
-  | "BIZ_TENANT_DELETE";
+  // Dentro de un negocio: los define lib/tenant/audit.ts (Core), que es quien los usa
+  | TenantAuditAction;
 
 export type AuditLogInput = {
   actorId: string;
