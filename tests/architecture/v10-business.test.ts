@@ -23,6 +23,11 @@ const MODULES: Record<string, Record<string, string>> = {
     "lib/business/scheduling/bookings-db.ts": "lib/business/bookings-db.ts",
     "lib/business/scheduling/calendar.ts": "lib/business/calendar.ts",
   },
+  customers: {
+    "lib/business/customers/customers-db.ts": "lib/business/customers-db.ts",
+    "lib/business/customers/customer-fields.ts": "lib/business/customer-fields.ts",
+    "lib/business/customers/customer-notes.ts": "lib/business/customer-notes.ts",
+  },
 };
 
 const files = (dir: string): string[] =>

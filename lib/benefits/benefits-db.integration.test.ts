@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createBenefitCode, expireBenefitTrial, redeemBenefit } from "@/lib/benefits/benefits-db";
-import { saveCustomer } from "@/lib/business/customers-db";
+import { saveCustomer } from "@/lib/business/customers/customers-db";
 import { seatLimit } from "@/lib/tenant/team-db";
 
 /**

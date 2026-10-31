@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { customerNameIn } from "@/lib/business/customers-db";
+import { customerNameIn } from "@/lib/business/customers/customers-db";
 import { validateLines, type InvoiceKind, type LineInput } from "@/lib/business/invoice";
 import { documentView, issueAdjustmentNote, type DocumentView } from "@/lib/business/documents-db";
 import { createInvoice, payInvoice, voidInvoice, invoiceStatus } from "@/lib/business/invoices-db";

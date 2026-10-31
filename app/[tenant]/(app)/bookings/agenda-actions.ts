@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { bookingsOverlapping, isActiveTeamMember, markBookingReminder, saveBooking, setBookingStatus } from "@/lib/business/scheduling/bookings-db";
-import { customerBelongs } from "@/lib/business/customers-db";
+import { customerBelongs } from "@/lib/business/customers/customers-db";
 import { bogotaToMs, capacityLeft, staffConflict } from "@/lib/business/scheduling/calendar";
 import { getProduct } from "@/lib/business/products-db";
 import { requireTenantContext } from "@/lib/tenant/context";

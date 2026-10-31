@@ -5,7 +5,7 @@ import { listProducts } from "@/lib/business/products-db";
 import { canHandleCash, canManage } from "@/lib/auth/roles";
 import { todayBogota } from "@/lib/ops/leads";
 import { requireTenantContext } from "@/lib/tenant/context";
-import { customerOptions } from "@/lib/business/customers-db";
+import { customerOptions } from "@/lib/business/customers/customers-db";
 import BillingList from "./_components/billing-list";
 import { routeCategory } from "@/lib/navigation/tenant-nav";
 

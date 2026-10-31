@@ -8,7 +8,7 @@ import {
   User,
   Wallet,
 } from "lucide-react";
-import { customerContact } from "@/lib/business/customers-db";
+import { customerContact } from "@/lib/business/customers/customers-db";
 import { getQuoteTerms, getVerticalTerms } from "@/lib/core/sectors/terms";
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import { QuoteStatusBadge } from "@/components/molecules/quote-badges";

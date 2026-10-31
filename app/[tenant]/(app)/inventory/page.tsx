@@ -4,7 +4,7 @@ import { kindsForVertical, KIND_LABELS } from "@/lib/business/catalog-kinds";
 import { listProducts } from "@/lib/business/products-db";
 import { canManage } from "@/lib/auth/roles";
 import { requireTenantContext } from "@/lib/tenant/context";
-import { customerOptions } from "@/lib/business/customers-db";
+import { customerOptions } from "@/lib/business/customers/customers-db";
 import CatalogView from "./_components/catalog-view";
 import { routeCategory } from "@/lib/navigation/tenant-nav";
 

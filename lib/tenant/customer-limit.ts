@@ -6,7 +6,7 @@ import { db } from "@/prisma/db";
  *
  * Es política de planes de Core, igual que `seatLimit` (usuarios) en `team-db.ts`: el límite
  * es un atributo del negocio (`Tenant.maxCustomers`) y lo aplican el medidor de consumo y las
- * altas de clientes. Antes vivía en `lib/business/customers-db.ts` y obligaba a Core a importar
+ * altas de clientes. Antes vivía en `lib/business/customers/customers-db.ts` y obligaba a Core a importar
  * de Business.
  */
 export async function customerLimit(tenantId: string): Promise<{ limit: number | null; used: number }> {

@@ -3,7 +3,7 @@
 import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
 import { createTenantDb } from "@/lib/tenant/db";
-import { NOTE_MAX_LENGTH } from "@/lib/business/customer-notes";
+import { NOTE_MAX_LENGTH } from "@/lib/business/customers/customer-notes";
 
 export type NoteFormState = {
   status: "idle" | "error" | "ok";

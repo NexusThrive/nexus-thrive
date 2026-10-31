@@ -12,7 +12,7 @@ import { canHandleCash, canManage } from "@/lib/auth/roles";
 import { bogotaDayKey } from "@/lib/finance/series";
 import { formatCurrency } from "@/lib/format";
 import { requireTenantContext } from "@/lib/tenant/context";
-import { customerOptions } from "@/lib/business/customers-db";
+import { customerOptions } from "@/lib/business/customers/customers-db";
 import TicketDesk from "./_components/ticket-desk";
 import VisitorReportView from "./_components/visitor-report";
 import MuseumSettingsForm from "./_components/museum-settings-form";

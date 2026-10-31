@@ -3,7 +3,7 @@ import { QrCode } from "@/components/atoms/qr-code";
 import { PrintButton } from "@/components/molecules/print-button";
 import { ensureAccessCode } from "@/lib/industry/gym/gym-db";
 import { requireTenantContext } from "@/lib/tenant/context";
-import { customerCard } from "@/lib/business/customers-db";
+import { customerCard } from "@/lib/business/customers/customers-db";
 import { tenantLetterhead } from "@/lib/tenant/membership";
 
 /** Carné del socio para imprimir (tamaño tarjeta): foto, nombre y QR de acceso. */

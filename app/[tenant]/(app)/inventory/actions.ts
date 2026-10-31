@@ -2,7 +2,7 @@
 
 import { StockError } from "@/lib/inventory/stock-service";
 import { revalidatePath } from "next/cache";
-import { customerBelongs } from "@/lib/business/customers-db";
+import { customerBelongs } from "@/lib/business/customers/customers-db";
 import { kindsForVertical, validateProduct, type ProductDraft } from "@/lib/business/catalog-kinds";
 import { sellProduct } from "@/lib/business/money-service";
 import { validateStockMove, type StockKind } from "@/lib/business/inventory";

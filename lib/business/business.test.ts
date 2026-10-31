@@ -102,7 +102,7 @@ describe("indicativos de país", () => {
   });
 });
 
-import { bmi, cleanProfile, membershipTypeFor, profileFor } from "./customer-fields";
+import { bmi, cleanProfile, membershipTypeFor, profileFor } from "./customers/customer-fields";
 
 describe("ficha del cliente por rubro", () => {
   it("el gym pide foto, medidas y plan; otros rubros sus propios datos", () => {

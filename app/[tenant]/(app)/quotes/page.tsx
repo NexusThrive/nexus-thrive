@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { ArrowLeft, Building2 } from "lucide-react";
-import { allCustomerOptions } from "@/lib/business/customers-db";
+import { allCustomerOptions } from "@/lib/business/customers/customers-db";
 import { createTenantDb } from "@/lib/tenant/db";
 import { canGovernBudget, type TenantRole } from "@/lib/tenant/context";
 import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/construction/project-domain";

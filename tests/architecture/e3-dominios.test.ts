@@ -74,7 +74,7 @@ describe("suscriptores de eventos", () => {
 describe("límite de clientes del plan", () => {
   test("la política vive en Core, junto a la de usuarios, y Business no la define", () => {
     expect(exists("lib/tenant/customer-limit.ts")).toBe(true);
-    expect(read("lib/business/customers-db.ts")).not.toMatch(/export async function customerLimit/);
+    expect(read("lib/business/customers/customers-db.ts")).not.toMatch(/export async function customerLimit/);
     expect(importsOf("lib/usage/consumption-db.ts").some((i) => i.startsWith("@/lib/business/"))).toBe(false);
   });
 });
