@@ -4,7 +4,6 @@ import { PageHeader } from "@/components/molecules/page-header";
 import { canManage } from "@/lib/auth/roles";
 import { listProducts } from "@/lib/business/catalog/products-db";
 import { listWarehouses } from "@/lib/inventory/kardex";
-import { todayBogota } from "@/lib/ops/leads";
 import { listParties } from "@/lib/parties/parties-db";
 import { listOrders } from "@/lib/purchasing/purchases-db";
 import { tenantWithModules } from "@/lib/tenant/membership";
@@ -12,6 +11,7 @@ import { requireTenantContext } from "@/lib/tenant/context";
 import PurchasesView from "./_components/purchases-view";
 import { routeCategory } from "@/lib/navigation/tenant-nav";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
+import { bogotaDay } from "@/lib/plain-date";
 
 /**
  * Compras a proveedores: órdenes, recepción de mercancía al inventario y
@@ -60,7 +60,7 @@ export default async function PurchasesPage({ params }: { params: Promise<{ tena
         suppliers={suppliers}
         products={products.filter((p) => p.trackStock).map((p) => ({ id: p.id, name: p.name, cost: p.cost, stock: p.stock }))}
         warehouses={warehouses}
-        today={todayBogota()}
+        today={bogotaDay()}
       />
     </div>
   );

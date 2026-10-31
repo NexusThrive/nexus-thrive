@@ -6,8 +6,9 @@ import { PageHeader } from "@/components/molecules/page-header";
 import { isVertical, VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
 import { getStaffContext } from "@/lib/ops/access";
 import { listManagers } from "@/lib/ops/accounts";
-import { getLead, listLeadActivity, tenantOptions, todayBogota } from "@/lib/ops/leads";
+import { getLead, listLeadActivity, tenantOptions } from "@/lib/ops/leads";
 import LeadDetail from "./_components/lead-detail";
+import { bogotaDay } from "@/lib/plain-date";
 
 export const metadata: Metadata = { title: "Lead · NEXUS Operations Center" };
 
@@ -29,7 +30,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
         owners={owners}
         tenants={tenants}
         me={staff.staffId}
-        today={todayBogota()}
+        today={bogotaDay()}
         canEdit={staff.permissions.includes("leads.edit")}
         canAssign={staff.permissions.includes("leads.assign")}
         verticalLabel={lead.vertical && isVertical(lead.vertical) ? VERTICAL_LABELS[lead.vertical] : null}

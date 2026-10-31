@@ -111,3 +111,21 @@ describe("todayCO (el día de Bogotá de un instante en milisegundos)", () => {
     expect(todayCO()).toBe(bogotaDay(new Date()));
   });
 });
+
+describe("bogotaDay() equivale al antiguo todayBogota() de Operaciones (V10 · M4)", () => {
+  /** La fórmula que tenía lib/ops/leads.ts: formato en-CA con la zona de Bogotá. */
+  const anterior = (ms: number) => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Bogota" }).format(new Date(ms));
+
+  test("da el mismo día en los límites de día, mes y año y en una barrida de cuatro años", () => {
+    const limites = ["2026-01-01T04:59:59.999Z", "2026-01-01T05:00:00.000Z", "2026-11-01T04:59:59.999Z", "2026-11-01T05:00:00.000Z", "2028-03-01T04:59:59.999Z", "2028-03-01T05:00:00.000Z", "1999-12-31T23:59:59.999Z"].map(Date.parse);
+    for (const ms of limites) expect(bogotaDay(new Date(ms)), new Date(ms).toISOString()).toBe(anterior(ms));
+    for (let ms = Date.parse("2025-01-01T00:00:00Z"); ms < Date.parse("2029-01-01T00:00:00Z"); ms += 7 * 3_600_000 + 13 * 60_000) {
+      if (bogotaDay(new Date(ms)) !== anterior(ms)) throw new Error(`difiere en ${new Date(ms).toISOString()}`);
+    }
+  });
+
+  test("sin argumento es el día de hoy en Bogotá", () => {
+    expect(bogotaDay()).toBe(anterior(Date.now()));
+  });
+});
+

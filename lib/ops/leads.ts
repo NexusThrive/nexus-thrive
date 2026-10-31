@@ -9,11 +9,6 @@ const now = () => instant(Date.now());
 const dateToInstant = (d: string | null) => (d ? Temporal.Instant.from(`${d}T12:00:00Z`) : null);
 const iso = (v: unknown) => (v ? String(v) : null);
 
-/** Hoy en Colombia (YYYY-MM-DD). */
-export function todayBogota(): string {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Bogota" }).format(new Date());
-}
-
 export type LeadRow = {
   id: string;
   company: string;

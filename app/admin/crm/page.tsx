@@ -3,8 +3,9 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getStaffContext } from "@/lib/ops/access";
 import { listManagers } from "@/lib/ops/accounts";
-import { listLeads, tenantOptions, todayBogota } from "@/lib/ops/leads";
+import { listLeads, tenantOptions } from "@/lib/ops/leads";
 import CrmView from "./_components/crm-view";
+import { bogotaDay } from "@/lib/plain-date";
 
 export const metadata: Metadata = { title: "CRM comercial · NEXUS Operations Center" };
 
@@ -21,7 +22,7 @@ export default async function CrmPage() {
         owners={owners}
         tenants={tenants}
         me={staff.staffId}
-        today={todayBogota()}
+        today={bogotaDay()}
         canEdit={staff.permissions.includes("leads.edit")}
         canAssign={staff.permissions.includes("leads.assign")}
       />

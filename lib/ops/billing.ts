@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { cache } from "react";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
+import { bogotaDay } from "@/lib/plain-date";
 import {
   DEFAULT_POLICY,
   dunning,
@@ -13,7 +14,6 @@ import {
   type Dunning,
   type SubscriptionStatusValue,
 } from "./billing-rules";
-import { todayBogota } from "./leads";
 
 /** Facturación de NEXUS a sus negocios: acceso a datos (servidor). */
 
@@ -102,7 +102,7 @@ export async function listCharges(filter: { tenantId?: string; chargeId?: string
   const evidence = ids.length
     ? await db.orm.public.ChargeEvidence.where((e) => e.chargeId.in(ids)).select("id", "chargeId", "fileName", "mimeType", "byteSize", "createdAt").orderBy((e) => e.createdAt.asc()).all()
     : [];
-  const today = todayBogota();
+  const today = bogotaDay();
   return charges.map((c) => {
     const t = n.tenant.get(c.tenantId);
     const row = {
@@ -282,7 +282,7 @@ export async function confirmCharge(chargeId: string, staffId: string): Promise<
     patch.currentPeriodEnd = c.periodEnd;
   }
   const policy = await getPolicy();
-  const today = todayBogota();
+  const today = bogotaDay();
   const pending = (await db.orm.public.Charge.where({ subscriptionId: s.id, status: "PENDING" }).select("dueAt", "noticeSentAt").all()).filter(
     (p) => OVERDUE.has(dunning({ status: "PENDING", dueDate: day(p.dueAt)!, noticeDate: day(p.noticeSentAt) }, policy, today).stage),
   );

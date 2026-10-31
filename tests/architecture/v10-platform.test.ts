@@ -37,6 +37,12 @@ describe("piezas neutrales que antes colgaban de módulos de Nexus (M4)", () => 
     expect(read("lib/benefits/benefits.ts") + (exists("lib/platform/benefits/benefits.ts") ? read("lib/platform/benefits/benefits.ts") : "")).not.toMatch(/export function withinLimit/);
   });
 
+  test("las páginas de los negocios (app/[tenant]) ya no importan Operaciones: el día de hoy sale de Foundation", () => {
+    const offenders = files("app/[tenant]").filter((f) => importsOf(f).some((s: string) => /^@\/lib\/(ops|platform\/(?!benefits\b))/.test(s)));
+    expect(offenders).toEqual([]);
+    expect(read("lib/ops/leads.ts") + (exists("lib/platform/crm/leads.ts") ? read("lib/platform/crm/leads.ts") : "")).not.toMatch(/todayBogota/);
+  });
+
   test("ningún módulo de Business ni de Core importa el programa de beneficios", () => {
     const offenders = [...files("lib/business"), ...files("lib/data-exchange"), ...files("lib/tenant"), ...files("lib/plans")]
       .filter((f) => !/\.test\./.test(f))

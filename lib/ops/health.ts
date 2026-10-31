@@ -2,11 +2,11 @@ import { db } from "@/prisma/db";
 import { listCharges, listSubscriptions } from "./billing";
 import { healthScore, type HealthFacts } from "./health-rules";
 import { daysBetween } from "./billing-rules";
-import { todayBogota } from "./leads";
 import { onboardingBoardFor } from "./onboarding-board";
 import { listSurveys } from "./satisfaction";
 import { isOpenStatus, slaState } from "./support-rules";
 import { listTickets } from "./tickets";
+import { bogotaDay } from "@/lib/plain-date";
 
 /** Salud de cada cuenta viva con su explicación (servidor). */
 export async function accountHealth(filter: { tenantId?: string } = {}) {
@@ -28,7 +28,7 @@ export async function accountHealth(filter: { tenantId?: string } = {}) {
     listSurveys(filter.tenantId ? { tenantId: filter.tenantId } : {}),
     db.orm.public.StaffMember.select("id", "name", "email").all(),
   ]);
-  const today = todayBogota();
+  const today = bogotaDay();
   const now = Date.now();
   const sn = new Map(staff.map((s) => [s.id, s.name ?? s.email]));
   const worst = { suspend_eligible: "suspendable", notice_running: "notice", notice_needed: "notice", grace: "grace" } as Record<string, HealthFacts["billing"]>;

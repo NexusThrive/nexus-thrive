@@ -4,13 +4,14 @@ import { accountHealth } from "./health";
 import { listConversations } from "./inbox";
 import { dunningLabel } from "./billing-rules";
 import { followUpState, stageMeta } from "./crm-rules";
-import { listLeads, todayBogota } from "./leads";
+import { listLeads } from "./leads";
 import { priorityMeta, slaState } from "./support-rules";
 import { listTickets } from "./tickets";
+import { bogotaDay } from "@/lib/plain-date";
 
 /** Prioridades comerciales: seguimientos vencidos o para hoy. */
 export async function leadPriorities(): Promise<PriorityItem[]> {
-  const today = todayBogota();
+  const today = bogotaDay();
   const leads = await listLeads();
   return leads
     .map((l) => ({ l, f: followUpState(l.stage, l.nextStepDate, today) }))
