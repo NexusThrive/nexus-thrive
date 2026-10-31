@@ -60,6 +60,8 @@ gimnasio, etapa E2).
 
 ## Lo que queda para E2 y posteriores
 
+> **Actualización:** E2 resolvió EX-011, la reubicación de permisos, roles, equipo, gimnasio y museo, y el duplicado de `escapeLike`. Ver [`E2-resultados.md`](E2-resultados.md).
+
 - **E2:** `business/enrollment-db.ts` (EX-011) y demás reubicaciones: permisos, roles y equipo a Core; gimnasio y museo a `lib/industry/`; `escapeLike` duplicado en `lib/admin/db.ts`.
 - La ficha 360° pide el aporte del gimnasio aunque el módulo de membresías esté inactivo (mismo comportamiento que antes). Se puede omitir la consulta en E2.
 - `lib/tenant/db.ts` sigue conteniendo repositorios de Business y Finance (`customers`, `payments`, `bookings`, `expenses`, `finance`).

@@ -26,7 +26,11 @@ run_quiet() {
 
 pnpm exec tsc --noEmit
 pnpm check:layers
-run_quiet 3 pnpm test --run
+# Pruebas unitarias SIN base de datos, como el CI (`TEST_DATABASE_URL: ""`): si la variable
+# estuviera definida, `pnpm test` también correría las de integración y en PARALELO, y
+# varias tocan tablas de plataforma compartidas (p. ej. el rol «ops») y se pisan.
+# La integración va después, por su script, que sí las corre una tras otra.
+run_quiet 3 env TEST_DATABASE_URL= pnpm test --run
 run_quiet 3 pnpm test:integration
 
 # El build pasa o falla por su código; las líneas de rutas son solo un resumen.

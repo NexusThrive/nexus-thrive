@@ -29,6 +29,7 @@ function fakePnpm(failOn: string | null) {
     join(dir, "pnpm"),
     `#!/usr/bin/env bash
 echo "$*" >> "${log}"
+echo "$*=\${TEST_DATABASE_URL:-<vacía>}" >> "${log}.env"
 if [ "$*" = "build" ]; then printf '○  (Static)   prerendered as static content\\nƒ  (Dynamic)  server-rendered on demand\\n'; fi
 if [ -n "\${FAIL_ON:-}" ] && [ "$*" = "$FAIL_ON" ]; then echo "SALIDA-DEL-FALLO: $*"; exit 7; fi
 echo "ok: $*"
@@ -48,6 +49,16 @@ describe("scripts/verify.sh", () => {
     expect(calls(f.log)).toEqual(STEPS);
     expect(r.stdout).toContain("todo en verde");
     expect(r.stdout).toContain("(Static)");
+  });
+
+  test("las pruebas unitarias corren sin base de datos y la integración con la base indicada", () => {
+    const f = fakePnpm(null);
+    const env = { ...f.env, TEST_DATABASE_URL: "postgresql://prueba@127.0.0.1:1/x" };
+    const r = spawnSync("bash", [SCRIPT], { env, encoding: "utf8" });
+    expect(r.status, r.stdout + r.stderr).toBe(0);
+    const seen = readFileSync(`${f.log}.env`, "utf8");
+    expect(seen).toContain("test --run=<vacía>");
+    expect(seen).toContain("test:integration=postgresql://prueba@127.0.0.1:1/x");
   });
 
   test.each(STEPS)("si falla «%s»: código distinto de cero, muestra su salida y no sigue", (step) => {

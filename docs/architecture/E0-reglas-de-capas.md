@@ -32,7 +32,7 @@ repositorio actual, y el CI ya corre `pnpm test`), `pnpm verify` (paso `check:la
 | integrations | foundation, core, business, finance | `providers`, `einvoice`, `google`, `maps`, `api`, `mcp` |
 | automation | foundation, core | `functions` |
 | platform | todo lo anterior salvo industry y experience | `ops` |
-| industry | foundation, core, business, finance, integrations, automation | `construction`; gimnasio y museo (archivos `gym*`, `memberships*`, `museum*` dentro de `lib/business/`) |
+| industry | foundation, core, business, finance, integrations, automation | `lib/construction`, `lib/industry/gym`, `lib/industry/museum` |
 | experience | todas | `navigation`, `motion`, `design`, `hooks`, `site`, `seo`, `onboarding`, `dashboard`, `fonts.ts`, `app/`, `components/` |
 
 Dos decisiones de clasificación, para tu revisión:
@@ -60,7 +60,7 @@ Hay tres garantías para que la lista solo pueda encogerse:
 2. Una excepción que **ya no se necesita** falla hasta que se marque «resuelta» y se quite.
 3. `maxAbiertas` es un tope: ampliarlo exige editarlo a la vista de la revisión, con justificación y tu aprobación.
 
-Estado inicial: **64 abiertas** (58 dependencias + 6 rubros escritos a mano). Todas con aprobación «propuesta E0, pendiente de revisión».
+Estado inicial en E0: **64 abiertas** (58 dependencias + 6 rubros escritos a mano). Hoy son menos: ver [`E1-resultados.md`](E1-resultados.md) y [`E2-resultados.md`](E2-resultados.md). Todas con aprobación «propuesta E0, pendiente de revisión».
 
 | Etapa prevista | Excepciones | Qué resuelve |
 |---|---|---|
@@ -99,4 +99,4 @@ La clasificación completa está en `exceptions.json` (`comparacionesVertical`).
 
 - El verificador analiza texto con expresiones regulares, no un árbol sintáctico: no ve imports construidos dinámicamente con variables.
 - Solo se evalúan los imports de `lib/`. `app/` y `components/` son experience y pueden importar todo.
-- La clasificación por archivo dentro de `lib/business/` (gimnasio, membresías, museo) depende de los nombres `gym*`, `memberships*`, `museum*`.
+- Cada industria se clasifica por carpeta (`lib/construction`, `lib/industry/<rubro>`); una industria nueva necesita su unidad en `layers.json`, o el verificador la marca «sin clasificar».
