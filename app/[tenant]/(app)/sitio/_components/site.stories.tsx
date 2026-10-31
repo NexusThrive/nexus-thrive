@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { withShell } from "../../../../../.storybook/decorators";
 import { SiteView } from "@/components/organisms/site-view";
-import type { SiteData } from "@/lib/site/site";
+import type { SiteData } from "@/lib/experience/site/site";
 import SiteEditor from "./site-editor";
 
 const site: SiteData = {

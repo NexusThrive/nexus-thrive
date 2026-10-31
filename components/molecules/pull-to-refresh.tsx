@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useTransition, type ReactNode } from "reac
 import { useRouter } from "next/navigation";
 import { NMark } from "@/components/atoms/n-mark";
 import { useToast } from "@/components/molecules/toast";
-import { motionOff } from "@/lib/motion";
+import { motionOff } from "@/lib/experience/motion/index";
 
 /** Arrastre necesario para actualizar (px). */
 const THRESHOLD = 170;

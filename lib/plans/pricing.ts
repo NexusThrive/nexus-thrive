@@ -67,7 +67,7 @@ export type VerticalConfig = {
   modules: ModuleValue[];
   /** Preseleccionados en el plan Elite. */
   recommended: ModuleValue[];
-  /** Receta del Inicio para el rubro (ver lib/dashboard). */
+  /** Receta del Inicio para el rubro (ver lib/experience/dashboard). */
   dashboardTemplate: string | null;
   order: number;
 };

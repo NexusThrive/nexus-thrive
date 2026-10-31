@@ -8,7 +8,7 @@ import { MODULES, type ModuleValue } from "@/lib/capabilities/modules";
 import { CAPABILITIES, CAPABILITY_CATEGORIES, type CapabilityCategory } from "@/lib/capabilities/registry";
 import { MODULE_NAV } from "@/lib/capabilities/route-modules";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
-import type { NavGroup, NavItem } from "./nav-types";
+import type { NavGroup, NavItem } from "../../navigation/nav-types";
 
 export type { NavGroup, NavItem };
 export { modulesForRoute } from "@/lib/capabilities/route-modules";

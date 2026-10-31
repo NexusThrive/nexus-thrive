@@ -7,7 +7,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { Chip, ChipRow } from "@/components/atoms/chip";
 import { inputClasses } from "@/components/atoms/input";
 import { EmptyState } from "@/components/molecules/empty-state";
-import { spring } from "@/lib/motion";
+import { spring } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 
 export type WhatsAppContact = { id: string; name: string; phone: string };

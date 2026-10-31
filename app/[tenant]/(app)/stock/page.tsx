@@ -8,7 +8,7 @@ import { listCounts, listTransfers, reorderOverview, stockOverview } from "@/lib
 import { requireTenantContext } from "@/lib/tenant/context";
 import { tenantWithModules } from "@/lib/tenant/membership";
 import StockView from "./_components/stock-view";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 /**
  * Existencias: qué hay en cada bodega, traslados entre bodegas, conteos físicos

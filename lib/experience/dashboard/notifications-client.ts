@@ -1,4 +1,4 @@
-import type { AppNotification } from "@/lib/dashboard/notifications";
+import type { AppNotification } from "@/lib/experience/dashboard/notifications";
 
 /**
  * Aviso interno del navegador: «algo cambió, revisa las notificaciones». Lo

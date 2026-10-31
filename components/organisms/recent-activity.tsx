@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Switch } from "@/components/atoms/switch";
-import { flash } from "@/lib/motion";
+import { flash } from "@/lib/experience/motion/index";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { ArrowUpRight, CalendarClock, HandCoins, Hourglass, Receipt, UserPlus } from "lucide-react";
@@ -11,7 +11,7 @@ import { Chip, ChipRow } from "@/components/atoms/chip";
 import { IconTile } from "@/components/atoms/icon-tile";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { Amount, ListItem } from "@/components/molecules/list-item";
-import type { ActivityType, RecentActivityItem } from "@/lib/dashboard/types";
+import type { ActivityType, RecentActivityItem } from "@/lib/experience/dashboard/types";
 
 const ACTIVITY_ICONS: Record<ActivityType, LucideIcon> = {
   payment: HandCoins,

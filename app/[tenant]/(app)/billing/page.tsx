@@ -6,7 +6,7 @@ import { canHandleCash, canManage } from "@/lib/auth/roles";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { customerOptions } from "@/lib/business/customers/customers-db";
 import BillingList from "./_components/billing-list";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 import { bogotaDay } from "@/lib/plain-date";
 
 /** Facturación V1: cuentas de cobro y recibos numerados (la factura electrónica DIAN llega con un proveedor). */

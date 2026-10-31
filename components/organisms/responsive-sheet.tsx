@@ -5,7 +5,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { cn } from "@/lib/utils";
-import { armModalMorph, exitPlayerFor, MORPH_SECONDS } from "@/lib/motion/modal-morph";
+import { armModalMorph, exitPlayerFor, MORPH_SECONDS } from "@/lib/experience/motion/modal-morph";
 import styles from "./responsive-sheet.module.css";
 
 /**

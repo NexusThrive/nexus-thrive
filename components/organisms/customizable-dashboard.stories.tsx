@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { KpiCard } from "@/components/molecules/kpi-card";
 import { PageHeader } from "@/components/molecules/page-header";
 import { Wallet, Users, TrendingUp } from "lucide-react";
-import { CHART_CATALOG } from "@/lib/dashboard/chart-catalog";
+import { CHART_CATALOG } from "@/lib/experience/dashboard/chart-catalog";
 import { CustomizableDashboard, DashboardMenu, type DashboardWidget } from "./customizable-dashboard";
 
 const widgets: DashboardWidget[] = [

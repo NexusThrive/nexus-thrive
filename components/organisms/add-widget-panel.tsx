@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { ListChecks } from "lucide-react";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { COMING_SOON, type ChartEntry, type ChartType } from "@/lib/dashboard/chart-catalog";
+import { COMING_SOON, type ChartEntry, type ChartType } from "@/lib/experience/dashboard/chart-catalog";
 import { cn } from "@/lib/utils";
 
 /** Vista previa de cada gráfico: trazos mono de 60 × 36, solo para reconocerlo. */

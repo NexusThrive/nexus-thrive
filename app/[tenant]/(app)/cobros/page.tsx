@@ -7,7 +7,7 @@ import { connectedGateways, listIntents, listReconciliations } from "@/lib/domai
 import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { requireTenantContext } from "@/lib/tenant/context";
 import CobrosView from "./_components/cobros-view";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 /** Cobros en línea: enlaces y botones de pago, estado oficial, reembolsos y conciliación diaria. */
 export default async function CobrosPage({ params }: { params: Promise<{ tenant: string }> }) {

@@ -12,7 +12,7 @@ import { NavbarSearch } from "@/components/organisms/navbar-search";
 import QuickActions from "@/components/organisms/quick-actions";
 import RecentActivity from "@/components/organisms/recent-activity";
 import { AppShellProvider } from "@/components/providers/shell-context";
-import { buildTenantNav } from "@/lib/navigation/tenant-nav";
+import { buildTenantNav } from "@/lib/experience/navigation/tenant-nav";
 import { ToastProvider } from "@/components/molecules/toast";
 import { withShell } from "../../../../.storybook/decorators";
 import PresencePillars from "./presence-pillars";

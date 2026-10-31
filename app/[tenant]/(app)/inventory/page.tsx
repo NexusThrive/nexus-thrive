@@ -6,7 +6,7 @@ import { canManage } from "@/lib/auth/roles";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { customerOptions } from "@/lib/business/customers/customers-db";
 import CatalogView from "./_components/catalog-view";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 /** Catálogo e inventario: lo que vende el negocio (productos, servicios, planes, entradas o tours según su rubro). */
 export default async function InventoryPage({ params, searchParams }: { params: Promise<{ tenant: string }>; searchParams: Promise<{ nuevo?: string }> }) {

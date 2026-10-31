@@ -21,7 +21,7 @@ import {
 } from "@dnd-kit/core";
 import { ArrowRight, CalendarClock, GripVertical, MoreHorizontal } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/molecules/dropdown-menu";
-import { useReducedMotion } from "@/lib/hooks/use-reduced-motion";
+import { useReducedMotion } from "@/lib/experience/hooks/use-reduced-motion";
 import { dropRule, followUpState, isActiveStage, LEAD_STAGES, stageMeta, type LeadStageValue } from "@/lib/platform/crm/crm-rules";
 import type { LeadRow } from "@/lib/platform/crm/leads";
 import { formatUsdCents } from "@/lib/plans/pricing";

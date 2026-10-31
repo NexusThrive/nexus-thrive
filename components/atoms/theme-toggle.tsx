@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
 import { THEME_STORAGE_KEY, themeInitScript } from "@/lib/init-scripts";
-import { withThemeSweep } from "@/lib/motion";
+import { withThemeSweep } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 
 /**

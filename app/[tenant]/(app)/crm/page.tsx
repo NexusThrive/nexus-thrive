@@ -6,7 +6,7 @@ import type { CustomerSort, CustomerStatus } from "./_components/customer-filter
 import { PageHeader } from "@/components/molecules/page-header";
 import { requirePageContext } from "@/lib/tenant/context";
 import { can } from "@/lib/auth/permissions";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 const PAGE_SIZE = 20;
 

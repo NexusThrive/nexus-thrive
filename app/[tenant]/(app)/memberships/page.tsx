@@ -17,7 +17,7 @@ import {
 import { PageHeader } from "@/components/molecules/page-header";
 import { requirePageContext } from "@/lib/tenant/context";
 import { can } from "@/lib/auth/permissions";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
 const PAGE_SIZE = 10;

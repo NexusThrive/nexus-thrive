@@ -3,10 +3,10 @@ import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getAppBaseUrl } from "@/lib/app-url";
 import { can } from "@/lib/auth/permissions";
-import { siteForEditor } from "@/lib/site/site-db";
+import { siteForEditor } from "@/lib/experience/site/site-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import SiteEditor from "./_components/site-editor";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 /** Mi sitio web: plantilla, textos, color, catálogo y SEO, con vista previa. */
 export default async function SitePage({ params }: { params: Promise<{ tenant: string }> }) {

@@ -9,7 +9,7 @@ import { listOrders } from "@/lib/business/purchasing/purchases-db";
 import { tenantWithModules } from "@/lib/tenant/membership";
 import { requireTenantContext } from "@/lib/tenant/context";
 import PurchasesView from "./_components/purchases-view";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import { bogotaDay } from "@/lib/plain-date";
 

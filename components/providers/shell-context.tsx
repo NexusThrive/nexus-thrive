@@ -10,8 +10,8 @@ import {
   tenantRelativePath,
   type NavGroup,
   type NavItem,
-} from "@/lib/navigation/tenant-nav";
-import { quickCreateActions, type QuickCreateAction } from "@/lib/navigation/quick-create";
+} from "@/lib/experience/navigation/tenant-nav";
+import { quickCreateActions, type QuickCreateAction } from "@/lib/experience/navigation/quick-create";
 
 /**
  * Contrato del shell: lo que necesitan la barra lateral, la superior, la

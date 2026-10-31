@@ -29,7 +29,7 @@ import { Switch } from "@/components/atoms/switch";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/molecules/dropdown-menu";
 import { ChartWidget } from "@/components/molecules/charts/chart-widget";
 import { AddWidgetPanel } from "@/components/organisms/add-widget-panel";
-import { entryOf, type ChartData, type ChartEntry, type ChartType } from "@/lib/dashboard/chart-catalog";
+import { entryOf, type ChartData, type ChartEntry, type ChartType } from "@/lib/experience/dashboard/chart-catalog";
 import {
   MIN_SPAN,
   SPANS,
@@ -52,8 +52,8 @@ import {
   toggleWidget,
   type DashboardLayout,
   type Span,
-} from "@/lib/dashboard/layout";
-import { EASE_OUT, motionOff } from "@/lib/motion";
+} from "@/lib/experience/dashboard/layout";
+import { EASE_OUT, motionOff } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 
 export type DashboardWidget = {
@@ -411,7 +411,7 @@ export function DashboardMenu({ className }: { className?: string }) {
  * selector de ancho, las flechas en la esquina y los botones Subir y Bajar.
  *
  * Los bloques del sistema se resuelven en el servidor: ocultar o mover no cambia
- * datos ni permisos. La preferencia está versionada (`lib/dashboard/layout.ts`) y
+ * datos ni permisos. La preferencia está versionada (`lib/experience/dashboard/layout.ts`) y
  * hoy se guarda por persona en este navegador (`localStorage`); pasarla a la base
  * de datos solo cambia dónde se guarda ese mismo objeto.
  */

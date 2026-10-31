@@ -13,7 +13,7 @@ import { useToast } from "@/components/molecules/toast";
 import { formatDateTime } from "@/lib/format";
 import type { ConversationRow, InboxMessageRow } from "@/lib/platform/inbox/inbox";
 import { mailtoLink, waLink, whatsappWindow } from "@/lib/platform/inbox/inbox-rules";
-import { useMinute } from "@/lib/hooks/use-minute";
+import { useMinute } from "@/lib/experience/hooks/use-minute";
 import { cn } from "@/lib/utils";
 import { markReadAction, replyAction, toTicketAction, updateConversationAction } from "../actions";
 import { Select } from "@/components/atoms/select";

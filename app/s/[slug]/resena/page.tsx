@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { TEMPLATES, onAccent } from "@/lib/site/site";
-import { publicSite } from "@/lib/site/site-db";
+import { TEMPLATES, onAccent } from "@/lib/experience/site/site";
+import { publicSite } from "@/lib/experience/site/site-db";
 import ReviewForm from "./review-form";
 
 export const metadata: Metadata = { title: "Tu opinión", robots: { index: false } };

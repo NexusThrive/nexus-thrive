@@ -3,7 +3,7 @@
 import { Check } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { NMark } from "@/components/atoms/n-mark";
-import { burstFrom, spring } from "@/lib/motion";
+import { burstFrom, spring } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 
 export type AgendaItem = {

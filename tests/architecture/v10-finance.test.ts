@@ -6,7 +6,7 @@
  * `integrations` (webhook entrante). M5.5: `receivables` vive en `lib/domains/finance/receivables` y solo la importa `app/`. M5.4: `accounting` vive en `lib/domains/finance/accounting`, depende de Foundation, de Business
  * (error y servicio de dinero, tabla de intercambio) y de `tax`, y nadie por debajo de Experience lo importa. M5.3: `tax` vive en `lib/domains/finance/tax` (área `domains` por ruta, sin unidad
  * en `layers.json`) y solo depende de Foundation. M5.2: las ayudas de captura de pagos en pantalla (teclado numérico y lectura
- * de un QR de cobro) viven en `lib/payment-input` (Experience), solo dependen del kernel de Foundation y
+ * de un QR de cobro) viven en `lib/experience/payment-input` (Experience), solo dependen del kernel de Foundation y
  * la carpeta antigua `lib/finance` ya no existe.
  */
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
@@ -22,18 +22,18 @@ const importsOf = (rel: string): string[] =>
   [...readFileSync(join(ROOT, rel), "utf8").matchAll(/(?:from|import\()\s*["']([^"']+)["']/g)].map((m) => m[1]);
 
 describe("M5.2 · payment-input (Experience)", () => {
-  const produccion = readdirSync(join(ROOT, "lib/payment-input")).filter((n) => n.endsWith(".ts") && !n.endsWith(".test.ts"));
+  const produccion = readdirSync(join(ROOT, "lib/experience/payment-input")).filter((n) => n.endsWith(".ts") && !n.endsWith(".test.ts"));
 
   test("contiene exactamente el teclado y la lectura de QR de cobro", () => {
     expect(produccion.sort()).toEqual(["keypad.ts", "payment-scan.ts"]);
   });
 
   test.each(produccion)("%s está en la capa experience", (name) => {
-    expect(classify(`lib/payment-input/${name}`, layers)?.layer).toBe("experience");
+    expect(classify(`lib/experience/payment-input/${name}`, layers)?.layer).toBe("experience");
   });
 
   test.each(produccion)("%s solo importa el kernel de Foundation o a su carpeta, y no toca datos", (name) => {
-    const file = `lib/payment-input/${name}`;
+    const file = `lib/experience/payment-input/${name}`;
     for (const spec of importsOf(file)) {
       expect(spec, file).toMatch(/^(@\/lib\/foundation\/kernel\/|\.\/)/);
     }

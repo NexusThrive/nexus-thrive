@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef } from "react";
-import { expoOut, motionOff } from "@/lib/motion";
+import { expoOut, motionOff } from "@/lib/experience/motion/index";
 import { formatCount, type CountFormat } from "./count-up";
 
 /** Cuántos dígitos del final «corren» con enfoque mientras la cifra se mueve. */

@@ -8,7 +8,7 @@ import { ConnectedExpenseSheet, ConnectedPaymentSheet } from "@/app/[tenant]/(ap
 import { SkeletonRows } from "@/components/molecules/skeleton-rows";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { useShell } from "@/components/providers/shell-context";
-import { quickSheetFor, type QuickSheet } from "@/lib/navigation/quick-create";
+import { quickSheetFor, type QuickSheet } from "@/lib/experience/navigation/quick-create";
 
 type QuickCreateContextValue = {
   /** Abre el mini-modal de esa acción de «Crear» y devuelve `true`; sin mini-modal devuelve `false` (quien llama navega). */

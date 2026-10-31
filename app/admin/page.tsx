@@ -3,7 +3,7 @@ import { AlertTriangle, Headphones, HeartPulse, Inbox, Receipt, Rocket, Target, 
 import { RevealText } from "@/components/atoms/reveal-text";
 import { PageHeader } from "@/components/molecules/page-header";
 import { createAdminDb } from "@/lib/platform/admin/db";
-import { greetingFor } from "@/lib/dashboard";
+import { greetingFor } from "@/lib/experience/dashboard/index";
 import { getPriorities } from "@/lib/platform/accounts/accounts";
 import type { PermissionKey } from "@/lib/platform/team/permissions";
 import { billingPriorities, healthPriorities, inboxPriorities, leadPriorities, ticketPriorities } from "@/lib/platform/accounts/work-priorities";

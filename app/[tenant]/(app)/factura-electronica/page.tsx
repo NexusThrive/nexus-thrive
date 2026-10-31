@@ -5,7 +5,7 @@ import { can } from "@/lib/auth/permissions";
 import { fiscalSettings, listFiscal } from "@/lib/integrations/einvoice/einvoice-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import FiscalView from "./_components/fiscal-view";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 /** Factura electrónica: cada venta deja su documento fiscal en cola y se entrega a un proveedor tecnológico por un puerto. */
 export default async function FiscalPage({ params }: { params: Promise<{ tenant: string }> }) {

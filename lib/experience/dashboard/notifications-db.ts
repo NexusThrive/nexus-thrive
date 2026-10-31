@@ -1,7 +1,7 @@
 import { and } from "@prisma/orm-postgres/orm-client";
 import { db } from "@/prisma/db";
 import { bogotaDayKey } from "@/lib/foundation/kernel/finance-series";
-import { buildNotifications, type AppNotification } from "@/lib/dashboard/notifications";
+import { buildNotifications, type AppNotification } from "@/lib/experience/dashboard/notifications";
 import { createTenantDb } from "@/lib/tenant/db";
 import { activeModuleNames } from "@/lib/tenant/settings-db";
 

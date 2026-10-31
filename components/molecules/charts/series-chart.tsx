@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useLayoutEffect, useRef, useState } from "react";
-import { EASE_OUT, motionOff } from "@/lib/motion";
+import { EASE_OUT, motionOff } from "@/lib/experience/motion/index";
 import { useBox } from "./use-box";
 
 export type Series = {

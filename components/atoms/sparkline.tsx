@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useLayoutEffect, useRef } from "react";
-import { EASE_OUT, motionOff } from "@/lib/motion";
+import { EASE_OUT, motionOff } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 
 const W = 200;

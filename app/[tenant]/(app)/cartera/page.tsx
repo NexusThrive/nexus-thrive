@@ -5,7 +5,7 @@ import { can } from "@/lib/auth/permissions";
 import { payables, receivables } from "@/lib/domains/finance/receivables/receivables-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import CarteraView from "./_components/cartera-view";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 /** Cartera: lo que te deben (cuentas de cobro) y lo que debes (facturas de proveedor), por antigüedad. */
 export default async function CarteraPage({ params }: { params: Promise<{ tenant: string }> }) {

@@ -3,8 +3,8 @@
 import * as React from "react";
 import { AlertTriangle, Bell, Check, WifiOff, X } from "lucide-react";
 import { IconTile } from "@/components/atoms/icon-tile";
-import { requestNotificationsRefresh } from "@/lib/dashboard/notifications-client";
-import { EASE_IN, motionOff, spring } from "@/lib/motion";
+import { requestNotificationsRefresh } from "@/lib/experience/dashboard/notifications-client";
+import { EASE_IN, motionOff, spring } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 
 export type ToastVariant = "success" | "error" | "info" | "warning";

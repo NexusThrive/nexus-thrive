@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Breadcrumbs, type Crumb } from "@/components/molecules/breadcrumbs";
 import { useShell } from "@/components/providers/shell-context";
-import { tenantRelativePath } from "@/lib/navigation/tenant-nav";
+import { tenantRelativePath } from "@/lib/experience/navigation/tenant-nav";
 
 /**
  * Migas de la página actual, derivadas del menú del negocio: Inicio › categoría ›

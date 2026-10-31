@@ -12,7 +12,7 @@ import { describe, expect, test } from "vitest";
 // @ts-ignore el verificador es un .mjs sin tipos
 import { classify, loadJson } from "../../scripts/check-layers.mjs";
 import { modulesForRoute as fromCore } from "@/lib/capabilities/route-modules";
-import { modulesForRoute as fromNav } from "@/lib/navigation/tenant-nav";
+import { modulesForRoute as fromNav } from "@/lib/experience/navigation/tenant-nav";
 
 const ROOT = join(import.meta.dirname, "..", "..");
 const read = (rel: string) => readFileSync(join(ROOT, rel), "utf8");
@@ -30,7 +30,7 @@ describe("tipos y reglas que dejaron de ser de experiencia", () => {
   });
 
   test("la experiencia sigue siendo de experiencia: el menú del negocio y el onboarding no pasaron a Core", () => {
-    expect(classify("lib/navigation/tenant-nav.ts", layers)?.layer).toBe("experience");
+    expect(classify("lib/experience/navigation/tenant-nav.ts", layers)?.layer).toBe("experience");
     expect(classify("lib/onboarding/prefill.ts", layers)?.layer).toBe("experience");
   });
 

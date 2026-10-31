@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ChevronRight, LayoutGrid, Plus, Search } from "lucide-react";
 import { IconTile } from "@/components/atoms/icon-tile";
 import { useShell } from "@/components/providers/shell-context";
-import { spring } from "@/lib/motion";
+import { spring } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 import { QuickCreateGrid } from "./quick-create-grid";
 import { ResponsiveSheet } from "./responsive-sheet";

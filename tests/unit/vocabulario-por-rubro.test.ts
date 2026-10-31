@@ -6,7 +6,7 @@ import { describe, expect, test } from "vitest";
 import { VERTICALS, type VerticalValue } from "@/lib/core/sectors/verticals";
 import { VERTICAL_RECIPES } from "@/lib/core/sectors/catalog";
 import { CAPABILITIES, type CapabilityNav } from "@/lib/capabilities/registry";
-import { quickCreateActions } from "@/lib/navigation/quick-create";
+import { quickCreateActions } from "@/lib/experience/navigation/quick-create";
 import { getVerticalTerms, hasMemberAccess } from "@/lib/core/sectors/terms";
 
 const navLabel = (moduleId: string, href: string, vertical: VerticalValue) => {

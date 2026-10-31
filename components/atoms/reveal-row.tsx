@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { useReducedMotion } from "@/lib/hooks/use-reduced-motion";
+import { useReducedMotion } from "@/lib/experience/hooks/use-reduced-motion";
 
 /* --- 6 · Lista con revelado ---------------------------------------------- */
 export function RevealRow({

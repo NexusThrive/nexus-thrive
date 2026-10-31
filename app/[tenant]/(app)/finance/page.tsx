@@ -17,7 +17,7 @@ import { UrlSegmentedControl } from "@/components/molecules/url-segmented-contro
 import { BalanceCard } from "@/components/organisms/balance-card";
 import { MovementsList } from "@/components/organisms/movements-list";
 import PettyCashCard from "./_components/petty-cash-card";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 const PAGE_SIZE = 10;
 

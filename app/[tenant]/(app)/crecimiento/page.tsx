@@ -5,10 +5,10 @@ import { getAppBaseUrl } from "@/lib/app-url";
 import { can } from "@/lib/auth/permissions";
 import { growthReport, listLinks, listReviews, reputationOf } from "@/lib/business/growth/growth-db";
 import { listingView } from "@/lib/integrations/google/google-db";
-import { siteForEditor } from "@/lib/site/site-db";
+import { siteForEditor } from "@/lib/experience/site/site-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import GrowthView from "./_components/growth-view";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 /** Campañas con enlaces cortos y UTM, de dónde vienen tus ventas y tus reseñas. */
 export default async function GrowthPage({ params }: { params: Promise<{ tenant: string }> }) {

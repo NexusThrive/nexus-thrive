@@ -28,12 +28,12 @@ export const fontMono = JetBrains_Mono({
 export const fontStunt = localFont({
   src: [
     {
-      path: "../app/fonts/public-stunt.otf",
+      path: "../../app/fonts/public-stunt.otf",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../app/fonts/public-stunt-italic.otf",
+      path: "../../app/fonts/public-stunt-italic.otf",
       weight: "400",
       style: "italic",
     },

@@ -60,18 +60,11 @@
     { "path": "lib/functions", "layer": "automation" },
 
 
-    { "path": "lib/fonts.ts", "layer": "experience" },
     { "path": "lib/navigation/nav-types.ts", "layer": "core" },
-    { "path": "lib/navigation", "layer": "experience" },
-    { "path": "lib/motion", "layer": "experience" },
     { "path": "lib/design", "layer": "experience" },
-    { "path": "lib/hooks", "layer": "experience" },
-    { "path": "lib/payment-input", "layer": "experience" },
-    { "path": "lib/site", "layer": "experience" },
     { "path": "lib/seo", "layer": "experience" },
     { "path": "lib/onboarding/types.ts", "layer": "core" },
     { "path": "lib/onboarding", "layer": "experience" },
-    { "path": "lib/dashboard", "layer": "experience" },
 
     { "path": "lib/industry/gym", "layer": "industry", "industry": "gym" },
     { "path": "lib/industry/museum", "layer": "industry", "industry": "museum" },

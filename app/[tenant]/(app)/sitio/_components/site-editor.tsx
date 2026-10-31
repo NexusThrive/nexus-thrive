@@ -11,8 +11,8 @@ import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { SiteView } from "@/components/organisms/site-view";
 import { saveSiteAction } from "@/app/[tenant]/(app)/sitio/actions";
-import { TEMPLATES, seoChecklist, type SiteData, type TemplateKey } from "@/lib/site/site";
-import type { SiteEditor as EditorData } from "@/lib/site/site-db";
+import { TEMPLATES, seoChecklist, type SiteData, type TemplateKey } from "@/lib/experience/site/site";
+import type { SiteEditor as EditorData } from "@/lib/experience/site/site-db";
 
 const peso = (n: number) => n.toLocaleString("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 });
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { useReducedMotion } from "@/lib/hooks/use-reduced-motion";
+import { useReducedMotion } from "@/lib/experience/hooks/use-reduced-motion";
 
 /* --- FocusText: el texto entra letra por letra --------------------------- */
 export function FocusText({

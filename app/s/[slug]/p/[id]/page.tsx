@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAppBaseUrl } from "@/lib/app-url";
-import { TEMPLATES, onAccent, whatsappUrl } from "@/lib/site/site";
-import { publicSite } from "@/lib/site/site-db";
+import { TEMPLATES, onAccent, whatsappUrl } from "@/lib/experience/site/site";
+import { publicSite } from "@/lib/experience/site/site-db";
 
 type Params = Promise<{ slug: string; id: string }>;
 

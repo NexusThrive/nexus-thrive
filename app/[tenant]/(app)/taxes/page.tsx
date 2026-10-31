@@ -5,7 +5,7 @@ import { can } from "@/lib/auth/permissions";
 import { listResolutions, listTaxRates } from "@/lib/domains/finance/tax/tax-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import TaxesView from "./_components/taxes-view";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 /**
  * Impuestos con vigencia (IVA, impoconsumo, retenciones) y resoluciones de

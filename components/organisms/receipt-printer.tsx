@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { BrandLogo } from "@nexus/brand/BrandLogo";
 import { NMark } from "@/components/atoms/n-mark";
-import { burst, motionOff } from "@/lib/motion";
+import { burst, motionOff } from "@/lib/experience/motion/index";
 
 export type ReceiptLine = { label: string; value: string };
 

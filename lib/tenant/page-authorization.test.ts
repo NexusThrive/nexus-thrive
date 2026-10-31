@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { describe, expect, test } from "vitest";
-import { modulesForRoute } from "@/lib/navigation/tenant-nav";
+import { modulesForRoute } from "@/lib/experience/navigation/tenant-nav";
 
 /**
  * SEC-03 (docs/nexus-architecture/security-audit.md): cada página de un
