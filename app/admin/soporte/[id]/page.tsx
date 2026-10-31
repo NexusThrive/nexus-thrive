@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getStaffContext } from "@/lib/platform/team/access";
-import { listManagers } from "@/lib/ops/accounts";
+import { listManagers } from "@/lib/platform/accounts/accounts";
 import { getTicket, listTicketMessages } from "@/lib/platform/support/tickets";
 import TicketDetail from "./_components/ticket-detail";
 

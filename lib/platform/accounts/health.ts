@@ -1,11 +1,11 @@
 import { db } from "@/prisma/db";
-import { listCharges, listSubscriptions } from "../platform/billing/billing";
+import { listCharges, listSubscriptions } from "../billing/billing";
 import { healthScore, type HealthFacts } from "./health-rules";
-import { daysBetween } from "../platform/billing/billing-rules";
+import { daysBetween } from "../billing/billing-rules";
 import { onboardingBoardFor } from "./onboarding-board";
-import { listSurveys } from "../platform/support/satisfaction";
-import { isOpenStatus, slaState } from "../platform/support/support-rules";
-import { listTickets } from "../platform/support/tickets";
+import { listSurveys } from "../support/satisfaction";
+import { isOpenStatus, slaState } from "../support/support-rules";
+import { listTickets } from "../support/tickets";
 import { bogotaDay } from "@/lib/plain-date";
 
 /** Salud de cada cuenta viva con su explicación (servidor). */

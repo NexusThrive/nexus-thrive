@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getStaffContext } from "@/lib/platform/team/access";
-import { listManagers } from "@/lib/ops/accounts";
+import { listManagers } from "@/lib/platform/accounts/accounts";
 import { tenantOptions } from "@/lib/platform/crm/leads";
 import { listTickets } from "@/lib/platform/support/tickets";
 import SupportView from "./_components/support-view";

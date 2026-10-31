@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/platform/team/access";
 import { logOps } from "@/lib/platform/team/audit";
 import { dropRule, isLeadStage, LEAD_ACTIVITY_KINDS, stageMeta, validateLead, type LeadInput } from "@/lib/platform/crm/crm-rules";
-import { assignManagerIfMissing } from "@/lib/ops/accounts";
+import { assignManagerIfMissing } from "@/lib/platform/accounts/accounts";
 import { addLeadActivity, createLead, deleteLead, getLead, touchLead, updateLead } from "@/lib/platform/crm/leads";
 import { isActiveStaff } from "@/lib/platform/team/team";
 

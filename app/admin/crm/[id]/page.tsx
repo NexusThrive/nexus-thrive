@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { PageHeader } from "@/components/molecules/page-header";
 import { isVertical, VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
 import { getStaffContext } from "@/lib/platform/team/access";
-import { listManagers } from "@/lib/ops/accounts";
+import { listManagers } from "@/lib/platform/accounts/accounts";
 import { getLead, listLeadActivity, tenantOptions } from "@/lib/platform/crm/leads";
 import LeadDetail from "./_components/lead-detail";
 import { bogotaDay } from "@/lib/plain-date";

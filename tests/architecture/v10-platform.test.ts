@@ -58,6 +58,15 @@ const MODULES: Record<string, Record<string, string>> = {
     "lib/platform/inbox/inbox-rules.ts": "lib/ops/inbox-rules.ts",
     "lib/platform/inbox/inbox-providers.ts": "lib/ops/inbox-providers.ts",
   },
+  accounts: {
+    "lib/platform/accounts/accounts.ts": "lib/ops/accounts.ts",
+    "lib/platform/accounts/account-stages.ts": "lib/ops/account-stages.ts",
+    "lib/platform/accounts/onboarding-board.ts": "lib/ops/onboarding-board.ts",
+    "lib/platform/accounts/onboarding-checklist.ts": "lib/ops/onboarding-checklist.ts",
+    "lib/platform/accounts/health.ts": "lib/ops/health.ts",
+    "lib/platform/accounts/health-rules.ts": "lib/ops/health-rules.ts",
+    "lib/platform/accounts/work-priorities.ts": "lib/ops/work-priorities.ts",
+  },
 };
 
 const files = (dir: string): string[] =>

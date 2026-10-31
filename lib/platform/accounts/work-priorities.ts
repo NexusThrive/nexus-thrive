@@ -1,12 +1,12 @@
 import type { PriorityItem } from "./accounts";
-import { listCharges } from "../platform/billing/billing";
+import { listCharges } from "../billing/billing";
 import { accountHealth } from "./health";
-import { listConversations } from "../platform/inbox/inbox";
-import { dunningLabel } from "../platform/billing/billing-rules";
-import { followUpState, stageMeta } from "../platform/crm/crm-rules";
-import { listLeads } from "../platform/crm/leads";
-import { priorityMeta, slaState } from "../platform/support/support-rules";
-import { listTickets } from "../platform/support/tickets";
+import { listConversations } from "../inbox/inbox";
+import { dunningLabel } from "../billing/billing-rules";
+import { followUpState, stageMeta } from "../crm/crm-rules";
+import { listLeads } from "../crm/leads";
+import { priorityMeta, slaState } from "../support/support-rules";
+import { listTickets } from "../support/tickets";
 import { bogotaDay } from "@/lib/plain-date";
 
 /** Prioridades comerciales: seguimientos vencidos o para hoy. */

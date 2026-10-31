@@ -8,8 +8,8 @@ import { EmptyState } from "@/components/molecules/empty-state";
 import { PageHeader } from "@/components/molecules/page-header";
 import { isVertical, VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
 import { getStaffContext } from "@/lib/platform/team/access";
-import { onboardingBoard } from "@/lib/ops/onboarding-board";
-import { CHECKLIST_STEPS } from "@/lib/ops/onboarding-checklist";
+import { onboardingBoard } from "@/lib/platform/accounts/onboarding-board";
+import { CHECKLIST_STEPS } from "@/lib/platform/accounts/onboarding-checklist";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Onboarding · NEXUS Operations Center" };

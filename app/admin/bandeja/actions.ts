@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/platform/team/access";
-import { tenantName } from "@/lib/ops/accounts";
+import { tenantName } from "@/lib/platform/accounts/accounts";
 import { logOps } from "@/lib/platform/team/audit";
 import { addInboxNote, conversationToTicket, markRead, reply, updateConversation } from "@/lib/platform/inbox/inbox";
 

@@ -9,15 +9,15 @@ import { UrlSegmentedControl } from "@/components/molecules/url-segmented-contro
 import { VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { createAdminDb } from "@/lib/platform/admin/db";
-import { getAccountExtras, listManagers, ACCOUNT_STAGES } from "@/lib/ops/accounts";
+import { getAccountExtras, listManagers, ACCOUNT_STAGES } from "@/lib/platform/accounts/accounts";
 import { getStaffContext } from "@/lib/platform/team/access";
 import { moduleStatusRow } from "@/lib/plans/compat";
 import { planOf, formatUsdCents } from "@/lib/plans/pricing";
 import { loadPricingConfig } from "@/lib/plans/settings";
 import { isOpenStatus, statusMeta } from "@/lib/platform/support/support-rules";
 import { listTickets } from "@/lib/platform/support/tickets";
-import { accountHealth } from "@/lib/ops/health";
-import { HEALTH_LEVELS } from "@/lib/ops/health-rules";
+import { accountHealth } from "@/lib/platform/accounts/health";
+import { HEALTH_LEVELS } from "@/lib/platform/accounts/health-rules";
 import { getSubscriptionByTenant, listCharges } from "@/lib/platform/billing/billing";
 import { CHARGE_STATUSES, dunningLabel, SUBSCRIPTION_STATUSES } from "@/lib/platform/billing/billing-rules";
 import type { PlanKey } from "@/lib/plans/catalog";

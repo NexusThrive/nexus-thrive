@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/platform/team/access";
-import { ACCOUNT_STAGES, deleteContact, saveContact, tenantName, updateAccount, type AccountStageValue } from "@/lib/ops/accounts";
+import { ACCOUNT_STAGES, deleteContact, saveContact, tenantName, updateAccount, type AccountStageValue } from "@/lib/platform/accounts/accounts";
 import { logOps } from "@/lib/platform/team/audit";
 import { validateContact } from "@/lib/platform/team/validators";
 import { isActiveStaff } from "@/lib/platform/team/team";
