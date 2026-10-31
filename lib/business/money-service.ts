@@ -6,7 +6,7 @@ import type { PaymentStatusValue } from "@/lib/finance";
 import { applyStockMovement, StockError } from "@/lib/inventory/stock-service";
 import { balanceOf, validatePayment } from "@/lib/receivables/aging";
 import { cashAccountFor, postByRule, reverseSource } from "@/lib/accounting/ledger-db";
-import { todayCO } from "@/lib/tax/tax";
+import { todayCO } from "@/lib/plain-date";
 import { MoneyError } from "./money-error";
 import { receiptCode } from "./invoice";
 import type { DocumentLineInput } from "./commercial-document";

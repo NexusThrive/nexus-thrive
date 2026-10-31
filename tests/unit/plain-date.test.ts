@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { addMonths, bogotaDay, bogotaToday, formatPlainDate, parsePlainDate } from "@/lib/plain-date";
+import { addMonths, bogotaDay, bogotaToday, formatPlainDate, parsePlainDate, todayCO } from "@/lib/plain-date";
 
 describe("parsePlainDate", () => {
   test("acepta YYYY-MM-DD válidas", () => {
@@ -91,5 +91,23 @@ describe("bogotaDay (fecha de negocio en Colombia)", () => {
     const instant = "2026-10-31T00:30:00Z";
     expect(instant.slice(0, 10)).toBe("2026-10-31");
     expect(bogotaDay(instant)).toBe("2026-10-30");
+  });
+});
+
+describe("todayCO (el día de Bogotá de un instante en milisegundos)", () => {
+  /** La fórmula anterior de lib/tax/tax.ts: restar 5 horas al instante UTC y cortar. */
+  const anterior = (now: number) => new Date(now - 5 * 3_600_000).toISOString().slice(0, 10);
+
+  test("da el mismo día que la fórmula anterior en una barrida de instantes, incluidos los límites de día, mes y año", () => {
+    const limites = ["2026-01-01T04:59:59.999Z", "2026-01-01T05:00:00.000Z", "2026-11-01T04:59:59.999Z", "2026-11-01T05:00:00.000Z", "2028-03-01T04:59:59.999Z", "2028-03-01T05:00:00.000Z", "1999-12-31T23:59:59.999Z"].map(Date.parse);
+    for (const ms of limites) expect(todayCO(ms), new Date(ms).toISOString()).toBe(anterior(ms));
+    // Barrida cada 7 h 13 min durante cuatro años (cubre todas las horas del día y varios cambios de mes y año).
+    for (let ms = Date.parse("2025-01-01T00:00:00Z"); ms < Date.parse("2029-01-01T00:00:00Z"); ms += 7 * 3_600_000 + 13 * 60_000) {
+      if (todayCO(ms) !== anterior(ms)) throw new Error(`difiere en ${new Date(ms).toISOString()}: ${todayCO(ms)} ≠ ${anterior(ms)}`);
+    }
+  });
+
+  test("sin argumento usa el instante actual", () => {
+    expect(todayCO()).toBe(bogotaDay(new Date()));
   });
 });

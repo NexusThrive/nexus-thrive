@@ -3,8 +3,7 @@ import { toNumber } from "@/lib/format";
 import { postByRule } from "@/lib/accounting/ledger-db";
 import { enqueueFiscal } from "@/lib/einvoice/einvoice-db";
 import { allocateNumber, commitNumber, withholdingsFor } from "@/lib/tax/tax-db";
-import { todayCO } from "@/lib/tax/tax";
-import { bogotaDay } from "@/lib/plain-date";
+import { bogotaDay, todayCO } from "@/lib/plain-date";
 import {
   canConvert,
   DOCUMENT_LABELS,

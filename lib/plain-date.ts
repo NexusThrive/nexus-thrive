@@ -59,6 +59,13 @@ export function bogotaDay(instant?: unknown): string {
   return formatPlainDate(bogotaToday(instant));
 }
 
+/**
+ * Día de hoy en Bogotá (o el del instante `now`, en milisegundos), como "YYYY-MM-DD". Es la fecha de negocio
+ * de Colombia que usan la numeración fiscal, los asientos contables y los informes. Equivale a `bogotaDay`
+ * con un número en lugar de un instante; antes vivía en `lib/tax/tax.ts` y obligaba a Business a importar de Finance.
+ */
+export const todayCO = (now: number = Date.now()): string => bogotaDay(new Date(now));
+
 /** "YYYY-MM-DD" */
 export function formatPlainDate(date: PlainDate): string {
   const mm = String(date.month).padStart(2, "0");
