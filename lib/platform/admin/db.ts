@@ -7,7 +7,7 @@ import {
   formatDateShort,
   formatRelativeTime,
   toNumber,
-} from "@/lib/format";
+} from "@/lib/foundation/format";
 import {
   paymentStatusLabel,
   type PaymentMethodValue,
@@ -353,7 +353,7 @@ const ROLE_LABELS: Record<"SUPERADMIN" | "OWNER" | "STAFF" | "ADMIN" | "RECEPTIO
   ADVISOR: "Asesor",
 };
 
-import { escapeLike } from "@/lib/sql-like";
+import { escapeLike } from "@/lib/foundation/db/sql-like";
 import { AUDIT_ACTION_LABELS } from "./audit-labels";
 export { AUDIT_ACTION_LABELS };
 

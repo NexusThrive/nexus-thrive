@@ -2,7 +2,7 @@ import Link from "next/link";
 import { CalendarClock, Folder, FolderClock } from "lucide-react";
 import { QuoteStatusBadge } from "@/components/molecules/quote-badges";
 import { ProjectStatusBadge } from "../../projects/_components/project-status-badge";
-import { formatDateShort, formatMoneyMicro } from "@/lib/format";
+import { formatDateShort, formatMoneyMicro } from "@/lib/foundation/format";
 import type { QuoteFolderRow } from "@/lib/industry/construction/project-quotes";
 import type { ProjectStatusValue } from "@/lib/industry/construction/project-domain";
 import { buttonVariants } from "@/components/atoms/button-variants";

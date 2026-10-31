@@ -1,4 +1,4 @@
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency } from "@/lib/foundation/format";
 import { StatTile } from "@/components/molecules/stat-tile";
 import type { MembershipMetrics } from "@/lib/industry/gym/memberships-repo";
 

@@ -8,7 +8,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { Select } from "@/components/atoms/select";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency } from "@/lib/foundation/format";
 import { COUNT_LABELS } from "@/lib/business/inventory/stock-docs";
 import type { CountRow, OverviewRow, ReorderRow, TransferRow } from "@/lib/business/inventory/stock-docs-db";
 import CountSheet from "./count-sheet";

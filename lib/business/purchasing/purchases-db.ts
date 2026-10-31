@@ -1,5 +1,5 @@
 import { db } from "@/prisma/db";
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { msOf } from "@/lib/core/events/instant";
 import { accountingPort } from "@/lib/business/sales/accounting-port";
 import { MoneyError } from "@/lib/business/sales/money-error";

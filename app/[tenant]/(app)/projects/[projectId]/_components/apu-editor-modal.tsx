@@ -17,7 +17,7 @@ import {
   type ApuItemCategoryValue,
   type ResourceTypeValue,
 } from "@/lib/industry/construction/apu-engine";
-import { formatMoneyMicro, formatQuantityMicro } from "@/lib/format";
+import { formatMoneyMicro, formatQuantityMicro } from "@/lib/foundation/format";
 import type { BudgetItemData, BudgetResourceData } from "@/lib/industry/construction/shared";
 import Modal from "@/components/organisms/modal";
 import { ApuCategoryBadge } from "@/components/molecules/quote-badges";

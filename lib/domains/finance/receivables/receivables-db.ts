@@ -1,4 +1,4 @@
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { cashAccountFor, postByRule } from "@/lib/domains/finance/accounting/ledger-db";
 import { MoneyError, moneyTransaction } from "@/lib/business/sales/money-service";
 import { todayCO } from "@/lib/domains/finance/tax/tax";

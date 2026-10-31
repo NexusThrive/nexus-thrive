@@ -7,7 +7,7 @@ import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { customerOptions } from "@/lib/business/customers/customers-db";
 import BillingList from "./_components/billing-list";
 import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
-import { bogotaDay } from "@/lib/plain-date";
+import { bogotaDay } from "@/lib/foundation/dates/plain-date";
 
 /** Facturación V1: cuentas de cobro y recibos numerados (la factura electrónica DIAN llega con un proveedor). */
 export default async function BillingPage({ params, searchParams }: { params: Promise<{ tenant: string }>; searchParams: Promise<{ nuevo?: string; doc?: string }> }) {

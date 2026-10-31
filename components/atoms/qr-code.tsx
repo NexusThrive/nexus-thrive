@@ -1,4 +1,4 @@
-import { qrSvgPath } from "@/lib/qr";
+import { qrSvgPath } from "@/lib/foundation/qr";
 import { cn } from "@/lib/utils";
 
 /**

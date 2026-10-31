@@ -3,7 +3,7 @@ import Script from "next/script";
 import { ClerkProvider } from "@clerk/nextjs";
 import { clerkLocalization, clerkProviderAppearance } from "@/lib/core/auth/clerk-appearance";
 import { fontVariables } from "@/lib/experience/fonts";
-import { prefsInitScript, themeInitScript } from "@/lib/init-scripts";
+import { prefsInitScript, themeInitScript } from "@/lib/foundation/init-scripts";
 import { MotionProvider } from "@/components/providers/motion-provider";
 import { PreferencesProvider } from "@/components/providers/preferences";
 import { PwaProvider } from "@/components/providers/pwa";

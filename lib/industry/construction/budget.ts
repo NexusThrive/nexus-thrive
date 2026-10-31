@@ -9,7 +9,7 @@ import {
 } from "@/prisma/db";
 import {
   formatDateTime,
-} from "@/lib/format";
+} from "@/lib/foundation/format";
 import {
   compositionUnitPrice,
   AIU_DEFAULTS,

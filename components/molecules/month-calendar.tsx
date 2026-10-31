@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { addMonths, dayNumber, monthGrid, monthLabel, sameMonth } from "@/lib/calendar";
+import { addMonths, dayNumber, monthGrid, monthLabel, sameMonth } from "@/lib/foundation/dates/calendar";
 import { cn } from "@/lib/utils";
 
 const WEEKDAYS = ["L", "M", "X", "J", "V", "S", "D"];

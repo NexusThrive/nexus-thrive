@@ -1,4 +1,4 @@
-import { definePort } from "@/lib/ports";
+import { definePort } from "@/lib/foundation/ports";
 
 /**
  * Contrato entre la tienda en línea (Business) y los cobros en línea (Finance/Payments).

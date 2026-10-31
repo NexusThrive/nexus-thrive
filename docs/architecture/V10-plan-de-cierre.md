@@ -8,7 +8,7 @@ V10 termina cuando se cumplen **estos siete criterios, todos medibles**. Al cump
 
 | # | Criterio | Cómo se comprueba | Hoy |
 |---|---|---|---|
-| 1 | La raíz de `lib/` contiene **las nueve áreas** (nueve directorios) **y los dos archivos documentados `utils.ts` y `cn.ts`**; nada más | `ls lib` | 53 entradas (32 carpetas y 21 archivos) |
+| 1 | La raíz de `lib/` contiene **las nueve áreas** (nueve directorios) **y los dos archivos documentados `utils.ts` y `cn.ts`**; nada más (ver §10) | `ls lib` y una prueba de arquitectura | 18 entradas (14 carpetas y 4 archivos) tras la etapa F |
 | 2 | Excepciones documentadas y justificadas: `lib/utils.ts` y `lib/cn.ts` (convención shadcn, 173 importadores; aprobado en E-3). `temporal.d.ts` se mueve a `foundation` en la etapa Z | Lista en este documento | aprobado |
 | 3 | `check:layers`: 0 violaciones, 0 huérfanas, 0 incoherentes, **0 excepciones (tope 0)**, 0 ciclos de valores, ciclos de tipos sin aumentar | `pnpm check:layers` | cumple (290 archivos, 3 ciclos de tipos) |
 | 4 | `layers.json` sin unidades por carpeta: el área se deduce de la ruta | revisión del archivo | 61 unidades (la mayoría por carpeta) |
@@ -52,7 +52,7 @@ Medición con el codemod en `--dry` (no escribe): archivos que se mueven, archiv
 | **X** · experience | `navigation`\*, `dashboard`, `site`, `motion`, `hooks`, `fonts`, `payment-input` → `experience/*`; el flujo de `onboarding` | 35 + onboarding | 96 | Medio (archivos de interfaz) |
 | **C** · core | `tenant`→`tenancy`, `auth`, `parties`, `files`, `plans`+`usage`→`entitlements`, `capabilities`+`functions`, `events`, `operations`, `api`+`mcp`→`api` | 97 | 303 | **Medio-alto** (más importadores; cambia la capa de `api`/`mcp` y `functions`) |
 | **F** · foundation | `format`, `plain-date`, `bogota-month`, `calendar`, `db-*`, `sql-like`, `qr`, `rate-limit`, `app-url`, `contact`, `image-upload`, `init-scripts`, `ports` → `foundation/*` (sin `utils` y `cn`) | 16 | 172 | Bajo en riesgo, alto en cantidad (`format` lo importan 108 archivos) |
-| **Z** · remate | Lo que quede: `onboarding` repartido (ver abajo), `admin/catalogs` y `vertical-icons`, `temporal.d.ts`, carpetas vacías (`lib/catalog`), unidades de `layers.json`, informe final y P-12 | pocos | pocas | Bajo |
+| **Z** · remate | Deja la raíz de `lib/` con **solo lo importante**: `onboarding` repartido (ver abajo), `navigation/nav-types` → `core/capabilities`, `admin/catalogs` y `vertical-icons`, `temporal.d.ts`, **`design` y `seo` (solo contienen pruebas) y `prisma8-query-patterns` → `tests/`**, la capa `automation` sin archivos y las unidades sobrantes de `layers.json`; documentación final (§9) y P-12 | pocos | pocas | Bajo-medio |
 
 \* `navigation/nav-types.ts` y `onboarding/types.ts` son hoy **Core** y deben seguir siéndolo (los importan archivos de Core): `nav-types` pasa a `core/capabilities` (como ya prevé el diseño V10) y `onboarding/types` a `core/tenancy`; el resto de `navigation` y `onboarding` va a `experience`. Detalle en E-5.
 
@@ -121,8 +121,8 @@ lib/
 | `utils.ts`, `cn.ts` | **se quedan** (excepción) | — |
 | `admin/catalogs.ts` (slug) · `admin/vertical-icons.ts` | `core/tenancy` · `experience` | Z |
 | `temporal.d.ts` | `foundation/dates/` (`tsconfig` incluye `**/*.ts`, así que seguirá visible) | Z |
-| `design`, `seo` (solo contienen pruebas) | `tests/` | fuera de V10 (M8) |
-| `prisma8-query-patterns.integration.test.ts` | `tests/integration/` | fuera de V10 (M8) |
+| `design`, `seo` (solo contienen pruebas) | `tests/` | **Z** (antes «fuera de V10»; incluido por petición del dueño, 2026-10-31) |
+| `prisma8-query-patterns.integration.test.ts` | `tests/integration/` | **Z** (ídem) |
 | `catalog` (carpeta vacía) | se elimina | Z |
 
 ## 6. Decisiones que necesito de ti
@@ -149,3 +149,67 @@ lib/
 ## 8. Qué necesito para empezar
 
 Tu respuesta a E-1 a E-9 (basta «apruebo todas con tus recomendaciones» o los ajustes que quieras). Con eso empiezo por la etapa **I** sin más diseño previo y sigo el orden de §4, deteniéndome al terminar cada etapa para que la revises, como hasta ahora.
+
+## 9. Entregable documental de la etapa Z (aprobado como requisito de cierre)
+
+V10 no se considera terminada hasta que exista, además de la estructura, la documentación para **conservarla**. Se redacta **después de F y Z**, cuando la estructura física esté terminada, para documentar la realidad y no una estructura que aún puede cambiar. Conjunto final en `docs/architecture/`:
+
+| Documento | Contenido |
+|---|---|
+| `V10-arquitectura-objetivo.md` | El «por qué» y la estructura destino (ya existe; se actualizará con el estado final) |
+| `V10-cierre-resultados.md` | Resultados por etapa (ya existe; se completa con F y Z) |
+| `guia-implementacion-lib.md` | **Nuevo.** Guía para trabajar en `lib/` sin romper la arquitectura |
+| `reglas-dependencias.md` | **Nuevo.** Quién puede importar a quién, fronteras que no se cruzan, excepciones vigentes y cómo se comprueban |
+
+### `guia-implementacion-lib.md`
+
+Bloques: **mapa arquitectónico** (las nueve áreas y su ubicación), **dependencias**, **módulos y sectores** (crear, dividir, mover, retirar; registrar un sector), **implementación** (dónde van la lógica, los tipos, los servicios, las pruebas, las integraciones y la composición) y **estabilidad** (qué revisar antes y qué verificar después). Debe responder, con ejemplos correctos e incorrectos:
+
+1. ¿Dónde creo un módulo nuevo?
+2. ¿Cuándo reutilizo uno existente?
+3. ¿Cuándo separo un módulo?
+4. ¿Cuándo una función pertenece a Core y cuándo a Business?
+5. ¿Cómo agrego un nuevo sector?
+6. ¿Cómo conecto una integración externa?
+7. ¿Dónde coloco las pruebas?
+8. ¿Cómo evito ciclos y dependencias indebidas?
+9. ¿Qué debo revisar antes de cambiar un contrato?
+10. ¿Qué verificaciones debo ejecutar antes de cerrar un cambio?
+
+**Regla fundamental (va al inicio de la guía):** *antes de crear, mover o modificar código, identifica la responsabilidad, el área propietaria, sus dependencias, sus consumidores y los contratos afectados. No elijas una ubicación únicamente por conveniencia.*
+
+**Lista obligatoria de preguntas antes de tocar código:**
+
+1. ¿A qué área pertenece esta responsabilidad?
+2. ¿Existe ya un módulo que debería hacerse cargo?
+3. ¿Estoy colocando la lógica en el área correcta o solo en la carpeta más cómoda?
+4. ¿Qué módulos importan actualmente este código?
+5. ¿La modificación introduce dependencias circulares o acoplamiento?
+6. ¿Afecta el aislamiento por `tenantId`, los permisos o la seguridad?
+7. ¿Cambia contratos públicos, operaciones, eventos o integraciones?
+8. ¿Hay rutas literales, scripts, mocks o referencias indirectas que actualizar?
+9. ¿Qué pruebas deben demostrar que el comportamiento sigue intacto?
+10. ¿La solución resuelve el problema actual sin crear infraestructura innecesaria?
+
+**Lecciones de las etapas que la guía debe recoger** (cada una apareció de verdad durante V10): el codemod no reescribe cadenas que no son rutas completas (expresiones regulares, listas dentro de cadenas, plantillas de texto); rutas relativas a archivos que solo falla `next build` (fuentes); listas de pruebas escritas a mano en scripts que pierden pruebas en silencio (`test-integration.sh`); comprobaciones del tipo «este archivo no existe» que quedan vacías al mover una carpeta; y la necesidad de comparar el recuento de pruebas, no solo el color de `pnpm verify`.
+
+### `reglas-dependencias.md`
+
+La matriz de `layers.json` explicada, las reglas R1 (nadie importa una industria salvo `experience` y `runtime`), R2 (un sector no importa a otro) y R3 (matriz de áreas), las excepciones vigentes y su tope (0 excepciones de capas; el ciclo exacto `inventory ⇄ sales` y los 3 ciclos de tipos), qué pruebas vigilan cada frontera, y los límites del verificador (escanea `lib/`, no `app/`).
+
+## 10. Criterio de la raíz de `lib/` (precisado por el dueño, 2026-10-31)
+
+La raíz de `lib/` debe contener **solo lo importante**: las nueve áreas (`foundation`, `core`, `business`, `domains`, `integrations`, `industry`, `platform`, `experience`, `runtime`) y las dos excepciones documentadas `utils.ts` y `cn.ts`. Por tanto, `navigation`, `onboarding`, `admin`, `design` y `seo` **no pueden quedarse en la raíz**: se resuelven en la etapa Z.
+
+| Hoy en la raíz | Destino en Z |
+|---|---|
+| `navigation/nav-types.ts` | `core/capabilities` (decisión E-5) |
+| `onboarding/` | se reparte: `types`, `validation`, `presets`, `slug` y `onboarding-db` → `core/tenancy`; `flags`, `flow`, `module-meta` y `prefill` → `experience/onboarding` |
+| `admin/catalogs.ts` | `core/tenancy` (la parte de slug y rubros) |
+| `admin/vertical-icons.ts` | `experience` |
+| `design/`, `seo/` | sus pruebas pasan a `tests/` (`tests/architecture` o `tests/unit`) |
+| `temporal.d.ts` | `foundation/dates/` |
+| `prisma8-query-patterns.integration.test.ts` | `tests/integration/` |
+
+Esto amplía el alcance previsto para Z (antes, `design`, `seo` y la prueba de Prisma quedaban fuera de V10). Son movimientos de pruebas, sin cambios de comportamiento. Al terminar, `ls lib` debe mostrar exactamente: los nueve directorios de área, `utils.ts` y `cn.ts`, y una prueba nueva lo fijará.
+

@@ -24,7 +24,7 @@ import { isTeamMember } from "@/lib/core/tenancy/team-db";
 import { parseMoney } from "@/lib/business/sales/money";
 import { canHandleCash, canManage } from "@/lib/core/auth/roles";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
-import { getAppBaseUrl } from "@/lib/app-url";
+import { getAppBaseUrl } from "@/lib/foundation/app-url";
 import { logTenantAction } from "@/lib/core/tenancy/audit";
 
 export type MoneyResult = { ok: true; message?: string; id?: string } | { ok: false; message: string };

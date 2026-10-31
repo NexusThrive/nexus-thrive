@@ -5,7 +5,7 @@ import { Gift, KeyRound, Loader2, MessageCircle, X } from "lucide-react";
 import { claimAccessCodeAction, clearAccessCodeAction } from "@/app/onboarding/actions";
 import type { OnboardingBenefit } from "@/lib/onboarding/types";
 import { cn } from "@/lib/utils";
-import { accessRequestMessage, whatsappLink } from "@/lib/contact";
+import { accessRequestMessage, whatsappLink } from "@/lib/foundation/contact";
 import { BenefitCard } from "./benefit-card";
 
 type Mode = "code" | "paid" | "free";

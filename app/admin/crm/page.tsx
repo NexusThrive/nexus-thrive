@@ -5,7 +5,7 @@ import { getStaffContext } from "@/lib/platform/team/access";
 import { listManagers } from "@/lib/platform/accounts/accounts";
 import { listLeads, tenantOptions } from "@/lib/platform/crm/leads";
 import CrmView from "./_components/crm-view";
-import { bogotaDay } from "@/lib/plain-date";
+import { bogotaDay } from "@/lib/foundation/dates/plain-date";
 
 export const metadata: Metadata = { title: "CRM comercial · NEXUS Operations Center" };
 

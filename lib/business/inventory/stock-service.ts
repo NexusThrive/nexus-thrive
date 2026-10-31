@@ -1,7 +1,7 @@
 import type { MoneyTx } from "@/lib/business/sales/money-service";
 import { accountingPort } from "@/lib/business/sales/accounting-port";
-import { toNumber } from "@/lib/format";
-import { todayCO } from "@/lib/plain-date";
+import { toNumber } from "@/lib/foundation/format";
+import { todayCO } from "@/lib/foundation/dates/plain-date";
 
 /**
  * Servicio de inventario: el ÚNICO camino que cambia existencias. Mantiene, en

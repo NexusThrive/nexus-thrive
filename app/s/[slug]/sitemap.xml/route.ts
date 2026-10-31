@@ -1,4 +1,4 @@
-import { getAppBaseUrl } from "@/lib/app-url";
+import { getAppBaseUrl } from "@/lib/foundation/app-url";
 import { sitemapXml } from "@/lib/experience/site/site";
 import { publicSite } from "@/lib/experience/site/site-db";
 

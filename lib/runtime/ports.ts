@@ -11,7 +11,7 @@ import { enqueueFiscal } from "@/lib/integrations/einvoice/einvoice-db";
 import { listingView } from "@/lib/integrations/google/google-db";
 import { decryptCredentials } from "@/lib/integrations/providers/connections";
 import { wompiCheckoutUrl } from "@/lib/integrations/providers/wompi";
-import { providedPorts } from "@/lib/ports";
+import { providedPorts } from "@/lib/foundation/ports";
 import { allocateNumber, commitNumber, withholdingsFor } from "@/lib/domains/finance/tax/tax-db";
 import { tenantProvisioningPort } from "@/lib/core/tenancy/provisioning-port";
 

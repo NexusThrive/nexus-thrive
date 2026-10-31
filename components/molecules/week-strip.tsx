@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { addDays, dayNumber, monthLabel, weekDays, weekdayLabel } from "@/lib/calendar";
+import { addDays, dayNumber, monthLabel, weekDays, weekdayLabel } from "@/lib/foundation/dates/calendar";
 import { spring } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 

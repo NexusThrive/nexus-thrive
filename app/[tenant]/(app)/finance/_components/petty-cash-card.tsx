@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Badge } from "@/components/atoms/badge";
 import { ProgressBar } from "@/components/atoms/progress-bar";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency } from "@/lib/foundation/format";
 import { paymentMethodLabel, type PaymentMethodValue } from "@/lib/foundation/kernel/payment-vocabulary";
 
 /**

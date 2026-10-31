@@ -1,5 +1,5 @@
 import { emitEvent } from "@/lib/core/events/outbox";
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { paymentGatewayPort } from "./payment-gateway-port";
 import { db } from "@/prisma/db";
 import { sanitizeOrigin } from "@/lib/business/growth/growth";

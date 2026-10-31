@@ -18,7 +18,7 @@
  *  No confundir ambos conceptos.
  */
 
-import { bogotaToday, type PlainDate } from "@/lib/plain-date";
+import { bogotaToday, type PlainDate } from "@/lib/foundation/dates/plain-date";
 
 /** Ancho de la ventana Lookahead (semanas). */
 export const WINDOW_WEEKS = 6;
@@ -86,8 +86,8 @@ export function isValidNonComplianceCause(
 // ---------------------------------------------------------------------------
 
 // Las fechas de calendario (PlainDate, bogotaToday, formatPlainDate, parsePlainDate) viven
-// en Foundation (`lib/plain-date.ts`); se reexportan para no romper a quien las importa de aquí.
-export { BOGOTA_TIME_ZONE, bogotaToday, formatPlainDate, parsePlainDate, type PlainDate } from "@/lib/plain-date";
+// en Foundation (`lib/foundation/dates/plain-date.ts`); se reexportan para no romper a quien las importa de aquí.
+export { BOGOTA_TIME_ZONE, bogotaToday, formatPlainDate, parsePlainDate, type PlainDate } from "@/lib/foundation/dates/plain-date";
 
 const MS_PER_DAY = 86_400_000;
 

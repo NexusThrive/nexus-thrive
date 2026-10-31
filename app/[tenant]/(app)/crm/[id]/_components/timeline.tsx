@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { StickyNote, Wallet, BadgeCheck } from "lucide-react";
 import type { CustomerTimelineEvent } from "@/lib/core/tenancy/db";
-import { formatCurrency, formatDateTime } from "@/lib/format";
+import { formatCurrency, formatDateTime } from "@/lib/foundation/format";
 import { cn } from "@/lib/cn";
 
 const EVENT_ICON: Record<CustomerTimelineEvent["type"], LucideIcon> = {

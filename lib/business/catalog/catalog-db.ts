@@ -1,5 +1,5 @@
 import { db } from "@/prisma/db";
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { checkBarcode } from "./barcode";
 
 /**

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowRight, CalendarDays, Clock } from "lucide-react";
 import { Card, CardAction, CardHeader, CardTitle } from "@/components/molecules/card";
-import { formatCurrency, formatDateShort } from "@/lib/format";
+import { formatCurrency, formatDateShort } from "@/lib/foundation/format";
 import { typeLabel } from "@/lib/industry/gym/memberships";
 import { useMinute } from "@/lib/experience/hooks/use-minute";
 import type { Customer360Membership } from "@/lib/industry/gym/memberships";

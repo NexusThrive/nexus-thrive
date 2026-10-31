@@ -1,6 +1,6 @@
 import { PAYMENT_METHODS, type PaymentMethodValue } from "@/lib/foundation/kernel/payment-vocabulary";
 import { MEMBERSHIP_TYPES, type MembershipTypeValue } from "@/lib/industry/gym/memberships";
-import { parsePlainDate } from "@/lib/plain-date";
+import { parsePlainDate } from "@/lib/foundation/dates/plain-date";
 
 export type MembershipFormValues = {
   customerId: string;

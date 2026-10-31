@@ -1,5 +1,5 @@
 import { db } from "@/prisma/db";
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { applyStockMovement } from "@/lib/business/inventory/stock-service";
 import type { StockKind } from "../inventory/inventory";
 

@@ -1,5 +1,5 @@
 import { emitEvent } from "@/lib/core/events/outbox";
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { db } from "@/prisma/db";
 import { DIRECT, combineRatings, isLowRating, newShortCode, originReport, sanitizeOrigin, validateLink, validateReview, type Origin, type OriginRow } from "./growth";
 

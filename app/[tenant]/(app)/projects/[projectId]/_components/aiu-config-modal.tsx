@@ -8,7 +8,7 @@ import {
   calculateBudgetTotals,
   percentToMicro,
 } from "@/lib/industry/construction/apu-engine";
-import { formatMoneyMicro } from "@/lib/format";
+import { formatMoneyMicro } from "@/lib/foundation/format";
 import {
   updateAiuConfigAction,
   type AiuFormState,

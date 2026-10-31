@@ -1,4 +1,4 @@
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { db } from "@/prisma/db";
 import { auxiliaryByParty, balanceSheet, generalLedger, incomeStatement, journal, journalCsv, statementCsv, trialBalance, trialBalanceCsv, type LedgerRow } from "./reports";
 import type { AccountType } from "./puc";

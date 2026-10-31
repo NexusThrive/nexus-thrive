@@ -11,7 +11,7 @@ import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { amountInWords, invoiceTotal, type InvoiceKind } from "@/lib/business/sales/invoice";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency } from "@/lib/foundation/format";
 import { createInvoiceAction } from "@/app/[tenant]/(app)/billing/actions";
 import { Select } from "@/components/atoms/select";
 

@@ -1,8 +1,8 @@
 import { and, not, or } from "@prisma/orm-postgres/orm-client";
 import { db } from "@/prisma/db";
-import { escapeLike } from "@/lib/sql-like";
-import { isUniqueViolation } from "@/lib/db-errors";
-import { toNumber } from "@/lib/format";
+import { escapeLike } from "@/lib/foundation/db/sql-like";
+import { isUniqueViolation } from "@/lib/foundation/db/db-errors";
+import { toNumber } from "@/lib/foundation/format";
 import { accessCode, checkAccess, currentMembership, freezePlan, membershipState, type AccessResult, type MembershipLike } from "./gym";
 
 /**

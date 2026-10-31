@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { addMonths, bogotaDay, bogotaToday, formatPlainDate, parsePlainDate, todayCO } from "@/lib/plain-date";
+import { addMonths, bogotaDay, bogotaToday, formatPlainDate, parsePlainDate, todayCO } from "@/lib/foundation/dates/plain-date";
 
 describe("parsePlainDate", () => {
   test("acepta YYYY-MM-DD válidas", () => {

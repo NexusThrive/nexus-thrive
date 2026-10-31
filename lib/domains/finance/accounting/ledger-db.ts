@@ -1,5 +1,5 @@
 import { MoneyError } from "@/lib/business/sales/money-error";
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { db } from "@/prisma/db";
 import { PeriodClosedError, assertPeriodOpen } from "./accounting-db";

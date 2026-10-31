@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { accessRequestMessage, whatsappLink } from "@/lib/contact";
+import { accessRequestMessage, whatsappLink } from "@/lib/foundation/contact";
 
 describe("contacto de NEXUS", () => {
   it("el enlace de WhatsApp lleva el número y el mensaje", () => {

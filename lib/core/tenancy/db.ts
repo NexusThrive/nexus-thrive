@@ -11,7 +11,7 @@ import {
 import {
   db,
 } from "@/prisma/db";
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { type VerticalValue } from "@/lib/core/sectors/verticals";
 import { DEFAULT_MODULES_BY_VERTICAL } from "@/lib/core/sectors/catalog";
 import {
@@ -20,8 +20,8 @@ import {
   type PaymentMethodValue,
   type PaymentStatusValue,
 } from "@/lib/foundation/kernel/payment-vocabulary";
-import { monthRangeBogota, resolveMonthYear } from "@/lib/bogota-month";
-import { escapeLike } from "@/lib/sql-like";
+import { monthRangeBogota, resolveMonthYear } from "@/lib/foundation/dates/bogota-month";
+import { escapeLike } from "@/lib/foundation/db/sql-like";
 
 
 export type CustomerSearchInput = {

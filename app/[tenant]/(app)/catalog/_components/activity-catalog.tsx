@@ -5,7 +5,7 @@ import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, Layers, Pencil, Plus, X, AlertTriangle } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency } from "@/lib/foundation/format";
 import { APU_UNITS, formatApuUnit } from "@/lib/industry/construction/apu-engine";
 import SearchInput from "@/components/molecules/search-input";
 import FilterSelect from "@/components/molecules/filter-select";

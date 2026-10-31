@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardTitle } from "@/components/molecules/card";
-import { formatCurrency, formatDateShort } from "@/lib/format";
+import { formatCurrency, formatDateShort } from "@/lib/foundation/format";
 import { paymentMethodLabel } from "@/lib/foundation/kernel/payment-vocabulary";
 import type {
   Customer360Metrics,

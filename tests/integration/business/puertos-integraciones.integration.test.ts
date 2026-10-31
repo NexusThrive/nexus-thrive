@@ -13,7 +13,7 @@ import { setFiscalEnabled } from "@/lib/integrations/einvoice/einvoice-db";
 import { connectGoogle } from "@/lib/integrations/google/google-db";
 import { checkoutPort, type CheckoutPort } from "@/lib/domains/finance/payments/checkout-port";
 import { createIntent, publicIntent } from "@/lib/domains/finance/payments/intents-db";
-import { PortNotProvidedError } from "@/lib/ports";
+import { PortNotProvidedError } from "@/lib/foundation/ports";
 import { listingPort, type ListingPort } from "@/lib/business/presence/listing-port";
 import { encryptCredentials } from "@/lib/integrations/providers/connections";
 import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";

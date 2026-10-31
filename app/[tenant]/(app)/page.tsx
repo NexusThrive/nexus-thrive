@@ -4,7 +4,7 @@ import { HandCoins, MinusCircle, TrendingUp, Users, Wallet } from "lucide-react"
 import { tenantWithModules } from "@/lib/core/tenancy/membership";
 import { createTenantDb } from "@/lib/core/tenancy/db";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
-import { formatCurrency, formatRelativeTime } from "@/lib/format";
+import { formatCurrency, formatRelativeTime } from "@/lib/foundation/format";
 import type { RecentActivityItem } from "@/lib/experience/dashboard/types";
 import { greetingFor, percentChange } from "@/lib/experience/dashboard/index";
 import { GRANULARITIES, HISTORY_DAYS, bogotaDayKey, chartBuckets, runningBalance, type FinanceSeries, type Granularity } from "@/lib/foundation/kernel/finance-series";

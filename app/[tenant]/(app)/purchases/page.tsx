@@ -11,7 +11,7 @@ import { requireTenantContext } from "@/lib/core/tenancy/context";
 import PurchasesView from "./_components/purchases-view";
 import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
-import { bogotaDay } from "@/lib/plain-date";
+import { bogotaDay } from "@/lib/foundation/dates/plain-date";
 
 /**
  * Compras a proveedores: órdenes, recepción de mercancía al inventario y

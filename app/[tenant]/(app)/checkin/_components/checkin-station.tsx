@@ -10,7 +10,7 @@ import { useToast } from "@/components/molecules/toast";
 import { CameraScanButton } from "@/components/molecules/qr-scanner";
 import { countdown } from "@/lib/industry/gym/gym";
 import type { AttendanceRow, CheckInResult, MemberCard, Method } from "@/lib/industry/gym/gym-db";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime } from "@/lib/foundation/format";
 import { cn } from "@/lib/utils";
 import { manualCheckInAction, scanAction, searchMembersAction, type ScanResult } from "../actions";
 

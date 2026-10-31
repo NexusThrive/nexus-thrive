@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getAppBaseUrl } from "@/lib/app-url";
+import { getAppBaseUrl } from "@/lib/foundation/app-url";
 import { can } from "@/lib/core/auth/permissions";
 import { adoptAsWebsite, saveSite, setPublished, type SiteInput } from "@/lib/experience/site/site-db";
 import { logTenantAction } from "@/lib/core/tenancy/audit";

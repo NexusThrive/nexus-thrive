@@ -14,7 +14,7 @@ import { accountingPort, type AccountingFact, type AccountingPort } from "@/lib/
 import { createDocument } from "@/lib/business/sales/documents-db";
 import { voidInvoice } from "@/lib/business/sales/invoices-db";
 import { recordIncomeNow, voidPayment } from "@/lib/business/sales/money-service";
-import { PortNotProvidedError } from "@/lib/ports";
+import { PortNotProvidedError } from "@/lib/foundation/ports";
 import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 
 const TEST_URL = process.env.TEST_DATABASE_URL;

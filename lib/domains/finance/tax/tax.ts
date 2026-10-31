@@ -139,7 +139,7 @@ export const fiscalCode = (prefix: string, n: number): string => `${prefix}${n}`
 export const NUMBERED_KINDS = ["SALE", "BILL", "RECEIPT", "CREDIT_NOTE", "DEBIT_NOTE"] as const;
 
 /** Fecha de hoy en Colombia (UTC−5) como AAAA-MM-DD: la vigencia se mide por día calendario local. */
-export { todayCO } from "@/lib/plain-date";
+export { todayCO } from "@/lib/foundation/dates/plain-date";
 
 /** Tarifas habituales en Colombia para arrancar; el negocio las ajusta (bases mínimas con su contador). */
 export const DEFAULT_TAX_RATES: readonly { code: string; name: string; kind: TaxKind; ratePct: number }[] = [

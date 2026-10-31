@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { customerContact } from "@/lib/business/customers/customers-db";
 import { getQuoteTerms, getVerticalTerms } from "@/lib/core/sectors/terms";
-import { formatCurrency, formatDateShort } from "@/lib/format";
+import { formatCurrency, formatDateShort } from "@/lib/foundation/format";
 import PrintButton from "./_components/print-button";
 import QuoteDocumentSheet from "@/components/organisms/quote-document-sheet";
 import { buttonVariants } from "@/components/atoms/button-variants";

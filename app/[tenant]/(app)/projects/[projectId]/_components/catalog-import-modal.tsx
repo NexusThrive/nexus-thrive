@@ -11,7 +11,7 @@ import {
   APU_UNITS,
   formatApuUnit,
 } from "@/lib/industry/construction/apu-engine";
-import { formatCurrency, toNumber } from "@/lib/format";
+import { formatCurrency, toNumber } from "@/lib/foundation/format";
 import type { ApuActivityDetail, ApuActivityRow } from "@/lib/industry/construction/shared";
 import Modal from "@/components/organisms/modal";
 import {

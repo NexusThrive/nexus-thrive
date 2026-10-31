@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { CalendarClock, Check, CheckCircle2, Mail, MapPin, MessageSquare, Phone, Printer, Send, Trash2, Users, XCircle } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
 import { QuoteStatusBadge } from "@/components/molecules/quote-badges";
-import { formatDateShort, formatMoneyMicro } from "@/lib/format";
+import { formatDateShort, formatMoneyMicro } from "@/lib/foundation/format";
 import { cn } from "@/lib/cn";
 import type {
   FollowUpTypeValue,

@@ -24,7 +24,7 @@ import {
   type UpdateProjectInput,
   serializeProjectHeader,
 } from "./shared";
-import { escapeLike } from "@/lib/sql-like";
+import { escapeLike } from "@/lib/foundation/db/sql-like";
 
 /**
  * Repositorio de proyectos de obra de un negocio: listar, métricas, consultar, crear, actualizar y borrar, siempre acotado por `tenantId`.

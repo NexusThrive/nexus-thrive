@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
-import { getAppBaseUrl } from "@/lib/app-url";
+import { getAppBaseUrl } from "@/lib/foundation/app-url";
 import { can } from "@/lib/core/auth/permissions";
 import { connectedGateways, listIntents, listReconciliations } from "@/lib/domains/finance/payments/intents-db";
 import { todayCO } from "@/lib/domains/finance/tax/tax";

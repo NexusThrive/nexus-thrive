@@ -10,7 +10,7 @@ import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { KIND_LABELS } from "@/lib/business/catalog/catalog-kinds";
 import { stockLevel } from "@/lib/business/inventory/inventory";
 import type { ProductKindValue, ProductRow } from "@/lib/business/catalog/products-db";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency } from "@/lib/foundation/format";
 import { cn } from "@/lib/utils";
 import ProductDetail from "./product-detail";
 import ProductSheet from "./product-sheet";

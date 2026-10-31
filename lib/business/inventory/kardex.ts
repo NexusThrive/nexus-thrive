@@ -1,6 +1,6 @@
 import { db } from "@/prisma/db";
 import { msOf } from "@/lib/core/events/instant";
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import type { KardexLine } from "./stock-service";
 
 /** Kardex y bodegas (lectura y administración). Todo con `tenantId`. */

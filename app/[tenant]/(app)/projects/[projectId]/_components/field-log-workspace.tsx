@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/molecules/empty-state";
 import { NLoader } from "@/components/atoms/n-loader";
 import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
-import { formatDateShort } from "@/lib/format";
+import { formatDateShort } from "@/lib/foundation/format";
 import { getLogSummaryStats, type FieldLogEntryData } from "@/lib/industry/construction/field-log-engine";
 import type { FieldLogData } from "@/lib/industry/construction/shared";
 import type { ItemProgressRow } from "@/lib/industry/construction/progress";

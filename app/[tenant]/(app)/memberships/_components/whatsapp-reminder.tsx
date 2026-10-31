@@ -8,7 +8,7 @@ import {
   plainFromInstant,
   whatsappReminderLink,
 } from "@/lib/industry/gym/memberships";
-import { formatDateShort } from "@/lib/format";
+import { formatDateShort } from "@/lib/foundation/format";
 import type { MembershipViewRow } from "./membership-table";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";

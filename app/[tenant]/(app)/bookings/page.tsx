@@ -8,7 +8,7 @@ import { activeTeam, bookingsBetween, customerPhoneOptions, customersByIds } fro
 import AgendaCalendar from "./_agenda/agenda-calendar";
 import type { AgendaBooking } from "./_agenda/types";
 import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
-import { bogotaDay } from "@/lib/plain-date";
+import { bogotaDay } from "@/lib/foundation/dates/plain-date";
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 

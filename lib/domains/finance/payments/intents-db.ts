@@ -1,5 +1,5 @@
 import { MoneyError, moneyTransaction, recordIncome, type MoneyTx } from "@/lib/business/sales/money-service";
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { balanceOf } from "@/lib/foundation/kernel/aging";
 import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { checkoutPort } from "./checkout-port";

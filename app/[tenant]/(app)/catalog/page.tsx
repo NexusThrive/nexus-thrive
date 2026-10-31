@@ -4,7 +4,7 @@ import { BookOpen, ImageIcon, Layers, Package, Upload } from "lucide-react";
 import { createTenantDb } from "@/lib/core/tenancy/db";
 import { canGovernBudget, type TenantRole } from "@/lib/core/tenancy/context";
 import { getQuoteTerms } from "@/lib/core/sectors/terms";
-import { formatDateShort } from "@/lib/format";
+import { formatDateShort } from "@/lib/foundation/format";
 import { isValidCategory } from "@/lib/industry/construction/apu-engine";
 import TabNav from "@/components/molecules/tab-nav";
 import ItemsBank from "./_components/items-bank";

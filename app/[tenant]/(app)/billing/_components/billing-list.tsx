@@ -12,7 +12,7 @@ import { documentCode, type DocumentKind } from "@/lib/business/sales/commercial
 import type { DocumentView } from "@/lib/business/sales/documents-db";
 import { viewDocumentAction } from "@/app/[tenant]/(app)/billing/actions";
 import DocumentActions from "./document-actions";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency } from "@/lib/foundation/format";
 import InvoiceSheet from "./invoice-sheet";
 
 type Row = { id: string; kind: DocumentKind; number: number; customerName: string; issueDate: string; dueDate: string | null; status: "ISSUED" | "PAID" | "VOID"; total: number };

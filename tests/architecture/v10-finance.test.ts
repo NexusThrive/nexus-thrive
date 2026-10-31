@@ -70,7 +70,7 @@ describe("M5.3 · domains/finance/tax", () => {
   });
 
   test("solo depende de Foundation (y de sí mismo)", () => {
-    const permitidos = /^(@\/lib\/plain-date|@\/lib\/format|@\/prisma\/db|\.\/tax)$/;
+    const permitidos = /^(@\/lib\/foundation\/dates\/plain-date|@\/lib\/foundation\/format|@\/prisma\/db|\.\/tax)$/;
     for (const name of ["tax.ts", "tax-db.ts"]) {
       for (const spec of importsOf(`${dir}/${name}`)) expect(spec, name).toMatch(permitidos);
     }
@@ -100,7 +100,7 @@ describe("M5.4 · domains/finance/accounting", () => {
 
   test("solo depende de Foundation, de Business (lista cerrada), de tax y de sí mismo", () => {
     const permitidos = new RegExp(
-      "^(node:crypto|@/prisma/db|@/lib/format|@/lib/business/sales/money-error|@/lib/business/data-exchange/table|@/lib/domains/finance/tax/tax|\\./(puc|ledger|accounting-db|reports))$",
+      "^(node:crypto|@/prisma/db|@/lib/foundation/format|@/lib/business/sales/money-error|@/lib/business/data-exchange/table|@/lib/domains/finance/tax/tax|\\./(puc|ledger|accounting-db|reports))$",
     );
     for (const name of produccion) {
       for (const spec of importsOf(`${dir}/${name}`)) expect(spec, name).toMatch(permitidos);
@@ -132,7 +132,7 @@ describe("M5.5 · domains/finance/receivables", () => {
 
   test("solo depende de Foundation, del kernel, de Business (dinero), de accounting y de tax", () => {
     const permitidos =
-      /^(@\/prisma\/db|@\/lib\/format|@\/lib\/foundation\/kernel\/aging|@\/lib\/business\/sales\/money-service|@\/lib\/domains\/finance\/(accounting\/ledger-db|tax\/tax))$/;
+      /^(@\/prisma\/db|@\/lib\/foundation\/format|@\/lib\/foundation\/kernel\/aging|@\/lib\/business\/sales\/money-service|@\/lib\/domains\/finance\/(accounting\/ledger-db|tax\/tax))$/;
     for (const spec of importsOf(file)) expect(spec).toMatch(permitidos);
   });
 
@@ -162,7 +162,7 @@ describe("M5.6 · domains/finance/payments", () => {
 
   test("solo depende de Foundation, del kernel, de Business (dinero y liquidación de la tienda), de tax y de sí mismo", () => {
     const permitidos = new RegExp(
-      "^(node:crypto|@/prisma/db|@/lib/ports|@/lib/format|@/lib/foundation/kernel/aging|@/lib/business/sales/money-service|@/lib/business/store/store-settle|@/lib/domains/finance/tax/tax|\\./(checkout-port|intents))$",
+      "^(node:crypto|@/prisma/db|@/lib/foundation/ports|@/lib/foundation/format|@/lib/foundation/kernel/aging|@/lib/business/sales/money-service|@/lib/business/store/store-settle|@/lib/domains/finance/tax/tax|\\./(checkout-port|intents))$",
     );
     for (const name of produccion) {
       for (const spec of importsOf(`${dir}/${name}`)) expect(spec, name).toMatch(permitidos);

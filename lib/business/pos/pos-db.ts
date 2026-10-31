@@ -1,7 +1,7 @@
 import { insertDocument } from "@/lib/business/sales/documents-db";
 import { closeCashSession, openCashSession } from "@/lib/business/sales/finance-db";
 import { MoneyError, moneyTransaction, recordIncome } from "@/lib/business/sales/money-service";
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { emitEvent } from "@/lib/core/events/outbox";
 import { StockError, applyStockMovement } from "@/lib/business/inventory/stock-service";
 import { db } from "@/prisma/db";

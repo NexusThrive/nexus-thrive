@@ -1,7 +1,7 @@
 import { ShieldCheck } from "lucide-react";
 import type { AuditLogRow } from "@/lib/platform/admin/db";
 import { AUDIT_ACTION_LABELS as ACTION_LABELS } from "@/lib/platform/admin/audit-labels";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime } from "@/lib/foundation/format";
 
 
 /**

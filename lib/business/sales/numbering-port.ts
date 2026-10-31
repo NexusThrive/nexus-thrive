@@ -1,5 +1,5 @@
-import type { DbWriter } from "@/lib/db-transaction";
-import { definePort } from "@/lib/ports";
+import type { DbWriter } from "@/lib/foundation/db/db-transaction";
+import { definePort } from "@/lib/foundation/ports";
 
 /**
  * Contrato entre los documentos comerciales (Business) y la numeración fiscal y las retenciones (Finance/Tax).

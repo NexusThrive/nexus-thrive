@@ -11,7 +11,7 @@ import {
 } from "@/prisma/db";
 import {
   toNumber,
-} from "@/lib/format";
+} from "@/lib/foundation/format";
 import {
   calculateQuoteTotals,
   type ApuSnapshot,
@@ -22,7 +22,7 @@ import {
   type QuoteMetrics,
   type QuoteRow,
 } from "./shared";
-import { escapeLike } from "@/lib/sql-like";
+import { escapeLike } from "@/lib/foundation/db/sql-like";
 
 /**
  * Repositorio de cotizaciones del negocio: listar con búsqueda, estado y paginación, métricas, consultar y registrar.

@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useMemo, useSyncExternalStore } from "react";
-import { PREFS_STORAGE_KEY, prefsInitScript } from "@/lib/init-scripts";
+import { PREFS_STORAGE_KEY, prefsInitScript } from "@/lib/foundation/init-scripts";
 
 /**
  * Preferencias de interfaz por navegador (Ajustes → Apariencia y movimiento).

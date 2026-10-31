@@ -6,7 +6,7 @@ import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency } from "@/lib/foundation/format";
 import type { PartyRow } from "@/lib/core/parties/parties-db";
 import { STATUS_LABELS, type OrderStatus } from "@/lib/business/purchasing/purchases";
 import type { OrderRow } from "@/lib/business/purchasing/purchases-db";

@@ -118,7 +118,7 @@ describe("pruebas negativas: una dependencia prohibida nueva se detecta", () => 
   });
 
   test("un import hacia abajo no genera problemas", () => {
-    expect(problemsWith({ "lib/business/zz-ok.ts": `import { x } from "@/lib/core/tenancy/context"; import { y } from "@/lib/format";` })).toEqual([]);
+    expect(problemsWith({ "lib/business/zz-ok.ts": `import { x } from "@/lib/core/tenancy/context"; import { y } from "@/lib/foundation/format";` })).toEqual([]);
   });
 });
 

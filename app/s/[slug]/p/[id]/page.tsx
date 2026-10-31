@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAppBaseUrl } from "@/lib/app-url";
+import { getAppBaseUrl } from "@/lib/foundation/app-url";
 import { TEMPLATES, onAccent, whatsappUrl } from "@/lib/experience/site/site";
 import { publicSite } from "@/lib/experience/site/site-db";
 

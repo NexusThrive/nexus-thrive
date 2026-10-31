@@ -8,7 +8,7 @@ import { getStaffContext } from "@/lib/platform/team/access";
 import { listManagers } from "@/lib/platform/accounts/accounts";
 import { getLead, listLeadActivity, tenantOptions } from "@/lib/platform/crm/leads";
 import LeadDetail from "./_components/lead-detail";
-import { bogotaDay } from "@/lib/plain-date";
+import { bogotaDay } from "@/lib/foundation/dates/plain-date";
 
 export const metadata: Metadata = { title: "Lead · NEXUS Operations Center" };
 

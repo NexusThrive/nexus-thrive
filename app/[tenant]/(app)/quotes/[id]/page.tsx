@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { customerContact } from "@/lib/business/customers/customers-db";
 import { getQuoteTerms, getVerticalTerms } from "@/lib/core/sectors/terms";
-import { formatCurrency, formatDateShort } from "@/lib/format";
+import { formatCurrency, formatDateShort } from "@/lib/foundation/format";
 import { QuoteStatusBadge } from "@/components/molecules/quote-badges";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { PageHeader } from "@/components/molecules/page-header";

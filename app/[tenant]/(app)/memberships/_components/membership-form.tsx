@@ -11,7 +11,7 @@ import {
 } from "../actions";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { MEMBERSHIP_TYPES, typeMonths, type MembershipTypeValue } from "@/lib/industry/gym/memberships";
-import { addMonths, bogotaToday, parsePlainDate, formatPlainDate } from "@/lib/plain-date";
+import { addMonths, bogotaToday, parsePlainDate, formatPlainDate } from "@/lib/foundation/dates/plain-date";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { labelClasses } from "@/components/atoms/input";

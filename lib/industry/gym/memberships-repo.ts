@@ -1,8 +1,8 @@
 import { and, or } from "@prisma/orm-postgres/orm-client";
 import { db } from "@/prisma/db";
-import { formatDateShort, toNumber } from "@/lib/format";
-import { monthRangeBogota, resolveMonthYear } from "@/lib/bogota-month";
-import { escapeLike } from "@/lib/sql-like";
+import { formatDateShort, toNumber } from "@/lib/foundation/format";
+import { monthRangeBogota, resolveMonthYear } from "@/lib/foundation/dates/bogota-month";
+import { escapeLike } from "@/lib/foundation/db/sql-like";
 import type { Customer360Contribution, CustomerTimelineEvent } from "@/lib/core/tenancy/db";
 import {
   EXPIRING_WINDOW_DAYS,

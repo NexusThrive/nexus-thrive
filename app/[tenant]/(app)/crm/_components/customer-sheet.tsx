@@ -12,7 +12,7 @@ import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { bmi, profileFor, type FieldDef } from "@/lib/business/customers/customer-fields";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency } from "@/lib/foundation/format";
 import { useVerticalTerms } from "../../vertical-terms-context";
 import { customerFormDataAction, getCustomerForEditAction, saveCustomerAction, type CustomerEdit } from "@/app/[tenant]/(app)/crm/profile-actions";
 import { Select } from "@/components/atoms/select";

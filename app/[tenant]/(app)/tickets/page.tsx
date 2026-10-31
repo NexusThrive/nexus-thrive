@@ -10,7 +10,7 @@ import { slotLoads, visitorReport, weekdayOf, WEEKDAYS } from "@/lib/industry/mu
 import { getMuseumSettings, salesBetween, salesOn, ticketTypes } from "@/lib/industry/museum/museum-db";
 import { canHandleCash, canManage } from "@/lib/core/auth/roles";
 import { bogotaDayKey } from "@/lib/foundation/kernel/finance-series";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency } from "@/lib/foundation/format";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { customerOptions } from "@/lib/business/customers/customers-db";
 import TicketDesk from "./_components/ticket-desk";

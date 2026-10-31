@@ -5,7 +5,7 @@ import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ProgressBar } from "@/components/atoms/progress-bar";
 import { cn } from "@/lib/utils";
-import { formatRelativeTime } from "@/lib/format";
+import { formatRelativeTime } from "@/lib/foundation/format";
 import { PRESENCE_STATES } from "@/lib/business/presence/presence";
 import type { PresenceSnapshot } from "@/lib/business/presence/load";
 

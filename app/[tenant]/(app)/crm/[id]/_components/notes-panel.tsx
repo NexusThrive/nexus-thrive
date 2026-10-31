@@ -4,7 +4,7 @@ import { useActionState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
 import type { Customer360Note } from "@/lib/core/tenancy/db";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime } from "@/lib/foundation/format";
 import { cn } from "@/lib/cn";
 import { NOTE_MAX_LENGTH } from "@/lib/business/customers/customer-notes";
 import { createCustomerNoteAction } from "../actions";

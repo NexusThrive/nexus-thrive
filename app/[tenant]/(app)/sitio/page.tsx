@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
-import { getAppBaseUrl } from "@/lib/app-url";
+import { getAppBaseUrl } from "@/lib/foundation/app-url";
 import { can } from "@/lib/core/auth/permissions";
 import { siteForEditor } from "@/lib/experience/site/site-db";
 import { requireTenantContext } from "@/lib/core/tenancy/context";

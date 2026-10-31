@@ -6,7 +6,7 @@ import { MessageCircle, PauseCircle, RefreshCw, UserRound } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import MembershipHoldSheet from "./membership-hold-sheet";
 import PaginationLinks from "@/components/molecules/pagination-links";
-import { formatCurrency, formatDateShort } from "@/lib/format";
+import { formatCurrency, formatDateShort } from "@/lib/foundation/format";
 import { typeLabel, type MembershipStatusValue, type MembershipTypeValue } from "@/lib/industry/gym/memberships";
 import MembershipStatusBadge from "./membership-status-badge";
 import MembershipModal from "./membership-modal";

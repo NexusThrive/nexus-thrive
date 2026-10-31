@@ -18,7 +18,7 @@ import { setEnabledAction, verifyLedgerAction, closePeriodAction, createAccountA
 import { TYPE_LABELS, periodLabel } from "@/lib/domains/finance/accounting/puc";
 import type { AccountRow, CostCenterRow, PeriodRow, RuleRow } from "@/lib/domains/finance/accounting/accounting-db";
 import type { EntryRow } from "@/lib/domains/finance/accounting/ledger-db";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency } from "@/lib/foundation/format";
 
 type Tab = "entries" | "reports" | "puc" | "rules" | "centers" | "periods";
 const AMOUNT_TEXT = { total: "total", subtotal: "subtotal", tax: "IVA", cost: "costo", payment: "valor cobrado/pagado", withholding: "retención", tip: "propina" } as const;

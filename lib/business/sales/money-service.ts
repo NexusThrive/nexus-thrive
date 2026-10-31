@@ -1,12 +1,12 @@
 import { emitEvent } from "@/lib/core/events/outbox";
 import { db } from "@/prisma/db";
-import type { DbTransaction } from "@/lib/db-transaction";
-import { toNumber } from "@/lib/format";
+import type { DbTransaction } from "@/lib/foundation/db/db-transaction";
+import { toNumber } from "@/lib/foundation/format";
 import type { PaymentStatusValue } from "@/lib/foundation/kernel/payment-vocabulary";
 import { applyStockMovement, StockError } from "@/lib/business/inventory/stock-service";
 import { balanceOf, validatePayment } from "@/lib/foundation/kernel/aging";
 import { accountingPort } from "./accounting-port";
-import { todayCO } from "@/lib/plain-date";
+import { todayCO } from "@/lib/foundation/dates/plain-date";
 import { MoneyError } from "./money-error";
 import { receiptCode } from "./invoice";
 import type { DocumentLineInput } from "./commercial-document";

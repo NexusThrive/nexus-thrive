@@ -63,7 +63,7 @@ describe("dependencias invertidas", () => {
     for (const file of ["lib/platform/admin/db.ts", "lib/core/tenancy/db.ts", "lib/industry/gym/gym-db.ts"]) {
       expect(read(file), file).not.toMatch(/function escapeLike/);
     }
-    expect(read("lib/sql-like.ts")).toMatch(/export function escapeLike/);
+    expect(read("lib/foundation/db/sql-like.ts")).toMatch(/export function escapeLike/);
   });
 });
 

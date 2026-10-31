@@ -1,4 +1,4 @@
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { decryptCredentials, encryptCredentials } from "@/lib/integrations/providers/connections";
 import { db } from "@/prisma/db";
 import { PLACE_ID, PlacesError, fetchPlace, napCheck, type NapRow, type Place } from "./places";

@@ -1,4 +1,4 @@
-import { definePort } from "@/lib/ports";
+import { definePort } from "@/lib/foundation/ports";
 
 /**
  * Contrato entre los cobros en línea (Finance) y las pasarelas de pago (Integrations).

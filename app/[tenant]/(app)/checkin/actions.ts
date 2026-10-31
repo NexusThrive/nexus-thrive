@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { canHandleCash } from "@/lib/core/auth/roles";
 import { checkIn, findMemberByScan, getMember, recordUnknownScan, searchMembers, type CheckInResult, type MemberCard, type Method } from "@/lib/industry/gym/gym-db";
-import { allowAttempt, recordAttempt } from "@/lib/rate-limit";
+import { allowAttempt, recordAttempt } from "@/lib/foundation/rate-limit";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type ScanResult = { ok: true; result: CheckInResult } | { ok: false; message: string };

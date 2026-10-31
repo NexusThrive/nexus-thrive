@@ -1,4 +1,4 @@
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { db } from "@/prisma/db";
 import { DEFAULT_TAX_RATES, NUMBERED_KINDS, computeWithholdings, overlaps, rateInForce, resolutionStatus, todayCO, validateResolution, validateTaxRate, type ResolutionStatus, type TaxKind, type TaxRateRow, type Withholding } from "./tax";
 

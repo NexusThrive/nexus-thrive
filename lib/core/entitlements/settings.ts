@@ -2,7 +2,7 @@ import { cache } from "react";
 import { db } from "@/prisma/db";
 import { isVertical } from "@/lib/core/sectors/verticals";
 import { isModule, type ModuleValue } from "@/lib/core/capabilities/modules";
-import { isUniqueViolation } from "@/lib/db-errors";
+import { isUniqueViolation } from "@/lib/foundation/db/db-errors";
 import type { PlanKey } from "./catalog";
 import {
   defaultPricingConfig,

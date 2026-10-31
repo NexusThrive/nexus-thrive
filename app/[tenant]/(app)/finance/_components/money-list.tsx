@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/molecules/empty-state";
 import PaginationLinks from "@/components/molecules/pagination-links";
 import { receiptCode } from "@/lib/business/sales/invoice";
 import { paymentMethodLabel } from "@/lib/foundation/kernel/payment-vocabulary";
-import { formatCurrency, formatDateTime } from "@/lib/format";
+import { formatCurrency, formatDateTime } from "@/lib/foundation/format";
 import { cn } from "@/lib/utils";
 import MoneyDetailSheet, { type MoneyItem } from "./money-detail-sheet";
 

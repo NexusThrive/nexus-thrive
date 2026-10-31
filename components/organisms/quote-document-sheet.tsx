@@ -1,4 +1,4 @@
-import { formatDateShort, formatMoneyMicro, formatPercentMicro, formatQuantityMicro } from "@/lib/format";
+import { formatDateShort, formatMoneyMicro, formatPercentMicro, formatQuantityMicro } from "@/lib/foundation/format";
 import type { QuoteDocument, QuoteParty } from "@/lib/industry/construction/quote-document";
 
 function Party({ title, party }: { title: string; party: QuoteParty }) {

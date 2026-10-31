@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { linkNfc } from "@/lib/industry/gym/gym-db";
-import { isUniqueViolation } from "@/lib/db-errors";
+import { isUniqueViolation } from "@/lib/foundation/db/db-errors";
 import { deleteTenantCompletely } from "./deletion";
 
 /**

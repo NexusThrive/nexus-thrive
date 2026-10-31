@@ -9,7 +9,7 @@ import {
 } from "../actions";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { typeLabel } from "@/lib/industry/gym/memberships";
-import { formatDateShort, formatCurrency } from "@/lib/format";
+import { formatDateShort, formatCurrency } from "@/lib/foundation/format";
 import type { MembershipViewRow } from "./membership-table";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";

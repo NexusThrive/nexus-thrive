@@ -1,7 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
-import { allowAttempt, recordAttempt } from "@/lib/rate-limit";
+import { allowAttempt, recordAttempt } from "@/lib/foundation/rate-limit";
 import { createLead, createReview } from "@/lib/business/growth/growth-db";
 import { placeOrder, type PlaceResult } from "@/lib/business/store/store-db";
 import type { CartLine, CustomerData } from "@/lib/business/store/cart";

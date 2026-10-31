@@ -13,7 +13,7 @@ import { KIND_LABELS } from "@/lib/business/catalog/catalog-kinds";
 import { STOCK_KIND_LABELS, stockLevel, type StockKind } from "@/lib/business/inventory/inventory";
 import type { ProductRow } from "@/lib/business/catalog/products-db";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
-import { formatCurrency, formatDateTime } from "@/lib/format";
+import { formatCurrency, formatDateTime } from "@/lib/foundation/format";
 import { moveStockAction, sellProductAction, stockHistoryAction } from "../actions";
 import { Select } from "@/components/atoms/select";
 

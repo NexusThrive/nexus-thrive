@@ -1,4 +1,4 @@
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { db } from "@/prisma/db";
 import { defaultCopy, isHexColor, isTemplate, validateSiteSlug, type SiteData } from "./site";
 

@@ -10,7 +10,7 @@ import { textareaClasses } from "@/components/atoms/input";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime } from "@/lib/foundation/format";
 import type { ConversationRow, InboxMessageRow } from "@/lib/platform/inbox/inbox";
 import { mailtoLink, waLink, whatsappWindow } from "@/lib/platform/inbox/inbox-rules";
 import { useMinute } from "@/lib/experience/hooks/use-minute";

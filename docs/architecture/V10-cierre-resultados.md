@@ -10,11 +10,11 @@ Informe acumulado de las etapas del [plan de cierre](V10-plan-de-cierre.md). Cad
 | B · business | **Hecha** (con excepción temporal documentada) | `5ce3a33` |
 | N · construction | **Hecha** | `748ff50` |
 | X · experience | **Hecha** | `7221fc2` |
-| C · core | **Hecha** | ver §5 |
-| F · foundation | Pendiente | — |
+| C · core | **Hecha** | `1ca590a` |
+| F · foundation | **Hecha** | ver §6 |
 | Z · remate | Pendiente | — |
 
-La raíz de `lib/` pasó de 66 entradas (inicio de M5) a 35 tras la etapa C (15 carpetas y 20 archivos). La meta es: las nueve áreas y los dos archivos documentados `utils.ts` y `cn.ts`.
+La raíz de `lib/` pasó de 66 entradas (inicio de M5) a 18 tras la etapa F (14 carpetas y 4 archivos). La meta es: las nueve áreas y los dos archivos documentados `utils.ts` y `cn.ts`.
 
 ## 1. Etapa I · integrations (`d406c29`)
 
@@ -133,4 +133,33 @@ Las doce carpetas de Core que seguían en la raíz de `lib/` → `lib/core/`:
 3. **Script de integración:** las dos pruebas de `lib/tenant` que lista `test-integration.sh` se actualizaron a `lib/core/tenancy/…`. La integración se mantiene en 66 archivos y 413 pruebas, y la guarda de rutas explícitas sigue activa.
 4. **Rutas en documentación y configuración:** actualizados `eslint/legacy-db-access.mjs` (comentario), `.github/pull_request_template.md` (dos rutas) y `app/globals.css` (comentario). **No se tocaron** los comentarios de `prisma/schema/**` que nombran `lib/plans` y `lib/capabilities` (Prisma no se modifica) ni los documentos de `docs/` (pasada P-12).
 5. **Sin hallazgos de rutas en tiempo de ejecución:** las pruebas movidas calculan la raíz con `process.cwd()`, no con rutas relativas al archivo; en el código de producción movido no hay `__dirname`, `import.meta` ni lecturas de archivos.
+
+## 6. Etapa F · foundation
+
+Las utilidades puras sueltas en la raíz de `lib/` → `lib/foundation/`:
+
+| Antes | Ahora |
+|---|---|
+| `plain-date`, `bogota-month`, `calendar` | `foundation/dates/` |
+| `db-errors`, `db-transaction`, `sql-like` | `foundation/db/` |
+| `format`, `qr`, `rate-limit`, `ports`, `app-url`, `contact`, `image-upload`, `init-scripts` | `foundation/<mismo nombre>` (planos) |
+
+Con `kernel/`, `countries.ts` y `limits.ts` (ya existentes), `lib/foundation/` queda con tres subcarpetas (`kernel`, `dates`, `db`) y los archivos planos (decisión E-2: carpeta solo con tres o más archivos relacionados).
+
+| | |
+|---|---|
+| Archivos movidos | 16 (14 de producción y 2 pruebas), con `git mv` |
+| Archivos con referencias reescritas | 172 (192 alias, 1 relativa, 5 literales); `format` lo importaban unos 108 archivos |
+| Capas | Se retiran 14 unidades de `layers.json`; el área se deduce de la ruta. Se conservan las de `utils.ts`, `cn.ts` (excepción documentada, E-3) y `temporal.d.ts` (se mueve en Z) |
+| Fronteras | El informe de dependencias entre áreas es **idéntico** al anterior (misma matriz, mismos ciclos): Foundation sigue sin importar ninguna otra área |
+| Pruebas | `tests/architecture/v10-foundation.test.ts` (24): `dates/` y `db/` exactos, archivos planos y kernel, nada de lo movido en la raíz, la raíz solo conserva archivos con excepción documentada, área por ruta sin unidad, sin unidades viejas |
+| Exportaciones | 56 de 14 archivos, idénticas |
+| Verificación | `pnpm verify` verde (incluido `next build`); unitarias 123 archivos y 1 886 (base de la etapa 1 862; +24); integración **66 archivos y 413** (sin pérdidas); contrato (15 operaciones + OpenAPI) idéntico; Prisma y migraciones sin cambios; `check:layers`: 290 archivos, 0 violaciones, 0 excepciones; mismos 3 ciclos de tipos y la excepción exacta `inventory ⇄ sales` sin cambios |
+
+### Problemas encontrados
+
+1. **Rutas dentro de expresiones regulares y cadenas de `v10-finance.test.ts`** (con barras `\/` escapadas y sin escapar): `plain-date`, `format` y `ports` aparecen en las listas de imports permitidos de `tax`, `accounting`, `receivables` y `payments`. El codemod no las reescribe; las habría delatado la prueba, pero se corrigieron antes (6 sustituciones) y una búsqueda posterior de ambas formas de escritura no deja ninguna.
+2. **Sin hallazgos de rutas en tiempo de ejecución:** los archivos movidos no usan `import.meta`, `__dirname`, `process.cwd`, lecturas de archivos ni rutas relativas a recursos.
+3. **Pendiente de la raíz de `lib/`** (etapa Z; el dueño precisó que la raíz debe tener solo lo importante, plan de cierre §10): `temporal.d.ts`, `admin`, `design`, `navigation` (solo `nav-types.ts`), `onboarding`, `seo`, la capa `automation` sin archivos en `layers.json` y la prueba `prisma8-query-patterns`.
+4. **Mutación de validación mal construida (mía, sin impacto):** al añadir un `import` al final de `lib/foundation/format.ts` el verificador no lo detectó porque ese archivo no termina en salto de línea y el `import` quedó pegado a la última línea; con el salto de línea previo falla con `R3-foundation-no-importa-core`. No es un hueco de la regla.
 

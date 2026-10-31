@@ -27,7 +27,7 @@ import {
   countItemCompositionUsage,
   getApuActivityDetail,
 } from "./shared";
-import { escapeLike } from "@/lib/sql-like";
+import { escapeLike } from "@/lib/foundation/db/sql-like";
 
 /** Igualdad de decimales en texto ("30000" = "30000.00"). */
 function sameDecimalText(a: unknown, b: unknown): boolean {

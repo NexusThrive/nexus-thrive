@@ -4,7 +4,7 @@
  */
 import { membershipTypeFor } from "@/lib/business/customers/customer-fields";
 import { bogotaEndOfDay, bogotaStartOfDay, computeMembershipStatus } from "@/lib/industry/gym/memberships";
-import { bogotaToday } from "@/lib/plain-date";
+import { bogotaToday } from "@/lib/foundation/dates/plain-date";
 import { moneyTransaction, recordIncome } from "@/lib/business/sales/money-service";
 
 type Plan = { id: string; name: string; price: number; durationDays: number };

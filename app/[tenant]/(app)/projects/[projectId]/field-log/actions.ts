@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { validateCreateFieldLogEntry } from "./validators";
-import { readImageUpload } from "@/lib/image-upload";
+import { readImageUpload } from "@/lib/foundation/image-upload";
 
 import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 

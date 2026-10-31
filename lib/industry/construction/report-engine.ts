@@ -32,7 +32,7 @@ import {
   formatMoneyMicro,
   formatQuantityMicro,
   formatPercentMicro,
-} from "@/lib/format";
+} from "@/lib/foundation/format";
 
 import type {
   ProjectBudgetData,

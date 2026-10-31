@@ -22,7 +22,7 @@ import { VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
 import { MODULE_LABELS } from "@/lib/core/capabilities/modules";
 import { TEAM_SIZE_LABELS, type TeamSizeValue } from "@/lib/onboarding/types";
 import { paymentMethodLabel } from "@/lib/foundation/kernel/payment-vocabulary";
-import { formatCurrency, formatDateTime } from "@/lib/format";
+import { formatCurrency, formatDateTime } from "@/lib/foundation/format";
 import type { TenantDetail } from "@/lib/platform/admin/db";
 import { cn } from "@/lib/utils";
 import {

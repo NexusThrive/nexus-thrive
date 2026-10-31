@@ -1,4 +1,4 @@
-import { definePort } from "@/lib/ports";
+import { definePort } from "@/lib/foundation/ports";
 
 /**
  * Contrato entre la presencia en línea (Business) y la ficha de Google (Integrations).
