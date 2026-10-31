@@ -1,5 +1,5 @@
 import type { MoneyTx } from "@/lib/business/money-service";
-import { postByRule } from "@/lib/accounting/ledger-db";
+import { accountingPort } from "@/lib/business/accounting-port";
 import { toNumber } from "@/lib/format";
 import { todayCO } from "@/lib/plain-date";
 
@@ -147,8 +147,8 @@ export async function applyStockMovement(tx: MoneyTx, tenantId: string, input: M
     });
     // Contabilidad: lo que sale al vender cuesta; una devolución de venta devuelve ese costo al inventario.
     const costValue = Math.round(movementCost * input.quantity * 100) / 100;
-    if (kind === "SALE" && costValue > 0) await postByRule(tx, tenantId, "SALE_COST", { cost: costValue }, { date: todayCO(), description: `Costo de venta · ${product.name}`, sourceType: "STOCK", sourceId: movement.id }, input.userId ?? null);
-    if (kind === "IN" && input.documentType === "CREDIT_NOTE" && costValue > 0) await postByRule(tx, tenantId, "SALE_COST_RETURN", { cost: costValue }, { date: todayCO(), description: `Costo devuelto · ${product.name}`, sourceType: "STOCK", sourceId: movement.id }, input.userId ?? null);
+    if (kind === "SALE" && costValue > 0) await accountingPort.use().record(tx, tenantId, { event: "SALE_COST", amounts: { cost: costValue }, date: todayCO(), description: `Costo de venta · ${product.name}`, sourceType: "STOCK", sourceId: movement.id }, input.userId ?? null);
+    if (kind === "IN" && input.documentType === "CREDIT_NOTE" && costValue > 0) await accountingPort.use().record(tx, tenantId, { event: "SALE_COST_RETURN", amounts: { cost: costValue }, date: todayCO(), description: `Costo devuelto · ${product.name}`, sourceType: "STOCK", sourceId: movement.id }, input.userId ?? null);
     return { warehouseId, balance: next, productStock, unitCost: nextAvg, delta };
   }
   throw new StockError("El inventario cambió mientras se registraba. Intenta de nuevo.");

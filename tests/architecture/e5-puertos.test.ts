@@ -55,9 +55,11 @@ describe("el arranque conecta los puertos", () => {
     expect(source.indexOf("temporal-polyfill")).toBeLessThan(source.indexOf("composePorts"));
   });
 
-  test("vitest.setup.ts los conecta cuando hay base de datos de pruebas", () => {
+  test("vitest.setup.ts los conecta cuando hay base de datos de pruebas, dentro de un beforeAll con importación dinámica", () => {
     const source = read("vitest.setup.ts");
     expect(source).toContain("TEST_DATABASE_URL");
     expect(source).toContain("composePorts()");
+    // En un beforeAll: los dominios se cargan después de los vi.mock de cada archivo (si no, quedan en caché con el módulo real).
+    expect(source).toMatch(/beforeAll\(async \(\) => \{[\s\S]*await import\("@\/lib\/runtime\/ports"\)/);
   });
 });

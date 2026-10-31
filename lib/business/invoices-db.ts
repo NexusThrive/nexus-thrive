@@ -1,4 +1,4 @@
-import { reverseSource } from "@/lib/accounting/ledger-db";
+import { accountingPort } from "./accounting-port";
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
 import { type InvoiceKind, type LineInput } from "./invoice";
@@ -89,6 +89,6 @@ export async function voidInvoice(tenantId: string, id: string, reason: string) 
   // Anular no borra: el asiento de la cuenta de cobro se reversa en el mismo momento (si el mes está cerrado, no se anula).
   await db.transaction(async (tx) => {
     await tx.orm.public.Invoice.where({ tenantId, id }).update({ status: "VOID", voidReason: reason });
-    await reverseSource(tx, tenantId, "DOCUMENT", id, reason, null);
+    await accountingPort.use().reverse(tx, tenantId, "DOCUMENT", id, reason, null);
   });
 }

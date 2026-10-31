@@ -1,6 +1,6 @@
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
-import { postByRule } from "@/lib/accounting/ledger-db";
+import { accountingPort, type AccountingEvent } from "./accounting-port";
 import { enqueueFiscal } from "@/lib/einvoice/einvoice-db";
 import { allocateNumber, commitNumber, withholdingsFor } from "@/lib/tax/tax-db";
 import { bogotaDay, todayCO } from "@/lib/plain-date";
@@ -110,10 +110,23 @@ export async function insertDocument(tx: Writer, tenantId: string, doc: NewDocum
   // Con la facturación electrónica activada, el documento fiscal queda en cola en esta misma transacción.
   const relatedCode = doc.sourceDocumentId ? await tx.orm.public.Invoice.where({ tenantId, id: doc.sourceDocumentId }).select("kind", "number").first().then((o) => (o ? documentCode(o.kind as DocumentKind, o.number) : null)) : null;
   // Contabilidad: la venta y las notas se contabilizan en esta misma transacción (si el negocio lo tiene activado).
-  const accountingEvent = ({ SALE: "SALE", BILL: "SALE", RECEIPT: "SALE", CREDIT_NOTE: "CREDIT_NOTE", DEBIT_NOTE: "DEBIT_NOTE" } as Partial<Record<DocumentKind, string>>)[doc.kind];
+  const accountingEvent = ({ SALE: "SALE", BILL: "SALE", RECEIPT: "SALE", CREDIT_NOTE: "CREDIT_NOTE", DEBIT_NOTE: "DEBIT_NOTE" } as Partial<Record<DocumentKind, AccountingEvent>>)[doc.kind];
   if (accountingEvent) {
     const customer = doc.customerId ? await tx.orm.public.Customer.where({ tenantId, id: doc.customerId }).select("partyId").first() : null;
-    await postByRule(tx, tenantId, accountingEvent, { total: totals.total, subtotal: Math.round((totals.subtotal - totals.discountTotal) * 100) / 100, tax: totals.taxTotal }, { date: bogotaDay(issueDate), description: `${DOCUMENT_LABELS[doc.kind]} ${documentCode(doc.kind, number)}`, sourceType: "DOCUMENT", sourceId: created.id, partyId: customer?.partyId ?? null }, userId);
+    await accountingPort.use().record(
+      tx,
+      tenantId,
+      {
+        event: accountingEvent,
+        amounts: { total: totals.total, subtotal: Math.round((totals.subtotal - totals.discountTotal) * 100) / 100, tax: totals.taxTotal },
+        date: bogotaDay(issueDate),
+        description: `${DOCUMENT_LABELS[doc.kind]} ${documentCode(doc.kind, number)}`,
+        sourceType: "DOCUMENT",
+        sourceId: created.id,
+        partyId: customer?.partyId ?? null,
+      },
+      userId,
+    );
   }
   await enqueueFiscal(tx, tenantId, { id: created.id, kind: doc.kind, number, prefix: allocation?.prefix || null, issueDate: bogotaDay(issueDate), customerName: doc.customerName, customerDoc: doc.customerDoc ?? null, lines: createdLines, totals, relatedCode, notes: doc.notes ?? null });
   return { id: created.id, number, total: totals.total };

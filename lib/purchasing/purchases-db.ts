@@ -1,7 +1,7 @@
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
 import { msOf } from "@/lib/events/instant";
-import { postByRule } from "@/lib/accounting/ledger-db";
+import { accountingPort } from "@/lib/business/accounting-port";
 import { MoneyError } from "@/lib/business/money-error";
 import { moneyTransaction } from "@/lib/business/money-service";
 import { applyStockMovement, ensureDefaultWarehouse, StockError } from "@/lib/inventory/stock-service";
@@ -200,7 +200,7 @@ export async function registerSupplierInvoice(tenantId: string, input: SupplierI
         total: money(input.total),
         cufe: input.cufe?.trim().slice(0, 120) || null,
       });
-      await postByRule(tx, tenantId, "PURCHASE_RECEIVED", { total: input.total, subtotal: input.subtotal, tax: input.taxTotal ?? 0 }, { date: input.issueDate.slice(0, 10), description: `Compra · factura ${number}`, sourceType: "SUPPLIER_INVOICE", sourceId: si.id, partyId: supplier.id }, null);
+      await accountingPort.use().record(tx, tenantId, { event: "PURCHASE_RECEIVED", amounts: { total: input.total, subtotal: input.subtotal, tax: input.taxTotal ?? 0 }, date: input.issueDate.slice(0, 10), description: `Compra · factura ${number}`, sourceType: "SUPPLIER_INVOICE", sourceId: si.id, partyId: supplier.id }, null);
       return si;
     });
     return { ok: true, id: created.id };
@@ -282,7 +282,7 @@ export async function receiveOrder(tenantId: string, orderId: string, input: Rec
           total: money(input.invoice.total),
           cufe: input.invoice.cufe?.trim().slice(0, 120) || null,
         });
-        await postByRule(tx, tenantId, "PURCHASE_RECEIVED", { total: input.invoice.total, subtotal: input.invoice.subtotal, tax: input.invoice.taxTotal ?? 0 }, { date: input.invoice.issueDate.slice(0, 10), description: `Compra · factura ${si.number}`, sourceType: "SUPPLIER_INVOICE", sourceId: si.id, partyId: order.supplierPartyId }, userId);
+        await accountingPort.use().record(tx, tenantId, { event: "PURCHASE_RECEIVED", amounts: { total: input.invoice.total, subtotal: input.invoice.subtotal, tax: input.invoice.taxTotal ?? 0 }, date: input.invoice.issueDate.slice(0, 10), description: `Compra · factura ${si.number}`, sourceType: "SUPPLIER_INVOICE", sourceId: si.id, partyId: order.supplierPartyId }, userId);
       }
       return { ok: true as const, status, received };
     });
