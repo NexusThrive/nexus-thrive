@@ -2,7 +2,7 @@ import type { BusinessRole } from "./roles";
 
 /**
  * Matriz única de permisos dentro de un negocio (SEC-05 en
- * docs/nexus-architecture/security-audit.md). Pura: sirve en el servidor y en
+ * docs/internal/historico/nexus-architecture/security-audit.md). Pura: sirve en el servidor y en
  * el navegador (para ocultar botones), pero la decisión que cuenta es la del
  * servidor en cada acción.
  *

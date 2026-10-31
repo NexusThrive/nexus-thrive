@@ -1,6 +1,6 @@
 /**
  * Correo de la sesión para decisiones de acceso (SEC-01 y SEC-10 de
- * docs/nexus-architecture/security-audit.md).
+ * docs/internal/historico/nexus-architecture/security-audit.md).
  *
  * Vincular una cuenta con una ficha del equipo NEXUS o con una invitación a
  * un negocio se decide por correo, así que el correo tiene que ser:

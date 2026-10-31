@@ -130,9 +130,9 @@ contabilidad y las tarifas fiscales de ejemplo deben confirmarse con un
 contador antes de usarse en producción.
 
 El estado por capa está en [`docs/wiki/04-modulos/capas/README.md`](docs/wiki/04-modulos/capas/README.md) y
-[`.docs/capas-estado-2026-10-25.md`](.docs/capas-estado-2026-10-25.md); el
+[`docs/internal/estado/capas-estado-2026-10-25.md`](docs/internal/estado/capas-estado-2026-10-25.md); el
 seguimiento de la ejecución, en
-[`.docs/ejecucion-nocturna.md`](.docs/ejecucion-nocturna.md); las migraciones,
+[`docs/internal/historico/ejecucion-nocturna.md`](docs/internal/historico/ejecucion-nocturna.md); las migraciones,
 en [`docs/wiki/08-operacion-y-despliegue/prod-sql-orden.md`](docs/wiki/08-operacion-y-despliegue/prod-sql-orden.md).
 
 ## Módulos
@@ -212,7 +212,7 @@ Las páginas y server actions pasan por `requireTenantContext`/`requireStaff`;
 cada negocio se aísla con `tenantId` resuelto en el servidor. Los flujos de
 dinero usan el servicio transaccional de dinero y las reglas puras viven junto a
 sus pruebas. La auditoría completa, con hallazgos y deuda técnica, está en
-[`docs/nexus-architecture/README.md`](docs/nexus-architecture/README.md) y la
+[`docs/internal/historico/nexus-architecture/README.md`](docs/internal/historico/nexus-architecture/README.md) y la
 arquitectura objetivo en
 [`docs/wiki/03-arquitectura/anterior-a-v10/target-architecture.md`](docs/wiki/03-arquitectura/anterior-a-v10/target-architecture.md).
 
@@ -323,7 +323,7 @@ historial en [`CHANGELOG.md`](CHANGELOG.md).
 | --- | --- |
 | [`PRODUCT.md`](PRODUCT.md) | Qué es NEXUS, para quién y principios de producto |
 | [`DESIGN.md`](DESIGN.md) | Marca, tokens, componentes, movimiento y layout |
-| [`docs/nexus-architecture/`](docs/nexus-architecture/README.md) | Auditoría, arquitectura actual y objetivo, seguridad, deuda y roadmap |
+| [`docs/nexus-architecture/`](docs/internal/historico/nexus-architecture/README.md) | Auditoría, arquitectura actual y objetivo, seguridad, deuda y roadmap |
 | [`docs/design/`](docs/design/interaction-patterns.md) | Patrones de interacción, accesibilidad y calidad |
 | [`docs/wiki/`](docs/wiki/Home.md) | **Manual vigente**: arquitectura, módulos, datos, pruebas, DevOps y nueva funcionalidad |
 | [`equipo-ingenieria.md`](docs/wiki/09-desarrollo/equipo-ingenieria.md) | Equipo de ingeniería: agentes, loops, conocimiento, automatización, seguridad y operación |

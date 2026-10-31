@@ -91,7 +91,7 @@ describe("quickCreateActions", () => {
   });
 });
 
-// ARCH-02 (docs/nexus-architecture/technical-debt.md): ningún ítem del menú
+// ARCH-02 (docs/internal/historico/nexus-architecture/technical-debt.md): ningún ítem del menú
 // lleva a un 404. Para cada rubro con todos los módulos activos, cada `href`
 // tiene su `page.tsx` bajo `app/[tenant]/(app)`.
 describe("cada ítem del menú tiene su página", () => {

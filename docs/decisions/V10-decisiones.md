@@ -1,6 +1,6 @@
 # V10 — Correspondencia definitiva de decisiones
 
-Reconcilia la numeración **D-V10-1…9 del diseño** ([`V10-arquitectura-fisica.md`](../architecture/V10-arquitectura-fisica.md) §8) con la de **las autorizaciones** (2026-10-31) y con las decisiones **P-1…P-13** de [`V10-revision-post-M0-M2.md`](../architecture/V10-revision-post-M0-M2.md) §9.
+Reconcilia la numeración **D-V10-1…9 del diseño** ([`V10-arquitectura-fisica.md`](../internal/historico/v10-y-etapas/V10-arquitectura-fisica.md) §8) con la de **las autorizaciones** (2026-10-31) y con las decisiones **P-1…P-13** de [`V10-revision-post-M0-M2.md`](../internal/historico/v10-y-etapas/V10-revision-post-M0-M2.md) §9.
 No altera ni reinterpreta ninguna decisión ya aprobada: solo dice cuál es cuál, qué está **aprobado**, qué está **implementado** y qué sigue **pendiente**. Los informes históricos no se modifican.
 
 ## 0. Convención de nombres (para no volver a confundirlos)
@@ -111,7 +111,7 @@ Las resoluciones de esta tabla se tomaron al preparar M3 a partir de las recomen
 
 ## 3. Decisiones P-1…P-13: aprobada / implementada / pendiente
 
-Coinciden una a una con el texto de la autorización de M3 (P-1…P-13 son las mismas de [`V10-revision-post-M0-M2.md`](../architecture/V10-revision-post-M0-M2.md) §9). No hay contradicción de numeración entre estos dos documentos.
+Coinciden una a una con el texto de la autorización de M3 (P-1…P-13 son las mismas de [`V10-revision-post-M0-M2.md`](../internal/historico/v10-y-etapas/V10-revision-post-M0-M2.md) §9). No hay contradicción de numeración entre estos dos documentos.
 
 | P | Decisión (tal como se aprobó) | Aprobada | Implementada | Pendiente |
 |---|---|---|---|---|
@@ -137,7 +137,7 @@ Coinciden una a una con el texto de la autorización de M3 (P-1…P-13 son las m
 
 ## 5. Decisiones tomadas dentro del alcance autorizado de M4
 
-Tomadas bajo la autorización de M4 (2026-10-31); ninguna cambia contratos públicos, comportamiento, datos ni una decisión ya aprobada. Detalle en [`V10-M4-resultados.md`](../architecture/V10-M4-resultados.md).
+Tomadas bajo la autorización de M4 (2026-10-31); ninguna cambia contratos públicos, comportamiento, datos ni una decisión ya aprobada. Detalle en [`V10-M4-resultados.md`](../internal/historico/v10-y-etapas/V10-M4-resultados.md).
 
 | Decisión | Estado |
 |---|---|
@@ -153,15 +153,15 @@ Aprobadas por el dueño tras la auditoría final de M4 (solo lectura). Son **exc
 
 | # | Decisión | Estado | Dónde queda registrada |
 |---|---|---|---|
-| **C-1** | **Historial de commits.** Se conservan los nueve commits intermedios de M4 que no compilan por separado (`0de8609`, `a39abba`, `2473f99`, `f2393ed`, `d98f878`, `aded2bc`, `2491db3`, `b01c604`, `0116c51`) y `ac71d60` como corrección. **No se reescribe, reorganiza ni modifica el historial.** | **Aprobada y vigente** (no requiere implementación) | Limitación y consecuencias para `git bisect` y los `revert` individuales: [`V10-M4-resultados.md`](../architecture/V10-M4-resultados.md) §14.1 |
-| **C-2** | **Benefits: opción A.** Se mantienen las tres referencias de `app/[tenant]` a `platform/benefits/benefits-db`; no se mueven funciones ni se cambia comportamiento. Se **aclara el criterio de aceptación** de V10 para distinguir las dependencias entre módulos (prohibidas fuera de platform, experience y runtime) de las dependencias legítimas de Experience hacia Platform (puntos de entrada, lista cerrada fijada por prueba). | **Aprobada**; el criterio aclarado está **implementado en la documentación** | [`V10-arquitectura-fisica.md`](../architecture/V10-arquitectura-fisica.md) §4.1 («Aclaración») y §7·M4 (fila «Aceptación») |
-| **C-3** | **Aislamiento y seguridad.** Se mantiene la prueba `lib/tenant/tenant-scope.test.ts` tal como está, sin debilitarla. La **auditoría de aislamiento por negocio** y la **revisión de las guardas de `app/admin`** se registran como **trabajo independiente fuera de V10**. | **Aprobada como registro; el trabajo NO está iniciado** | [`hoja-de-ruta.md`](../wiki/02-producto/hoja-de-ruta.md) §4 y [`V10-M4-resultados.md`](../architecture/V10-M4-resultados.md) §14.7 |
+| **C-1** | **Historial de commits.** Se conservan los nueve commits intermedios de M4 que no compilan por separado (`0de8609`, `a39abba`, `2473f99`, `f2393ed`, `d98f878`, `aded2bc`, `2491db3`, `b01c604`, `0116c51`) y `ac71d60` como corrección. **No se reescribe, reorganiza ni modifica el historial.** | **Aprobada y vigente** (no requiere implementación) | Limitación y consecuencias para `git bisect` y los `revert` individuales: [`V10-M4-resultados.md`](../internal/historico/v10-y-etapas/V10-M4-resultados.md) §14.1 |
+| **C-2** | **Benefits: opción A.** Se mantienen las tres referencias de `app/[tenant]` a `platform/benefits/benefits-db`; no se mueven funciones ni se cambia comportamiento. Se **aclara el criterio de aceptación** de V10 para distinguir las dependencias entre módulos (prohibidas fuera de platform, experience y runtime) de las dependencias legítimas de Experience hacia Platform (puntos de entrada, lista cerrada fijada por prueba). | **Aprobada**; el criterio aclarado está **implementado en la documentación** | [`V10-arquitectura-fisica.md`](../internal/historico/v10-y-etapas/V10-arquitectura-fisica.md) §4.1 («Aclaración») y §7·M4 (fila «Aceptación») |
+| **C-3** | **Aislamiento y seguridad.** Se mantiene la prueba `lib/tenant/tenant-scope.test.ts` tal como está, sin debilitarla. La **auditoría de aislamiento por negocio** y la **revisión de las guardas de `app/admin`** se registran como **trabajo independiente fuera de V10**. | **Aprobada como registro; el trabajo NO está iniciado** | [`hoja-de-ruta.md`](../wiki/02-producto/hoja-de-ruta.md) §4 y [`V10-M4-resultados.md`](../internal/historico/v10-y-etapas/V10-M4-resultados.md) §14.7 |
 
 Alcance anotado para el trabajo independiente de C-3 (a definir y autorizar aparte): (a) los límites de la prueba actual, que solo ve consultas literales `.orm.public.<Modelo>.where({…})` y no las del constructor `.sql`, los filtros no literales ni las lecturas sin `where`; (b) las 54 consultas sin `tenantId` que la prueba excluye a propósito en seis módulos del panel; (c) las 14 páginas de `app/admin` que dependen de la guarda del layout y no tienen una propia. La explotabilidad de (c) **no se ha evaluado**.
 
 ## 7. Decisiones de M5 (2026-10-31)
 
-Aprobadas por el dueño al autorizar M5 con las recomendaciones del diseño ([`V10-M5-diseno.md`](../architecture/V10-M5-diseno.md) §9). Ninguna cambia contratos públicos, comportamiento, datos, Prisma ni migraciones, y no hay excepciones nuevas en el verificador. Detalle de la ejecución en [`V10-M5-resultados.md`](../architecture/V10-M5-resultados.md).
+Aprobadas por el dueño al autorizar M5 con las recomendaciones del diseño ([`V10-M5-diseno.md`](../internal/historico/v10-y-etapas/V10-M5-diseno.md) §9). Ninguna cambia contratos públicos, comportamiento, datos, Prisma ni migraciones, y no hay excepciones nuevas en el verificador. Detalle de la ejecución en [`V10-M5-resultados.md`](../internal/historico/v10-y-etapas/V10-M5-resultados.md).
 
 | # | Decisión | Estado |
 |---|---|---|
@@ -177,7 +177,7 @@ Aprobadas por el dueño al autorizar M5 con las recomendaciones del diseño ([`V
 
 ## 8. Plan de cierre de V10 y etapas I y B (2026-10-31)
 
-El dueño aprobó el plan de cierre ([`V10-plan-de-cierre.md`](../architecture/V10-plan-de-cierre.md)): E-1 a E-9 con las recomendaciones, con la precisión de que la raíz de `lib/` tendrá **las nueve áreas y las dos excepciones documentadas `utils.ts` y `cn.ts`** (no «solo nueve directorios»). E-6: V10 es reorganización física sin cambios de comportamiento; M7 y M6c quedan fuera. Resultados de cada etapa en [`V10-cierre-resultados.md`](../architecture/V10-cierre-resultados.md).
+El dueño aprobó el plan de cierre ([`V10-plan-de-cierre.md`](../internal/historico/v10-y-etapas/V10-plan-de-cierre.md)): E-1 a E-9 con las recomendaciones, con la precisión de que la raíz de `lib/` tendrá **las nueve áreas y las dos excepciones documentadas `utils.ts` y `cn.ts`** (no «solo nueve directorios»). E-6: V10 es reorganización física sin cambios de comportamiento; M7 y M6c quedan fuera. Resultados de cada etapa en [`V10-cierre-resultados.md`](../internal/historico/v10-y-etapas/V10-cierre-resultados.md).
 
 ### 8.1 Excepción temporal y puntual: ciclo `inventory ⇄ sales` (decisión B-1)
 
@@ -210,5 +210,5 @@ Al unir `inventory` con `sales` bajo `lib/business/` (etapa B), la prueba «los 
 | **Z-6** | Documentación final: `guia-implementacion-lib.md` y `reglas-dependencias.md` | **Implementada** |
 | **B-1** (vigente) | Excepción temporal y puntual `inventory ⇄ sales`; deuda arquitectónica pendiente | **Vigente** (§8.1) |
 
-M7 y M6c quedan **fuera de V10** (E-6). Lo que sigue pendiente después del cierre está en [`V10-cierre-resultados.md`](../architecture/V10-cierre-resultados.md) §8.4.
+M7 y M6c quedan **fuera de V10** (E-6). Lo que sigue pendiente después del cierre está en [`V10-cierre-resultados.md`](../internal/historico/v10-y-etapas/V10-cierre-resultados.md) §8.4.
 

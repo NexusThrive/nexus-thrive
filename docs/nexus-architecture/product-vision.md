@@ -1,6 +1,6 @@
 # 12 · Visión de producto: el sistema operativo del negocio
 
-[← Índice](README.md) · Propuesta. Ordena hacia dónde va NEXUS y en qué orden
+[← Índice](../internal/historico/nexus-architecture/README.md) · Propuesta. Ordena hacia dónde va NEXUS y en qué orden
 construirlo, partiendo de lo que ya existe ([product-inventory.md](product-inventory.md)).
 La arquitectura que la soporta está en [target-architecture.md](../wiki/03-arquitectura/anterior-a-v10/target-architecture.md)
 y la ruta de crecimiento técnico en [scaling-path.md](scaling-path.md).

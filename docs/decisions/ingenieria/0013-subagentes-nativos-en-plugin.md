@@ -45,7 +45,7 @@ plugin `product-team` los agrupe de forma ordenada.
 6. Se conservan: `.product-team/ci.json` (tres comandos que lee `ciclo-sprint`), el criterio del
    Steward (`docs/ingenieria/steward/criterios.md`) y el registro de herramientas externas
    (`docs/ingenieria/herramientas/registro.json`, evidencia del ADR 0008).
-7. La documentación del motor pasa a `docs/ingenieria/archivo/motor-python/` como historia.
+7. La documentación del motor se eliminó del repositorio; su historia queda en git (consultar los commits anteriores a esta decisión).
 
 ## Consecuencias
 

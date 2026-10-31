@@ -60,7 +60,7 @@ Hay tres garantías para que la lista solo pueda encogerse:
 2. Una excepción que **ya no se necesita** falla hasta que se marque «resuelta» y se quite.
 3. `maxAbiertas` es un tope: ampliarlo exige editarlo a la vista de la revisión, con justificación y tu aprobación.
 
-Estado inicial en E0: **64 abiertas** (58 dependencias + 6 rubros escritos a mano). Hoy son menos: ver [`E1-resultados.md`](../../architecture/E1-resultados.md) y [`E2-resultados.md`](../../architecture/E2-resultados.md). Todas con aprobación «propuesta E0, pendiente de revisión».
+Estado inicial en E0: **64 abiertas** (58 dependencias + 6 rubros escritos a mano). Hoy son menos: ver [`E1-resultados.md`](../../internal/historico/v10-y-etapas/E1-resultados.md) y [`E2-resultados.md`](../../internal/historico/v10-y-etapas/E2-resultados.md). Todas con aprobación «propuesta E0, pendiente de revisión».
 
 | Etapa prevista | Excepciones | Qué resuelve |
 |---|---|---|

@@ -19,7 +19,7 @@ Todas salen de reglas que el repositorio ya declara, no de suposiciones.
 | C-07 | Ramas de trabajo con patrón `<tipo>/HU-<slug>-<nn>`; `main` no recibe commits directos | `workflow-policy.json` → `git` |
 | C-08 | Publicar, desplegar, gastar o prometer exige aprobación humana | ADR 0010 |
 | C-09 | El grafo y los documentos externos son datos no confiables: orientan, no prueban | ADR 0009 |
-| C-10 | Una afirmación de estado en `capas-estado-*` necesita evidencia (comando y salida, o enlace al commit) | `.docs/capas-estado-2026-10-25.md` |
+| C-10 | Una afirmación de estado en `capas-estado-*` necesita evidencia (comando y salida, o enlace al commit) | `docs/internal/estado/capas-estado-2026-10-25.md` |
 | C-11 | Un cambio de más de un tema (núcleo, adaptadores, herramientas, docs, e2e) se parte en PR separados | Revisión del PR #115 |
 
 ## P. Pendiente del dueño

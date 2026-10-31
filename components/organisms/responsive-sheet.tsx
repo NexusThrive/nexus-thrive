@@ -175,7 +175,7 @@ export function ResponsiveSheet({
     if (node) {
       lastContent.current = node;
       // Móvil, drawer, alert, `size="full"` y movimiento reducido no viajan:
-      // lo decide `armModalMorph` (docs/superpowers/specs/2026-10-29-prettymodal-desktop-design.md).
+      // lo decide `armModalMorph` (docs/internal/historico/superpowers/specs/2026-10-29-prettymodal-desktop-design.md).
       if (!alert) morphCleanup.current = armModalMorph(node);
       // Huella de «cómo abrió». Se mantiene al día (también si los campos
       // llegan después de montar, p. ej. al cargar una ficha) hasta justo antes

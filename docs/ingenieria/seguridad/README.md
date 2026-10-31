@@ -1,7 +1,6 @@
 # Seguridad — registros del equipo
 
-Hallazgos y revisiones de seguridad del ciclo de ingeniería. La política completa
-está en [`../archivo/motor-python/security.md`](../archivo/motor-python/security.md).
+Hallazgos y revisiones de seguridad del ciclo de ingeniería. La política de seguridad del equipo vive en las reglas de `CLAUDE.md` y en el plugin `product-team`; la del motor Python retirado ya no aplica (ver ADR 0013).
 
 ## Nomenclatura
 

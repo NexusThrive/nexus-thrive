@@ -1,6 +1,6 @@
 # 10 · Plan de evolución
 
-[← Índice](README.md) · Etapas en orden de dependencia. Cada etapa deja `main`
+[← Índice](../internal/historico/nexus-architecture/README.md) · Etapas en orden de dependencia. Cada etapa deja `main`
 desplegable y termina con criterios verificables.
 
 ```mermaid
@@ -27,11 +27,11 @@ gantt
 
 | Tarea | Hallazgo | Criterio de finalización |
 |---|---|---|
-| Igualdad exacta de correo, sin reasignar fichas vinculadas, correo verificado | [SEC-01](security-audit.md#sec-01) | Prueba de integración con `_`/`%` falla en encontrar fichas ajenas; revisión del `AuditLog` hecha |
-| Quitar bootstrap de OWNER; alta desde el panel con invitación al dueño | [SEC-02](security-audit.md#sec-02) | Consulta de negocios sin miembros en producción revisada; prueba: un tercero que abre `/{slug}` de un negocio vacío ve "Sin acceso" |
-| Revisar `.env.produccion` e historial; rotar si hace falta | [SEC-04](security-audit.md#sec-04) | Archivo sin valores; secretos rotados si había |
-| Ejecutar la prueba RSC de SEC-03 | [SEC-03](security-audit.md#sec-03) | Resultado documentado (vulnerable / no vulnerable) |
-| Confirmar verificación de correo en Clerk | [SEC-10](security-audit.md#sec-10) | Captura de la configuración en el ADR o en `docs/wiki/08-operacion-y-despliegue/clerk-produccion.md` |
+| Igualdad exacta de correo, sin reasignar fichas vinculadas, correo verificado | [SEC-01](../internal/historico/nexus-architecture/security-audit.md#sec-01) | Prueba de integración con `_`/`%` falla en encontrar fichas ajenas; revisión del `AuditLog` hecha |
+| Quitar bootstrap de OWNER; alta desde el panel con invitación al dueño | [SEC-02](../internal/historico/nexus-architecture/security-audit.md#sec-02) | Consulta de negocios sin miembros en producción revisada; prueba: un tercero que abre `/{slug}` de un negocio vacío ve "Sin acceso" |
+| Revisar `.env.produccion` e historial; rotar si hace falta | [SEC-04](../internal/historico/nexus-architecture/security-audit.md#sec-04) | Archivo sin valores; secretos rotados si había |
+| Ejecutar la prueba RSC de SEC-03 | [SEC-03](../internal/historico/nexus-architecture/security-audit.md#sec-03) | Resultado documentado (vulnerable / no vulnerable) |
+| Confirmar verificación de correo en Clerk | [SEC-10](../internal/historico/nexus-architecture/security-audit.md#sec-10) | Captura de la configuración en el ADR o en `docs/wiki/08-operacion-y-despliegue/clerk-produccion.md` |
 
 Riesgo: bajo (cambios pequeños). Depende de: nada.
 
@@ -51,11 +51,11 @@ Depende de: Etapa 0. Riesgo: medio (toca muchas páginas, cambio mecánico).
 
 | Tarea | Hallazgo | Criterio |
 |---|---|---|
-| Servicio `money` transaccional; pago de factura idempotente | [DATA-01](technical-debt.md#data-01) | Prueba de concurrencia: 1 cobro por factura; fallo a mitad → 0 filas |
-| Una sola fuente del esquema de producción | [DATA-03](technical-debt.md#data-03) | Diff `--schema-only` producción vs migrada = vacío; `00-ORDEN.md` actualizado o retirado |
-| FK a `Tenant` en las 22 tablas; FK compuestas en dinero; unicidad de `accessCode`/`nfcUid` | [DATA-04](technical-debt.md#data-04), [SEC-07](security-audit.md#sec-07) | Migración aplicada; integración verde |
-| RLS sin políticas en todas las tablas (cerrar PostgREST) | [SEC-07](security-audit.md#sec-07) | `pg_tables.rowsecurity` verdadero en todas |
-| Cobros de membresía solo en `Payment` | [DATA-02](technical-debt.md#data-02) | La ficha lee `Payment`; JSON retirado |
+| Servicio `money` transaccional; pago de factura idempotente | [DATA-01](../internal/historico/nexus-architecture/technical-debt.md#data-01) | Prueba de concurrencia: 1 cobro por factura; fallo a mitad → 0 filas |
+| Una sola fuente del esquema de producción | [DATA-03](../internal/historico/nexus-architecture/technical-debt.md#data-03) | Diff `--schema-only` producción vs migrada = vacío; `00-ORDEN.md` actualizado o retirado |
+| FK a `Tenant` en las 22 tablas; FK compuestas en dinero; unicidad de `accessCode`/`nfcUid` | [DATA-04](../internal/historico/nexus-architecture/technical-debt.md#data-04), [SEC-07](../internal/historico/nexus-architecture/security-audit.md#sec-07) | Migración aplicada; integración verde |
+| RLS sin políticas en todas las tablas (cerrar PostgREST) | [SEC-07](../internal/historico/nexus-architecture/security-audit.md#sec-07) | `pg_tables.rowsecurity` verdadero en todas |
+| Cobros de membresía solo en `Payment` | [DATA-02](../internal/historico/nexus-architecture/technical-debt.md#data-02) | La ficha lee `Payment`; JSON retirado |
 
 Puede ir en paralelo a la Etapa 1. Riesgo: medio-alto (migraciones de datos):
 probar sobre copia de producción.
@@ -96,4 +96,4 @@ de: Etapa 2 (dinero) y 3 (capacidades).
 ## Verificación continua
 
 `pnpm verify` debe pasar en cada etapa (con `NODE_OPTIONS` para `tsc`,
-[QA-01](technical-debt.md#qa-01)), más `pnpm test:integration` sobre Postgres.
+[QA-01](../internal/historico/nexus-architecture/technical-debt.md#qa-01)), más `pnpm test:integration` sobre Postgres.

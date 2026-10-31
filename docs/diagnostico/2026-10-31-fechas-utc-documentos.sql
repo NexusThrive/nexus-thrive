@@ -1,7 +1,7 @@
 -- ============================================================================
 -- DIAGNÓSTICO · documentos comerciales fechados en UTC (solo lectura)
 --
--- Contexto: docs/architecture/hallazgo-fechas-utc-en-asientos.md
+-- Contexto: docs/internal/historico/v10-y-etapas/hallazgo-fechas-utc-en-asientos.md
 --   Antes de la corrección, el asiento contable y la cola fiscal de un documento se
 --   fechaban con el día UTC del instante de emisión. Entre las 19:00 y las 24:00 de
 --   Bogotá (UTC−5) ese día es el siguiente al de Colombia.

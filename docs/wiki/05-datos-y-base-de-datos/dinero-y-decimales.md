@@ -47,7 +47,7 @@ que se vende) y deben ocurrir **todas o ninguna**.
 | Qué | Dónde |
 |---|---|
 | Servicio de dinero | `lib/business/money-service.ts` |
-| Decisión | `docs/decisions/arquitectura/0006-servicio-de-dinero.md` (estado «Propuesta») y `DATA-01` en `docs/nexus-architecture/technical-debt.md` |
+| Decisión | `docs/decisions/arquitectura/0006-servicio-de-dinero.md` (estado «Propuesta») y `DATA-01` en `docs/internal/historico/nexus-architecture/technical-debt.md` |
 | Montos a mano | `lib/finance/cop-amount.ts`, prueba `lib/finance/cop-amount.test.ts` |
 | Motor de costos | `lib/construction/apu-engine.ts`, prueba `lib/construction/apu-engine.test.ts` |
 | Formato | `lib/format.ts` (`toNumber`, `formatCurrency`) |

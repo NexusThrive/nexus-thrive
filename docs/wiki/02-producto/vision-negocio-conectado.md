@@ -11,7 +11,7 @@ tags: [vision, presencia, facturacion, contabilidad, pos, inventario, dian, womp
 
 Este documento dice **a dónde queremos llegar** con la integración de
 facturación, contabilidad, POS, inventario y visibilidad. El cómo y el orden
-están en [`hoja-de-ruta-implementacion.md`](../../../.docs/hoja-de-ruta-implementacion.md); las
+están en [`hoja-de-ruta-implementacion.md`](../../internal/historico/hoja-de-ruta-30-pr.md); las
 reglas de API, MCP y webhooks, en
 [`integracion-api-mcp-webhooks.md`](../07-integraciones/api-mcp-webhooks.md).
 

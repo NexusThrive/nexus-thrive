@@ -1,6 +1,6 @@
 # Cómo agregar una funcionalidad
 
-[← Guías](../../guias/README.md)
+[← Wiki](../Home.md)
 
 La receta que sigue el código hoy. **Antes de crear o mover código, decide el área y el módulo con [`guia-implementacion-lib.md`](../03-arquitectura/guia-implementacion-lib.md)** (las rutas de abajo ya reflejan la estructura V10). Cada paso tiene una prueba o una regla de
 lint que avisa si te lo saltas. Antes de empezar, lee el flujo de ramas y

@@ -43,7 +43,7 @@ tags: [capas, estructura, indice]
 _Generado con `node scripts/capas-progreso.mjs --write`. La capa XI (construcción) usa pestañas en lugar de casillas: su estado está en su README. «Integración» cuenta las casillas de la superficie API · MCP · Webhooks de cada subcapa (no suman al porcentaje de funcionalidades)._
 <!-- progreso:fin -->
 
-> Reorganización por responsabilidad (Core, compartidas, funciones, contratos), checklists de GYM y RESTAURANTE y decisiones pendientes: [`../arquitectura-v2/`](../../../../.docs/arquitectura-v2/README.md).
+> Reorganización por responsabilidad (Core, compartidas, funciones, contratos), checklists de GYM y RESTAURANTE y decisiones pendientes: [`../arquitectura-v2/`](../../../internal/historico/arquitectura-v2/README.md).
 
 ## Capas
 
@@ -61,5 +61,5 @@ _Generado con `node scripts/capas-progreso.mjs --write`. La capa XI (construcci�
 
 ## Fuente
 
-- [`../fuentes/DesordenadoCapas.md`](../../../../.docs/fuentes/DesordenadoCapas.md) — contenido fuente (niveles N1–N4).
-- [`../fuentes/EstructuraCapasImplementacion.md`](../../../../.docs/fuentes/EstructuraCapasImplementacion.md) — nombres de capas, subcapas y escalera N0–N6.
+- [`fuentes/DesordenadoCapas.md`](../../../internal/fuentes/DesordenadoCapas.md) — contenido fuente (niveles N1–N4).
+- [`fuentes/EstructuraCapasImplementacion.md`](../../../internal/fuentes/EstructuraCapasImplementacion.md) — nombres de capas, subcapas y escalera N0–N6.

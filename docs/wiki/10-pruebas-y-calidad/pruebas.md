@@ -1,6 +1,6 @@
 # Cómo correr y escribir pruebas
 
-[← Guías](../../guias/README.md)
+[← Wiki](../Home.md)
 
 NEXUS tiene cuatro capas de verificación. Las tres primeras corren en el CI
 (`.github/workflows/ci.yml`) en cada PR y en cada push a `main`.

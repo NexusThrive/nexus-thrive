@@ -142,7 +142,7 @@ Y en el CHANGELOG, arriba del todo, con el enlace de comparación.
 - **Los SQL son aditivos e idempotentes**: se pueden correr dos veces.
 - **Lo que no bloquea el piloto se anota, no se frena**: Wompi, Meta, Resend
   y Google Places están pendientes a propósito; siguen en
-  `docs/V1-PROGRESO.md`.
+  `docs/internal/historico/V1-PROGRESO.md`.
 
 ### Estas reglas se cumplen solas
 

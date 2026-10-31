@@ -2,7 +2,7 @@
 
 > **Estado: anterior a V10 (auditoría del 22 oct 2026).** Describe Nexus **antes** de la reorganización de `lib/` en nueve áreas; rutas y nombres pueden estar desfasados. Para lo vigente, consulta [arquitectura-objetivo](../arquitectura-objetivo.md), [guía de implementación de `lib/`](../guia-implementacion-lib.md) y [reglas de dependencias](../reglas-dependencias.md). Se conserva porque contiene análisis y evidencia que aún no están reescritos; su fusión con las páginas vigentes es la tarea de la fase 4.
 
-[← Índice](../../../nexus-architecture/README.md) · Describe lo que **existe**. Las propuestas están en
+[← Índice](../../../internal/historico/nexus-architecture/README.md) · Describe lo que **existe**. Las propuestas están en
 [target-architecture.md](target-architecture.md).
 
 ## 1. Stack verificado
@@ -159,7 +159,7 @@ Detalle del modelo en [domain-and-data-model.md](domain-and-data-model.md).
 1. **Páginas ↔ base de datos**: lectura directa sin capa intermedia ni
    autorización propia en 17 páginas.
 2. **Módulo `quotes` ↔ construcción**: un valor de enum activa tres pantallas de
-   construcción ([ARCH-01](../../../nexus-architecture/technical-debt.md#arch-01)).
+   construcción ([ARCH-01](../../../internal/historico/nexus-architecture/technical-debt.md#arch-01)).
 3. **Menú ↔ rubro**: entradas condicionadas por `vertical` dentro de
    `MODULE_NAV` (taquilla, salidas, check-in).
 4. **`lib/tenant-db.ts`**: un objeto de 1.563 líneas que importa construcción,

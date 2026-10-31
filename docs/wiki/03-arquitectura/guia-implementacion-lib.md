@@ -177,7 +177,7 @@ Excepciones **vigentes y explícitas**: las carpetas de `platform` que operan en
 | **Esquema de base de datos** (Prisma) y migraciones | Todo | Es un cambio aparte, con su propia aprobación, su migración y su SQL de producción (`scripts/check-prod-sql.sh` lo exige) |
 | **Autenticación, RLS, permisos** | Todo | Nunca como efecto lateral de otro cambio |
 
-Para comprobar que un movimiento o refactor **no** cambió nada público, compara antes y después: lista de exportaciones por archivo, las 15 operaciones y el OpenAPI generado (byte a byte), y el recuento de pruebas. Durante V10 se hizo con herramientas de apoyo locales que **no están en el repositorio** (ver «Decisiones pendientes» en [`V10-cierre-resultados.md`](../../architecture/V10-cierre-resultados.md)).
+Para comprobar que un movimiento o refactor **no** cambió nada público, compara antes y después: lista de exportaciones por archivo, las 15 operaciones y el OpenAPI generado (byte a byte), y el recuento de pruebas. Durante V10 se hizo con herramientas de apoyo locales que **no están en el repositorio** (ver «Decisiones pendientes» en [`V10-cierre-resultados.md`](../../internal/historico/v10-y-etapas/V10-cierre-resultados.md)).
 
 ## 11. Lo que el compilador no ve: referencias indirectas (pregunta 8)
 

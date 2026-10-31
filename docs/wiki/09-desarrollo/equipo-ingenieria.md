@@ -14,7 +14,6 @@ de los comandos y los commits.
 | Criterio del dueño que aplica el Steward | `docs/ingenieria/steward/criterios.md` |
 | Registro de herramientas externas evaluadas | `docs/ingenieria/herramientas/registro.json` |
 | Decisiones | [`docs/decisions/ingenieria/`](../../decisions/README.md) |
-| Diseño anterior (retirado) | [`docs/ingenieria/archivo/motor-python/`](../../ingenieria/archivo/motor-python/README.md) |
 
 ## Lo que se perdió al retirar el motor
 

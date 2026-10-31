@@ -2,7 +2,7 @@
 
 ## Por qué elegimos esta estructura y cómo permite escalar la plataforma
 
-Estado: **documento de referencia, estructura terminada** (cierre de V10, 2026-10-31). Describe la estructura de `lib/` y por qué se eligió. Cómo trabajar en ella sin romperla está en [`guia-implementacion-lib.md`](guia-implementacion-lib.md); quién puede importar a quién, en [`reglas-dependencias.md`](reglas-dependencias.md); lo ocurrido etapa por etapa, en [`V10-cierre-resultados.md`](../../architecture/V10-cierre-resultados.md). El diseño técnico original (matriz, etapas M0–M8) sigue en [`V10-arquitectura-fisica.md`](../../architecture/V10-arquitectura-fisica.md) y las decisiones en [`V10-decisiones.md`](../../decisions/V10-decisiones.md).
+Estado: **documento de referencia, estructura terminada** (cierre de V10, 2026-10-31). Describe la estructura de `lib/` y por qué se eligió. Cómo trabajar en ella sin romperla está en [`guia-implementacion-lib.md`](guia-implementacion-lib.md); quién puede importar a quién, en [`reglas-dependencias.md`](reglas-dependencias.md); lo ocurrido etapa por etapa, en [`V10-cierre-resultados.md`](../../internal/historico/v10-y-etapas/V10-cierre-resultados.md). El diseño técnico original (matriz, etapas M0–M8) sigue en [`V10-arquitectura-fisica.md`](../../internal/historico/v10-y-etapas/V10-arquitectura-fisica.md) y las decisiones en [`V10-decisiones.md`](../../decisions/V10-decisiones.md).
 
 ---
 

@@ -1,11 +1,11 @@
 // Plan de PR sobre las capas. Cada PR cierra casillas de docs/wiki/04-modulos/capas marcadas
 // en su README con `_(PR-NN)_`; de ahí salen sus capas, niveles y etiquetas.
 // `node scripts/capas-pr.mjs --write` regenera la sección 3 de
-// .docs/hoja-de-ruta-implementacion.md.
+// docs/internal/historico/hoja-de-ruta-30-pr.md.
 //
 //   hito   etiqueta `hito-…` del PR
 //   tipo   etiquetas `tipo:…`
-//   sql    borrador de esquema en .docs/sql (null = sin tablas nuevas)
+//   sql    borrador de esquema en docs/internal/historico/sql (null = sin tablas nuevas)
 //   deps   PR de los que depende
 //   hecho  criterio de «hecho» (qué se prueba)
 //   pr     URL del PR en GitHub cuando existe

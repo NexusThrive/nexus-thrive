@@ -1,6 +1,6 @@
 # 02 · Recorrido completo del usuario
 
-[← Índice](README.md) · Todo lo descrito aquí es el comportamiento **actual** según
+[← Índice](../internal/historico/nexus-architecture/README.md) · Todo lo descrito aquí es el comportamiento **actual** según
 el código. La propuesta de experiencia está en [onboarding-and-ux.md](onboarding-and-ux.md).
 
 ## 1. Identidad en cada capa
@@ -50,7 +50,7 @@ Evidencia: `proxy.ts`, `app/auth/callback/page.tsx`, `app/auth/callback/actions.
 | Verificación de correo | La decide la configuración del panel de Clerk; el código no la comprueba | **INDETERMINADO** |
 | Recuperación de cuenta | La ofrece el componente de Clerk; no hay código propio | IMPLEMENTADO por Clerk (no verificado) |
 | Cierre de sesión | `UserButton` en la barra superior (`components/organisms/app-topbar.tsx:83`); `SignOutButton` en avisos del equipo e invitaciones | IMPLEMENTADO |
-| Protección de rutas | El proxy **no protege** rutas: solo redirige `/`. La protección vive en `app/[tenant]/layout.tsx`, `app/admin/layout.tsx`, `app/onboarding/layout.tsx` y en cada acción | Ver [security-audit.md](security-audit.md#sec-03) |
+| Protección de rutas | El proxy **no protege** rutas: solo redirige `/`. La protección vive en `app/[tenant]/layout.tsx`, `app/admin/layout.tsx`, `app/onboarding/layout.tsx` y en cada acción | Ver [security-audit.md](../internal/historico/nexus-architecture/security-audit.md#sec-03) |
 | Fallo de Clerk | `components/molecules/auth-mount-fallback.tsx` muestra aviso y reintento si el formulario no monta; proxy opcional de la Frontend API (`NEXT_PUBLIC_CLERK_PROXY_URL`) | IMPLEMENTADO |
 | Dominio | La Publishable Key codifica el host; `docs/wiki/08-operacion-y-despliegue/clerk-produccion.md` documenta qué cambiar al mover de dominio | Documentado |
 
@@ -102,7 +102,7 @@ Variantes que no pasan por el wizard:
   módulos **sin ningún `User`** y con `onboardingCompleted = false`. El primer
   usuario autenticado que abra `/{slug}` queda como OWNER
   (`app/[tenant]/layout.tsx:71-93`) y luego pasa por el wizard en modo resume.
-  Ver [SEC-02](security-audit.md#sec-02).
+  Ver [SEC-02](../internal/historico/nexus-architecture/security-audit.md#sec-02).
 - **Tarjeta NFC/QR** (`/c/{code}`): guarda el código en cookie y manda a
   registrarse; el canje ocurre al crear el negocio.
 
@@ -153,7 +153,7 @@ escrituras son atómicas.
 | Flujo | Entrada | Validaciones | Escrituras | Transacción | Riesgo de inconsistencia |
 |---|---|---|---|---|---|
 | Crear negocio | `completeAdaptiveOnboardingAction` | sesión, catálogo, slug único | `Tenant`, `User`, `TenantModule` | **Sí** | Canje del código fuera de la transacción (diseño intencional) |
-| Invitar al equipo | `inviteMemberAction` (`settings/team-actions.ts`) | rol que gestiona equipo, correo, plazas del plan | `TenantInvite` | No aplica | Se acepta por **correo** al entrar ([SEC-10](security-audit.md#sec-10)) |
+| Invitar al equipo | `inviteMemberAction` (`settings/team-actions.ts`) | rol que gestiona equipo, correo, plazas del plan | `TenantInvite` | No aplica | Se acepta por **correo** al entrar ([SEC-10](../internal/historico/nexus-architecture/security-audit.md#sec-10)) |
 | Crear cliente | `saveCustomerAction` (`crm/profile-actions.ts`) | nombre, correo, teléfono, campos del rubro, foto | `Customer`, `Attachment` | No | Foto huérfana si falla el segundo paso |
 | Vender producto | `sellProductAction` (`inventory/actions.ts:72`) | rol de caja, stock, cliente del negocio | `Payment` → número de recibo → `StockMovement`+`Product.stock` (tx) → `CashMovement` | **Parcial** (solo el stock) | Pago sin descontar stock si falla a mitad; stock comprobado antes y no dentro de la tx |
 | Registrar cobro | `createPaymentAction` (`finance/actions.ts:57`) | rol de caja, cliente del negocio, referencia única | `Payment` → número → `CashMovement` | No | Pago sin número o sin entrada a caja |

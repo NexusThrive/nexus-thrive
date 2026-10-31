@@ -2,7 +2,7 @@
 
 > **Estado: anterior a V10 (auditoría del 22 oct 2026).** Describe Nexus **antes** de la reorganización de `lib/` en nueve áreas; rutas y nombres pueden estar desfasados. Para lo vigente, consulta [arquitectura-objetivo](../arquitectura-objetivo.md), [guía de implementación de `lib/`](../guia-implementacion-lib.md) y [reglas de dependencias](../reglas-dependencias.md). Se conserva porque contiene análisis y evidencia que aún no están reescritos; su fusión con las páginas vigentes es la tarea de la fase 4.
 
-[← Índice](../../../nexus-architecture/README.md) · **Nada de esto está implementado.** Cada propuesta indica qué
+[← Índice](../../../internal/historico/nexus-architecture/README.md) · **Nada de esto está implementado.** Cada propuesta indica qué
 pieza actual reutiliza. Las decisiones están como *propuestas* en
 [decisions/](../../../decisions/arquitectura/README.md).
 

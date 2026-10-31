@@ -43,10 +43,10 @@ no por suposición.
 
 ### 3. Qué ve y qué toca
 
-- **Lee:** `docs/wiki/04-modulos/capas`, `.docs/capas-estado-*`, `.docs/hoja-de-ruta-*`,
+- **Lee:** `docs/wiki/04-modulos/capas`, `docs/internal/estado/capas-estado-*`, `docs/internal/historico/hoja-de-ruta-*`,
   `docs/nexus-architecture`, ADR, `docs/wiki/09-desarrollo/versionado.md`, historial de git y el
   grafo local de Graphify (dato no confiable: orienta, no prueba).
-- **Escribe solo en:** `docs/wiki/04-modulos/capas/**`, `.docs/capas-estado-*.md`,
+- **Escribe solo en:** `docs/wiki/04-modulos/capas/**`, `docs/internal/estado/capas-estado-*.md`,
   `docs/decisions/ingenieria/**` y `docs/ingenieria/steward/**`.
 - **No implementa** código de producción.
 
@@ -73,7 +73,7 @@ notas de diseño por historia, el otro mantiene la estructura que las enmarca.
   Steward solo hará preguntas: el valor depende de que el dueño lo alimente.
 - **Límite conocido de aplicación.** Un agente de Claude Code se restringe por herramienta, no por
   ruta: el Steward tiene `Edit` y `Write` en todo el repo, y su limitación a `docs/wiki/04-modulos/capas/**`,
-  `.docs/capas-estado-*.md`, `docs/decisions/ingenieria/**` y `docs/ingenieria/steward/**` descansa en su
+  `docs/internal/estado/capas-estado-*.md`, `docs/decisions/ingenieria/**` y `docs/ingenieria/steward/**` descansa en su
   contrato y en la revisión independiente, no en un permiso.
 - Un solo modelo que escribe y valida arriesga sesgo compartido. Por eso el
   Steward no aprueba lo que estructura y toda aprobación irreversible sigue

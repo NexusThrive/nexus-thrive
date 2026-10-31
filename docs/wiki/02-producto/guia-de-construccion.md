@@ -18,15 +18,15 @@ Esta carpeta es **la guía de qué construimos y en qué orden**. Las capas
 | Este README | Visión, objetivos, progreso y ruta por fases |
 | [capas/](../04-modulos/capas/README.md) | Las 11 capas, 70 subcapas y su escalera de madurez N0–N6, con casillas de hecho/pendiente |
 | [vision-negocio-conectado.md](vision-negocio-conectado.md) | **A dónde llegamos:** negocio visible, que vende en línea y conectado por dentro (facturación, contabilidad, POS, inventario, visibilidad); la barra de Presencia en dos fases; puertos listos para DIAN y Wompi; n8n en casa |
-| [hoja-de-ruta-implementacion.md](../../../.docs/hoja-de-ruta-implementacion.md) | **Cómo empezamos:** 30 PR en orden de dependencia, cómo se migra y por dónde arrancar |
-| [sql/](../../../.docs/sql/README.md) | Borradores de esquema (SQL) de cada PR, validados contra Postgres |
+| [hoja-de-ruta-implementacion.md](../../internal/historico/hoja-de-ruta-30-pr.md) | **Cómo empezamos:** 30 PR en orden de dependencia, cómo se migra y por dónde arrancar |
+| [sql/](../../internal/historico/sql/README.md) | Borradores de esquema (SQL) de cada PR, validados contra Postgres |
 | [integracion-api-mcp-webhooks.md](../07-integraciones/api-mcp-webhooks.md) | **Regla transversal:** todo tiene API, MCP y webhooks; pagos, DIAN y n8n por puertos; cómo ordenar el trabajo |
 | [distribucion-por-rubro.md](distribucion-por-rubro.md) | **Un solo sistema:** núcleo compartido, el rubro como perfil (no frontera), funciones incluidas en todos los planes, planes por uso; revisión del estado contra esta visión |
-| [auditoria-arquitectura-unificada.md](../../../.docs/auditoria-arquitectura-unificada.md) | **Auditoría:** qué del código ya cumple la visión unificada y multiempresa, qué la contradecía y la migración por etapas (A–E) |
+| [auditoria-arquitectura-unificada.md](../../internal/historico/auditoria-arquitectura-unificada.md) | **Auditoría:** qué del código ya cumple la visión unificada y multiempresa, qué la contradecía y la migración por etapas (A–E) |
 | [mapa-de-capacidades.md](mapa-de-capacidades.md) | Las 447 capacidades que usa una empresa contra las capas y el código: qué hay, qué falta y **qué sigue** |
-| [fuentes/](../../../.docs/fuentes/) | Material de origen de las capas (no se edita; se consulta) |
+| [fuentes/](../../internal/fuentes/) | Material de origen de las capas (no se edita; se consulta) |
 | [`docs/PENDIENTES.md`](../../PENDIENTES.md) | Lista viva de tareas, decisiones abiertas y la ruta de automatizaciones y agentes de IA |
-| [`docs/nexus-architecture/`](../../nexus-architecture/README.md) | Arquitectura actual y objetivo, auditoría y decisiones técnicas |
+| [`docs/nexus-architecture/`](../../internal/historico/nexus-architecture/README.md) | Arquitectura actual y objetivo, auditoría y decisiones técnicas |
 
 ---
 
@@ -136,7 +136,7 @@ _Generado con `node scripts/capas-progreso.mjs --write`. La capa XI (construcci�
 Además de lo contado arriba, ya está hecha la base que no aparece como
 casilla: seguridad de la auditoría, servicio de dinero transaccional, matriz de
 permisos, módulos exigidos en el servidor, esquema único con RLS, CI con
-pruebas (ver [remediation-log](../../nexus-architecture/remediation-log.md)).
+pruebas (ver [remediation-log](../../internal/historico/nexus-architecture/remediation-log.md)).
 
 **Construcción (capa XI): N1 completo** — obra con presupuesto APU/AIU, línea
 base, Lean, bitácora con fotos, actas de avance, informes y explosión de
@@ -164,7 +164,7 @@ eventos, porque hoy una venta vive en cinco formas distintas.
 | --- | --- | --- | --- |
 | 0 | ~~Códigos de activación a medida~~ (hecho 2026-10-23) | X.00 | En paralelo: precio, módulos y límites por cliente |
 | 1 | ~~Registro de capacidades y separar construcción de cotizaciones~~ (hecho 2026-10-23) | X.00, IV.02 | ARCH-01 / ADR-0003 |
-| 2 | **Documento comercial unificado** (cotización, pedido, factura o recibo, nota crédito; líneas, impuestos, descuentos, estados, numeración) | I.00, V.06 | En curso (2026-10-23): servidor hecho — venta al cobrar, nota crédito al anular, conversión, informe del día; falta la pantalla. Siguiente: [propuesta](../../nexus-architecture/propuesta-bloque-b-3-a-7.md) |
+| 2 | **Documento comercial unificado** (cotización, pedido, factura o recibo, nota crédito; líneas, impuestos, descuentos, estados, numeración) | I.00, V.06 | En curso (2026-10-23): servidor hecho — venta al cobrar, nota crédito al anular, conversión, informe del día; falta la pantalla. Siguiente: [propuesta](../../internal/historico/nexus-architecture/propuesta-bloque-b-3-a-7.md) |
 | 3 | Cartera: abonos, pagos parciales, cuentas por cobrar por antigüedad | VII.02 | Sobre el servicio de dinero |
 | 4 | POS de varias líneas | V.03 | Sobre el documento |
 | 5 | Tercero único mínimo e importar/exportar clientes y catálogo | I.00, I.01, IV.00 | Requisito DIAN y migración desde Excel o Alegra |
@@ -229,7 +229,7 @@ declara su operación. Detalle en
 
 El plan concreto —30 PR, de lo más básico a lo más avanzado, con su esquema y
 cómo se migra— está en
-[`hoja-de-ruta-implementacion.md`](../../../.docs/hoja-de-ruta-implementacion.md); lo que
+[`hoja-de-ruta-implementacion.md`](../../internal/historico/hoja-de-ruta-30-pr.md); lo que
 queremos lograr, en [`vision-negocio-conectado.md`](vision-negocio-conectado.md).
 
 No por capa completa ni «N1 de las 70 a la vez»: **columna de integración
@@ -261,15 +261,17 @@ marketplace, telefonía) queda en las capas como posibilidad, sin fecha.
 4. Si cambia el orden de las fases, se actualiza la §4 de este README y
    `docs/nexus-architecture/product-vision.md`.
 
-## Estructura de la carpeta
+## Dónde vive cada cosa
 
 ```
-.docs/
-├── README.md        ← esta guía (visión, objetivos, progreso, ruta)
-├── capas/           ← 11 capas · 70 subcapas · escalera N0–N6
-│   ├── README.md    ← índice de capas con progreso
-│   └── <capa>/<subcapa>/README.md
-└── fuentes/         ← material de origen (no se edita)
-    ├── DesordenadoCapas.md
-    └── EstructuraCapasImplementacion.md
+docs/
+├── wiki/
+│   ├── 02-producto/guia-de-construccion.md   ← esta guía (visión, objetivos, progreso, ruta)
+│   └── 04-modulos/capas/                     ← 11 capas · 70 subcapas · escalera N0–N6
+│       ├── README.md                         ← índice de capas con progreso
+│       └── <capa>/<subcapa>/README.md
+└── internal/
+    ├── fuentes/                              ← material de origen (no se edita)
+    ├── estado/                               ← capas-estado-*.md (los mantiene el Steward)
+    └── historico/                            ← plan de 30 PR y borradores SQL (históricos)
 ```

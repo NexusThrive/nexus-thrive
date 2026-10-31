@@ -1,6 +1,6 @@
 # Flujo de DevOps
 
-[← Guías](../../guias/README.md)
+[← Wiki](../Home.md)
 
 Cómo viaja un cambio desde tu máquina hasta `app.nexusthrive.com.co`, qué lo
 protege en cada tramo y qué falta para que el flujo sea estable sin depender de

@@ -2,7 +2,7 @@
 
 > **Estado: anterior a V10 (auditoría del 22 oct 2026).** Describe Nexus **antes** de la reorganización de `lib/` en nueve áreas; rutas y nombres pueden estar desfasados. Para lo vigente, consulta [arquitectura-objetivo](../arquitectura-objetivo.md), [guía de implementación de `lib/`](../guia-implementacion-lib.md) y [reglas de dependencias](../reglas-dependencias.md). Se conserva porque contiene análisis y evidencia que aún no están reescritos; su fusión con las páginas vigentes es la tarea de la fase 4.
 
-[← Índice](../../../nexus-architecture/README.md)
+[← Índice](../../../internal/historico/nexus-architecture/README.md)
 
 ## 1. Qué es hoy un "módulo"
 
@@ -29,7 +29,7 @@ Estados que el código **distingue** (comentario en `prisma/contract.prisma`, ca
 (`TenantModule.active`) ≠ *operativo* (`ModuleSetting.status`). Lo que **no**
 existe: *configurado* (asistente o requisitos previos del módulo) y *autorizado*
 (qué roles lo usan). Y ninguno de los estados se aplica en el servidor: solo
-filtran el menú ([SEC-06](../../../nexus-architecture/security-audit.md#sec-06)).
+filtran el menú ([SEC-06](../../../internal/historico/nexus-architecture/security-audit.md#sec-06)).
 
 ## 2. Ficha por módulo
 
@@ -127,4 +127,4 @@ justifiquen microservicios o bases separadas. Lo que falta es **delimitar**:
 un registro de capacidades en código, una puerta de servidor por capacidad y un
 "núcleo de dinero" único. Ver [target-architecture.md](target-architecture.md).
 
-Siguiente: [security-audit.md](../../../nexus-architecture/security-audit.md).
+Siguiente: [security-audit.md](../../../internal/historico/nexus-architecture/security-audit.md).
