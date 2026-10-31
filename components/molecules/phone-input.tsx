@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import { inputClasses } from "@/components/atoms/input";
-import { joinPhone, searchCountries, splitPhone, type Country } from "@/lib/business/countries";
+import { joinPhone, searchCountries, splitPhone, type Country } from "@/lib/foundation/countries";
 import { cn } from "@/lib/utils";
 
 /**

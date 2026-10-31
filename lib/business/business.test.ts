@@ -83,7 +83,7 @@ describe("catálogo por rubro", () => {
   });
 });
 
-import { COUNTRIES, joinPhone, searchCountries, splitPhone } from "./countries";
+import { COUNTRIES, joinPhone, searchCountries, splitPhone } from "../foundation/countries";
 
 describe("indicativos de país", () => {
   it("Colombia primero y el resto alfabético", () => {

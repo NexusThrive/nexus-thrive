@@ -117,3 +117,13 @@ describe("referencias de configuración a módulos movidos (M3)", () => {
     for (const name of names) expect(exists(name.slice(2) + ".ts"), name).toBe(true);
   });
 });
+
+describe("movimientos menores de M3", () => {
+  test("countries.ts es de Foundation (puro, sin imports de Nexus) y ya no está en business", () => {
+    expect(exists("lib/foundation/countries.ts")).toBe(true);
+    expect(exists("lib/business/countries.ts")).toBe(false);
+    expect(classify("lib/foundation/countries.ts", layers)).toMatchObject({ layer: "foundation", byPath: true });
+    expect(parseImports(read("lib/foundation/countries.ts"))).toEqual([]);
+  });
+});
+
