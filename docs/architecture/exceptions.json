@@ -1,6 +1,6 @@
 {
   "descripcion": "Excepciones de E0 a las reglas de dependencia (scripts/check-layers.mjs). Cada una registra origen, destino, regla, justificación, etapa prevista de resolución y estado. La lista solo puede reducirse: una excepción nueva o una que sobra hace fallar la comprobación, y maxAbiertas solo baja. Ampliarla requiere justificación y aprobación explícita del dueño.",
-  "maxAbiertas": 41,
+  "maxAbiertas": 40,
   "etapasPrevistas": {
     "E1": "E1 · Core deja de importar rubros (registro de repositorios por rubro)",
     "E2": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
@@ -203,19 +203,6 @@
       "soloTipos": false,
       "justificacion": "El despachador de eventos (Core) invoca lógica de presencia digital directamente. Los suscriptores deben registrarse desde su dominio.",
       "etapa": "E3 · Operaciones y suscriptores de eventos por dominio (cada dominio se registra; Core no los conoce)",
-      "estado": "abierta",
-      "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
-    },
-    {
-      "id": "EX-020",
-      "tipo": "import",
-      "origen": "lib/files/stored-files.ts",
-      "destino": "lib/ops/access.ts",
-      "regla": "R3-core-no-importa-platform",
-      "importaciones": 1,
-      "soloTipos": false,
-      "justificacion": "El almacén de archivos (Core) usa el control de acceso de la plataforma (Platform). El helper de acceso debe estar en Core.",
-      "etapa": "E2 · Reubicar archivos mal clasificados (permisos/roles/equipo a Core, gimnasio y museo a industry, utilidades a Foundation)",
       "estado": "abierta",
       "aprobacion": "Propuesta E0 (2026-10-30); pendiente de revisión del dueño"
     },

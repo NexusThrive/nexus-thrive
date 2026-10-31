@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { readAttachmentFor } from "@/lib/files/stored-files";
+import { staffCanViewAccounts } from "@/lib/ops/access";
 
 /**
  * Archivo de un negocio guardado en NEXUS (comprobantes, soportes, fotos).
@@ -9,7 +10,7 @@ import { readAttachmentFor } from "@/lib/files/stored-files";
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { userId } = await auth();
-  const file = userId ? await readAttachmentFor(userId, id) : null;
+  const file = userId ? await readAttachmentFor(userId, id, staffCanViewAccounts) : null;
   if (!file) return new Response("No encontrado.", { status: 404 });
   return new Response(file.data as Uint8Array<ArrayBuffer>, {
     headers: {
