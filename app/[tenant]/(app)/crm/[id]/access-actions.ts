@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cancelMembership, ensureAccessCode, freezeMembership, linkNfc, unfreezeMembership } from "@/lib/business/gym-db";
+import { cancelMembership, ensureAccessCode, freezeMembership, linkNfc, unfreezeMembership } from "@/lib/industry/gym/gym-db";
 import { canHandleCash, canManage } from "@/lib/auth/roles";
 import { requireTenantContext } from "@/lib/tenant/context";
 

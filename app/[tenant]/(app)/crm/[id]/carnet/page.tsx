@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { QrCode } from "@/components/atoms/qr-code";
 import { PrintButton } from "@/components/molecules/print-button";
-import { ensureAccessCode } from "@/lib/business/gym-db";
+import { ensureAccessCode } from "@/lib/industry/gym/gym-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { customerCard } from "@/lib/business/customers-db";
 import { tenantLetterhead } from "@/lib/tenant/membership";

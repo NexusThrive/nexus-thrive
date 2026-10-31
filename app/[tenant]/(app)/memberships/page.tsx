@@ -4,7 +4,7 @@ import {
   MEMBERSHIP_TYPES,
   type MembershipStatusValue,
   type MembershipTypeValue,
-} from "@/lib/business/memberships";
+} from "@/lib/industry/gym/memberships";
 import MembershipSummary from "./_components/membership-summary";
 import MembershipFilters from "./_components/membership-filters";
 import MembershipTable, {
@@ -19,7 +19,7 @@ import { requirePageContext } from "@/lib/tenant/context";
 import { can } from "@/lib/auth/permissions";
 import { routeCategory } from "@/lib/navigation/tenant-nav";
 
-import { createMembershipsDb } from "@/lib/business/memberships-repo";
+import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
 const PAGE_SIZE = 10;
 
 function firstString(value: string | string[] | undefined): string {

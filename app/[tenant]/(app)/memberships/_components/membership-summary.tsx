@@ -1,6 +1,6 @@
 import { formatCurrency } from "@/lib/format";
 import { StatTile } from "@/components/molecules/stat-tile";
-import type { MembershipMetrics } from "@/lib/business/memberships-repo";
+import type { MembershipMetrics } from "@/lib/industry/gym/memberships-repo";
 
 /**
  * Resumen de membresías (Server Component, datos reales): Activas, Por vencer

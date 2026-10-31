@@ -6,7 +6,7 @@ import type { db } from "@/prisma/db";
  * Escrituras de membresías que van con dinero. La membresía y su cobro (recibo
  * consecutivo; en efectivo, entra a la caja abierta) pasan juntos o no pasan,
  * en una transacción del servicio de dinero. Las fechas y el estado los
- * calcula quien llama (`lib/business/memberships.ts`).
+ * calcula quien llama (`lib/industry/gym/memberships.ts`).
  */
 
 type ChargeInput = { method: string; description: string } | null;

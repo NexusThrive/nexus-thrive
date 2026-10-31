@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { cleanProfile, profileFor } from "@/lib/business/customer-fields";
 import { getCustomer, saveCustomer, setCustomerPhoto } from "@/lib/business/customers-db";
-import { enrollInPlan } from "@/lib/business/enrollment-db";
+import { enrollInPlan } from "@/lib/industry/gym/enrollment-db";
 import { addAttachment, checkAttachment } from "@/lib/business/finance-db";
 import { getProduct, planOptions } from "@/lib/business/products-db";
 import { PAYMENT_METHODS } from "@/lib/finance";

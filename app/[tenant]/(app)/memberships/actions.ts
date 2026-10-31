@@ -4,7 +4,7 @@ import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
 import { createTenantDb } from "@/lib/tenant/db";
 import { formatDateShort } from "@/lib/format";
-import { createMembershipWithCharge, renewMembershipWithCharge } from "@/lib/business/memberships-db";
+import { createMembershipWithCharge, renewMembershipWithCharge } from "@/lib/industry/gym/memberships-db";
 import { can } from "@/lib/auth/permissions";
 import {
   bogotaEndOfDay,
@@ -13,7 +13,7 @@ import {
   plainFromInstant,
   typeMonths,
   typeLabel,
-} from "@/lib/business/memberships";
+} from "@/lib/industry/gym/memberships";
 import { addMonths, bogotaToday, parsePlainDate } from "@/lib/plain-date";
 import {
   validateMembership,
@@ -23,7 +23,7 @@ import {
   type RenewalFieldErrors,
 } from "./validators";
 
-import { createMembershipsDb } from "@/lib/business/memberships-repo";
+import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
 export type MembershipFormState = {
   status: "idle" | "error" | "ok";
   message?: string;

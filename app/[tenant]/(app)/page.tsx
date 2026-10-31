@@ -13,7 +13,7 @@ import { quickCreateActions } from "@/lib/navigation/quick-create";
 import { CHART_CATALOG } from "@/lib/dashboard/chart-catalog";
 import { cashFlow, comparison, countLabel, daysUntil, updatedLabel } from "@/lib/dashboard/insights";
 import { receivables } from "@/lib/receivables/receivables-db";
-import { typeLabel } from "@/lib/business/memberships";
+import { typeLabel } from "@/lib/industry/gym/memberships";
 import { paymentMethodLabel } from "@/lib/finance";
 import { Delta } from "@/components/atoms/delta";
 import { RevealText } from "@/components/atoms/reveal-text";
@@ -33,7 +33,7 @@ import PresenceSummary from "./_components/presence-summary";
 import { StatTile } from "@/components/molecules/stat-tile";
 import { requirePageContext } from "@/lib/tenant/context";
 
-import { createMembershipsDb } from "@/lib/business/memberships-repo";
+import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
 /**
  * Dashboard del negocio. Server Component: toda la data (tenant, usuario,
  * métricas y actividad reciente) se resuelve aquí desde PostgreSQL vía

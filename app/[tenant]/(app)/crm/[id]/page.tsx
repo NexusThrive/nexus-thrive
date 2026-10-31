@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { customerProfileExtras } from "@/lib/business/customers-db";
 import { tenantWithModules } from "@/lib/tenant/membership";
 import { buildCustomer360, createTenantDb } from "@/lib/tenant/db";
-import { getCustomer360Memberships } from "@/lib/business/memberships-repo";
+import { getCustomer360Memberships } from "@/lib/industry/gym/memberships-repo";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 import { bmi, profileFor } from "@/lib/business/customer-fields";
 import CustomerHeader from "./_components/customer-header";
@@ -21,7 +21,7 @@ import PaymentsTable from "./_components/payments-table";
 import MembershipsTable from "./_components/memberships-table";
 import NotesPanel from "./_components/notes-panel";
 import AccessCard from "./_components/access-card";
-import { memberStatus } from "@/lib/business/gym-db";
+import { memberStatus } from "@/lib/industry/gym/gym-db";
 import { requirePageContext } from "@/lib/tenant/context";
 
 /**

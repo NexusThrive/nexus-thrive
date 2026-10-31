@@ -7,7 +7,7 @@ import {
   normalizeWhatsAppPhone,
   plainFromInstant,
   whatsappReminderLink,
-} from "@/lib/business/memberships";
+} from "@/lib/industry/gym/memberships";
 import { formatDateShort } from "@/lib/format";
 import type { MembershipViewRow } from "./membership-table";
 import { buttonVariants } from "@/components/atoms/button-variants";

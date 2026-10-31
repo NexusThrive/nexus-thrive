@@ -88,9 +88,8 @@
     { "path": "lib/dashboard", "layer": "experience" },
 
     { "path": "lib/construction", "layer": "industry", "industry": "construction" },
-    { "path": "lib/business/gym*.ts", "layer": "industry", "industry": "gym" },
-    { "path": "lib/business/memberships*.ts", "layer": "industry", "industry": "gym" },
-    { "path": "lib/business/museum*.ts", "layer": "industry", "industry": "museum" },
+    { "path": "lib/industry/gym", "layer": "industry", "industry": "gym" },
+    { "path": "lib/industry/museum", "layer": "industry", "industry": "museum" },
 
     { "path": "app/", "layer": "experience" },
     { "path": "components/", "layer": "experience" }
