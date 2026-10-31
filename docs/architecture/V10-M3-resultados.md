@@ -72,6 +72,20 @@ Pruebas nuevas: 11 de arquitectura en `tests/architecture/v10-business.test.ts` 
 - **`lib/business/business.test.ts`** queda en la raíz de `lib/business`; su destino se decide en la migración de pruebas.
 - **`receipt-share.ts`** (canvas del navegador) está dentro de `sales`; es código de cliente que importan componentes. No cambió de naturaleza.
 
+## Estado de las decisiones: aprobadas, implementadas y pendientes
+
+Detalle completo en [`V10-decisiones.md`](V10-decisiones.md). Resumen de lo que M3 toca:
+
+| Estado | Qué |
+|---|---|
+| **Aprobadas e implementadas en M3** | P-1 (`business/sales`), P-2 (`money-service` en `business/sales`), P-3 (`countries` → Foundation, `inventory` → Inventario), P-4 (rutas de las pruebas de arquitectura), P-10 (unidades huérfanas) |
+| **Aprobadas, vigentes y sin cambios que implementar** | P-6 (el enum se mantiene), P-9 (M6c-a: no tocar la auditoría), P-13 (no integrar `integracion/local-revision`) |
+| **Aprobadas, NO implementadas** | D-V10-9 (acceso de socios por módulo activo), P-5 (`SectorView`), P-7 (permisos `members.*`), P-8 (comprobación de solo lectura previa) — todas para M7; P-11 (mover la composición de suscriptores, pospuesta); P-12 (pasada documental sobre rutas antiguas) |
+| **Propuestas documentadas, a confirmar en su etapa** | Q-3 (`domains/finance/<módulo>`, M5), Q-7b (`benefits` → `platform/benefits`, M4, con el prerrequisito de extraer `withinLimit`), Q-7a (`presence` y `growth` se quedan), Q-8 (sin `extensions/`) |
+| **Pendientes de autorización** | M4, M5, M6, M7 y M8 completas. Ninguna se inició |
+
+`lib/domains/` y `lib/platform/` **no existen** y no se crean por estas decisiones.
+
 ## Qué queda preparado
 
 - M4 (`platform`) y M5 (`finance` → `domains`) se apoyan en el mismo codemod y en el detector de unidades huérfanas.
