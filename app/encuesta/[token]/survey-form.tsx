@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { Check } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { textareaClasses } from "@/components/atoms/input";
-import { SCORE_LABELS } from "@/lib/ops/satisfaction-rules";
+import { SCORE_LABELS } from "@/lib/platform/support/satisfaction-rules";
 import { cn } from "@/lib/utils";
 import { answerSurveyAction } from "./actions";
 

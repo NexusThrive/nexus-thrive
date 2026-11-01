@@ -1,7 +1,7 @@
 "use server";
 
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { organizationLimitProblem } from "@/lib/admin/users-db";
+import { organizationLimitProblem } from "@/lib/platform/admin/users-db";
 import { completeExistingTenant, createTenantWithOwner, onboardingMembership, onboardingTenant, slugInUse } from "@/lib/onboarding/onboarding-db";
 import { validateAdaptiveOnboarding } from "@/lib/onboarding/validation";
 import { suggestSlug } from "@/lib/onboarding/slug";
@@ -11,9 +11,9 @@ import {
   applyBenefitCookie,
   clearBenefitCookie,
   setBenefitCookie,
-} from "@/lib/benefits/benefit-cookie";
-import { getBenefitByCode } from "@/lib/benefits/benefits-db";
-import { normalizeBenefitCode, type BenefitKind } from "@/lib/benefits/benefits";
+} from "@/lib/platform/benefits/benefit-cookie";
+import { getBenefitByCode } from "@/lib/platform/benefits/benefits-db";
+import { normalizeBenefitCode, type BenefitKind } from "@/lib/platform/benefits/benefits";
 import { SHOW_PRICING } from "@/lib/onboarding/flags";
 import { allowAttempt, recordAttempt } from "@/lib/rate-limit";
 import type { PlanKey, Billing } from "@/lib/plans/catalog";

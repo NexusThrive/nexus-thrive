@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
-import { getStaffContext } from "@/lib/ops/access";
-import { billingSummary, getPolicy, listCharges, listSubscriptions, tenantsWithoutSubscription } from "@/lib/ops/billing";
-import { todayBogota } from "@/lib/ops/leads";
+import { getStaffContext } from "@/lib/platform/team/access";
+import { billingSummary, getPolicy, listCharges, listSubscriptions, tenantsWithoutSubscription } from "@/lib/platform/billing/billing";
 import BillingView from "./_components/billing-view";
+import { bogotaDay } from "@/lib/plain-date";
 
 export const metadata: Metadata = { title: "Facturación · NEXUS Operations Center" };
 
@@ -13,7 +13,7 @@ export default async function FacturacionPage() {
   const staff = await getStaffContext();
   if (!staff?.permissions.includes("billing.view")) notFound();
   const [subs, charges, missing, policy] = await Promise.all([listSubscriptions(), listCharges(), tenantsWithoutSubscription(), getPolicy()]);
-  const today = todayBogota();
+  const today = bogotaDay();
   const p = staff.permissions;
   return (
     <div className="grid gap-5">

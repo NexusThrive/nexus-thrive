@@ -14,7 +14,7 @@ import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { createResolutionAction, createTaxRateAction, loadDefaultTaxesAction, toggleResolutionAction, updateTaxRateAction, type TaxActionResult } from "@/app/[tenant]/(app)/taxes/actions";
-import { DOCUMENT_LABELS, type DocumentKind } from "@/lib/business/commercial-document";
+import { DOCUMENT_LABELS, type DocumentKind } from "@/lib/business/sales/commercial-document";
 import { TAX_KINDS, TAX_KIND_LABELS, NUMBERED_KINDS, todayCO, type TaxRateRow } from "@/lib/tax/tax";
 import type { ResolutionRow } from "@/lib/tax/tax-db";
 

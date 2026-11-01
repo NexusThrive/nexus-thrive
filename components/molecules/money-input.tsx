@@ -2,7 +2,7 @@
 
 import { forwardRef, useState } from "react";
 import { inputClasses } from "@/components/atoms/input";
-import { formatMoneyInput, liveFormat, parseMoney } from "@/lib/business/money";
+import { formatMoneyInput, liveFormat, parseMoney } from "@/lib/business/sales/money";
 import { cn } from "@/lib/utils";
 
 /**

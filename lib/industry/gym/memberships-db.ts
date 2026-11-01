@@ -1,5 +1,5 @@
-import { recordCharge } from "@/lib/business/charge";
-import { moneyTransaction } from "@/lib/business/money-service";
+import { recordCharge } from "@/lib/business/sales/charge";
+import { moneyTransaction } from "@/lib/business/sales/money-service";
 import type { db } from "@/prisma/db";
 
 /**

@@ -2,10 +2,10 @@
  * Inscripción de un cliente a un plan del gimnasio (`enrollInPlan`): crea la membresía desde hoy y, si quien
  * registra maneja dinero, el cobro con su recibo, todo en una sola transacción del servicio de dinero.
  */
-import { membershipTypeFor } from "@/lib/business/customer-fields";
+import { membershipTypeFor } from "@/lib/business/customers/customer-fields";
 import { bogotaEndOfDay, bogotaStartOfDay, computeMembershipStatus } from "@/lib/industry/gym/memberships";
 import { bogotaToday } from "@/lib/plain-date";
-import { moneyTransaction, recordIncome } from "@/lib/business/money-service";
+import { moneyTransaction, recordIncome } from "@/lib/business/sales/money-service";
 
 type Plan = { id: string; name: string; price: number; durationDays: number };
 

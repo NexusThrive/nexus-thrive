@@ -1,9 +1,9 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createAdminDb } from "@/lib/admin/db";
-import { createDocument } from "@/lib/business/documents-db";
-import { recordIncomeNow, voidPayment } from "@/lib/business/money-service";
-import { moneyTransaction } from "@/lib/business/money-service";
+import { createAdminDb } from "@/lib/platform/admin/db";
+import { createDocument } from "@/lib/business/sales/documents-db";
+import { recordIncomeNow, voidPayment } from "@/lib/business/sales/money-service";
+import { moneyTransaction } from "@/lib/business/sales/money-service";
 import { applyStockMovement } from "@/lib/inventory/stock-service";
 import { sellCart, openTurn, createTerminal } from "@/lib/pos/pos-db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";

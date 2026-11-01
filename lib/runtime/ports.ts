@@ -1,8 +1,8 @@
 import { seedAccounting } from "@/lib/accounting/accounting-db";
 import { cashAccountFor, postByRule, reverseSource } from "@/lib/accounting/ledger-db";
-import { accountingPort } from "@/lib/business/accounting-port";
-import { fiscalQueuePort } from "@/lib/business/fiscal-port";
-import { numberingPort } from "@/lib/business/numbering-port";
+import { accountingPort } from "@/lib/business/sales/accounting-port";
+import { fiscalQueuePort } from "@/lib/business/sales/fiscal-port";
+import { numberingPort } from "@/lib/business/sales/numbering-port";
 import { paymentGatewayPort } from "@/lib/store/payment-gateway-port";
 import { checkoutPort } from "@/lib/payments/checkout-port";
 import { connectedGateways, createIntent } from "@/lib/payments/intents-db";

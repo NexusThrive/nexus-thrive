@@ -135,7 +135,7 @@ export async function createMembershipAction(
 
   const priceAmount = String(Number(price.replace(",", ".")));
   // La membresía y su cobro inicial (recibo consecutivo; en efectivo entra a
-  // la caja abierta) pasan juntos o no pasan: lib/business/money-service.ts.
+  // la caja abierta) pasan juntos o no pasan: lib/business/sales/money-service.ts.
   await createMembershipWithCharge(tenantDb.tenantId, tenantDb.memberId, {
     customerId,
     type,

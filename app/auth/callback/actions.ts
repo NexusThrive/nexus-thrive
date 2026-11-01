@@ -2,9 +2,9 @@
 
 import { redirect } from "next/navigation";
 import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
-import { createAdminDb } from "@/lib/admin/db";
-import { findStaffByEmail } from "@/lib/ops/access";
-import { linkStaffAccount, linkedClerkUserId } from "@/lib/ops/team";
+import { createAdminDb } from "@/lib/platform/admin/db";
+import { findStaffByEmail } from "@/lib/platform/team/access";
+import { linkStaffAccount, linkedClerkUserId } from "@/lib/platform/team/team";
 import { normalizeEmail, verifiedEmailOf } from "@/lib/auth/session-email";
 
 /**

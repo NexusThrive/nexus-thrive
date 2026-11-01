@@ -6,11 +6,11 @@ import { loadPricingConfig } from "@/lib/plans/settings";
 
 import { clerkClient } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
-import { requireStaff } from "@/lib/ops/access";
-import type { PermissionKey } from "@/lib/ops/permissions";
+import { requireStaff } from "@/lib/platform/team/access";
+import type { PermissionKey } from "@/lib/platform/team/permissions";
 import { revalidatePath } from "next/cache";
-import { organizationLimitProblem } from "@/lib/admin/users-db";
-import { createAdminDb, type AuditLogInput } from "@/lib/admin/db";
+import { organizationLimitProblem } from "@/lib/platform/admin/users-db";
+import { createAdminDb, type AuditLogInput } from "@/lib/platform/admin/db";
 import { validateSlug, type SlugValidation } from "@/lib/admin/catalogs";
 import {
   validateSuspendTenant,
@@ -50,7 +50,7 @@ type Actor = { userId: string; email: string | null };
 
 /**
  * Autorización de las actions del Operations Center: integrante activo del
- * equipo NEXUS con el permiso de la acción (lib/ops/access.ts). Devuelve el
+ * equipo NEXUS con el permiso de la acción (lib/platform/team/access.ts). Devuelve el
  * actor (para auditoría) o `null`.
  */
 async function requireActor(permission: PermissionKey): Promise<Actor | null> {

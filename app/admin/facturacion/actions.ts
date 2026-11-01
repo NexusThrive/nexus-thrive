@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireStaff } from "@/lib/ops/access";
-import { logOps } from "@/lib/ops/audit";
+import { requireStaff } from "@/lib/platform/team/access";
+import { logOps } from "@/lib/platform/team/audit";
 import {
   addEvidence,
   confirmCharge,
@@ -18,9 +18,9 @@ import {
   suspendForNonPayment,
   updateSubscription,
   voidCharge,
-} from "@/lib/ops/billing";
-import { checkConfirm, checkEvidence, PAYMENT_METHODS, validatePolicy, type BillingPolicyValues, type Cycle, type SubscriptionStatusValue } from "@/lib/ops/billing-rules";
-import { tenantName } from "@/lib/ops/accounts";
+} from "@/lib/platform/billing/billing";
+import { checkConfirm, checkEvidence, PAYMENT_METHODS, validatePolicy, type BillingPolicyValues, type Cycle, type SubscriptionStatusValue } from "@/lib/platform/billing/billing-rules";
+import { tenantName } from "@/lib/platform/accounts/accounts";
 
 export type BillingResult = { ok: true; message?: string } | { ok: false; message: string };
 const DENIED = { ok: false as const, message: "No tienes permiso para esta acción." };

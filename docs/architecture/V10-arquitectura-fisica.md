@@ -1,6 +1,6 @@
 # V10 — Arquitectura física extensible de `lib/`: auditoría y diseño
 
-**Estado: diseño aprobado (2026-10-31). Ejecutadas M0, M1 y M2 — ver [`V10-M0-M2-resultados.md`](V10-M0-M2-resultados.md); M3–M8 siguen pendientes de autorización.** *Texto original del diseño:* **DISEÑO para revisión. No se implementó nada.** No se movió ningún archivo, no se cambió ningún import, contrato, `layers.json`, prueba, Prisma, migración ni dato.
+**Estado: diseño aprobado (2026-10-31). Ejecutadas M0, M1 y M2 — ver [`V10-M0-M2-resultados.md`](V10-M0-M2-resultados.md) — M3 — ver [`V10-M3-resultados.md`](V10-M3-resultados.md) — y M4 — ver [`V10-M4-resultados.md`](V10-M4-resultados.md); M5–M8 siguen pendientes de autorización.** *Texto original del diseño:* **DISEÑO para revisión. No se implementó nada.** No se movió ningún archivo, no se cambió ningún import, contrato, `layers.json`, prueba, Prisma, migración ni dato.
 Base: rama local `chore/HU-esquema-prisma-modular-01`, commit `f0b49cc` (E0–E5, E7, E9 y V cerradas; 0 excepciones; `pnpm verify` en verde; sin push, PR, merge ni despliegue).
 Las cifras salen de scripts de solo lectura sobre el código (método en el apéndice A); lo que no se pudo medir está marcado como **[no medido]**.
 
@@ -233,11 +233,19 @@ export const restaurant = defineSector({
 | `domains` | foundation, core, business | Entre **familias** (`finance` ↔ otra futura) solo por contrato. Dentro de una familia, import directo |
 | `integrations` | foundation, core, business, domains | Implementan puertos; los dominios no los importan |
 | `industry` | foundation, core, business, domains, integrations | Un sector no importa a otro (R2). Nadie lo importa salvo `runtime` y `experience` (R1) |
-| `platform` | foundation, core, business, domains, integrations | Ningún negocio la importa |
+| `platform` | foundation, core, business, domains, integrations | Ningún **módulo** de `foundation`, `core`, `business`, `domains`, `integrations` ni `industry` la importa; solo la importan `experience` (puntos de entrada) y `runtime`. *(Aclarado al cierre de M4; ver «Aclaración» bajo esta tabla. Redacción original: «Ningún negocio la importa».)* |
 | `experience` | todas excepto `runtime` | Sin reglas de negocio propias |
 | `runtime` | todas | Solo la importan los puntos de entrada y las pruebas |
 
 Difiere de hoy en que `automation` desaparece (H9) y `finance` pasa a `domains`; `api`/`mcp` pasan a Core (H10).
+
+> **Aclaración (cierre de M4, 2026-10-31).** Hay que distinguir dos tipos de dependencia hacia `platform`:
+>
+> 1. **Entre módulos de `lib/`.** Ningún módulo fuera de `platform`, `experience` y `runtime` puede importar `platform`. Lo comprueba `pnpm check:layers` (R3) y es la regla que protege la separación entre áreas.
+> 2. **De Experience hacia Platform.** `app/` y `components/` son la capa `experience`; la matriz les permite importar `platform`. Son legítimas cuando son **puntos de entrada** (páginas, layouts, acciones, rutas). El verificador solo escanea `lib/`, así que para los negocios (`app/[tenant]`) la lista de referencias permitidas es **cerrada y la fija una prueba** (`tests/architecture/v10-platform.test.ts`): hoy son **tres**, todas a `platform/benefits/benefits-db` (el layout del negocio, la página de ajustes y un tipo). Añadir una cuarta exige una decisión nueva.
+>
+> Por eso «Ningún negocio importa `platform`» se entiende como la regla 1; la regla 2 no se prohíbe, se limita y se vigila.
+
 
 ### 4.2 Cuándo corresponde cada herramienta
 
@@ -451,7 +459,7 @@ Justificación: H1. Riesgos: medio (muchos importadores; sin cambios de lógica)
 | Imports | `admin/db.ts` = 62 (11 desde `lib`); `ops/access.ts` = 39, `ops/leads.ts` = 17, todos desde `app/` (`ops` tiene 0 importadores en `lib`) |
 | Riesgos | Medio-bajo: solo `app/` importa `ops` |
 | Pruebas | Pruebas de `ops`, `admin`, panel `/admin` y `/ops` |
-| Aceptación | Ningún negocio (`app/[tenant]`) importa `platform` |
+| Aceptación | Ningún **módulo** de `lib/` fuera de `platform`, `experience` y `runtime` importa `platform` (lo comprueba `check:layers`); las páginas de los negocios (`app/[tenant]`) solo importan `platform` en la lista cerrada de referencias fijada por prueba (aclaración del cierre de M4, bajo la matriz de §4.1). *Redacción original: «Ningún negocio (`app/[tenant]`) importa `platform`».* |
 | Reversible | Sí |
 
 ### M5 — `finance` como familia de `domains` y `kernel`
@@ -509,6 +517,8 @@ M0 → M1 → M2 → M6a/b/e → M3 → M4 → M5 → M6c/d → M7. M2 y M3 son 
 ---
 
 ## 8. Riesgos y decisiones que necesitan aprobación
+
+> **Nota de numeración (añadida tras la autorización).** Los «D-V10-n» de esta tabla son las **preguntas del diseño**; la autorización aprobó una lista D-V10-1…9 con otro enunciado en 3, 4, 6, 7 y 8. La correspondencia definitiva (preguntas = Q-n, autorización = D-V10-n, revisión = P-n) está en [`V10-decisiones.md`](V10-decisiones.md). La tabla de abajo se conserva tal como se escribió.
 
 | # | Decisión | Opciones | Recomendación |
 |---|---|---|---|

@@ -10,7 +10,7 @@ import { FullPanelLink } from "@/components/molecules/full-panel-link";
 import { PhoneInput } from "@/components/molecules/phone-input";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { bmi, profileFor, type FieldDef } from "@/lib/business/customer-fields";
+import { bmi, profileFor, type FieldDef } from "@/lib/business/customers/customer-fields";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import { formatCurrency } from "@/lib/format";
 import { useVerticalTerms } from "../../vertical-terms-context";

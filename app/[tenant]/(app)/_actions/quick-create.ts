@@ -1,6 +1,6 @@
 "use server";
 
-import { listCashBoxes } from "@/lib/business/finance-db";
+import { listCashBoxes } from "@/lib/business/sales/finance-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 
 export type QuickCreateData = {

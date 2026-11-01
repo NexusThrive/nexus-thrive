@@ -3,8 +3,8 @@ import { redirect } from "next/navigation";
 import { getOnboardingPrefill } from "@/lib/onboarding/prefill";
 import OnboardingWizard from "./_components/onboarding-wizard";
 import { loadPricingConfig } from "@/lib/plans/settings";
-import { getPendingBenefit } from "@/lib/benefits/benefit-cookie";
-import { findStaffByEmail } from "@/lib/ops/access";
+import { getPendingBenefit } from "@/lib/platform/benefits/benefit-cookie";
+import { findStaffByEmail } from "@/lib/platform/team/access";
 import { StaffAccessNotice } from "@/components/molecules/staff-access-notice";
 import { verifiedEmailOf } from "@/lib/auth/session-email";
 

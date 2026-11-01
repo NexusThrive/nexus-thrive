@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 
 import { KpiCard } from "@/components/molecules/kpi-card";
 import { PageHeader, SectionTitle } from "@/components/molecules/page-header";
-import { getStaffContext } from "@/lib/ops/access";
-import { presenceOverview } from "@/lib/ops/presence";
+import { getStaffContext } from "@/lib/platform/team/access";
+import { presenceOverview } from "@/lib/platform/presence/presence";
 import PresenceRow from "./_components/presence-row";
 import RequestList from "./_components/request-list";
 

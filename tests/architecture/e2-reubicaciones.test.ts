@@ -60,7 +60,7 @@ describe("dependencias invertidas", () => {
   });
 
   test("escapeLike tiene una sola definición (Foundation)", () => {
-    for (const file of ["lib/admin/db.ts", "lib/tenant/db.ts", "lib/industry/gym/gym-db.ts"]) {
+    for (const file of ["lib/platform/admin/db.ts", "lib/tenant/db.ts", "lib/industry/gym/gym-db.ts"]) {
       expect(read(file), file).not.toMatch(/function escapeLike/);
     }
     expect(read("lib/sql-like.ts")).toMatch(/export function escapeLike/);

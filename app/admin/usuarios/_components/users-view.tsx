@@ -13,7 +13,7 @@ import { PageHeader } from "@/components/molecules/page-header";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { createUserOrganizationAction, setUserLimitAction } from "@/app/admin/usuarios/actions";
-import type { PlatformUser } from "@/lib/admin/users-db";
+import type { PlatformUser } from "@/lib/platform/admin/users-db";
 
 type Dialog = { kind: "limit" | "create"; user: PlatformUser } | null;
 

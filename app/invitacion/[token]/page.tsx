@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { LogIn, ShieldCheck } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { getStaffInvite, redeemStaffInvite } from "@/lib/ops/team";
+import { getStaffInvite, redeemStaffInvite } from "@/lib/platform/team/team";
 import { InviteNotice } from "./_components/invite-notice";
 
 /**

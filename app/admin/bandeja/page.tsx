@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/atoms/badge";
 import { PageHeader } from "@/components/molecules/page-header";
-import { getStaffContext } from "@/lib/ops/access";
-import { listManagers } from "@/lib/ops/accounts";
-import { listConversations, listInboxMessages } from "@/lib/ops/inbox";
-import { providers } from "@/lib/ops/inbox-providers";
-import { tenantOptions } from "@/lib/ops/leads";
+import { getStaffContext } from "@/lib/platform/team/access";
+import { listManagers } from "@/lib/platform/accounts/accounts";
+import { listConversations, listInboxMessages } from "@/lib/platform/inbox/inbox";
+import { providers } from "@/lib/platform/inbox/inbox-providers";
+import { tenantOptions } from "@/lib/platform/crm/leads";
 import InboxView from "./_components/inbox-view";
 
 export const metadata: Metadata = { title: "Bandeja · NEXUS Operations Center" };

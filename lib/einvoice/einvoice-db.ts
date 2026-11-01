@@ -1,4 +1,4 @@
-import { documentCode, type DocumentKind, type DocumentLineInput } from "@/lib/business/commercial-document";
+import { documentCode, type DocumentKind, type DocumentLineInput } from "@/lib/business/sales/commercial-document";
 import { toNumber } from "@/lib/format";
 import { db } from "@/prisma/db";
 import { buildFiscalPayload, fiscalKindOf } from "./payload";

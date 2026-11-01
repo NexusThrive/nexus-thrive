@@ -8,7 +8,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { ProgressBar } from "@/components/atoms/progress-bar";
 import { cn } from "@/lib/utils";
 import { PRESENCE_STATES } from "@/lib/presence/presence";
-import type { PresenceOverviewRow } from "@/lib/ops/presence";
+import type { PresenceOverviewRow } from "@/lib/platform/presence/presence";
 import { rescanPresenceAction } from "../actions";
 
 const STATE_LABEL: Record<string, string> = {

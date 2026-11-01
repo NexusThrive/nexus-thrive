@@ -7,7 +7,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { NMark } from "@/components/atoms/n-mark";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
-import { ACCOUNT_STAGES, type AccountStageValue } from "@/lib/ops/account-stages";
+import { ACCOUNT_STAGES, type AccountStageValue } from "@/lib/platform/accounts/account-stages";
 import { updateAccountAction } from "../../actions";
 import { Select } from "@/components/atoms/select";
 

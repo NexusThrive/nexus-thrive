@@ -7,7 +7,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { Input, labelClasses } from "@/components/atoms/input";
 import { Select } from "@/components/atoms/select";
 import { Textarea } from "@/components/atoms/textarea";
-import type { PresenceRequestRow } from "@/lib/ops/presence";
+import type { PresenceRequestRow } from "@/lib/platform/presence/presence";
 import { updatePresenceRequestAction, type PresenceAdminState } from "../actions";
 
 const IDLE: PresenceAdminState = { status: "idle" };

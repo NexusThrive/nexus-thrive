@@ -6,7 +6,7 @@ import { createTenantDb } from "@/lib/tenant/db";
 import { getVerticalTerms, type VerticalTerms } from "@/lib/core/sectors/terms";
 import { can } from "@/lib/auth/permissions";
 import { logTenantAction } from "@/lib/tenant/audit";
-import { withinLimit } from "@/lib/benefits/benefits";
+import { withinLimit } from "@/lib/foundation/limits";
 import { customerLimit } from "@/lib/tenant/customer-limit";
 
 /** Resultado de las acciones de fila / acciones masivas. */

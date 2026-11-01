@@ -12,9 +12,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createAdminDb } from "@/lib/admin/db";
+import { createAdminDb } from "@/lib/platform/admin/db";
 import { setAccountingEnabled } from "@/lib/accounting/ledger-db";
-import { createDocument } from "@/lib/business/documents-db";
+import { createDocument } from "@/lib/business/sales/documents-db";
 import { setFiscalEnabled } from "@/lib/einvoice/einvoice-db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 

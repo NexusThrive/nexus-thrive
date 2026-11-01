@@ -8,8 +8,8 @@ import { Alert } from "@/components/molecules/alert";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { PERMISSION_GROUPS, type PermissionKey } from "@/lib/ops/permissions";
-import type { RoleRow } from "@/lib/ops/team";
+import { PERMISSION_GROUPS, type PermissionKey } from "@/lib/platform/team/permissions";
+import type { RoleRow } from "@/lib/platform/team/team";
 import { cn } from "@/lib/utils";
 import { saveRoleAction } from "../actions";
 

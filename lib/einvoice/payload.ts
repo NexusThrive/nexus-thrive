@@ -1,4 +1,4 @@
-import { DOCUMENT_LABELS, type DocumentKind } from "@/lib/business/commercial-document";
+import { DOCUMENT_LABELS, type DocumentKind } from "@/lib/business/sales/commercial-document";
 import type { FiscalKind, FiscalParty, FiscalPayload } from "./port";
 
 /** Tipo fiscal de un documento comercial, o `null` si no se factura (cotizaciones y pedidos no lo son). */

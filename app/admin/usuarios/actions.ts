@@ -3,11 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { VERTICAL_LABELS, isVertical } from "@/lib/core/sectors/verticals";
 import { DEFAULT_MODULES_BY_VERTICAL } from "@/lib/core/sectors/catalog";
-import { normalizeEmail, slugFromName } from "@/lib/admin/account-limits";
-import { createAdminDb } from "@/lib/admin/db";
-import { organizationLimitProblem, setLimit } from "@/lib/admin/users-db";
-import { requireStaff } from "@/lib/ops/access";
-import { logOps } from "@/lib/ops/audit";
+import { normalizeEmail, slugFromName } from "@/lib/platform/admin/account-limits";
+import { createAdminDb } from "@/lib/platform/admin/db";
+import { organizationLimitProblem, setLimit } from "@/lib/platform/admin/users-db";
+import { requireStaff } from "@/lib/platform/team/access";
+import { logOps } from "@/lib/platform/team/audit";
 
 export type UserResult = { ok: true; message: string } | { ok: false; message: string };
 const DENIED: UserResult = { ok: false, message: "No tienes permiso para esta acción." };

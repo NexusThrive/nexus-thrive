@@ -1,14 +1,14 @@
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
-import { addDaysKey, bogotaToMs, monthGrid, weekStart } from "@/lib/business/calendar";
-import { listProducts } from "@/lib/business/products-db";
-import { todayBogota } from "@/lib/ops/leads";
+import { addDaysKey, bogotaToMs, monthGrid, weekStart } from "@/lib/business/scheduling/calendar";
+import { listProducts } from "@/lib/business/catalog/products-db";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
-import { activeTeam, bookingsBetween, customerPhoneOptions, customersByIds } from "@/lib/business/bookings-db";
+import { activeTeam, bookingsBetween, customerPhoneOptions, customersByIds } from "@/lib/business/scheduling/bookings-db";
 import AgendaCalendar from "./_agenda/agenda-calendar";
 import type { AgendaBooking } from "./_agenda/types";
 import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { bogotaDay } from "@/lib/plain-date";
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -22,7 +22,7 @@ export default async function BookingsPage({ params, searchParams }: { params: P
   const sp = await searchParams;
   const ctx = await requireTenantContext(tenant, "/bookings");
   if (!ctx) notFound();
-  const today = todayBogota();
+  const today = bogotaDay();
   const view = sp.v === "week" || sp.v === "day" ? sp.v : "month";
   const cursor = sp.d && DATE.test(sp.d) ? sp.d : today;
   const [y, m] = cursor.split("-").map(Number);

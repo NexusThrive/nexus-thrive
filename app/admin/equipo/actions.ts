@@ -1,9 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireStaff } from "@/lib/ops/access";
-import { logOps } from "@/lib/ops/audit";
-import { OWNER_ROLE_KEY, canGrantAll, normalizePermissions } from "@/lib/ops/permissions";
+import { requireStaff } from "@/lib/platform/team/access";
+import { logOps } from "@/lib/platform/team/audit";
+import { OWNER_ROLE_KEY, canGrantAll, normalizePermissions } from "@/lib/platform/team/permissions";
 import {
   activeOwnerCount,
   createRole,
@@ -19,8 +19,8 @@ import {
   setStaffRole,
   unlinkStaffAccount,
   updateRole,
-} from "@/lib/ops/team";
-import { roleKeyFrom, validateInvite, validateRole } from "@/lib/ops/validators";
+} from "@/lib/platform/team/team";
+import { roleKeyFrom, validateInvite, validateRole } from "@/lib/platform/team/validators";
 
 export type ActionResult =
   | { ok: true; token?: string }

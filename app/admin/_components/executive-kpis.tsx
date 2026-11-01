@@ -3,10 +3,10 @@ import { Activity, Building2, CircleDollarSign, Clock } from "lucide-react";
 import { Delta } from "@/components/atoms/delta";
 import { Alert } from "@/components/molecules/alert";
 import { KpiCard } from "@/components/molecules/kpi-card";
-import type { ExecutiveKpis as ExecutiveKpisData } from "@/lib/admin/db";
+import type { ExecutiveKpis as ExecutiveKpisData } from "@/lib/platform/admin/db";
 
 /**
- * KPIs ejecutivos del CEO con datos reales de la base (ver `lib/admin/db.ts`):
+ * KPIs ejecutivos del CEO con datos reales de la base (ver `lib/platform/admin/db.ts`):
  * volumen de pagos con su variación, altas de negocios con tendencia diaria,
  * onboarding y actividad real. Cada KPI y el aviso de alertas son bloques
  * independientes del inicio (se mueven y cambian de tamaño por separado).

@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireStaff, getStaffContext } from "@/lib/ops/access";
-import { logOps } from "@/lib/ops/audit";
+import { requireStaff, getStaffContext } from "@/lib/platform/team/access";
+import { logOps } from "@/lib/platform/team/audit";
 import type { CustomerTier, ModuleConfig, PlanConfig, VerticalConfig } from "@/lib/plans/pricing";
 import { loadPricingConfig, saveModule, savePlan, saveTiers, saveVertical } from "@/lib/plans/settings";
 import { validateModule, validatePlan, validateTiers, validateVertical } from "@/lib/plans/validators";

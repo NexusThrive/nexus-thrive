@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createAdminDb } from "@/lib/admin/db";
-import { createDocument } from "@/lib/business/documents-db";
+import { createAdminDb } from "@/lib/platform/admin/db";
+import { createDocument } from "@/lib/business/sales/documents-db";
 import { encryptCredentials } from "@/lib/providers/connections";
 import { receiveProviderWebhook } from "@/lib/providers/inbound";
 import { sandboxSignature } from "@/lib/providers/sandbox";

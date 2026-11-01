@@ -1,5 +1,5 @@
 import { MODULES, MODULE_LABELS } from "@/lib/capabilities/modules";
-import type { ContractTerms } from "@/lib/benefits/benefits";
+import type { ContractTerms } from "@/lib/platform/benefits/benefits";
 
 const inputClass =
   "h-10 rounded-md border border-border bg-surface px-3 text-sm outline-none focus:border-ink";

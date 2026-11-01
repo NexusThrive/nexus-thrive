@@ -44,7 +44,6 @@
     { "path": "lib/temporal.d.ts", "layer": "foundation" },
     { "path": "lib/utils.ts", "layer": "foundation" },
 
-    { "path": "lib/vertical-terms.ts", "layer": "core" },
     { "path": "lib/tenant", "layer": "core" },
     { "path": "lib/auth", "layer": "core" },
     { "path": "lib/admin", "layer": "core" },
@@ -57,12 +56,10 @@
     { "path": "lib/files", "layer": "core" },
 
     { "path": "lib/business", "layer": "business" },
-    { "path": "lib/catalog", "layer": "business" },
     { "path": "lib/inventory", "layer": "business" },
     { "path": "lib/purchasing", "layer": "business" },
     { "path": "lib/pos", "layer": "business" },
     { "path": "lib/store", "layer": "business" },
-    { "path": "lib/benefits", "layer": "business" },
     { "path": "lib/growth", "layer": "business" },
     { "path": "lib/data-exchange", "layer": "business" },
     { "path": "lib/presence", "layer": "business" },
@@ -83,7 +80,6 @@
     { "path": "lib/events", "layer": "core" },
     { "path": "lib/functions", "layer": "automation" },
 
-    { "path": "lib/ops", "layer": "platform" },
 
     { "path": "lib/fonts.ts", "layer": "experience" },
     { "path": "lib/navigation/nav-types.ts", "layer": "core" },

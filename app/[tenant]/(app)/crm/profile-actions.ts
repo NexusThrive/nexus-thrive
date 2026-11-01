@@ -1,11 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cleanProfile, profileFor } from "@/lib/business/customer-fields";
-import { getCustomer, saveCustomer, setCustomerPhoto } from "@/lib/business/customers-db";
+import { cleanProfile, profileFor } from "@/lib/business/customers/customer-fields";
+import { getCustomer, saveCustomer, setCustomerPhoto } from "@/lib/business/customers/customers-db";
 import { enrollInPlan } from "@/lib/industry/gym/enrollment-db";
-import { addAttachment, checkAttachment } from "@/lib/business/finance-db";
-import { getProduct, planOptions } from "@/lib/business/products-db";
+import { addAttachment, checkAttachment } from "@/lib/business/sales/finance-db";
+import { getProduct, planOptions } from "@/lib/business/catalog/products-db";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { can } from "@/lib/auth/permissions";
@@ -103,7 +103,7 @@ export async function saveCustomerAction(form: FormData): Promise<CustomerSaveRe
       const method = String(form.get("paymentMethod") ?? "");
       // Cobrar exige manejar dinero (SEC-05): sin ese permiso se inscribe sin cobro.
       const pay = PAYMENT_METHODS.some((m) => m.value === method) && can(ctx.role, "money.handle");
-      // Membresía y cobro (recibo y caja) juntos o nada: lib/business/money-service.ts.
+      // Membresía y cobro (recibo y caja) juntos o nada: lib/business/sales/money-service.ts.
       await enrollInPlan(
         ctx.tenantId,
         { customerId: customerId, customerName: name, plan: { id: plan.id, name: plan.name, price: plan.price, durationDays: plan.durationDays }, method: pay ? method : null },

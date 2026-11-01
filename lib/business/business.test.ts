@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { arqueo, expectedCash, replenishNeeded, validateCashMovement } from "./cash";
-import { applyStock, stockLevel, validateStockMove } from "./inventory";
-import { amountInWords, invoiceCode, invoiceTotal, validateLines } from "./invoice";
-import { formatMoneyInput, liveFormat, parseMoney } from "./money";
+import { arqueo, expectedCash, replenishNeeded, validateCashMovement } from "./sales/cash";
+import { applyStock, stockLevel, validateStockMove } from "../inventory/inventory";
+import { amountInWords, invoiceCode, invoiceTotal, validateLines } from "./sales/invoice";
+import { formatMoneyInput, liveFormat, parseMoney } from "./sales/money";
 
 describe("dinero en formato colombiano", () => {
   it("lee lo que escribe la persona", () => {
@@ -66,7 +66,7 @@ describe("recibos y cuentas de cobro", () => {
   });
 });
 
-import { kindsForVertical, validateProduct } from "./catalog-kinds";
+import { kindsForVertical, validateProduct } from "./catalog/catalog-kinds";
 
 describe("catálogo por rubro", () => {
   const base = { kind: "PRODUCT" as const, name: "Proteína", description: "", sku: "", category: "", price: 120000, cost: 80000, trackStock: true, initialStock: 10, minStock: 3, unit: "", durationMinutes: null, durationDays: null, capacity: null, active: true };
@@ -83,7 +83,7 @@ describe("catálogo por rubro", () => {
   });
 });
 
-import { COUNTRIES, joinPhone, searchCountries, splitPhone } from "./countries";
+import { COUNTRIES, joinPhone, searchCountries, splitPhone } from "../foundation/countries";
 
 describe("indicativos de país", () => {
   it("Colombia primero y el resto alfabético", () => {
@@ -102,7 +102,7 @@ describe("indicativos de país", () => {
   });
 });
 
-import { bmi, cleanProfile, membershipTypeFor, profileFor } from "./customer-fields";
+import { bmi, cleanProfile, membershipTypeFor, profileFor } from "./customers/customer-fields";
 
 describe("ficha del cliente por rubro", () => {
   it("el gym pide foto, medidas y plan; otros rubros sus propios datos", () => {
@@ -124,7 +124,7 @@ describe("ficha del cliente por rubro", () => {
   });
 });
 
-import { bogotaParts, bogotaToMs, capacityLeft, monthGrid, occupancy, reminderText, slotPosition, staffConflict, weekStart } from "./calendar";
+import { bogotaParts, bogotaToMs, capacityLeft, monthGrid, occupancy, reminderText, slotPosition, staffConflict, weekStart } from "./scheduling/calendar";
 
 describe("agenda", () => {
   it("cuadrícula del mes empieza en lunes", () => {

@@ -1,10 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireStaff } from "@/lib/ops/access";
-import { tenantName } from "@/lib/ops/accounts";
-import { logOps } from "@/lib/ops/audit";
-import { addInboxNote, conversationToTicket, markRead, reply, updateConversation } from "@/lib/ops/inbox";
+import { requireStaff } from "@/lib/platform/team/access";
+import { tenantName } from "@/lib/platform/accounts/accounts";
+import { logOps } from "@/lib/platform/team/audit";
+import { addInboxNote, conversationToTicket, markRead, reply, updateConversation } from "@/lib/platform/inbox/inbox";
 
 export type InboxResult = { ok: true; message?: string; delivery?: string; id?: string } | { ok: false; message: string };
 const DENIED = { ok: false as const, message: "No tienes permiso para esta acción." };

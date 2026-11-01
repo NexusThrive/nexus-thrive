@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
-import { addDaysKey, bogotaParts, monthGrid, occupancy, slotPosition, weekStart } from "@/lib/business/calendar";
+import { addDaysKey, bogotaParts, monthGrid, occupancy, slotPosition, weekStart } from "@/lib/business/scheduling/calendar";
 import { useMinute } from "@/lib/hooks/use-minute";
 import { cn } from "@/lib/utils";
 import BookingDetail, { STATUS } from "./booking-detail";

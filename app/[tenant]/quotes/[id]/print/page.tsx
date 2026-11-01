@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { customerContact } from "@/lib/business/customers-db";
+import { customerContact } from "@/lib/business/customers/customers-db";
 import { getQuoteTerms, getVerticalTerms } from "@/lib/core/sectors/terms";
 import { formatCurrency, formatDateShort } from "@/lib/format";
 import PrintButton from "./_components/print-button";

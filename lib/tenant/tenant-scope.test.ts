@@ -9,14 +9,15 @@ import { describe, expect, test } from "vitest";
  * línea y la tabla si una consulta nueva lo olvida.
  *
  * Quedan fuera, con motivo:
- * - `lib/ops/` y `lib/admin/`: el panel de NEXUS opera entre negocios a
- *   propósito y cada acción exige un permiso del equipo (`requireStaff`).
+ * - Los módulos del panel dentro de `lib/platform/` (`admin`, `team`, `billing`, `crm`, `support`, `inbox`, `accounts` y `presence`;
+ *   NO `lib/platform/benefits/`, que sigue vigilado): el panel de NEXUS
+ *   opera entre negocios a propósito y cada acción exige un permiso del equipo (`requireStaff`).
  * - `SCOPED_ELSEWHERE`: consultas donde el negocio todavía no se conoce o ya
  *   se validó antes. Esta lista solo se achica.
  */
 
 const ROOT = process.cwd();
-const PLATFORM_DIRS = ["lib/ops/", "lib/admin/"];
+const PLATFORM_DIRS = ["lib/platform/admin/", "lib/platform/team/", "lib/platform/crm/", "lib/platform/billing/", "lib/platform/support/", "lib/platform/inbox/", "lib/platform/accounts/", "lib/platform/presence/"];
 
 /**
  * Procesos de plataforma que por diseño cruzan negocios: el despachador del
@@ -27,7 +28,7 @@ const PLATFORM_FILES = ["lib/events/dispatcher.ts", "lib/providers/inbound.ts"];
 const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
   { file: "lib/files/stored-files.ts", model: "Attachment", why: "Se pide por id desde una URL; después se exige membresía del negocio del archivo." },
   { file: "lib/files/stored-files.ts", model: "ApuImage", why: "Igual que Attachment." },
-  { file: "lib/business/finance-db.ts", model: "Payment", why: "Recibo público por token firmado y referencia del proveedor, única en toda la plataforma (solo sí/no)." },
+  { file: "lib/business/sales/finance-db.ts", model: "Payment", why: "Recibo público por token firmado y referencia del proveedor, única en toda la plataforma (solo sí/no)." },
   { file: "lib/tenant/team-db.ts", model: "TenantInvite", why: "Invitaciones a un correo en cualquier negocio, al entrar con ese correo verificado." },
   { file: "lib/tenant/membership.ts", model: "User", why: "Resuelve el negocio de una cuenta de la sesión (clerkUserId)." },
   { file: "lib/onboarding/prefill.ts", model: "User", why: "Membresías de la cuenta de la sesión para reanudar el alta." },

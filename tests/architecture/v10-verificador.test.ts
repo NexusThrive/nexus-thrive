@@ -10,7 +10,7 @@ import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore el verificador es un .mjs sin tipos
-import { areaOf, classify, compare, findCycles, findViolations, loadJson, parseImports, ruleFor } from "../../scripts/check-layers.mjs";
+import { areaOf, classify, compare, findCycles, findOrphanUnits, findViolations, loadJson, parseImports, ruleFor } from "../../scripts/check-layers.mjs";
 
 const ROOT = join(import.meta.dirname, "..", "..");
 const layers = loadJson("docs/architecture/layers.json");
@@ -87,7 +87,7 @@ describe("dependencias entre áreas", () => {
 
   test("los archivos reales están donde dice su ruta (ninguna ubicación incoherente)", () => {
     expect(c("lib/runtime/ports.ts")?.layer).toBe("runtime");
-    expect(c("lib/business/money-service.ts")?.layer).toBe("business");
+    expect(c("lib/business/sales/money-service.ts")?.layer).toBe("business");
     expect(c("lib/industry/gym/gym-db.ts")).toMatchObject({ layer: "industry", industry: "gym" });
   });
 });
@@ -151,5 +151,23 @@ describe("cero excepciones y resultados reproducibles", () => {
   test("el verificador no modifica el código: no escribe archivos", () => {
     const source = execFileSync("cat", ["scripts/check-layers.mjs"], { cwd: ROOT, encoding: "utf8" });
     expect(source).not.toMatch(/writeFile|appendFile|unlink|rmSync|renameSync|execSync|spawn/);
+  });
+});
+
+describe("unidades huérfanas de layers.json (V10 · M3, P-10)", () => {
+  const units = { units: [{ path: "lib/business", layer: "business" }, { path: "lib/vieja.ts", layer: "core" }, { path: "lib/otra/", layer: "core" }, { path: "lib/*-db.ts", layer: "core" }] };
+  const exists = (p: string) => ["lib/business", "lib/otra"].includes(p);
+
+  test("una unidad que apunta a algo que ya no existe se detecta (los patrones con * no se comprueban)", () => {
+    expect(findOrphanUnits(units, exists)).toEqual(["lib/vieja.ts"]);
+  });
+
+  test("una unidad huérfana hace fallar la comprobación", () => {
+    const problems = compare([], [], { exceptions: [], maxAbiertas: 0, maxCiclosDeTipos: 0 }, mini, [], { orphans: ["lib/vieja.ts"], cycles: { valueCycles: [], typeCycles: [] } });
+    expect(problems.some((p: string) => p.includes("sin archivos") && p.includes("lib/vieja.ts"))).toBe(true);
+  });
+
+  test("el layers.json real no tiene unidades huérfanas", () => {
+    expect(findOrphanUnits(layers)).toEqual([]);
   });
 });

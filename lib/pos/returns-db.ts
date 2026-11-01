@@ -1,5 +1,5 @@
-import { insertDocument } from "@/lib/business/documents-db";
-import { MoneyError, moneyTransaction } from "@/lib/business/money-service";
+import { insertDocument } from "@/lib/business/sales/documents-db";
+import { MoneyError, moneyTransaction } from "@/lib/business/sales/money-service";
 import { toNumber } from "@/lib/format";
 import { emitEvent } from "@/lib/events/outbox";
 import { applyStockMovement } from "@/lib/inventory/stock-service";

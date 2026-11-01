@@ -1,4 +1,4 @@
-import { documentTotals, lineAmounts, type DocumentLineInput } from "@/lib/business/commercial-document";
+import { documentTotals, lineAmounts, type DocumentLineInput } from "@/lib/business/sales/commercial-document";
 
 /**
  * Carrito del punto de venta (reglas puras). Las líneas llevan precio, descuento

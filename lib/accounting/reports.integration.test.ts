@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 import { db } from "@/prisma/db";
-import { createAdminDb } from "@/lib/admin/db";
-import { createDocument } from "@/lib/business/documents-db";
-import { recordIncomeNow } from "@/lib/business/money-service";
+import { createAdminDb } from "@/lib/platform/admin/db";
+import { createDocument } from "@/lib/business/sales/documents-db";
+import { recordIncomeNow } from "@/lib/business/sales/money-service";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { setAccountingEnabled } from "./ledger-db";
 import { buildReport, ledgerRows, reportCsv } from "./reports-db";

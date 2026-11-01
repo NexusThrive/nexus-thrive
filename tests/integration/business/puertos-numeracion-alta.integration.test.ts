@@ -3,9 +3,9 @@
  */
 import { afterAll, afterEach, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createAdminDb } from "@/lib/admin/db";
-import { numberingPort, type NumberingPort } from "@/lib/business/numbering-port";
-import { createDocument } from "@/lib/business/documents-db";
+import { createAdminDb } from "@/lib/platform/admin/db";
+import { numberingPort, type NumberingPort } from "@/lib/business/sales/numbering-port";
+import { createDocument } from "@/lib/business/sales/documents-db";
 import { createResolution } from "@/lib/tax/tax-db";
 import { PortNotProvidedError } from "@/lib/ports";
 import { tenantProvisioningPort, type TenantProvisioningPort } from "@/lib/tenant/provisioning-port";

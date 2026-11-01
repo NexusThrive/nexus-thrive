@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { documentTotals, lineAmounts } from "@/lib/business/commercial-document";
+import { documentTotals, lineAmounts } from "@/lib/business/sales/commercial-document";
 import { computeWithholdings, fiscalCode, isInForce, netPayable, overlaps, rateInForce, resolutionStatus, taxBreakdown, validateResolution, validateTaxRate, warnThreshold } from "./tax";
 
 const rate = (o: Partial<Parameters<typeof isInForce>[0]> & { code?: string }) => ({ code: "IVA_19", active: true, validFrom: "2023-01-01", validTo: null, ...o });

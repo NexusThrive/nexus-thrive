@@ -1,4 +1,4 @@
-import { MoneyError, moneyTransaction, recordIncome, type MoneyTx } from "@/lib/business/money-service";
+import { MoneyError, moneyTransaction, recordIncome, type MoneyTx } from "@/lib/business/sales/money-service";
 import { toNumber } from "@/lib/format";
 import { balanceOf } from "@/lib/receivables/aging";
 import { todayCO } from "@/lib/tax/tax";

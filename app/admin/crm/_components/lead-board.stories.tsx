@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { LEAD_STAGES, type LeadStageValue } from "@/lib/ops/crm-rules";
-import type { LeadRow } from "@/lib/ops/leads";
+import { LEAD_STAGES, type LeadStageValue } from "@/lib/platform/crm/crm-rules";
+import type { LeadRow } from "@/lib/platform/crm/leads";
 import LeadBoard from "./lead-board";
 
 const lead = (id: string, company: string, stage: LeadStageValue, extra: Partial<LeadRow> = {}): LeadRow => ({

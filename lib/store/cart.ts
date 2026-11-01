@@ -1,4 +1,4 @@
-import { documentTotals, type DocumentLineInput } from "@/lib/business/commercial-document";
+import { documentTotals, type DocumentLineInput } from "@/lib/business/sales/commercial-document";
 
 /**
  * Tienda en línea (reglas puras): validación del pedido, totales con impuestos, código y mensaje. El

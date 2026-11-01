@@ -6,9 +6,9 @@ import { KpiCard } from "@/components/molecules/kpi-card";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { isVertical } from "@/lib/core/sectors/verticals";
-import { getStaffContext } from "@/lib/ops/access";
-import { accountHealth } from "@/lib/ops/health";
-import { HEALTH_LEVELS } from "@/lib/ops/health-rules";
+import { getStaffContext } from "@/lib/platform/team/access";
+import { accountHealth } from "@/lib/platform/accounts/health";
+import { HEALTH_LEVELS } from "@/lib/platform/accounts/health-rules";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Salud de cuentas · NEXUS Operations Center" };

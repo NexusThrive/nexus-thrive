@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { validateCashMovement, type CashKind } from "@/lib/business/cash";
+import { validateCashMovement, type CashKind } from "@/lib/business/sales/cash";
 import {
   addAttachment,
   addCashMovement,
@@ -18,10 +18,10 @@ import {
   updateCashBox,
   updatePaymentNotes,
   voidPayment,
-} from "@/lib/business/finance-db";
-import { voidExpense } from "@/lib/business/money-service";
+} from "@/lib/business/sales/finance-db";
+import { voidExpense } from "@/lib/business/sales/money-service";
 import { isTeamMember } from "@/lib/tenant/team-db";
-import { parseMoney } from "@/lib/business/money";
+import { parseMoney } from "@/lib/business/sales/money";
 import { canHandleCash, canManage } from "@/lib/auth/roles";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { getAppBaseUrl } from "@/lib/app-url";

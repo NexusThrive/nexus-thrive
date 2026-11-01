@@ -1,6 +1,6 @@
 import { toNumber } from "@/lib/format";
 import { cashAccountFor, postByRule } from "@/lib/accounting/ledger-db";
-import { MoneyError, moneyTransaction } from "@/lib/business/money-service";
+import { MoneyError, moneyTransaction } from "@/lib/business/sales/money-service";
 import { todayCO } from "@/lib/tax/tax";
 import { db } from "@/prisma/db";
 import { ageItems, balanceOf, bucketOf, daysOverdue, validatePayment, type Aging, type Bucket } from "./aging";

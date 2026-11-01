@@ -7,7 +7,7 @@ import { inputClasses, textareaClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { TICKET_CATEGORIES, TICKET_CHANNELS, TICKET_PRIORITIES, type TicketInput } from "@/lib/ops/support-rules";
+import { TICKET_CATEGORIES, TICKET_CHANNELS, TICKET_PRIORITIES, type TicketInput } from "@/lib/platform/support/support-rules";
 import { createTicketAction } from "../actions";
 import { Select } from "@/components/atoms/select";
 
