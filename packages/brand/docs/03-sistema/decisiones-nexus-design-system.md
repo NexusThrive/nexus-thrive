@@ -23,7 +23,7 @@ Contexto: [`inventario-patrones.md`](inventario-patrones.md) · [`SYSTEM-DESIGN.
 | **2c** | API de `Input` | **ESTRUCTURA APROBADA · CONSOLIDACIÓN PENDIENTE** | Primitivos · `Field` · especializados. Contratos de `UsdInput`/`MoneyInput` y `SearchField`/`SearchInput` investigados en §2.7: **no son fusiones directas** |
 | **3** | 19 componentes sin uso | **CLASIFICACIÓN PROVISIONAL APROBADA** | Conservar 5 · Consolidar 10 · Retirar 4. Los cuatro a retirar **pasan primero a Laboratorio**; **no se elimina nada en esta etapa**. `network-banner` y `staff-access-notice` se conservan y necesitan historias de estado |
 
-| **P** | **Principio transversal: Mobile as a First-Class Experience** | **INCORPORADO COMO PRINCIPIO PROPUESTO** (a ratificar) | Una sola plataforma adaptada a cada contexto; criterios verificables R1–R5; tamaños de referencia; auditoría responsive y piloto (dashboard y restaurantes). Web responsive con PWA; sin aplicación nativa por ahora. Ver §4. **Sin migración de código** |
+| **P** | **Principio transversal: Mobile as a First-Class Experience** | **RATIFICADO** (principio 08 aprobado; fase H aprobada como auditoría previa a la implementación) | Una sola plataforma adaptada a cada contexto; criterios R1–R5; auditoría responsive con el **dashboard primero y restaurantes después**. Web responsive con PWA como evolución; **sin aplicación nativa por ahora**. Tablas: variantes adaptativas desde el inicio, sin imponer tarjetas cuando una lista sea más útil. **Dos condiciones antes de implementar:** (1) resolver 375 px frente a 412 px y definir un viewport de referencia para tablet; (2) **no dar por cumplidos R2, R4 y R5** hasta probarlos en dispositivos o con pruebas reproducibles. Ver §4. **Sin migración de código** |
 
 ### Correcciones al inventario (#138)
 
@@ -439,7 +439,9 @@ en todo el sistema. Son el primer candidato del nivel «Patrones» (estados) en 
 
 ## 4. Principio transversal: Mobile as a First-Class Experience
 
-Estado: **incorporado como principio propuesto** (a ratificar) · afecta a todas las decisiones anteriores · **no inicia ninguna migración de código**.
+Estado: **ratificado** (principio 08 y fase H aprobados) · afecta a todas las decisiones anteriores · **no inicia ninguna migración de código**.
+
+**Condiciones antes de empezar a implementar:** (1) resolver la discrepancia entre 375 px y 412 px y definir un viewport de referencia para tablet (§4.4); (2) **no dar por cumplidos R2, R4 y R5** hasta probarlos realmente en dispositivos o mediante pruebas reproducibles (§4.3). **Decisiones ratificadas:** PWA como evolución de la web responsive, sin app nativa ahora · tablas con variantes adaptativas desde el inicio (lista o tarjetas según lo que sea más útil) · auditoría con el dashboard primero y restaurantes después.
 
 > **Una sola plataforma, una experiencia adaptada a cada contexto.**
 > Nexus no tiene una versión de escritorio y otra móvil como experiencias separadas: tiene **una plataforma empresarial** que se adapta a
@@ -592,7 +594,7 @@ métricas de uso móvil que lo justifiquen.
 | 2c | Estructura de campos | **Estructura aprobada**; consolidación **pendiente** | §2.6–§2.7 |
 | 3 | 19 componentes sin uso (5 · 10 · 4) | **Clasificación provisional aprobada**; retirar → Laboratorio; sin eliminar | §3 |
 | 3 · cond. | `network-banner` y `staff-access-notice` | **Conservar**; crear historias de estado | §3.1 |
-| **P** | Mobile as a First-Class Experience: principio 08, criterios R1–R5, tamaños de referencia, plan de seis pasos | **Incorporado como principio propuesto**; sin ratificar; sin migración | §4 |
+| **P** | Mobile as a First-Class Experience: principio 08, criterios R1–R5, tamaños de referencia, plan de seis pasos | **Ratificado** con dos condiciones antes de implementar (375 frente a 412 px y viewport de tablet; R2, R4 y R5 no se dan por cumplidos sin prueba real); sin migración | §4 |
 
 ## 6. Próximos pasos (ninguno se ejecuta con esta resolución)
 
