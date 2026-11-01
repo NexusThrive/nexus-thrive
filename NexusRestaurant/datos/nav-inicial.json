@@ -1,0 +1,765 @@
+{
+ "aside": [
+  {
+   "tag": "aside",
+   "role": null,
+   "label": null,
+   "items": [
+    {
+     "t": "a",
+     "text": "Pedidos",
+     "href": "/app/orders",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Tienda en línea",
+     "href": "/app/store",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Mesas",
+     "href": "/app/tables",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Repartidores",
+     "href": "/app/riders",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Plataformas de delivery",
+     "href": "/app/platforms",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Cajas e impresoras",
+     "href": "/app/devices",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Agregar nueva herramienta",
+     "href": null,
+     "popup": "menu",
+     "expanded": "false",
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Menús",
+     "href": "/app/menus",
+     "popup": null,
+     "expanded": null,
+     "current": "page",
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Modificadores",
+     "href": "/app/modifiers",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Etiquetas",
+     "href": "/app/tags",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Personalización",
+     "href": "/app/appearance",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Banners",
+     "href": "/app/banners",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Agregar nueva herramienta",
+     "href": null,
+     "popup": "menu",
+     "expanded": "false",
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Ventas",
+     "href": "/app/sales",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Agregar nueva herramienta",
+     "href": null,
+     "popup": "menu",
+     "expanded": "false",
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Resumen",
+     "href": "/app/inventory",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Existencias",
+     "href": "/app/inventory/stock",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Compras y proveedores",
+     "href": "/app/inventory/purchases",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Conteos y mermas",
+     "href": "/app/inventory/counts",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Producción",
+     "href": "/app/inventory/production",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Reportes",
+     "href": "/app/inventory/reports",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Ajustes de la marca",
+     "href": "/app/brand",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Sucursales",
+     "href": "/app/branches",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Suscripción y pagos",
+     "href": "/app/billing",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Personal",
+     "href": "/app/team",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Actividad",
+     "href": "/app/activity",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Agregar nueva herramienta",
+     "href": null,
+     "popup": "menu",
+     "expanded": "false",
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Agregar un nuevo módulo",
+     "href": null,
+     "popup": "menu",
+     "expanded": "false",
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Soporte y documentación",
+     "href": "/soporte",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Academia",
+     "href": "/app/academy",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Feedback y sugerencias",
+     "href": "/app/feedback",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Refiere y gana",
+     "href": "/app/refiere",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Más herramientas",
+     "href": "/app/tools",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "",
+     "href": "https://link.colegastudio.com/widget/bookings/configura-tu-men-gratis",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Plegar menú",
+     "href": null,
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    }
+   ]
+  }
+ ],
+ "header": [
+  {
+   "tag": "header",
+   "role": null,
+   "label": null,
+   "items": [
+    {
+     "t": "button",
+     "text": "Menú",
+     "href": null,
+     "popup": "dialog",
+     "expanded": "false",
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Ir al inicio del panel",
+     "href": "/app/menus",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Restaurante: <restaurante>, Sucursal: · <sucursal>",
+     "href": null,
+     "popup": "menu",
+     "expanded": "false",
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Buscar en todo el sistema",
+     "href": null,
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Pedidos en línea",
+     "href": null,
+     "popup": "menu",
+     "expanded": "false",
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Te quedan 10 días de prueba gratis",
+     "href": null,
+     "popup": "menu",
+     "expanded": "false",
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Primeros pasos: 1 de 7",
+     "href": null,
+     "popup": "dialog",
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Tu cuenta",
+     "href": null,
+     "popup": "menu",
+     "expanded": "false",
+     "current": null,
+     "badge": ""
+    }
+   ]
+  }
+ ],
+ "nav": [
+  {
+   "tag": "nav",
+   "role": null,
+   "label": "Módulos",
+   "items": [
+    {
+     "t": "a",
+     "text": "Pedidos",
+     "href": "/app/orders",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Tienda en línea",
+     "href": "/app/store",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Mesas",
+     "href": "/app/tables",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Repartidores",
+     "href": "/app/riders",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Plataformas de delivery",
+     "href": "/app/platforms",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Cajas e impresoras",
+     "href": "/app/devices",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Agregar nueva herramienta",
+     "href": null,
+     "popup": "menu",
+     "expanded": "false",
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Menús",
+     "href": "/app/menus",
+     "popup": null,
+     "expanded": null,
+     "current": "page",
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Modificadores",
+     "href": "/app/modifiers",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Etiquetas",
+     "href": "/app/tags",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Personalización",
+     "href": "/app/appearance",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Banners",
+     "href": "/app/banners",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Agregar nueva herramienta",
+     "href": null,
+     "popup": "menu",
+     "expanded": "false",
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Ventas",
+     "href": "/app/sales",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Agregar nueva herramienta",
+     "href": null,
+     "popup": "menu",
+     "expanded": "false",
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Resumen",
+     "href": "/app/inventory",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Existencias",
+     "href": "/app/inventory/stock",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Compras y proveedores",
+     "href": "/app/inventory/purchases",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Conteos y mermas",
+     "href": "/app/inventory/counts",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Producción",
+     "href": "/app/inventory/production",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Reportes",
+     "href": "/app/inventory/reports",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Ajustes de la marca",
+     "href": "/app/brand",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Sucursales",
+     "href": "/app/branches",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Suscripción y pagos",
+     "href": "/app/billing",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Personal",
+     "href": "/app/team",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Actividad",
+     "href": "/app/activity",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Agregar nueva herramienta",
+     "href": null,
+     "popup": "menu",
+     "expanded": "false",
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "button",
+     "text": "Agregar un nuevo módulo",
+     "href": null,
+     "popup": "menu",
+     "expanded": "false",
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Soporte y documentación",
+     "href": "/soporte",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Academia",
+     "href": "/app/academy",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Feedback y sugerencias",
+     "href": "/app/feedback",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Refiere y gana",
+     "href": "/app/refiere",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Más herramientas",
+     "href": "/app/tools",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "",
+     "href": "https://link.colegastudio.com/widget/bookings/configura-tu-men-gratis",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    }
+   ]
+  },
+  {
+   "tag": "nav",
+   "role": null,
+   "label": "Secciones de Menú",
+   "items": [
+    {
+     "t": "a",
+     "text": "Productos",
+     "href": "/app/menus",
+     "popup": null,
+     "expanded": null,
+     "current": "page",
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Modificadores",
+     "href": "/app/modifiers",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Recetas",
+     "href": "/app/menus/recipes",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    },
+    {
+     "t": "a",
+     "text": "Insumos",
+     "href": "/app/menus/items",
+     "popup": null,
+     "expanded": null,
+     "current": null,
+     "badge": ""
+    }
+   ]
+  }
+ ]
+}
