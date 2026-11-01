@@ -17,7 +17,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -o storybook-static",
     "docs:progreso": "node scripts/capas-progreso.mjs --write",
-    "wiki:check": "node scripts/wiki-sync.mjs check"
+    "wiki:check": "node scripts/wiki-sync.mjs check",
+    "design:inventory": "node scripts/design-inventory.mjs"
   },
   "dependencies": {
     "@clerk/localizations": "^4.23.0",
