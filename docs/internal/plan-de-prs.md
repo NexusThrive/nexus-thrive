@@ -2,20 +2,20 @@
 
 Estado a 2026-10-31. La rama de trabajo tiene **101 commits y más de 1 200 archivos** sobre `main` (`97eb497`, sin avances: 0 detrás). Un solo PR sería irrevisable, así que se parte en una **pila de 8 PR** (los 7 tramos del plan inicial más el arreglo de fechas, ahora separado). Cada PR cuelga del anterior. **Ninguna rama se ha subido y no hay PR abiertos.**
 
-> Las ramas de la pila son `stack/NN-…`. Se reconstruyeron con `git cherry-pick` a partir de la rama de trabajo (que no se tocó). Las ramas `pr/01…07` de la primera versión del plan quedan **obsoletas**: no las uses.
+> Las ramas de la pila son `chore/HU-v10-<tema>-NN` (nombres que exige el hook de ramas del equipo: `<tipo>/HU-<slug>-<nn>`). Se reconstruyeron con `git cherry-pick` a partir de la rama de trabajo (que no se tocó). Existen además copias locales `stack/NN-…` con exactamente los mismos commits (no se publican) y las ramas `pr/01…07` de la primera versión del plan, **obsoletas**: no las uses.
 
 ## Pila
 
 | PR | Rama | Base | Commits | Archivos | Qué contiene |
 |---|---|---|---|---|---|
-| 1 | `stack/01-prisma-capas-e1` | `main` | 15 | 144 | Contrato Prisma dividido por dominio (sin cambiar tablas), reglas de capas (E0), guardián de SQL de producción, primeros movimientos (E1), integración por patrón, `pnpm verify` honesto y una prueba contable que ya no depende de la hora real |
-| 2 | `stack/02-fechas-bogota` | PR 1 | 2 | 8 | **Cambio funcional independiente**: la fecha de un documento es el día de Bogotá, no el día UTC. Con su prueba, el SQL de diagnóstico de solo lectura y el hallazgo documentado |
-| 3 | `stack/03-reubicaciones-e2-e9` | PR 2 | 26 | 331 | E2 (permisos y equipo a Core, gimnasio y museo a `industry`), E3 (operaciones por dominio, eventos), E5 (puertos entre dominios), E7 (puertos de integraciones), E9 y V (rubros por receta) |
-| 4 | `stack/04-v10-m0-m2` | PR 3 | 6 | 127 | V10 M0–M2: verificador por áreas, raíz de composición en `lib/runtime`, sectores en Core |
-| 5 | `stack/05-v10-m3-m4` | PR 4 | 26 | 298 | V10 M3 (business por módulos) y M4 (platform por módulos, fin de `lib/ops`) |
-| 6 | `stack/06-v10-m5-cierre` | PR 5 | 17 | 771 | V10 M5 (finance a `domains/finance`) y cierre por etapas (I, B, N, X, C, F, Z): `lib/` queda en nueve áreas. **Sin cambios visuales** |
-| 7 | `stack/07-favicon-y-tests` | PR 6 | 3 | 173 | Favicon solo SVG (incluye ahora el cambio de `app/icon.svg`) y las 150 pruebas de `lib/` a `tests/` |
-| 8 | `stack/08-wiki` | PR 7 | 8 | 330 | Documentación unificada (`docs/wiki`, `docs/decisions`, `docs/internal`), sincronización simulada con la Wiki de GitHub y los informes de entrega |
+| 1 | `chore/HU-v10-prisma-capas-01` | `main` | 15 | 144 | Contrato Prisma dividido por dominio (sin cambiar tablas), reglas de capas (E0), guardián de SQL de producción, primeros movimientos (E1), integración por patrón, `pnpm verify` honesto y una prueba contable que ya no depende de la hora real |
+| 2 | `chore/HU-v10-fechas-bogota-02` | PR 1 | 2 | 8 | **Cambio funcional independiente**: la fecha de un documento es el día de Bogotá, no el día UTC. Con su prueba, el SQL de diagnóstico de solo lectura y el hallazgo documentado |
+| 3 | `chore/HU-v10-reubicaciones-03` | PR 2 | 26 | 331 | E2 (permisos y equipo a Core, gimnasio y museo a `industry`), E3 (operaciones por dominio, eventos), E5 (puertos entre dominios), E7 (puertos de integraciones), E9 y V (rubros por receta) |
+| 4 | `chore/HU-v10-m0-m2-04` | PR 3 | 6 | 127 | V10 M0–M2: verificador por áreas, raíz de composición en `lib/runtime`, sectores en Core |
+| 5 | `chore/HU-v10-m3-m4-05` | PR 4 | 26 | 298 | V10 M3 (business por módulos) y M4 (platform por módulos, fin de `lib/ops`) |
+| 6 | `chore/HU-v10-m5-cierre-06` | PR 5 | 17 | 771 | V10 M5 (finance a `domains/finance`) y cierre por etapas (I, B, N, X, C, F, Z): `lib/` queda en nueve áreas. **Sin cambios visuales** |
+| 7 | `chore/HU-v10-favicon-tests-07` | PR 6 | 3 | 173 | Favicon solo SVG (incluye ahora el cambio de `app/icon.svg`) y las 150 pruebas de `lib/` a `tests/` |
+| 8 | `chore/HU-v10-wiki-08` | PR 7 | 8 | 330 | Documentación unificada (`docs/wiki`, `docs/decisions`, `docs/internal`), sincronización simulada con la Wiki de GitHub y los informes de entrega |
 
 ### Dónde quedó el cambio de fechas
 

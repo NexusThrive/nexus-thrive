@@ -6,16 +6,16 @@
 
 | PR | Rama | Base | Título |
 |---|---|---|---|
-| 01 | `stack/01-prisma-capas-e1` | `main` | Prisma por dominio, reglas de capas y primeros movimientos (E0–E1) |
-| 02 | `stack/02-fechas-bogota` | `stack/01-prisma-capas-e1` | Fechas de documentos: día de Bogotá en lugar del día UTC (cambio funcional) |
-| 03 | `stack/03-reubicaciones-e2-e9` | `stack/02-fechas-bogota` | Reubicaciones y puertos entre dominios (E2–E9) |
-| 04 | `stack/04-v10-m0-m2` | `stack/03-reubicaciones-e2-e9` | V10 M0–M2: verificador por áreas, raíz de composición y sectores |
-| 05 | `stack/05-v10-m3-m4` | `stack/04-v10-m0-m2` | V10 M3–M4: business y platform por módulos |
-| 06 | `stack/06-v10-m5-cierre` | `stack/05-v10-m3-m4` | V10 M5 y cierre: finance a domains y `lib/` en nueve áreas |
-| 07 | `stack/07-favicon-y-tests` | `stack/06-v10-m5-cierre` | Favicon solo SVG y pruebas fuera de `lib/` |
-| 08 | `stack/08-wiki` | `stack/07-favicon-y-tests` | Wiki unificada, decisiones e informes de entrega |
+| 01 | `chore/HU-v10-prisma-capas-01` | `main` | Prisma por dominio, reglas de capas y primeros movimientos (E0–E1) |
+| 02 | `chore/HU-v10-fechas-bogota-02` | `chore/HU-v10-prisma-capas-01` | Fechas de documentos: día de Bogotá en lugar del día UTC (cambio funcional) |
+| 03 | `chore/HU-v10-reubicaciones-03` | `chore/HU-v10-fechas-bogota-02` | Reubicaciones y puertos entre dominios (E2–E9) |
+| 04 | `chore/HU-v10-m0-m2-04` | `chore/HU-v10-reubicaciones-03` | V10 M0–M2: verificador por áreas, raíz de composición y sectores |
+| 05 | `chore/HU-v10-m3-m4-05` | `chore/HU-v10-m0-m2-04` | V10 M3–M4: business y platform por módulos |
+| 06 | `chore/HU-v10-m5-cierre-06` | `chore/HU-v10-m3-m4-05` | V10 M5 y cierre: finance a domains y `lib/` en nueve áreas |
+| 07 | `chore/HU-v10-favicon-tests-07` | `chore/HU-v10-m5-cierre-06` | Favicon solo SVG y pruebas fuera de `lib/` |
+| 08 | `chore/HU-v10-wiki-08` | `chore/HU-v10-favicon-tests-07` | Wiki unificada, decisiones e informes de entrega |
 
-Cadena lineal verificada: cada rama es descendiente de la anterior. `main` (`97eb497`) no ha avanzado, así que no hace falta rebase. Las ramas `pr/01…07` de la primera versión del plan están **obsoletas**: no las subas ni las borres hasta que la pila nueva esté integrada.
+Cadena lineal verificada: cada rama es descendiente de la anterior. `main` (`97eb497`) no ha avanzado, así que no hace falta rebase. Las ramas se llaman `chore/HU-v10-<tema>-NN` porque el hook de ramas del equipo solo admite `<tipo>/HU-<slug>-<nn>`. Existen copias locales `stack/NN-…` con los mismos commits (no se publican). Las ramas `pr/01…07` de la primera versión del plan están **obsoletas**: no las subas ni las borres hasta que la pila nueva esté integrada.
 
 ## 2. Dependencias
 
@@ -45,57 +45,69 @@ PR 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8, estricto: cada PR parte del ante
 1. **Subir las ocho ramas** con el remoto `origin` (el remoto `github` tiene el push bloqueado a propósito y no se toca):
 
 ```bash
-git push origin stack/01-prisma-capas-e1 stack/02-fechas-bogota stack/03-reubicaciones-e2-e9 \
-  stack/04-v10-m0-m2 stack/05-v10-m3-m4 stack/06-v10-m5-cierre stack/07-favicon-y-tests stack/08-wiki
+git push origin chore/HU-v10-prisma-capas-01 chore/HU-v10-fechas-bogota-02 chore/HU-v10-reubicaciones-03 \
+  chore/HU-v10-m0-m2-04 chore/HU-v10-m3-m4-05 chore/HU-v10-m5-cierre-06 chore/HU-v10-favicon-tests-07 chore/HU-v10-wiki-08
 ```
 
 2. **Abrir los ocho PR en borrador**, cada uno contra la rama anterior (títulos y cuerpos en `docs/internal/lanzamiento/pr-NN.md`):
 
 ```bash
 gh pr create --draft --repo NexusThrive/nexus-thrive \
-  --base main --head stack/01-prisma-capas-e1 \
+  --base main --head chore/HU-v10-prisma-capas-01 \
   --title "Prisma por dominio, reglas de capas y primeros movimientos (E0–E1)" \
   --body-file docs/internal/lanzamiento/pr-01.md
 
 gh pr create --draft --repo NexusThrive/nexus-thrive \
-  --base stack/01-prisma-capas-e1 --head stack/02-fechas-bogota \
+  --base chore/HU-v10-prisma-capas-01 --head chore/HU-v10-fechas-bogota-02 \
   --title "Fechas de documentos: día de Bogotá en lugar del día UTC (cambio funcional)" \
   --body-file docs/internal/lanzamiento/pr-02.md
 
 gh pr create --draft --repo NexusThrive/nexus-thrive \
-  --base stack/02-fechas-bogota --head stack/03-reubicaciones-e2-e9 \
+  --base chore/HU-v10-fechas-bogota-02 --head chore/HU-v10-reubicaciones-03 \
   --title "Reubicaciones y puertos entre dominios (E2–E9)" \
   --body-file docs/internal/lanzamiento/pr-03.md
 
 gh pr create --draft --repo NexusThrive/nexus-thrive \
-  --base stack/03-reubicaciones-e2-e9 --head stack/04-v10-m0-m2 \
+  --base chore/HU-v10-reubicaciones-03 --head chore/HU-v10-m0-m2-04 \
   --title "V10 M0–M2: verificador por áreas, raíz de composición y sectores" \
   --body-file docs/internal/lanzamiento/pr-04.md
 
 gh pr create --draft --repo NexusThrive/nexus-thrive \
-  --base stack/04-v10-m0-m2 --head stack/05-v10-m3-m4 \
+  --base chore/HU-v10-m0-m2-04 --head chore/HU-v10-m3-m4-05 \
   --title "V10 M3–M4: business y platform por módulos" \
   --body-file docs/internal/lanzamiento/pr-05.md
 
 gh pr create --draft --repo NexusThrive/nexus-thrive \
-  --base stack/05-v10-m3-m4 --head stack/06-v10-m5-cierre \
+  --base chore/HU-v10-m3-m4-05 --head chore/HU-v10-m5-cierre-06 \
   --title "V10 M5 y cierre: finance a domains y `lib/` en nueve áreas" \
   --body-file docs/internal/lanzamiento/pr-06.md
 
 gh pr create --draft --repo NexusThrive/nexus-thrive \
-  --base stack/06-v10-m5-cierre --head stack/07-favicon-y-tests \
+  --base chore/HU-v10-m5-cierre-06 --head chore/HU-v10-favicon-tests-07 \
   --title "Favicon solo SVG y pruebas fuera de `lib/`" \
   --body-file docs/internal/lanzamiento/pr-07.md
 
 gh pr create --draft --repo NexusThrive/nexus-thrive \
-  --base stack/07-favicon-y-tests --head stack/08-wiki \
+  --base chore/HU-v10-favicon-tests-07 --head chore/HU-v10-wiki-08 \
   --title "Wiki unificada, decisiones e informes de entrega" \
   --body-file docs/internal/lanzamiento/pr-08.md
 ```
 
 3. **Revisar y fusionar en orden**: PR 1 con *merge commit*; cambiar la base del PR 2 a `main` (`gh pr edit <n> --base main`); esperar el CI; repetir hasta el PR 8. Marcar cada PR como listo para revisión (`gh pr ready <n>`) cuando le toque.
 
-> `gh pr create` lee el cuerpo de un archivo que vive en la rama `stack/08-wiki`: ejecuta los comandos con esa rama como directorio de trabajo, o copia antes `docs/internal/lanzamiento/` a una ruta local.
+> `gh pr create` lee el cuerpo de un archivo que vive en la rama `chore/HU-v10-wiki-08`: ejecuta los comandos con esa rama como directorio de trabajo, o copia antes `docs/internal/lanzamiento/` a una ruta local.
+
+### Wiki de GitHub (se hace después, con la pila subida)
+
+Requisitos: que exista el repositorio Wiki (se crea al guardar una primera página desde la interfaz de GitHub) y que `chore/HU-v10-wiki-08` esté publicada, para que los enlaces de la wiki a documentos que aún no están en `main` funcionen durante la revisión. Se genera con `--branch` para que esos enlaces apunten a esa rama; al integrar toda la pila se vuelve a sincronizar apuntando a `main`:
+
+```bash
+# Simulación (no escribe): muestra qué cambiaría en la wiki publicada
+node scripts/wiki-sync.mjs publish --remote https://github.com/NexusThrive/nexus-thrive.wiki.git --branch chore/HU-v10-wiki-08
+# Publicación (solo con autorización): añade --confirm y NEXUS_WIKI_PUBLISH=yes
+```
+
+`--branch` solo cambia el nombre de rama que se escribe en las URL `blob`/`tree` y en el pie de cada página; el resto de la conversión no cambia.
 
 ## 6. Trabajos independientes (no bloquean la pila)
 
@@ -113,6 +125,7 @@ gh pr create --draft --repo NexusThrive/nexus-thrive \
 | Favicon | Cambio de `app/icon.svg` en el PR 7 |
 | Estrategia de integración | *Merge commits*, sin squash |
 | Prueba horaria | Determinista en el PR 1, sin adelantar el arreglo de fechas |
+| Nombres de rama | `chore/HU-v10-<tema>-NN`, compatibles con el hook; `stack/*` queda como copia local |
 | Mecanismo de publicación | Recomendado: la persona dueña ejecuta `gh` desde su entorno |
 | Publicación | **No autorizada** |
 | `pushurl` | `no_push` |

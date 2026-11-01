@@ -1,6 +1,6 @@
 # Informe: cambio de fechas UTC → Bogotá (PR 2)
 
-Fecha: 2026-10-31. Alcance: el único cambio de comportamiento de la pila de PR, **ahora separado en su propio PR 2** (`stack/02-fechas-bogota`: commit de la corrección `dbe79e3` y commit de diagnóstico `3552ede`, 8 archivos, justo después del PR 1). **No se aprueba solo porque `pnpm verify` esté en verde**: este informe separa lo que se comprobó de lo que queda por decidir.
+Fecha: 2026-10-31. Alcance: el único cambio de comportamiento de la pila de PR, **ahora separado en su propio PR 2** (`chore/HU-v10-fechas-bogota-02`: commit de la corrección `dbe79e3` y commit de diagnóstico `3552ede`, 8 archivos, justo después del PR 1). **No se aprueba solo porque `pnpm verify` esté en verde**: este informe separa lo que se comprobó de lo que queda por decidir.
 
 ## 1. Qué cambió
 

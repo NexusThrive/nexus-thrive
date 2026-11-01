@@ -6,17 +6,17 @@ Fecha: 2026-10-31. Complementa el [plan de PR](plan-de-prs.md). **Ninguna rama s
 
 ```mermaid
 flowchart LR
-  main["origin/main<br/>97eb497"] --> P1["PR 1 · stack/01-prisma-capas-e1<br/>15 commits"]
-  P1 --> P2["PR 2 · stack/02-fechas-bogota<br/>2 commits · CAMBIO FUNCIONAL"]
-  P2 --> P3["PR 3 · stack/03-reubicaciones-e2-e9<br/>26"]
-  P3 --> P4["PR 4 · stack/04-v10-m0-m2<br/>6"]
-  P4 --> P5["PR 5 · stack/05-v10-m3-m4<br/>26"]
-  P5 --> P6["PR 6 · stack/06-v10-m5-cierre<br/>17"]
-  P6 --> P7["PR 7 · stack/07-favicon-y-tests<br/>3"]
-  P7 --> P8["PR 8 · stack/08-wiki<br/>8"]
+  main["origin/main<br/>97eb497"] --> P1["PR 1 · chore/HU-v10-prisma-capas-01<br/>15 commits"]
+  P1 --> P2["PR 2 · chore/HU-v10-fechas-bogota-02<br/>2 commits · CAMBIO FUNCIONAL"]
+  P2 --> P3["PR 3 · chore/HU-v10-reubicaciones-03<br/>26"]
+  P3 --> P4["PR 4 · chore/HU-v10-m0-m2-04<br/>6"]
+  P4 --> P5["PR 5 · chore/HU-v10-m3-m4-05<br/>26"]
+  P5 --> P6["PR 6 · chore/HU-v10-m5-cierre-06<br/>17"]
+  P6 --> P7["PR 7 · chore/HU-v10-favicon-tests-07<br/>3"]
+  P7 --> P8["PR 8 · chore/HU-v10-wiki-08<br/>8"]
 ```
 
-Cadena lineal: cada rama es un prefijo de la siguiente (`git merge-base --is-ancestor` verdadero en los 8 pares) y ninguna queda «detrás» de su base. Las ramas `stack/*` se reconstruyeron con `git cherry-pick` a partir de la rama de trabajo, que no se modificó. Los dos cambios pedidos:
+Cadena lineal: cada rama es un prefijo de la siguiente (`git merge-base --is-ancestor` verdadero en los 8 pares) y ninguna queda «detrás» de su base. Las ramas se reconstruyeron con `git cherry-pick` a partir de la rama de trabajo, que no se modificó. Se publican con nombres `chore/HU-v10-<tema>-NN` (los que acepta el hook de ramas); las copias locales `stack/NN-…` tienen los mismos commits. Los dos cambios pedidos:
 
 | Cambio | Antes | Ahora |
 |---|---|---|
@@ -25,7 +25,7 @@ Cadena lineal: cada rama es un prefijo de la siguiente (`git merge-base --is-anc
 
 ### Dónde queda el cambio de fechas
 
-PR 2 (`stack/02-fechas-bogota`). Contiene: la corrección (`dbe79e3`: `documents-db.ts`, `invoices-db.ts`, `plain-date.ts`, sus pruebas unitarias y de integración) y un commit de documentación y diagnóstico (`3552ede`: hallazgo, SQL de solo lectura y su prueba). Se colocó **antes** de la reorganización para que se revise sin ruido; ninguno de sus archivos de código se mueve de lugar dentro de ese PR. Detalle: [informe del cambio de fechas](informe-cambio-fechas-pr2.md).
+PR 2 (`chore/HU-v10-fechas-bogota-02`). Contiene: la corrección (`dbe79e3`: `documents-db.ts`, `invoices-db.ts`, `plain-date.ts`, sus pruebas unitarias y de integración) y un commit de documentación y diagnóstico (`3552ede`: hallazgo, SQL de solo lectura y su prueba). Se colocó **antes** de la reorganización para que se revise sin ruido; ninguno de sus archivos de código se mueve de lugar dentro de ese PR. Detalle: [informe del cambio de fechas](informe-cambio-fechas-pr2.md).
 
 ## 2. Verificación completa de cada PR
 
@@ -69,7 +69,7 @@ Limitaciones: el contrato público se comparó con la captura anterior a V10 M1;
 
 ## 3. Que no se pierde ni se duplica nada
 
-- **Árbol final**: `stack/08-wiki` frente a la rama de trabajo difiere solo en los documentos editados a propósito (hallazgo de fechas y resultados de E2, que ahora dicen que la corrección va en el PR 2), los documentos de entrega y **un archivo de prueba**: `reports.integration.test.ts`, con el reloj fijo.
+- **Árbol final**: `chore/HU-v10-wiki-08` frente a la rama de trabajo difiere solo en los documentos editados a propósito (hallazgo de fechas y resultados de E2, que ahora dicen que la corrección va en el PR 2), los documentos de entrega y **un archivo de prueba**: `reports.integration.test.ts`, con el reloj fijo.
 - **Commits equivalentes** (comparación por `patch-id`): de los 101 commits de la rama de trabajo, 97 tienen un commit idéntico en la pila. Los 4 distintos son los previstos: `da534e8` (resultados de E2: la nota de fechas ya no dice «sin corregir»), `724229b` + `0cbcdca` (consolidados en `3552ede`, el commit de diagnóstico del PR 2) y `b6a3039` (cierre de `lib/` sin `app/icon.svg`, que pasa al commit nuevo `2189c91`).
 - Total de commits: 101 en la rama de trabajo y 102 en la pila (dos del diagnóstico de fechas se fusionaron en uno; se añadieron el commit del favicon, el de la prueba horaria y el de documentación final).
 
