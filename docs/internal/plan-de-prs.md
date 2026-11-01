@@ -1,6 +1,6 @@
 # Plan de PR de la rama `chore/HU-esquema-prisma-modular-01`
 
-Estado a 2026-10-31. La rama de trabajo tiene **101 commits y más de 1 200 archivos** sobre `main` (`97eb497`, sin avances: 0 detrás). Un solo PR sería irrevisable, así que se parte en una **pila de 8 PR** (los 7 tramos del plan inicial más el arreglo de fechas, ahora separado). Cada PR cuelga del anterior. **Ninguna rama se ha subido y no hay PR abiertos.**
+Estado a 2026-10-31. La rama de trabajo tiene **101 commits y más de 1 200 archivos** sobre `main` (`97eb497`, sin avances: 0 detrás). Un solo PR sería irrevisable, así que se parte en una **pila de 8 PR** (los 7 tramos del plan inicial más el arreglo de fechas, ahora separado). Cada PR cuelga del anterior. **Estado: publicado e integrado en `main` el 1 nov 2026** (PR #128 a #135, ver [lanzamiento](lanzamiento/README.md#9-resultado-1-nov-2026)); las ramas de la pila ya se eliminaron. Este documento conserva el plan original.
 
 > Las ramas de la pila son `chore/HU-v10-<tema>-NN` (nombres que exige el hook de ramas del equipo: `<tipo>/HU-<slug>-<nn>`). Se reconstruyeron con `git cherry-pick` a partir de la rama de trabajo (que no se tocó). Existen además copias locales `stack/NN-…` con exactamente los mismos commits (no se publican) y las ramas `pr/01…07` de la primera versión del plan, **obsoletas**: no las uses.
 
