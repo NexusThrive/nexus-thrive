@@ -368,13 +368,13 @@ git commit -m "test(modal): cubre drawer, full y movimiento reducido sin viaje"
 ### Task 4: Documentación y cierre
 
 **Files:**
-- Modify: `docs/design/movimiento.md`
+- Modify: `packages/brand/docs/04-patrones/movimiento.md`
 - Modify: `components/organisms/responsive-sheet.tsx` (comentario de cabecera del componente)
 - Modify: `docs/internal/historico/superpowers/specs/2026-10-29-prettymodal-desktop-design.md` (estado: implementado)
 
 - [x] **Step 1: Actualizar la guía de movimiento**
 
-En `docs/design/movimiento.md`:
+En `packages/brand/docs/04-patrones/movimiento.md`:
 - §1.3: añadir la excepción del modal de escritorio (`width`, `height`, `border-radius`, `background-color`, una sola vez por transición, con `data-morph` como único dueño).
 - §2: cambiar la fila del modal a «GSAP (viaje desde el botón y su reversa)».
 - §3: el modal de escritorio usa **400 ms** en entrada y salida; el resto de tokens no cambia.
@@ -406,6 +406,6 @@ Servir Storybook (`pnpm storybook` o el build estático) y pedir al usuario que 
 - [x] **Step 6: Commit**
 
 ```bash
-git add docs/design/movimiento.md docs/internal/historico/superpowers/specs/2026-10-29-prettymodal-desktop-design.md components/organisms/responsive-sheet.tsx
+git add packages/brand/docs/04-patrones/movimiento.md docs/internal/historico/superpowers/specs/2026-10-29-prettymodal-desktop-design.md components/organisms/responsive-sheet.tsx
 git commit -m "docs(modal): documenta el viaje GSAP de escritorio y su excepción de movimiento"
 ```

@@ -7,13 +7,13 @@ documento dice qué existe, dónde vive y cómo se usa.
 | Documento | Para qué |
 |---|---|
 | Este archivo | Marca, tokens, componentes, movimiento, layout |
-| [PRODUCT.md](PRODUCT.md) | A quién servimos, principios y restricciones |
-| [docs/design/interaction-patterns.md](docs/design/interaction-patterns.md) | Diálogo, panel lateral, ventana flotante, página o en línea: cuándo cada uno |
-| [docs/design/movimiento.md](docs/design/movimiento.md) | Guía de uso del movimiento: dueños, tokens, morfeo de modales, arrastre |
-| [docs/design/pwa.md](docs/design/pwa.md) | PWA: qué se cachea (solo estáticos), instalación y límites |
-| [docs/design/accessibility.md](docs/design/accessibility.md) | WCAG 2.2 AA: requisitos y cómo se verifican |
-| [docs/design/quality-checklist.md](docs/design/quality-checklist.md) | Lista obligatoria antes de abrir un PR con UI |
-| [docs/design/auditoria-2026-10.md](docs/design/auditoria-2026-10.md) | Inventario y auditoría de partida (octubre 2026) |
+| [PRODUCT.md](../02-producto/PRODUCT.md) | A quién servimos, principios y restricciones |
+| [packages/brand/docs/04-patrones/interaction-patterns.md](../04-patrones/interaction-patterns.md) | Diálogo, panel lateral, ventana flotante, página o en línea: cuándo cada uno |
+| [packages/brand/docs/04-patrones/movimiento.md](../04-patrones/movimiento.md) | Guía de uso del movimiento: dueños, tokens, morfeo de modales, arrastre |
+| [packages/brand/docs/04-patrones/pwa.md](../04-patrones/pwa.md) | PWA: qué se cachea (solo estáticos), instalación y límites |
+| [packages/brand/docs/04-patrones/accessibility.md](../04-patrones/accessibility.md) | WCAG 2.2 AA: requisitos y cómo se verifican |
+| [packages/brand/docs/05-calidad/quality-checklist.md](../05-calidad/quality-checklist.md) | Lista obligatoria antes de abrir un PR con UI |
+| [packages/brand/docs/06-auditorias/auditoria-2026-10.md](../06-auditorias/auditoria-2026-10.md) | Inventario y auditoría de partida (octubre 2026) |
 | Storybook (`pnpm storybook`) | Catálogo vivo de componentes y sus estados |
 
 ---
@@ -172,12 +172,12 @@ Storybook con sus estados.
 | Esperando contenido dentro de un panel, ficha o lista | `SkeletonRows` (esqueleto con la forma de lo que viene) | `components/molecules/skeleton-rows.tsx` |
 | Esperando la página | `PageSkeleton` (en `loading.tsx`) | `components/organisms/page-skeleton.tsx` |
 | Elegir una opción de una lista | `Select` propio (mismos props que `<select>`; **no** usar `<select>` nativo) | `components/atoms/select.tsx` |
-| Menú de acciones | `DropdownMenu` (el panel viaja desde su botón y vuelve a él; ver `docs/design/movimiento.md`) | `components/molecules/dropdown-menu.tsx` |
+| Menú de acciones | `DropdownMenu` (el panel viaja desde su botón y vuelve a él; ver `packages/brand/docs/04-patrones/movimiento.md`) | `components/molecules/dropdown-menu.tsx` |
 | Inicio que cada persona ordena | `CustomizableDashboard` (12 columnas; se edita manteniendo presionado un bloque, sin botón «Personalizar»; arrastrar, ancho y alto por las esquinas, ocultar y «Agregar» gráficos del catálogo `lib/dashboard/chart-catalog.ts`; cada tarjeta es su propio bloque `widgets` con `id`, `label`, `span` y `half`; preferencia versionada en `localStorage`) | `components/organisms/customizable-dashboard.tsx`, lógica en `lib/dashboard/layout.ts` |
 | Crear sin salir de la pantalla (pago, gasto, socio) | **Mini-modal de creación**: `QuickCreateProvider` + `useQuickCreate().open(key)` abren una hoja encima de la pantalla actual desde «Crear», «Acciones rápidas» y la paleta (`QuickActionLink` conserva el `href`: Ctrl/⌘-clic o sin JS navegan). Cada hoja lleva `FullPanelLink` («Abrir en el panel completo →» a la sección). Una operación nueva declara su acción una vez en `lib/navigation/quick-create.ts` (`quickSheetFor`) y reutiliza el formulario del módulo | `components/organisms/quick-create-host.tsx`, `quick-action-link.tsx`, `components/molecules/full-panel-link.tsx`; hojas: `finance-sheets.tsx`, `customer-sheet.tsx` |
 | Guiar a una cuenta nueva | `WelcomeChecklist` («Primeros pasos»): pasos por módulo activo, marcados por datos reales; «Ocultar» por negocio en `localStorage` | `components/organisms/welcome-checklist.tsx`, armado en `app/[tenant]/(app)/page.tsx` |
 | Buscar clientes y catálogo | `CommandPalette` (Ctrl K) + `searchEntitiesAction`: desde 2 letras, 250 ms de espera, máx. 5 por tipo, solo módulos activos y siempre por `tenantId` | `components/organisms/command-palette.tsx`, `app/[tenant]/(app)/_actions/search.ts` |
-| Instalar la app / aviso de versión | `usePwa()`, `UpdateNotice` | `components/providers/pwa.tsx` (política en `docs/design/pwa.md`) |
+| Instalar la app / aviso de versión | `usePwa()`, `UpdateNotice` | `components/providers/pwa.tsx` (política en `packages/brand/docs/04-patrones/pwa.md`) |
 
 **Prohibido en código nuevo:** `window.confirm`/`alert`, un `<div
 className="fixed inset-0">` como modal, Radix Dialog directo (el Dialog y el
@@ -244,7 +244,7 @@ Reglas:
    la forma es panel lateral u hoja móvil, entra la animación centrada de
    siempre. No bloquea la interacción ni el foco. Detalle y fundamento (por qué
    no la API nativa de View Transitions) en
-   [docs/design/movimiento.md](docs/design/movimiento.md).
+   [packages/brand/docs/04-patrones/movimiento.md](../04-patrones/movimiento.md).
 6. **Propietario de cada transición** (una sola técnica por superficie):
 
    | Superficie | Dueño |
@@ -289,7 +289,7 @@ Reglas:
    Storybook con sus estados, prueba en `e2e/` si tiene interacción, y fila
    en la §3.
 3. ¿Cambió un patrón de interacción? Se actualiza
-   `docs/design/interaction-patterns.md` en el mismo PR.
+   `packages/brand/docs/04-patrones/interaction-patterns.md` en el mismo PR.
 4. `pnpm test:e2e` (Playwright + axe sobre Storybook) antes de abrir el PR.
    Pendiente: sumarlo al CI (`.github/workflows/ci.yml`; el cambio está
    descrito en el PR del rediseño, requiere permiso `workflow`).

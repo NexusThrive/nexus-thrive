@@ -1,6 +1,6 @@
 # Patrones de interacción
 
-[← DESIGN.md](../../DESIGN.md)
+[← DESIGN.md](../03-sistema/DESIGN.md)
 
 El mismo tipo de operación se comporta igual en toda la app. Antes de crear
 una pantalla, un formulario o una acción, se elige el patrón con esta guía.
@@ -76,7 +76,7 @@ una pantalla, un formulario o una acción, se elige el patrón con esta guía.
 | Activar un módulo | En línea (interruptor) | `settings/_components/modules-tab.tsx` |
 
 La lista de cada formulario existente y su patrón está en
-[auditoria-2026-10.md §4](auditoria-2026-10.md#4-formularios).
+[auditoria-2026-10.md §4](../06-auditorias/auditoria-2026-10.md#4-formularios).
 
 ## Modales: pequeño y avanzado
 

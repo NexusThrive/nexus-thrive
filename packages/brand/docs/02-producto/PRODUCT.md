@@ -1,8 +1,8 @@
 # PRODUCT.md — Qué es NEXUS y para quién
 
 Resumen para decidir diseño. El detalle de producto está en
-[docs/nexus-architecture/product-vision.md](docs/nexus-architecture/product-vision.md)
-y la ruta en [docs/wiki/02-producto/guia-de-construccion.md](docs/wiki/02-producto/guia-de-construccion.md).
+[docs/nexus-architecture/product-vision.md](../../../../docs/nexus-architecture/product-vision.md)
+y la ruta en [docs/wiki/02-producto/guia-de-construccion.md](../../../../docs/wiki/02-producto/guia-de-construccion.md).
 
 ## Qué es
 
@@ -46,7 +46,7 @@ ayuda enseña.
    funcionan ni módulos que no existen. Lo que no está listo no aparece.
 4. **El mismo gesto para lo mismo.** Crear, editar, buscar, confirmar y anular
    se hacen igual en todos los módulos
-   ([interaction-patterns.md](docs/design/interaction-patterns.md)).
+   ([interaction-patterns.md](../04-patrones/interaction-patterns.md)).
 5. **El dinero no se equivoca.** Sin cobros duplicados, con recibo, y anular
    deja rastro (`money-service.ts`, bitácora).
 6. **Español de Colombia, claro y corto.** Tú, no usted. Verbos concretos
@@ -56,11 +56,11 @@ ayuda enseña.
 
 ## Restricciones
 
-- Marca NEXUS y sus fuentes sin cambios (ver [DESIGN.md](DESIGN.md)).
+- Marca NEXUS y sus fuentes sin cambios (ver [DESIGN.md](../03-sistema/DESIGN.md)).
 - Next.js 16 + React 19 + Tailwind v4 + Radix; sin librerías de animación.
 - Datos: nada en `app/` consulta la base directo; todo pasa por repositorios
   de `lib/` con `tenantId`, `can()`, `money-service` y `logTenantAction`
-  ([docs/wiki/09-desarrollo/nueva-funcionalidad.md](docs/wiki/09-desarrollo/nueva-funcionalidad.md)).
+  ([docs/wiki/09-desarrollo/nueva-funcionalidad.md](../../../../docs/wiki/09-desarrollo/nueva-funcionalidad.md)).
 - Permisos en el servidor; ocultar un botón es comodidad, no seguridad.
 - Módulos apagados no muestran pantallas ni acciones (`modulesForRoute`).
 - Capturas para la ayuda: solo de la app real con datos de demostración.

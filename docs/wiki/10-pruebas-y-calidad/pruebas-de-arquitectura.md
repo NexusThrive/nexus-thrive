@@ -2,10 +2,11 @@
 
 Las pruebas de `tests/architecture/` no prueban funcionalidad: **vigilan la forma del sistema**. Si una falla, normalmente significa que un cambio rompió una regla de estructura, no que haya un error de lógica. Corren con `pnpm test` y dentro de `pnpm verify`.
 
-Esta lista se generó a partir del comentario inicial de cada archivo (29 archivos). Las familias `v10-*`, `e1-*`…`e9-*` fijan por etapa la estructura que dejó la reorganización de `lib/`; `layers`, `tenant-scope`, `data-access` y `page-authorization` son reglas permanentes.
+Esta lista se generó a partir del comentario inicial de cada archivo (30 archivos). Las familias `v10-*`, `e1-*`…`e9-*` fijan por etapa la estructura que dejó la reorganización de `lib/`; `layers`, `tenant-scope`, `data-access` y `page-authorization` son reglas permanentes.
 
 | Archivo | Qué vigila |
 |---|---|
+| `brand-docs.test.ts` | Todo el diseño operativo vive en `packages/brand/`. Evita que los documentos de diseño vuelvan a repartirse por el repositorio y comprueba que el índice del paquete, Storybook y los enlaces de su documentación siguen al día. |
 | `check-prod-sql.test.ts` | Guardián de SQL de producción (scripts/check-prod-sql.sh). |
 | `data-access.test.ts` | ARCH-04 (bloque A.1–A.2): `app/` no consulta la base. La deuda llegó a cero el 2026-10-23; esta prueba evita que vuelva, además de la regla de ESLint. |
 | `e1-core-industria.test.ts` | E1 · Core no conoce las industrias. |
@@ -17,7 +18,7 @@ Esta lista se generó a partir del comentario inicial de cada archivo (29 archiv
 | `layers.test.ts` | Reglas de dependencia entre capas (E0). Comprueba scripts/check-layers.mjs y, con el último caso, que el repositorio actual las cumple. No toca archivos: las pruebas negativas inyectan fuentes virtuales. |
 | `page-authorization.test.ts` | SEC-03 (docs/internal/historico/nexus-architecture/security-audit.md): cada página de un negocio comprueba sesión + membresía activa por sí misma. El layout de `app/[tenant]` no basta: en la navegación del App Router puede no ejec… |
 | `tenant-scope.test.ts` | Bloque A.4: todo repositorio de `lib/` que lee o escribe una tabla de un negocio (las que tienen `tenantId` en el contrato) filtra por `tenantId` en su `.where({ ... })`. Se lee el código: la prueba falla con el archivo, la línea … |
-| `ui-rules.test.ts` | Reglas del sistema de diseño que se pueden leer en el código (DESIGN.md §3, docs/design/interaction-patterns.md). Lo que ya existía y aún no se migró está en las listas de deuda: solo se achican. Si migras un archivo, sácalo de la… |
+| `ui-rules.test.ts` | Reglas del sistema de diseño que se pueden leer en el código (DESIGN.md §3, packages/brand/docs/04-patrones/interaction-patterns.md). Lo que ya existía y aún no se migró está en las listas de deuda: solo se achican. Si migras un archivo, sácalo de la… |
 | `v10-business-completo.test.ts` | V10 · Etapa B · Business completo. |
 | `v10-business.test.ts` | V10 · M3 — `lib/business` deja de ser un cajón y pasa a módulos con una responsabilidad cada uno. |
 | `v10-composicion.test.ts` | V10 · M1 — Una sola raíz de composición: `lib/runtime`. |

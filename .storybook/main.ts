@@ -5,7 +5,7 @@ import remarkGfm from "remark-gfm";
 const config: StorybookConfig = {
   framework: "@storybook/nextjs-vite",
   stories: [
-    "../components/docs/**/*.mdx",
+    "../packages/brand/docs/storybook/**/*.mdx",
     "../components/**/*.stories.tsx",
     // Piezas de una función con historia propia (p. ej. el tablero del CRM).
     "../app/**/*.stories.tsx",

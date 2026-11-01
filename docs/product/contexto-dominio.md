@@ -75,10 +75,10 @@ cuentan como verificadas.
 | Hecho | Referencia |
 |---|---|
 | Marca, tokens y componentes | `DESIGN.md` |
-| Patrones de interacción | `docs/design/interaction-patterns.md` |
-| Accesibilidad WCAG 2.2 AA | `docs/design/accessibility.md` |
-| Checklist de calidad | `docs/design/quality-checklist.md` |
-| PWA y caché | `docs/design/pwa.md` |
+| Patrones de interacción | `packages/brand/docs/04-patrones/interaction-patterns.md` |
+| Accesibilidad WCAG 2.2 AA | `packages/brand/docs/04-patrones/accessibility.md` |
+| Checklist de calidad | `packages/brand/docs/05-calidad/quality-checklist.md` |
+| PWA y caché | `packages/brand/docs/04-patrones/pwa.md` |
 | Paquete de marca | `packages/brand` |
 
 ## 7. Ingeniería y automatización

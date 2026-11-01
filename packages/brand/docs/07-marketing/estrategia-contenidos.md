@@ -4,7 +4,7 @@
   medidos.
 - **Base:** capacidades reales del producto
   (`docs/nexus-architecture/product-vision.md`) y Brand Book
-  (`docs/brand/brand-book.md`).
+  (`packages/brand/docs/01-marca/brand-book.md`).
 
 ## 1. Objetivo
 

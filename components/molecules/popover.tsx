@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
  * panel con scroll. Va en la capa `--z-popover`, por encima de los modales.
  *
  * No es para formularios largos ni navegación: ahí va un diálogo o un panel
- * lateral (docs/design/interaction-patterns.md).
+ * lateral (packages/brand/docs/04-patrones/interaction-patterns.md).
  */
 function Popover(props: React.ComponentProps<typeof PopoverPrimitive.Root>) {
   return <PopoverPrimitive.Root data-slot="popover" {...props} />;

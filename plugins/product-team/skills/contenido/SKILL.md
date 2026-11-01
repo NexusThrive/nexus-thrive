@@ -29,7 +29,7 @@ Ninguna etapa se salta. La publicación externa requiere autorización humana ex
 
 ## Revisión de marca
 
-- Tono y mensajes según `docs/brand/guia-de-tono.md`.
+- Tono y mensajes según `packages/brand/docs/01-marca/guia-de-tono.md`.
 - Sin promesas no demostrables ni urgencia falsa.
 - Sin contenido duplicado generado en masa.
 

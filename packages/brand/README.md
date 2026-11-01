@@ -4,6 +4,38 @@ Todo sale del logo: un bloque negro sólido, esquinas rectas y cortes diagonales
 De ahí se derivan las reglas: negro dominante, oro como único acento, radios casi nulos,
 bordes en lugar de sombras y un solo motivo gráfico (el corte diagonal).
 
+## Todo el diseño operativo, en un solo lugar
+
+Este paquete es la **única casa del diseño de Nexus**: el código de la marca (arriba) y toda su documentación (`docs/`).
+Los **componentes** (código con 372 consumidores) siguen en `components/` y se indexan más abajo.
+
+| Carpeta de `docs/` | Qué contiene |
+|---|---|
+| [`01-marca/`](docs/01-marca/brand-book.md) | Libro de marca, guía de tono, prompt de marca |
+| [`02-producto/`](docs/02-producto/PRODUCT.md) | `PRODUCT.md`: qué es Nexus, para quién y principios de producto |
+| [`03-sistema/`](docs/03-sistema/DESIGN.md) | `DESIGN.md` (tokens, componentes, movimiento, layout vigentes) y el borrador del [System Design](docs/03-sistema/SYSTEM-DESIGN.md) |
+| [`04-patrones/`](docs/04-patrones/interaction-patterns.md) | Patrones de interacción, [accesibilidad](docs/04-patrones/accessibility.md), [movimiento](docs/04-patrones/movimiento.md) y [PWA](docs/04-patrones/pwa.md) |
+| [`05-calidad/`](docs/05-calidad/quality-checklist.md) | Lista de calidad de interfaz (se copia en cada PR) |
+| [`06-auditorias/`](docs/06-auditorias/REDISENO-NEXUS.md) | Rediseño de NEXUS, auditorías de diseño y UX y sus capturas |
+| [`07-marketing/`](docs/07-marketing/estrategia-contenidos.md) | Estrategia de contenidos, SEO técnico, ventas, medición y experimentos |
+| [`storybook/`](docs/storybook/introduccion.mdx) | Las páginas de documentación que muestra Storybook (`.storybook/main.ts` apunta aquí) |
+
+### Dónde está el código del sistema de diseño
+
+| Qué | Dónde |
+|---|---|
+| Tokens, tema, base, fuentes, logo | este paquete (`css/`, `tokens/`, `tailwind/`, `fonts/`, `src/`) |
+| Átomos, moléculas, organismos, plantillas | `components/{atoms,molecules,organisms,templates}` (tabla en [`DESIGN.md` §3](docs/03-sistema/DESIGN.md)) |
+| Historias de Storybook | junto a cada componente y en `app/**` |
+| Estilos globales de la app | `app/globals.css`, `app/styles/` |
+| Movimiento y experiencia como lógica | `lib/experience/` |
+| Iconos de la app (los leen Next y el service worker) | `app/icon.svg`, `public/icons/` |
+| Reglas de diseño que se prueban | `tests/architecture/ui-rules.test.ts`, `tests/architecture/brand-docs.test.ts` |
+| Accesibilidad automatizada | `e2e/a11y.spec.ts` (Playwright + axe) |
+
+**Regla:** un documento de diseño nuevo va en una carpeta de `docs/`; no se crea fuera de este paquete. Si cambia el sistema, se
+actualiza `DESIGN.md` en el mismo PR.
+
 ## Estructura
 
 Este paquete es la **única fuente de la marca**. La app lo consume desde
@@ -28,7 +60,8 @@ packages/brand/                       ← @nexus/brand
 │   ├── cargas-de-interfaz.html       ←   Cargas de interfaz
 │   ├── intro-de-la-app.html          ←   Intro de la app
 │   └── receipt-printer.html          ←   Impresora de recibos
-└── PROMPT.md                         ← guía para generar UI con la marca
+├── docs/                             ← documentación de diseño (ver abajo)
+└── (la guía de prompts está en docs/01-marca/PROMPT.md)
 ```
 
 ## Instalación en apps/nexus-core/portal

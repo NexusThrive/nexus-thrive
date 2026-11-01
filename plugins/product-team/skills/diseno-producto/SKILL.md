@@ -13,7 +13,7 @@ description: Audita y diseña flujos reales de Nexus Thrive (pantallas, estados 
 
 ## Antes de diseñar
 
-1. Lee `PRODUCT.md`, `DESIGN.md` y `docs/design/interaction-patterns.md`.
+1. Lee `PRODUCT.md`, `DESIGN.md` y `packages/brand/docs/04-patrones/interaction-patterns.md`.
 2. Abre la ruta real y los componentes que ya la implementan. No diseñes sobre suposiciones.
 3. Identifica datos reales disponibles. Si faltan, el estado debe decirlo; no inventes cifras.
 4. Revisa si existe un componente equivalente en `components/`.

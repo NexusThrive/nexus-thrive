@@ -2,7 +2,7 @@
 
 Contrato del movimiento de NEXUS. La referencia de valores es el código
 (`packages/brand/css/tokens.css`, `app/styles/motion.css`, `lib/motion/`); aquí
-está **cuándo y cómo** usarlos. Resumen en [DESIGN.md §4](../../DESIGN.md);
+está **cuándo y cómo** usarlos. Resumen en [DESIGN.md §4](../03-sistema/DESIGN.md);
 catálogo vivo en Storybook (*Fundamentos → Movimiento*).
 
 ## 1. Principios

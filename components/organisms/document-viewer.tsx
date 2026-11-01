@@ -15,7 +15,7 @@ import { formatCurrency } from "@/lib/foundation/format";
  * adquirente, líneas, impuestos, retenciones, saldo y documentos relacionados), con
  * impresión limpia. Las acciones rápidas sobre el documento (cobrar, anular, emitir
  * una nota) abren modales PEQUEÑOS encima: un campo o dos, sin perder el documento.
- * Criterio de elección: docs/design/interaction-patterns.md.
+ * Criterio de elección: packages/brand/docs/04-patrones/interaction-patterns.md.
  */
 const STATUS = { ISSUED: { label: "Emitido", tone: "warning" }, PAID: { label: "Pagado", tone: "success" }, VOID: { label: "Anulado", tone: "muted" } } as const;
 const TONE: Record<DocumentKind, string> = { CREDIT_NOTE: "text-[#9B2C2C]", DEBIT_NOTE: "text-[#1F5F3F]", QUOTE: "", ORDER: "", BILL: "", RECEIPT: "", SALE: "" };

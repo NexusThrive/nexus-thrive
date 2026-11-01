@@ -1,6 +1,6 @@
 # Accesibilidad
 
-[← DESIGN.md](../../DESIGN.md)
+[← DESIGN.md](../03-sistema/DESIGN.md)
 
 **Base: WCAG 2.2 nivel AA.** Es un requisito de implementación, no un repaso
 final. No se declara "cumple WCAG" sin una evaluación con alcance definido:

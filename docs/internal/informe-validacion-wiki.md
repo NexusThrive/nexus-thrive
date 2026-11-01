@@ -18,7 +18,7 @@ Fecha: 2026-10-31. Alcance: `docs/wiki/` (11 secciones), `docs/decisions/`, los 
 | 10 · Pruebas y calidad | 2 | 1 740 | Pruebas · **pruebas de arquitectura (generada)** |
 | 11 · Glosario | 1 | 353 | 20 términos |
 
-Navegación: `Home` y `_Sidebar` enlazan las 11 secciones; cada índice de sección lista todas sus páginas (lo comprueba `tests/architecture/wiki.test.ts`). Secciones más delgadas: 01, 06, 11 (una a dos páginas); tienen lo esencial pero no son exhaustivas, y `docs/wiki/06` en particular no cubre RLS ni la política de caché de datos privados (esta última está en `docs/design/pwa.md`).
+Navegación: `Home` y `_Sidebar` enlazan las 11 secciones; cada índice de sección lista todas sus páginas (lo comprueba `tests/architecture/wiki.test.ts`). Secciones más delgadas: 01, 06, 11 (una a dos páginas); tienen lo esencial pero no son exhaustivas, y `docs/wiki/06` en particular no cubre RLS ni la política de caché de datos privados (esta última está en `packages/brand/docs/04-patrones/pwa.md`).
 
 ## 2. Enlaces
 

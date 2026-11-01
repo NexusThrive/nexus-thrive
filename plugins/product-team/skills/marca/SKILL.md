@@ -7,7 +7,7 @@ description: Aplica y revisa la identidad de Nexus Thrive (posicionamiento, tono
 
 ## Antes de escribir o diseñar
 
-1. Lee `docs/brand/brand-book.md` y `docs/brand/guia-de-tono.md`.
+1. Lee `packages/brand/docs/01-marca/brand-book.md` y `packages/brand/docs/01-marca/guia-de-tono.md`.
 2. Confirma qué capacidades existen realmente; separa disponible, prototipo y futuro.
 3. Revisa los activos aprobados antes de crear variantes.
 

@@ -8,7 +8,7 @@ description: Gobierna tokens, componentes, variantes y reglas de composición de
 ## Fuente de verdad
 
 - Tokens: `packages/brand/tokens/tokens.json` y su espejo CSS `packages/brand/css/tokens.css`.
-- Reglas: `DESIGN.md` y `docs/design/`.
+- Reglas: `packages/brand/docs/03-sistema/DESIGN.md` y `packages/brand/docs/04-patrones/`.
 - Componentes: `components/atoms`, `components/molecules`, `components/organisms`.
 - Referencia visual: Storybook.
 

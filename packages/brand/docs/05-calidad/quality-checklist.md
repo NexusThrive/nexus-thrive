@@ -1,6 +1,6 @@
 # Lista de calidad de interfaz
 
-[← DESIGN.md](../../DESIGN.md)
+[← DESIGN.md](../03-sistema/DESIGN.md)
 
 Obligatoria para todo PR que crea o cambia una pantalla, un formulario, un
 componente o una interacción. Se copia en la descripción del PR y se marca lo
@@ -10,8 +10,8 @@ que aplica. Lo que no se pudo verificar se dice.
 
 - [ ] Sé qué tarea resuelve la pantalla y para qué rol.
 - [ ] Busqué si ya existe un componente o una interacción igual
-      ([DESIGN.md §3](../../DESIGN.md#3-componentes)).
-- [ ] Elegí el patrón con [interaction-patterns.md](interaction-patterns.md)
+      ([DESIGN.md §3](../03-sistema/DESIGN.md#3-componentes)).
+- [ ] Elegí el patrón con [interaction-patterns.md](../04-patrones/interaction-patterns.md)
       (diálogo, panel lateral, ventana flotante, página o en línea).
 - [ ] Tengo claros los estados: cargando, vacío, error, éxito, sin permiso,
       módulo apagado.
@@ -27,7 +27,7 @@ que aplica. Lo que no se pudo verificar se dice.
 - [ ] Ayuda "?" con `ContextHelp` solo donde aporta; lo imprescindible en la
       descripción visible.
 - [ ] Teclado, foco y táctil funcionan; botones de icono con `aria-label`.
-- [ ] Movimiento con los tokens de [DESIGN.md §4](../../DESIGN.md#4-movimiento),
+- [ ] Movimiento con los tokens de [DESIGN.md §4](../03-sistema/DESIGN.md#4-movimiento),
       y nada se rompe con movimiento reducido.
 - [ ] Permisos y datos: la página llama `requirePageContext`, la acción
       `requireTenantContext` + `can()`; nada de `@/prisma/db` en `app/`;
@@ -43,7 +43,7 @@ que aplica. Lo que no se pudo verificar se dice.
 - [ ] Historia de Storybook con los estados, si es un componente compartido
 - [ ] Probado en el navegador en 375, 768 y 1280 px; sin errores en consola
 - [ ] Revisión manual de accesibilidad
-      ([accessibility.md §2](accessibility.md#2-cómo-se-verifica))
+      ([accessibility.md §2](../04-patrones/accessibility.md#2-cómo-se-verifica))
 - [ ] Capturas antes/después en el PR (sin datos personales)
 - [ ] Ayuda actualizada si cambió un flujo visible
 - [ ] Si el sistema cambió (token, componente, patrón), actualicé DESIGN.md o

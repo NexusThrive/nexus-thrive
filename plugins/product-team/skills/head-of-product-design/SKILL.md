@@ -10,7 +10,7 @@ description: "Procedimiento y lista de comprobación del rol Head of Product Des
 
 - DESIGN.md
 - packages/brand/tokens/tokens.json
-- docs/design/
+- packages/brand/docs/
 - capturas y pruebas de Playwright
 - registro canónico de agentes
 

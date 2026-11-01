@@ -14,8 +14,8 @@
   <a href="https://nexusthrive.com.co">Sitio público</a> ·
   <a href="https://nexusthrive.com.co/help">Centro de ayuda</a> ·
   <a href="docs/nexus-architecture/product-vision.md">Visión de producto</a> ·
-  <a href="PRODUCT.md">Producto</a> ·
-  <a href="DESIGN.md">Diseño</a>
+  <a href="packages/brand/docs/02-producto/PRODUCT.md">Producto</a> ·
+  <a href="packages/brand/README.md">Diseño y marca</a>
 </p>
 
 <p align="center">
@@ -30,7 +30,7 @@
 
 <p align="center">
   <img
-    src="docs/design/capturas/v2/dashboard-claro.png"
+    src="packages/brand/docs/06-auditorias/capturas/v2/dashboard-claro.png"
     alt="Inicio de NEXUS V2: barra lateral por categorías, métricas de ingresos, socios, gastos y balance, gráfico de ingresos y gastos, acciones rápidas y visibilidad verificada."
     width="100%"
   >
@@ -321,10 +321,10 @@ historial en [`CHANGELOG.md`](CHANGELOG.md).
 
 | Documento | Para qué |
 | --- | --- |
-| [`PRODUCT.md`](PRODUCT.md) | Qué es NEXUS, para quién y principios de producto |
-| [`DESIGN.md`](DESIGN.md) | Marca, tokens, componentes, movimiento y layout |
+| [`PRODUCT.md`](packages/brand/docs/02-producto/PRODUCT.md) | Qué es NEXUS, para quién y principios de producto |
+| [`DESIGN.md`](packages/brand/docs/03-sistema/DESIGN.md) | Marca, tokens, componentes, movimiento y layout |
 | [`docs/nexus-architecture/`](docs/internal/historico/nexus-architecture/README.md) | Auditoría del 22–23 oct de 2026 (histórica, pendiente de validación): seguridad, deuda y remediación |
-| [`docs/design/`](docs/design/interaction-patterns.md) | Patrones de interacción, accesibilidad y calidad |
+| [`packages/brand/`](packages/brand/README.md) | **Todo el diseño operativo**: marca, producto, sistema, patrones, calidad, auditorías, marketing y documentación de Storybook |
 | [`docs/wiki/`](docs/wiki/Home.md) | **Manual vigente**: arquitectura, módulos, datos, pruebas, DevOps y nueva funcionalidad |
 | [`equipo-ingenieria.md`](docs/wiki/09-desarrollo/equipo-ingenieria.md) | Equipo de ingeniería: agentes, loops, conocimiento, automatización, seguridad y operación |
 | [`docs/diagrams/`](docs/wiki/03-arquitectura/diagramas.md) | Diagramas Mermaid de arquitectura, agentes, loops, conocimiento, n8n y despliegue |
