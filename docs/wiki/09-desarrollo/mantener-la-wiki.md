@@ -42,9 +42,20 @@ Qué hace la conversión: nombres planos (`04-modulos/mapa.md` → `04-modulos-m
 
 ### Estado y permisos necesarios
 
-- **Estado actual: solo simulación.** No se ha publicado nada ni hay sincronización automática en CI. Publicar requiere una decisión explícita.
-- Antes de la primera publicación, el repositorio debe tener la Wiki activada (Settings → Features → Wikis) y una primera página creada desde la interfaz, para que exista `<repo>.wiki.git`.
-- Hace falta permiso de escritura en el repositorio. Con HTTPS, un token con acceso de escritura; en una acción de GitHub, `GITHUB_TOKEN` con `contents: write`. Estos requisitos hay que **confirmarlos al activar la publicación**.
+- **Estado actual: publicada** el 1 nov 2026 en <https://github.com/NexusThrive/nexus-thrive/wiki> (135 páginas, generadas desde `main`). **No hay sincronización automática en CI**: cada vez que cambie `docs/wiki/` hay que volver a sincronizar a mano, con una decisión explícita.
+- Requisito (ya cumplido): el repositorio tiene la Wiki activada y una primera página creada desde la interfaz, para que exista `<repo>.wiki.git`.
+- Hace falta permiso de escritura en el repositorio. Con HTTPS, un token con acceso de escritura; en una acción de GitHub, `GITHUB_TOKEN` con `contents: write`. Con credenciales de escritura locales (HTTPS) la publicación del 1 nov funcionó sin más.
 - El token de `gh` de este entorno no puede subir archivos de workflows; un workflow nuevo se añade a mano o desde la interfaz.
 - La rama de la wiki suele llamarse `master`; el script usa la rama que traiga el clon.
 - Nunca se edita en la Wiki de GitHub: el siguiente `publish` sobrescribe esos cambios.
+- El clon temporal que usa `publish` no tiene identidad de Git: al publicar hay que definir `GIT_AUTHOR_NAME`, `GIT_AUTHOR_EMAIL`, `GIT_COMMITTER_NAME` y `GIT_COMMITTER_EMAIL` en el entorno de esa ejecución (sin tocar la configuración global).
+- Los enlaces a código y documentos fuera de la wiki apuntan a `main`; si se publica desde otra rama, usa `--branch <rama>`.
+
+### Cómo resincronizar
+
+```bash
+# 1. Desde una copia de main con docs/wiki al día y sin cambios sin confirmar
+node scripts/wiki-sync.mjs publish --remote https://github.com/NexusThrive/nexus-thrive.wiki.git      # simulación
+GIT_AUTHOR_NAME=… GIT_AUTHOR_EMAIL=… GIT_COMMITTER_NAME=… GIT_COMMITTER_EMAIL=… \
+  NEXUS_WIKI_PUBLISH=yes node scripts/wiki-sync.mjs publish --remote https://github.com/NexusThrive/nexus-thrive.wiki.git --confirm
+```

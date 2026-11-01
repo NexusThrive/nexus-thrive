@@ -1,6 +1,6 @@
 # Informe de la pila de PR
 
-Fecha: 2026-10-31. Complementa el [plan de PR](plan-de-prs.md). **Ninguna rama se subió y no hay PR abiertos.** `main` (`97eb497`) no ha avanzado: las ramas cuelgan de él sin necesidad de rebase.
+Fecha: 2026-10-31. Complementa el [plan de PR](plan-de-prs.md). **Informe previo a la publicación.** La pila se publicó e integró en `main` el 1 nov 2026 (PR #128 a #135; ver [resultado](lanzamiento/README.md#9-resultado-1-nov-2026)); lo que sigue describe el estado antes de subirla. `main` (`97eb497`) no ha avanzado: las ramas cuelgan de él sin necesidad de rebase.
 
 ## 1. Grafo y cambios respecto al plan anterior
 
@@ -93,7 +93,7 @@ El trazo es idéntico; solo desaparece el fondo y el archivo pierde el salto de 
 
 Con la cadena lineal verificada, «Create a merge commit» conserva los commits de cada PR tal como están en su rama, y las ramas siguientes siguen siendo descendientes sin retoques. «Rebase and merge» reescribe hashes y obliga a rebasar los PR restantes; el squash está descartado.
 
-## 6. Qué no se hizo
+## 6. Qué no se hizo (en el momento de este informe)
 
 - No se subió ninguna rama ni se abrió ningún PR; el `pushurl = no_push` del remoto `github` no se tocó. No se publicó la Wiki ni se activó ningún workflow.
 - No se corrigieron fechas históricas ni el recibo del punto de venta.

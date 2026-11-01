@@ -22,7 +22,8 @@ Estado: **vigente a 2026-10-31**, tras el cierre de V10 (la estructura de `lib/`
 |---|---|---|
 | 8 | Prisma P3–P6 | Relaciones Business → Industry, modelos sin `tenantId`, cambios de datos, RLS real |
 | 9 | Comentarios de `prisma/schema/**` con rutas anteriores a V10 | Exige tocar el contrato; pasada independiente |
-| 10 | Asientos históricos fechados en UTC | Ejecutar el SQL de diagnóstico (`docs/diagnostico/`) contra una copia y decidir si se corrigen |
+| 10 | Asientos históricos fechados en UTC | Ejecutar el SQL de diagnóstico (`docs/diagnostico/`) contra una **copia** y decidir si se corrigen |
+| 10b | Recibo del punto de venta en UTC | `receiptOf` (`lib/business/pos/pos-db.ts`) imprime fecha y hora en UTC; definir el formato horario esperado (Bogotá) y probarlo antes de tocarlo. **Pendiente**, va en la lista de implementación de producto |
 
 ## Seguridad
 
@@ -36,11 +37,11 @@ Estado: **vigente a 2026-10-31**, tras el cierre de V10 (la estructura de `lib/`
 |---|---|---|
 | 12 | Revisar los 13 documentos pendientes | Decidir uno por uno (ver [revisión](../../internal/revision-documentos-pendientes.md)) |
 | 13 | Reescribir `user-journey` y la tabla de permisos de construcción contra el código | Hoy son históricos o no válidos |
-| 14 | Publicación en la Wiki de GitHub | Mecanismo preparado y probado en local; falta autorizar la publicación ([mantener la wiki](../09-desarrollo/mantener-la-wiki.md)) |
+| 14 | Sincronizar la Wiki de GitHub tras cada cambio de `docs/wiki/` | **Publicada el 1 nov 2026.** Falta volver a sincronizar cuando cambie la documentación ([mantener la wiki](../09-desarrollo/mantener-la-wiki.md)) |
 
 ## Entrega
 
 | # | Tema | Qué se necesita |
 |---|---|---|
-| 15 | Push y PR | Pila de 7 PR preparada en ramas locales ([plan](../../internal/plan-de-prs.md)); falta autorizar el envío |
+| 15 | Pila de PR de V10 | **Hecho:** 8 PR (#128–#135) fusionados en `main` el 1 nov 2026 ([lanzamiento](../../internal/lanzamiento/README.md)) |
 | 16 | Integración de `integracion/local-revision` (P-13) | Revisión propia |

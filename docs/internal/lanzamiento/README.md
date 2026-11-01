@@ -1,6 +1,6 @@
 # Lanzamiento de la pila de 8 PR
 
-**Estado: preparado, NO publicado.** Este documento es la trazabilidad de la primera gran integración arquitectónica de Nexus. Nada de lo que contiene se ha ejecutado contra GitHub; publicar requiere autorización expresa. Los comandos están para que **tú** los revises y ejecutes desde tu entorno.
+**Estado: publicado e integrado en `main` el 1 nov 2026** (ver §9). Este documento es la trazabilidad de la primera gran integración arquitectónica de Nexus. Las secciones 1 a 8 describen el plan tal como se preparó; los comandos de la §5 son el procedimiento previsto, conservados como registro.
 
 ## 1. La pila
 
@@ -15,7 +15,7 @@
 | 07 | `chore/HU-v10-favicon-tests-07` | `chore/HU-v10-m5-cierre-06` | Favicon solo SVG y pruebas fuera de `lib/` |
 | 08 | `chore/HU-v10-wiki-08` | `chore/HU-v10-favicon-tests-07` | Wiki unificada, decisiones e informes de entrega |
 
-Cadena lineal verificada: cada rama es descendiente de la anterior. `main` (`97eb497`) no ha avanzado, así que no hace falta rebase. Las ramas se llaman `chore/HU-v10-<tema>-NN` porque el hook de ramas del equipo solo admite `<tipo>/HU-<slug>-<nn>`. Existen copias locales `stack/NN-…` con los mismos commits (no se publican). Las ramas `pr/01…07` de la primera versión del plan están **obsoletas**: no las subas ni las borres hasta que la pila nueva esté integrada.
+Cadena lineal verificada: cada rama es descendiente de la anterior. `main` (`97eb497`) no ha avanzado, así que no hace falta rebase. Las ramas se llaman `chore/HU-v10-<tema>-NN` porque el hook de ramas del equipo solo admite `<tipo>/HU-<slug>-<nn>`. Existen copias locales `stack/NN-…` con los mismos commits (no se publican). Las ramas `pr/01…07` de la primera versión del plan estaban obsoletas y, junto con las copias `stack/*`, se eliminaron tras la integración (§9).
 
 ## 2. Dependencias
 
@@ -115,7 +115,7 @@ node scripts/wiki-sync.mjs publish --remote https://github.com/NexusThrive/nexus
 - **SQL de diagnóstico de fechas:** ejecutarlo sobre una **copia** de producción, nunca directamente en producción, y documentar el resultado.
 - **Wiki de GitHub:** comprobar Mermaid, imágenes, enlaces internos y navegación antes de publicarla.
 - **13 documentos pendientes de revisión:** decisión individual ([revisión](../revision-documentos-pendientes.md)).
-- **Ramas obsoletas `pr/01…07`:** eliminarlas solo cuando la pila nueva esté integrada.
+- **Ramas obsoletas `pr/01…07`:** eliminadas tras la integración.
 
 ## 7. Registro de decisiones
 
@@ -142,3 +142,25 @@ El primer CI (1 nov 2026) pasó en el PR 1 y falló en los PR 2 a 8 por dos prue
 Las correcciones se añadieron como commits nuevos en las ramas 02 y 03 y se fusionaron hacia adelante (02→03, 03→04 … 07→08) con commits de merge: **no se reescribió historial ni se hizo force-push**. Por eso las ramas 03 a 08 ya no son idénticas a las copias locales `stack/*`. Lección: la verificación local debe reproducir el entorno del CI (base `nexus_test`, sin variables exportadas a mano).
 
 Vercel falló en #129 y #132 por un error de Turbopack con `next/font/google` ("queries have exactly one entry") al restaurar la caché de compilación; el mismo código compila en las demás ramas, así que parece transitorio. Se revisa tras los nuevos commits.
+
+## 9. Resultado (1 nov 2026)
+
+La pila **se publicó y se integró**. Resumen de lo ocurrido:
+
+| PR | Rama (eliminada tras fusionar) | Fusionado en `main` |
+|---|---|---|
+| [#128](https://github.com/NexusThrive/nexus-thrive/pull/128) | `chore/HU-v10-prisma-capas-01` | `829b35f` |
+| [#129](https://github.com/NexusThrive/nexus-thrive/pull/129) | `chore/HU-v10-fechas-bogota-02` | `68e85fd` |
+| [#130](https://github.com/NexusThrive/nexus-thrive/pull/130) | `chore/HU-v10-reubicaciones-03` | `9c3e7fc` |
+| [#131](https://github.com/NexusThrive/nexus-thrive/pull/131) | `chore/HU-v10-m0-m2-04` | `88af15e` |
+| [#132](https://github.com/NexusThrive/nexus-thrive/pull/132) | `chore/HU-v10-m3-m4-05` | `c87fc22` |
+| [#133](https://github.com/NexusThrive/nexus-thrive/pull/133) | `chore/HU-v10-m5-cierre-06` | `6530df1` |
+| [#134](https://github.com/NexusThrive/nexus-thrive/pull/134) | `chore/HU-v10-favicon-tests-07` | `cf2a402` |
+| [#135](https://github.com/NexusThrive/nexus-thrive/pull/135) | `chore/HU-v10-wiki-08` | `8be7313` |
+
+- Se fusionaron en orden con *merge commit* (sin squash). Para cada PR siguiente se cambió la base a `main` y se **cerró y reabrió** para que el CI lo validara contra `main` (cambiar la base no relanza el CI).
+- El primer CI de GitHub falló en los PR 2 a 8 por dos pruebas de integración que dependían del entorno local (ver §8); se corrigieron sin reescribir historial. Vercel falló una vez por un error transitorio de Turbopack.
+- `main` quedó idéntica, archivo por archivo, a la última rama verificada; su CI (`verify`) y el despliegue de producción de Vercel pasaron.
+- La **Wiki de GitHub** se publicó el 1 nov 2026 (135 páginas) en <https://github.com/NexusThrive/nexus-thrive/wiki>.
+- Las 8 ramas remotas fusionadas, las copias locales `stack/*` y las obsoletas `pr/01…07` se eliminaron tras comprobar que sus commits estaban en `main` o en la rama de trabajo.
+- Quedan fuera de este lanzamiento: el recibo del POS (UTC), la ejecución del SQL de diagnóstico de fechas contra una copia y los 13 documentos por revisar.
