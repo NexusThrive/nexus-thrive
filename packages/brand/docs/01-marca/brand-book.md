@@ -179,5 +179,5 @@ Resumen operativo; el detalle está en
 | Logo | `packages/brand/src/BrandLogo.tsx`, `components/atoms/n-mark.tsx` |
 | Sistema de diseño | `DESIGN.md` |
 | Producto | `PRODUCT.md` |
-| Tono | `docs/brand/guia-de-tono.md` |
+| Tono | `packages/brand/docs/01-marca/guia-de-tono.md` |
 | Componentes vivos | Storybook (`pnpm storybook`) |

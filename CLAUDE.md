@@ -3,18 +3,19 @@
 ## Interfaz: sistema de diseño obligatorio
 
 Toda pantalla, formulario, componente o interacción nueva o modificada sigue el
-sistema de diseño. Antes de escribir UI, leer:
+sistema de diseño. Antes de escribir UI, leer (todo el diseño operativo vive en `packages/brand/`; índice en
+[packages/brand/README.md](packages/brand/README.md)):
 
-- [DESIGN.md](DESIGN.md) — marca (no se cambia: NEXUS, Public Stunt, negro y
+- [DESIGN.md](packages/brand/docs/03-sistema/DESIGN.md) — marca (no se cambia: NEXUS, Public Stunt, negro y
   oro), tokens, componentes compartidos y movimiento.
-- [docs/design/interaction-patterns.md](docs/design/interaction-patterns.md) —
+- [packages/brand/docs/04-patrones/interaction-patterns.md](packages/brand/docs/04-patrones/interaction-patterns.md) —
   diálogo, panel lateral, ventana flotante, página o en línea.
-- [docs/design/accessibility.md](docs/design/accessibility.md) — WCAG 2.2 AA.
-- [docs/design/quality-checklist.md](docs/design/quality-checklist.md) — se
+- [packages/brand/docs/04-patrones/accessibility.md](packages/brand/docs/04-patrones/accessibility.md) — WCAG 2.2 AA.
+- [packages/brand/docs/05-calidad/quality-checklist.md](packages/brand/docs/05-calidad/quality-checklist.md) — se
   copia en el PR.
-- [docs/design/movimiento.md](docs/design/movimiento.md) — guía de uso del
+- [packages/brand/docs/04-patrones/movimiento.md](packages/brand/docs/04-patrones/movimiento.md) — guía de uso del
   movimiento (dueños, morfeo de modales, arrastrar y soltar).
-- [docs/design/pwa.md](docs/design/pwa.md) — instalación y política de caché.
+- [packages/brand/docs/04-patrones/pwa.md](packages/brand/docs/04-patrones/pwa.md) — instalación y política de caché.
 
 Reglas que no se negocian:
 
@@ -53,14 +54,14 @@ Cada pantalla o módulo nuevo debe, antes de fusionarse:
 6. Mantener Server Components; `"use client"` solo donde hay estado o eventos.
 7. Cero dependencias nuevas salvo necesidad medida y documentada en el PR.
 8. Datos privados nunca en caché del navegador ni del service worker
-   (`docs/design/pwa.md`); búsquedas y listas con límite en el servidor.
+   (`packages/brand/docs/04-patrones/pwa.md`); búsquedas y listas con límite en el servidor.
 9. Un patrón reutilizable nuevo se documenta en `DESIGN.md` en el mismo PR.
 
 **Proponer una variante o primitiva nueva:** abrir el PR con (a) los dos
 usos reales que no cubre lo existente, (b) la historia con todos sus estados,
 (c) la prueba en `e2e/` si tiene interacción, (d) la fila en `DESIGN.md`.
 
-**Checklist de PR:** copiar `docs/design/quality-checklist.md`; además
+**Checklist de PR:** copiar `packages/brand/docs/05-calidad/quality-checklist.md`; además
 `pnpm exec tsc --noEmit`, `pnpm test` y `pnpm test:e2e` en verde.
 
 **Movimiento: un dueño por transición** (tabla en `DESIGN.md` §4). No
@@ -82,7 +83,7 @@ un paquete de Radix, comprobar que `pnpm why @radix-ui/react-dismissable-layer`
 sigue mostrando **una sola versión**.
 
 **Arrastrar y soltar:** solo con `@dnd-kit/core` y siguiendo
-`docs/design/movimiento.md` §6: siempre con alternativa sin arrastrar
+`packages/brand/docs/04-patrones/movimiento.md` §6: siempre con alternativa sin arrastrar
 (menú o teclado), asa propia, anuncios en español, cambio optimista con
 reversión, permiso comprobado en el servidor y estado real persistido. No
 persistir orden si el modelo no tiene un campo de posición.

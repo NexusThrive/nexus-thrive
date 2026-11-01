@@ -51,7 +51,7 @@ type FormSheetProps = {
  * - lo escrito no se borra tras un error recuperable;
  * - al guardar se cierra y el foco vuelve al botón que lo abrió.
  *
- * Elegir diálogo o panel: docs/design/interaction-patterns.md.
+ * Elegir diálogo o panel: packages/brand/docs/04-patrones/interaction-patterns.md.
  */
 function FormSheet({
   variant,

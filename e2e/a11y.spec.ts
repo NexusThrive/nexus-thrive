@@ -5,7 +5,7 @@ import { expectNoAxeViolations, openStory } from "./helpers";
  * axe (WCAG 2.2 AA) sobre los componentes compartidos, en claro y oscuro.
  * Lo automático no basta: el teclado, el foco y los lectores se prueban en
  * overlays.spec.ts y context-help.spec.ts, y a mano según
- * docs/design/accessibility.md.
+ * packages/brand/docs/04-patrones/accessibility.md.
  */
 const STORIES = [
   "átomos-button--primary",

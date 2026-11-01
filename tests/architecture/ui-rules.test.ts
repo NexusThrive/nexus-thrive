@@ -4,7 +4,7 @@ import { describe, expect, test } from "vitest";
 
 /**
  * Reglas del sistema de diseño que se pueden leer en el código
- * (DESIGN.md §3, docs/design/interaction-patterns.md). Lo que ya existía y
+ * (DESIGN.md §3, packages/brand/docs/04-patrones/interaction-patterns.md). Lo que ya existía y
  * aún no se migró está en las listas de deuda: solo se achican. Si migras un
  * archivo, sácalo de la lista; si la prueba falla con un archivo nuevo, usa
  * el componente compartido en vez de agregarlo a la lista.

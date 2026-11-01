@@ -1,5 +1,5 @@
 > **Paso 0 — va antes de todo lo demás.** Rediseño del sistema aplicando este
-> mandato, antes de los pasos A–C de [`docs/PENDIENTES.md`](docs/PENDIENTES.md).
+> mandato, antes de los pasos A–C de [`docs/PENDIENTES.md`](../../../../docs/PENDIENTES.md).
 > Aún no ejecutado. Documento original, sin cambios.
 
 # NEXUS — Unified Design System, Enterprise UX, Accessibility & Motion Engineering
@@ -213,9 +213,9 @@ Create or update the following project documents, using the existing documentati
 
 - `DESIGN.md`: brand tokens, typography, spacing, component variants, layout rules, and motion conventions.
 - `PRODUCT.md`: audience, purpose, product principles, and important constraints.
-- `docs/design/interaction-patterns.md`: when to use each interaction pattern.
-- `docs/design/accessibility.md`: accessibility requirements and verification procedures.
-- `docs/design/quality-checklist.md`: mandatory checks for new and modified UI.
+- `packages/brand/docs/04-patrones/interaction-patterns.md`: when to use each interaction pattern.
+- `packages/brand/docs/04-patrones/accessibility.md`: accessibility requirements and verification procedures.
+- `packages/brand/docs/05-calidad/quality-checklist.md`: mandatory checks for new and modified UI.
 
 Do not create duplicate documents if equivalent ones already exist. Consolidate and improve the existing documentation.
 
@@ -394,7 +394,7 @@ Preserve validation, submission logic, permissions, data persistence, and error 
 
 ## 4.3 Create an interaction decision matrix
 
-Document the rules in `docs/design/interaction-patterns.md`.
+Document the rules in `packages/brand/docs/04-patrones/interaction-patterns.md`.
 
 For each pattern, define:
 

@@ -23,6 +23,6 @@
 
 ## Revisión de interfaz (si cambia lo que se ve)
 
-- [ ] [Lista de calidad](../docs/design/quality-checklist.md) revisada.
+- [ ] [Lista de calidad](../packages/brand/docs/05-calidad/quality-checklist.md) revisada.
 - [ ] Capturas antes/después (sin datos personales).
 - [ ] Guía de ayuda actualizada si cambió un flujo.

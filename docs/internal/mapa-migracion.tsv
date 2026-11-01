@@ -119,15 +119,15 @@ IDEAS-E-IMPLEMENTACIONES-IMPORTANTES.md	revisar	docs/wiki/02-producto/ideas-y-ba
 PRODUCT.md	diferido		marca y diseño: no se mueve (decisión del usuario)
 README.md	conservar		raíz (puerta de entrada / agentes)
 REDISENO-NEXUS.md	diferido		marca y diseño: no se mueve (decisión del usuario)
-components/docs/accesibilidad.mdx	diferido		documentación de Storybook (diseño)
-components/docs/capas.mdx	diferido		documentación de Storybook (diseño)
-components/docs/colores.mdx	diferido		documentación de Storybook (diseño)
-components/docs/espacio.mdx	diferido		documentación de Storybook (diseño)
-components/docs/introduccion.mdx	diferido		documentación de Storybook (diseño)
-components/docs/inventario.mdx	diferido		documentación de Storybook (diseño)
-components/docs/movimiento.mdx	diferido		documentación de Storybook (diseño)
-components/docs/patrones.mdx	diferido		documentación de Storybook (diseño)
-components/docs/tipografia.mdx	diferido		documentación de Storybook (diseño)
+packages/brand/docs/storybook/accesibilidad.mdx	diferido		documentación de Storybook (diseño)
+packages/brand/docs/storybook/capas.mdx	diferido		documentación de Storybook (diseño)
+packages/brand/docs/storybook/colores.mdx	diferido		documentación de Storybook (diseño)
+packages/brand/docs/storybook/espacio.mdx	diferido		documentación de Storybook (diseño)
+packages/brand/docs/storybook/introduccion.mdx	diferido		documentación de Storybook (diseño)
+packages/brand/docs/storybook/inventario.mdx	diferido		documentación de Storybook (diseño)
+packages/brand/docs/storybook/movimiento.mdx	diferido		documentación de Storybook (diseño)
+packages/brand/docs/storybook/patrones.mdx	diferido		documentación de Storybook (diseño)
+packages/brand/docs/storybook/tipografia.mdx	diferido		documentación de Storybook (diseño)
 docs/PENDIENTES.md	revisar	docs/wiki/02-producto/hoja-de-ruta.md	lista viva: se fusiona con la hoja de ruta
 docs/SIGUIENTE-PASO.md	revisar	docs/wiki/02-producto/hoja-de-ruta.md	lista viva: se fusiona con la hoja de ruta
 docs/V1-PROGRESO.md	archivar	docs/internal/historico/V1-PROGRESO.md	histórico
@@ -162,8 +162,8 @@ docs/architecture/hallazgo-fechas-utc-en-asientos.md	archivar	docs/internal/hist
 docs/architecture/hoja-de-ruta.md	mover	docs/wiki/02-producto/hoja-de-ruta.md	vigente; absorbe SIGUIENTE-PASO
 docs/architecture/plan-migracion-tests.md	archivar	docs/internal/historico/v10-y-etapas/plan-migracion	informe de etapa o auditoría fechada
 docs/architecture/reglas-dependencias.md	mover	docs/wiki/03-arquitectura/reglas-dependencias.md	vigente
-docs/brand/brand-book.md	diferido		marca y diseño
-docs/brand/guia-de-tono.md	diferido		marca y diseño
+packages/brand/docs/01-marca/brand-book.md	diferido		marca y diseño
+packages/brand/docs/01-marca/guia-de-tono.md	diferido		marca y diseño
 docs/clerk-produccion.md	mover	docs/wiki/08-operacion-y-despliegue/clerk-produccion.md	
 docs/construction/auditoria-etapa-0.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
 docs/construction/cierre-etapa-1.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
@@ -187,13 +187,13 @@ docs/construction/test-integration.md	revisar	docs/wiki/10-pruebas-y-calidad/	po
 docs/construction/verificacion-1-pnpm-verify.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
 docs/construction/verificacion-2-clon-limpio.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
 docs/construction/verificacion-3-mediciones.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
-docs/design/accessibility.md	diferido		marca y diseño
-docs/design/auditoria-2026-10.md	diferido		marca y diseño
-docs/design/auditoria-ux-2026-10.md	diferido		marca y diseño
-docs/design/interaction-patterns.md	diferido		marca y diseño
-docs/design/movimiento.md	diferido		marca y diseño
-docs/design/pwa.md	diferido		marca y diseño
-docs/design/quality-checklist.md	diferido		marca y diseño
+packages/brand/docs/04-patrones/accessibility.md	diferido		marca y diseño
+packages/brand/docs/06-auditorias/auditoria-2026-10.md	diferido		marca y diseño
+packages/brand/docs/06-auditorias/auditoria-ux-2026-10.md	diferido		marca y diseño
+packages/brand/docs/04-patrones/interaction-patterns.md	diferido		marca y diseño
+packages/brand/docs/04-patrones/movimiento.md	diferido		marca y diseño
+packages/brand/docs/04-patrones/pwa.md	diferido		marca y diseño
+packages/brand/docs/05-calidad/quality-checklist.md	diferido		marca y diseño
 docs/diagrams/README.md	mover	docs/wiki/03-arquitectura/diagramas.md	los .mmd se incrustan como Mermaid
 docs/guias/README.md	eliminar		lo reemplaza el índice de la wiki
 docs/guias/devops.md	mover	docs/wiki/08-operacion-y-despliegue/devops.md	
@@ -236,11 +236,11 @@ docs/knowledge/policies/README.md	mover	docs/wiki/09-desarrollo/conocimiento/	Gr
 docs/knowledge/research/README.md	mover	docs/wiki/09-desarrollo/conocimiento/	Graphify/NotebookLM
 docs/knowledge/sources/README.md	mover	docs/wiki/09-desarrollo/conocimiento/	Graphify/NotebookLM
 docs/knowledge/synchronization/README.md	mover	docs/wiki/09-desarrollo/conocimiento/	Graphify/NotebookLM
-docs/marketing/estrategia-contenidos.md	diferido		adyacente a marca; decidir con el sistema de diseño
-docs/marketing/growth-experimentos.md	diferido		adyacente a marca; decidir con el sistema de diseño
-docs/marketing/medicion.md	diferido		adyacente a marca; decidir con el sistema de diseño
-docs/marketing/seo-tecnico.md	diferido		adyacente a marca; decidir con el sistema de diseño
-docs/marketing/ventas.md	diferido		adyacente a marca; decidir con el sistema de diseño
+packages/brand/docs/07-marketing/estrategia-contenidos.md	diferido		adyacente a marca; decidir con el sistema de diseño
+packages/brand/docs/07-marketing/growth-experimentos.md	diferido		adyacente a marca; decidir con el sistema de diseño
+packages/brand/docs/07-marketing/medicion.md	diferido		adyacente a marca; decidir con el sistema de diseño
+packages/brand/docs/07-marketing/seo-tecnico.md	diferido		adyacente a marca; decidir con el sistema de diseño
+packages/brand/docs/07-marketing/ventas.md	diferido		adyacente a marca; decidir con el sistema de diseño
 docs/nexus-architecture/README.md	archivar	docs/internal/historico/nexus-architecture/	auditoría del 22–23 oct
 docs/nexus-architecture/current-architecture.md	fusionar	docs/wiki/03-arquitectura/	pre-V10: se reescribe contra el código actual
 docs/nexus-architecture/decisions/0001-monolito-modular.md	mover	docs/decisions/	ADR 0001–0006 (se renumeran)
@@ -271,6 +271,6 @@ docs/product/contexto-dominio.md	mover	docs/wiki/02-producto/	contexto de domini
 docs/product/plan.md	mover	docs/wiki/02-producto/	contexto de dominio
 docs/superpowers/plans/2026-10-29-prettymodal-desktop.md	archivar	docs/internal/historico/superpowers/	plan y diseño fechados
 docs/superpowers/specs/2026-10-29-prettymodal-desktop-design.md	archivar	docs/internal/historico/superpowers/	plan y diseño fechados
-packages/brand/PROMPT.md	diferido		marca
+packages/brand/docs/01-marca/PROMPT.md	diferido		marca
 packages/brand/README.md	diferido		marca
 prisma/schema/README.md	conservar		junto al esquema; la wiki lo enlaza

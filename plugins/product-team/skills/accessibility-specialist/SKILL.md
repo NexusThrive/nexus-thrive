@@ -9,7 +9,7 @@ description: "Procedimiento y lista de comprobación del rol Accessibility Speci
 ## Entradas
 
 - componentes y rutas reales
-- docs/design/accessibility.md
+- packages/brand/docs/04-patrones/accessibility.md
 - resultados de axe y Playwright
 
 ## Reglas de decisión

@@ -35,7 +35,7 @@ de `ResponsiveSheet`; este diseño lleva ese motor al componente real.
 
 ## Restricciones
 
-1. **Contrato de movimiento** (`docs/design/movimiento.md` §1.3): solo
+1. **Contrato de movimiento** (`packages/brand/docs/04-patrones/movimiento.md` §1.3): solo
    `transform`, `opacity`, `filter`, `clip-path`. Este efecto necesita además
    `width`, `height`, `border-radius` y `background-color` para ser idéntico.
    Se acepta como **excepción documentada** en el componente y en la guía, como

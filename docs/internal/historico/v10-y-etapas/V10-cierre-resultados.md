@@ -93,7 +93,7 @@ Al juntar los módulos aparece un ciclo entre módulos que la prueba de M3 («lo
 
 1. **`next build` falló y nada más lo detectó (corregido).** `fonts.ts` carga las fuentes con `next/font/local` y una ruta **relativa al propio archivo** (`../app/fonts/…`); al bajarlo un nivel la ruta dejó de resolver. `tsc`, las pruebas de arquitectura y las 1 833 unitarias pasaban; solo falló `next build` («Font file not found»). Se ajustaron las dos rutas (`../../app/fonts/…`) y se añadió una prueba que exige que cada fuente declarada exista. Revisé el resto de archivos movidos: no hay otras rutas relativas a archivos (`new URL`, `__dirname`, `readFileSync`). En las etapas anteriores el build se ejecutó en cada `pnpm verify` y pasó.
 2. **Carrera de arranque de mi base desechable (infraestructura, no código).** La primera integración falló en 65 archivos porque creé la base mientras Postgres reiniciaba tras su inicialización («database system is shutting down») y `nexus_e5_test` no llegó a existir. Se recreó el contenedor esperando a que la inicialización termine; la integración dio 66 archivos y 413 pruebas.
-3. **Referencias que el codemod no reescribe:** rutas de `payment-input` dentro de plantillas de texto de `v10-finance.test.ts` y comentarios en `app/styles/motion.css`, `components/docs/movimiento.mdx` y `lib/plans/pricing.ts`. Actualizadas. Los documentos de `docs/` con la ruta antigua quedan para P-12.
+3. **Referencias que el codemod no reescribe:** rutas de `payment-input` dentro de plantillas de texto de `v10-finance.test.ts` y comentarios en `app/styles/motion.css`, `packages/brand/docs/storybook/movimiento.mdx` y `lib/plans/pricing.ts`. Actualizadas. Los documentos de `docs/` con la ruta antigua quedan para P-12.
 
 ## 5. Etapa C · core
 
@@ -216,7 +216,7 @@ Dejó la raíz de `lib/` con **solo lo importante** y escribió la documentació
 | [`guia-implementacion-lib.md`](../../../wiki/03-arquitectura/guia-implementacion-lib.md) | **Nuevo.** Regla fundamental, las diez preguntas previas, árbol de decisión de área, Core o Business, cuándo crear/reutilizar/separar/fusionar/mover/retirar, sectores, integraciones, pruebas, ciclos, aislamiento, contratos, referencias indirectas (con los incidentes reales de V10) y verificaciones |
 | [`reglas-dependencias.md`](../../../wiki/03-arquitectura/reglas-dependencias.md) | **Nuevo.** Matriz, reglas R1 a R3, dependencias internas por área, mecanismos para invertir dependencias, excepciones vigentes y límites del verificador |
 | [`../guias/nueva-funcionalidad.md`](../../../wiki/09-desarrollo/nueva-funcionalidad.md) | Rutas actualizadas a la estructura V10 y enlace a la guía nueva |
-| `DESIGN.md`, `docs/design/movimiento.md`, `components/docs/introduccion.mdx` | Ruta de `ui-rules.test.ts` actualizada |
+| `DESIGN.md`, `packages/brand/docs/04-patrones/movimiento.md`, `packages/brand/docs/storybook/introduccion.mdx` | Ruta de `ui-rules.test.ts` actualizada |
 
 ### 7.5 Problemas encontrados y decisiones de alcance
 

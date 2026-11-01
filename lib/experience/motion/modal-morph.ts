@@ -11,7 +11,7 @@ import { motionOff } from "./reduced";
  * Anima `width`, `height`, `border-radius` y `background-color`, que el
  * contrato de movimiento reserva a `transform/opacity/filter/clip-path`. Es la
  * excepción documentada de este componente: sin cambiar el tamaño real no se
- * reproduce el efecto aprobado (ver docs/design/movimiento.md §1.3).
+ * reproduce el efecto aprobado (ver packages/brand/docs/04-patrones/movimiento.md §1.3).
  *
  * Un solo dueño: mientras el motor vive, el CSS no anima la entrada ni la
  * salida (`data-morph`); solo sostiene la salida para que Radix espere a

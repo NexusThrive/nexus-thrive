@@ -15,5 +15,6 @@ Manual vigente de **cómo funciona Nexus hoy**. Si algo aquí contradice al cód
 | Añadir una funcionalidad | [09 · Desarrollo](09-desarrollo/README.md) |
 | Escribir o ejecutar pruebas | [10 · Pruebas](10-pruebas-y-calidad/README.md) |
 | Consultar un término | [11 · Glosario](11-glosario/README.md) |
+| Diseño, marca y sistema de diseño | [Diseño operativo (`packages/brand`)](../../packages/brand/README.md) |
 
-Decisiones técnicas: [`docs/decisions/`](../decisions/README.md). Historial y auditorías: [`docs/internal/historico/`](../internal/historico/README.md). Marca y diseño: [`DESIGN.md`](../../DESIGN.md) (se reorganizan aparte).
+Decisiones técnicas: [`docs/decisions/`](../decisions/README.md). Historial y auditorías: [`docs/internal/historico/`](../internal/historico/README.md). Marca y diseño: [`packages/brand`](../../packages/brand/README.md).

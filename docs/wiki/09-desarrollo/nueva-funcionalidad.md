@@ -97,8 +97,8 @@ existen.
 
 ### Paso 5 · La pantalla
 
-Antes de dibujarla: [DESIGN.md](../../../DESIGN.md) y
-[interaction-patterns.md](../../design/interaction-patterns.md) para elegir
+Antes de dibujarla: [DESIGN.md](../../../packages/brand/docs/03-sistema/DESIGN.md) y
+[interaction-patterns.md](../../../packages/brand/docs/04-patrones/interaction-patterns.md) para elegir
 diálogo, panel lateral, ventana flotante, página o en línea, y los
 componentes compartidos (`FormDialog`/`FormDrawer`, `ConfirmDialog`, `Field`,
 `ContextHelp`, `EmptyState`, `LoadingState`).
@@ -181,5 +181,5 @@ durante el despliegue.
 - [ ] Si cambió el contrato: migración + SQL de producción + `00-ORDEN.md`;
       tabla nueva con FK a `Tenant` y `@@rls`.
 - [ ] Probado en `pnpm dev` con un rol que puede y uno que no.
-- [ ] Si hay interfaz: la [lista de calidad](../../design/quality-checklist.md)
+- [ ] Si hay interfaz: la [lista de calidad](../../../packages/brand/docs/05-calidad/quality-checklist.md)
       está copiada y marcada en el PR.

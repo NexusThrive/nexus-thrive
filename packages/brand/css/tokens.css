@@ -91,7 +91,7 @@
   /* Ancho de lectura (texto corrido, ayuda, formularios de una columna). */
   --content-prose: 72ch;
 
-  /* --- Superficies flotantes (docs/design/interaction-patterns.md) --- */
+  /* --- Superficies flotantes (packages/brand/docs/04-patrones/interaction-patterns.md) --- */
   --dialog-w-sm: 440px;   /* confirmaciones */
   --dialog-w-md: 520px;   /* formulario corto (por defecto) */
   --dialog-w-lg: 640px;   /* formulario de dos columnas */

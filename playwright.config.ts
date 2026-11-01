@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 /**
- * Pruebas de navegador del sistema de diseño (docs/design/quality-checklist.md).
+ * Pruebas de navegador del sistema de diseño (packages/brand/docs/05-calidad/quality-checklist.md).
  *
  * Corren contra el Storybook estático: los componentes compartidos se prueban
  * aislados, sin sesión de Clerk ni base de datos. `pnpm test:e2e` construye

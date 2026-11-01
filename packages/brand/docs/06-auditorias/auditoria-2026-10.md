@@ -1,7 +1,7 @@
 # Inventario y auditoría de diseño · octubre 2026
 
-[← DESIGN.md](../../DESIGN.md) · Punto de partida del rediseño
-([REDISENO-NEXUS.md](../../REDISENO-NEXUS.md), Paso 0, puntos 1 y 2).
+[← DESIGN.md](../03-sistema/DESIGN.md) · Punto de partida del rediseño
+([REDISENO-NEXUS.md](REDISENO-NEXUS.md), Paso 0, puntos 1 y 2).
 Hecho sobre el código de `main` (`f85ac9f`) el 2026-10-23.
 
 > Herramientas: los comandos `/impeccable` **no están instalados** en este
