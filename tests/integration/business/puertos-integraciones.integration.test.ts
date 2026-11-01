@@ -42,6 +42,8 @@ describe.skipIf(!TEST_URL)("puertos hacia las integraciones (integración)", () 
 
   beforeAll(async () => {
     if (normalize(process.env.DATABASE_URL) !== normalize(TEST_URL)) throw new Error("DATABASE_URL debe ser igual a TEST_DATABASE_URL.");
+    // Las credenciales de proveedor se cifran con esta clave; el CI no la define (igual que las demás pruebas de proveedores).
+    process.env.WEBHOOK_ENCRYPTION_KEY = "d".repeat(64);
     realFiscal = fiscalQueuePort.use();
     realCheckout = checkoutPort.use();
     realListing = listingPort.use();
