@@ -11,7 +11,7 @@ import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { KIND_LABELS, type ProductDraft } from "@/lib/business/catalog/catalog-kinds";
-import { margin } from "@/lib/inventory/inventory";
+import { margin } from "@/lib/business/inventory/inventory";
 import type { ProductKindValue, ProductRow } from "@/lib/business/catalog/products-db";
 import { saveProductAction } from "../actions";
 

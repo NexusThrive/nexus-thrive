@@ -1,7 +1,7 @@
 import { db } from "@/prisma/db";
-import { toNumber } from "@/lib/format";
-import { applyStockMovement } from "@/lib/inventory/stock-service";
-import type { StockKind } from "../../inventory/inventory";
+import { toNumber } from "@/lib/foundation/format";
+import { applyStockMovement } from "@/lib/business/inventory/stock-service";
+import type { StockKind } from "../inventory/inventory";
 
 /** Catálogo e inventario del negocio (servidor, aislado por tenant). */
 

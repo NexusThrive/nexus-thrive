@@ -2,15 +2,15 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
 import { VERTICAL_LABELS, isVertical } from "@/lib/core/sectors/verticals";
 import { VERTICAL_RECIPES } from "@/lib/core/sectors/catalog";
-import { type ModuleValue } from "@/lib/capabilities/modules";
-import { CAPABILITIES } from "@/lib/capabilities/registry";
-import { groupFunctions } from "@/lib/functions/functions";
-import { setupStates } from "@/lib/functions/setup-db";
-import { usageSignals } from "@/lib/functions/signals-db";
-import { suggestFromUsage } from "@/lib/functions/suggestions";
-import { loadPricingConfig } from "@/lib/plans/settings";
-import { requireTenantContext } from "@/lib/tenant/context";
-import { tenantWithModules } from "@/lib/tenant/membership";
+import { type ModuleValue } from "@/lib/core/capabilities/modules";
+import { CAPABILITIES } from "@/lib/core/capabilities/registry";
+import { groupFunctions } from "@/lib/core/capabilities/discovery/functions";
+import { setupStates } from "@/lib/core/capabilities/discovery/setup-db";
+import { usageSignals } from "@/lib/core/capabilities/discovery/signals-db";
+import { suggestFromUsage } from "@/lib/core/capabilities/discovery/suggestions";
+import { loadPricingConfig } from "@/lib/core/entitlements/settings";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
+import { tenantWithModules } from "@/lib/core/tenancy/membership";
 import FunctionsView from "./_components/functions-view";
 
 /**

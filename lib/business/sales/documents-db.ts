@@ -1,9 +1,9 @@
 import { db } from "@/prisma/db";
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { accountingPort, type AccountingEvent } from "./accounting-port";
 import { fiscalQueuePort } from "./fiscal-port";
 import { numberingPort } from "./numbering-port";
-import { bogotaDay, todayCO } from "@/lib/plain-date";
+import { bogotaDay, todayCO } from "@/lib/foundation/dates/plain-date";
 import {
   canConvert,
   DOCUMENT_LABELS,

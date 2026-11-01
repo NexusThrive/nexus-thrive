@@ -9,7 +9,7 @@ import { AppTopbar } from "@/components/organisms/app-topbar";
 import { MobileTabBar } from "@/components/organisms/mobile-tab-bar";
 import { AppShellProvider, type ShellContextValue } from "@/components/providers/shell-context";
 import styles from "@/components/templates/tenant-shell.module.css";
-import type { QuickCreateAction } from "@/lib/navigation/quick-create";
+import type { QuickCreateAction } from "@/lib/experience/navigation/quick-create";
 import { opsActiveKey, opsNavFor } from "@/lib/platform/team/nav";
 import type { PermissionKey } from "@/lib/platform/team/permissions";
 import CommandPalette from "./command-palette";

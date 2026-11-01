@@ -11,9 +11,9 @@ import { Field } from "@/components/molecules/field";
 import { MoneyInput } from "@/components/molecules/money-input";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { formatCurrency } from "@/lib/format";
-import type { PartyRow } from "@/lib/parties/parties-db";
-import { orderTotals } from "@/lib/purchasing/purchases";
+import { formatCurrency } from "@/lib/foundation/format";
+import type { PartyRow } from "@/lib/core/parties/parties-db";
+import { orderTotals } from "@/lib/business/purchasing/purchases";
 import { createOrderAction } from "@/app/[tenant]/(app)/purchases/actions";
 
 export type ProductOption = { id: string; name: string; cost: number | null; stock: number };

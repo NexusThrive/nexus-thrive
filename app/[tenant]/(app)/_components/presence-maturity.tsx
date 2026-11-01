@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/atoms/badge";
-import type { Maturity } from "@/lib/presence/maturity";
+import type { Maturity } from "@/lib/business/presence/maturity";
 
 const LEVEL = { INICIAL: "Inicial", EN_CRECIMIENTO: "En crecimiento", CONSOLIDADO: "Consolidado" } as const;
 

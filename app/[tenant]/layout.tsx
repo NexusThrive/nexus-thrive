@@ -1,9 +1,9 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
-import { loadActiveTenant } from "@/lib/tenant/context";
+import { loadActiveTenant } from "@/lib/core/tenancy/context";
 import { expireBenefitTrial } from "@/lib/platform/benefits/benefits-db";
-import { verifiedEmailOf } from "@/lib/auth/session-email";
-import { resolveTenantMembership } from "@/lib/tenant/membership";
+import { verifiedEmailOf } from "@/lib/core/auth/session-email";
+import { resolveTenantMembership } from "@/lib/core/tenancy/membership";
 
 /**
  * Shell multi-tenant: acceso.

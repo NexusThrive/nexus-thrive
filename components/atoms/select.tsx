@@ -3,7 +3,7 @@
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { Check, ChevronDown } from "lucide-react";
-import { armPopoverMorph, SELECT_MORPH_SECONDS, type PopoverMorph } from "@/lib/motion";
+import { armPopoverMorph, SELECT_MORPH_SECONDS, type PopoverMorph } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 import { fieldClasses } from "./input";
 

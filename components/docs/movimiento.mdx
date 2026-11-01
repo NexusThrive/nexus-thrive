@@ -48,11 +48,11 @@ qué cambió, que se guardó); nunca adorna sin motivo.
 - **Cero librerías de animación.** El artifact usaba GSAP, Motion y AutoAnimate; aquí todo es
   CSS o Web Animations API (corren en el compositor, sin JS por cuadro).
 - Solo se animan `transform`, `opacity`, `filter` y `clip-path`.
-- Los resortes se **precalculan** (`lib/motion/spring.ts`) y se reproducen como keyframes.
+- Los resortes se **precalculan** (`lib/experience/motion/spring.ts`) y se reproducen como keyframes.
 - Contadores y odómetro escriben en el DOM sin re-renderizar React.
 - Un solo listener delegado para presión, foco de luz e imán (`MotionProvider`).
 
-## API (`lib/motion`)
+## API (`lib/experience/motion`)
 
 | Función | Qué hace |
 | --- | --- |

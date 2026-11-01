@@ -2,11 +2,11 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
 import { kindsForVertical, KIND_LABELS } from "@/lib/business/catalog/catalog-kinds";
 import { listProducts } from "@/lib/business/catalog/products-db";
-import { canManage } from "@/lib/auth/roles";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { canManage } from "@/lib/core/auth/roles";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { customerOptions } from "@/lib/business/customers/customers-db";
 import CatalogView from "./_components/catalog-view";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 /** Catálogo e inventario: lo que vende el negocio (productos, servicios, planes, entradas o tours según su rubro). */
 export default async function InventoryPage({ params, searchParams }: { params: Promise<{ tenant: string }>; searchParams: Promise<{ nuevo?: string }> }) {

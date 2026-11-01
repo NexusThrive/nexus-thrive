@@ -1,10 +1,10 @@
 import { Check, Sparkles } from "lucide-react";
-import { MODULE_LABELS, type ModuleValue } from "@/lib/capabilities/modules";
-import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
-import { PLANS, type Billing, type PlanKey } from "@/lib/plans/catalog";
+import { MODULE_LABELS, type ModuleValue } from "@/lib/core/capabilities/modules";
+import { MODULE_ICONS } from "@/lib/experience/onboarding/module-meta";
+import { PLANS, type Billing, type PlanKey } from "@/lib/core/entitlements/catalog";
 import type { TenantAccess } from "@/lib/platform/benefits/benefits-db";
 import { ConsumptionPanel } from "@/components/organisms/consumption-panel";
-import type { ConsumptionRow } from "@/lib/usage/consumption";
+import type { ConsumptionRow } from "@/lib/core/entitlements/consumption";
 
 export type PlanInfo = {
   plan: PlanKey;

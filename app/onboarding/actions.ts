@@ -2,11 +2,11 @@
 
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { organizationLimitProblem } from "@/lib/platform/admin/users-db";
-import { completeExistingTenant, createTenantWithOwner, onboardingMembership, onboardingTenant, slugInUse } from "@/lib/onboarding/onboarding-db";
-import { validateAdaptiveOnboarding } from "@/lib/onboarding/validation";
-import { suggestSlug } from "@/lib/onboarding/slug";
-import { quote as quotePlan } from "@/lib/plans/pricing";
-import { loadPricingConfig } from "@/lib/plans/settings";
+import { completeExistingTenant, createTenantWithOwner, onboardingMembership, onboardingTenant, slugInUse } from "@/lib/experience/onboarding/onboarding-db";
+import { validateAdaptiveOnboarding } from "@/lib/core/tenancy/onboarding/validation";
+import { suggestSlug } from "@/lib/core/tenancy/onboarding/slug";
+import { quote as quotePlan } from "@/lib/core/entitlements/pricing";
+import { loadPricingConfig } from "@/lib/core/entitlements/settings";
 import {
   applyBenefitCookie,
   clearBenefitCookie,
@@ -14,15 +14,15 @@ import {
 } from "@/lib/platform/benefits/benefit-cookie";
 import { getBenefitByCode } from "@/lib/platform/benefits/benefits-db";
 import { normalizeBenefitCode, type BenefitKind } from "@/lib/platform/benefits/benefits";
-import { SHOW_PRICING } from "@/lib/onboarding/flags";
-import { allowAttempt, recordAttempt } from "@/lib/rate-limit";
-import type { PlanKey, Billing } from "@/lib/plans/catalog";
-import { resolveModules } from "@/lib/plans/pricing";
-import { can } from "@/lib/auth/permissions";
+import { SHOW_PRICING } from "@/lib/experience/onboarding/flags";
+import { allowAttempt, recordAttempt } from "@/lib/foundation/rate-limit";
+import type { PlanKey, Billing } from "@/lib/core/entitlements/catalog";
+import { resolveModules } from "@/lib/core/entitlements/pricing";
+import { can } from "@/lib/core/auth/permissions";
 import type {
   AdaptiveOnboardingInput,
   OnboardingActionResult,
-} from "@/lib/onboarding/types";
+} from "@/lib/core/tenancy/onboarding/types";
 
 /**
  * Acción ÚNICA de finalización del onboarding adaptativo.

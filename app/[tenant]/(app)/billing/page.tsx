@@ -2,12 +2,12 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
 import { listInvoices } from "@/lib/business/sales/invoices-db";
 import { listProducts } from "@/lib/business/catalog/products-db";
-import { canHandleCash, canManage } from "@/lib/auth/roles";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { canHandleCash, canManage } from "@/lib/core/auth/roles";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { customerOptions } from "@/lib/business/customers/customers-db";
 import BillingList from "./_components/billing-list";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
-import { bogotaDay } from "@/lib/plain-date";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
+import { bogotaDay } from "@/lib/foundation/dates/plain-date";
 
 /** Facturación V1: cuentas de cobro y recibos numerados (la factura electrónica DIAN llega con un proveedor). */
 export default async function BillingPage({ params, searchParams }: { params: Promise<{ tenant: string }>; searchParams: Promise<{ nuevo?: string; doc?: string }> }) {

@@ -1,5 +1,5 @@
 /** Acciones de existencias en Storybook: datos de muestra, sin servidor ni base. */
-import type { CountDetail } from "@/lib/inventory/stock-docs-db";
+import type { CountDetail } from "@/lib/business/inventory/stock-docs-db";
 
 const wait = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms));
 

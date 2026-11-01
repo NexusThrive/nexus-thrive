@@ -1,5 +1,5 @@
-import { customerLimit } from "@/lib/tenant/customer-limit";
-import { syncCustomerParty } from "@/lib/parties/parties-db";
+import { customerLimit } from "@/lib/core/tenancy/customer-limit";
+import { syncCustomerParty } from "@/lib/core/parties/parties-db";
 import { db } from "@/prisma/db";
 import { withinLimit } from "@/lib/foundation/limits";
 

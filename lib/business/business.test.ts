@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { arqueo, expectedCash, replenishNeeded, validateCashMovement } from "./sales/cash";
-import { applyStock, stockLevel, validateStockMove } from "../inventory/inventory";
+import { applyStock, stockLevel, validateStockMove } from "./inventory/inventory";
 import { amountInWords, invoiceCode, invoiceTotal, validateLines } from "./sales/invoice";
 import { formatMoneyInput, liveFormat, parseMoney } from "./sales/money";
 

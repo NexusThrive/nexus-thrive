@@ -10,9 +10,9 @@ import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { formatCurrency } from "@/lib/format";
-import { canCancel, canClose, canMarkOrdered, canReceive, orderTotals, STATUS_LABELS } from "@/lib/purchasing/purchases";
-import type { OrderDetail } from "@/lib/purchasing/purchases-db";
+import { formatCurrency } from "@/lib/foundation/format";
+import { canCancel, canClose, canMarkOrdered, canReceive, orderTotals, STATUS_LABELS } from "@/lib/business/purchasing/purchases";
+import type { OrderDetail } from "@/lib/business/purchasing/purchases-db";
 import { cancelOrderAction, closeOrderAction, markOrderedAction, orderDetailAction, receiveOrderAction } from "@/app/[tenant]/(app)/purchases/actions";
 
 const TONES = { DRAFT: "muted", ORDERED: "warning", PARTIAL: "warning", RECEIVED: "success", CANCELED: "muted" } as const;

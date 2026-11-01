@@ -37,11 +37,11 @@ fi
 # cliente, p. ej. el MASTER PACK, indicado con una variable de entorno que no
 # está en el repositorio). Se ejecutan a mano:
 #   MASTER_PACK_FILE=/ruta/al/archivo.xlsx pnpm exec vitest run \
-#     lib/construction/apu-importer/master-pack-import.file.integration.test.ts
+#     lib/industry/construction/apu-importer/master-pack-import.file.integration.test.ts
 pnpm exec vitest run --testTimeout=20000 --no-file-parallelism \
   --exclude '**/*.file.integration.test.ts' \
   '.integration.test.ts' \
-  lib/tenant/db.archived-rejection.test.ts \
-  lib/tenant/db.cache-invalidation.test.ts \
-  lib/construction/apu-importer/price-behavior.test.ts \
-  lib/construction/apu-importer/field-changes.test.ts
+  lib/core/tenancy/db.archived-rejection.test.ts \
+  lib/core/tenancy/db.cache-invalidation.test.ts \
+  lib/industry/construction/apu-importer/price-behavior.test.ts \
+  lib/industry/construction/apu-importer/field-changes.test.ts

@@ -9,13 +9,13 @@ import {
   type AdminFormState,
 } from "../actions";
 import { VERTICAL_ICONS, VERTICAL_LABELS, VERTICALS, type VerticalValue } from "@/lib/core/sectors/verticals";
-import { MODULE_LABELS, MODULES } from "@/lib/capabilities/modules";
+import { MODULE_LABELS, MODULES } from "@/lib/core/capabilities/modules";
 import {
   TEAM_SIZE_LABELS,
   type OnboardingTenantType,
   type TeamSizeValue,
-} from "@/lib/onboarding/types";
-import { getOnboardingModulePreset } from "@/lib/onboarding/presets";
+} from "@/lib/core/tenancy/onboarding/types";
+import { getOnboardingModulePreset } from "@/lib/core/tenancy/onboarding/presets";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { labelClasses } from "@/components/atoms/input";

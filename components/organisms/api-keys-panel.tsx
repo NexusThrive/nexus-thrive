@@ -12,8 +12,8 @@ import { Field } from "@/components/molecules/field";
 import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { ResponsiveSheet, SheetCloseButton } from "@/components/organisms/responsive-sheet";
-import { formatRelativeTime } from "@/lib/format";
-import type { ApiKeyRow } from "@/lib/api/keys";
+import { formatRelativeTime } from "@/lib/foundation/format";
+import type { ApiKeyRow } from "@/lib/core/api/keys";
 
 export type CreateKeyInput = { name: string; environment: string; scopes: string[]; expiresInDays: number | null };
 export type CreateKeyOutcome =

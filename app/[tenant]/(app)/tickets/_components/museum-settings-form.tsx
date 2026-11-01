@@ -8,7 +8,7 @@ import { inputClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { WEEKDAYS, type MuseumSettings } from "@/lib/industry/museum/museum";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency } from "@/lib/foundation/format";
 import { saveMuseumSettingsAction, seedTicketTypesAction, type TicketResult } from "../actions";
 
 /** Aforo por franja, horarios, días de cierre, duración de la guiada y tipos de entrada. */

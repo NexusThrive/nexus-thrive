@@ -1,10 +1,10 @@
 import { after } from "next/server";
-import type { ApiDeps } from "@/lib/api/handler";
-import { authenticateApiKey, recordApiRequest } from "@/lib/api/keys";
-import { auditOperation } from "@/lib/operations/audit";
+import type { ApiDeps } from "@/lib/core/api/handler";
+import { authenticateApiKey, recordApiRequest } from "@/lib/core/api/keys";
+import { auditOperation } from "@/lib/core/operations/audit";
 import { OPERATIONS } from "@/lib/runtime/operations";
-import { consumeMeter, secondsToNextPeriod } from "@/lib/usage/meters";
-import { tenantWithModules } from "@/lib/tenant/membership";
+import { consumeMeter, secondsToNextPeriod } from "@/lib/core/entitlements/meters";
+import { tenantWithModules } from "@/lib/core/tenancy/membership";
 
 /**
  * Conexión de `/api/v1` y `/api/mcp` a la base y al registro de operaciones (compartida: misma llave, mismo registro de uso).

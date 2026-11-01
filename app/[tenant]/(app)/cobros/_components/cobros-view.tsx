@@ -15,9 +15,9 @@ import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { cancelIntentAction, confirmManualAction, createIntentAction, reconcileAction, refundAction } from "@/app/[tenant]/(app)/cobros/actions";
-import { STATUS_LABELS, payButtonHtml, type Reconciliation } from "@/lib/payments/intents";
-import type { IntentRow } from "@/lib/payments/intents-db";
-import { formatCurrency } from "@/lib/format";
+import { STATUS_LABELS, payButtonHtml, type Reconciliation } from "@/lib/domains/finance/payments/intents";
+import type { IntentRow } from "@/lib/domains/finance/payments/intents-db";
+import { formatCurrency } from "@/lib/foundation/format";
 
 type Run = { id: string; provider: string; day: string; expected: number; reported: number; matched: number; differences: Reconciliation["differences"] };
 type Tab = "links" | "recon";

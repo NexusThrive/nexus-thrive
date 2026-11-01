@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/molecules/print-button";
-import { can } from "@/lib/auth/permissions";
-import { receiptOf } from "@/lib/pos/pos-db";
-import { receiptLines } from "@/lib/pos/receipt";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { can } from "@/lib/core/auth/permissions";
+import { receiptOf } from "@/lib/business/pos/pos-db";
+import { receiptLines } from "@/lib/business/pos/receipt";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 /** Tiquete de una venta, listo para impresora térmica de 80 mm (o guardar como PDF). */
 export default async function ReceiptPage({ params }: { params: Promise<{ tenant: string; id: string }> }) {

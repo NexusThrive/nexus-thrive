@@ -1,6 +1,6 @@
 /* ==========================================================================
    Movimiento NEXUS THRIVE (compartido por todos los componentes).
-   Todo lo que puede ser CSS es CSS; el JS de lib/motion solo calcula
+   Todo lo que puede ser CSS es CSS; el JS de lib/experience/motion solo calcula
    resortes, contadores y partículas y los reproduce con la Web Animations
    API. Un único interruptor apaga todo: prefers-reduced-motion o
    <html data-motion="off"> (Ajustes → Reducir movimiento).
@@ -28,7 +28,7 @@ html[data-motion="off"] *::after {
   }
 }
 
-/* El cambio de tema lo anima lib/motion/theme-transition (barrido a 24°). */
+/* El cambio de tema lo anima lib/experience/motion/theme-transition (barrido a 24°). */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
@@ -56,7 +56,7 @@ html[data-motion="off"] *::after {
   }
 }
 
-/* --- Ráfaga de cortes (lib/motion burst) --- */
+/* --- Ráfaga de cortes (lib/experience/motion burst) --- */
 .nx-burst {
   position: fixed;
   inset: 0;
@@ -252,7 +252,7 @@ html[data-motion="off"] *::after {
   }
 }
 
-/* --- Paneles anclados que viajan desde su botón (lib/motion/popover-morph.ts) ---
+/* --- Paneles anclados que viajan desde su botón (lib/experience/motion/popover-morph.ts) ---
    Con `data-morph` el viaje lo dibuja GSAP (un solo dueño): se apaga la animación
    de entrada y la de salida solo sostiene el panel para que Radix no lo desmonte
    antes de que termine la reversa (480 ms + margen). */

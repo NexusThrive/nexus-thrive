@@ -1,4 +1,4 @@
-import { receiveProviderWebhook } from "@/lib/providers/inbound";
+import { receiveProviderWebhook } from "@/lib/integrations/providers/inbound";
 
 /**
  * Webhooks entrantes de proveedores (pasarelas, facturación electrónica…).

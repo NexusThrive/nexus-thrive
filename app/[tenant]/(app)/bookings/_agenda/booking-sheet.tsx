@@ -9,7 +9,7 @@ import { MoneyInput } from "@/components/molecules/money-input";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { bogotaParts } from "@/lib/business/scheduling/calendar";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency } from "@/lib/foundation/format";
 import { saveBookingAction } from "../agenda-actions";
 import type { AgendaBooking, AgendaOption, AgendaService } from "./types";
 import { Select } from "@/components/atoms/select";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { motionOff } from "@/lib/motion";
+import { motionOff } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 
 const DIGITS = "0123456789".split("");

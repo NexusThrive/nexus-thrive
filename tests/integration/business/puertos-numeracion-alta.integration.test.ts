@@ -6,10 +6,10 @@ import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { numberingPort, type NumberingPort } from "@/lib/business/sales/numbering-port";
 import { createDocument } from "@/lib/business/sales/documents-db";
-import { createResolution } from "@/lib/tax/tax-db";
-import { PortNotProvidedError } from "@/lib/ports";
-import { tenantProvisioningPort, type TenantProvisioningPort } from "@/lib/tenant/provisioning-port";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { createResolution } from "@/lib/domains/finance/tax/tax-db";
+import { PortNotProvidedError } from "@/lib/foundation/ports";
+import { tenantProvisioningPort, type TenantProvisioningPort } from "@/lib/core/tenancy/provisioning-port";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const normalize = (url: string | undefined) => (url ?? "").replace(/\?.*$/, "");

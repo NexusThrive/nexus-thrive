@@ -21,7 +21,7 @@ import {
   Users,
   UsersRound,
 } from "lucide-react";
-import type { NavGroup } from "@/lib/navigation/nav-types";
+import type { NavGroup } from "@/lib/core/capabilities/nav-types";
 import type { PermissionKey } from "./permissions";
 
 type OpsItem = {

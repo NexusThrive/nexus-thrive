@@ -1,9 +1,9 @@
 import { accountingPort } from "./accounting-port";
 import { db } from "@/prisma/db";
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { type InvoiceKind, type LineInput } from "./invoice";
 import { createDocument } from "./documents-db";
-import { bogotaDay } from "@/lib/plain-date";
+import { bogotaDay } from "@/lib/foundation/dates/plain-date";
 
 /** Recibos y cuentas de cobro del negocio (servidor). */
 

@@ -11,7 +11,7 @@ import { setTheme } from "@/components/atoms/theme-toggle";
 import { usePwa } from "@/components/providers/pwa";
 import { useQuickCreate } from "@/components/organisms/quick-create-host";
 import { usePalette, useShell } from "@/components/providers/shell-context";
-import { CAPABILITIES } from "@/lib/capabilities/registry";
+import { CAPABILITIES } from "@/lib/core/capabilities/registry";
 import { cn } from "@/lib/utils";
 
 const DESKTOP_QUERY = "(min-width: 768px)";

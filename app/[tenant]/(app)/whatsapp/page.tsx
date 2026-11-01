@@ -1,7 +1,7 @@
-import { createTenantDb } from "@/lib/tenant/db";
+import { createTenantDb } from "@/lib/core/tenancy/db";
 import { PageHeader } from "@/components/molecules/page-header";
 import { WhatsAppComposer } from "@/components/organisms/whatsapp-composer";
-import { requirePageContext } from "@/lib/tenant/context";
+import { requirePageContext } from "@/lib/core/tenancy/context";
 
 /**
  * Módulo WhatsApp: clientes activos con teléfono, plantillas y envío por

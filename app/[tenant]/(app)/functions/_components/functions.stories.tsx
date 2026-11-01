@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { withShell } from "../../../../../.storybook/decorators";
-import type { FunctionGroups, FunctionItem } from "@/lib/functions/functions";
+import type { FunctionGroups, FunctionItem } from "@/lib/core/capabilities/discovery/functions";
 import FunctionsView from "./functions-view";
 
 const item = (id: FunctionItem["id"], label: string, pitch: string, extra: Partial<FunctionItem> = {}): FunctionItem => ({ id, label, pitch, specialty: false, beta: false, planned: false, active: false, reason: null, needs: null, setup: null, category: "Clientes y agenda", ...extra });

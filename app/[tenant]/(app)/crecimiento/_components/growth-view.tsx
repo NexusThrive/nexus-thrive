@@ -14,10 +14,10 @@ import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { createLinkAction, handleReviewAction, toggleLinkAction, type GrowthResult } from "@/app/[tenant]/(app)/crecimiento/actions";
-import { googleReviewUrl } from "@/lib/growth/growth";
-import type { LinkRow, ReviewRow } from "@/lib/growth/growth-db";
-import type { OriginRow } from "@/lib/growth/growth";
-import { formatCurrency } from "@/lib/format";
+import { googleReviewUrl } from "@/lib/business/growth/growth";
+import type { LinkRow, ReviewRow } from "@/lib/business/growth/growth-db";
+import type { OriginRow } from "@/lib/business/growth/growth";
+import { formatCurrency } from "@/lib/foundation/format";
 
 type Tab = "links" | "report" | "reviews";
 const Stars = ({ n }: { n: number }) => <span role="img" aria-label={`${n} de 5 estrellas`} className="inline-flex">{[1, 2, 3, 4, 5].map((i) => <Star key={i} aria-hidden="true" className={`size-3.5 ${i <= n ? "fill-accent text-accent" : "text-border-strong"}`} />)}</span>;

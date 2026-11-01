@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { motionOff, spring } from "@/lib/motion";
+import { motionOff, spring } from "@/lib/experience/motion/index";
 
 /** Elementos que se hunden al presionarlos y vuelven con un resorte. */
 const PRESS_SELECTOR = "[data-press], .nx-press";

@@ -14,7 +14,7 @@ import {
   redeemBenefit,
   type RedeemResult,
 } from "@/lib/platform/benefits/benefits-db";
-import type { OnboardingBenefit } from "@/lib/onboarding/types";
+import type { OnboardingBenefit } from "@/lib/core/tenancy/onboarding/types";
 
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 14;
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { IncomeChart } from "@/components/organisms/income-chart";
-import { entryOf, type ChartData, type ChartType } from "@/lib/dashboard/chart-catalog";
+import { entryOf, type ChartData, type ChartType } from "@/lib/experience/dashboard/chart-catalog";
 import { DonutChart } from "./donut-chart";
 import { GaugeChart } from "./gauge-chart";
 import { SeriesChart } from "./series-chart";

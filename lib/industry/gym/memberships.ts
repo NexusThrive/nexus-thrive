@@ -10,7 +10,7 @@
  *   presentación y las reglas de negocio usan America/Bogota.
  */
 
-import { bogotaToday, parsePlainDate, type PlainDate } from "@/lib/plain-date";
+import { bogotaToday, parsePlainDate, type PlainDate } from "@/lib/foundation/dates/plain-date";
 
 export const MEMBERSHIP_TYPES = [
   { value: "mensual", label: "Mensual", months: 1 },

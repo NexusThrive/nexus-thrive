@@ -2,12 +2,12 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 import { PageHeader } from "@/components/molecules/page-header";
-import { loadPresence } from "@/lib/presence/load";
+import { loadPresence } from "@/lib/business/presence/load";
 import PresencePanel from "../_components/presence-panel";
 import PresenceMaturity from "../_components/presence-maturity";
 import PresencePillars from "../_components/presence-pillars";
-import { presenceV2 } from "@/lib/presence/pillars-db";
-import { requirePageContext } from "@/lib/tenant/context";
+import { presenceV2 } from "@/lib/business/presence/pillars-db";
+import { requirePageContext } from "@/lib/core/tenancy/context";
 
 /**
  * Presence Thrive (página completa). Aquí vive todo el detalle —puntaje por

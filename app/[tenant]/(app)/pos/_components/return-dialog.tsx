@@ -9,9 +9,9 @@ import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { findSaleAction, returnSaleAction } from "@/app/[tenant]/(app)/pos/actions";
-import { PAYMENT_METHODS } from "@/lib/finance";
-import { formatCurrency } from "@/lib/format";
-import type { SaleToReturn } from "@/lib/pos/returns-db";
+import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
+import { formatCurrency } from "@/lib/foundation/format";
+import type { SaleToReturn } from "@/lib/business/pos/returns-db";
 
 /** Modal pequeño de devolución: busca la venta por su número y elige qué unidades vuelven. */
 export default function ReturnDialog({ slug, open, onClose }: { slug: string; open: boolean; onClose: () => void }) {

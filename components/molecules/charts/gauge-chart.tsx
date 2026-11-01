@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useRef } from "react";
 import { RollingNumber } from "@/components/atoms/rolling-number";
-import { EASE_OUT, motionOff } from "@/lib/motion";
+import { EASE_OUT, motionOff } from "@/lib/experience/motion/index";
 
 /**
  * Medidor semicircular: qué parte de `of` representa `value` (balance sobre

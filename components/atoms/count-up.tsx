@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef } from "react";
-import { expoOut, motionOff } from "@/lib/motion";
+import { expoOut, motionOff } from "@/lib/experience/motion/index";
 
 /** Formatos con nombre: se pueden pasar desde componentes de servidor. */
 const NAMED_FORMATS = {

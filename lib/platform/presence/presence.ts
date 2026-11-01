@@ -1,6 +1,6 @@
 import { db } from "@/prisma/db";
-import { computePresence, type PresenceCheck, type PresenceState, type WebsiteSignal } from "@/lib/presence/presence";
-import { toIso } from "@/lib/presence/dates";
+import { computePresence, type PresenceCheck, type PresenceState, type WebsiteSignal } from "@/lib/business/presence/presence";
+import { toIso } from "@/lib/business/presence/dates";
 
 /**
  * Vista del Operations Center: presencia digital de cada negocio. Reúne en

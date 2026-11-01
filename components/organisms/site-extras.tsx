@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createLeadAction } from "@/app/s/[slug]/actions";
-import { DIRECT, originFromParams, sanitizeOrigin, type Origin } from "@/lib/growth/growth";
+import { DIRECT, originFromParams, sanitizeOrigin, type Origin } from "@/lib/business/growth/growth";
 
 /**
  * Atribución del sitio público: al llegar con `utm_*` en la URL se guarda el origen 30 días (el primero que trajo al

@@ -8,7 +8,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { textareaClasses } from "@/components/atoms/input";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime } from "@/lib/foundation/format";
 import { allowedTransitions, isOpenStatus, statusMeta, TICKET_CATEGORIES, TICKET_PRIORITIES, type TicketStatusValue } from "@/lib/platform/support/support-rules";
 import type { TicketMessageRow, TicketRow } from "@/lib/platform/support/tickets";
 import { cn } from "@/lib/utils";

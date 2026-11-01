@@ -9,14 +9,14 @@ import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { fiscalQueuePort, type FiscalQueuePort } from "@/lib/business/sales/fiscal-port";
 import { createDocument } from "@/lib/business/sales/documents-db";
-import { setFiscalEnabled } from "@/lib/einvoice/einvoice-db";
-import { connectGoogle } from "@/lib/google/google-db";
-import { checkoutPort, type CheckoutPort } from "@/lib/payments/checkout-port";
-import { createIntent, publicIntent } from "@/lib/payments/intents-db";
-import { PortNotProvidedError } from "@/lib/ports";
-import { listingPort, type ListingPort } from "@/lib/presence/listing-port";
-import { encryptCredentials } from "@/lib/providers/connections";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { setFiscalEnabled } from "@/lib/integrations/einvoice/einvoice-db";
+import { connectGoogle } from "@/lib/integrations/google/google-db";
+import { checkoutPort, type CheckoutPort } from "@/lib/domains/finance/payments/checkout-port";
+import { createIntent, publicIntent } from "@/lib/domains/finance/payments/intents-db";
+import { PortNotProvidedError } from "@/lib/foundation/ports";
+import { listingPort, type ListingPort } from "@/lib/business/presence/listing-port";
+import { encryptCredentials } from "@/lib/integrations/providers/connections";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const normalize = (url: string | undefined) => (url ?? "").replace(/\?.*$/, "");
@@ -151,7 +151,7 @@ describe.skipIf(!TEST_URL)("puertos hacia las integraciones (integración)", () 
     });
 
     test("sin el puerto conectado, medir la presencia falla de forma visible", async () => {
-      const { refreshPresence } = await import("@/lib/presence/pillars-db");
+      const { refreshPresence } = await import("@/lib/business/presence/pillars-db");
       await withoutPort("google-listing", async () => {
         await expect(refreshPresence(tenantId)).rejects.toThrow(PortNotProvidedError);
       });

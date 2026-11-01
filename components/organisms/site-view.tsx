@@ -1,7 +1,7 @@
 import { MessageCircle } from "lucide-react";
 import { AttributionCapture, ContactForm } from "@/components/organisms/site-extras";
 import { AddToCart, CartDock } from "@/components/organisms/store-cart";
-import { TEMPLATES, mapUrl, onAccent, whatsappUrl, type SiteData } from "@/lib/site/site";
+import { TEMPLATES, mapUrl, onAccent, whatsappUrl, type SiteData } from "@/lib/experience/site/site";
 
 const peso = (n: number) => n.toLocaleString("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 });
 

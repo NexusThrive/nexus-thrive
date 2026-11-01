@@ -3,15 +3,15 @@
 import { createContext, useContext, useMemo, useState, type MouseEvent } from "react";
 import { usePathname } from "next/navigation";
 import type { VerticalValue } from "@/lib/core/sectors/verticals";
-import type { ModuleValue } from "@/lib/capabilities/modules";
+import type { ModuleValue } from "@/lib/core/capabilities/modules";
 import {
   buildTenantNav,
   isNavActive,
   tenantRelativePath,
   type NavGroup,
   type NavItem,
-} from "@/lib/navigation/tenant-nav";
-import { quickCreateActions, type QuickCreateAction } from "@/lib/navigation/quick-create";
+} from "@/lib/experience/navigation/tenant-nav";
+import { quickCreateActions, type QuickCreateAction } from "@/lib/experience/navigation/quick-create";
 
 /**
  * Contrato del shell: lo que necesitan la barra lateral, la superior, la

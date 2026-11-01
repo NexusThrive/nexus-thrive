@@ -2,12 +2,12 @@ import { Badge, StatusDot } from "@/components/atoms/badge";
 import {
   paymentStatusLabel,
   type PaymentStatusValue,
-} from "@/lib/finance";
+} from "@/lib/foundation/kernel/payment-vocabulary";
 import {
   MEMBERSHIP_STATUSES,
   type MembershipStatusValue,
 } from "@/lib/industry/gym/memberships";
-import type { CustomerAccountStatus } from "@/lib/tenant/db";
+import type { CustomerAccountStatus } from "@/lib/core/tenancy/db";
 
 type DotTone = "success" | "danger" | "warning" | "muted";
 

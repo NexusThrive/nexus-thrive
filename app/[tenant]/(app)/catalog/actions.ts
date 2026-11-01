@@ -1,13 +1,13 @@
 "use server";
 
-import { readImageUpload } from "@/lib/image-upload";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { readImageUpload } from "@/lib/foundation/image-upload";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { revalidatePath } from "next/cache";
-import { importApuItems } from "@/lib/construction/catalog-import";
-import { createAuth, type NexusRole } from "@/lib/auth/authorization";
+import { importApuItems } from "@/lib/industry/construction/catalog-import";
+import { createAuth, type NexusRole } from "@/lib/core/auth/authorization";
 import { getQuoteTerms, type QuoteTerms } from "@/lib/core/sectors/terms";
-import type { ApuItemCategoryValue } from "@/lib/construction/apu-engine";
-import { isUniqueViolation } from "@/lib/db-errors";
+import type { ApuItemCategoryValue } from "@/lib/industry/construction/apu-engine";
+import { isUniqueViolation } from "@/lib/foundation/db/db-errors";
 import {
   validateApuActivity,
   validateApuItem,
@@ -19,7 +19,7 @@ import {
   type ApuItemFormValues,
 } from "./validators";
 
-import { createConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 
 /** Capa de datos de construcción del negocio activo (Core no la conoce). */
 const construction = (context: { tenantId: string }) => createConstructionDb(context.tenantId);

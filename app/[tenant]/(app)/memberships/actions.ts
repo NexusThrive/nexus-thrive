@@ -1,11 +1,11 @@
 "use server";
 
-import { requireTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { revalidatePath } from "next/cache";
-import { createTenantDb } from "@/lib/tenant/db";
-import { formatDateShort } from "@/lib/format";
+import { createTenantDb } from "@/lib/core/tenancy/db";
+import { formatDateShort } from "@/lib/foundation/format";
 import { createMembershipWithCharge, renewMembershipWithCharge } from "@/lib/industry/gym/memberships-db";
-import { can } from "@/lib/auth/permissions";
+import { can } from "@/lib/core/auth/permissions";
 import {
   bogotaEndOfDay,
   bogotaStartOfDay,
@@ -14,7 +14,7 @@ import {
   typeMonths,
   typeLabel,
 } from "@/lib/industry/gym/memberships";
-import { addMonths, bogotaToday, parsePlainDate } from "@/lib/plain-date";
+import { addMonths, bogotaToday, parsePlainDate } from "@/lib/foundation/dates/plain-date";
 import {
   validateMembership,
   validateRenewal,

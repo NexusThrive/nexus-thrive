@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { STATUS_LABELS } from "@/lib/payments/intents";
-import { publicIntent } from "@/lib/payments/intents-db";
-import { formatCurrency } from "@/lib/format";
+import { STATUS_LABELS } from "@/lib/domains/finance/payments/intents";
+import { publicIntent } from "@/lib/domains/finance/payments/intents-db";
+import { formatCurrency } from "@/lib/foundation/format";
 
 export const metadata: Metadata = { title: "Cobro · NEXUS THRIVE", robots: { index: false } };
 

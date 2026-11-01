@@ -1,11 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { canManage } from "@/lib/auth/roles";
-import { createParty, type DuplicateMatch, type PartyInput } from "@/lib/parties/parties-db";
-import { cancelOrder, closeOrder, createOrder, getOrder, markOrdered, receiveOrder, type OrderDetail, type OrderInput, type ReceiveInput } from "@/lib/purchasing/purchases-db";
-import { logTenantAction } from "@/lib/tenant/audit";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { canManage } from "@/lib/core/auth/roles";
+import { createParty, type DuplicateMatch, type PartyInput } from "@/lib/core/parties/parties-db";
+import { cancelOrder, closeOrder, createOrder, getOrder, markOrdered, receiveOrder, type OrderDetail, type OrderInput, type ReceiveInput } from "@/lib/business/purchasing/purchases-db";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type PurchaseActionResult = { ok: true; message?: string; id?: string } | { ok: false; message: string };
 const DENIED = { ok: false as const, message: "Solo el dueño o administración maneja las compras." };

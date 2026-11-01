@@ -1,14 +1,14 @@
 import { notFound } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
-import { getAppBaseUrl } from "@/lib/app-url";
-import { can } from "@/lib/auth/permissions";
-import { growthReport, listLinks, listReviews, reputationOf } from "@/lib/growth/growth-db";
-import { listingView } from "@/lib/google/google-db";
-import { siteForEditor } from "@/lib/site/site-db";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { getAppBaseUrl } from "@/lib/foundation/app-url";
+import { can } from "@/lib/core/auth/permissions";
+import { growthReport, listLinks, listReviews, reputationOf } from "@/lib/business/growth/growth-db";
+import { listingView } from "@/lib/integrations/google/google-db";
+import { siteForEditor } from "@/lib/experience/site/site-db";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import GrowthView from "./_components/growth-view";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 /** Campañas con enlaces cortos y UTM, de dónde vienen tus ventas y tus reseñas. */
 export default async function GrowthPage({ params }: { params: Promise<{ tenant: string }> }) {

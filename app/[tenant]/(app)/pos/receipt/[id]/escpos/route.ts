@@ -1,7 +1,7 @@
-import { can } from "@/lib/auth/permissions";
-import { receiptOf } from "@/lib/pos/pos-db";
-import { escposBytes, receiptLines } from "@/lib/pos/receipt";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { can } from "@/lib/core/auth/permissions";
+import { receiptOf } from "@/lib/business/pos/pos-db";
+import { escposBytes, receiptLines } from "@/lib/business/pos/receipt";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 /** Bytes ESC/POS del tiquete para una app de impresión térmica (Bluetooth/USB). */
 export async function GET(_request: Request, { params }: { params: Promise<{ tenant: string; id: string }> }) {

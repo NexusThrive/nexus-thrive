@@ -9,8 +9,8 @@ import { Select } from "@/components/atoms/select";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { validateTransfer } from "@/lib/inventory/stock-docs";
-import type { OverviewRow } from "@/lib/inventory/stock-docs-db";
+import { validateTransfer } from "@/lib/business/inventory/stock-docs";
+import type { OverviewRow } from "@/lib/business/inventory/stock-docs-db";
 import { createTransferAction } from "@/app/[tenant]/(app)/stock/actions";
 import type { WarehouseOption } from "./stock-view";
 

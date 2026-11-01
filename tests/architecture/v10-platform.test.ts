@@ -94,14 +94,14 @@ describe("piezas neutrales que antes colgaban de módulos de Nexus (M4)", () => 
     expect(read("lib/platform/crm/leads.ts") + (exists("lib/platform/crm/leads.ts") ? read("lib/platform/crm/leads.ts") : "")).not.toMatch(/todayBogota/);
   });
 
-  test("Core no importa la administración de la plataforma: las acciones BIZ_* las define Core (lib/tenant/audit.ts) y la plataforma las compone", () => {
-    const tenant = read("lib/tenant/audit.ts");
+  test("Core no importa la administración de la plataforma: las acciones BIZ_* las define Core (lib/core/tenancy/audit.ts) y la plataforma las compone", () => {
+    const tenant = read("lib/core/tenancy/audit.ts");
     expect(tenant).not.toMatch(/@\/lib\/(admin|platform)\b/);
     expect(tenant).toMatch(/export type TenantAuditAction =\s*\n\s*\| "BIZ_PAYMENT_VOID"/);
     const admin = exists("lib/platform/admin/db.ts") ? read("lib/platform/admin/db.ts") : read("lib/platform/admin/db.ts");
-    expect(admin).toContain('import type { TenantAuditAction } from "@/lib/tenant/audit"');
+    expect(admin).toContain('import type { TenantAuditAction } from "@/lib/core/tenancy/audit"');
     expect(admin).not.toMatch(/\| "BIZ_/);
-    const offenders = [...files("lib/tenant"), ...files("lib/auth"), ...files("lib/core"), ...files("lib/plans"), ...files("lib/operations"), ...files("lib/events")]
+    const offenders = [...files("lib/core")]
       .filter((f) => !/\.test\./.test(f))
       .filter((f) => importsOf(f).some((s: string) => /^@\/lib\/(admin\/(db|users-db|account-limits|audit-labels)|ops|benefits|platform)\b/.test(s)));
     expect(offenders).toEqual([]);
@@ -116,7 +116,7 @@ describe("piezas neutrales que antes colgaban de módulos de Nexus (M4)", () => 
   });
 
   test("ningún módulo de Business ni de Core importa el programa de beneficios", () => {
-    const offenders = [...files("lib/business"), ...files("lib/data-exchange"), ...files("lib/tenant"), ...files("lib/plans")]
+    const offenders = [...files("lib/business"), ...files("lib/core")]
       .filter((f) => !/\.test\./.test(f))
       .filter((f) => importsOf(f).some((s: string) => /^@\/lib\/(benefits|platform\/benefits)\b/.test(s)));
     expect(offenders).toEqual([]);
@@ -162,10 +162,12 @@ describe("módulos de lib/platform (M4)", () => {
 });
 
 describe("estructura final de platform (M4)", () => {
-  test("lib/ops y lib/benefits ya no existen y lib/admin solo conserva lo que no es administración de la plataforma", () => {
+  test("lib/ops, lib/benefits y lib/admin ya no existen (catalogs.ts está en core/tenancy y vertical-icons.ts en experience)", () => {
     expect(exists("lib/ops")).toBe(false);
     expect(exists("lib/benefits")).toBe(false);
-    expect(readdirSync(join(ROOT, "lib/admin")).sort()).toEqual(["catalogs.ts", "vertical-icons.ts"]);
+    expect(exists("lib/admin")).toBe(false);
+    expect(exists("lib/core/tenancy/catalogs.ts")).toBe(true);
+    expect(exists("lib/experience/vertical-icons.ts")).toBe(true);
     expect(readdirSync(join(ROOT, "lib/platform")).sort()).toEqual(["accounts", "admin", "benefits", "billing", "crm", "inbox", "presence", "support", "team"]);
   });
 
@@ -192,7 +194,7 @@ describe("estructura final de platform (M4)", () => {
   });
 
   test("la prueba de aislamiento por negocio sigue vigilando benefits y excluye solo las ocho carpetas del panel", () => {
-    const text = read("lib/tenant/tenant-scope.test.ts");
+    const text = read("lib/core/tenancy/tenant-scope.test.ts");
     const dirs = /const PLATFORM_DIRS = \[(.*?)\];/.exec(text)![1].match(/"[^"]+"/g)!.map((d) => d.slice(1, -1)).sort();
     expect(dirs).toEqual(["accounts", "admin", "billing", "crm", "inbox", "presence", "support", "team"].map((m) => `lib/platform/${m}/`));
     expect(dirs).not.toContain("lib/platform/benefits/");

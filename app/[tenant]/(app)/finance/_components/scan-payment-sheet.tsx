@@ -13,10 +13,10 @@ import { Keypad, applyKey, type KeypadKey } from "@/components/molecules/keypad"
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { ReceiptPrinter, type ReceiptData } from "@/components/organisms/receipt-printer";
-import { PAYMENT_METHODS, type PaymentMethodValue } from "@/lib/finance";
-import { spring } from "@/lib/motion";
+import { PAYMENT_METHODS, type PaymentMethodValue } from "@/lib/foundation/kernel/payment-vocabulary";
+import { spring } from "@/lib/experience/motion/index";
 import { receiptQrDataUrl, receiptQrPayload } from "@/lib/business/sales/receipt-qr";
-import { bestCopAmount, guessPaymentMethod, parseQrPaymentPayload } from "@/lib/finance/payment-scan";
+import { bestCopAmount, guessPaymentMethod, parseQrPaymentPayload } from "@/lib/experience/payment-input/payment-scan";
 import { cn } from "@/lib/utils";
 import { registerScannedPaymentAction } from "../actions";
 import { Select } from "@/components/atoms/select";

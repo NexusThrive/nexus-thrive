@@ -1,9 +1,9 @@
 "use server";
 
-import { requireTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { auth } from "@clerk/nextjs/server";
 
-import { createConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 
 /** Capa de datos de construcción del negocio activo (Core no la conoce). */
 const construction = (context: { tenantId: string }) => createConstructionDb(context.tenantId);
@@ -16,13 +16,13 @@ export type ActionState = {
 
 export type InformeCeroResult = {
   status: "ok" | "error";
-  data?: import("@/lib/construction/report-engine").InformeCeroData;
+  data?: import("@/lib/industry/construction/report-engine").InformeCeroData;
   message?: string;
 };
 
 export type WeeklyReportResult = {
   status: "ok" | "error";
-  data?: import("@/lib/construction/report-engine").WeeklyReportData;
+  data?: import("@/lib/industry/construction/report-engine").WeeklyReportData;
   message?: string;
 };
 
@@ -127,7 +127,7 @@ export async function exportBomCsvAction(
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
     const resources = await construction(context).reports.getBomExportData(projectId);
-    const { generateBomCsv } = await import("@/lib/construction/report-engine");
+    const { generateBomCsv } = await import("@/lib/industry/construction/report-engine");
     const csv = generateBomCsv(resources);
 
     const project = await construction(context).projects.get(projectId);

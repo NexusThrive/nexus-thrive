@@ -10,7 +10,7 @@ import { NMark } from "@/components/atoms/n-mark";
 import { Alert } from "@/components/molecules/alert";
 import { Field } from "@/components/molecules/field";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { burstFrom, shake } from "@/lib/motion";
+import { burstFrom, shake } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 
 export type ExpenseSaveInput = {

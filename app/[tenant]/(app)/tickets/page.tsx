@@ -8,10 +8,10 @@ import { UrlSegmentedControl } from "@/components/molecules/url-segmented-contro
 import { addDaysKey } from "@/lib/business/scheduling/calendar";
 import { slotLoads, visitorReport, weekdayOf, WEEKDAYS } from "@/lib/industry/museum/museum";
 import { getMuseumSettings, salesBetween, salesOn, ticketTypes } from "@/lib/industry/museum/museum-db";
-import { canHandleCash, canManage } from "@/lib/auth/roles";
-import { bogotaDayKey } from "@/lib/finance/series";
-import { formatCurrency } from "@/lib/format";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { canHandleCash, canManage } from "@/lib/core/auth/roles";
+import { bogotaDayKey } from "@/lib/foundation/kernel/finance-series";
+import { formatCurrency } from "@/lib/foundation/format";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { customerOptions } from "@/lib/business/customers/customers-db";
 import TicketDesk from "./_components/ticket-desk";
 import VisitorReportView from "./_components/visitor-report";

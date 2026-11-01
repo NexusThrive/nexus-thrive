@@ -1,20 +1,20 @@
-import type { TenantAuditAction } from "@/lib/tenant/audit";
+import type { TenantAuditAction } from "@/lib/core/tenancy/audit";
 import { and, or } from "@prisma/orm-postgres/orm-client";
-import { tenantProvisioningPort } from "@/lib/tenant/provisioning-port";
+import { tenantProvisioningPort } from "@/lib/core/tenancy/provisioning-port";
 import { db } from "@/prisma/db";
 import {
   formatCurrency,
   formatDateShort,
   formatRelativeTime,
   toNumber,
-} from "@/lib/format";
+} from "@/lib/foundation/format";
 import {
   paymentStatusLabel,
   type PaymentMethodValue,
-} from "@/lib/finance";
+} from "@/lib/foundation/kernel/payment-vocabulary";
 import { type VerticalValue } from "@/lib/core/sectors/verticals";
-import { MODULES, sortModules, type ModuleValue } from "@/lib/capabilities/modules";
-import type { OnboardingTenantType } from "@/lib/onboarding/types";
+import { MODULES, sortModules, type ModuleValue } from "@/lib/core/capabilities/modules";
+import type { OnboardingTenantType } from "@/lib/core/tenancy/onboarding/types";
 
 /** Vigencia de la invitación al dueño de un negocio creado desde el panel. */
 const OWNER_INVITE_DAYS = 14;
@@ -22,7 +22,7 @@ const OWNER_INVITE_DAYS = 14;
 /**
  * Capa de datos GLOBAL de la plataforma (capa /admin).
  *
- * A diferencia de `lib/tenant/db.ts`, estas consultas NO están scoped a un
+ * A diferencia de `lib/core/tenancy/db.ts`, estas consultas NO están scoped a un
  * tenant: operan sobre todos los negocios. Se mantiene deliberadamente
  * separado para no romper el aislamiento conceptual Platform ↔ Tenant.
  *
@@ -292,7 +292,7 @@ export type AuditAction =
   | "BENEFIT_UPDATE"
   | "BENEFIT_REDEEM"
   | "TENANT_DELETE"
-  // Dentro de un negocio: los define lib/tenant/audit.ts (Core), que es quien los usa
+  // Dentro de un negocio: los define lib/core/tenancy/audit.ts (Core), que es quien los usa
   | TenantAuditAction;
 
 export type AuditLogInput = {
@@ -353,7 +353,7 @@ const ROLE_LABELS: Record<"SUPERADMIN" | "OWNER" | "STAFF" | "ADMIN" | "RECEPTIO
   ADVISOR: "Asesor",
 };
 
-import { escapeLike } from "@/lib/sql-like";
+import { escapeLike } from "@/lib/foundation/db/sql-like";
 import { AUDIT_ACTION_LABELS } from "./audit-labels";
 export { AUDIT_ACTION_LABELS };
 

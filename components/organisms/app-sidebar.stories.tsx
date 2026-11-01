@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { withShell } from "../../.storybook/decorators";
 import { AppShellProvider } from "@/components/providers/shell-context";
 import { opsNavFor } from "@/lib/platform/team/nav";
-import { buildTenantNav } from "@/lib/navigation/tenant-nav";
+import { buildTenantNav } from "@/lib/experience/navigation/tenant-nav";
 import { AppSidebar } from "./app-sidebar";
 
 const meta = {

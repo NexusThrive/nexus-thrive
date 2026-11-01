@@ -12,9 +12,9 @@ import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import ReturnDialog from "./return-dialog";
 import { closeTurnAction, createTerminalAction, openTurnAction, scanBarcodeAction, sellAction } from "@/app/[tenant]/(app)/pos/actions";
-import { cartTotals, settlePayments, tipFor } from "@/lib/pos/cart";
-import { formatCurrency } from "@/lib/format";
-import { PAYMENT_METHODS } from "@/lib/finance";
+import { cartTotals, settlePayments, tipFor } from "@/lib/business/pos/cart";
+import { formatCurrency } from "@/lib/foundation/format";
+import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 
 export type PosProduct = { id: string; name: string; price: number; stock: number | null; sku: string | null; taxRatePct: number };
 export type PosTerminalOption = { id: string; name: string; busy: boolean };

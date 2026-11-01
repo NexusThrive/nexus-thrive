@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 
-import type { ModuleValue } from "@/lib/capabilities/modules";
+import type { ModuleValue } from "@/lib/core/capabilities/modules";
 import ProfileTab from "./profile-tab";
 import TeamTab, { type Seats } from "./team-tab";
-import type { PendingInvite, TeamMember as BusinessMember } from "@/lib/tenant/team-db";
+import type { PendingInvite, TeamMember as BusinessMember } from "@/lib/core/tenancy/team-db";
 import PlanTab, { type PlanInfo } from "./plan-tab";
 import DangerTab from "./danger-tab";
 import AccountTab, { type MyAccount } from "./account-tab";
@@ -14,7 +14,7 @@ import { CreditCard, Palette, Store, TriangleAlert, UserRound, Users } from "luc
 import { SectionNav } from "@/components/molecules/section-nav";
 import { PageHeader } from "@/components/molecules/page-header";
 import type { VerticalValue } from "@/lib/core/sectors/verticals";
-import type { BusinessModel } from "@/lib/tenant/business-context";
+import type { BusinessModel } from "@/lib/core/tenancy/business-context";
 import { AppearanceSettings } from "@/components/organisms/appearance-settings";
 
 

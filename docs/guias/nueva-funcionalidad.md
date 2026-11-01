@@ -2,7 +2,7 @@
 
 [← Guías](README.md)
 
-La receta que sigue el código hoy. Cada paso tiene una prueba o una regla de
+La receta que sigue el código hoy. **Antes de crear o mover código, decide el área y el módulo con [`guia-implementacion-lib.md`](../architecture/guia-implementacion-lib.md)** (las rutas de abajo ya reflejan la estructura V10). Cada paso tiene una prueba o una regla de
 lint que avisa si te lo saltas. Antes de empezar, lee el flujo de ramas y
 versiones en [devops.md](devops.md).
 
@@ -15,7 +15,7 @@ app/[tenant]/(app)/<ruta>/
   page.tsx            ← delgada: contexto → repositorio → componentes
   actions.ts          ← "use server": contexto → permiso → validación → servicio
   _components/        ← cliente; recibe datos y permisos ya resueltos por props
-lib/<dominio>/
+lib/<área>/<módulo>/        (ver guia-implementacion-lib.md para elegir el área)
   <algo>.ts           ← reglas puras (validar, calcular). Se prueban sin base
   <algo>-db.ts        ← repositorio: recibe tenantId, filtra SIEMPRE por él
   <algo>.test.ts      ← unitarias
@@ -24,12 +24,12 @@ lib/<dominio>/
 
 | Necesitas… | Usa | Archivo |
 |---|---|---|
-| Saber quién es y de qué negocio | `requirePageContext(slug, route)` en páginas · `requireTenantContext(slug, route)` en acciones | `lib/tenant/context.ts` |
-| Saber si su rol puede | `can(ctx.role, "<permiso>")` | `lib/business/permissions.ts` |
-| Mover dinero (cobrar, pagar, vender, anular) | `moneyTransaction`, `recordIncome`, `payInvoice`, `sellProduct`, `voidPayment` | `lib/business/money-service.ts` |
-| Dejar rastro de algo sensible | `logTenantAction(ctx, "BIZ_…", {...})` | `lib/tenant/audit.ts` |
-| Leer o escribir datos del negocio | Un repositorio de `lib/` que recibe `tenantId` | `lib/business/*-db.ts`, `createTenantDb` en `lib/tenant/db.ts` |
-| Que la pantalla aparezca en el menú | Entrada en `MODULE_NAV` | `lib/navigation/tenant-nav.ts` |
+| Saber quién es y de qué negocio | `requirePageContext(slug, route)` en páginas · `requireTenantContext(slug, route)` en acciones | `lib/core/tenancy/context.ts` |
+| Saber si su rol puede | `can(ctx.role, "<permiso>")` | `lib/core/auth/permissions.ts` |
+| Mover dinero (cobrar, pagar, vender, anular) | `moneyTransaction`, `recordIncome`, `payInvoice`, `sellProduct`, `voidPayment` | `lib/business/sales/money-service.ts` |
+| Dejar rastro de algo sensible | `logTenantAction(ctx, "BIZ_…", {...})` | `lib/core/tenancy/audit.ts` |
+| Leer o escribir datos del negocio | Un repositorio de `lib/` que recibe `tenantId` | `lib/business/<módulo>/*-db.ts`, `createTenantDb` en `lib/core/tenancy/db.ts` |
+| Que la pantalla aparezca en el menú | Entrada en `MODULE_NAV` | `lib/experience/navigation/tenant-nav.ts` |
 
 Prohibido en `app/`: importar `@/prisma/db` o abrir `moneyTransaction` (ESLint lo bloquea, sin excepciones), redefinir o
 renombrar `requireTenantContext`/`requirePageContext` (lo bloquea
@@ -44,12 +44,12 @@ El caso más común (por ejemplo: "exportar el inventario", "nota en un cobro").
 ### Paso 1 · La regla pura y su prueba
 
 ```ts
-// lib/business/inventory.ts
+// lib/business/inventory/inventory.ts
 export function validateExport(input: ExportInput): string | null { … }
 ```
 
 ```ts
-// lib/business/inventory.test.ts
+// lib/business/inventory/inventory.test.ts
 test("no exporta un rango vacío", () => { … });
 ```
 
@@ -59,7 +59,7 @@ Recibe `tenantId` como primer argumento y lo pone en **cada** `where`. No
 recibe nunca el `slug` ni confía en datos del navegador para saber el negocio.
 
 ```ts
-// lib/business/products-db.ts
+// lib/business/catalog/products-db.ts
 export async function listForExport(tenantId: string, filter: ExportFilter) {
   return db.orm.public.Product.where({ tenantId, active: true }) … .all();
 }
@@ -134,11 +134,11 @@ texto validado (`isModule`): **no hace falta migración**.
 
 | # | Dónde | Qué |
 |---|---|---|
-| 1 | `lib/capabilities/registry.ts` | Una entrada: id, nombres, descripción, icono, estado (`PLANNED` hasta que funcione), precio y menú (rutas, con rubros si son propias de un rubro) |
+| 1 | `lib/core/capabilities/registry.ts` | Una entrada: id, nombres, descripción, icono, estado (`PLANNED` hasta que funcione), precio y menú (rutas, con rubros si son propias de un rubro) |
 | 2 | `app/[tenant]/(app)/<ruta>/` | `page.tsx` + `actions.ts` siguiendo la receta A |
-| 3 | (opcional) `lib/admin/catalogs.ts` → `VERTICAL_RECIPES` | Si viene activado por defecto en algún rubro |
+| 3 | (opcional) `lib/core/sectors/catalog.ts` → `VERTICAL_RECIPES` | Si viene activado por defecto en algún rubro |
 
-`lib/capabilities/registry.test.ts` comprueba que cada ruta del menú tenga su
+`lib/core/capabilities/registry.test.ts` comprueba que cada ruta del menú tenga su
 página y que los catálogos derivados no se desalineen. En una base que ya
 existe, la fila de precio (`ModuleSetting`) se crea sola al cargar el catálogo.
 
@@ -173,7 +173,7 @@ durante el despliegue.
 - [ ] La página llama a `requirePageContext(tenant, "/<ruta>")`.
 - [ ] Cada acción llama a `requireTenantContext(slug, "/<ruta>")` y a `can(...)`.
 - [ ] Ningún archivo nuevo de `app/` importa `@/prisma/db`.
-- [ ] Todo `where` del repositorio lleva `tenantId` (lo exige `lib/tenant/tenant-scope.test.ts`).
+- [ ] Todo `where` del repositorio lleva `tenantId` (lo exige `lib/core/tenancy/tenant-scope.test.ts`).
 - [ ] El dinero pasa por `money-service.ts`.
 - [ ] Lo destructivo o sensible deja `logTenantAction`.
 - [ ] Hay prueba: unitaria para la regla; integración si toca datos (y está en

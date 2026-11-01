@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { Wordmark } from "@/components/atoms/wordmark";
-import { homeTenantFor } from "@/lib/tenant/membership";
+import { homeTenantFor } from "@/lib/core/tenancy/membership";
 import { normalizeBenefitCode } from "@/lib/platform/benefits/benefits";
 import { getBenefitByCode } from "@/lib/platform/benefits/benefits-db";
 import { claimBenefitAction, redeemBenefitAction } from "./actions";

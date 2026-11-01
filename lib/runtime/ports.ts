@@ -1,19 +1,19 @@
-import { seedAccounting } from "@/lib/accounting/accounting-db";
-import { cashAccountFor, postByRule, reverseSource } from "@/lib/accounting/ledger-db";
+import { seedAccounting } from "@/lib/domains/finance/accounting/accounting-db";
+import { cashAccountFor, postByRule, reverseSource } from "@/lib/domains/finance/accounting/ledger-db";
 import { accountingPort } from "@/lib/business/sales/accounting-port";
 import { fiscalQueuePort } from "@/lib/business/sales/fiscal-port";
 import { numberingPort } from "@/lib/business/sales/numbering-port";
-import { paymentGatewayPort } from "@/lib/store/payment-gateway-port";
-import { checkoutPort } from "@/lib/payments/checkout-port";
-import { connectedGateways, createIntent } from "@/lib/payments/intents-db";
-import { listingPort } from "@/lib/presence/listing-port";
-import { enqueueFiscal } from "@/lib/einvoice/einvoice-db";
-import { listingView } from "@/lib/google/google-db";
-import { decryptCredentials } from "@/lib/providers/connections";
-import { wompiCheckoutUrl } from "@/lib/providers/wompi";
-import { providedPorts } from "@/lib/ports";
-import { allocateNumber, commitNumber, withholdingsFor } from "@/lib/tax/tax-db";
-import { tenantProvisioningPort } from "@/lib/tenant/provisioning-port";
+import { paymentGatewayPort } from "@/lib/business/store/payment-gateway-port";
+import { checkoutPort } from "@/lib/domains/finance/payments/checkout-port";
+import { connectedGateways, createIntent } from "@/lib/domains/finance/payments/intents-db";
+import { listingPort } from "@/lib/business/presence/listing-port";
+import { enqueueFiscal } from "@/lib/integrations/einvoice/einvoice-db";
+import { listingView } from "@/lib/integrations/google/google-db";
+import { decryptCredentials } from "@/lib/integrations/providers/connections";
+import { wompiCheckoutUrl } from "@/lib/integrations/providers/wompi";
+import { providedPorts } from "@/lib/foundation/ports";
+import { allocateNumber, commitNumber, withholdingsFor } from "@/lib/domains/finance/tax/tax-db";
+import { tenantProvisioningPort } from "@/lib/core/tenancy/provisioning-port";
 
 /**
  * Raíz de composición: conecta cada puerto declarado por un dominio con la implementación de otro.

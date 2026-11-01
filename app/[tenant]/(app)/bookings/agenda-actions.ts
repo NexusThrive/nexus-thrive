@@ -5,7 +5,7 @@ import { bookingsOverlapping, isActiveTeamMember, markBookingReminder, saveBooki
 import { customerBelongs } from "@/lib/business/customers/customers-db";
 import { bogotaToMs, capacityLeft, staffConflict } from "@/lib/business/scheduling/calendar";
 import { getProduct } from "@/lib/business/catalog/products-db";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type AgendaResult = { ok: true; message?: string; id?: string } | { ok: false; message: string; field?: string };
 const DATE = /^\d{4}-\d{2}-\d{2}$/;

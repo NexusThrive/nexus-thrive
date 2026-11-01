@@ -27,55 +27,55 @@ describe("operaciones por dominio", () => {
   });
 
   test.each([
-    ["lib/inventory/operations.ts", "inventory"],
-    ["lib/purchasing/operations.ts", "purchases"],
-    ["lib/presence/operations.ts", "presence"],
+    ["lib/business/inventory/operations.ts", "inventory"],
+    ["lib/business/purchasing/operations.ts", "purchases"],
+    ["lib/business/presence/operations.ts", "presence"],
   ])("%s declara las operaciones de su dominio", (file) => {
     expect(exists(file)).toBe(true);
   });
 
-  test.each(["inventory", "purchases", "presence"])("lib/operations/definitions/%s.ts ya no existe", (name) => {
-    expect(exists(`lib/operations/definitions/${name}.ts`)).toBe(false);
+  test.each(["inventory", "purchases", "presence"])("lib/core/operations/definitions/%s.ts ya no existe", (name) => {
+    expect(exists(`lib/core/operations/definitions/${name}.ts`)).toBe(false);
   });
 
   test("el motor, los tipos y las definiciones de Core no importan ningún dominio", () => {
-    const core = ["lib/operations/engine.ts", "lib/operations/types.ts", "lib/operations/audit.ts", "lib/operations/definitions/business.ts", "lib/operations/definitions/customers.ts", "lib/operations/definitions/events.ts", "lib/operations/definitions/finance.ts", "lib/operations/definitions/parties.ts"];
+    const core = ["lib/core/operations/engine.ts", "lib/core/operations/types.ts", "lib/core/operations/audit.ts", "lib/core/operations/definitions/business.ts", "lib/core/operations/definitions/customers.ts", "lib/core/operations/definitions/events.ts", "lib/core/operations/definitions/finance.ts", "lib/core/operations/definitions/parties.ts"];
     for (const file of core) {
-      const dominios = importsOf(file).filter((s) => /@\/lib\/(inventory|purchasing|presence|catalog|business|accounting|tax|receivables)\b/.test(s));
+      const dominios = importsOf(file).filter((s) => /@\/lib\/(inventory|purchasing|presence|catalog|business|domains\/finance)\b/.test(s));
       expect(dominios, file).toEqual([]);
     }
   });
 
   test("el registro es la raíz de composición: está en la capa runtime (V10 · M1) y reúne los dominios", () => {
     expect(classify("lib/runtime/operations.ts", layers)?.layer).toBe("runtime");
-    expect(classify("lib/operations/engine.ts", layers)?.layer).toBe("core");
+    expect(classify("lib/core/operations/engine.ts", layers)?.layer).toBe("core");
     const imports = importsOf("lib/runtime/operations.ts");
-    for (const dominio of ["@/lib/inventory/operations", "@/lib/purchasing/operations", "@/lib/presence/operations"]) expect(imports).toContain(dominio);
+    for (const dominio of ["@/lib/business/inventory/operations", "@/lib/business/purchasing/operations", "@/lib/business/presence/operations"]) expect(imports).toContain(dominio);
   });
 });
 
 describe("suscriptores de eventos", () => {
   test("el despachador (Core) no importa ningún dominio", () => {
-    const dominios = importsOf("lib/events/dispatcher.ts").filter((i) => /@\/lib\/(presence|business|inventory|store|accounting)\b/.test(i));
+    const dominios = importsOf("lib/core/events/dispatcher.ts").filter((i) => /@\/lib\/(presence|business|inventory|store|domains\/finance)\b/.test(i));
     expect(dominios).toEqual([]);
   });
 
   test("el suscriptor de presencia vive en su dominio y la ruta de cron lo entrega", () => {
-    expect(exists("lib/presence/subscribers.ts")).toBe(true);
+    expect(exists("lib/business/presence/subscribers.ts")).toBe(true);
     expect(read("app/api/cron/webhooks/route.ts")).toContain("dispatchPending({ subscribers: [presenceSubscriber] })");
   });
 
   test("`subscribers` es obligatorio: no hay un valor por defecto que lo omita en silencio", () => {
-    expect(read("lib/events/dispatcher.ts")).toMatch(/export async function dispatchPending\(deps: DispatchDeps\)/);
-    expect(read("lib/events/dispatcher.ts")).toMatch(/subscribers: readonly EventSubscriber\[\];/);
+    expect(read("lib/core/events/dispatcher.ts")).toMatch(/export async function dispatchPending\(deps: DispatchDeps\)/);
+    expect(read("lib/core/events/dispatcher.ts")).toMatch(/subscribers: readonly EventSubscriber\[\];/);
   });
 });
 
 describe("límite de clientes del plan", () => {
   test("la política vive en Core, junto a la de usuarios, y Business no la define", () => {
-    expect(exists("lib/tenant/customer-limit.ts")).toBe(true);
+    expect(exists("lib/core/tenancy/customer-limit.ts")).toBe(true);
     expect(read("lib/business/customers/customers-db.ts")).not.toMatch(/export async function customerLimit/);
-    expect(importsOf("lib/usage/consumption-db.ts").some((i) => i.startsWith("@/lib/business/"))).toBe(false);
+    expect(importsOf("lib/core/entitlements/consumption-db.ts").some((i) => i.startsWith("@/lib/business/"))).toBe(false);
   });
 });
 

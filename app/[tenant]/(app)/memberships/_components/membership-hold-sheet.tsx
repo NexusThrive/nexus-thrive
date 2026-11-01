@@ -9,8 +9,8 @@ import { useToast } from "@/components/molecules/toast";
 import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { MAX_FREEZE_DAYS } from "@/lib/industry/gym/gym";
-import { bogotaDayKey } from "@/lib/finance/series";
-import { formatDateShort } from "@/lib/format";
+import { bogotaDayKey } from "@/lib/foundation/kernel/finance-series";
+import { formatDateShort } from "@/lib/foundation/format";
 import { cancelMembershipAction, freezeMembershipAction, unfreezeMembershipAction, type AccessActionResult } from "../../crm/[id]/access-actions";
 import type { MembershipViewRow } from "./membership-table";
 

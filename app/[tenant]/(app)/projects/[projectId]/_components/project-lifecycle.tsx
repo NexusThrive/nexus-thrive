@@ -10,7 +10,7 @@ import {
   projectStatusNeedsBaselineWarning,
   isTerminalProjectStatus,
   type ProjectStatusValue,
-} from "@/lib/construction/project-domain";
+} from "@/lib/industry/construction/project-domain";
 import {
   updateProjectAction,
   updateProjectStatusAction,

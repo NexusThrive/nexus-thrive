@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { Banknote, Bell, CalendarClock, Clock, MinusCircle, X } from "lucide-react";
-import { EASE_IN_OUT, armPopoverMorph, flash, motionOff, spring, type PopoverMorph } from "@/lib/motion";
-import { newArrivals, unreadCount, type AppNotification, type NotificationKind } from "@/lib/dashboard/notifications";
-import { NOTIFICATIONS_REFRESH, type NotificationArrival } from "@/lib/dashboard/notifications-client";
+import { EASE_IN_OUT, armPopoverMorph, flash, motionOff, spring, type PopoverMorph } from "@/lib/experience/motion/index";
+import { newArrivals, unreadCount, type AppNotification, type NotificationKind } from "@/lib/experience/dashboard/notifications";
+import { NOTIFICATIONS_REFRESH, type NotificationArrival } from "@/lib/experience/dashboard/notifications-client";
 import { cn } from "@/lib/utils";
 
 const ICONS: Record<NotificationKind, typeof Bell> = {

@@ -1,9 +1,9 @@
 import { timingSafeEqual } from "node:crypto";
-import { markAbandonedOrders } from "@/lib/store/store-db";
-import { sendWeeklyReports } from "@/lib/presence/pillars-db";
-import { dispatchPending } from "@/lib/events/dispatcher";
-import { presenceSubscriber } from "@/lib/presence/subscribers";
-import { processPendingProviderEvents } from "@/lib/providers/inbound";
+import { markAbandonedOrders } from "@/lib/business/store/store-db";
+import { sendWeeklyReports } from "@/lib/business/presence/pillars-db";
+import { dispatchPending } from "@/lib/core/events/dispatcher";
+import { presenceSubscriber } from "@/lib/business/presence/subscribers";
+import { processPendingProviderEvents } from "@/lib/integrations/providers/inbound";
 
 /**
  * Reintenta eventos de proveedores sin procesar y despacha el outbox: reparte eventos nuevos y envía/reintenta webhooks.

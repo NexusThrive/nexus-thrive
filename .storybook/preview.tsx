@@ -1,6 +1,6 @@
 import type { Decorator, Preview } from "@storybook/nextjs-vite";
 import { withThemeByClassName } from "@storybook/addon-themes";
-import { fontVariables } from "@/lib/fonts";
+import { fontVariables } from "@/lib/experience/fonts";
 import { MotionProvider } from "@/components/providers/motion-provider";
 import { PreferencesProvider } from "@/components/providers/preferences";
 import "../app/globals.css";

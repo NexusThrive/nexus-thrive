@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { addMonths, bogotaDay, bogotaToday, formatPlainDate, parsePlainDate, todayCO } from "@/lib/plain-date";
+import { addMonths, bogotaDay, bogotaToday, formatPlainDate, parsePlainDate, todayCO } from "@/lib/foundation/dates/plain-date";
 
 describe("parsePlainDate", () => {
   test("acepta YYYY-MM-DD válidas", () => {
@@ -95,7 +95,7 @@ describe("bogotaDay (fecha de negocio en Colombia)", () => {
 });
 
 describe("todayCO (el día de Bogotá de un instante en milisegundos)", () => {
-  /** La fórmula anterior de lib/tax/tax.ts: restar 5 horas al instante UTC y cortar. */
+  /** La fórmula anterior de lib/domains/finance/tax/tax.ts: restar 5 horas al instante UTC y cortar. */
   const anterior = (now: number) => new Date(now - 5 * 3_600_000).toISOString().slice(0, 10);
 
   test("da el mismo día que la fórmula anterior en una barrida de instantes, incluidos los límites de día, mes y año", () => {

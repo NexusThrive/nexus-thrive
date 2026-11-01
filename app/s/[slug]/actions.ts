@@ -1,10 +1,10 @@
 "use server";
 
 import { headers } from "next/headers";
-import { allowAttempt, recordAttempt } from "@/lib/rate-limit";
-import { createLead, createReview } from "@/lib/growth/growth-db";
-import { placeOrder, type PlaceResult } from "@/lib/store/store-db";
-import type { CartLine, CustomerData } from "@/lib/store/cart";
+import { allowAttempt, recordAttempt } from "@/lib/foundation/rate-limit";
+import { createLead, createReview } from "@/lib/business/growth/growth-db";
+import { placeOrder, type PlaceResult } from "@/lib/business/store/store-db";
+import type { CartLine, CustomerData } from "@/lib/business/store/cart";
 
 /**
  * Pedido de la tienda pública (sin sesión). Se limita por dirección IP para que nadie llene de pedidos falsos

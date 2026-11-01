@@ -1,8 +1,8 @@
 "use server";
 
-import { bogotaRange } from "@/lib/finance/series";
-import type { MovementRow } from "@/lib/tenant/db";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { bogotaRange } from "@/lib/foundation/kernel/finance-series";
+import type { MovementRow } from "@/lib/core/tenancy/db";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type MovementsResult = { ok: true; rows: MovementRow[]; truncated: boolean } | { ok: false; message: string };
 

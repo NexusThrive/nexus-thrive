@@ -1,7 +1,7 @@
 "use server";
 
-import { requireTenantContext } from "@/lib/tenant/context";
-import { saveMemberTheme } from "@/lib/tenant/membership";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
+import { saveMemberTheme } from "@/lib/core/tenancy/membership";
 
 /** Guarda el tema (claro u oscuro) en la cuenta de la persona. */
 export async function saveThemeAction(tenantSlug: string, theme: string): Promise<void> {

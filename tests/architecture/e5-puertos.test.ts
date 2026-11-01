@@ -7,7 +7,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
-import { providedPorts } from "@/lib/ports";
+import { providedPorts } from "@/lib/foundation/ports";
 import { composePorts } from "@/lib/runtime/ports";
 
 const ROOT = join(import.meta.dirname, "..", "..");
@@ -23,7 +23,7 @@ function sources(dir: string): string[] {
 
 /** Nombres de los puertos declarados en el código: `definePort<…>("nombre")`. */
 const declarados = sources("lib").flatMap((file) => [...read(file).matchAll(/definePort<[\s\S]*?>\(\s*["']([^"']+)["']\s*\)/g)].map((m) => m[1]).map((name) => ({ name, file })))
-  .filter((p) => p.file !== "lib/ports.ts");
+  .filter((p) => p.file !== "lib/foundation/ports.ts");
 
 describe("puertos entre dominios", () => {
   test("hay puertos declarados y cada uno tiene un nombre único", () => {

@@ -172,8 +172,8 @@ aprueba, se crea la línea base (Informe Cero) y el presupuesto se bloquea. La
 planificación Lean, la bitácora con fotos y las actas de avance alimentan el
 informe semanal con valor ganado.
 
-El código vive en `lib/construction/*` (datos por dominio),
-`lib/construction/apu-importer/*` (importador) y
+El código vive en `lib/industry/construction/*` (datos por dominio),
+`lib/industry/construction/apu-importer/*` (importador) y
 `app/[tenant]/(app)/{projects,quotes,catalog}`.
 
 ## Tecnologías
@@ -258,7 +258,7 @@ pnpm build
 ```
 
 El CI (`.github/workflows/ci.yml`) ejecuta todo esto sobre un Postgres efímero.
-El test `lib/construction/apu-importer/master-pack*.file*.test.ts` verifica un
+El test `lib/industry/construction/apu-importer/master-pack*.file*.test.ts` verifica un
 pack APU real si se le pasa `MASTER_PACK_FILE=/ruta/al/archivo.xlsx`.
 
 - Cómo preparar la base de pruebas: [`docs/guias/pruebas.md`](docs/guias/pruebas.md).

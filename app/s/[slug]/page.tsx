@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SiteView } from "@/components/organisms/site-view";
-import { getAppBaseUrl } from "@/lib/app-url";
-import { jsonLd } from "@/lib/site/site";
-import { publicSite } from "@/lib/site/site-db";
+import { getAppBaseUrl } from "@/lib/foundation/app-url";
+import { jsonLd } from "@/lib/experience/site/site";
+import { publicSite } from "@/lib/experience/site/site-db";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const site = await publicSite((await params).slug);

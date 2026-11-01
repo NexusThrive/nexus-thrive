@@ -1,11 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { canManage } from "@/lib/auth/roles";
-import { createWarehouse } from "@/lib/inventory/kardex";
-import { cancelCount, createCount, createTransfer, finalizeCount, getCount, saveCountLines, setReorderLevels, type CountDetail, type TransferInput } from "@/lib/inventory/stock-docs-db";
-import { logTenantAction } from "@/lib/tenant/audit";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { canManage } from "@/lib/core/auth/roles";
+import { createWarehouse } from "@/lib/business/inventory/kardex";
+import { cancelCount, createCount, createTransfer, finalizeCount, getCount, saveCountLines, setReorderLevels, type CountDetail, type TransferInput } from "@/lib/business/inventory/stock-docs-db";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type StockResult = { ok: true; message: string; id?: string } | { ok: false; message: string };
 const DENIED = { ok: false as const, message: "Solo el dueño o administración maneja el inventario." };

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { withShell } from "../../../../../.storybook/decorators";
-import { ageItems, balanceOf, bucketOf, daysOverdue } from "@/lib/receivables/aging";
-import type { Cartera } from "@/lib/receivables/receivables-db";
+import { ageItems, balanceOf, bucketOf, daysOverdue } from "@/lib/foundation/kernel/aging";
+import type { Cartera } from "@/lib/domains/finance/receivables/receivables-db";
 import CarteraView from "./cartera-view";
 
 const TODAY = "2026-10-24";

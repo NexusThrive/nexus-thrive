@@ -1,7 +1,7 @@
 import { StatTile } from "@/components/molecules/stat-tile";
 import { PrintButton } from "@/components/molecules/print-button";
 import type { VisitorReport } from "@/lib/industry/museum/museum";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency } from "@/lib/foundation/format";
 
 const dayLabel = (day: string, opts: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("es-CO", { ...opts, timeZone: "UTC" }).format(new Date(`${day}T12:00:00Z`));
 

@@ -1,8 +1,8 @@
 "use server";
 
 import { isVertical } from "@/lib/core/sectors/verticals";
-import { checkModuleToggle } from "@/lib/plans/compat";
-import { loadPricingConfig } from "@/lib/plans/settings";
+import { checkModuleToggle } from "@/lib/core/entitlements/compat";
+import { loadPricingConfig } from "@/lib/core/entitlements/settings";
 
 import { clerkClient } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
@@ -11,7 +11,7 @@ import type { PermissionKey } from "@/lib/platform/team/permissions";
 import { revalidatePath } from "next/cache";
 import { organizationLimitProblem } from "@/lib/platform/admin/users-db";
 import { createAdminDb, type AuditLogInput } from "@/lib/platform/admin/db";
-import { validateSlug, type SlugValidation } from "@/lib/admin/catalogs";
+import { validateSlug, type SlugValidation } from "@/lib/core/tenancy/catalogs";
 import {
   validateSuspendTenant,
   validateTenantForm,

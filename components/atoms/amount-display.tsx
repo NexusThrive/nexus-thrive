@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { spring } from "@/lib/motion";
+import { spring } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 
 /**

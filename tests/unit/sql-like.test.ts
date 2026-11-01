@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { escapeLike } from "@/lib/sql-like";
+import { escapeLike } from "@/lib/foundation/db/sql-like";
 
 describe("escapeLike", () => {
   test("deja intacto el texto sin comodines", () => {

@@ -3,7 +3,7 @@
  * Core con los aportes de otras capacidades sin conocerlas. Función pura.
  */
 import { describe, expect, test } from "vitest";
-import { buildCustomer360, type Customer360Base, type Customer360Contribution, type CustomerTimelineEvent } from "@/lib/tenant/db";
+import { buildCustomer360, type Customer360Base, type Customer360Contribution, type CustomerTimelineEvent } from "@/lib/core/tenancy/db";
 
 const event = (id: string, type: CustomerTimelineEvent["type"], date: string): CustomerTimelineEvent => ({ id, type, date, title: id });
 

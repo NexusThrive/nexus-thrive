@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Wordmark } from "@/components/atoms/wordmark";
-import { getAppBaseUrl } from "@/lib/app-url";
+import { getAppBaseUrl } from "@/lib/foundation/app-url";
 import { publicReceipt, verifyReceiptToken } from "@/lib/business/sales/finance-db";
 import { receiptQrDataUrl, receiptQrPayload } from "@/lib/business/sales/receipt-qr";
 import { receiptCode } from "@/lib/business/sales/invoice";
-import { paymentMethodLabel, type PaymentMethodValue } from "@/lib/finance";
-import { formatCurrency, toNumber } from "@/lib/format";
+import { paymentMethodLabel, type PaymentMethodValue } from "@/lib/foundation/kernel/payment-vocabulary";
+import { formatCurrency, toNumber } from "@/lib/foundation/format";
 
 export const metadata: Metadata = { title: "Recibo de pago", robots: { index: false } };
 

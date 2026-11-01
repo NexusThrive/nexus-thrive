@@ -1,11 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getAppBaseUrl } from "@/lib/app-url";
-import { can } from "@/lib/auth/permissions";
-import { adoptAsWebsite, saveSite, setPublished, type SiteInput } from "@/lib/site/site-db";
-import { logTenantAction } from "@/lib/tenant/audit";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { getAppBaseUrl } from "@/lib/foundation/app-url";
+import { can } from "@/lib/core/auth/permissions";
+import { adoptAsWebsite, saveSite, setPublished, type SiteInput } from "@/lib/experience/site/site-db";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type SiteResult = { ok: true; message: string } | { ok: false; message: string; field?: string };
 

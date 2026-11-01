@@ -1,5 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
-import { readApuImageFor } from "@/lib/files/stored-files";
+import { readApuImageFor } from "@/lib/core/files/stored-files";
 import { staffCanViewAccounts } from "@/lib/platform/team/access";
 
 /**

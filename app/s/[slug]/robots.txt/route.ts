@@ -1,6 +1,6 @@
-import { getAppBaseUrl } from "@/lib/app-url";
-import { robotsTxt } from "@/lib/site/site";
-import { publicSite } from "@/lib/site/site-db";
+import { getAppBaseUrl } from "@/lib/foundation/app-url";
+import { robotsTxt } from "@/lib/experience/site/site";
+import { publicSite } from "@/lib/experience/site/site-db";
 
 export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

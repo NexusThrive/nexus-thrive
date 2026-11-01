@@ -7,7 +7,7 @@
  * son la vista estática del catálogo base y no cambian con los registros en caliente.
  */
 
-import { withChildModules, type ModuleValue } from "@/lib/capabilities/modules";
+import { withChildModules, type ModuleValue } from "@/lib/core/capabilities/modules";
 import type { QuoteTerms, VerticalTerms } from "./lexicon";
 import { SIGNUP_VERTICALS, VERTICALS, VERTICAL_ICONS, VERTICAL_LABELS, type VerticalValue } from "./verticals";
 

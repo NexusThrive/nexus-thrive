@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { quickCreateActions } from "@/lib/navigation/quick-create";
+import { quickCreateActions } from "@/lib/experience/navigation/quick-create";
 import QuickActions from "./quick-actions";
 
 const meta = {

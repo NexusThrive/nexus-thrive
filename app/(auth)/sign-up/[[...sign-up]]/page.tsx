@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { SignUp } from "@clerk/nextjs";
-import { clerkAppearance } from "@/lib/auth/clerk-appearance";
+import { clerkAppearance } from "@/lib/core/auth/clerk-appearance";
 
 export const metadata: Metadata = { title: "Crear cuenta · NEXUS THRIVE" };
 

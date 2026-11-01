@@ -1,12 +1,12 @@
-import { createTenantDb } from "@/lib/tenant/db";
+import { createTenantDb } from "@/lib/core/tenancy/db";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import CustomerToolbar from "./_components/customer-toolbar";
 import CustomerTable, { type CustomerRow } from "./_components/customer-table";
 import type { CustomerSort, CustomerStatus } from "./_components/customer-filters";
 import { PageHeader } from "@/components/molecules/page-header";
-import { requirePageContext } from "@/lib/tenant/context";
-import { can } from "@/lib/auth/permissions";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { requirePageContext } from "@/lib/core/tenancy/context";
+import { can } from "@/lib/core/auth/permissions";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 const PAGE_SIZE = 20;
 

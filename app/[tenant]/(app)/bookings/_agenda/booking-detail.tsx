@@ -8,7 +8,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { bogotaParts, reminderText } from "@/lib/business/scheduling/calendar";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency } from "@/lib/foundation/format";
 import { markReminderAction, setBookingStatusAction } from "../agenda-actions";
 import type { AgendaBooking } from "./types";
 

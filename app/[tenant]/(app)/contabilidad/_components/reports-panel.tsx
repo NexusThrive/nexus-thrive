@@ -10,8 +10,8 @@ import { Select } from "@/components/atoms/select";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { Field } from "@/components/molecules/field";
 import { reportAction } from "@/app/[tenant]/(app)/contabilidad/actions";
-import type { ReportResult } from "@/lib/accounting/reports-db";
-import { formatCurrency } from "@/lib/format";
+import type { ReportResult } from "@/lib/domains/finance/accounting/reports-db";
+import { formatCurrency } from "@/lib/foundation/format";
 
 const LABELS = { trial: "Balance de prueba", income: "Estado de resultados", balance: "Balance general", journal: "Libro diario", ledger: "Libro mayor (una cuenta)", auxiliary: "Auxiliar por tercero (una cuenta)" } as const;
 type Kind = keyof typeof LABELS;

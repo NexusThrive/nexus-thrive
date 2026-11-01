@@ -5,7 +5,7 @@
  * incorpora registrándolo (sin tocar módulos compartidos) y el registro rechaza definiciones incompletas.
  */
 import { afterEach, describe, expect, test } from "vitest";
-import { MODULES, withChildModules } from "@/lib/capabilities/modules";
+import { MODULES, withChildModules } from "@/lib/core/capabilities/modules";
 import { DEFAULT_MODULES_BY_VERTICAL, SECTOR_CATALOG, VERTICAL_RECIPES, type SectorDefinition } from "@/lib/core/sectors/catalog";
 import { findSector, getSector, listSectors, registerSector } from "@/lib/core/sectors/registry";
 import { getQuoteTerms, getVerticalTerms, hasMemberAccess } from "@/lib/core/sectors/terms";

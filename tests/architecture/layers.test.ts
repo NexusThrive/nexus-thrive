@@ -37,23 +37,23 @@ describe("clasificación y reglas", () => {
     expect(classify("lib/industry/gym/gym-db.ts", layers)).toMatchObject({ layer: "industry", industry: "gym" });
     expect(classify("lib/industry/museum/museum-db.ts", layers)).toMatchObject({ layer: "industry", industry: "museum" });
     expect(classify("lib/business/customers/customers-db.ts", layers)?.layer).toBe("business");
-    expect(classify("lib/construction/quotes.ts", layers)?.industry).toBe("construction");
-    expect(classify("lib/events/outbox.ts", layers)?.layer).toBe("core");
+    expect(classify("lib/industry/construction/quotes.ts", layers)?.industry).toBe("construction");
+    expect(classify("lib/core/events/outbox.ts", layers)?.layer).toBe("core");
   });
 
   test("importar hacia abajo o dentro de la misma capa está permitido", () => {
     const c = (f: string) => classify(f, layers);
-    expect(ruleFor(c("lib/business/customers/customers-db.ts"), c("lib/tenant/context.ts"), layers)).toBeNull();
-    expect(ruleFor(c("lib/construction/quotes.ts"), c("lib/business/customers/customers-db.ts"), layers)).toBeNull();
-    expect(ruleFor(c("lib/construction/quotes.ts"), c("lib/construction/budget.ts"), layers)).toBeNull();
-    expect(ruleFor(c("app/[tenant]/page.tsx"), c("lib/construction/quotes.ts"), layers)).toBeNull();
+    expect(ruleFor(c("lib/business/customers/customers-db.ts"), c("lib/core/tenancy/context.ts"), layers)).toBeNull();
+    expect(ruleFor(c("lib/industry/construction/quotes.ts"), c("lib/business/customers/customers-db.ts"), layers)).toBeNull();
+    expect(ruleFor(c("lib/industry/construction/quotes.ts"), c("lib/industry/construction/budget.ts"), layers)).toBeNull();
+    expect(ruleFor(c("app/[tenant]/page.tsx"), c("lib/industry/construction/quotes.ts"), layers)).toBeNull();
   });
 
   test("devuelve la regla incumplida", () => {
     const c = (f: string) => classify(f, layers);
-    expect(ruleFor(c("lib/business/customers/customers-db.ts"), c("lib/construction/quotes.ts"), layers)).toMatch(/^R1/);
-    expect(ruleFor(c("lib/industry/gym/gym-db.ts"), c("lib/construction/shared.ts"), layers)).toMatch(/^R2/);
-    expect(ruleFor(c("lib/tenant/context.ts"), c("lib/business/customers/customers-db.ts"), layers)).toBe("R3-core-no-importa-business");
+    expect(ruleFor(c("lib/business/customers/customers-db.ts"), c("lib/industry/construction/quotes.ts"), layers)).toMatch(/^R1/);
+    expect(ruleFor(c("lib/industry/gym/gym-db.ts"), c("lib/industry/construction/shared.ts"), layers)).toMatch(/^R2/);
+    expect(ruleFor(c("lib/core/tenancy/context.ts"), c("lib/business/customers/customers-db.ts"), layers)).toBe("R3-core-no-importa-business");
   });
 });
 
@@ -82,28 +82,28 @@ import "side-effect";
 
 describe("pruebas negativas: una dependencia prohibida nueva se detecta", () => {
   test("R1: Business importando una industria", () => {
-    const p = problemsWith({ "lib/business/zz-negativa.ts": `import { createQuotesDb } from "@/lib/construction/quotes";` });
+    const p = problemsWith({ "lib/business/zz-negativa.ts": `import { createQuotesDb } from "@/lib/industry/construction/quotes";` });
     expect(p.some((m) => m.includes("R1-nadie-importa-industry") && m.includes("lib/business/zz-negativa.ts"))).toBe(true);
   });
 
   test("R1: Core importando el gimnasio", () => {
-    const p = problemsWith({ "lib/tenant/zz-negativa.ts": `import { x } from "@/lib/industry/gym/gym-db";` });
-    expect(p.some((m) => m.includes("R1-nadie-importa-industry") && m.includes("lib/tenant/zz-negativa.ts"))).toBe(true);
+    const p = problemsWith({ "lib/core/tenancy/zz-negativa.ts": `import { x } from "@/lib/industry/gym/gym-db";` });
+    expect(p.some((m) => m.includes("R1-nadie-importa-industry") && m.includes("lib/core/tenancy/zz-negativa.ts"))).toBe(true);
   });
 
   test("R2: una industria importando otra", () => {
-    const p = problemsWith({ "lib/construction/zz-negativa.ts": `import { x } from "@/lib/industry/gym/gym-db";` });
+    const p = problemsWith({ "lib/industry/construction/zz-negativa.ts": `import { x } from "@/lib/industry/gym/gym-db";` });
     expect(p.some((m) => m.includes("R2-industry-no-importa-industry"))).toBe(true);
   });
 
   test("R3: Core importando Business con ruta relativa", () => {
-    const p = problemsWith({ "lib/auth/zz-negativa.ts": `import { x } from "../business/customers/customers-db";` });
-    expect(p.some((m) => m.includes("R3-core-no-importa-business") && m.includes("lib/auth/zz-negativa.ts"))).toBe(true);
+    const p = problemsWith({ "lib/core/auth/zz-negativa.ts": `import { x } from "../../business/customers/customers-db";` });
+    expect(p.some((m) => m.includes("R3-core-no-importa-business") && m.includes("lib/core/auth/zz-negativa.ts"))).toBe(true);
   });
 
   test("R3: Foundation importando Core", () => {
     const utils = libSources()["lib/utils.ts"];
-    const p = problemsWith({ "lib/utils.ts": `${utils}\nimport { x } from "@/lib/tenant/context";` });
+    const p = problemsWith({ "lib/utils.ts": `${utils}\nimport { x } from "@/lib/core/tenancy/context";` });
     expect(p.some((m) => m.includes("R3-foundation-no-importa-core"))).toBe(true);
   });
 
@@ -118,7 +118,7 @@ describe("pruebas negativas: una dependencia prohibida nueva se detecta", () => 
   });
 
   test("un import hacia abajo no genera problemas", () => {
-    expect(problemsWith({ "lib/business/zz-ok.ts": `import { x } from "@/lib/tenant/context"; import { y } from "@/lib/format";` })).toEqual([]);
+    expect(problemsWith({ "lib/business/zz-ok.ts": `import { x } from "@/lib/core/tenancy/context"; import { y } from "@/lib/foundation/format";` })).toEqual([]);
   });
 });
 
@@ -129,7 +129,7 @@ describe("la lista de excepciones solo puede encogerse", () => {
     const sources = libSources();
     const origen = Object.keys(sources).find((f) => f.startsWith("lib/business/"))!;
     const sobrante = {
-      id: "EX-TEST", tipo: "import", origen, destino: "lib/accounting/ledger-db.ts", regla: "R3-business-no-importa-finance", importaciones: 1, soloTipos: false,
+      id: "EX-TEST", tipo: "import", origen, destino: "lib/domains/finance/accounting/ledger-db.ts", regla: "R3-business-no-importa-domains", importaciones: 1, soloTipos: false,
       justificacion: "prueba", etapa: "prueba", estado: "abierta", aprobacion: "prueba",
     };
     const conSobrante = { ...exceptions, maxAbiertas: exceptions.maxAbiertas + 1, exceptions: [...exceptions.exceptions, sobrante] };
@@ -145,7 +145,7 @@ describe("la lista de excepciones solo puede encogerse", () => {
 
   test("una excepción sin justificación, etapa o aprobación es inválida", () => {
     // La lista real ya está vacía: se fabrican tres excepciones de import incompletas.
-    const base = { tipo: "import", origen: "lib/a.ts", destino: "lib/b.ts", regla: "R3-core-no-importa-finance", importaciones: 1, soloTipos: false, estado: "abierta" };
+    const base = { tipo: "import", origen: "lib/a.ts", destino: "lib/b.ts", regla: "R3-core-no-importa-domains", importaciones: 1, soloTipos: false, estado: "abierta" };
     const bad = structuredClone(exceptions);
     bad.exceptions = [
       { ...base, id: "EX-T1", justificacion: "", etapa: "x", aprobacion: "x" },

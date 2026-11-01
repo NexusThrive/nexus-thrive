@@ -1,5 +1,5 @@
 import { Building2, User } from "lucide-react";
-import type { OnboardingTenantType } from "@/lib/onboarding/types";
+import type { OnboardingTenantType } from "@/lib/core/tenancy/onboarding/types";
 import { cn } from "@/lib/utils";
 
 const PROFILES: {

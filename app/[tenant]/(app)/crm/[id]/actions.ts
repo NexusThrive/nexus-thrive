@@ -1,8 +1,8 @@
 "use server";
 
-import { requireTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { revalidatePath } from "next/cache";
-import { createTenantDb } from "@/lib/tenant/db";
+import { createTenantDb } from "@/lib/core/tenancy/db";
 import { NOTE_MAX_LENGTH } from "@/lib/business/customers/customer-notes";
 
 export type NoteFormState = {

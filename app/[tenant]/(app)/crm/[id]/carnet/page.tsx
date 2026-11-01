@@ -2,9 +2,9 @@ import { notFound } from "next/navigation";
 import { QrCode } from "@/components/atoms/qr-code";
 import { PrintButton } from "@/components/molecules/print-button";
 import { ensureAccessCode } from "@/lib/industry/gym/gym-db";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { customerCard } from "@/lib/business/customers/customers-db";
-import { tenantLetterhead } from "@/lib/tenant/membership";
+import { tenantLetterhead } from "@/lib/core/tenancy/membership";
 
 /** Carné del socio para imprimir (tamaño tarjeta): foto, nombre y QR de acceso. */
 export default async function CarnetPage({ params }: { params: Promise<{ tenant: string; id: string }> }) {

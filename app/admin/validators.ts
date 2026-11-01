@@ -1,13 +1,13 @@
 import { VERTICALS, isVertical, type VerticalValue } from "@/lib/core/sectors/verticals";
-import { MODULES, isModule, type ModuleValue } from "@/lib/capabilities/modules";
-import { validateSlug } from "@/lib/admin/catalogs";
+import { MODULES, isModule, type ModuleValue } from "@/lib/core/capabilities/modules";
+import { validateSlug } from "@/lib/core/tenancy/catalogs";
 import {
   TEAM_SIZES,
   type OnboardingTenantType,
   type TeamSizeValue,
-} from "@/lib/onboarding/types";
-import { TAX_ID_PATTERN } from "@/lib/onboarding/validation";
-import { normalizeEmail } from "@/lib/auth/session-email";
+} from "@/lib/core/tenancy/onboarding/types";
+import { TAX_ID_PATTERN } from "@/lib/core/tenancy/onboarding/validation";
+import { normalizeEmail } from "@/lib/core/auth/session-email";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

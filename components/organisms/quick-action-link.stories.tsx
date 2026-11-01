@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { QuickActionLink } from "./quick-action-link";
 import { QuickCreateContext } from "./quick-create-host";
-import { quickSheetFor } from "@/lib/navigation/quick-create";
+import { quickSheetFor } from "@/lib/experience/navigation/quick-create";
 
 function Demo() {
   const [opened, setOpened] = useState<string[]>([]);

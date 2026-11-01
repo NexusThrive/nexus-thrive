@@ -30,14 +30,14 @@ describe("catálogo de sectores en Core", () => {
 
   test("separado de la administración: los sectores no importan lib/admin y catalogs.ts ya no contiene sectores ni módulos", () => {
     for (const f of SECTOR_FILES) expect(importsOf(f).filter((s: string) => /^@\/lib\/admin\b/.test(s)), f).toEqual([]);
-    const catalogs = read("lib/admin/catalogs.ts");
+    const catalogs = read("lib/core/tenancy/catalogs.ts");
     for (const symbol of ["VERTICALS", "VERTICAL_RECIPES", "VerticalTerms", "MODULES", "normalizeVertical", "withChildModules"]) {
       expect(catalogs, symbol).not.toMatch(new RegExp(`\\b${symbol}\\b\\s*[=:(]|export (const|type|function) ${symbol}\\b`));
     }
   });
 
   test("los sectores solo importan Core y Foundation: ninguna industria, negocio ni finanzas", () => {
-    const allowed = /^(\.\/|@\/lib\/capabilities\/|@\/lib\/core\/sectors\/)/;
+    const allowed = /^(\.\/|@\/lib\/core\/capabilities\/|@\/lib\/core\/sectors\/)/;
     for (const f of SECTOR_FILES) {
       const bad = importsOf(f).filter((s: string) => !allowed.test(s));
       expect(bad, f).toEqual([]);
@@ -47,7 +47,7 @@ describe("catálogo de sectores en Core", () => {
   test("hojas sin ciclo: verticals y lexicon no importan nada de Nexus; el registro de capacidades solo toma de ellas sus tipos", () => {
     expect(importsOf("lib/core/sectors/verticals.ts")).toEqual([]);
     expect(importsOf("lib/core/sectors/lexicon.ts").filter((s: string) => s.startsWith("@/"))).toEqual([]);
-    const fromRegistry = importsOf("lib/capabilities/registry.ts").filter((s: string) => s.startsWith("@/lib/core/sectors/"));
+    const fromRegistry = importsOf("lib/core/capabilities/registry.ts").filter((s: string) => s.startsWith("@/lib/core/sectors/"));
     expect(fromRegistry.sort()).toEqual(["@/lib/core/sectors/lexicon", "@/lib/core/sectors/verticals"]);
   });
 
@@ -62,8 +62,8 @@ describe("catálogo de sectores en Core", () => {
 describe("registro explícito de sectores", () => {
   test("ningún módulo compartido importa una industria; solo runtime puede componerlas", () => {
     const offenders = ls("lib")
-      .filter((f) => /\.(ts|tsx)$/.test(f) && !/\.(test|stories)\./.test(f) && !f.startsWith("lib/industry/") && !f.startsWith("lib/runtime/") && !f.startsWith("lib/construction/"))
-      .filter((f) => importsOf(f).some((s: string) => /^@\/lib\/(industry|construction)\b/.test(s)))
+      .filter((f) => /\.(ts|tsx)$/.test(f) && !/\.(test|stories)\./.test(f) && !f.startsWith("lib/industry/") && !f.startsWith("lib/runtime/"))
+      .filter((f) => importsOf(f).some((s: string) => /^@\/lib\/industry\b/.test(s)))
       // La experiencia sí puede (regla R1): se excluye lo clasificado como experiencia.
       .filter((f) => classify(f, layers)?.layer !== "experience");
     expect(offenders).toEqual([]);

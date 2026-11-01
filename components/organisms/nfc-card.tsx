@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { N_PATH, THRIVE_LETTERS } from "@nexus/brand/BrandLogo";
-import { burstFrom, motionOff } from "@/lib/motion";
+import { burstFrom, motionOff } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 import styles from "./nfc-card.module.css";
 

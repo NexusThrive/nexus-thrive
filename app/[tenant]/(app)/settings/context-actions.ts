@@ -1,10 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { updateBusinessContext } from "@/lib/tenant/settings-db";
-import { parseBusinessContext, type BusinessContext } from "@/lib/tenant/business-context";
-import { logTenantAction } from "@/lib/tenant/audit";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { updateBusinessContext } from "@/lib/core/tenancy/settings-db";
+import { parseBusinessContext, type BusinessContext } from "@/lib/core/tenancy/business-context";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type ContextResult = { ok: true; message: string } | { ok: false; message: string };
 

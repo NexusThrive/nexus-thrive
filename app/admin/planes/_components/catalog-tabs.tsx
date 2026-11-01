@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
-import type { PricingConfig } from "@/lib/plans/pricing";
+import type { PricingConfig } from "@/lib/core/entitlements/pricing";
 import ModulesPanel from "./modules-panel";
 import PlansPanel from "./plans-panel";
 import Simulator from "./simulator";

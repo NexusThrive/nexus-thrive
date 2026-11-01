@@ -4,10 +4,10 @@ import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { amountInWords, INVOICE_KIND_LABELS, invoiceCode } from "@/lib/business/sales/invoice";
 import { getInvoice } from "@/lib/business/sales/invoices-db";
-import { canManage } from "@/lib/auth/roles";
-import { formatCurrency } from "@/lib/format";
-import { requireTenantContext } from "@/lib/tenant/context";
-import { tenantLetterhead } from "@/lib/tenant/membership";
+import { canManage } from "@/lib/core/auth/roles";
+import { formatCurrency } from "@/lib/foundation/format";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
+import { tenantLetterhead } from "@/lib/core/tenancy/membership";
 import InvoiceActions from "./invoice-actions";
 
 /** Cuenta de cobro o recibo listo para imprimir o guardar como PDF. */

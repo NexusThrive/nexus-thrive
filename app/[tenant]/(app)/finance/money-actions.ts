@@ -20,12 +20,12 @@ import {
   voidPayment,
 } from "@/lib/business/sales/finance-db";
 import { voidExpense } from "@/lib/business/sales/money-service";
-import { isTeamMember } from "@/lib/tenant/team-db";
+import { isTeamMember } from "@/lib/core/tenancy/team-db";
 import { parseMoney } from "@/lib/business/sales/money";
-import { canHandleCash, canManage } from "@/lib/auth/roles";
-import { requireTenantContext } from "@/lib/tenant/context";
-import { getAppBaseUrl } from "@/lib/app-url";
-import { logTenantAction } from "@/lib/tenant/audit";
+import { canHandleCash, canManage } from "@/lib/core/auth/roles";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
+import { getAppBaseUrl } from "@/lib/foundation/app-url";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
 
 export type MoneyResult = { ok: true; message?: string; id?: string } | { ok: false; message: string };
 const DENIED: MoneyResult = { ok: false, message: "Tu rol no permite esta acción." };

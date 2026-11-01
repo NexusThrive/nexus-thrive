@@ -285,7 +285,7 @@ guarda ese objeto (requiere un campo nuevo: decisión de producto pendiente).
 `components/atoms/select.tsx`: botón con forma de campo y lista flotante de
 divs (nunca el menú nativo). Mismos props que `<select>`; debajo vive un
 `<select>` oculto que es el que se envía y valida. Prohibido el `<select>`
-nativo (`lib/design/ui-rules.test.ts`). Radix: `dialog`, `dropdown-menu`,
+nativo (`tests/architecture/ui-rules.test.ts`). Radix: `dialog`, `dropdown-menu`,
 `popover` y `tooltip` deben mantenerse en versiones que compartan
 `@radix-ui/react-dismissable-layer` (una sola copia); con dos copias, un
 Popover dentro de un diálogo no recibe clics ni respeta Escape.

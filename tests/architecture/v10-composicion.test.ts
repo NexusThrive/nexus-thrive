@@ -34,7 +34,7 @@ describe("lib/runtime es la raíz de composición", () => {
   });
 
   test("las ubicaciones anteriores ya no existen (no quedan duplicados ni reexportaciones)", () => {
-    for (const f of ["lib/operations/registry.ts", "lib/operations/registry.test.ts", "lib/api/runtime-deps.ts"]) {
+    for (const f of ["lib/operations/registry.ts", "lib/operations/registry.test.ts", "lib/api/runtime-deps.ts", "lib/core/operations/registry.ts", "lib/core/operations/registry.test.ts", "lib/core/api/runtime-deps.ts"]) {
       expect(existsSync(join(ROOT, f)), f).toBe(false);
     }
   });
@@ -76,8 +76,8 @@ describe("conexión de puertos", () => {
   });
 
   test("un puerto sin conectar sigue fallando de forma visible", () => {
-    expect(read("lib/ports.ts")).toContain("class PortNotProvidedError");
-    expect(read("lib/ports.ts")).toMatch(/use\(\)\s*\{\s*if \(!registry\(\)\.provided\.has\(name\)\) throw new PortNotProvidedError\(name\)/);
+    expect(read("lib/foundation/ports.ts")).toContain("class PortNotProvidedError");
+    expect(read("lib/foundation/ports.ts")).toMatch(/use\(\)\s*\{\s*if \(!registry\(\)\.provided\.has\(name\)\) throw new PortNotProvidedError\(name\)/);
   });
 
   test("composePorts sigue siendo la función que instrumentation.ts y vitest.setup.ts llaman", () => {

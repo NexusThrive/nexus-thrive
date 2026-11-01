@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { motionOff } from "@/lib/motion";
+import { motionOff } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 
 export type ChartPoint = {

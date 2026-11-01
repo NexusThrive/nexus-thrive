@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { updatePresenceRequest } from "@/lib/platform/presence/presence";
 import { requireStaff } from "@/lib/platform/team/access";
-import { scanTenantPresence } from "@/lib/presence/scan";
+import { scanTenantPresence } from "@/lib/business/presence/scan";
 
 /**
  * Acciones de Presence Thrive en el Operations Center. Cada una verifica el

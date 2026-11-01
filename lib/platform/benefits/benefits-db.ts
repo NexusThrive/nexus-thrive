@@ -7,11 +7,11 @@
 
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
-import { loadPricingConfig } from "@/lib/plans/settings";
-import { resolveModules } from "@/lib/plans/pricing";
-import { PLANS, type PlanKey } from "@/lib/plans/catalog";
+import { loadPricingConfig } from "@/lib/core/entitlements/settings";
+import { resolveModules } from "@/lib/core/entitlements/pricing";
+import { PLANS, type PlanKey } from "@/lib/core/entitlements/catalog";
 import type { VerticalValue } from "@/lib/core/sectors/verticals";
-import type { ModuleValue } from "@/lib/capabilities/modules";
+import type { ModuleValue } from "@/lib/core/capabilities/modules";
 import {
   type BenefitKind,
   type BenefitStatus,

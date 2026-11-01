@@ -1,7 +1,7 @@
 "use client";
 
 import type { ComponentProps, ReactNode } from "react";
-import { spring } from "@/lib/motion";
+import { spring } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 
 /**

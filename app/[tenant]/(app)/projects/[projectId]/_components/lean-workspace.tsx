@@ -7,7 +7,7 @@ import { KpiCard } from "@/components/molecules/kpi-card";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
-import { formatDateShort } from "@/lib/format";
+import { formatDateShort } from "@/lib/foundation/format";
 import {
   NON_COMPLIANCE_CAUSES,
   calculatePpc,
@@ -23,8 +23,8 @@ import {
   WINDOW_WEEKS,
   type CommitmentStatusValue,
   type NonComplianceCauseValue,
-} from "@/lib/construction/lean-engine";
-import type { ProjectPlanData } from "@/lib/construction/shared";
+} from "@/lib/industry/construction/lean-engine";
+import type { ProjectPlanData } from "@/lib/industry/construction/shared";
 import {
   createLookaheadTaskAction,
   createWeeklyCommitmentAction,

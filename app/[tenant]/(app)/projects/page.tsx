@@ -4,17 +4,17 @@ import {
   Hammer,
   ListChecks,
 } from "lucide-react";
-import { createTenantDb } from "@/lib/tenant/db";
-import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/construction/project-domain";
+import { createTenantDb } from "@/lib/core/tenancy/db";
+import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/industry/construction/project-domain";
 import { KpiCard } from "@/components/molecules/kpi-card";
 import { PageHeader } from "@/components/molecules/page-header";
 import SearchInput from "@/components/molecules/search-input";
 import FilterSelect from "@/components/molecules/filter-select";
 import ProjectsTable from "./_components/projects-table";
 import NewProjectModal from "./_components/new-project-modal";
-import { requirePageContext } from "@/lib/tenant/context";
+import { requirePageContext } from "@/lib/core/tenancy/context";
 
-import { createConstructionDb } from "@/lib/construction/construction-db";
+import { createConstructionDb } from "@/lib/industry/construction/construction-db";
 const PROJECTS_PAGE_SIZE = 12;
 
 function firstString(value: string | string[] | undefined): string {

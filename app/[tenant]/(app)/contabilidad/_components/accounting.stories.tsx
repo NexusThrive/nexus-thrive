@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { withShell } from "../../../../../.storybook/decorators";
-import { DEFAULT_RULES, PUC_TEMPLATE } from "@/lib/accounting/puc";
+import { DEFAULT_RULES, PUC_TEMPLATE } from "@/lib/domains/finance/accounting/puc";
 import AccountingView from "./accounting-view";
 
 const accounts = PUC_TEMPLATE.map((a, i) => ({ id: `a${i}`, ...a, active: a.code !== "1120" }));

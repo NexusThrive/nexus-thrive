@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { loadActiveTenant } from "@/lib/tenant/context";
-import { memberDirectory } from "@/lib/tenant/membership";
-import { createTenantDb } from "@/lib/tenant/db";
+import { loadActiveTenant } from "@/lib/core/tenancy/context";
+import { memberDirectory } from "@/lib/core/tenancy/membership";
+import { createTenantDb } from "@/lib/core/tenancy/db";
 import FinanceActions from "./_components/finance-actions";
 import SearchInput from "@/components/molecules/search-input";
 import FilterSelect from "@/components/molecules/filter-select";
@@ -9,15 +9,15 @@ import MoneyList from "./_components/money-list";
 import type { MoneyItem } from "./_components/money-detail-sheet";
 import CashPanel from "./_components/cash-panel";
 import { cashHistory, listCashBoxes, sessionMovements } from "@/lib/business/sales/finance-db";
-import { canManage } from "@/lib/auth/roles";
-import { requireTenantContext } from "@/lib/tenant/context";
-import { EXPENSE_CATEGORIES, PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/finance";
+import { canManage } from "@/lib/core/auth/roles";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
+import { EXPENSE_CATEGORIES, PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/foundation/kernel/payment-vocabulary";
 import { PageHeader } from "@/components/molecules/page-header";
 import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
 import { BalanceCard } from "@/components/organisms/balance-card";
 import { MovementsList } from "@/components/organisms/movements-list";
 import PettyCashCard from "./_components/petty-cash-card";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 const PAGE_SIZE = 10;
 

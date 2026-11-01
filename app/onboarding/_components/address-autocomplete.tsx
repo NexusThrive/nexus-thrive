@@ -4,8 +4,8 @@ import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { Check, Loader2, MapPinned, Search } from "lucide-react";
 import { inputClasses } from "@/components/atoms/input";
 import { cn } from "@/lib/utils";
-import { loadLeaflet } from "@/lib/maps/leaflet";
-import { searchPlaces, type PlaceSuggestion } from "@/lib/maps/photon";
+import { loadLeaflet } from "@/lib/integrations/maps/leaflet";
+import { searchPlaces, type PlaceSuggestion } from "@/lib/integrations/maps/photon";
 
 /** Cambio del campo de dirección: texto + coordenadas confirmadas (o null). */
 export type AddressChange = {

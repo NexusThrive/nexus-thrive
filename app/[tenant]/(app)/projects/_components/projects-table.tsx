@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, FolderOpen } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
-import type { ProjectRow } from "@/lib/construction/shared";
+import type { ProjectRow } from "@/lib/industry/construction/shared";
 import { ProjectStatusBadge } from "./project-status-badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 

@@ -4,7 +4,7 @@ import {
   quoteStatusLabel,
   type ApuItemCategoryValue,
   type QuoteStatusValue,
-} from "@/lib/construction/apu-engine";
+} from "@/lib/industry/construction/apu-engine";
 
 const STATUS_DOTS: Record<
   QuoteStatusValue,

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { declaredPorts, definePort, PortNotProvidedError, providedPorts } from "@/lib/ports";
+import { declaredPorts, definePort, PortNotProvidedError, providedPorts } from "@/lib/foundation/ports";
 
 describe("definePort", () => {
   test("usar un puerto sin implementación falla cerrado, con un mensaje que dice qué hacer", () => {

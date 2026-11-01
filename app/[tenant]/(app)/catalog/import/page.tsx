@@ -3,7 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import ImportWorkspace from "./_components/import-workspace";
 import { PageHeader } from "@/components/molecules/page-header";
-import { requirePageContext } from "@/lib/tenant/context";
+import { requirePageContext } from "@/lib/core/tenancy/context";
 
 /**
  * Importador inteligente de APUs e insumos.

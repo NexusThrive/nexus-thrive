@@ -1,5 +1,5 @@
 import { apiDeps } from "@/lib/runtime/api-deps";
-import { handleMcp } from "@/lib/mcp/server";
+import { handleMcp } from "@/lib/core/api/mcp/server";
 
 /**
  * `/api/mcp`: servidor MCP (Streamable HTTP sin sesión), solo lectura.

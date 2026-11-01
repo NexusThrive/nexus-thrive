@@ -2,13 +2,13 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
 import { addDaysKey, bogotaToMs, monthGrid, weekStart } from "@/lib/business/scheduling/calendar";
 import { listProducts } from "@/lib/business/catalog/products-db";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import { activeTeam, bookingsBetween, customerPhoneOptions, customersByIds } from "@/lib/business/scheduling/bookings-db";
 import AgendaCalendar from "./_agenda/agenda-calendar";
 import type { AgendaBooking } from "./_agenda/types";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
-import { bogotaDay } from "@/lib/plain-date";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
+import { bogotaDay } from "@/lib/foundation/dates/plain-date";
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 

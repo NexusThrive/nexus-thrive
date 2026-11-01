@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
-import { can } from "@/lib/auth/permissions";
-import { listOrders } from "@/lib/store/store-db";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { can } from "@/lib/core/auth/permissions";
+import { listOrders } from "@/lib/business/store/store-db";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 import OrdersView from "./_components/orders-view";
-import { routeCategory } from "@/lib/navigation/tenant-nav";
+import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 /** Pedidos de la tienda en línea: quién pidió qué, si ya pagó y lo que hay que revisar. */
 export default async function StoreOrdersPage({ params }: { params: Promise<{ tenant: string }> }) {

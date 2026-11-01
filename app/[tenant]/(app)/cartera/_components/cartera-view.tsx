@@ -12,10 +12,10 @@ import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { paySupplierAction, receivePaymentAction } from "@/app/[tenant]/(app)/cartera/actions";
-import { formatCurrency } from "@/lib/format";
-import { PAYMENT_METHODS } from "@/lib/finance";
-import { BUCKETS, BUCKET_LABELS } from "@/lib/receivables/aging";
-import type { Cartera, CarteraRow } from "@/lib/receivables/receivables-db";
+import { formatCurrency } from "@/lib/foundation/format";
+import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
+import { BUCKETS, BUCKET_LABELS } from "@/lib/foundation/kernel/aging";
+import type { Cartera, CarteraRow } from "@/lib/domains/finance/receivables/receivables-db";
 
 type Side = "in" | "out";
 

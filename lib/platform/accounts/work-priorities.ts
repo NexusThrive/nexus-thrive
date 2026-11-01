@@ -7,7 +7,7 @@ import { followUpState, stageMeta } from "../crm/crm-rules";
 import { listLeads } from "../crm/leads";
 import { priorityMeta, slaState } from "../support/support-rules";
 import { listTickets } from "../support/tickets";
-import { bogotaDay } from "@/lib/plain-date";
+import { bogotaDay } from "@/lib/foundation/dates/plain-date";
 
 /** Prioridades comerciales: seguimientos vencidos o para hoy. */
 export async function leadPriorities(): Promise<PriorityItem[]> {

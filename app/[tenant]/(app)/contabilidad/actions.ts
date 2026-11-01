@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { closePeriod, createAccount, createCostCenter, reopenPeriod, seedAccounting, setAccountActive, setCostCenterActive, setRuleActive } from "@/lib/accounting/accounting-db";
-import { listEntries, setAccountingEnabled, verifyLedger } from "@/lib/accounting/ledger-db";
-import { REPORTS, buildReport, ledgerRows, type ReportKind, type ReportResult } from "@/lib/accounting/reports-db";
-import { can } from "@/lib/auth/permissions";
-import { logTenantAction } from "@/lib/tenant/audit";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { closePeriod, createAccount, createCostCenter, reopenPeriod, seedAccounting, setAccountActive, setCostCenterActive, setRuleActive } from "@/lib/domains/finance/accounting/accounting-db";
+import { listEntries, setAccountingEnabled, verifyLedger } from "@/lib/domains/finance/accounting/ledger-db";
+import { REPORTS, buildReport, ledgerRows, type ReportKind, type ReportResult } from "@/lib/domains/finance/accounting/reports-db";
+import { can } from "@/lib/core/auth/permissions";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type AccResult = { ok: true; message: string } | { ok: false; message: string };
 const DENIED: AccResult = { ok: false, message: "Solo el dueño o administración maneja la contabilidad." };
@@ -108,7 +108,7 @@ export async function verifyLedgerAction(slug: string): Promise<AccResult> {
   return r.ok ? { ok: true, message: `Libro íntegro: ${r.checked} asientos revisados, todos cuadran y el encadenado está intacto` } : { ok: false, message: `Asiento ${r.brokenAt}: ${r.reason}` };
 }
 
-export type { EntryRow } from "@/lib/accounting/ledger-db";
+export type { EntryRow } from "@/lib/domains/finance/accounting/ledger-db";
 void listEntries;
 
 /** Un informe contable en pantalla para un rango de fechas (los mismos datos que baja el contador en CSV). */

@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { db } from "@/prisma/db";
-import { getAppBaseUrl } from "@/lib/app-url";
+import { getAppBaseUrl } from "@/lib/foundation/app-url";
 import { ticketCode } from "./support-rules";
 
 /** Encuestas de satisfacción de soporte (servidor). */

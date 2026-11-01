@@ -5,7 +5,7 @@ import { Check, Plus, Trash2 } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
 import { UsdInput } from "@/components/molecules/usd-input";
-import type { CustomerTier } from "@/lib/plans/pricing";
+import type { CustomerTier } from "@/lib/core/entitlements/pricing";
 import { cn } from "@/lib/utils";
 import { saveTiersAction } from "../actions";
 import { useSave } from "./use-save";

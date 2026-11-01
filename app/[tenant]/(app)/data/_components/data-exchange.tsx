@@ -7,7 +7,7 @@ import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { useToast } from "@/components/molecules/toast";
 import { commitImportAction, previewImportAction, type ImportActionResult } from "@/app/[tenant]/(app)/data/actions";
-import type { ImportKind, ImportReport } from "@/lib/data-exchange/exchange-db";
+import type { ImportKind, ImportReport } from "@/lib/business/data-exchange/exchange-db";
 
 const KINDS: { kind: ImportKind; title: string; blurb: string; columns: string; matches: string; exportNote: string }[] = [
   {

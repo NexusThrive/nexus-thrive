@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { defaultPricingConfig, quote } from "@/lib/plans/pricing";
+import { defaultPricingConfig, quote } from "@/lib/core/entitlements/pricing";
 import { OnboardingReview } from "./onboarding-review";
 
 const meta = {

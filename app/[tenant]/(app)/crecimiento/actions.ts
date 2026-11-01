@@ -1,10 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { can } from "@/lib/auth/permissions";
-import { createLink, handleReview, setLinkActive } from "@/lib/growth/growth-db";
-import { logTenantAction } from "@/lib/tenant/audit";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { can } from "@/lib/core/auth/permissions";
+import { createLink, handleReview, setLinkActive } from "@/lib/business/growth/growth-db";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type GrowthResult = { ok: true; message: string } | { ok: false; message: string };
 const manager = async (slug: string) => {

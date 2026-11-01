@@ -1,6 +1,6 @@
 import { createHash, createHmac } from "node:crypto";
 import { db } from "@/prisma/db";
-import { toNumber } from "@/lib/format";
+import { toNumber } from "@/lib/foundation/format";
 import { expectedCash, type CashKind } from "./cash";
 
 /**

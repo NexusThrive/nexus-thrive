@@ -1,8 +1,8 @@
 "use server";
 
-import type { AppNotification } from "@/lib/dashboard/notifications";
-import { dismissNotification, loadNotifications } from "@/lib/dashboard/notifications-db";
-import { requireTenantContext } from "@/lib/tenant/context";
+import type { AppNotification } from "@/lib/experience/dashboard/notifications";
+import { dismissNotification, loadNotifications } from "@/lib/experience/dashboard/notifications-db";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 /**
  * Notificaciones de la campana: cobros y gastos de hoy, citas de hoy y

@@ -1,11 +1,11 @@
 import { Card, CardHeader, CardTitle } from "@/components/molecules/card";
-import { formatCurrency, formatDateShort } from "@/lib/format";
-import { paymentMethodLabel } from "@/lib/finance";
+import { formatCurrency, formatDateShort } from "@/lib/foundation/format";
+import { paymentMethodLabel } from "@/lib/foundation/kernel/payment-vocabulary";
 import type {
   Customer360Metrics,
   Customer360Payment,
   CustomerTimelineEvent,
-} from "@/lib/tenant/db";
+} from "@/lib/core/tenancy/db";
 import { cn } from "@/lib/utils";
 
 /**

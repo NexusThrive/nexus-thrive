@@ -10,7 +10,7 @@ import { Sparkline } from "@/components/atoms/sparkline";
 import { Wordmark } from "@/components/atoms/wordmark";
 import type { AuthMode } from "@/components/molecules/auth-mode-switch";
 import { Eyebrow } from "@/components/molecules/page-header";
-import { EASE_IN_OUT, motionOff } from "@/lib/motion";
+import { EASE_IN_OUT, motionOff } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 import styles from "./auth-brand-panel.module.css";
 

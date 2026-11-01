@@ -1,7 +1,7 @@
-import { REPORTS, ledgerRows, reportCsv, type ReportKind } from "@/lib/accounting/reports-db";
-import { can } from "@/lib/auth/permissions";
-import { logTenantAction } from "@/lib/tenant/audit";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { REPORTS, ledgerRows, reportCsv, type ReportKind } from "@/lib/domains/finance/accounting/reports-db";
+import { can } from "@/lib/core/auth/permissions";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 /**
  * Descarga de un informe contable en CSV para el contador (`?desde=AAAA-MM-DD&hasta=AAAA-MM-DD&cuenta=1105`).

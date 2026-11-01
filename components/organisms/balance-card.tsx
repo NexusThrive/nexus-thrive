@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { CountUp } from "@/components/atoms/count-up";
-import { motionOff } from "@/lib/motion";
+import { motionOff } from "@/lib/experience/motion/index";
 
 const cop = (n: number) => `${n < 0 ? "−" : ""}$ ${Math.round(Math.abs(n)).toLocaleString("es-CO")}`;
 

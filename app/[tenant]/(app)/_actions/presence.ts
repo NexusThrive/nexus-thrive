@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireTenantContext } from "@/lib/tenant/context";
-import { scanTenantPresence } from "@/lib/presence/scan";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
+import { scanTenantPresence } from "@/lib/business/presence/scan";
 
 /**
  * Analiza la presencia digital del negocio autenticado: verifica el sitio,

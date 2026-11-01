@@ -5,7 +5,7 @@ import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { findStaffByEmail } from "@/lib/platform/team/access";
 import { linkStaffAccount, linkedClerkUserId } from "@/lib/platform/team/team";
-import { normalizeEmail, verifiedEmailOf } from "@/lib/auth/session-email";
+import { normalizeEmail, verifiedEmailOf } from "@/lib/core/auth/session-email";
 
 /**
  * Vincula la ficha del equipo de NEXUS con la cuenta de esta sesión.

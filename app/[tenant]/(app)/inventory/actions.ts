@@ -1,15 +1,15 @@
 "use server";
 
-import { StockError } from "@/lib/inventory/stock-service";
+import { StockError } from "@/lib/business/inventory/stock-service";
 import { revalidatePath } from "next/cache";
 import { customerBelongs } from "@/lib/business/customers/customers-db";
 import { kindsForVertical, validateProduct, type ProductDraft } from "@/lib/business/catalog/catalog-kinds";
 import { sellProduct } from "@/lib/business/sales/money-service";
-import { validateStockMove, type StockKind } from "@/lib/inventory/inventory";
+import { validateStockMove, type StockKind } from "@/lib/business/inventory/inventory";
 import { getProduct, moveStock, saveProduct, stockHistory } from "@/lib/business/catalog/products-db";
-import { canHandleCash, canManage } from "@/lib/auth/roles";
-import { PAYMENT_METHODS } from "@/lib/finance";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { canHandleCash, canManage } from "@/lib/core/auth/roles";
+import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type CatalogResult = { ok: true; message?: string; id?: string; receipt?: string } | { ok: false; message: string; errors?: Partial<Record<keyof ProductDraft, string>> };
 const DENIED: CatalogResult = { ok: false, message: "Tu rol no permite esta acción." };

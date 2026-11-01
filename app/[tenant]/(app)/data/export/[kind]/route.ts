@@ -1,9 +1,9 @@
-import { can } from "@/lib/auth/permissions";
-import { exportCustomers, exportProducts } from "@/lib/data-exchange/exchange-db";
-import { CUSTOMER_EXAMPLE, CUSTOMER_HEADERS, PRODUCT_EXAMPLE, PRODUCT_HEADERS } from "@/lib/data-exchange/rows";
-import { toCsv } from "@/lib/data-exchange/table";
-import { logTenantAction } from "@/lib/tenant/audit";
-import { requireTenantContext } from "@/lib/tenant/context";
+import { can } from "@/lib/core/auth/permissions";
+import { exportCustomers, exportProducts } from "@/lib/business/data-exchange/exchange-db";
+import { CUSTOMER_EXAMPLE, CUSTOMER_HEADERS, PRODUCT_EXAMPLE, PRODUCT_HEADERS } from "@/lib/business/data-exchange/rows";
+import { toCsv } from "@/lib/business/data-exchange/table";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 /**
  * Descarga de clientes o catálogo en CSV (`?plantilla=1` baja solo el ejemplo

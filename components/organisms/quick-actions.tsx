@@ -1,7 +1,7 @@
 import { IconTile } from "@/components/atoms/icon-tile";
 import { ListItem } from "@/components/molecules/list-item";
 import { QuickActionLink } from "@/components/organisms/quick-action-link";
-import type { QuickCreateAction } from "@/lib/navigation/quick-create";
+import type { QuickCreateAction } from "@/lib/experience/navigation/quick-create";
 
 /**
  * Acciones rápidas del inicio (Server Component): las mismas acciones de

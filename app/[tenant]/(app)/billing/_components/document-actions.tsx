@@ -10,8 +10,8 @@ import { ConfirmDialog } from "@/components/organisms/confirm-dialog";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { issueNoteAction, payInvoiceAction, voidInvoiceAction } from "@/app/[tenant]/(app)/billing/actions";
 import type { DocumentView } from "@/lib/business/sales/documents-db";
-import { PAYMENT_METHODS } from "@/lib/finance";
-import { formatCurrency } from "@/lib/format";
+import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
+import { formatCurrency } from "@/lib/foundation/format";
 
 type Small = "pay" | "void" | "credit" | "debit" | null;
 

@@ -6,7 +6,7 @@ import { ACCOUNT_STAGES, deleteContact, saveContact, tenantName, updateAccount, 
 import { logOps } from "@/lib/platform/team/audit";
 import { validateContact } from "@/lib/platform/team/validators";
 import { isActiveStaff } from "@/lib/platform/team/team";
-import { deleteTenantCompletely } from "@/lib/tenant/deletion";
+import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 
 export type ActionResult = { ok: true } | { ok: false; message: string; errors?: Record<string, string> };
 const DENIED: ActionResult = { ok: false, message: "No tienes permiso para esta acción." };

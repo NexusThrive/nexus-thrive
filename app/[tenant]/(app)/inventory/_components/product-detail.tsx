@@ -10,10 +10,10 @@ import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { KIND_LABELS } from "@/lib/business/catalog/catalog-kinds";
-import { STOCK_KIND_LABELS, stockLevel, type StockKind } from "@/lib/inventory/inventory";
+import { STOCK_KIND_LABELS, stockLevel, type StockKind } from "@/lib/business/inventory/inventory";
 import type { ProductRow } from "@/lib/business/catalog/products-db";
-import { PAYMENT_METHODS } from "@/lib/finance";
-import { formatCurrency, formatDateTime } from "@/lib/format";
+import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
+import { formatCurrency, formatDateTime } from "@/lib/foundation/format";
 import { moveStockAction, sellProductAction, stockHistoryAction } from "../actions";
 import { Select } from "@/components/atoms/select";
 

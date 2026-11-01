@@ -3,9 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { requireStaff, getStaffContext } from "@/lib/platform/team/access";
 import { logOps } from "@/lib/platform/team/audit";
-import type { CustomerTier, ModuleConfig, PlanConfig, VerticalConfig } from "@/lib/plans/pricing";
-import { loadPricingConfig, saveModule, savePlan, saveTiers, saveVertical } from "@/lib/plans/settings";
-import { validateModule, validatePlan, validateTiers, validateVertical } from "@/lib/plans/validators";
+import type { CustomerTier, ModuleConfig, PlanConfig, VerticalConfig } from "@/lib/core/entitlements/pricing";
+import { loadPricingConfig, saveModule, savePlan, saveTiers, saveVertical } from "@/lib/core/entitlements/settings";
+import { validateModule, validatePlan, validateTiers, validateVertical } from "@/lib/core/entitlements/validators";
 
 export type CatalogResult = { ok: true } | { ok: false; message: string };
 const DENIED: CatalogResult = { ok: false, message: "No tienes permiso para esta acción." };

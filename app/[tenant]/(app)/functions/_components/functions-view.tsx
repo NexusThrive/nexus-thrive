@@ -12,9 +12,9 @@ import { EmptyState } from "@/components/molecules/empty-state";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { setFunctionAction } from "@/app/[tenant]/(app)/functions/actions";
-import { CAPABILITY_CATEGORIES, type CapabilityCategory } from "@/lib/capabilities/registry";
-import { searchable, type FunctionGroups, type FunctionItem } from "@/lib/functions/functions";
-import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
+import { CAPABILITY_CATEGORIES, type CapabilityCategory } from "@/lib/core/capabilities/registry";
+import { searchable, type FunctionGroups, type FunctionItem } from "@/lib/core/capabilities/discovery/functions";
+import { MODULE_ICONS } from "@/lib/experience/onboarding/module-meta";
 import { cn } from "@/lib/utils";
 
 type Status = "all" | "on" | "off";

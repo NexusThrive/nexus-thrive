@@ -34,13 +34,13 @@ Estado de las nueve:
 | D | Aprobada | Implementada | Pendiente |
 |---|---|---|---|
 | D-V10-1 | Sí | Sí (M0 declara el cambio en `layers.json`; M1–M4 mueven archivos) | — |
-| D-V10-2 | Sí | Sí (áreas por ruta, capas `domains` y `runtime`, M0). `platform` ya tiene archivos (M4) | Materializar las áreas que aún no los tienen (`domains`) y completar `core` en sus etapas |
+| D-V10-2 | Sí | Sí (áreas por ruta, capas `domains` y `runtime`, M0). `platform` ya tiene archivos (M4) | `domains` ya tiene archivos (M5: `lib/domains/finance/`); completar `core` en sus etapas |
 | D-V10-3 | Sí | Sí (verificador de reglas, M0) | — |
 | D-V10-4 | Sí | Parcial: principio documentado y límites en `lexicon.ts` (M2) | Los procesos sectoriales llegan con M7 |
 | D-V10-5 | Sí | Sí (M2) | — |
 | D-V10-6 | Sí | Sí (se usaron en M1–M3; el reporte vive en `check-layers --report`) | — |
 | D-V10-7 | Sí | Sí (registro y `runtime/sectors.ts`, M2) | Primera industria con definición propia (M7) |
-| D-V10-8 | Sí | Parcial: M1–M4 | M5–M8 |
+| D-V10-8 | Sí | Parcial: M1–M5 | M6–M8 |
 | D-V10-9 | **Sí, solo la dirección** | **No** | Implementación en M7, tras la comprobación de solo lectura sobre una copia (P-8) |
 
 ## 2. Preguntas abiertas del diseño (Q-n) y su resolución
@@ -50,7 +50,7 @@ Las resoluciones de esta tabla se tomaron al preparar M3 a partir de las recomen
 | Pregunta | Resolución | Estado | Se confirma / implementa |
 |---|---|---|---|
 | **Q-1 / Q-2** Sustituir D-1; nombre y número de áreas | Resueltas por D-V10-1 y D-V10-2 | Aprobada | Hecho |
-| **Q-3** Anidación de `domains/finance` | **Propuesta conceptual futura:** cuando los módulos de Finanzas se muevan, quedarán en `domains/finance/<módulo>` | **Propuesta, no instrucción** | Al autorizar M5 |
+| **Q-3** Anidación de `domains/finance` | **`lib/domains/finance/<módulo>`** (confirmada al autorizar M5, D5-1) | **Implementada en M5** | Hecho (`b667c5d`, `16755cf`, `68e8e37`, `f50f951`; ver `V10-M5-resultados.md`) |
 | **Q-4** ¿`money-service` pasa a Finance? | **No.** Queda en `business/sales` | Aprobada (**P-2**) | Hecho (M3) |
 | **Q-6** Enum `Vertical` | **Mantener el enum durante M7**; la opción B (texto + FK a `VerticalSetting`) es una dirección futura sujeta a la etapa Prisma | Aprobada (**P-6**) | Etapa Prisma P5 |
 | **Q-7a** `presence`, `growth` | **Se quedan en `business`** | Propuesta (recomendación del diseño) | Se reabre solo si aparece un segundo módulo de análisis |
@@ -58,6 +58,8 @@ Las resoluciones de esta tabla se tomaron al preparar M3 a partir de las recomen
 | **Q-8** `extensions/` | **No se introduce** | Propuesta (recomendación del diseño) | Se reabre con un requisito real de código externo o por negocio |
 
 ### 2.1 Q-3 — `domains/finance/<módulo>`: qué es y qué no es
+
+> **Resuelta en M5 (2026-10-31).** El dueño autorizó M5 y aprobó D5-1: la anidación es `lib/domains/finance/{tax,accounting,receivables,payments}`. Lo que sigue es el texto previo a esa autorización, conservado como contexto; ya no es una propuesta.
 
 - Es una **propuesta conceptual futura** sobre dónde terminarán `accounting`, `tax`, `receivables` y `payments` cuando se autorice M5. Sirve para que la regla «entre familias solo por contrato» tenga un lugar donde aplicarse.
 - **No es una instrucción para crear directorios.** `lib/domains/` **no existe** y **no debe crearse vacío** ni antes de M5. No se crea ningún área, módulo ni carpeta por esta decisión.
@@ -156,4 +158,57 @@ Aprobadas por el dueño tras la auditoría final de M4 (solo lectura). Son **exc
 | **C-3** | **Aislamiento y seguridad.** Se mantiene la prueba `lib/tenant/tenant-scope.test.ts` tal como está, sin debilitarla. La **auditoría de aislamiento por negocio** y la **revisión de las guardas de `app/admin`** se registran como **trabajo independiente fuera de V10**. | **Aprobada como registro; el trabajo NO está iniciado** | [`hoja-de-ruta.md`](hoja-de-ruta.md) §4 y [`V10-M4-resultados.md`](V10-M4-resultados.md) §14.7 |
 
 Alcance anotado para el trabajo independiente de C-3 (a definir y autorizar aparte): (a) los límites de la prueba actual, que solo ve consultas literales `.orm.public.<Modelo>.where({…})` y no las del constructor `.sql`, los filtros no literales ni las lecturas sin `where`; (b) las 54 consultas sin `tenantId` que la prueba excluye a propósito en seis módulos del panel; (c) las 14 páginas de `app/admin` que dependen de la guarda del layout y no tienen una propia. La explotabilidad de (c) **no se ha evaluado**.
+
+## 7. Decisiones de M5 (2026-10-31)
+
+Aprobadas por el dueño al autorizar M5 con las recomendaciones del diseño ([`V10-M5-diseno.md`](V10-M5-diseno.md) §9). Ninguna cambia contratos públicos, comportamiento, datos, Prisma ni migraciones, y no hay excepciones nuevas en el verificador. Detalle de la ejecución en [`V10-M5-resultados.md`](V10-M5-resultados.md).
+
+| # | Decisión | Estado |
+|---|---|---|
+| **D5-1** | Anidación `lib/domains/finance/<módulo>` (cierra Q-3) | **Implementada** (M5.3 a M5.6) |
+| **D5-2** | `finance/index.ts` → `foundation/kernel/payment-vocabulary.ts` y `finance/series.ts` → `foundation/kernel/finance-series.ts` | **Implementada** (M5.1, `dc3ef22`) |
+| **D5-3** | `cop-amount` se queda en `foundation/kernel` (es puro; lo usan el servidor y la pantalla) | **Implementada** (M5.1) |
+| **D5-4** | `keypad` y `payment-scan` en la unidad nueva `lib/payment-input` (Experience) | **Implementada** (M5.2, `3bad057`) |
+| **D5-5** | Paso previo M5.0: reclasificar las unidades de `finance` como `domains` y retirar la capa `finance` | **Implementada** (M5.0, `259e684`) |
+| **D5-6** | No tocar informes históricos ni documentación viva con rutas antiguas; los absorbe la pasada P-12 | **Vigente** (pendiente P-12) |
+| **D5-7** | Verificación de integración con un contenedor Docker desechable propio, sin tocar `nexus-postgres` ni `nx-pg` | **Cumplida** en M5.1 a M5.6 |
+
+**Pendiente de decisión, fuera de M5:** el movimiento físico de las carpetas de `core`, `business`, `integrations` y `experience` que hoy siguen en la raíz de `lib/` y que V10 (M0–M8) no programa mover (`V10-M5-resultados.md` §9.4). Requiere un diseño propio y la aprobación del dueño; no está iniciado.
+
+## 8. Plan de cierre de V10 y etapas I y B (2026-10-31)
+
+El dueño aprobó el plan de cierre ([`V10-plan-de-cierre.md`](V10-plan-de-cierre.md)): E-1 a E-9 con las recomendaciones, con la precisión de que la raíz de `lib/` tendrá **las nueve áreas y las dos excepciones documentadas `utils.ts` y `cn.ts`** (no «solo nueve directorios»). E-6: V10 es reorganización física sin cambios de comportamiento; M7 y M6c quedan fuera. Resultados de cada etapa en [`V10-cierre-resultados.md`](V10-cierre-resultados.md).
+
+### 8.1 Excepción temporal y puntual: ciclo `inventory ⇄ sales` (decisión B-1)
+
+Al unir `inventory` con `sales` bajo `lib/business/` (etapa B), la prueba «los módulos de business no forman ciclos entre sí» (P-1, M3) detectó un ciclo **entre módulos**. El dueño decidió aceptarlo como excepción **temporal, específica y documentada** (opción A), sin fusionar módulos ni alterar dependencias a mitad de la etapa.
+
+**La dependencia real es esta (de valor y de tipo; no es solo un ciclo de tipos):**
+
+| Sentido | Archivo → archivo | Clase |
+|---|---|---|
+| `inventory → sales` | `stock-docs-db.ts` → `money-service.ts` | valor |
+| `inventory → sales` | `stock-service.ts` → `accounting-port.ts` | valor |
+| `inventory → sales` | `stock-service.ts` → `money-service.ts` | tipo |
+| `sales → inventory` | `money-service.ts` → `stock-service.ts` | valor |
+
+- **A nivel de archivo** no hay ciclo de valores: el único ciclo es el de tipos `money-service ⇄ stock-service`, que ya cuenta en el tope de 3. **A nivel de módulo** el ciclo es de valor, porque `stock-docs-db` y `stock-service` (inventory) importan valores de `sales` y `money-service` (sales) importa un valor de `stock-service` (inventory).
+- **Origen:** identificado en M3 (`V10-M3-resultados.md`, punto 4: «se conserva; resolverlo es una etapa propia»). Esa etapa **nunca se programó**.
+- **Cómo está acotada:** `tests/architecture/v10-business.test.ts` permite **exclusivamente** el par `inventory ⇄ sales` y exige que sus dependencias sean exactamente las cuatro de la tabla (ni más ni menos). Cualquier otro ciclo entre módulos de `business` hace fallar la prueba, y una dependencia nueva entre estos dos módulos también. La regla general no se debilitó ni se tocó el verificador.
+- **No es una solución definitiva.** Es **deuda arquitectónica pendiente**. Para saldarla hay que decidir, con su propio análisis, entre: mover `stock-docs-db` y la dependencia con `accounting-port` hacia `sales`, invertir una de las dependencias mediante un puerto, o fusionar `inventory` en `sales`. Ninguna se hizo ni se prejuzga aquí. Al saldarla se elimina la excepción de la prueba.
+- **No se modificó código** (implementaciones, contratos ni dependencias) para ocultar el ciclo.
+
+## 9. Decisiones del cierre de V10 (etapas F y Z)
+
+| # | Decisión | Estado |
+|---|---|---|
+| **Z-1** | La raíz de `lib/` contiene exactamente las nueve áreas y `utils.ts` y `cn.ts`; lo fija `tests/architecture/v10-raiz-lib.test.ts` | **Implementada** |
+| **Z-2** | `design/`, `seo/` y la prueba de patrones de Prisma pasan a `tests/` (antes «fuera de V10») | **Implementada** (movimientos de pruebas, sin cambios de comportamiento) |
+| **Z-3** | `nav-types` → `core/capabilities`; el alta del negocio (`types`, `validation`, `presets`, `slug`) → `core/tenancy/onboarding`; `catalogs.ts` → `core/tenancy` | **Implementada** |
+| **Z-4** | `onboarding-db` se queda en `experience/onboarding` porque importa Domains, que Core no puede importar. Ajusta el plan de cierre §10 | **Implementada** (informada al dueño en el cierre) |
+| **Z-5** | `layers.json` se reduce a las unidades que la ruta no puede deducir (5) y se retira la capa `automation` | **Implementada** |
+| **Z-6** | Documentación final: `guia-implementacion-lib.md` y `reglas-dependencias.md` | **Implementada** |
+| **B-1** (vigente) | Excepción temporal y puntual `inventory ⇄ sales`; deuda arquitectónica pendiente | **Vigente** (§8.1) |
+
+M7 y M6c quedan **fuera de V10** (E-6). Lo que sigue pendiente después del cierre está en [`V10-cierre-resultados.md`](V10-cierre-resultados.md) §8.4.
 

@@ -1,8 +1,8 @@
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
-import { rememberBusiness } from "@/lib/tenant/membership";
-import { loadActiveTenant } from "@/lib/tenant/context";
+import { rememberBusiness } from "@/lib/core/tenancy/membership";
+import { loadActiveTenant } from "@/lib/core/tenancy/context";
 
 /**
  * La cuenta cambió de organización desde el selector: se recuerda como la última

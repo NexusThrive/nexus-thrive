@@ -3,7 +3,7 @@ import { MessageCircle, RefreshCw } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import type { ExpiringRow } from "@/lib/industry/gym/gym-db";
-import { formatDateShort } from "@/lib/format";
+import { formatDateShort } from "@/lib/foundation/format";
 import { whatsappReminderLink } from "@/lib/industry/gym/memberships";
 
 /** Membresías que vencen pronto o vencieron hace poco: aviso por WhatsApp y renovación. */

@@ -66,7 +66,7 @@ describe("dependencias entre áreas", () => {
   test("solo runtime y experience pueden importar una industria", () => {
     expect(ruleFor({ layer: "runtime" }, { layer: "industry", industry: "gym" }, layers)).toBeNull();
     expect(ruleFor({ layer: "experience" }, { layer: "industry", industry: "gym" }, layers)).toBeNull();
-    for (const from of ["foundation", "core", "business", "finance", "integrations", "platform"]) {
+    for (const from of ["foundation", "core", "business", "domains", "integrations", "platform"]) {
       expect(ruleFor({ layer: from }, { layer: "industry", industry: "gym" }, layers), from).toMatch(/^R1/);
     }
   });

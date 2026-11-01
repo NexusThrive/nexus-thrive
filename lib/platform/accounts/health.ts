@@ -6,7 +6,7 @@ import { onboardingBoardFor } from "./onboarding-board";
 import { listSurveys } from "../support/satisfaction";
 import { isOpenStatus, slaState } from "../support/support-rules";
 import { listTickets } from "../support/tickets";
-import { bogotaDay } from "@/lib/plain-date";
+import { bogotaDay } from "@/lib/foundation/dates/plain-date";
 
 /** Salud de cada cuenta viva con su explicación (servidor). */
 export async function accountHealth(filter: { tenantId?: string } = {}) {

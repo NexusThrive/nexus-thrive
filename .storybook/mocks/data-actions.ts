@@ -1,5 +1,5 @@
 /** Importar y exportar en Storybook: informes de muestra según el nombre del archivo, sin servidor ni base. */
-import type { ImportKind, ImportReport } from "@/lib/data-exchange/exchange-db";
+import type { ImportKind, ImportReport } from "@/lib/business/data-exchange/exchange-db";
 
 const wait = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms));
 
