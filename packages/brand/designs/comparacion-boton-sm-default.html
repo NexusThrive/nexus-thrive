@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Botón: sm frente a default · maqueta de decisión</title>
+<!-- Maqueta APROXIMADA para decidir el tamaño por defecto del botón (decisión 2b).
+     Usa los tokens reales de packages/brand/css; los botones replican buttonVariants (components/atoms/button-variants.ts).
+     No es Storybook ni sustituye a las historias. La tipografía es la de respaldo del sistema (Inter/Montserrat no se cargan aquí).
+     Parámetros de la URL:  ?tema=oscuro  ·  ?densidad=compacta -->
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<style>
+  body { padding: 24px; max-width: 1240px; margin: 0 auto; }
+  h1 { font-size: 22px; line-height: 28px; margin-bottom: 4px; }
+  .nota { color: var(--foreground-muted); font-size: 13px; margin: 0 0 20px; max-width: 78ch; }
+  h2.sec { font-size: 15px; margin: 28px 0 10px; display: flex; gap: 10px; align-items: baseline; }
+  h2.sec small { font-family: var(--font-sans); font-weight: 400; color: var(--foreground-muted); font-size: 12px; }
+  .trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  @media (max-width: 900px) { .trio { grid-template-columns: 1fr; } }
+  .caso { border: 1px solid var(--border); background: var(--surface); padding: 14px; border-radius: var(--radius-md); min-width: 0; }
+  .caso > .rotulo { font: 600 11px/16px var(--font-sans); letter-spacing: .06em; text-transform: uppercase; color: var(--foreground-muted); margin-bottom: 10px; display: flex; justify-content: space-between; gap: 8px; }
+  .caso > .rotulo b { color: var(--foreground); }
+
+  /* --- botón: réplica de buttonVariants --- */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; border: 1px solid transparent;
+         border-radius: var(--radius-md); font: 600 13px/1 var(--font-sans); height: var(--control-h); padding: 0 18px; cursor: pointer; }
+  .btn.sm { height: 32px; padding: 0 12px; font-size: 12.5px; }
+  .btn.pri { background: var(--primary); color: var(--primary-foreground); }
+  .btn.acc { background: var(--accent); color: #0a0a0b; }
+  .btn.out { background: transparent; color: var(--foreground); border-color: var(--border-strong); }
+  .btn.gho { background: transparent; color: var(--foreground); }
+  .btn.dan { background: var(--danger); color: #fff; }
+
+  /* --- campos --- */
+  .campo { display: grid; gap: 6px; font-size: 13px; font-weight: 500; }
+  .campo input { height: var(--control-h); border: 1px solid var(--border-input); border-radius: var(--radius-md); background: var(--surface);
+                 color: var(--foreground); padding: 0 12px; font: 400 14px/1 var(--font-sans); width: 100%; }
+  .campo small { font-weight: 400; color: var(--foreground-muted); font-size: 12px; }
+  .fila { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .fila.fin { justify-content: flex-end; }
+
+  /* --- tarjetas, tabla, diálogo --- */
+  .kpi { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; background: var(--surface-muted); }
+  .kpi p { margin: 0; font-size: 12px; color: var(--foreground-muted); }
+  .kpi strong { display: block; font: 700 24px/32px var(--font-display); font-variant-numeric: tabular-nums; margin: 2px 0 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-size: 12px; font-weight: 600; color: var(--foreground-muted); padding: 8px; border-bottom: 1px solid var(--border); }
+  td { padding: 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  td.acc { text-align: right; white-space: nowrap; }
+  .dialogo { border: 1px solid var(--border-strong); border-radius: var(--radius-lg); background: var(--surface); overflow: hidden; }
+  .dialogo header { padding: 14px 16px; border-bottom: 1px solid var(--border); font: 600 15px/20px var(--font-display); }
+  .dialogo .cuerpo { padding: 14px 16px; display: grid; gap: 12px; }
+  .dialogo footer { padding: 12px 16px; border-top: 1px solid var(--border); background: var(--surface-muted); }
+  .medida { color: var(--foreground-muted); font-size: 12px; margin-top: 10px; }
+  code { font-family: var(--font-mono); font-size: 12px; }
+</style>
+<script>
+  const q = new URLSearchParams(location.search);
+  if (q.get("tema") === "oscuro") document.documentElement.setAttribute("data-theme", "dark");
+  if (q.get("densidad") === "compacta") document.documentElement.setAttribute("data-density", "compact");
+</script>
+</head>
+<body>
+<h1>Botón · <code>sm</code> frente a <code>default</code></h1>
+<p class="nota">Cada caso se muestra en tres combinaciones: <b>Hoy</b> (acción principal en <code>default</code> 40 px y secundaria en <code>sm</code> 32 px: lo que más se ve en el código),
+<b>Todo sm</b> (32 px) y <b>Todo default</b> (40 px; 34 px con densidad compacta). Alto del control = <code>--control-h</code>. Es una maqueta aproximada para decidir; no cambia ningún componente.</p>
+
+<!-- 1. Acciones principal / secundaria -->
+<h2 class="sec">1 · Acción principal y secundaria <small>pareja habitual de cierre de un formulario</small></h2>
+<div class="trio">
+  <div class="caso"><div class="rotulo"><b>Hoy</b><span>principal default · secundaria sm</span></div>
+    <div class="fila"><button class="btn out sm">Cancelar</button><button class="btn pri">Guardar cliente</button></div></div>
+  <div class="caso"><div class="rotulo"><b>Todo sm</b><span>32 px</span></div>
+    <div class="fila"><button class="btn out sm">Cancelar</button><button class="btn pri sm">Guardar cliente</button></div></div>
+  <div class="caso"><div class="rotulo"><b>Todo default</b><span>40 px</span></div>
+    <div class="fila"><button class="btn out">Cancelar</button><button class="btn pri">Guardar cliente</button></div></div>
+</div>
+
+<!-- 2. Dashboard -->
+<h2 class="sec">2 · Dashboard <small>tarjetas con una acción</small></h2>
+<div class="trio">
+  <div class="caso"><div class="rotulo"><b>Hoy</b><span>principal default · secundaria sm</span></div>
+    <div class="kpi"><p>Ventas de hoy</p><strong>$ 1.240.000</strong><div class="fila"><button class="btn pri">Cobrar</button><button class="btn out sm">Ver caja</button></div></div></div>
+  <div class="caso"><div class="rotulo"><b>Todo sm</b><span>32 px</span></div>
+    <div class="kpi"><p>Ventas de hoy</p><strong>$ 1.240.000</strong><div class="fila"><button class="btn pri sm">Cobrar</button><button class="btn out sm">Ver caja</button></div></div></div>
+  <div class="caso"><div class="rotulo"><b>Todo default</b><span>40 px</span></div>
+    <div class="kpi"><p>Ventas de hoy</p><strong>$ 1.240.000</strong><div class="fila"><button class="btn pri">Cobrar</button><button class="btn out">Ver caja</button></div></div></div>
+</div>
+
+<!-- 3. Formularios -->
+<h2 class="sec">3 · Formularios <small>los campos miden <code>--control-h</code>: ¿el botón debe igualarlos?</small></h2>
+<div class="trio">
+  <div class="caso"><div class="rotulo"><b>Hoy</b><span>campo 40 · principal 40 · secundaria 32</span></div>
+    <div class="campo"><label for="a1">Nombre</label><input id="a1" value="Camila Torres"><small>Como aparece en el recibo.</small></div>
+    <div class="fila fin" style="margin-top:12px"><button class="btn gho sm">Descartar</button><button class="btn pri">Guardar</button></div></div>
+  <div class="caso"><div class="rotulo"><b>Todo sm</b><span>campo 40 · botones 32</span></div>
+    <div class="campo"><label for="a2">Nombre</label><input id="a2" value="Camila Torres"><small>Como aparece en el recibo.</small></div>
+    <div class="fila fin" style="margin-top:12px"><button class="btn gho sm">Descartar</button><button class="btn pri sm">Guardar</button></div></div>
+  <div class="caso"><div class="rotulo"><b>Todo default</b><span>campo 40 · botones 40</span></div>
+    <div class="campo"><label for="a3">Nombre</label><input id="a3" value="Camila Torres"><small>Como aparece en el recibo.</small></div>
+    <div class="fila fin" style="margin-top:12px"><button class="btn gho">Descartar</button><button class="btn pri">Guardar</button></div></div>
+</div>
+
+<!-- 4. Tablas -->
+<h2 class="sec">4 · Tablas y listados <small>acciones por fila</small></h2>
+<div class="trio">
+  <div class="caso"><div class="rotulo"><b>Hoy</b><span>filas con sm (81 % del código)</span></div>
+    <table><thead><tr><th>Cliente</th><th>Saldo</th><th></th></tr></thead><tbody>
+      <tr><td>Carlos Peña</td><td>$ 89.000</td><td class="acc"><button class="btn out sm">Cobrar</button></td></tr>
+      <tr><td>Laura Gómez</td><td>$ 55.000</td><td class="acc"><button class="btn out sm">Cobrar</button></td></tr>
+      <tr><td>Andrés Gómez</td><td>$ 0</td><td class="acc"><button class="btn out sm">Ver</button></td></tr></tbody></table></div>
+  <div class="caso"><div class="rotulo"><b>Todo sm</b><span>32 px</span></div>
+    <table><thead><tr><th>Cliente</th><th>Saldo</th><th></th></tr></thead><tbody>
+      <tr><td>Carlos Peña</td><td>$ 89.000</td><td class="acc"><button class="btn out sm">Cobrar</button></td></tr>
+      <tr><td>Laura Gómez</td><td>$ 55.000</td><td class="acc"><button class="btn out sm">Cobrar</button></td></tr>
+      <tr><td>Andrés Gómez</td><td>$ 0</td><td class="acc"><button class="btn out sm">Ver</button></td></tr></tbody></table></div>
+  <div class="caso"><div class="rotulo"><b>Todo default</b><span>40 px</span></div>
+    <table><thead><tr><th>Cliente</th><th>Saldo</th><th></th></tr></thead><tbody>
+      <tr><td>Carlos Peña</td><td>$ 89.000</td><td class="acc"><button class="btn out">Cobrar</button></td></tr>
+      <tr><td>Laura Gómez</td><td>$ 55.000</td><td class="acc"><button class="btn out">Cobrar</button></td></tr>
+      <tr><td>Andrés Gómez</td><td>$ 0</td><td class="acc"><button class="btn out">Ver</button></td></tr></tbody></table></div>
+</div>
+
+<!-- 5. Diálogos -->
+<h2 class="sec">5 · Diálogos y paneles <small>pie con acciones; confirmación destructiva</small></h2>
+<div class="trio">
+  <div class="caso"><div class="rotulo"><b>Hoy</b><span>principal default · secundaria sm (el 59 % de las secundarias son sm)</span></div>
+    <div class="dialogo"><header>¿Anular la venta?</header><div class="cuerpo"><span style="font-size:13px">Se creará una nota crédito y el stock volverá al inventario.</span></div>
+      <footer class="fila fin"><button class="btn out sm">Conservar</button><button class="btn dan">Anular venta</button></footer></div></div>
+  <div class="caso"><div class="rotulo"><b>Todo sm</b><span>32 px</span></div>
+    <div class="dialogo"><header>¿Anular la venta?</header><div class="cuerpo"><span style="font-size:13px">Se creará una nota crédito y el stock volverá al inventario.</span></div>
+      <footer class="fila fin"><button class="btn out sm">Conservar</button><button class="btn dan sm">Anular venta</button></footer></div></div>
+  <div class="caso"><div class="rotulo"><b>Todo default</b><span>40 px</span></div>
+    <div class="dialogo"><header>¿Anular la venta?</header><div class="cuerpo"><span style="font-size:13px">Se creará una nota crédito y el stock volverá al inventario.</span></div>
+      <footer class="fila fin"><button class="btn out">Conservar</button><button class="btn dan">Anular venta</button></footer></div></div>
+</div>
+
+<p class="medida">Referencias: <code>sm</code> = 32 px de alto y 12,5 px de texto · <code>default</code> = <code>--control-h</code> (40 px; 34 px con <code>?densidad=compacta</code>) y 13 px de texto · objetivo táctil recomendado en móvil ≈ 44 px (WCAG 2.2 pide mínimo 24 px).</p>
+</body>
+</html>

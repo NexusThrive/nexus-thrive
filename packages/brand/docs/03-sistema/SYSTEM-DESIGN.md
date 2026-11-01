@@ -72,6 +72,7 @@ Son criterios para **evaluar decisiones**, no adornos. Cada uno lleva su pregunt
 | 05 | **Acciones con propósito** | Cada botón, formulario o indicador resuelve una necesidad | Si lo quitamos, ¿alguien lo echaría de menos? |
 | 06 | **Complejidad progresiva** | Lo esencial primero; lo avanzado cuando se necesita | ¿Una persona nueva puede completar la tarea sin ver opciones avanzadas? |
 | 07 | **Accesibilidad y confianza** | Estados claros, navegación accesible, control del usuario | ¿Se puede hacer con teclado, con una mano y sin color? ¿Se puede deshacer o ver el rastro? |
+| 08 | **Mobile as a First-Class Experience** (ratificado) | Una sola plataforma adaptada a cada contexto: escritorio para productividad y densidad, tablet para operación flexible, móvil para rapidez y ejecución. El comportamiento cambia, no solo el tamaño | ¿La tarea esencial se completa en móvil, con objetivos táctiles cómodos, sin scroll horizontal de página y con estados claros? (criterios R1–R5 de [`decisiones-nexus-design-system.md` §4](decisiones-nexus-design-system.md#4-principio-transversal-mobile-as-a-first-class-experience)) |
 
 **Ejemplo de uso:** un dashboard con 15 tarjetas que no ayudan a tomar ninguna decisión **no** es mejor por tener más
 información (principios 01 y 05).
@@ -87,6 +88,7 @@ información (principios 01 y 05).
 | 05 Acciones con propósito | «Lo que no está listo no aparece» (3) | Falta criterio para **retirar** elementos existentes |
 | 06 Complejidad progresiva | — | **Sin cubrir**: no existe regla escrita |
 | 07 Accesibilidad y confianza | «Accesible y usable con una mano» (7), «El dinero no se equivoca» (5) | Cubierto; «confianza» se limita hoy al dinero |
+| 08 Mobile as a First-Class Experience | «Accesible y usable con una mano» (7), `CLAUDE.md`: «nacer responsive» y probar en 375 y 1280 px | Parcial: falta tablet, tamaños de referencia coherentes (375 frente a 412), patrón móvil de tablas y criterios verificables |
 
 ---
 
@@ -227,6 +229,7 @@ experiencias y datos de usuarios**.
 | **D. Estados** | Matriz de estados por componente y por pantalla | §4.4 con brechas cerradas o decididas | Los 11 estados tienen tratamiento o excepción explícita |
 | **E. Escala** | Formalizar el nivel 4 (patrones) y el 6 (experiencias) | Sección en `DESIGN.md` y `docs/design/` | Definidos sin renombrar carpetas |
 | **F. Experiencias** | Elegir 2–3 flujos y evaluarlos con los principios | Informe por flujo (onboarding, vender/cobrar, restaurante) | Brechas priorizadas |
+| **H. Auditoría responsive y patrones adaptativos** | Auditar dashboard, navegación, tablas, formularios, modales y módulos empresariales en móvil pequeño, móvil estándar, tablet y escritorio; definir el patrón adaptativo de cada elemento | Informe con capturas y fichas de patrón con variante móvil | Brechas priorizadas por criterio R1–R5; pilotos: dashboard y restaurantes |
 | **G. Integración** | Repartir el contenido final y retirar este archivo | Páginas en `docs/design/` y en la wiki; pruebas de regla donde se pueda | Este archivo eliminado |
 
 Cada fase termina con **evidencia** (documento + ejemplo real + prueba o historia cuando aplique), en línea con la regla de

@@ -13,7 +13,7 @@ Los **componentes** (código con 372 consumidores) siguen en `components/` y se 
 |---|---|
 | [`01-marca/`](docs/01-marca/brand-book.md) | Libro de marca, guía de tono, prompt de marca |
 | [`02-producto/`](docs/02-producto/PRODUCT.md) | `PRODUCT.md`: qué es Nexus, para quién y principios de producto |
-| [`03-sistema/`](docs/03-sistema/DESIGN.md) | `DESIGN.md` (tokens, componentes, movimiento, layout vigentes), el borrador del [System Design](docs/03-sistema/SYSTEM-DESIGN.md) y el [inventario de patrones](docs/03-sistema/inventario-patrones.md) medido (`pnpm design:inventory`) |
+| [`03-sistema/`](docs/03-sistema/DESIGN.md) | `DESIGN.md` (tokens, componentes, movimiento, layout vigentes), el borrador del [System Design](docs/03-sistema/SYSTEM-DESIGN.md) el [inventario de patrones](docs/03-sistema/inventario-patrones.md) medido (`pnpm design:inventory`) y las [decisiones del Design System](docs/03-sistema/decisiones-nexus-design-system.md) (resoluciones registradas, la comparación visual del botón y el principio transversal *Mobile as a First-Class Experience*) |
 | [`04-patrones/`](docs/04-patrones/interaction-patterns.md) | Patrones de interacción, [accesibilidad](docs/04-patrones/accessibility.md), [movimiento](docs/04-patrones/movimiento.md) y [PWA](docs/04-patrones/pwa.md) |
 | [`05-calidad/`](docs/05-calidad/quality-checklist.md) | Lista de calidad de interfaz (se copia en cada PR) |
 | [`06-auditorias/`](docs/06-auditorias/REDISENO-NEXUS.md) | Rediseño de NEXUS, auditorías de diseño y UX y sus capturas |
@@ -59,7 +59,8 @@ packages/brand/                       ← @nexus/brand
 │   ├── design-system-bos.html        ←   Design System del BOS
 │   ├── cargas-de-interfaz.html       ←   Cargas de interfaz
 │   ├── intro-de-la-app.html          ←   Intro de la app
-│   └── receipt-printer.html          ←   Impresora de recibos
+│   ├── receipt-printer.html          ←   Impresora de recibos
+│   └── comparacion-boton-sm-default.html ← Maqueta de decisión: botón sm frente a default
 ├── docs/                             ← documentación de diseño (ver abajo)
 └── (la guía de prompts está en docs/01-marca/PROMPT.md)
 ```
