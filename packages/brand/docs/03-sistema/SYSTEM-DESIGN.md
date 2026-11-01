@@ -7,7 +7,7 @@
 > Reglas de partida: **la marca NEXUS no se cambia** (nombre, negro y oro, tipografías); todo lo marcado como *propuesta*
 > se valida contra usuarios y funcionalidades reales antes de volverse regla.
 
-Estado: borrador 0 · 2026-11-01 · sin decisiones tomadas.
+Estado: borrador 1 · 2026-11-01 · **fase B hecha**: inventario medido en [`inventario-patrones.md`](inventario-patrones.md). Sin decisiones de diseño tomadas todavía.
 
 ---
 
@@ -222,7 +222,7 @@ experiencias y datos de usuarios**.
 | Fase | Objetivo | Entregable | Criterio de salida |
 |---|---|---|---|
 | **A. Principios** | Validar los 7 principios y reconciliarlos con `PRODUCT.md` | §3 cerrado y una lista corta de «cómo se evalúa» | Aprobados por producto |
-| **B. Inventario** | Listar patrones reales usados hoy en `app/` (no solo componentes) | Tablas §4.1 completas, con ejemplos y capturas | Cada patrón tiene al menos un ejemplo real y su ubicación |
+| **B. Inventario** (hecha) | Listar patrones reales usados hoy en `app/` (no solo componentes) | [`inventario-patrones.md`](inventario-patrones.md) y `pnpm design:inventory` | Cumplido: cifras medidas, hallazgos priorizados y propuesta de estructura de Storybook |
 | **C. Fichas** | Documentar los patrones prioritarios con la ficha de §4.2 | 8–12 fichas (formulario, estado vacío, tabla con filtros, confirmación destructiva, creación rápida, progreso…) | Una persona nueva puede implementar el patrón solo con la ficha |
 | **D. Estados** | Matriz de estados por componente y por pantalla | §4.4 con brechas cerradas o decididas | Los 11 estados tienen tratamiento o excepción explícita |
 | **E. Escala** | Formalizar el nivel 4 (patrones) y el 6 (experiencias) | Sección en `DESIGN.md` y `docs/design/` | Definidos sin renombrar carpetas |
