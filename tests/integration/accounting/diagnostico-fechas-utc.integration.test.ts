@@ -190,7 +190,8 @@ describe.skipIf(!TEST_URL)("el diagnóstico sobre datos simulados (integración)
   test("solo corre contra la base desechable de la prueba (nunca contra una base persistente)", async () => {
     expect(normalize(process.env.DATABASE_URL)).toBe(normalize(TEST_URL));
     const r = spawnSync("psql", [TEST_URL!, "-X", "-q", "-A", "-t", "-c", "select current_database()"], { encoding: "utf8" });
-    expect(r.stdout.trim()).toMatch(/^nexus_e\d+_test$/);
+    // Base desechable: la local de pruebas (`nexus_e<n>_test`) o la efímera del CI (`nexus_test`).
+    expect(r.stdout.trim()).toMatch(/^nexus_(e\d+_)?test$/);
   });
 
   test("no modifica nada: los asientos, documentos y documentos fiscales quedan idénticos", async () => {
