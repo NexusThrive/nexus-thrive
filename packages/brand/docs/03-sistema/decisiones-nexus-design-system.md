@@ -23,6 +23,8 @@ Contexto: [`inventario-patrones.md`](inventario-patrones.md) · [`SYSTEM-DESIGN.
 | **2c** | API de `Input` | **ESTRUCTURA APROBADA · CONSOLIDACIÓN PENDIENTE** | Primitivos · `Field` · especializados. Contratos de `UsdInput`/`MoneyInput` y `SearchField`/`SearchInput` investigados en §2.7: **no son fusiones directas** |
 | **3** | 19 componentes sin uso | **CLASIFICACIÓN PROVISIONAL APROBADA** | Conservar 5 · Consolidar 10 · Retirar 4. Los cuatro a retirar **pasan primero a Laboratorio**; **no se elimina nada en esta etapa**. `network-banner` y `staff-access-notice` se conservan y necesitan historias de estado |
 
+| **P** | **Principio transversal: Mobile as a First-Class Experience** | **INCORPORADO COMO PRINCIPIO PROPUESTO** (a ratificar) | Una sola plataforma adaptada a cada contexto; criterios verificables R1–R5; tamaños de referencia; auditoría responsive y piloto (dashboard y restaurantes). Web responsive con PWA; sin aplicación nativa por ahora. Ver §4. **Sin migración de código** |
+
 ### Correcciones al inventario (#138)
 
 | Dato del inventario | Matiz medido ahora |
@@ -435,7 +437,147 @@ en todo el sistema. Son el primer candidato del nivel «Patrones» (estados) en 
 
 ---
 
-## 4. Registro de resoluciones
+## 4. Principio transversal: Mobile as a First-Class Experience
+
+Estado: **incorporado como principio propuesto** (a ratificar) · afecta a todas las decisiones anteriores · **no inicia ninguna migración de código**.
+
+> **Una sola plataforma, una experiencia adaptada a cada contexto.**
+> Nexus no tiene una versión de escritorio y otra móvil como experiencias separadas: tiene **una plataforma empresarial** que se adapta a
+> la forma en que cada persona trabaja. El responsive no es una adaptación posterior: es una propiedad de diseño desde el primer paso.
+
+| Contexto | Qué prima |
+|---|---|
+| **Escritorio** | Productividad, densidad de información y gestión avanzada |
+| **Tablet** | Operación flexible y navegación intermedia |
+| **Móvil** | Rapidez, accesibilidad y ejecución de tareas desde cualquier lugar |
+
+Relación con lo que ya rige: `PRODUCT.md` ya pide «accesible y usable con una mano» y `CLAUDE.md` exige «nacer responsive (móvil primero)»
+y probar en 375 y 1280 px. Este principio **lo eleva a criterio de diseño verificable** y lo amplía de «que quepa» a «que sea una experiencia
+completa». Pasa a ser el **principio 08** del [System Design](SYSTEM-DESIGN.md).
+
+### 4.1 No son cuatro tamaños de pantalla: son cuatro situaciones de uso
+
+El diseño debe contemplar **contexto, dispositivo, tarea y usuario**, no solo el ancho:
+
+| Situación | Usuario | Dispositivo | Tarea | Qué debe resolver el diseño |
+|---|---|---|---|---|
+| Revisar el estado financiero | Administrador | Computadora | Conciliar, filtrar, exportar | Densidad, tablas completas, varias columnas, atajos de teclado |
+| Gestionar una comanda | Mesero | Celular, de pie, a menudo con una mano | Tomar, modificar y enviar un pedido en segundos | Objetivos táctiles grandes, una acción principal visible, poco texto, tolerancia a mala conexión |
+| Consultar a los miembros | Entrenador | Tablet | Ver ficha, registrar entrada, anotar | Navegación intermedia, listas con detalle lateral, lectura a distancia |
+| Revisar indicadores fuera del local | Propietario | Celular | Ver cifras del día y decidir | Resumen en tarjetas, gráficas simplificadas, carga rápida y estados claros |
+
+### 4.2 No todo se comporta igual en todos los tamaños
+
+No basta con que los componentes se encojan. El **comportamiento** cambia:
+
+| Elemento | Escritorio | Móvil | Regla |
+|---|---|---|---|
+| Navegación | Barra lateral | Navegación compacta (barra inferior y búsqueda accesible) | Las tareas frecuentes quedan a ≤ 2 toques |
+| Dashboard | Widgets en columnas | Tarjetas y secciones en una columna | El orden móvil se decide por prioridad de decisión, no por el orden del escritorio |
+| Tablas | Tabla completa | **Lista o tarjetas adaptadas** | Una tabla de 12 columnas **no** se convierte en una tabla diminuta |
+| Formularios | Columnas | Una columna | Campos a 16 px de texto (decisión 1b) |
+| Acciones | Botones y menús | Acciones táctiles accesibles | Objetivo ≥ 44 px en la acción principal |
+| Modales | Diálogo centrado | Hoja inferior o pantalla completa | Ya lo resuelve `ResponsiveSheet` |
+| Filtros | Paneles y ventanas emergentes | Panel desplegable | Se aplican con una acción clara y se pueden limpiar |
+| Gráficas | Visualización amplia | Gráficas simplificadas | Menos series, etiquetas legibles; no una versión reducida de la grande |
+
+**Reglas para decidir qué patrón usar** (propuesta a validar en la auditoría de §4.5):
+
+| Si la información es… | En escritorio | En móvil |
+|---|---|---|
+| Un listado con ≤ 4 columnas esenciales | Tabla | Lista de filas con dato principal y secundario |
+| Un listado con 5–12 columnas | Tabla con columnas priorizadas y personalizables | **Tarjetas** con las 3–4 columnas esenciales y el resto en el detalle |
+| Una comparación que necesita todas las columnas | Tabla completa | Scroll horizontal **solo como último recurso**, con la primera columna fija y un indicio visible de que hay más |
+| Una acción que no cambia de pantalla | Diálogo o ventana emergente | Hoja inferior (`ResponsiveSheet`) |
+| Un formulario largo o con pasos | Panel lateral | **Pantalla completa** por pasos |
+| Una acción frecuente de una mano | Botón en la fila | Acción táctil en la zona del pulgar, con alternativa sin gestos |
+
+### 4.3 Cinco criterios obligatorios, hechos verificables
+
+| # | Criterio | Qué se exige | Cómo se verifica | Estado hoy |
+|---|---|---|---|---|
+| **R1** | **Cobertura funcional** | Las operaciones esenciales de cada módulo se pueden **completar** en móvil, no solo consultar | Una prueba e2e por flujo esencial en el proyecto `movil` de Playwright, sin saltarlo | Existe el proyecto `movil` (Pixel 7), pero **al menos dos pruebas se saltan en móvil** (tablero de CRM, reordenar el inicio), con alternativa documentada |
+| **R2** | **Interacción táctil** | Objetivos ≥ 24 px en todo control (mínimo WCAG 2.2 AA) y **≥ 44 px en las acciones principales**; separación entre objetivos; el hover no es la única vía; los gestos tienen alternativa | Prueba de Playwright que mide las cajas de los controles en móvil; revisión manual de gestos | Botón `sm` y `icon-sm` miden 32 px: cumplen 24, **no 44**. Gestos con alternativa ya es regla (`movimiento.md` §6) |
+| **R3** | **Navegación móvil** | Arquitectura coherente, búsqueda accesible y acceso rápido a las tareas frecuentes | Revisión por flujo; prueba de que cada módulo es alcanzable desde la navegación móvil | `MobileTabBar` en la plantilla del negocio (3 archivos); la paleta de búsqueda se abre con Ctrl K y hay un buscador en la barra superior (`navbar-search`): **auditar su uso táctil** |
+| **R4** | **Accesibilidad** | Contraste AA, texto legible (suelo 11 px, campos a 16 px), foco, lectores de pantalla y **reflow a 320 px sin scroll horizontal de la página** (WCAG 1.4.10) | axe en el proyecto `movil` y una prueba de que el documento no desborda a 320 y 375 px | axe corre en Playwright; **no hay prueba de reflow** ni se prueba a 320 px |
+| **R5** | **Rendimiento y estados** | Cargando, error, sin conexión, guardando, guardado y vacío resueltos **también en móvil y con conexión lenta** | Historias de estado en Storybook con viewport móvil; prueba con red lenta emulada | Estados medidos en el inventario (0 `error.tsx`, «sin conexión» sin historia); sin pruebas de red lenta |
+
+Cada criterio pasa a la **lista de calidad** de interfaz como bloque «Móvil» y se convierte en prueba automática cuando se pueda; los que
+son juicio de diseño (R3) se revisan en el PR con capturas en los tamaños de referencia.
+
+### 4.4 Tamaños de referencia
+
+No se diseña para una sola resolución. Referencias propuestas (a ratificar en la auditoría):
+
+| Referencia | Ancho | Para qué |
+|---|---|---|
+| Móvil pequeño | 320–360 px | Reflow (WCAG 1.4.10), teléfonos pequeños y ampliados |
+| **Móvil estándar** | 375–412 px | El caso principal (hoy: 375 en `CLAUDE.md`, 412 en el proyecto `movil` de Playwright) |
+| Tablet | 768–834 px (vertical) y 1024 px (horizontal) | Operación intermedia; **hoy no existe ninguna referencia ni prueba** |
+| Escritorio | 1280 px (y 1440 px o más) | Productividad y densidad |
+
+**Inconsistencias medidas que hay que resolver (no se corrigen aquí):**
+
+- La guía dice **375 px** y las pruebas automáticas usan **412 px** (Pixel 7).
+- **Dos umbrales** para «móvil»: `ResponsiveSheet` cambia a 768 px, mientras que el prefijo más usado en el código es `sm` (640 px: **316 usos**,
+  frente a `md` 74 y `lg` 109). Hay que fijar los puntos de quiebre canónicos y qué significa «móvil» en cada componente.
+- **Storybook no define viewports de referencia**: no se pueden revisar las historias en los tamaños acordados.
+
+### 4.5 Estado actual del responsive (medido)
+
+Heurístico: cuenta texto, no analiza el árbol de sintaxis.
+
+| Dato | Valor |
+|---|---|
+| Archivos con algún prefijo responsive (`sm:`, `md:`, `lg:`, `xl:`) | 145 de 439; en `app/`, 171 de 286 no tienen ninguno (no implica un problema: muchas pantallas son de una columna) |
+| Prefijos usados | `sm` 316 · `lg` 109 · `md` 74 · `max-sm` 35 · `xl` 16 |
+| **Tablas** (31 archivos, mediana de 6 columnas y máximo de 12) | **27 con scroll horizontal**, 16 con ancho mínimo fijo, **0 con una alternativa de lista o tarjetas en móvil**, 4 sin scroll ni alternativa |
+| Cuadrículas de varias columnas sin colapso (`grid-cols-2+` sin prefijo) | 52 (frente a 14 que colapsan con `md:grid-cols-…`) |
+| Layouts duales (uno para móvil y otro para escritorio) | 1 archivo |
+| Piezas pensadas para móvil | `MobileTabBar` (3), `ResponsiveSheet` (43), `PullToRefresh` (2), `SwipeCard` (2) |
+| PWA | `app/manifest.ts` y `public/sw.js` existen |
+| Pruebas automáticas | Proyectos `escritorio` (1280 × 800) y `movil` (Pixel 7); sin tablet |
+
+**Lectura:** la **base móvil es real** (hojas inferiores, barra de pestañas, gestos con alternativa, PWA), pero **las tablas, que son el
+corazón de un sistema empresarial, no tienen versión móvil**: hoy se resuelven con scroll horizontal, que es justo lo que el principio
+descarta como solución por defecto. Es la brecha más grande y encaja con el patrón de tabla de la decisión 3 (`data-table`).
+
+### 4.6 Plan de trabajo (ninguno se ejecuta con esta resolución)
+
+| Paso | Trabajo | Entregable | Criterio de salida |
+|---|---|---|---|
+| 1 | **Incorporar el principio** (este documento y el System Design) | Principio 08 y criterios R1–R5 | Aprobado |
+| 2 | **Auditoría responsive**: dashboard, navegación, tablas, formularios, modales y módulos empresariales, en los cuatro tamaños | Informe con capturas y brechas priorizadas | Cada brecha tiene tamaño, módulo y criterio R1–R5 afectado |
+| 3 | **Patrones adaptativos**: cuándo tabla, lista, tarjeta, hoja, menú o pantalla completa | Fichas de patrón (§4.2 del System Design) con la variante móvil | Reglas de §4.2 validadas con la auditoría |
+| 4 | **Tamaños de referencia y puntos de quiebre canónicos** | Decisión escrita; viewports en Storybook y en Playwright (incluida la tablet) | Una sola definición de «móvil» |
+| 5 | **Storybook responsive**: cada componente importante muestra variantes responsive y estados de interacción | Historias con viewports de referencia | Cobertura de los componentes de §3 y del inventario |
+| 6 | **Piloto en un módulo real**: primero el **dashboard**, después el flujo de **restaurantes** (comandas, mesas, cocina), que exige operación real en móvil | Informe por piloto con R1–R5 medidos | Los cinco criterios cumplidos o con excepción explícita |
+
+### 4.7 Aplicación web responsive completa; PWA sí, aplicación nativa todavía no
+
+Para esta etapa: **una aplicación web responsive completa, con PWA**. La PWA **ya existe** (manifiesto y service worker; política de caché
+en [`pwa.md`](../04-patrones/pwa.md)): se mantiene y se mejora, no se empieza. **No se construye todavía una aplicación nativa independiente** para iOS y
+Android: primero se consigue que la plataforma web funcione extraordinariamente bien en ambos contextos.
+
+Condiciones para **reconsiderar** una aplicación nativa más adelante (a evaluar con datos de uso, no por intuición): necesidad probada de
+capacidades del dispositivo que la web no ofrece de forma fiable, requisitos de operación sin conexión que superen lo razonable para una PWA, o
+métricas de uso móvil que lo justifiquen.
+
+### 4.8 Cómo cambia este principio las decisiones anteriores
+
+| Decisión | Efecto |
+|---|---|
+| **1b** (16 px en campos) | Pasa de «investigar iOS» a **requisito R4** del criterio móvil |
+| **2b** (tamaño del botón) | La evidencia móvil pesa más: el objetivo táctil de 44 px en la acción principal es un criterio, no una opinión |
+| **3** (`data-table`) | El patrón de tabla **debe nacer con variante móvil** (lista o tarjetas), no solo con la de escritorio |
+| **Storybook** | La reestructuración incluye **viewports de referencia** y una variante móvil por componente importante |
+| **Estados** | Los estados de §1.4 del inventario se revisan **también en móvil y con conexión lenta** |
+| **Escala tipográfica** | Se valida legibilidad en móvil con los tamaños de referencia antes de migrar |
+
+
+---
+
+## 5. Registro de resoluciones
 
 | # | Decisión | Estado | Evidencia en este documento |
 |---|---|---|---|
@@ -450,18 +592,21 @@ en todo el sistema. Son el primer candidato del nivel «Patrones» (estados) en 
 | 2c | Estructura de campos | **Estructura aprobada**; consolidación **pendiente** | §2.6–§2.7 |
 | 3 | 19 componentes sin uso (5 · 10 · 4) | **Clasificación provisional aprobada**; retirar → Laboratorio; sin eliminar | §3 |
 | 3 · cond. | `network-banner` y `staff-access-notice` | **Conservar**; crear historias de estado | §3.1 |
+| **P** | Mobile as a First-Class Experience: principio 08, criterios R1–R5, tamaños de referencia, plan de seis pasos | **Incorporado como principio propuesto**; sin ratificar; sin migración | §4 |
 
-## 5. Próximos pasos (ninguno se ejecuta con esta resolución)
+## 6. Próximos pasos (ninguno se ejecuta con esta resolución)
 
+0. **Ratificar el principio móvil** (§4) y arrancar la **auditoría responsive** (dashboard, navegación, tablas, formularios, modales, módulos empresariales) en los cuatro tamaños de referencia.
 1. **Evidencia pendiente de la 2b:** capturas de Storybook y de pantallas reales, y prueba táctil en móvil; decidir antes la política de pareja.
 2. **Validación de 1b en iPhone real** con el protocolo de §1.9.
 3. **Contraste:** corregir los 7 usos con opacidad que incumplen o rozan AA (con revisión visual) y medir con capturas por módulo.
 4. **Tokens** `text-2xs`/`text-ui` y prueba de regla con la deuda congelada (primer cambio de código, en un PR aparte).
 5. **Reestructurar Storybook** en los seis niveles, con las historias de estado (incluidas `NetworkBanner` y `StaffAccessNotice`) y el grupo `Laboratorio` para los cuatro componentes a retirar.
-6. **Contratos de entrada:** decidir la base común de dinero y la composición `SearchInput` → `SearchField`.
+6. **Patrón de tabla con variante móvil** (lista o tarjetas), a partir de `data-table`: la mayor brecha responsive medida (§4.5).
+6b. **Contratos de entrada:** decidir la base común de dinero y la composición `SearchInput` → `SearchField`.
 7. **Migración de `Button`** por áreas, con un caso piloto que confirme `Button asChild` desde Server Components.
 
-## 6. Límites de este análisis
+## 7. Límites de este análisis
 
 - Las cifras son **heurísticas** (cuentan texto con `grep` y expresiones regulares); sirven para decidir, no para sancionar un archivo.
 - Los esfuerzos son **órdenes de magnitud** (número de PR y de archivos), no plazos.
@@ -469,4 +614,5 @@ en todo el sistema. Son el primer candidato del nivel «Patrones» (estados) en 
   respaldo del sistema. Sirve para discutir, no para decidir sola.
 - El contraste se calculó con las fórmulas de WCAG sobre los valores de los tokens, **no** sobre capturas renderizadas.
 - El zoom de Safari en iOS es un comportamiento conocido que **no se verificó en un dispositivo real**.
+- Los datos de §4.5 (responsive) son heurísticos y **no incluyen capturas ni pruebas en dispositivo**: la auditoría del paso 2 de §4.6 es quien los confirma.
 - La compatibilidad de `Button asChild` desde Server Components **no se ha compilado**; es una hipótesis con una condición de piloto.
