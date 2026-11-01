@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { Badge, type StatusTone } from "@/components/atoms/badge";
 import { CountUp } from "@/components/atoms/count-up";
@@ -28,14 +28,22 @@ export function StatTile({
   index?: number;
   className?: string;
 }) {
+  // Caracteres de la cifra tal como se pinta (el mismo formato de `CountUp`: miles con punto).
+  const chars = typeof value === "number" ? Math.round(value).toLocaleString("es-CO").length : typeof value === "string" ? value.length : 0;
   const body = (
     <>
       <Badge tone={tone} pulse={pulse} className="self-start">
         {label}
       </Badge>
-      <p className="font-display text-2xl font-semibold leading-none tabular-nums text-foreground">
-        {typeof value === "number" ? <CountUp value={value} duration={1000} /> : value}
-      </p>
+      {/* La cifra se ajusta al ancho de su tarjeta (consulta de contenedor): 24 px de máximo y 16 px de suelo. */}
+      <div className="@container">
+        <p
+          style={{ "--nx-chars": Math.max(chars, 1) } as CSSProperties}
+          className="whitespace-nowrap font-display text-[length:min(1.5rem,max(1rem,calc(100cqw/(var(--nx-chars)*0.6))))] font-semibold leading-none tabular-nums text-foreground"
+        >
+          {typeof value === "number" ? <CountUp value={value} duration={1000} /> : value}
+        </p>
+      </div>
       {note ? <p className="text-xs text-muted-foreground">{note}</p> : null}
     </>
   );

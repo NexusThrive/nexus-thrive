@@ -44,16 +44,15 @@ Los hallazgos de la auditoría que aún no se corrigen se marcan con `test.fail(
 
 | Marca | Hallazgo | Se resuelve en |
 |---|---|---|
-| `P1-1` | Importes recortados a 320 px | Paso 3 |
-| `P1-2` | Barra superior superpuesta a 320 y 360 px (con la campana de producción, aunque el nombre del negocio sea corto) | Paso 3 |
-| `P1-3` | Importes con datos realistas recortados hasta 375 px | Paso 3 |
 | `P2-3` | Objetivos táctiles de 40–42 px | Paso 4 |
 | `P2-4` | Riel de tablet sin etiquetas y texto de 10 px (también los títulos de grupo de la barra expandida) | Paso 5 |
 | `P2-5` | Controles de contenido por debajo de 44 px (selectores de periodo, filtros, ayudas, enlaces) | Paso 4 |
 
+**Corregidos (marca retirada):** `P1-1`, `P1-2` y `P1-3` (importes recortados y barra superior superpuesta) en el paso 3; ver [`correcciones-p1-2026-11`](../06-auditorias/correcciones-p1-2026-11/informe.md).
+
 ## Alcance y límites
 
-- Corren sobre **historias**, no sobre la aplicación. La más fiel es `Páginas/Inicio/Dashboard fiel` (`ConDatos`, `CuentaNueva` y `Cargando`): `TenantShell` real y la composición de `page.tsx` con datos de muestra. Sus diferencias con producción están en [`historia-fiel-dashboard-2026-11`](../06-auditorias/historia-fiel-dashboard-2026-11/informe.md).
+- Corren sobre **historias**, no sobre la aplicación. Incluyen casos exigentes: `NombreLargo` y `CifrasGrandes`. La más fiel es `Páginas/Inicio/Dashboard fiel` (`ConDatos`, `CuentaNueva` y `Cargando`): `TenantShell` real y la composición de `page.tsx` con datos de muestra. Sus diferencias con producción están en [`historia-fiel-dashboard-2026-11`](../06-auditorias/historia-fiel-dashboard-2026-11/informe.md).
 - Solo **Chromium con emulación táctil**: no sustituyen la prueba en iPhone o iPad reales (zoom de Safari, gestos, teclado virtual).
 - No miden red lenta, contraste renderizado ni estados de carga y error (R5).
 - Los criterios **R2, R4 y R5 no se dan por cumplidos** hasta probarlos también en dispositivos.

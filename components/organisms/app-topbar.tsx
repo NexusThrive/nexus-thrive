@@ -78,7 +78,7 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
         </span>
       </Link>
 
-      <div className="relative flex min-w-0 flex-1 items-center justify-end gap-2 border-b border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3 text-[var(--sidebar-fg)] md:gap-4 md:px-6 xl:px-8">
+      <div className="relative flex min-w-fit flex-1 md:min-w-0 items-center justify-end gap-2 border-b border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3 text-[var(--sidebar-fg)] md:gap-4 md:px-6 xl:px-8">
         {/* Izquierda: contexto (negocio) y búsqueda. `suppressHydrationWarning`:
             Proton Pass marca con `data-protonpass-form` los contenedores con
             botones/inputs antes de que React hidrate y dispara el aviso de
