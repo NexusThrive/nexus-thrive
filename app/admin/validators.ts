@@ -1,12 +1,6 @@
-import {
-  MODULES,
-  VERTICALS,
-  isModule,
-  isVertical,
-  validateSlug,
-  type ModuleValue,
-  type VerticalValue,
-} from "@/lib/admin/catalogs";
+import { VERTICALS, isVertical, type VerticalValue } from "@/lib/core/sectors/verticals";
+import { MODULES, isModule, type ModuleValue } from "@/lib/capabilities/modules";
+import { validateSlug } from "@/lib/admin/catalogs";
 import {
   TEAM_SIZES,
   type OnboardingTenantType,

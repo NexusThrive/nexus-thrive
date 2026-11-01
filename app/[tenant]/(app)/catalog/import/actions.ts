@@ -3,7 +3,7 @@
 import { requireTenantContext } from "@/lib/tenant/context";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import { getQuoteTerms } from "@/lib/vertical-terms";
+import { getQuoteTerms } from "@/lib/core/sectors/terms";
 import { analyzeFile, buildExecutionPlan } from "@/lib/construction/apu-importer";
 import { executeImport } from "@/lib/construction/apu-importer/execute";
 import { isMasterPackWorkbook, parseMasterPack } from "@/lib/construction/apu-importer/master-pack";

@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { DEFAULT_MODULES_BY_VERTICAL, VERTICAL_LABELS, isVertical } from "@/lib/admin/catalogs";
+import { VERTICAL_LABELS, isVertical } from "@/lib/core/sectors/verticals";
+import { DEFAULT_MODULES_BY_VERTICAL } from "@/lib/core/sectors/catalog";
 import { normalizeEmail, slugFromName } from "@/lib/admin/account-limits";
 import { createAdminDb } from "@/lib/admin/db";
 import { organizationLimitProblem, setLimit } from "@/lib/admin/users-db";

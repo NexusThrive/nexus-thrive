@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
-import { VERTICAL_LABELS, VERTICAL_RECIPES, isVertical, type ModuleValue } from "@/lib/admin/catalogs";
+import { VERTICAL_LABELS, isVertical } from "@/lib/core/sectors/verticals";
+import { VERTICAL_RECIPES } from "@/lib/core/sectors/catalog";
+import { type ModuleValue } from "@/lib/capabilities/modules";
 import { CAPABILITIES } from "@/lib/capabilities/registry";
 import { groupFunctions } from "@/lib/functions/functions";
 import { setupStates } from "@/lib/functions/setup-db";

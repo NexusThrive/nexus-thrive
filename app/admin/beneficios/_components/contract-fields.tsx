@@ -1,4 +1,4 @@
-import { MODULES, MODULE_LABELS } from "@/lib/admin/catalogs";
+import { MODULES, MODULE_LABELS } from "@/lib/capabilities/modules";
 import type { ContractTerms } from "@/lib/benefits/benefits";
 
 const inputClass =

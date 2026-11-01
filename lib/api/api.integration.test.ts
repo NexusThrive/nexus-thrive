@@ -3,7 +3,7 @@ import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { tenantWithModules } from "@/lib/tenant/membership";
-import { OPERATIONS } from "@/lib/operations/registry";
+import { OPERATIONS } from "@/lib/runtime/operations";
 import { handleApi, type ApiDeps, type ApiLogEntry } from "./handler";
 import { authenticateApiKey, createApiKey, listApiKeys, revokeApiKey } from "./keys";
 import { resetRateLimits } from "./rate-limit";

@@ -2,11 +2,14 @@ import { after } from "next/server";
 import type { ApiDeps } from "@/lib/api/handler";
 import { authenticateApiKey, recordApiRequest } from "@/lib/api/keys";
 import { auditOperation } from "@/lib/operations/audit";
-import { OPERATIONS } from "@/lib/operations/registry";
+import { OPERATIONS } from "@/lib/runtime/operations";
 import { consumeMeter, secondsToNextPeriod } from "@/lib/usage/meters";
 import { tenantWithModules } from "@/lib/tenant/membership";
 
-/** Conexión de `/api/v1` y `/api/mcp` a la base y al registro (compartida: misma llave, mismo registro de uso). */
+/**
+ * Conexión de `/api/v1` y `/api/mcp` a la base y al registro de operaciones (compartida: misma llave, mismo registro de uso).
+ * Es composición (reúne la API, el uso, la auditoría y el inquilino con datos reales), así que vive en `lib/runtime`.
+ */
 export const apiDeps: ApiDeps = {
   operations: OPERATIONS,
   usage: async (tenantId) => {

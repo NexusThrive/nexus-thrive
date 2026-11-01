@@ -4,7 +4,7 @@ import { customerProfileExtras } from "@/lib/business/customers-db";
 import { tenantWithModules } from "@/lib/tenant/membership";
 import { buildCustomer360, createTenantDb } from "@/lib/tenant/db";
 import { getCustomer360Memberships } from "@/lib/industry/gym/memberships-repo";
-import { getVerticalTerms, hasMemberAccess } from "@/lib/vertical-terms";
+import { getVerticalTerms, hasMemberAccess } from "@/lib/core/sectors/terms";
 import { bmi, profileFor } from "@/lib/business/customer-fields";
 import CustomerHeader from "./_components/customer-header";
 import MembershipHighlight from "./_components/membership-highlight";

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Badge } from "@/components/atoms/badge";
 import { Switch } from "@/components/atoms/switch";
 import { useToast } from "@/components/molecules/toast";
-import type { ModuleValue } from "@/lib/admin/catalogs";
+import type { ModuleValue } from "@/lib/capabilities/modules";
 import { CAPABILITIES, CAPABILITY_CATEGORIES } from "@/lib/capabilities/registry";
 import { MODULE_ICONS } from "@/lib/onboarding/module-meta";
 import type { ModuleState } from "@/lib/plans/compat";

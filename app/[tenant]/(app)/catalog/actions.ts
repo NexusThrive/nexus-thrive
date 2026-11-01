@@ -5,7 +5,7 @@ import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
 import { importApuItems } from "@/lib/construction/catalog-import";
 import { createAuth, type NexusRole } from "@/lib/auth/authorization";
-import { getQuoteTerms, type QuoteTerms } from "@/lib/vertical-terms";
+import { getQuoteTerms, type QuoteTerms } from "@/lib/core/sectors/terms";
 import type { ApuItemCategoryValue } from "@/lib/construction/apu-engine";
 import { isUniqueViolation } from "@/lib/db-errors";
 import {

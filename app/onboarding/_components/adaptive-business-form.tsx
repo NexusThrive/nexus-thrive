@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Check, Link2, MapPin, Receipt } from "lucide-react";
-import type { VerticalValue } from "@/lib/admin/catalogs";
+import type { VerticalValue } from "@/lib/core/sectors/verticals";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { normalizeSlug, normalizeAndValidateSlug } from "@/lib/onboarding/slug";
 import {

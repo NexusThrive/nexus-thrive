@@ -6,7 +6,7 @@ import { ContextHelp } from "@/components/molecules/context-help";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
-import { VERTICAL_LABELS } from "@/lib/admin/catalogs";
+import { VERTICAL_LABELS } from "@/lib/core/sectors/verticals";
 import { getVerticalIcon } from "@/lib/admin/vertical-icons";
 import { createAdminDb } from "@/lib/admin/db";
 import { getAccountExtras, listManagers, ACCOUNT_STAGES } from "@/lib/ops/accounts";

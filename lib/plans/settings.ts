@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { db } from "@/prisma/db";
-import { isModule, isVertical, type ModuleValue } from "@/lib/admin/catalogs";
+import { isVertical } from "@/lib/core/sectors/verticals";
+import { isModule, type ModuleValue } from "@/lib/capabilities/modules";
 import { isUniqueViolation } from "@/lib/db-errors";
 import type { PlanKey } from "./catalog";
 import {

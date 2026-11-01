@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
 import { runOperation } from "@/lib/operations/engine";
-import { OPERATIONS } from "@/lib/operations/registry";
+import { OPERATIONS } from "@/lib/runtime/operations";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { addBarcode, createPriceList, createVariant, findByBarcode, listVariants, resolvePrice, setDefaultPriceList, setListPrice, setProductTax } from "./catalog-db";
 

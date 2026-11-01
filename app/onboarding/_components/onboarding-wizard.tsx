@@ -14,7 +14,7 @@ import {
   type OnboardingPrefill,
 } from "@/lib/onboarding/types";
 import { SHOW_PRICING } from "@/lib/onboarding/flags";
-import { MODULE_LABELS } from "@/lib/admin/catalogs";
+import { MODULE_LABELS } from "@/lib/capabilities/modules";
 import { modulePriceCents, planOf, quote as quotePlan, signupVerticals, type PricingConfig, formatUsdCents } from "@/lib/plans/pricing";
 import type { PlanKey } from "@/lib/plans/catalog";
 import ProfileSelection from "./profile-selection";

@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, type ReactNode } from "react";
-import type { VerticalTerms } from "@/lib/vertical-terms";
+import type { VerticalTerms } from "@/lib/core/sectors/terms";
 
 /**
  * Vocabulario adaptativo de la vertical en vivo.

@@ -8,14 +8,8 @@ import {
   checkSlugAvailabilityAction,
   type AdminFormState,
 } from "../actions";
-import {
-  MODULE_LABELS,
-  MODULES,
-  VERTICAL_ICONS,
-  VERTICAL_LABELS,
-  VERTICALS,
-  type VerticalValue,
-} from "@/lib/admin/catalogs";
+import { VERTICAL_ICONS, VERTICAL_LABELS, VERTICALS, type VerticalValue } from "@/lib/core/sectors/verticals";
+import { MODULE_LABELS, MODULES } from "@/lib/capabilities/modules";
 import {
   TEAM_SIZE_LABELS,
   type OnboardingTenantType,

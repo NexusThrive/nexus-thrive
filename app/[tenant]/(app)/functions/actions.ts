@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { isModule, isVertical } from "@/lib/admin/catalogs";
+import { isVertical } from "@/lib/core/sectors/verticals";
+import { isModule } from "@/lib/capabilities/modules";
 import { CAPABILITIES } from "@/lib/capabilities/registry";
 import { toggleProblem } from "@/lib/functions/functions";
 import { tenantWithModules } from "@/lib/tenant/membership";

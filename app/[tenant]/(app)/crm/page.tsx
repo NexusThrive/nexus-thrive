@@ -1,5 +1,5 @@
 import { createTenantDb } from "@/lib/tenant/db";
-import { getVerticalTerms } from "@/lib/vertical-terms";
+import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import CustomerToolbar from "./_components/customer-toolbar";
 import CustomerTable, { type CustomerRow } from "./_components/customer-table";
 import type { CustomerSort, CustomerStatus } from "./_components/customer-filters";

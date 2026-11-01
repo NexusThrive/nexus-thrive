@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { isVertical } from "@/lib/admin/catalogs";
+import { isVertical } from "@/lib/core/sectors/verticals";
 import { createAdminDb, type TenantSortKey } from "@/lib/admin/db";
 import { getStaffContext } from "@/lib/ops/access";
 import { notFound } from "next/navigation";

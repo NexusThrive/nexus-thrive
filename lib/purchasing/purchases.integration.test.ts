@@ -3,7 +3,7 @@ import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
 import { kardex, reconcile, stockByWarehouse } from "@/lib/inventory/kardex";
 import { runOperation } from "@/lib/operations/engine";
-import { OPERATIONS } from "@/lib/operations/registry";
+import { OPERATIONS } from "@/lib/runtime/operations";
 import { createParty } from "@/lib/parties/parties-db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { cancelOrder, closeOrder, createOrder, getOrder, listOrders, markOrdered, receiveOrder, registerSupplierInvoice } from "./purchases-db";

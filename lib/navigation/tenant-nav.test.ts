@@ -1,7 +1,8 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { MODULES, VERTICALS } from "@/lib/admin/catalogs";
+import { VERTICALS } from "@/lib/core/sectors/verticals";
+import { MODULES } from "@/lib/capabilities/modules";
 import { activeNavItem, buildTenantNav, isNavActive, modulesForRoute, tenantRelativePath } from "./tenant-nav";
 import { quickCreateActions, quickSheetFor } from "./quick-create";
 

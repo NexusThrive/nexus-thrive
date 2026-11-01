@@ -9,13 +9,8 @@
 
 import type { Billing, PlanKey } from "@/lib/plans/catalog";
 import { defaultPricingConfig, resolveModules, signupVerticals, type PricingConfig } from "@/lib/plans/pricing";
-import {
-  isVertical,
-  isModule,
-  sortModules,
-  type ModuleValue,
-  type VerticalValue,
-} from "@/lib/admin/catalogs";
+import { isVertical, type VerticalValue } from "@/lib/core/sectors/verticals";
+import { isModule, sortModules, type ModuleValue } from "@/lib/capabilities/modules";
 import {
   isOnboardingTenantType,
   isTeamSize,

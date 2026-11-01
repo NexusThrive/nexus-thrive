@@ -1,5 +1,5 @@
 import { handleApi } from "@/lib/api/handler";
-import { apiDeps } from "@/lib/api/runtime-deps";
+import { apiDeps } from "@/lib/runtime/api-deps";
 
 /**
  * `/api/v1/*`: el adaptador HTTP del registro de operaciones. Toda la lógica

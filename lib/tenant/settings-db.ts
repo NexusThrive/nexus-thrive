@@ -1,5 +1,5 @@
 import { db } from "@/prisma/db";
-import type { ModuleValue } from "@/lib/admin/catalogs";
+import type { ModuleValue } from "@/lib/capabilities/modules";
 
 /**
  * Configuración del negocio (perfil y módulos), siempre por `tenantId`.

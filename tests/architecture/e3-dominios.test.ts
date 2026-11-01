@@ -9,7 +9,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
-import { OPERATIONS } from "@/lib/operations/registry";
+import { OPERATIONS } from "@/lib/runtime/operations";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore el verificador es un .mjs sin tipos
 import { classify, loadJson } from "../../scripts/check-layers.mjs";
@@ -46,10 +46,10 @@ describe("operaciones por dominio", () => {
     }
   });
 
-  test("el registro es la raíz de composición: está en la capa de integraciones y reúne los dominios", () => {
-    expect(classify("lib/operations/registry.ts", layers)?.layer).toBe("integrations");
+  test("el registro es la raíz de composición: está en la capa runtime (V10 · M1) y reúne los dominios", () => {
+    expect(classify("lib/runtime/operations.ts", layers)?.layer).toBe("runtime");
     expect(classify("lib/operations/engine.ts", layers)?.layer).toBe("core");
-    const imports = importsOf("lib/operations/registry.ts");
+    const imports = importsOf("lib/runtime/operations.ts");
     for (const dominio of ["@/lib/inventory/operations", "@/lib/purchasing/operations", "@/lib/presence/operations"]) expect(imports).toContain(dominio);
   });
 });

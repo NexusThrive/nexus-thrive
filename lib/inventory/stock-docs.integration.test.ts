@@ -3,7 +3,7 @@ import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
 import { moneyTransaction } from "@/lib/business/money-service";
 import { runOperation } from "@/lib/operations/engine";
-import { OPERATIONS } from "@/lib/operations/registry";
+import { OPERATIONS } from "@/lib/runtime/operations";
 import { createParty } from "@/lib/parties/parties-db";
 import { createOrder, markOrdered } from "@/lib/purchasing/purchases-db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";

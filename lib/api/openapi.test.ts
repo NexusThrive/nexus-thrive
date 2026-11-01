@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { OPERATIONS } from "@/lib/operations/registry";
+import { OPERATIONS } from "@/lib/runtime/operations";
 import { buildOpenApi } from "./openapi";
 
 type Doc = { openapi: string; paths: Record<string, Record<string, Record<string, unknown>>>; components: { schemas: Record<string, unknown>; securitySchemes: Record<string, unknown> } };

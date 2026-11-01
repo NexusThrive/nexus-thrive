@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import type { ModuleValue } from "@/lib/admin/catalogs";
+import type { ModuleValue } from "@/lib/capabilities/modules";
 
 /**
  * Forma de los elementos y grupos del menú lateral. Es solo un contrato de tipos: lo comparten el menú del negocio

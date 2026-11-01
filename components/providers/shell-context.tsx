@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useMemo, useState, type MouseEvent } from "react";
 import { usePathname } from "next/navigation";
-import type { ModuleValue, VerticalValue } from "@/lib/admin/catalogs";
+import type { VerticalValue } from "@/lib/core/sectors/verticals";
+import type { ModuleValue } from "@/lib/capabilities/modules";
 import {
   buildTenantNav,
   isNavActive,

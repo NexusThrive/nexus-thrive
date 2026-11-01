@@ -18,5 +18,7 @@ if (process.env.TEST_DATABASE_URL) {
   beforeAll(async () => {
     const { composePorts } = await import("@/lib/runtime/ports");
     composePorts();
+    const { composeSectors } = await import("@/lib/runtime/sectors");
+    composeSectors();
   });
 }

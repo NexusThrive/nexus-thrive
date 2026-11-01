@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createApiKey, listApiKeys, revokeApiKey, type ApiEnvironment, type ApiKeyRow } from "@/lib/api/keys";
 import { invalidScope } from "@/lib/api/scopes";
 import { canManageTeam } from "@/lib/auth/roles";
-import { OPERATIONS } from "@/lib/operations/registry";
+import { OPERATIONS } from "@/lib/runtime/operations";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";
 

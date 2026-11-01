@@ -1,6 +1,6 @@
 import type { z } from "zod";
 import type { BusinessPermission } from "@/lib/auth/permissions";
-import type { ModuleValue } from "@/lib/admin/catalogs";
+import type { ModuleValue } from "@/lib/capabilities/modules";
 
 /**
  * Registro de operaciones: una operación de negocio se declara UNA vez y de ahí

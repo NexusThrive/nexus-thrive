@@ -1,6 +1,6 @@
 "use server";
 
-import { isVertical } from "@/lib/admin/catalogs";
+import { isVertical } from "@/lib/core/sectors/verticals";
 import { checkModuleToggle } from "@/lib/plans/compat";
 import { loadPricingConfig } from "@/lib/plans/settings";
 

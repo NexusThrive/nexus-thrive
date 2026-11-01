@@ -1,4 +1,4 @@
-import { isVertical, VERTICALS, type VerticalValue } from "@/lib/admin/catalogs";
+import { isVertical, VERTICALS, type VerticalValue } from "@/lib/core/sectors/verticals";
 
 /**
  * Perfil del negocio como CONTEXTO (no como restricción): perfil de partida

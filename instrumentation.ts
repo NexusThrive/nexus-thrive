@@ -18,5 +18,9 @@ export async function register() {
     // Si un puerto no queda conectado, usarlo falla de forma visible (PortNotProvidedError): nunca se omite en silencio.
     const { composePorts } = await import("@/lib/runtime/ports");
     console.info(`[puertos] conectados: ${composePorts().join(", ")}`);
+    // Registra las definiciones de sector que aportan las industrias (hoy ninguna: rigen los valores del catálogo base).
+    const { composeSectors } = await import("@/lib/runtime/sectors");
+    const sectors = composeSectors();
+    if (sectors.length) console.info(`[sectores] registrados: ${sectors.join(", ")}`);
   }
 }

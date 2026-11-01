@@ -1,16 +1,19 @@
 {
   "version": 1,
-  "descripcion": "Clasificación de lib/ por capa de Nexus V2 (E0). La comprueba scripts/check-layers.mjs. No mueve archivos: solo declara a qué capa pertenece cada carpeta. Aprobado D-1: la organización física se mantiene.",
+  "descripcion": "Clasificación de lib/ por capa de Nexus V2 (E0, ampliada por V10). La comprueba scripts/check-layers.mjs. Un archivo pertenece a la unidad más específica de `units`; si no hay unidad, a la capa que dice su ruta (`lib/<área>/…`, ver `areas`). D-V10-1 (2026-10-31) sustituye a D-1: la reorganización física de lib/ se hace por olas (M0–M8), solo las autorizadas.",
+  "areas": ["foundation", "core", "business", "domains", "integrations", "industry", "platform", "experience", "runtime"],
   "layers": {
     "foundation": { "mayImport": [], "descripcion": "Utilidades y acceso a la base. No depende de nada de Nexus." },
     "core": { "mayImport": ["foundation"], "descripcion": "Identidad, organizaciones, tenant, permisos, planes, terceros, archivos, API de operaciones." },
     "business": { "mayImport": ["foundation", "core"], "descripcion": "Capacidades empresariales generales: clientes, catálogo, inventario, ventas, compras, POS, tienda." },
     "finance": { "mayImport": ["foundation", "core", "business"], "descripcion": "Pagos, caja, impuestos, contabilidad, cartera." },
-    "integrations": { "mayImport": ["foundation", "core", "business", "finance"], "descripcion": "Puertos y adaptadores hacia proveedores y superficies externas (API, MCP, Google, facturación electrónica)." },
+    "domains": { "mayImport": ["foundation", "core", "business"], "descripcion": "Familias de dominios especializados (hoy ninguna con archivos: `finance` pasará aquí en M5). Entre familias solo por contrato." },
+    "integrations": { "mayImport": ["foundation", "core", "business", "finance", "domains"], "descripcion": "Puertos y adaptadores hacia proveedores y superficies externas (API, MCP, Google, facturación electrónica)." },
     "automation": { "mayImport": ["foundation", "core"], "descripcion": "Eventos, outbox, webhooks internos y funciones automáticas." },
-    "platform": { "mayImport": ["foundation", "core", "business", "finance", "integrations", "automation"], "descripcion": "Operación global de Nexus como SaaS (Operations Center). No es un segundo Core." },
-    "industry": { "mayImport": ["foundation", "core", "business", "finance", "integrations", "automation"], "descripcion": "Extensiones sectoriales. Cada industria solo puede importarse a sí misma." },
-    "experience": { "mayImport": ["foundation", "core", "business", "finance", "integrations", "automation", "platform", "industry"], "descripcion": "Navegación, onboarding, dashboard, presencia, sitio y utilidades de interfaz." }
+    "platform": { "mayImport": ["foundation", "core", "business", "finance", "domains", "integrations", "automation"], "descripcion": "Operación global de Nexus como SaaS (Operations Center). No es un segundo Core." },
+    "industry": { "mayImport": ["foundation", "core", "business", "finance", "domains", "integrations", "automation"], "descripcion": "Extensiones sectoriales. Cada industria solo puede importarse a sí misma." },
+    "experience": { "mayImport": ["foundation", "core", "business", "finance", "domains", "integrations", "automation", "platform", "industry"], "descripcion": "Navegación, onboarding, dashboard, presencia, sitio y utilidades de interfaz." },
+    "runtime": { "mayImport": ["foundation", "core", "business", "finance", "domains", "integrations", "automation", "platform", "industry", "experience"], "descripcion": "Raíz de composición: conecta puertos y registros. Puede importarlo todo; solo la importan los puntos de entrada (instrumentation.ts) y las pruebas." }
   },
   "reglas": {
     "R1-nadie-importa-industry": "Solo experience puede importar una industria (y la propia industria su código).",
@@ -49,8 +52,7 @@
     { "path": "lib/usage", "layer": "core" },
     { "path": "lib/capabilities", "layer": "core" },
     { "path": "lib/operations", "layer": "core" },
-    { "path": "lib/operations/registry.ts", "layer": "integrations" },
-    { "path": "lib/runtime", "layer": "experience" },
+    { "path": "lib/runtime", "layer": "runtime" },
     { "path": "lib/parties", "layer": "core" },
     { "path": "lib/files", "layer": "core" },
 

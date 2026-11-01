@@ -6,7 +6,7 @@ import { requireStaff } from "@/lib/ops/access";
 import { logOps } from "@/lib/ops/audit";
 import { createBenefitCode, setBenefitActive, updateBenefitCode } from "@/lib/benefits/benefits-db";
 import { normalizeBenefitKind, validateContractTerms } from "@/lib/benefits/benefits";
-import { isModule } from "@/lib/admin/catalogs";
+import { isModule } from "@/lib/capabilities/modules";
 
 /** Accesos a NEXUS (códigos promo y códigos de acceso pagado). `catalog.edit`. */
 

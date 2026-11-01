@@ -1,5 +1,7 @@
 import { CAPABILITIES } from "@/lib/capabilities/registry";
-import { MODULES, SIGNUP_VERTICALS, VERTICALS, VERTICAL_LABELS, VERTICAL_RECIPES, type ModuleValue, type VerticalValue } from "@/lib/admin/catalogs";
+import { SIGNUP_VERTICALS, VERTICALS, VERTICAL_LABELS, type VerticalValue } from "@/lib/core/sectors/verticals";
+import { VERTICAL_RECIPES } from "@/lib/core/sectors/catalog";
+import { MODULES, type ModuleValue } from "@/lib/capabilities/modules";
 import {
   ANNUAL_DISCOUNT,
   GENERAL_MODULES,

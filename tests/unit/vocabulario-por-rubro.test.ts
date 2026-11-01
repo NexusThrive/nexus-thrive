@@ -3,10 +3,11 @@
  * Estas pruebas fijan que el resultado es el mismo que daban las comparaciones, para cada uno de los rubros.
  */
 import { describe, expect, test } from "vitest";
-import { VERTICALS, VERTICAL_RECIPES, type VerticalValue } from "@/lib/admin/catalogs";
+import { VERTICALS, type VerticalValue } from "@/lib/core/sectors/verticals";
+import { VERTICAL_RECIPES } from "@/lib/core/sectors/catalog";
 import { CAPABILITIES, type CapabilityNav } from "@/lib/capabilities/registry";
 import { quickCreateActions } from "@/lib/navigation/quick-create";
-import { getVerticalTerms, hasMemberAccess } from "@/lib/vertical-terms";
+import { getVerticalTerms, hasMemberAccess } from "@/lib/core/sectors/terms";
 
 const navLabel = (moduleId: string, href: string, vertical: VerticalValue) => {
   const nav = CAPABILITIES.find((c) => c.id === moduleId)!.nav.find((n) => n.href === href)!;

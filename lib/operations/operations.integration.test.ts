@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
-import { run, type OperationContext } from "./registry";
+import { run, type OperationContext } from "@/lib/runtime/operations";
 
 /**
  * Las operaciones de lectura contra una base real y con DOS negocios: cada una

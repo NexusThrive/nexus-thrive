@@ -3,10 +3,11 @@
  * relativa al negocio, el elemento activo y la categoría de una ruta.
  */
 import { Blocks, FileSpreadsheet, Receipt, Settings } from "lucide-react";
-import { MODULES, type ModuleValue, type VerticalValue } from "@/lib/admin/catalogs";
+import { type VerticalValue } from "@/lib/core/sectors/verticals";
+import { MODULES, type ModuleValue } from "@/lib/capabilities/modules";
 import { CAPABILITIES, CAPABILITY_CATEGORIES, type CapabilityCategory } from "@/lib/capabilities/registry";
 import { MODULE_NAV } from "@/lib/capabilities/route-modules";
-import { getVerticalTerms } from "@/lib/vertical-terms";
+import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import type { NavGroup, NavItem } from "./nav-types";
 
 export type { NavGroup, NavItem };
