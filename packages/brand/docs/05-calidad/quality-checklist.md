@@ -41,7 +41,7 @@ que aplica. Lo que no se pudo verificar se dice.
 - [ ] `pnpm test:integration` si toqué datos
 - [ ] `pnpm test:e2e` si toqué un componente compartido (Playwright + axe)
 - [ ] Historia de Storybook con los estados, si es un componente compartido
-- [ ] Probado en el navegador en 375, 768 y 1280 px; sin errores en consola
+- [ ] Probado en el navegador en 320, 360, 412, 820, 1180 × 820 y 1280 px ([pruebas responsive](pruebas-responsive.md)); sin errores en consola
 - [ ] Revisión manual de accesibilidad
       ([accessibility.md §2](../04-patrones/accessibility.md#2-cómo-se-verifica))
 - [ ] Capturas antes/después en el PR (sin datos personales)

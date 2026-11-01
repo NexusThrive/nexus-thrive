@@ -46,7 +46,8 @@ Cada pantalla o módulo nuevo debe, antes de fusionarse:
 2. Definir los cuatro estados: **carga** (`loading.tsx`/`LoadingState`),
    **error** (`Alert` con salida), **éxito** (`useToast`) y **vacío**
    (`EmptyState`). Sin permiso: `notFound()` o aviso, nunca datos.
-3. Nacer responsive (móvil primero) y probarse en 375 y 1280 px.
+3. Nacer responsive (móvil primero) y probarse en 320 (reflow), 360, 412, 820, 1180 × 820 y 1280 px
+   (`pnpm test:responsive`; `packages/brand/docs/05-calidad/pruebas-responsive.md`).
 4. Mover solo con tokens y `nx-rise` en la primera carga; sin movimiento
    decorativo continuo. Respetar movimiento reducido.
 5. Operarse con teclado, con foco visible y nombres accesibles; HTML nativo
