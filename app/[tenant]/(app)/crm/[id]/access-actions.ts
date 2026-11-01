@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cancelMembership, ensureAccessCode, freezeMembership, linkNfc, unfreezeMembership } from "@/lib/business/gym-db";
-import { canHandleCash, canManage } from "@/lib/business/roles";
+import { cancelMembership, ensureAccessCode, freezeMembership, linkNfc, unfreezeMembership } from "@/lib/industry/gym/gym-db";
+import { canHandleCash, canManage } from "@/lib/auth/roles";
 import { requireTenantContext } from "@/lib/tenant/context";
 
 export type AccessActionResult = { ok: true; message?: string; code?: string } | { ok: false; message: string };

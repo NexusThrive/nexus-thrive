@@ -13,6 +13,9 @@ import type { TenantContext } from "./context";
  */
 export type TenantAuditAction = Extract<AuditAction, `BIZ_${string}`>;
 
+/**
+ * Anota en la bitácora una acción sensible de un negocio (ver arriba). Si escribir falla, lo deja en el registro del servidor y no interrumpe la acción.
+ */
 export async function logTenantAction(
   ctx: Pick<TenantContext, "userId" | "tenantId" | "memberId" | "role" | "tenant">,
   action: TenantAuditAction,

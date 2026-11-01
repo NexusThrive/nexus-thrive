@@ -2,11 +2,11 @@ import { and } from "@prisma/orm-postgres/orm-client";
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
 import { bogotaDayKey } from "@/lib/finance/series";
-import { addDaysKey, bogotaToMs } from "./calendar";
-import { recordCharge } from "./charge";
-import { payTicketSale as payTicketSaleOnce } from "./money-service";
-import { voidPayment, withNextNumber } from "./finance-db";
-import { listProducts } from "./products-db";
+import { addDaysKey, bogotaToMs } from "@/lib/business/calendar";
+import { recordCharge } from "@/lib/business/charge";
+import { payTicketSale as payTicketSaleOnce } from "@/lib/business/money-service";
+import { voidPayment, withNextNumber } from "@/lib/business/finance-db";
+import { listProducts } from "@/lib/business/products-db";
 import { museumSettings, saleKindLabel, slotLoads, ticketCode, validateTicketSale, type MuseumSettings, type SaleLike, type TicketLineInput } from "./museum";
 
 /**
@@ -17,11 +17,15 @@ import { museumSettings, saleKindLabel, slotLoads, ticketCode, validateTicketSal
 
 const instant = (ms: number) => Temporal.Instant.fromEpochMilliseconds(ms);
 
+/**
+ * Configuración del museo (franjas, aforo, tarifas…) guardada en los ajustes del negocio, con valores por defecto.
+ */
 export async function getMuseumSettings(tenantId: string): Promise<MuseumSettings> {
   const t = await db.orm.public.Tenant.where({ id: tenantId }).select("settings").first();
   return museumSettings(t?.settings);
 }
 
+/** Guarda la configuración del museo dentro de los ajustes del negocio sin tocar los demás ajustes. */
 export async function saveMuseumSettings(tenantId: string, value: MuseumSettings) {
   const t = await db.orm.public.Tenant.where({ id: tenantId }).select("settings").first();
   const current = t?.settings && typeof t.settings === "object" ? (t.settings as Record<string, unknown>) : {};
@@ -63,6 +67,7 @@ export async function salesBetween(tenantId: string, fromDay: string, toDay: str
   return rows.map((r) => toRow(r, names));
 }
 
+/** Ventas de entradas de un día. */
 export const salesOn = (tenantId: string, day: string) => salesBetween(tenantId, day, addDaysKey(day, 1));
 
 /** Tipos de entrada activos (productos TICKET) con su precio. */

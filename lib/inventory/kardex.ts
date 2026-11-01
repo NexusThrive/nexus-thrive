@@ -56,6 +56,9 @@ export async function reconcile(tenantId: string, productId: string): Promise<{ 
   return { ok: problems.length === 0, productStock: product.stock, levelsTotal, problems };
 }
 
+/**
+ * Crea una bodega con nombre, código y dirección opcionales. Devuelve un mensaje si el nombre está vacío o ya existe.
+ */
 export async function createWarehouse(tenantId: string, input: { name: string; code?: string | null; address?: string | null }): Promise<{ ok: true; id: string } | { ok: false; message: string }> {
   const name = input.name.trim().slice(0, 80);
   if (!name) return { ok: false, message: "Ponle un nombre a la bodega." };
@@ -68,6 +71,7 @@ export async function createWarehouse(tenantId: string, input: { name: string; c
   }
 }
 
+/** Bodegas activas del negocio, ordenadas por nombre. */
 export async function listWarehouses(tenantId: string) {
   const rows = await db.orm.public.Warehouse.where({ tenantId, active: true }).orderBy((w) => w.name.asc()).all();
   return rows.map((w) => ({ id: w.id, name: w.name, code: w.code ?? null, isDefault: w.isDefault }));

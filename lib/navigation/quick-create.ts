@@ -1,7 +1,11 @@
+/**
+ * Acciones de «crear rápido» del negocio (cobro, gasto, cliente, documento…): cuáles se ofrecen según el rubro, los
+ * módulos activos y los permisos de quien navega, y qué panel abre cada una.
+ */
 import type { LucideIcon } from "lucide-react";
 import { Building2, CalendarPlus, FileText, HandCoins, Receipt, UserPlus } from "lucide-react";
 import type { ModuleValue, VerticalValue } from "@/lib/admin/catalogs";
-import { can, type BusinessPermission } from "@/lib/business/permissions";
+import { can, type BusinessPermission } from "@/lib/auth/permissions";
 import { getVerticalTerms } from "@/lib/vertical-terms";
 
 export type QuickCreateAction = {
@@ -34,7 +38,7 @@ export function quickCreateActions(
   if (has("construction")) {
     actions.push({
       key: "new-project",
-      label: vertical === "construction" ? "Nueva obra" : "Nuevo proyecto",
+      label: terms.newProject ?? "Nuevo proyecto",
       hint: "Presupuesto y cotización",
       href: "/projects",
       icon: Building2,

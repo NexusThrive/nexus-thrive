@@ -39,6 +39,9 @@ function sameDecimalText(a: unknown, b: unknown): boolean {
   return norm(a) === norm(b);
 }
 
+/**
+ * Repositorio del catálogo APU de un negocio: insumos, unidades, capítulos y actividades con su composición, uso, imágenes y reporte de salud. Mantiene en memoria un caché breve (60 s) de costos p99 que se invalida al escribir.
+ */
 export function createCatalogDb(tenantId: string) {
   // --- APU p99 cache (closure-scoped, avoids 'this') ---
   let _p99Cache: { ts: number; data: { activityUnitCost: Record<string, string>; itemConsumption: Record<string, string>; activityUnitCostMedian: Record<string, string>; itemConsumptionMedian: Record<string, string>; activityUnitCostP99: Record<string, string>; itemConsumptionP99: Record<string, string> } } | null = null;

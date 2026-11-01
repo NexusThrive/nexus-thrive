@@ -66,6 +66,7 @@ async function loadImage(src: string): Promise<HTMLImageElement> {
   return img;
 }
 
+/** Dibuja un recibo en un canvas del navegador y lo devuelve como imagen PNG, para compartirlo (solo cliente). */
 export async function drawReceiptPng(d: ReceiptImageData): Promise<Blob> {
   const W = 720;
   const scale = 2;
@@ -213,6 +214,7 @@ export async function shareReceiptOnWhatsapp(opts: { image: Blob; fileName: stri
   return copied ? "copied" : "text-only";
 }
 
+/** Descarga un archivo desde el navegador con el nombre indicado (solo cliente). */
 export function downloadBlob(blob: Blob, name: string) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

@@ -72,6 +72,7 @@ export type PermissionKey = (typeof PERMISSION_GROUPS)[number]["permissions"][nu
 
 export const ALL_PERMISSIONS: PermissionKey[] = PERMISSION_GROUPS.flatMap((g) => g.permissions.map((p) => p.key));
 
+/** Comprueba que un texto sea un permiso conocido del panel de operaciones. */
 export function isPermission(value: string): value is PermissionKey {
   return (ALL_PERMISSIONS as string[]).includes(value);
 }
@@ -120,6 +121,7 @@ export const SYSTEM_ROLES: SystemRole[] = [
   },
 ];
 
+/** ¿Está el permiso entre los concedidos? */
 export function can(granted: readonly string[], permission: PermissionKey): boolean {
   return granted.includes(permission);
 }

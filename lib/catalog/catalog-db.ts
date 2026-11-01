@@ -23,6 +23,9 @@ async function variantOf(tenantId: string, productId: string, variantId: string)
 
 export type VariantInput = { name: string; sku?: string | null; attributes?: Record<string, string>; price?: number | null; cost?: number | null };
 
+/**
+ * Crea una variante de un producto (por ejemplo «Talla M») con SKU, atributos y precio opcional. Valida el nombre y el precio.
+ */
 export async function createVariant(tenantId: string, productId: string, input: VariantInput): Promise<CatalogResult<{ id: string }>> {
   if (!(await productOf(tenantId, productId))) return { ok: false, message: "No se encontró el producto." };
   const name = input.name.trim().slice(0, 120);
@@ -45,6 +48,7 @@ export async function createVariant(tenantId: string, productId: string, input: 
   }
 }
 
+/** Variantes activas de un producto, ordenadas por nombre. */
 export async function listVariants(tenantId: string, productId: string) {
   const rows = await db.orm.public.ProductVariant.where({ tenantId, productId, active: true }).orderBy((v) => v.name.asc()).all();
   return rows.map((v) => ({ id: v.id, name: v.name, sku: v.sku ?? null, attributes: (v.attributes ?? {}) as Record<string, string>, price: v.price == null ? null : toNumber(v.price) }));
@@ -52,6 +56,9 @@ export async function listVariants(tenantId: string, productId: string) {
 
 // ── Códigos de barras ──────────────────────────────────────────────────────
 
+/**
+ * Asocia un código de barras a un producto o a una variante. Valida el código y que no esté ya usado en el negocio.
+ */
 export async function addBarcode(tenantId: string, input: { productId: string; variantId?: string | null; code: string }): Promise<CatalogResult<{ id: string; code: string }>> {
   const checked = checkBarcode(input.code);
   if (!checked.ok) return { ok: false, code: "invalid_barcode", message: checked.message };
@@ -70,6 +77,7 @@ export async function addBarcode(tenantId: string, input: { productId: string; v
 
 // ── Listas de precios ──────────────────────────────────────────────────────
 
+/** Crea una lista de precios; si se pide como predeterminada, la deja como la única predeterminada. */
 export async function createPriceList(tenantId: string, input: { name: string; isDefault?: boolean }): Promise<CatalogResult<{ id: string }>> {
   const name = input.name.trim().slice(0, 80);
   if (!name) return { ok: false, message: "Ponle un nombre a la lista." };
@@ -94,6 +102,9 @@ export async function setDefaultPriceList(tenantId: string, id: string): Promise
   return true;
 }
 
+/**
+ * Fija el precio de un producto o variante en una lista de precios, validando el precio y que lista, producto y variante sean del negocio.
+ */
 export async function setListPrice(tenantId: string, input: { priceListId: string; productId: string; variantId?: string | null; price: number }): Promise<CatalogResult<{ id: string }>> {
   if (!Number.isFinite(input.price) || input.price < 0) return { ok: false, message: "El precio no es válido." };
   if (!(await db.orm.public.PriceList.where({ tenantId, id: input.priceListId }).first())) return { ok: false, message: "No se encontró la lista." };
@@ -151,6 +162,9 @@ export type BarcodeHit = {
   priceSource: PriceSource;
 };
 
+/**
+ * Busca por código de barras (ignora espacios y caracteres de control) y devuelve el producto o la variante con su precio, o `null`. Con una lista de precios usa el precio de esa lista.
+ */
 export async function findByBarcode(tenantId: string, rawCode: string, priceListId?: string | null): Promise<BarcodeHit | null> {
   const code = rawCode.replace(/[\s\u0000-\u001f]/g, "");
   const barcode = code ? await db.orm.public.ProductBarcode.where({ tenantId, code }).first() : null;
@@ -173,6 +187,9 @@ export async function findByBarcode(tenantId: string, rawCode: string, priceList
 export const TAX_CATEGORIES = ["GRAVADO", "EXCLUIDO", "EXENTO"] as const;
 export const UNIT_CODES = ["EA", "KGM", "GRM", "LTR", "MTR", "MTK", "HUR", "DAY", "MON", "SET", "BX"] as const;
 
+/**
+ * Define la categoría de impuesto de un producto (gravado, excluido, exento), su tarifa y su unidad de medida. Solo el gravado cobra tarifa; valida el rango de 0 a 100.
+ */
 export async function setProductTax(tenantId: string, productId: string, input: { taxCategory: (typeof TAX_CATEGORIES)[number]; taxRatePct?: number; unitCode?: (typeof UNIT_CODES)[number] }): Promise<CatalogResult<object>> {
   if (!(await productOf(tenantId, productId))) return { ok: false, message: "No se encontró el producto." };
   if (!TAX_CATEGORIES.includes(input.taxCategory)) return { ok: false, message: "La categoría de impuesto no es válida." };

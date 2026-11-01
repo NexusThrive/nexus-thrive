@@ -10,6 +10,9 @@ export type PlatformUser = { email: string; name: string | null; orgs: UserOrg[]
 
 const PEOPLE_CAP = 5000;
 
+/**
+ * Personas de la plataforma con su límite de negocios y las invitaciones de dueño pendientes. Con `q` filtra por texto y devuelve también el total.
+ */
 export async function listPlatformUsers(opts: { q?: string } = {}): Promise<{ users: PlatformUser[]; total: number }> {
   const [members, limits, invites] = await Promise.all([
     db.orm.public.User.limit(PEOPLE_CAP).all(),
@@ -66,6 +69,7 @@ export async function ownedCountOf(email: string): Promise<number> {
   return ids.size;
 }
 
+/** Límite de negocios de un correo, o `null` si no tiene límite propio. */
 export async function limitOf(email: string): Promise<number | null> {
   const row = await db.orm.public.AccountLimit.where({ email: normalizeEmail(email) }).first();
   return row?.maxOrganizations ?? null;
@@ -78,6 +82,9 @@ export async function organizationLimitProblem(email: string): Promise<string | 
   return limitProblem(await ownedCountOf(email), limit);
 }
 
+/**
+ * Fija el límite de negocios de un correo con una nota opcional; un valor vacío quita el límite. Valida el correo y el número.
+ */
 export async function setLimit(email: string, raw: string, note?: string): Promise<{ ok: true; limit: number | null } | { ok: false; message: string }> {
   const key = normalizeEmail(email);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(key)) return { ok: false, message: "Ese correo no parece válido." };

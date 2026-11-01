@@ -577,6 +577,7 @@ export type FieldLogEntryRow = {
   photoUrls: string[];
 };
 
+/** Carga una bitácora con sus entradas, de la más reciente a la más antigua. */
 export async function loadFieldLog(log: FieldLogRow, tenantId: string): Promise<FieldLogData> {
   const entries = await db.orm.public.FieldLogEntry
     .where({ logId: log.id, tenantId })
@@ -637,6 +638,7 @@ export function instantToBogotaIsoDate(value: unknown): string {
   return formatPlainDate(bogotaToday(String(value)));
 }
 
+/** Carga un plan Lean con sus tareas (por semana) y sus compromisos semanales. */
 export async function loadLeanPlan(plan: ProjectPlanRow): Promise<ProjectPlanData> {
   const [tasks, commitments] = await Promise.all([
     db.orm.public.LookaheadTask
@@ -966,6 +968,7 @@ export type ProjectHeaderRow = {
   supervisorName: string | null;
 };
 
+/** Convierte la ficha del proyecto de la base de datos al formato que usa la aplicación. */
 export function serializeProjectHeader(header: ProjectHeaderRow): ProjectHeaderData {
   return {
     clientTaxName: header.clientTaxName,

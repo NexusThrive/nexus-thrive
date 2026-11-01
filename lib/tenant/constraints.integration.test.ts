@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/admin/db";
-import { linkNfc } from "@/lib/business/gym-db";
+import { linkNfc } from "@/lib/industry/gym/gym-db";
 import { isUniqueViolation } from "@/lib/db-errors";
 import { deleteTenantCompletely } from "./deletion";
 

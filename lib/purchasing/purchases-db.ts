@@ -1,7 +1,7 @@
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
 import { msOf } from "@/lib/events/instant";
-import { postByRule } from "@/lib/accounting/ledger-db";
+import { accountingPort } from "@/lib/business/accounting-port";
 import { MoneyError } from "@/lib/business/money-error";
 import { moneyTransaction } from "@/lib/business/money-service";
 import { applyStockMovement, ensureDefaultWarehouse, StockError } from "@/lib/inventory/stock-service";
@@ -26,6 +26,9 @@ class PurchaseError extends Error {
   }
 }
 
+/**
+ * Crea una orden de compra numerada con sus líneas, validando las líneas y la fecha esperada. Reintenta si dos órdenes toman el mismo número.
+ */
 export async function createOrder(tenantId: string, input: OrderInput, userId: string | null): Promise<PurchaseResult<{ id: string; number: number; code: string }>> {
   const lines = input.lines.map((l) => ({ productId: l.productId, variantId: l.variantId ?? null, quantity: Number(l.quantity), unitCost: Number(l.unitCost), taxRatePct: Number(l.taxRatePct ?? 0) }));
   const invalid = validateLines(lines);
@@ -83,6 +86,9 @@ export async function createOrder(tenantId: string, input: OrderInput, userId: s
 
 export type OrderRow = { id: string; number: number; code: string; status: OrderStatus; supplierPartyId: string; supplierName: string; warehouseId: string; total: number; expectedDate: string | null; createdAt: string; lineCount: number; pendingUnits: number };
 
+/**
+ * Órdenes de compra, de la más reciente a la más antigua (100 por defecto, máximo 200), con filtro opcional por estado.
+ */
 export async function listOrders(tenantId: string, opts: { status?: OrderStatus; limit?: number } = {}): Promise<OrderRow[]> {
   const limit = Math.min(200, Math.max(1, Math.trunc(opts.limit ?? 100)));
   const base = db.orm.public.PurchaseOrder.where({ tenantId });
@@ -121,6 +127,7 @@ export type OrderDetail = OrderRow & {
   invoices: { id: string; number: string; issueDate: string; dueDate: string | null; total: number; status: string }[];
 };
 
+/** Una orden con sus líneas, proveedor, bodega y facturas, o `null`. */
 export async function getOrder(tenantId: string, id: string): Promise<OrderDetail | null> {
   const order = await db.orm.public.PurchaseOrder.where({ tenantId, id }).first();
   if (!order) return null;
@@ -163,8 +170,11 @@ async function setStatus(tenantId: string, id: string, allowed: (status: OrderSt
   return updated ? { ok: true } : { ok: false, message: "La orden cambió mientras la revisabas. Recarga e intenta de nuevo." };
 }
 
+/** Pasa una orden de borrador a pedida. Solo se permite desde borrador. */
 export const markOrdered = (tenantId: string, id: string) => setStatus(tenantId, id, (s) => canMarkOrdered(s), "ORDERED", "Solo un borrador se marca como pedido.");
+/** Cancela una orden que aún es borrador o está pedida y no ha recibido nada. */
 export const cancelOrder = (tenantId: string, id: string) => setStatus(tenantId, id, (s, received) => canCancel(s, received), "CANCELED", "Solo se cancela una orden sin mercancía recibida.");
+/** Cierra como recibida una orden recibida en parte, cuando el proveedor no enviará el resto. */
 export const closeOrder = (tenantId: string, id: string) => setStatus(tenantId, id, (s) => canClose(s), "RECEIVED", "Solo se cierra una orden recibida en parte.");
 
 export type SupplierInvoiceInput = { supplierPartyId: string; purchaseOrderId?: string | null; number: string; issueDate: string; dueDate?: string | null; subtotal: number; taxTotal?: number; total: number; cufe?: string | null };
@@ -177,6 +187,9 @@ function checkInvoice(input: SupplierInvoiceInput): string | null {
   return null;
 }
 
+/**
+ * Registra la factura de un proveedor y, en la misma transacción, su asiento contable (si corresponde). Valida número, fechas y que el proveedor sea del negocio.
+ */
 export async function registerSupplierInvoice(tenantId: string, input: SupplierInvoiceInput): Promise<PurchaseResult<{ id: string }>> {
   const bad = checkInvoice(input);
   if (bad) return { ok: false, message: bad };
@@ -200,7 +213,7 @@ export async function registerSupplierInvoice(tenantId: string, input: SupplierI
         total: money(input.total),
         cufe: input.cufe?.trim().slice(0, 120) || null,
       });
-      await postByRule(tx, tenantId, "PURCHASE_RECEIVED", { total: input.total, subtotal: input.subtotal, tax: input.taxTotal ?? 0 }, { date: input.issueDate.slice(0, 10), description: `Compra · factura ${number}`, sourceType: "SUPPLIER_INVOICE", sourceId: si.id, partyId: supplier.id }, null);
+      await accountingPort.use().record(tx, tenantId, { event: "PURCHASE_RECEIVED", amounts: { total: input.total, subtotal: input.subtotal, tax: input.taxTotal ?? 0 }, date: input.issueDate.slice(0, 10), description: `Compra · factura ${number}`, sourceType: "SUPPLIER_INVOICE", sourceId: si.id, partyId: supplier.id }, null);
       return si;
     });
     return { ok: true, id: created.id };
@@ -282,7 +295,7 @@ export async function receiveOrder(tenantId: string, orderId: string, input: Rec
           total: money(input.invoice.total),
           cufe: input.invoice.cufe?.trim().slice(0, 120) || null,
         });
-        await postByRule(tx, tenantId, "PURCHASE_RECEIVED", { total: input.invoice.total, subtotal: input.invoice.subtotal, tax: input.invoice.taxTotal ?? 0 }, { date: input.invoice.issueDate.slice(0, 10), description: `Compra · factura ${si.number}`, sourceType: "SUPPLIER_INVOICE", sourceId: si.id, partyId: order.supplierPartyId }, userId);
+        await accountingPort.use().record(tx, tenantId, { event: "PURCHASE_RECEIVED", amounts: { total: input.invoice.total, subtotal: input.invoice.subtotal, tax: input.invoice.taxTotal ?? 0 }, date: input.invoice.issueDate.slice(0, 10), description: `Compra · factura ${si.number}`, sourceType: "SUPPLIER_INVOICE", sourceId: si.id, partyId: order.supplierPartyId }, userId);
       }
       return { ok: true as const, status, received };
     });

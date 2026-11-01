@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { connectGoogle, disconnectGoogle, syncGoogle } from "@/lib/google/google-db";
 import { refreshPresence } from "@/lib/presence/pillars-db";
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import { logTenantAction } from "@/lib/tenant/audit";
 import { requireTenantContext } from "@/lib/tenant/context";
 

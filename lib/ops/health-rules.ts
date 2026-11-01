@@ -64,6 +64,9 @@ function satisfaction(scores: number[]): HealthFactor {
   return { key: "satisfaccion", label: "Satisfacción", points, max, reason: `Calificación promedio ${avg.toFixed(1)} de 5 (${scores.length}).`, action: avg < 4 ? "Llamar para entender qué no le gustó." : null };
 }
 
+/**
+ * Puntaje de salud de un cliente (suma de actividad, adopción, pagos, soporte y satisfacción), su nivel (saludable, en observación, en riesgo, crítico) y la acción más urgente.
+ */
 export function healthScore(f: HealthFacts) {
   const factors = [activity(f.daysSinceActivity), adoption(f.onboardingPct), payments(f), support(f.openTickets, f.breachedTickets), satisfaction(f.scores)];
   const score = factors.reduce((s, x) => s + x.points, 0);

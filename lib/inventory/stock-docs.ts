@@ -1,10 +1,14 @@
 /** Traslados y conteos (puro): consecutivos, validación y diferencias. */
 export const transferCode = (n: number) => `TR-${String(n).padStart(4, "0")}`;
+/** Código legible de un conteo («CT-0012»). */
 export const countCode = (n: number) => `CT-${String(n).padStart(4, "0")}`;
 
 export type CountStatus = "DRAFT" | "COMPLETED" | "CANCELED";
 export const COUNT_LABELS: Record<CountStatus, string> = { DRAFT: "En conteo", COMPLETED: "Cerrado", CANCELED: "Cancelado" };
 
+/**
+ * Valida un traslado: bodegas de origen y destino distintas, entre 1 y 100 productos y cantidades válidas. Devuelve el mensaje de error o `null`.
+ */
 export function validateTransfer(input: { fromWarehouseId: string; toWarehouseId: string; lines: readonly { productId: string; quantity: number }[] }): string | null {
   if (!input.fromWarehouseId || !input.toWarehouseId) return "Elige la bodega de origen y la de destino.";
   if (input.fromWarehouseId === input.toWarehouseId) return "El origen y el destino deben ser bodegas distintas.";
@@ -23,6 +27,7 @@ export function validateTransfer(input: { fromWarehouseId: string; toWarehouseId
 /** Diferencia de un conteo: contado − esperado (null si aún no se contó). */
 export const countDifference = (line: { expected: number; counted: number | null }) => (line.counted === null ? null : line.counted - line.expected);
 
+/** Resumen de un conteo: líneas, contadas, con diferencia, y el sobrante y el faltante. */
 export function countSummary(lines: readonly { expected: number; counted: number | null }[]) {
   const counted = lines.filter((l) => l.counted !== null);
   const diffs = counted.map((l) => (l.counted as number) - l.expected).filter((d) => d !== 0);
@@ -42,6 +47,9 @@ export function suggestedOrder(p: ReorderInput): number {
   return Math.max(0, target - p.stock - p.onOrder);
 }
 
+/**
+ * Valida los niveles de reposición: enteros no negativos, punto de reorden no menor que el mínimo y máximo no menor que ninguno de los dos. Devuelve el mensaje de error o `null`.
+ */
 export function validateLevels(l: { minStock: number; maxStock: number | null; reorderPoint: number | null }): string | null {
   const ints = [l.minStock, l.maxStock, l.reorderPoint].filter((v): v is number => v !== null);
   if (ints.some((v) => !Number.isInteger(v) || v < 0)) return "Los niveles deben ser enteros de cero en adelante.";

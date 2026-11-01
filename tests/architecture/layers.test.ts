@@ -34,7 +34,8 @@ function problemsWith(extra: Record<string, string>, excs = exceptions): string[
 
 describe("clasificación y reglas", () => {
   test("gana la unidad más específica (el gimnasio dentro de lib/business)", () => {
-    expect(classify("lib/business/gym-db.ts", layers)).toMatchObject({ layer: "industry", industry: "gym" });
+    expect(classify("lib/industry/gym/gym-db.ts", layers)).toMatchObject({ layer: "industry", industry: "gym" });
+    expect(classify("lib/industry/museum/museum-db.ts", layers)).toMatchObject({ layer: "industry", industry: "museum" });
     expect(classify("lib/business/customers-db.ts", layers)?.layer).toBe("business");
     expect(classify("lib/construction/quotes.ts", layers)?.industry).toBe("construction");
     expect(classify("lib/events/outbox.ts", layers)?.layer).toBe("core");
@@ -51,7 +52,7 @@ describe("clasificación y reglas", () => {
   test("devuelve la regla incumplida", () => {
     const c = (f: string) => classify(f, layers);
     expect(ruleFor(c("lib/business/customers-db.ts"), c("lib/construction/quotes.ts"), layers)).toMatch(/^R1/);
-    expect(ruleFor(c("lib/business/gym-db.ts"), c("lib/construction/shared.ts"), layers)).toMatch(/^R2/);
+    expect(ruleFor(c("lib/industry/gym/gym-db.ts"), c("lib/construction/shared.ts"), layers)).toMatch(/^R2/);
     expect(ruleFor(c("lib/tenant/context.ts"), c("lib/business/customers-db.ts"), layers)).toBe("R3-core-no-importa-business");
   });
 });
@@ -86,12 +87,12 @@ describe("pruebas negativas: una dependencia prohibida nueva se detecta", () => 
   });
 
   test("R1: Core importando el gimnasio", () => {
-    const p = problemsWith({ "lib/tenant/zz-negativa.ts": `import { x } from "@/lib/business/gym-db";` });
+    const p = problemsWith({ "lib/tenant/zz-negativa.ts": `import { x } from "@/lib/industry/gym/gym-db";` });
     expect(p.some((m) => m.includes("R1-nadie-importa-industry") && m.includes("lib/tenant/zz-negativa.ts"))).toBe(true);
   });
 
   test("R2: una industria importando otra", () => {
-    const p = problemsWith({ "lib/construction/zz-negativa.ts": `import { x } from "@/lib/business/gym-db";` });
+    const p = problemsWith({ "lib/construction/zz-negativa.ts": `import { x } from "@/lib/industry/gym/gym-db";` });
     expect(p.some((m) => m.includes("R2-industry-no-importa-industry"))).toBe(true);
   });
 
@@ -123,14 +124,18 @@ describe("pruebas negativas: una dependencia prohibida nueva se detecta", () => 
 
 describe("la lista de excepciones solo puede encogerse", () => {
   test("una excepción que ya no se necesita hace fallar", () => {
-    // Se toma cualquier excepción abierta de import y se quita su archivo de origen:
-    // la violación desaparece y la excepción sobra.
-    const open = exceptions.exceptions.find((e: { tipo: string; estado: string }) => e.tipo === "import" && e.estado !== "resuelta");
+    // Se declara una excepción de import que no corresponde a ninguna violación real (con la lista ya vaciada de
+    // excepciones de import, es el caso que importa): sobra y el verificador lo avisa.
     const sources = libSources();
-    delete sources[open.origen];
+    const origen = Object.keys(sources).find((f) => f.startsWith("lib/business/"))!;
+    const sobrante = {
+      id: "EX-TEST", tipo: "import", origen, destino: "lib/accounting/ledger-db.ts", regla: "R3-business-no-importa-finance", importaciones: 1, soloTipos: false,
+      justificacion: "prueba", etapa: "prueba", estado: "abierta", aprobacion: "prueba",
+    };
+    const conSobrante = { ...exceptions, maxAbiertas: exceptions.maxAbiertas + 1, exceptions: [...exceptions.exceptions, sobrante] };
     const { violations, unclassified } = findViolations(sources, layers);
-    const p = compare(violations, unclassified, exceptions, layers, findVerticalLiterals(allSources()));
-    expect(p.some((m) => m.includes("ya no se necesita") && m.includes(open.origen))).toBe(true);
+    const p = compare(violations, unclassified, conSobrante, layers, findVerticalLiterals(allSources()));
+    expect(p.some((m) => m.includes("ya no se necesita") && m.includes(origen) && m.includes("EX-TEST"))).toBe(true);
   });
 
   test("maxAbiertas impide ampliar la lista", () => {
@@ -139,10 +144,15 @@ describe("la lista de excepciones solo puede encogerse", () => {
   });
 
   test("una excepción sin justificación, etapa o aprobación es inválida", () => {
+    // La lista real ya está vacía: se fabrican tres excepciones de import incompletas.
+    const base = { tipo: "import", origen: "lib/a.ts", destino: "lib/b.ts", regla: "R3-core-no-importa-finance", importaciones: 1, soloTipos: false, estado: "abierta" };
     const bad = structuredClone(exceptions);
-    bad.exceptions[0].justificacion = "";
-    bad.exceptions[1].etapa = "  ";
-    bad.exceptions[2].aprobacion = "";
+    bad.exceptions = [
+      { ...base, id: "EX-T1", justificacion: "", etapa: "x", aprobacion: "x" },
+      { ...base, id: "EX-T2", justificacion: "x", etapa: "  ", aprobacion: "x" },
+      { ...base, id: "EX-T3", justificacion: "x", etapa: "x", aprobacion: "" },
+    ];
+    bad.maxAbiertas = 3;
     const p = problemsWith({}, bad);
     for (const campo of ["justificacion", "etapa", "aprobacion"]) expect(p.some((m) => m.includes(`«${campo}»`))).toBe(true);
   });
@@ -160,8 +170,9 @@ describe("la lista de excepciones solo puede encogerse", () => {
     const list = exceptions.comparacionesVertical;
     expect(list).toHaveLength(11);
     for (const c of list) expect(["Lógica de negocio", "Configuración", "Navegación", "Presentación", "Prueba"]).toContain(c.categoria);
-    const sectoriales = list.filter((c: { esDependenciaSectorial: boolean }) => c.esDependenciaSectorial).length;
-    expect(sectoriales).toBe(exceptions.exceptions.filter((e: { tipo: string }) => e.tipo === "vertical-literal").length);
+    // Las sectoriales se resolvieron en V (cada una anota cómo); las que sigan sin resolver deben tener excepción abierta.
+    const sectoriales = list.filter((c: { esDependenciaSectorial: boolean; resuelta?: string }) => c.esDependenciaSectorial && !c.resuelta).length;
+    expect(sectoriales).toBe(exceptions.exceptions.filter((e: { tipo: string; estado: string }) => e.tipo === "vertical-literal" && e.estado !== "resuelta").length);
   });
 });
 

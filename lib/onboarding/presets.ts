@@ -34,6 +34,9 @@ export const MINIMAL_MODULES: readonly ModuleValue[] = [
   "online_payments",
 ];
 
+/**
+ * Módulos de partida de un negocio nuevo según su rubro; si es individual, sin los módulos pensados para equipos.
+ */
 export function getOnboardingModulePreset(input: {
   tenantType: OnboardingTenantType;
   vertical: VerticalValue;

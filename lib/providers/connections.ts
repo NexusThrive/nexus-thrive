@@ -18,6 +18,7 @@ export type ConnectionRow = {
   webhookPath: string;
 };
 
+/** Ruta pública donde un proveedor externo envía sus eventos para una conexión. */
 export const webhookPath = (provider: string, id: string) => `/api/webhooks/providers/${provider}/${id}`;
 
 const toRow = (c: Record<string, unknown>): ConnectionRow => ({
@@ -31,11 +32,16 @@ const toRow = (c: Record<string, unknown>): ConnectionRow => ({
   webhookPath: webhookPath(String(c.provider), String(c.id)),
 });
 
+/** Cifra las credenciales de un proveedor para guardarlas. */
 export const encryptCredentials = (credentials: ProviderCredentials) => encryptSecret(JSON.stringify(credentials));
+/** Descifra las credenciales guardadas de un proveedor. */
 export const decryptCredentials = (stored: string): ProviderCredentials => JSON.parse(decryptSecret(stored)) as ProviderCredentials;
 
 export type ConnectResult = { ok: true; row: ConnectionRow; generated?: ProviderCredentials } | { ok: false; message: string };
 
+/**
+ * Conecta un proveedor externo al negocio: comprueba que exista, que las credenciales obligatorias estén y que no haya ya una conexión activa; verifica las credenciales con el proveedor y las guarda cifradas (queda conectada o con el error). La pasarela de prueba genera su propio secreto, que se muestra una sola vez.
+ */
 export async function connectProvider(
   tenantId: string,
   input: { provider: string; environment: Environment; credentials?: ProviderCredentials },
@@ -73,6 +79,7 @@ export async function connectProvider(
   return { ok: true, row: toRow(row as unknown as Record<string, unknown>), ...(Object.keys(generated).length ? { generated } : {}) };
 }
 
+/** Conexiones del negocio con proveedores externos, de la más reciente a la más antigua, sin credenciales. */
 export async function listConnections(tenantId: string): Promise<ConnectionRow[]> {
   const rows = await db.orm.public.ExternalConnection.where({ tenantId }).orderBy((c) => c.createdAt.desc()).all();
   return rows.map((r) => toRow(r as unknown as Record<string, unknown>));

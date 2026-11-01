@@ -19,6 +19,9 @@ export type ImageUpload =
   | { status: "ok"; data: Uint8Array; mimeType: string }
   | { status: "error"; message: string };
 
+/**
+ * Lee una imagen subida en un formulario: sin archivo devuelve «none»; rechaza lo que supere 2 MB o cuyos bytes no correspondan a un formato de imagen admitido (se comprueba el contenido, no solo el tipo declarado).
+ */
 export async function readImageUpload(formData: FormData, field: string): Promise<ImageUpload> {
   const file = formData.get(field);
   if (!(file instanceof File) || file.size === 0) return { status: "none" };

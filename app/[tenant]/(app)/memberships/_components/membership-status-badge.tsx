@@ -2,7 +2,7 @@ import { Badge, StatusDot } from "@/components/atoms/badge";
 import {
   MEMBERSHIP_STATUSES,
   type MembershipStatusValue,
-} from "@/lib/business/memberships";
+} from "@/lib/industry/gym/memberships";
 
 const TONES: Record<MembershipStatusValue, "success" | "muted" | "danger"> = {
   active: "success",

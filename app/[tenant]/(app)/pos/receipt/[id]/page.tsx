@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/molecules/print-button";
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import { receiptOf } from "@/lib/pos/pos-db";
 import { receiptLines } from "@/lib/pos/receipt";
 import { requireTenantContext } from "@/lib/tenant/context";

@@ -12,11 +12,13 @@ export function gs1CheckDigit(body: string): number {
   return (10 - (sum % 10)) % 10;
 }
 
+/** ¿Es un GTIN válido (EAN-8, UPC-A o EAN-13) con su dígito verificador correcto? */
 export function isValidGtin(code: string): boolean {
   if (!/^\d+$/.test(code) || ![8, 12, 13].includes(code.length)) return false;
   return gs1CheckDigit(code.slice(0, -1)) === Number(code.slice(-1));
 }
 
+/** Simbología con la que se imprime un código según su largo: EAN-13, UPC-A, EAN-8 o, si no encaja, Code 128. */
 export function detectSymbology(code: string): Symbology {
   if (/^\d{13}$/.test(code)) return "EAN13";
   if (/^\d{12}$/.test(code)) return "UPCA";

@@ -31,6 +31,9 @@ async function activeWarehouse(tx: Parameters<Parameters<typeof moneyTransaction
 
 export type TransferInput = { fromWarehouseId: string; toWarehouseId: string; note?: string | null; lines: { productId: string; variantId?: string | null; quantity: number }[] };
 
+/**
+ * Crea un traslado numerado entre dos bodegas: cada producto sale del origen a su costo promedio y entra al destino con ese mismo costo, así el valor del inventario se conserva. Es todo o nada y reintenta si dos traslados toman el mismo número.
+ */
 export async function createTransfer(tenantId: string, input: TransferInput, userId: string | null): Promise<DocResult<{ id: string; number: number; code: string }>> {
   const invalid = validateTransfer(input);
   if (invalid) return { ok: false, message: invalid };
@@ -66,6 +69,7 @@ export async function createTransfer(tenantId: string, input: TransferInput, use
 
 export type TransferRow = { id: string; number: number; code: string; fromName: string; toName: string; lineCount: number; units: number; value: number; note: string | null; createdAt: string };
 
+/** Traslados más recientes (50 por defecto, máximo 200) con bodegas, unidades y valor. */
 export async function listTransfers(tenantId: string, limit = 50): Promise<TransferRow[]> {
   const rows = await db.orm.public.StockTransfer.where({ tenantId }).orderBy((t) => t.number.desc()).limit(Math.min(200, Math.max(1, limit))).all();
   if (!rows.length) return [];
@@ -79,6 +83,9 @@ export async function listTransfers(tenantId: string, limit = 50): Promise<Trans
 
 // ── Conteos ────────────────────────────────────────────────────────────────
 
+/**
+ * Abre un conteo físico de una bodega: una línea por cada producto activo con inventario, con la cantidad esperada según el sistema. Numera el conteo y reintenta si hay choque de numeración.
+ */
 export async function createCount(tenantId: string, warehouseId: string, userId: string | null): Promise<DocResult<{ id: string; number: number; code: string; lines: number }>> {
   for (let attempt = 0; attempt < 15; attempt++) {
     try {
@@ -108,6 +115,7 @@ export async function createCount(tenantId: string, warehouseId: string, userId:
 
 export type CountDetail = { id: string; number: number; code: string; status: CountStatus; warehouseId: string; warehouseName: string; note: string | null; createdAt: string; completedAt: string | null; lines: { id: string; productId: string; productName: string; expected: number; counted: number | null; adjustment: number | null }[] };
 
+/** Un conteo con su bodega y sus líneas, o `null`. */
 export async function getCount(tenantId: string, id: string): Promise<CountDetail | null> {
   const count = await db.orm.public.StockCount.where({ tenantId, id }).first();
   if (!count) return null;
@@ -129,6 +137,7 @@ export async function getCount(tenantId: string, id: string): Promise<CountDetai
 
 export type CountRow = { id: string; number: number; code: string; status: CountStatus; warehouseName: string; createdAt: string; lines: number; counted: number; withDifference: number };
 
+/** Conteos más recientes (50 por defecto, máximo 200) con su avance y diferencias. */
 export async function listCounts(tenantId: string, limit = 50): Promise<CountRow[]> {
   const rows = await db.orm.public.StockCount.where({ tenantId }).orderBy((c) => c.number.desc()).limit(Math.min(200, Math.max(1, limit))).all();
   if (!rows.length) return [];
@@ -192,6 +201,7 @@ export async function finalizeCount(tenantId: string, countId: string, note: str
   }
 }
 
+/** Cancela un conteo abierto. Falla si ya no lo está o cambió mientras se revisaba. */
 export async function cancelCount(tenantId: string, countId: string): Promise<DocResult> {
   const count = await db.orm.public.StockCount.where({ tenantId, id: countId }).first();
   if (!count) return { ok: false, message: "No se encontró el conteo." };
@@ -204,6 +214,7 @@ export async function cancelCount(tenantId: string, countId: string): Promise<Do
 
 export type OverviewRow = { productId: string; productName: string; warehouseId: string; warehouseName: string; quantity: number; avgCost: number; value: number };
 
+/** Existencias por producto y bodega, sin variantes. */
 export async function stockOverview(tenantId: string): Promise<OverviewRow[]> {
   const [levels, warehouses] = await Promise.all([db.orm.public.StockLevel.where({ tenantId, variantKey: "" }).all(), db.orm.public.Warehouse.where({ tenantId }).all()]);
   if (!levels.length) return [];
@@ -232,6 +243,9 @@ export async function reorderOverview(tenantId: string): Promise<ReorderRow[]> {
   });
 }
 
+/**
+ * Guarda el mínimo, el máximo y el punto de reorden de un producto con inventario, validando que sean coherentes.
+ */
 export async function setReorderLevels(tenantId: string, productId: string, levels: { minStock: number; maxStock: number | null; reorderPoint: number | null }): Promise<DocResult> {
   const invalid = validateLevels(levels);
   if (invalid) return { ok: false, message: invalid };

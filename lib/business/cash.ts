@@ -36,6 +36,9 @@ export function replenishNeeded(fund: number, current: number): number {
   return Math.max(0, Math.round((fund - current) * 100) / 100);
 }
 
+/**
+ * Valida un movimiento de caja: tipo conocido, monto distinto de cero (positivo salvo en ajustes), descripción, beneficiario si es un vale, y que los egresos y vales no superen el efectivo disponible. Devuelve el mensaje de error o `null`.
+ */
 export function validateCashMovement(m: { kind: string; amount: number | null; description: string; beneficiary?: string | null }, available: number): string | null {
   if (!["INCOME", "EXPENSE", "VOUCHER", "REPLENISH", "ADJUST"].includes(m.kind)) return "Tipo de movimiento no válido.";
   if (m.amount == null || !Number.isFinite(m.amount) || m.amount === 0) return "Escribe el monto.";

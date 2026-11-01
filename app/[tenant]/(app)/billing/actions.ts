@@ -6,7 +6,7 @@ import { validateLines, type InvoiceKind, type LineInput } from "@/lib/business/
 import { documentView, issueAdjustmentNote, type DocumentView } from "@/lib/business/documents-db";
 import { createInvoice, payInvoice, voidInvoice, invoiceStatus } from "@/lib/business/invoices-db";
 import { MoneyError } from "@/lib/business/money-error";
-import { canHandleCash, canManage } from "@/lib/business/roles";
+import { canHandleCash, canManage } from "@/lib/auth/roles";
 import { receiptCode } from "@/lib/business/invoice";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import { requireTenantContext } from "@/lib/tenant/context";

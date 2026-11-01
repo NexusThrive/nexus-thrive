@@ -1,6 +1,6 @@
 import { emitEvent } from "@/lib/events/outbox";
 import { toNumber } from "@/lib/format";
-import { connectedGateways, createIntent } from "@/lib/payments/intents-db";
+import { paymentGatewayPort } from "./payment-gateway-port";
 import { db } from "@/prisma/db";
 import { sanitizeOrigin } from "@/lib/growth/growth";
 import { ABANDON_AFTER_MINUTES, isAbandoned, normalizeCart, orderCode, orderMessage, orderTotals, validateCustomer, type CartLine, type CustomerData } from "./cart";
@@ -10,6 +10,9 @@ export type PlaceResult =
   | { ok: true; code: string; reference: string; total: number; whatsappText: string; whatsapp: string | null; business: string }
   | { ok: false; message: string; fields?: Partial<Record<keyof CustomerData, string>> };
 
+/**
+ * Crea un pedido de la tienda en línea desde el sitio público: valida la tienda y los productos, guarda el pedido y sus líneas y crea el cobro en línea. Si el cobro no se puede crear, cancela el pedido con el motivo.
+ */
 export async function placeOrder(siteSlug: string, input: { customer: CustomerData; lines: CartLine[]; origin?: unknown }): Promise<PlaceResult> {
   const cfg = await db.orm.public.SiteConfig.where({ siteSlug, enabled: true }).first();
   if (!cfg || !cfg.showCatalog) return { ok: false, message: "Esta tienda no está disponible." };
@@ -35,7 +38,7 @@ export async function placeOrder(siteSlug: string, input: { customer: CustomerDa
   const c = input.customer;
   for (let attempt = 0; ; attempt++) {
     try {
-      const gateway = (await connectedGateways(tenantId))[0]?.value ?? "sandbox";
+      const gateway = (await paymentGatewayPort.use().connectedGateways(tenantId))[0]?.value ?? "sandbox";
       const order = await db.transaction(async (tx) => {
         const last = await tx.orm.public.StoreOrder.where({ tenantId }).orderBy((o) => o.number.desc()).first();
         const number = (last?.number ?? 0) + 1;
@@ -43,7 +46,7 @@ export async function placeOrder(siteSlug: string, input: { customer: CustomerDa
         await tx.orm.public.StoreOrderLine.createAll(lines.map((l) => ({ tenantId, orderId: created.id, productId: l.productId, name: l.name.slice(0, 160), quantity: l.quantity, unitPrice: l.unitPrice.toFixed(2), taxRatePct: l.taxRatePct.toFixed(2) }))).toArray();
         return created;
       });
-      const intent = await createIntent(tenantId, { amount: total, description: `Pedido ${orderCode(order.number)} · ${tenant.name}`, expiresInHours: 72, provider: gateway }, "tienda");
+      const intent = await paymentGatewayPort.use().createIntent(tenantId, { amount: total, description: `Pedido ${orderCode(order.number)} · ${tenant.name}`, expiresInHours: 72, provider: gateway }, "tienda");
       if (!intent.ok) {
         await db.orm.public.StoreOrder.where({ tenantId, id: order.id }).update({ status: "CANCELED", review: `No se pudo crear el cobro: ${intent.message}` });
         return { ok: false, message: "No pudimos generar el cobro de tu pedido. Escríbenos por WhatsApp." };
@@ -61,6 +64,7 @@ export async function placeOrder(siteSlug: string, input: { customer: CustomerDa
 
 export type OrderRow = { id: string; code: string; status: string; customerName: string; phone: string; email: string | null; address: string | null; city: string | null; notes: string | null; total: number; review: string | null; createdAt: string; reference: string | null; lines: { name: string; quantity: number; unitPrice: number }[] };
 
+/** Pedidos de la tienda, del más reciente al más antiguo (100 por defecto), con sus líneas y el estado del cobro. */
 export async function listOrders(tenantId: string, limit = 100): Promise<OrderRow[]> {
   const orders = await db.orm.public.StoreOrder.where({ tenantId }).orderBy((o) => o.number.desc()).limit(limit).all();
   if (!orders.length) return [];

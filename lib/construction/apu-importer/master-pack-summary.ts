@@ -35,6 +35,9 @@ function sameDecimal(a: unknown, b: string): boolean {
   return norm(String(a)) === norm(b);
 }
 
+/**
+ * Resume antes de importar un pack APU qué se creará, qué ya existe y qué cambia, comparando el plan con el catálogo actual del negocio. Solo lee.
+ */
 export async function summarizeMasterPack(input: {
   tenantId: string;
   fileName: string;

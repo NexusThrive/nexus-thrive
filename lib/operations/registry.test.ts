@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { BUSINESS_PERMISSIONS } from "@/lib/business/permissions";
+import { BUSINESS_PERMISSIONS } from "@/lib/auth/permissions";
 import { isModule } from "@/lib/admin/catalogs";
 import { describeOperation, OPERATIONS, getOperation, operationsFor } from "./registry";
 

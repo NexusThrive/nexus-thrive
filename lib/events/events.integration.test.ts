@@ -24,7 +24,7 @@ describe.skipIf(!TEST_URL)("outbox y webhooks (integración)", () => {
       hits.push({ url: String(url), headers: init.headers as Record<string, string>, body: String(init.body) });
       return new Response("ok", { status: statuses[Math.min(hits.length, statuses.length) - 1] });
     }) as unknown as typeof fetch;
-  const run = (fetchImpl: typeof fetch) => dispatchPending({ fetchImpl, now: () => clock, resolveHost, tenantIds: [a, b] });
+  const run = (fetchImpl: typeof fetch) => dispatchPending({ subscribers: [], fetchImpl, now: () => clock, resolveHost, tenantIds: [a, b] });
 
   beforeAll(async () => {
     process.env.WEBHOOK_ENCRYPTION_KEY = "b".repeat(64);
@@ -121,7 +121,7 @@ describe.skipIf(!TEST_URL)("outbox y webhooks (integración)", () => {
     await run(makeFetch([200]));
     await sell(a, 111);
     const hits: Hit[] = [];
-    const blocked = await dispatchPending({ fetchImpl: makeFetch([200], hits), now: () => clock, resolveHost: async (h) => !h.startsWith("interno.") });
+    const blocked = await dispatchPending({ subscribers: [], fetchImpl: makeFetch([200], hits), now: () => clock, resolveHost: async (h) => !h.startsWith("interno.") });
     expect(blocked.failed).toBeGreaterThanOrEqual(1);
     expect(hits.some((h) => h.url.includes("interno."))).toBe(false); // nunca se llamó
     expect((await listDeliveries(a)).some((d) => d.responseExcerpt?.includes("no permitido"))).toBe(true);

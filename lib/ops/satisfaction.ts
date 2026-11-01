@@ -7,6 +7,7 @@ import { ticketCode } from "./support-rules";
 
 const ms = (v: unknown) => (v ? Date.parse(String(v)) : null);
 
+/** Enlace público de una encuesta de satisfacción a partir de su token. */
 export function surveyUrl(token: string, base: string) {
   return `${base}/encuesta/${token}`;
 }
@@ -23,6 +24,9 @@ export async function ensureSurvey(ticketId: string): Promise<string | null> {
   return surveyUrl(token, base);
 }
 
+/**
+ * Encuesta por su token (con el ticket y el negocio a los que se refiere). `null` si el token no tiene el formato esperado o no existe.
+ */
 export async function getSurveyByToken(token: string) {
   if (!/^[\w-]{20,40}$/.test(token)) return null;
   const s = await db.orm.public.SatisfactionSurvey.where({ token }).first();
@@ -34,6 +38,7 @@ export async function getSurveyByToken(token: string) {
   return { id: s.id, answered: !!s.answeredAt, score: s.score, code: t ? ticketCode(t.year, t.seq) : "", subject: t?.subject ?? "", tenantName: tenant?.name ?? null };
 }
 
+/** Guarda la respuesta de una encuesta y la fecha en que se contestó. */
 export async function answerSurvey(id: string, v: { score: number; nps: number | null; comment: string | null }) {
   await db.orm.public.SatisfactionSurvey.where({ id }).update({ ...v, answeredAt: Temporal.Instant.fromEpochMilliseconds(Date.now()) });
 }
@@ -54,6 +59,9 @@ export type SurveyRow = {
   url: string;
 };
 
+/**
+ * Encuestas de satisfacción enviadas, de la más reciente a la más antigua, con el ticket, el negocio y el responsable, y su enlace público. Se puede acotar a un negocio.
+ */
 export async function listSurveys(filter: { tenantId?: string } = {}): Promise<SurveyRow[]> {
   let q = db.orm.public.SatisfactionSurvey.orderBy((s) => s.sentAt.desc());
   if (filter.tenantId) q = q.where({ tenantId: filter.tenantId });

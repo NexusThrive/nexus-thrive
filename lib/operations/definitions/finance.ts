@@ -1,3 +1,7 @@
+/**
+ * Operaciones de finanzas de solo lectura: resumen de ingresos y gastos (hoy, 7 o 30 días contra el periodo anterior)
+ * y movimientos recientes (cobros y gastos). Exigen el permiso de manejar dinero.
+ */
 import { z } from "zod";
 import { defineOperation, type OperationDefinition } from "../types";
 

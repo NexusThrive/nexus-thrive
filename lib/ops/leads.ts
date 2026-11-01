@@ -67,11 +67,13 @@ function toRow(l: Record<string, unknown>, names: Map<string, string>): LeadRow 
   };
 }
 
+/** Oportunidades de venta, de la más recientemente tocada a la más antigua. */
 export async function listLeads(): Promise<LeadRow[]> {
   const [rows, names] = await Promise.all([db.orm.public.Lead.orderBy((l) => l.updatedAt.desc()).all(), staffNames()]);
   return rows.map((r) => toRow(r as unknown as Record<string, unknown>, names));
 }
 
+/** Una oportunidad con el nombre de su responsable, o `null`. */
 export async function getLead(id: string): Promise<LeadRow | null> {
   const [row, names] = await Promise.all([db.orm.public.Lead.where({ id }).first(), staffNames()]);
   return row ? toRow(row as unknown as Record<string, unknown>, names) : null;
@@ -79,6 +81,7 @@ export async function getLead(id: string): Promise<LeadRow | null> {
 
 export type LeadActivityRow = { id: string; kind: LeadActivityKind; body: string; staffName: string | null; createdAt: string };
 
+/** Historial de actividad de una oportunidad, del más reciente al más antiguo. */
 export async function listLeadActivity(leadId: string): Promise<LeadActivityRow[]> {
   const rows = await db.orm.public.LeadActivity.where({ leadId }).orderBy((a) => a.createdAt.desc()).all();
   return rows.map((a) => ({ id: a.id, kind: a.kind as LeadActivityKind, body: a.body, staffName: a.staffName, createdAt: String(a.createdAt) }));
@@ -89,6 +92,7 @@ function data(v: LeadValues) {
   return { ...rest, nextStepAt: dateToInstant(nextStepDate) };
 }
 
+/** Crea una oportunidad y devuelve su id. */
 export async function createLead(v: LeadValues): Promise<string> {
   const row = await db.orm.public.Lead.create({ ...data(v), stageChangedAt: now() });
   return row.id;
@@ -99,6 +103,7 @@ export async function updateLead(id: string, v: LeadValues, stageChanged: boolea
   await db.orm.public.Lead.where({ id }).update({ ...data(v), ...(stageChanged ? { stageChangedAt: now() } : {}) });
 }
 
+/** Registra una actividad (nota, llamada…) en una oportunidad, con quién la hizo. */
 export async function addLeadActivity(leadId: string, kind: LeadActivityKind, body: string, staff: { staffId: string; name: string | null; email: string }) {
   await db.orm.public.LeadActivity.create({ leadId, kind, body, staffId: staff.staffId, staffName: staff.name ?? staff.email });
 }
@@ -108,6 +113,7 @@ export async function touchLead(id: string) {
   await db.orm.public.Lead.where({ id }).update({ updatedAt: Temporal.Instant.fromEpochMilliseconds(Date.now()) });
 }
 
+/** Elimina una oportunidad. */
 export async function deleteLead(id: string) {
   await db.orm.public.Lead.where({ id }).delete();
 }

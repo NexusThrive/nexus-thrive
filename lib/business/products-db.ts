@@ -52,6 +52,7 @@ function toRow(p: NonNullable<Awaited<ReturnType<typeof db.orm.public.Product.fi
   };
 }
 
+/** Productos del negocio, con filtros opcionales por tipo, activos y texto, y un límite. */
 export async function listProducts(tenantId: string, filter: { kind?: ProductKindValue | ProductKindValue[]; activeOnly?: boolean; q?: string; limit?: number } = {}): Promise<ProductRow[]> {
   let q = db.orm.public.Product.where({ tenantId });
   if (filter.kind) {
@@ -68,6 +69,7 @@ export async function listProducts(tenantId: string, filter: { kind?: ProductKin
   return rows.map(toRow);
 }
 
+/** Un producto por su id, o `null`. */
 export async function getProduct(tenantId: string, id: string) {
   const p = await db.orm.public.Product.where({ tenantId, id }).first();
   return p ? toRow(p) : null;
@@ -75,6 +77,9 @@ export async function getProduct(tenantId: string, id: string) {
 
 export type ProductInput = Omit<ProductRow, "id" | "stock" | "taxRatePct"> & { initialStock?: number };
 
+/**
+ * Crea (sin `id`) o actualiza un producto y devuelve su id. Al crear con existencias iniciales registra el movimiento «Inventario inicial».
+ */
 export async function saveProduct(tenantId: string, id: string | null, v: ProductInput, userId: string): Promise<string> {
   const data = {
     kind: v.kind,
@@ -115,11 +120,13 @@ export async function moveStock(tenantId: string, productId: string, kind: Stock
   });
 }
 
+/** Últimos movimientos de inventario de un producto (20 por defecto). */
 export async function stockHistory(tenantId: string, productId: string, limit = 20) {
   const rows = await db.orm.public.StockMovement.where({ tenantId, productId }).orderBy((m) => m.createdAt.desc()).limit(limit).all();
   return rows.map((m) => ({ id: m.id, kind: m.kind as StockKind, quantity: m.quantity, note: m.note, createdAt: String(m.createdAt) }));
 }
 
+/** Productos activos con control de existencias que están en o debajo del mínimo. */
 export async function lowStock(tenantId: string) {
   const rows = await db.orm.public.Product.where({ tenantId, trackStock: true, active: true }).select("id", "name", "stock", "minStock").all();
   return rows.filter((r) => r.stock <= r.minStock);

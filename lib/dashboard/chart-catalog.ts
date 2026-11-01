@@ -9,6 +9,7 @@ import type { Span } from "./layout";
 export const CHART_TYPES = ["bars", "line", "area", "donut", "gauge", "customers"] as const;
 export type ChartType = (typeof CHART_TYPES)[number];
 
+/** Comprueba que un valor sea un tipo de gráfico del catálogo. */
 export const isChartType = (value: unknown): value is ChartType => CHART_TYPES.includes(value as ChartType);
 
 export type ChartEntry = {
@@ -41,6 +42,7 @@ export const COMING_SOON = [
   { label: "Lista de tareas", description: "Pendientes del equipo con fecha y responsable, junto al sistema de productividad." },
 ] as const;
 
+/** Ficha del catálogo (nombre, descripción, tamaño inicial) de un tipo de gráfico. */
 export const entryOf = (type: ChartType): ChartEntry => CHART_CATALOG.find((e) => e.type === type)!;
 
 /** Datos serializables que reciben los gráficos agregados (los arma la página en el servidor). */

@@ -97,6 +97,7 @@ export async function verifyLedger(tenantId: string): Promise<{ ok: true; checke
   return { ok: true, checked };
 }
 
+/** Activa o desactiva la contabilidad del negocio. Para activarla debe haber al menos una regla contable activa. */
 export async function setAccountingEnabled(tenantId: string, enabled: boolean): Promise<{ ok: true } | { ok: false; message: string }> {
   if (enabled) {
     const rules = await db.orm.public.AccountingRule.where({ tenantId, active: true }).select("id").first();
@@ -108,6 +109,7 @@ export async function setAccountingEnabled(tenantId: string, enabled: boolean): 
 
 export type EntryRow = { id: string; number: number; date: string; description: string; event: string; reversalOfId: string | null; reversed: boolean; lines: { account: string; debit: number; credit: number; label: string | null }[] };
 
+/** Asientos contables más recientes (100 por defecto) con sus líneas, y si ya fueron reversados. */
 export async function listEntries(tenantId: string, limit = 100): Promise<EntryRow[]> {
   const entries = await db.orm.public.JournalEntry.where({ tenantId }).orderBy((e) => e.number.desc()).limit(limit).all();
   if (!entries.length) return [];

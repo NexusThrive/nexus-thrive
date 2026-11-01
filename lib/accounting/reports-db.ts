@@ -42,6 +42,9 @@ export type ReportResult =
   | { kind: "ledger"; account: string; data: ReturnType<typeof generalLedger> }
   | { kind: "auxiliary"; account: string; data: ReturnType<typeof auxiliaryByParty> };
 
+/**
+ * Arma el informe pedido (balance de prueba, estado de resultados, balance general, diario, mayor o auxiliar por tercero) a partir de los renglones del libro. El mayor y el auxiliar necesitan la cuenta.
+ */
 export function buildReport(kind: ReportKind, rows: readonly LedgerRow[], account: string): ReportResult {
   switch (kind) {
     case "trial": return { kind, data: trialBalance(rows) };

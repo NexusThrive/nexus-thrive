@@ -68,6 +68,7 @@ const PROFILES: Record<string, VerticalProfile> = {
 PROFILES.tour_guides = PROFILES.tourism_agency;
 PROFILES.events = PROFILES.museum;
 
+/** Campos del cliente que corresponden al rubro; si no tiene perfil propio, el perfil base. */
 export function profileFor(vertical: string): VerticalProfile {
   return PROFILES[vertical] ?? BASE;
 }

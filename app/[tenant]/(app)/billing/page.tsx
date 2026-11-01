@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/molecules/page-header";
 import { listInvoices } from "@/lib/business/invoices-db";
 import { listProducts } from "@/lib/business/products-db";
-import { canHandleCash, canManage } from "@/lib/business/roles";
+import { canHandleCash, canManage } from "@/lib/auth/roles";
 import { todayBogota } from "@/lib/ops/leads";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { customerOptions } from "@/lib/business/customers-db";

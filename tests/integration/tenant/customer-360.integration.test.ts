@@ -12,7 +12,7 @@ import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { buildCustomer360, createTenantDb } from "@/lib/tenant/db";
-import { getCustomer360Memberships } from "@/lib/business/memberships-repo";
+import { getCustomer360Memberships } from "@/lib/industry/gym/memberships-repo";
 
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const at = (iso: string) => Temporal.Instant.from(iso);

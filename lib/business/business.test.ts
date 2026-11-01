@@ -157,7 +157,7 @@ describe("agenda", () => {
   });
 });
 
-import { accessCode, checkAccess, countdown, freezePlan, membershipState } from "./gym";
+import { accessCode, checkAccess, countdown, freezePlan, membershipState } from "@/lib/industry/gym/gym";
 
 describe("gimnasio", () => {
   const D = 86_400_000;

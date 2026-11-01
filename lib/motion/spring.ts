@@ -1,3 +1,7 @@
+/**
+ * Resortes y temblor con la Web Animations API: `springFrames` precalcula las posiciones de un resorte a 60 fps y
+ * `spring`/`shake` las reproducen en el compositor, sin trabajo por cuadro en JavaScript. Respetan el movimiento reducido.
+ */
 import { motionOff } from "./reduced";
 
 export type SpringOptions = {

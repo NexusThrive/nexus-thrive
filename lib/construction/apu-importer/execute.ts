@@ -40,6 +40,9 @@ function itemByNameKey(item: ItemRow): string {
   return normalizeKey(item.name);
 }
 
+/**
+ * Escribe un plan de importación validado en el catálogo del negocio en una sola transacción: crea o actualiza insumos y actividades y reemplaza la composición de cada actividad. Con `updatePrices` también actualiza los precios de insumos existentes. Devuelve los conteos de lo creado y actualizado.
+ */
 export async function executeImport(
   tenantId: string,
   plan: ExecutionPlan,

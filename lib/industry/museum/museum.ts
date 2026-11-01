@@ -80,6 +80,7 @@ export const SALE_KINDS = [
   { value: "GRUPO", label: "Grupo" },
 ] as const;
 export type SaleKind = (typeof SALE_KINDS)[number]["value"];
+/** Nombre para mostrar de un tipo de venta de entradas. */
 export const saleKindLabel = (k: string) => SALE_KINDS.find((x) => x.value === k)?.label ?? k;
 
 export type TicketLineInput = { productId: string; qty: number };
@@ -111,6 +112,7 @@ export function validateTicketSale(
   return { ok: true, visitors, total, lines };
 }
 
+/** Código legible de una venta de entradas («T-000012»). */
 export const ticketCode = (n: number) => `T-${String(n).padStart(6, "0")}`;
 
 export type VisitorReport = {

@@ -19,6 +19,7 @@ const problemResponse = (description: string) => ({ description, content: { "app
 
 type Json = Record<string, unknown>;
 
+/** Documento OpenAPI de la API pública, construido a partir de las operaciones declaradas que tienen ruta REST. */
 export function buildOpenApi(operations: readonly OperationDefinition[], serverUrl = "/api/v1"): Json {
   const paths: Record<string, Record<string, unknown>> = {};
   for (const op of operations) {

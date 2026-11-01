@@ -259,7 +259,7 @@ export const CAPABILITIES = [
     priceUsd: 0,
     general: true,
     // El restaurante compra insumos; el resto, mercancía.
-    nav: [{ href: "/purchases", icon: Truck, label: (_terms, vertical) => (vertical === "restaurant" ? "Compras de insumos" : "Compras") }],
+    nav: [{ href: "/purchases", icon: Truck, label: (terms) => terms.purchases ?? "Compras" }],
   },
   {
     id: "orders",
@@ -306,7 +306,7 @@ export const CAPABILITIES = [
       {
         href: "/projects",
         icon: Building2,
-        label: (_terms, vertical) => (vertical === "construction" ? "Obras" : "Proyectos"),
+        label: (terms) => terms.projects ?? "Proyectos",
       },
       { href: "/quotes", icon: FolderOpen, label: () => "Cotizaciones" },
       { href: "/catalog", icon: BookOpen, label: () => "Catálogo APU" },

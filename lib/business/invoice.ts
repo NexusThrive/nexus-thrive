@@ -4,24 +4,31 @@ export type InvoiceKind = "RECEIPT" | "BILL";
 
 export const INVOICE_KIND_LABELS: Record<InvoiceKind, string> = { RECEIPT: "Recibo", BILL: "Cuenta de cobro" };
 
+/** Código legible de una cuenta de cobro («CC-000012») o recibo («R-000012»). */
 export function invoiceCode(kind: InvoiceKind, n: number) {
   return `${kind === "RECEIPT" ? "R" : "CC"}-${String(n).padStart(6, "0")}`;
 }
 
+/** Código legible de un recibo («R-000012»). */
 export function receiptCode(n: number) {
   return `R-${String(n).padStart(6, "0")}`;
 }
 
 export type LineInput = { description: string; quantity: number; unitPrice: number; productId?: string | null };
 
+/** Total de un concepto (cantidad por valor unitario) redondeado a centavos. */
 export function lineTotal(l: LineInput) {
   return Math.round(l.quantity * l.unitPrice * 100) / 100;
 }
 
+/** Suma de los conceptos de una cuenta de cobro, redondeada a centavos. */
 export function invoiceTotal(lines: LineInput[]) {
   return Math.round(lines.reduce((s, l) => s + lineTotal(l), 0) * 100) / 100;
 }
 
+/**
+ * Valida los conceptos de una cuenta de cobro: al menos uno, con descripción, cantidad mayor que cero y valor no negativo. Devuelve el mensaje de error o `null`.
+ */
 export function validateLines(lines: LineInput[]): string | null {
   if (!lines.length) return "Agrega al menos un concepto.";
   for (const [i, l] of lines.entries()) {

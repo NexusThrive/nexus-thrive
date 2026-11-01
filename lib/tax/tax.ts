@@ -14,6 +14,7 @@ export const TAX_KIND_LABELS: Record<TaxKind, string> = {
   RETEIVA: "Retención de IVA",
   RETEICA: "Retención de ICA",
 };
+/** ¿El tipo de impuesto es una retención (retefuente, reteIVA o reteICA)? */
 export const isWithholding = (kind: string): boolean => kind === "RETEFUENTE" || kind === "RETEIVA" || kind === "RETEICA";
 
 export type TaxRateRow = { id: string; code: string; name: string; kind: TaxKind; ratePct: number; minBase: number; validFrom: string; validTo: string | null; active: boolean };
@@ -101,6 +102,9 @@ export function warnThreshold(r: Pick<ResolutionState, "rangeFrom" | "rangeTo">)
   return Math.max(20, Math.ceil((r.rangeTo - r.rangeFrom + 1) * 0.1));
 }
 
+/**
+ * Estado de una resolución a una fecha: inactiva, aún no vigente, vencida, agotada o vigente, con los números restantes, los días que le quedan y las advertencias.
+ */
 export function resolutionStatus(r: ResolutionState, today: string): ResolutionStatus {
   const remaining = Math.max(0, r.rangeTo - r.nextNumber + 1);
   const daysLeft = daysBetween(today, r.validTo);
@@ -135,7 +139,7 @@ export const fiscalCode = (prefix: string, n: number): string => `${prefix}${n}`
 export const NUMBERED_KINDS = ["SALE", "BILL", "RECEIPT", "CREDIT_NOTE", "DEBIT_NOTE"] as const;
 
 /** Fecha de hoy en Colombia (UTC−5) como AAAA-MM-DD: la vigencia se mide por día calendario local. */
-export const todayCO = (now: number = Date.now()): string => new Date(now - 5 * 3_600_000).toISOString().slice(0, 10);
+export { todayCO } from "@/lib/plain-date";
 
 /** Tarifas habituales en Colombia para arrancar; el negocio las ajusta (bases mínimas con su contador). */
 export const DEFAULT_TAX_RATES: readonly { code: string; name: string; kind: TaxKind; ratePct: number }[] = [

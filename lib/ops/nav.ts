@@ -1,3 +1,7 @@
+/**
+ * Menú del panel de operaciones de la plataforma (CEO/soporte): los grupos y elementos, filtrados por los permisos de
+ * quien entra, y cuál queda activo según la ruta.
+ */
 import type { LucideIcon } from "lucide-react";
 import {
   HeartPulse,
@@ -17,7 +21,7 @@ import {
   Users,
   UsersRound,
 } from "lucide-react";
-import type { NavGroup } from "@/lib/navigation/tenant-nav";
+import type { NavGroup } from "@/lib/navigation/nav-types";
 import type { PermissionKey } from "./permissions";
 
 type OpsItem = {

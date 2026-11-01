@@ -53,6 +53,6 @@ describe("createTenantDb (Core)", () => {
   test("lib/tenant/db.ts no importa construcción ni el gimnasio", () => {
     const source = readFileSync(join(ROOT, "lib/tenant/db.ts"), "utf8");
     expect(source).not.toMatch(/from\s+["']@\/lib\/construction\//);
-    expect(source).not.toMatch(/from\s+["']@\/lib\/business\/(memberships|gym|museum)/);
+    expect(source).not.toMatch(/from\s+["']@\/lib\/industry\//);
   });
 });

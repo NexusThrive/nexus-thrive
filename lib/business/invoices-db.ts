@@ -1,4 +1,4 @@
-import { reverseSource } from "@/lib/accounting/ledger-db";
+import { accountingPort } from "./accounting-port";
 import { db } from "@/prisma/db";
 import { toNumber } from "@/lib/format";
 import { type InvoiceKind, type LineInput } from "./invoice";
@@ -26,6 +26,9 @@ export type InvoiceRow = {
   lines: { id: string; description: string; quantity: number; unitPrice: number; total: number }[];
 };
 
+/**
+ * Cuentas de cobro, recibos y sus notas crédito y débito (las 200 más recientes). Las ventas al cobrar salen en el informe de ventas (`documents-db`).
+ */
 export async function listInvoices(tenantId: string): Promise<InvoiceRow[]> {
   // Facturación muestra cuentas de cobro, recibos y sus notas crédito y débito;
   // las ventas al cobrar salen en el informe de ventas (documents-db).
@@ -56,6 +59,7 @@ export async function invoiceStatus(tenantId: string, id: string): Promise<strin
   return row ? String(row.status) : null;
 }
 
+/** Un documento de facturación por su id, o `null`. */
 export async function getInvoice(tenantId: string, id: string) {
   return (await listInvoices(tenantId)).find((i) => i.id === id) ?? null;
 }
@@ -85,10 +89,13 @@ export async function createInvoice(tenantId: string, v: { kind: InvoiceKind; cu
  */
 export { payInvoice } from "./money-service";
 
+/**
+ * Anula un documento sin borrarlo y reversa su asiento contable en la misma transacción; si el mes está cerrado, no se anula.
+ */
 export async function voidInvoice(tenantId: string, id: string, reason: string) {
   // Anular no borra: el asiento de la cuenta de cobro se reversa en el mismo momento (si el mes está cerrado, no se anula).
   await db.transaction(async (tx) => {
     await tx.orm.public.Invoice.where({ tenantId, id }).update({ status: "VOID", voidReason: reason });
-    await reverseSource(tx, tenantId, "DOCUMENT", id, reason, null);
+    await accountingPort.use().reverse(tx, tenantId, "DOCUMENT", id, reason, null);
   });
 }

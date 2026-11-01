@@ -1,11 +1,12 @@
 import { emitEvent } from "@/lib/events/outbox";
 import { db } from "@/prisma/db";
+import type { DbTransaction } from "@/lib/db-transaction";
 import { toNumber } from "@/lib/format";
 import type { PaymentStatusValue } from "@/lib/finance";
 import { applyStockMovement, StockError } from "@/lib/inventory/stock-service";
 import { balanceOf, validatePayment } from "@/lib/receivables/aging";
-import { cashAccountFor, postByRule, reverseSource } from "@/lib/accounting/ledger-db";
-import { todayCO } from "@/lib/tax/tax";
+import { accountingPort } from "./accounting-port";
+import { todayCO } from "@/lib/plain-date";
 import { MoneyError } from "./money-error";
 import { receiptCode } from "./invoice";
 import type { DocumentLineInput } from "./commercial-document";
@@ -26,7 +27,8 @@ import { insertDocument, issueCreditNote, saleDocumentOfPayment } from "./docume
  *   ya lo reclamó, el UPDATE no afecta filas y se aborta: no hay doble cobro.
  */
 
-export type MoneyTx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+/** Transacción del servicio de dinero (alias del tipo de Foundation `DbTransaction`). */
+export type MoneyTx = DbTransaction;
 
 export { MoneyError };
 
@@ -128,7 +130,12 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
   const receipt = receiptCode(receiptNumber);
   if (status === "APPROVED") {
     const payer = input.customerId ? await tx.orm.public.Customer.where({ tenantId, id: input.customerId }).select("partyId").first() : null;
-    await postByRule(tx, tenantId, "PAYMENT_RECEIVED", { payment: Number(amount) }, { date: todayCO(), description: `Cobro ${receipt}`, sourceType: "PAYMENT", sourceId: payment.id, partyId: payer?.partyId ?? null, swap: cashAccountFor(input.method) }, userId);
+    await accountingPort.use().record(
+      tx,
+      tenantId,
+      { event: "PAYMENT_RECEIVED", amounts: { payment: Number(amount) }, date: todayCO(), description: `Cobro ${receipt}`, sourceType: "PAYMENT", sourceId: payment.id, partyId: payer?.partyId ?? null, paymentMethod: input.method },
+      userId,
+    );
   }
   if (sessionId) {
     await tx.orm.public.CashMovement.create({
@@ -412,7 +419,7 @@ export async function voidPayment(tenantId: string, paymentId: string, reason: s
         }
       }
       // Contabilidad: el asiento del cobro se reversa (el libro no se edita, se corrige con otro asiento).
-      await reverseSource(tx, tenantId, "PAYMENT", paymentId, reason, userId);
+      await accountingPort.use().reverse(tx, tenantId, "PAYMENT", paymentId, reason, userId);
       // Anular un abono (o el pago) de una cuenta de cobro la devuelve a la cartera.
       if (p.invoiceId && p.sourceType === "INVOICE") {
         const inv = await tx.orm.public.Invoice.where({ tenantId, id: p.invoiceId }).select("status", "paidTotal").first();

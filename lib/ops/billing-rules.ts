@@ -32,7 +32,9 @@ export type ChargeStatusValue = (typeof CHARGE_STATUSES)[number]["value"];
 
 const DAY = 86_400_000;
 const toMs = (d: string) => Date.parse(`${d}T12:00:00Z`);
+/** Días enteros entre dos fechas "YYYY-MM-DD" (negativo si `to` es anterior a `from`). */
 export const daysBetween = (from: string, to: string) => Math.round((toMs(to) - toMs(from)) / DAY);
+/** Suma `n` días a una fecha "YYYY-MM-DD" y devuelve otra fecha en el mismo formato. */
 export function addDays(d: string, n: number) {
   return new Date(toMs(d) + n * DAY).toISOString().slice(0, 10);
 }
@@ -46,6 +48,7 @@ export function addMonths(d: string, months: number) {
   return target.toISOString().slice(0, 10);
 }
 
+/** Fin de un periodo de suscripción: un mes después del inicio (ciclo mensual) o doce (anual). */
 export function periodEnd(start: string, cycle: Cycle) {
   return addMonths(start, cycle === "ANNUAL" ? 12 : 1);
 }
@@ -79,6 +82,7 @@ export function dunning(c: { status: ChargeStatusValue; dueDate: string; noticeD
   return { stage: "suspend_eligible", overdue: d };
 }
 
+/** Texto para mostrar del estado de cobranza de un cargo (pagado, anulado, por vencer, vencido…). */
 export function dunningLabel(x: Dunning): string {
   switch (x.stage) {
     case "paid":
@@ -109,6 +113,9 @@ export function checkConfirm(c: { status: ChargeStatusValue; evidenceCount: numb
   return { ok: true };
 }
 
+/**
+ * Valida la política de cobranza: normaliza los días de recordatorio (únicos, de 0 a 30, de mayor a menor), exige gracia de 0 a 60 días y aviso previo de 1 a 30.
+ */
 export function validatePolicy(raw: BillingPolicyValues): { ok: true; value: BillingPolicyValues } | { ok: false; message: string } {
   const ints = (raw.reminderDays ?? []).map((n) => Math.round(Number(n))).filter((n) => Number.isFinite(n));
   const reminderDays = [...new Set(ints)].filter((n) => n >= 0 && n <= 30).sort((a, b) => b - a);
@@ -122,6 +129,9 @@ export function validatePolicy(raw: BillingPolicyValues): { ok: true; value: Bil
 export const EVIDENCE_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp"] as const;
 export const EVIDENCE_MAX_BYTES = 8 * 1024 * 1024;
 
+/**
+ * Valida un comprobante de pago (PDF, JPG, PNG o WEBP, no vacío, hasta 8 MB). Devuelve el mensaje de error o `null` si es válido.
+ */
 export function checkEvidence(file: { type: string; size: number }): string | null {
   if (!(EVIDENCE_TYPES as readonly string[]).includes(file.type)) return "El comprobante debe ser PDF, JPG, PNG o WEBP.";
   if (file.size <= 0) return "El archivo está vacío.";

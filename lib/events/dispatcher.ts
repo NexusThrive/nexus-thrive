@@ -23,7 +23,30 @@ const CLAIM_MS = 120_000;
 const TIMEOUT_MS = 10_000;
 const EXCERPT = 200;
 
+/**
+ * Suscriptor de dominio. Después de repartir los eventos nuevos, el despachador le entrega, una vez por
+ * negocio y por corrida, los negocios en los que ocurrió algún evento que le interesa. El despachador es de
+ * Core y no conoce a ningún dominio: cada suscriptor lo declara su dominio y lo entrega quien invoca.
+ *
+ * - Es idempotente por naturaleza: se llama después de que los eventos quedaron marcados como procesados, y
+ *   debe poder repetirse sin efectos duplicados (p. ej. recalcular un valor).
+ * - Un fallo de un suscriptor se registra y no detiene ni el reparto ni a los demás suscriptores.
+ */
+export type EventSubscriber = {
+  /** Nombre para el registro de errores. */
+  name: string;
+  /** ¿Le interesa este tipo de evento? */
+  matches: (eventType: string) => boolean;
+  /** Se llama una vez por negocio con algún evento que cumple `matches`. */
+  handle: (tenantId: string) => Promise<void>;
+};
+
 export type DispatchDeps = {
+  /**
+   * Suscriptores de dominio. Es obligatorio a propósito: así quien invoca decide de forma explícita
+   * qué dominios reaccionan a los eventos (`[]` = ninguno) y olvidarlo no compila.
+   */
+  subscribers: readonly EventSubscriber[];
   fetchImpl?: typeof fetch;
   now?: () => number;
   resolveHost?: (host: string) => Promise<boolean>;
@@ -34,11 +57,17 @@ export type DispatchDeps = {
 
 export type DispatchResult = { fannedOut: number; sent: number; succeeded: number; failed: number; deadLettered: number };
 
+/**
+ * Espera antes del siguiente reintento de un webhook según los intentos ya hechos (de 1 minuto hasta 24 horas; el último valor se repite).
+ */
 export function backoffMs(attemptsDone: number): number {
   return BACKOFF_MS[Math.min(attemptsDone, BACKOFF_MS.length) - 1] ?? BACKOFF_MS[0];
 }
 
-export async function dispatchPending(deps: DispatchDeps = {}): Promise<DispatchResult> {
+/**
+ * Un ciclo del despachador: reparte los eventos nuevos del outbox a los webhooks activos que los piden, entrega los suscriptores de dominio, envía las entregas pendientes firmadas (con tiempo límite y reintentos con espera creciente) y desactiva el webhook tras demasiados fallos seguidos. Devuelve cuántos repartió, envió, acertaron, fallaron o quedaron muertos.
+ */
+export async function dispatchPending(deps: DispatchDeps): Promise<DispatchResult> {
   const doFetch = deps.fetchImpl ?? fetch;
   const nowMs = deps.now ?? Date.now;
   const resolveHost = deps.resolveHost ?? ((h: string) => resolvesPublic(h));
@@ -62,14 +91,15 @@ export async function dispatchPending(deps: DispatchDeps = {}): Promise<Dispatch
     }
     await db.orm.public.OutboxEvent.where({ id: event.id }).update({ processedAt: toInstant(nowMs()) });
   }
-  // La presencia se recalcula cuando pasa algo que la mueve (una venta, un cobro, un evento de pasarela): una vez por negocio y corrida.
-  const touched = [...new Set(events.filter((e) => /^(sale\.|provider\.)/.test(e.type)).map((e) => e.tenantId))];
-  for (const tenantId of touched) {
-    try {
-      const { refreshPresence } = await import("@/lib/presence/pillars-db");
-      await refreshPresence(tenantId);
-    } catch (error) {
-      console.error(`[presencia] no se pudo recalcular ${tenantId}:`, error);
+  // Suscriptores de dominio: una vez por negocio y por corrida, solo para los negocios con algún evento que les interesa.
+  for (const subscriber of deps.subscribers) {
+    const touched = [...new Set(events.filter((e) => subscriber.matches(e.type)).map((e) => e.tenantId))];
+    for (const tenantId of touched) {
+      try {
+        await subscriber.handle(tenantId);
+      } catch (error) {
+        console.error(`[eventos:${subscriber.name}] no se pudo procesar ${tenantId}:`, error);
+      }
     }
   }
 

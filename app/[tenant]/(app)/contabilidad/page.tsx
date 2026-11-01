@@ -3,7 +3,7 @@ import { Alert } from "@/components/molecules/alert";
 import { PageHeader } from "@/components/molecules/page-header";
 import { listEntries } from "@/lib/accounting/ledger-db";
 import { listAccounts, listCostCenters, listPeriods, listRules } from "@/lib/accounting/accounting-db";
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import { todayCO } from "@/lib/tax/tax";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { tenantWithModules } from "@/lib/tenant/membership";

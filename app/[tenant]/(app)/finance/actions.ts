@@ -6,7 +6,7 @@ import { paymentRefTaken } from "@/lib/business/finance-db";
 import { getAppBaseUrl } from "@/lib/app-url";
 import { formatCurrency } from "@/lib/format";
 import { receiptCode } from "@/lib/business/invoice";
-import { canHandleCash } from "@/lib/business/roles";
+import { canHandleCash } from "@/lib/auth/roles";
 import { addAttachment, addCashMovement, checkAttachment, currentCashSession, receiptToken } from "@/lib/business/finance-db";
 import {
   validateExpense,

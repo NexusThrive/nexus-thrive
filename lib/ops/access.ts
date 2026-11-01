@@ -185,6 +185,14 @@ export async function getStaffContext(): Promise<StaffContext | null> {
   };
 }
 
+/**
+ * ¿La sesión actual es del equipo NEXUS con acceso a cuentas? Es lo que las rutas
+ * de archivos entregan a `lib/files/stored-files` como `StaffFileAccess`.
+ */
+export async function staffCanViewAccounts(): Promise<boolean> {
+  return Boolean((await getStaffContext())?.permissions.includes("accounts.view"));
+}
+
 /** Integrante con el permiso pedido (o cualquiera activo si no se pide), o `null`. */
 export async function requireStaff(permission?: PermissionKey): Promise<StaffContext | null> {
   const ctx = await getStaffContext();

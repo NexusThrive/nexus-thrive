@@ -9,6 +9,7 @@ export const TEMPLATES = {
   minimal: { label: "Minimal", bg: "#FFFFFF", fg: "#1A1A1A", muted: "#6B6B6B", card: "#FFFFFF" },
 } as const;
 export type TemplateKey = keyof typeof TEMPLATES;
+/** Comprueba que un texto sea una plantilla de sitio conocida. */
 export const isTemplate = (v: string): v is TemplateKey => v in TEMPLATES;
 
 export type SiteProduct = { id: string; name: string; description: string | null; price: number; category: string | null; imageUrl: string | null };
@@ -50,6 +51,7 @@ export function validateSiteSlug(raw: string): { ok: true; slug: string } | { ok
   return { ok: true, slug };
 }
 
+/** ¿Es un color hexadecimal de seis dígitos (#D4AF37)? */
 export const isHexColor = (v: string) => /^#[0-9a-fA-F]{6}$/.test(v);
 
 /** Texto de color legible sobre el acento (negro o blanco, el que dé más contraste). */
@@ -63,11 +65,13 @@ export function onAccent(hex: string): "#000000" | "#FFFFFF" {
   return lum > 0.4 ? "#000000" : "#FFFFFF";
 }
 
+/** Enlace de WhatsApp con un texto ya escrito, o `null` si el número tiene menos de 10 dígitos. */
 export const whatsappUrl = (number: string | null | undefined, text: string) => {
   const d = (number ?? "").replace(/\D/g, "");
   return d.length >= 10 ? `https://wa.me/${d}?text=${encodeURIComponent(text)}` : null;
 };
 
+/** Enlace al mapa (OpenStreetMap) de la ubicación del negocio, o `null` sin coordenadas. */
 export const mapUrl = (b: SiteData["business"]) =>
   b.latitude != null && b.longitude != null ? `https://www.openstreetmap.org/?mlat=${b.latitude}&mlon=${b.longitude}#map=17/${b.latitude}/${b.longitude}` : b.address ? `https://www.openstreetmap.org/search?query=${encodeURIComponent(`${b.address} ${b.city ?? ""}`.trim())}` : null;
 
@@ -94,11 +98,15 @@ export function jsonLd(site: SiteData, baseUrl: string): object {
   };
 }
 
+/** Mapa del sitio (XML) con la página del negocio y las de cada producto. */
 export function sitemapXml(baseUrl: string, slug: string, productIds: readonly string[], lastmod: string): string {
   const urls = [`${baseUrl}/s/${slug}`, ...productIds.map((id) => `${baseUrl}/s/${slug}/p/${id}`)];
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${esc(u)}</loc><lastmod>${lastmod}</lastmod></url>`).join("\n")}\n</urlset>\n`;
 }
 
+/**
+ * Contenido de `robots.txt` del sitio: permite indexarlo e incluye el mapa del sitio, o lo bloquea si no es indexable.
+ */
 export const robotsTxt = (baseUrl: string, slug: string, indexable: boolean) =>
   indexable ? `User-agent: *\nAllow: /s/${slug}\nSitemap: ${baseUrl}/s/${slug}/sitemap.xml\n` : `User-agent: *\nDisallow: /s/${slug}\n`;
 

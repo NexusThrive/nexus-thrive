@@ -7,7 +7,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
-import { WEEKDAYS, type MuseumSettings } from "@/lib/business/museum";
+import { WEEKDAYS, type MuseumSettings } from "@/lib/industry/museum/museum";
 import { formatCurrency } from "@/lib/format";
 import { saveMuseumSettingsAction, seedTicketTypesAction, type TicketResult } from "../actions";
 

@@ -1,5 +1,10 @@
+/**
+ * Operaciones de inventario expuestas por API, MCP y webhooks: buscar productos, consultar existencias, buscar por
+ * código de barras, kardex, bodegas y sugerencias de reposición. Son de solo lectura y cargan la lógica de
+ * `products-db` o `stock-service` bajo demanda.
+ */
 import { z } from "zod";
-import { defineOperation, OperationError, type OperationDefinition } from "../types";
+import { defineOperation, OperationError, type OperationDefinition } from "@/lib/operations/types";
 
 const productSummary = z.object({
   id: z.string(),

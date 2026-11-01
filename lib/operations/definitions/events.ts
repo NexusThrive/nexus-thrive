@@ -1,3 +1,7 @@
+/**
+ * Operación `events.list`: lista los eventos del negocio en orden, a partir del último id procesado, para que una
+ * integración se ponga al día.
+ */
 import { z } from "zod";
 import { defineOperation, OperationError, type OperationDefinition } from "../types";
 

@@ -7,6 +7,9 @@ import type { Pillar, Trend } from "./pillars";
  */
 export type Phase = "A" | "B_READY";
 
+/**
+ * Aviso para el cliente cuando su presencia entra o sale de la fase B; `null` si no hay cambio o es la primera medición.
+ */
 export const phaseChangeNotice = (before: Phase | null, after: Phase): { title: string; message: string } | null => {
   if (before === null || before === after) return null;
   return after === "B_READY"

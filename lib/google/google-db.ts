@@ -8,6 +8,9 @@ export type ListingView = { connected: boolean; placeId: string | null; status: 
 
 const mapsUrlOf = (placeId: string) => `https://www.google.com/maps/place/?q=place_id:${encodeURIComponent(placeId)}`;
 
+/**
+ * Conecta la ficha de Google del negocio: valida el ID del lugar y la llave de API, guarda la llave cifrada y deja la ficha pendiente de sincronizar.
+ */
 export async function connectGoogle(tenantId: string, input: { placeId: string; apiKey: string }): Promise<{ ok: true } | { ok: false; message: string }> {
   const placeId = input.placeId.trim();
   if (!PLACE_ID.test(placeId)) return { ok: false, message: "El ID de lugar no parece válido (empieza por «ChIJ»). Búscalo en el buscador de IDs de lugar de Google." };
@@ -41,11 +44,15 @@ export async function syncGoogle(tenantId: string, fetchImpl: typeof fetch = fet
   }
 }
 
+/** Desconecta Google: borra la ficha y la conexión guardada. */
 export async function disconnectGoogle(tenantId: string): Promise<void> {
   await db.orm.public.GoogleListing.where({ tenantId }).deleteAll();
   await db.orm.public.ExternalConnection.where({ tenantId, kind: "LISTING", provider: "google" }).deleteAll();
 }
 
+/**
+ * Estado de la ficha de Google para mostrar: si está conectada, los datos del lugar y la comparación de nombre, dirección y teléfono con los del negocio.
+ */
 export async function listingView(tenantId: string): Promise<ListingView> {
   const [l, t] = await Promise.all([db.orm.public.GoogleListing.where({ tenantId }).first(), db.orm.public.Tenant.where({ id: tenantId }).select("name", "address", "city", "whatsappNumber", "websiteUrl").first()]);
   if (!l || !t) return { connected: false, placeId: null, status: null, syncedAt: null, lastError: null, place: null, nap: [], napMatches: 0, mapsUrl: null };

@@ -21,6 +21,9 @@ const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)));
 /** 100 al llegar a la meta; proporcional por debajo. */
 const toward = (value: number, goal: number) => clamp((value / goal) * 100);
 
+/**
+ * Madurez digital del negocio: puntaje por ventas, inventario, caja, clientes y demás dimensiones frente a una meta de 30 días, el nivel resultante (inicial, en crecimiento, consolidado) y las señales con la acción sugerida. Es puro.
+ */
 export function computeMaturity(i: MaturityInput): Maturity {
   const dimensions: Dimension[] = [
     { key: "sales", label: "Ventas", score: toward(i.invoices30d, 20), detail: `${i.invoices30d} facturas en 30 días (meta 20)` },

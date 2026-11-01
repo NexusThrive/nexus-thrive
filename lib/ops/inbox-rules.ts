@@ -32,10 +32,12 @@ export function whatsappWindow(lastInboundMs: number | null, now: number): { ope
   return { open: left > 0, leftMs: Math.max(0, left) };
 }
 
+/** Enlace de WhatsApp (`wa.me`) con un texto ya escrito. */
 export function waLink(handle: string, text: string) {
   return `https://wa.me/${handle}?text=${encodeURIComponent(text)}`;
 }
 
+/** Enlace `mailto:` con asunto («Re: …» si responde) y cuerpo. */
 export function mailtoLink(email: string, subject: string | null, body: string) {
   return `mailto:${email}?subject=${encodeURIComponent(subject ? `Re: ${subject.replace(/^re:\s*/i, "")}` : "NEXUS THRIVE")}&body=${encodeURIComponent(body)}`;
 }

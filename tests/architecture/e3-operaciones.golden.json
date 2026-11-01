@@ -1,0 +1,167 @@
+[
+ {
+  "id": "business.get_summary",
+  "module": null,
+  "permission": null,
+  "risk": "read",
+  "rest": {
+   "method": "GET",
+   "path": "/business"
+  },
+  "title": "Resumen del negocio"
+ },
+ {
+  "id": "customers.search",
+  "module": "crm",
+  "permission": null,
+  "risk": "read",
+  "rest": {
+   "method": "GET",
+   "path": "/customers"
+  },
+  "title": "Buscar clientes"
+ },
+ {
+  "id": "products.search",
+  "module": "inventory",
+  "permission": null,
+  "risk": "read",
+  "rest": {
+   "method": "GET",
+   "path": "/products"
+  },
+  "title": "Buscar productos"
+ },
+ {
+  "id": "inventory.check_stock",
+  "module": "inventory",
+  "permission": null,
+  "risk": "read",
+  "rest": {
+   "method": "GET",
+   "path": "/products/{productId}/stock"
+  },
+  "title": "Consultar existencias"
+ },
+ {
+  "id": "products.find_by_barcode",
+  "module": "inventory",
+  "permission": null,
+  "risk": "read",
+  "rest": {
+   "method": "GET",
+   "path": "/products/barcode/{code}"
+  },
+  "title": "Buscar por código de barras"
+ },
+ {
+  "id": "inventory.kardex",
+  "module": "inventory",
+  "permission": "money.handle",
+  "risk": "read",
+  "rest": {
+   "method": "GET",
+   "path": "/products/{productId}/kardex"
+  },
+  "title": "Kardex de un producto"
+ },
+ {
+  "id": "inventory.list_warehouses",
+  "module": "inventory",
+  "permission": null,
+  "risk": "read",
+  "rest": {
+   "method": "GET",
+   "path": "/warehouses"
+  },
+  "title": "Bodegas"
+ },
+ {
+  "id": "inventory.reorder_suggestions",
+  "module": "inventory",
+  "permission": "business.manage",
+  "risk": "read",
+  "rest": {
+   "method": "GET",
+   "path": "/inventory/reorder"
+  },
+  "title": "Qué conviene reponer"
+ },
+ {
+  "id": "presence.get",
+  "module": null,
+  "permission": null,
+  "risk": "read",
+  "rest": {
+   "method": "GET",
+   "path": "/presence"
+  },
+  "title": "Presencia digital"
+ },
+ {
+  "id": "finance.get_summary",
+  "module": "finance",
+  "permission": "money.handle",
+  "risk": "read",
+  "rest": {
+   "method": "GET",
+   "path": "/finance/summary"
+  },
+  "title": "Resumen de ingresos y gastos"
+ },
+ {
+  "id": "sales.list_recent",
+  "module": "finance",
+  "permission": "money.handle",
+  "risk": "read",
+  "rest": {
+   "method": "GET",
+   "path": "/sales/recent"
+  },
+  "title": "Movimientos recientes"
+ },
+ {
+  "id": "events.list",
+  "module": null,
+  "permission": "business.manage",
+  "risk": "read",
+  "rest": {
+   "method": "GET",
+   "path": "/events"
+  },
+  "title": "Eventos del negocio"
+ },
+ {
+  "id": "parties.search",
+  "module": null,
+  "permission": "business.manage",
+  "risk": "read",
+  "rest": {
+   "method": "GET",
+   "path": "/parties"
+  },
+  "title": "Buscar terceros"
+ },
+ {
+  "id": "purchases.list_orders",
+  "module": "purchases",
+  "permission": "business.manage",
+  "risk": "read",
+  "rest": {
+   "method": "GET",
+   "path": "/purchases/orders"
+  },
+  "title": "Órdenes de compra"
+ },
+ {
+  "id": "purchases.get_order",
+  "module": "purchases",
+  "permission": "business.manage",
+  "risk": "read",
+  "rest": {
+   "method": "GET",
+   "path": "/purchases/orders/{orderId}"
+  },
+  "title": "Detalle de una orden de compra"
+ }
+]

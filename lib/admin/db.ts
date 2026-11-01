@@ -1,5 +1,5 @@
 import { and, or } from "@prisma/orm-postgres/orm-client";
-import { seedAccounting } from "@/lib/accounting/accounting-db";
+import { tenantProvisioningPort } from "@/lib/tenant/provisioning-port";
 import { db } from "@/prisma/db";
 import {
   formatCurrency,
@@ -393,13 +393,9 @@ const ROLE_LABELS: Record<"SUPERADMIN" | "OWNER" | "STAFF" | "ADMIN" | "RECEPTIO
   ADVISOR: "Asesor",
 };
 
+import { escapeLike } from "@/lib/sql-like";
 import { AUDIT_ACTION_LABELS } from "./audit-labels";
 export { AUDIT_ACTION_LABELS };
-
-/** Escapa los comodines de LIKE para que la búsqueda sea literal. */
-function escapeLike(input: string): string {
-  return input.replace(/[\\%_]/g, (char) => `\\${char}`);
-}
 
 /**
  * URL de acceso directo a un negocio.
@@ -504,6 +500,9 @@ async function countUsersByTenant(
   return map;
 }
 
+/**
+ * Repositorio de la plataforma (SuperAdmin): autorización global, alta y administración de negocios y sus módulos. A diferencia del repositorio de un negocio, no está acotado a un `tenantId`.
+ */
 export function createAdminDb() {
   return {
     /**
@@ -845,7 +844,7 @@ export function createAdminDb() {
         });
 
         // Un negocio nuevo trae su plan de cuentas y sus reglas contables de partida.
-        await seedAccounting(tenant.id, tx);
+        await tenantProvisioningPort.use().onCreated(tx, tenant.id);
 
         return tenant;
       }),

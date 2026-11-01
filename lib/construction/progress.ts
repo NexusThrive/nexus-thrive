@@ -52,6 +52,9 @@ function instantToIsoDay(value: unknown): string {
   return new Date(ms - 5 * 3600 * 1000).toISOString().slice(0, 10);
 }
 
+/**
+ * Repositorio del avance físico de obra de un negocio: avance por partida del presupuesto, registrar o borrar avances y consultar los acumulados hasta un día.
+ */
 export function createProgressDb(tenantId: string) {
   const budgetItems = async (projectId: string) => {
     const budget = await db.orm.public.ProjectBudget.where({ projectId, tenantId }).select("id").first();

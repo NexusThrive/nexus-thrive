@@ -143,6 +143,14 @@ export type VerticalTerms = {
   items: string;
   /** Plural del módulo Cotizaciones (sidebar); opcional con default. */
   quotes?: string;
+  /** Nombre del módulo de compras en el menú y su pantalla; sin valor, «Compras». */
+  purchases?: string;
+  /** Nombre del módulo de proyectos en el menú; sin valor, «Proyectos». */
+  projects?: string;
+  /** Texto de la acción «Crear» para un proyecto nuevo; sin valor, «Nuevo proyecto». */
+  newProject?: string;
+  /** Título de la sección de datos propios del cliente en su ficha; sin valor, el del perfil del rubro. */
+  profileTitle?: string;
 };
 
 /**
@@ -202,6 +210,8 @@ export const VERTICAL_QUOTE_TERMS: Partial<
 export type VerticalRecipe = {
   modules: readonly ModuleValue[];
   terms: VerticalTerms;
+  /** El rubro lleva control de acceso de socios (código QR y estado de la membresía en la ficha del cliente). */
+  memberAccess?: boolean;
 };
 
 export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
@@ -215,7 +225,9 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
       bookings: "Clases",
       item: "Membresía",
       items: "Membresías",
+      profileTitle: "Datos físicos y objetivo",
     },
+    memberAccess: true,
   },
   tourism_agency: {
     modules: ["dashboard", "crm", "bookings", "payments", "finance", "whatsapp", "inventory", "billing"],
@@ -249,6 +261,8 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
       item: "Servicio",
       items: "Servicios",
       quotes: "Presupuestos",
+      projects: "Obras",
+      newProject: "Nueva obra",
     },
   },
   carpentry: {
@@ -272,6 +286,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
       bookings: "Mesas",
       item: "Plato",
       items: "Platos",
+      purchases: "Compras de insumos",
     },
   },
   retail: {
@@ -517,14 +532,17 @@ export function validateSlug(raw: string): SlugValidation {
   return { ok: true, slug };
 }
 
+/** Comprueba que un texto sea un rubro conocido. */
 export function isVertical(value: string): value is VerticalValue {
   return (VERTICALS as readonly string[]).includes(value);
 }
 
+/** Comprueba que un texto sea un módulo conocido. */
 export function isModule(value: string): value is ModuleValue {
   return (MODULES as readonly string[]).includes(value);
 }
 
+/** Comprueba que un texto sea un medio de pago conocido. */
 export function isPaymentMethod(value: string): value is PaymentMethodValue {
   return (PAYMENT_METHODS as readonly string[]).includes(value);
 }

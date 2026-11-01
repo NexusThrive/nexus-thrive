@@ -232,6 +232,9 @@ export type ReportIssuer = {
   city: string | null;
 };
 
+/**
+ * Arma el Informe Cero (línea base del proyecto): datos del proyecto, capítulos y partidas del presupuesto y, si se conoce, el emisor. Es una función pura.
+ */
 export function buildInformeCeroData(
   project: ProjectData,
   budget: ProjectBudgetData | null,
@@ -435,6 +438,9 @@ export function earnedValueMicro(
   return total;
 }
 
+/**
+ * Calcula los indicadores de valor ganado (EVM). Los que no se pueden medir con los datos disponibles (por ejemplo, costo real) se marcan como no medibles con su motivo, en lugar de inventar un valor.
+ */
 export function buildEvm(
   budget: ProjectBudgetData | null,
   physicalProgressPct: number | null,
@@ -705,6 +711,7 @@ export type DataAvailability = {
   hasFieldLog: boolean;
 };
 
+/** Indica qué datos existen para generar informes: proyecto, ficha, presupuesto, plan y bitácora. */
 export function checkDataAvailability(
   project: ProjectData | null,
   budget: ProjectBudgetData | null,

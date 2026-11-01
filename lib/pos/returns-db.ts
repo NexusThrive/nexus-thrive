@@ -41,6 +41,9 @@ export async function saleForReturn(tenantId: string, number: number): Promise<S
 export type ReturnInput = { documentId: string; lines: { productId: string; quantity: number }[]; reason: string; refundMethod: string };
 export type ReturnResult = { ok: true; noteNumber: number; refund: number } | { ok: false; message: string };
 
+/**
+ * Devuelve productos de una venta: emite una nota crédito, reintegra el inventario y, si se reembolsa en efectivo, registra la salida en el turno abierto. Exige un motivo y no devuelve más de lo vendido.
+ */
 export async function returnSale(tenantId: string, input: ReturnInput, userId: string): Promise<ReturnResult> {
   const wanted = input.lines.filter((l) => l.quantity > 0);
   if (!wanted.length) return { ok: false, message: "Elige qué se devuelve." };

@@ -9,10 +9,14 @@ const round2 = (n: number) => Math.round(n * 100) / 100;
 
 export type CartTotals = { subtotal: number; discountTotal: number; taxTotal: number; total: number };
 
+/**
+ * Totales del carrito (subtotal, descuentos, impuesto y total) con las mismas reglas de los documentos comerciales.
+ */
 export function cartTotals(lines: readonly DocumentLineInput[]): CartTotals {
   return documentTotals(lines);
 }
 
+/** Total de una línea del carrito con su descuento e impuesto. */
 export function lineTotal(line: DocumentLineInput): number {
   return lineAmounts(line).total;
 }

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { canManage } from "@/lib/business/roles";
+import { canManage } from "@/lib/auth/roles";
 import { createParty, type DuplicateMatch, type PartyInput } from "@/lib/parties/parties-db";
 import { cancelOrder, closeOrder, createOrder, getOrder, markOrdered, receiveOrder, type OrderDetail, type OrderInput, type ReceiveInput } from "@/lib/purchasing/purchases-db";
 import { logTenantAction } from "@/lib/tenant/audit";

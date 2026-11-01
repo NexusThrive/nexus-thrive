@@ -33,6 +33,9 @@ const CLEAR = "xPercent,yPercent,x,y,width,height,borderRadius,backgroundColor,o
 let lastActivator: WeakRef<HTMLElement> | null = null;
 let tracking = false;
 
+/**
+ * Empieza a recordar el último botón o enlace pulsado, para que el modal pueda crecer desde él. Es seguro llamarla varias veces y no hace nada en el servidor.
+ */
 export function trackActivators(): void {
   if (tracking || typeof document === "undefined") return;
   tracking = true;

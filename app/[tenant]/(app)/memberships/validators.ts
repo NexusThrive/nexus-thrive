@@ -1,5 +1,5 @@
 import { PAYMENT_METHODS, type PaymentMethodValue } from "@/lib/finance";
-import { MEMBERSHIP_TYPES, type MembershipTypeValue } from "@/lib/business/memberships";
+import { MEMBERSHIP_TYPES, type MembershipTypeValue } from "@/lib/industry/gym/memberships";
 import { parsePlainDate } from "@/lib/plain-date";
 
 export type MembershipFormValues = {

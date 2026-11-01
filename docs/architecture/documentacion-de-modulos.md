@@ -1,7 +1,20 @@
 # Documentación de módulos: qué conviene trasladar a `docs/architecture/`
 
-Estado: **solo identificación**. No se movió ni se borró ningún comentario de `lib/`. Los comentarios locales que explican
-una operación interna se conservan donde están.
+Estado: **identificación y, después, descripciones añadidas**. No se movió, extrajo ni reescribió ningún comentario de `lib/`. Los
+comentarios locales que explican una operación interna se conservan donde están.
+
+## Descripciones añadidas (2026-10-31)
+
+Con autorización expresa y limitada a **añadir** texto, se completaron las descripciones que faltaban:
+
+- **17 archivos** sin descripción de módulo recibieron su cabecera (outbox de eventos, teclado de cobro, hooks, inscripción al gimnasio,
+  operaciones de inventario y compras, movimiento, navegación, definiciones de operaciones, menú de operaciones y `tenant/db.ts`).
+  Quedan 0 archivos de `lib/` sin cabecera.
+- **401 funciones exportadas** recibieron su JSDoc (de 401 sin descripción a 0, medido con la misma heurística). Cada una dice qué hace,
+  qué valida o qué devuelve según el código real; las reglas largas siguen en la cabecera del archivo.
+- **Verificación**: cada archivo tocado se transpiló sin comentarios y se comparó contra el commit anterior: el código es idéntico en todos.
+  Además `tsc` sin errores y `pnpm lint` sin errores.
+- **Sin tocar**: los 198 comentarios dentro de funciones (60 archivos) se conservan en su sitio; no se cambió lógica, firmas, tipos, comportamiento ni carpetas.
 
 ## Qué se midió
 

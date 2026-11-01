@@ -19,8 +19,10 @@ export type ApiEnvironment = "live" | "test";
 
 export const KEY_PATTERN = /^nx_(live|test)_[0-9a-f]{32}$/;
 
+/** Huella SHA-256 de una llave de API; es lo único que se guarda. */
 export const hashKey = (key: string) => createHash("sha256").update(key).digest("hex");
 
+/** Genera una llave de API nueva (`nx_<entorno>_<32 hex>`) con su prefijo visible y su huella. */
 export function generateKey(environment: ApiEnvironment) {
   const secret = `nx_${environment}_${randomBytes(16).toString("hex")}`;
   return { secret, prefix: secret.slice(0, 12), hash: hashKey(secret) };
@@ -54,6 +56,9 @@ const toRow = (k: Record<string, unknown>): ApiKeyRow => ({
   createdAt: iso(k.createdAt) as string,
 });
 
+/**
+ * Crea una llave de API del negocio con sus alcances, vencimiento y direcciones IP permitidas. Devuelve el secreto una sola vez; en la base solo queda la huella.
+ */
 export async function createApiKey(
   tenantId: string,
   input: { name: string; environment: ApiEnvironment; scopes: string[]; expiresAt?: Date | null; ipAllowlist?: string[]; createdById: string | null; createdByRole: string },
@@ -74,6 +79,7 @@ export async function createApiKey(
   return { row: toRow(created as unknown as Record<string, unknown>), secret };
 }
 
+/** Llaves de API del negocio, de la más reciente a la más antigua, sin la llave ni su huella. */
 export async function listApiKeys(tenantId: string): Promise<ApiKeyRow[]> {
   const rows = await db.orm.public.ApiKey.where({ tenantId }).orderBy((k) => k.createdAt.desc()).all();
   return rows.map((r) => toRow(r as unknown as Record<string, unknown>));

@@ -15,6 +15,9 @@ import { cartTotals, settlePayments, tipFor, type PaymentInput } from "./cart";
  */
 export type Terminal = { id: string; name: string; boxId: string; warehouseId: string | null; openTurn: { sessionId: string; cashierId: string; openedAt: string; openingAmount: number } | null };
 
+/**
+ * Crea una terminal de punto de venta con su propia caja (fondo en cero) y una bodega opcional. Valida el nombre y que la bodega sea del negocio.
+ */
 export async function createTerminal(tenantId: string, name: string, warehouseId: string | null): Promise<{ ok: true; id: string } | { ok: false; message: string }> {
   const clean = name.trim().slice(0, 60);
   if (clean.length < 2) return { ok: false, message: "Ponle un nombre a la terminal." };
@@ -24,6 +27,7 @@ export async function createTerminal(tenantId: string, name: string, warehouseId
   return { ok: true, id: t.id };
 }
 
+/** Terminales activas con el turno abierto de cada una, si lo tienen. */
 export async function listTerminals(tenantId: string): Promise<Terminal[]> {
   const terminals = await db.orm.public.PosTerminal.where({ tenantId, active: true }).orderBy((t) => t.createdAt.asc()).all();
   const open = await db.orm.public.CashSession.where({ tenantId }).where((s) => s.closedAt.isNull()).where((s) => s.terminalId.isNotNull()).all();
@@ -41,6 +45,9 @@ export async function myTurn(tenantId: string, userId: string): Promise<{ sessio
   return { sessionId: s.id, terminalId: s.terminalId, terminalName: t?.name ?? "Terminal", openedAt: String(s.openedAt), openingAmount: toNumber(s.openingAmount) };
 }
 
+/**
+ * Abre un turno de caja en una terminal. Falla si la terminal no existe, el valor de apertura es negativo o la persona ya tiene un turno abierto.
+ */
 export async function openTurn(tenantId: string, terminalId: string, openingAmount: number, userId: string): Promise<{ ok: true; sessionId: string } | { ok: false; message: string }> {
   const t = await db.orm.public.PosTerminal.where({ tenantId, id: terminalId, active: true }).first();
   if (!t) return { ok: false, message: "La terminal no existe." };
@@ -69,6 +76,9 @@ export type SaleResult = { ok: true; documentId: string; number: number; total: 
 /** Descuento máximo que un cajero puede dar por su cuenta en una línea. */
 export const MAX_CASHIER_DISCOUNT = 30;
 
+/**
+ * Cobra un carrito en el turno abierto de quien vende: valida descuentos (los altos requieren autorización), crea el documento de venta, registra cada pago en caja y descuenta el inventario, todo en una sola transacción del servicio de dinero.
+ */
 export async function sellCart(tenantId: string, input: SaleInput, userId: string, opts: { canDiscountOver?: boolean } = {}): Promise<SaleResult> {
   if (!input.lines.length) return { ok: false, message: "Agrega al menos un producto." };
   try {

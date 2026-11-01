@@ -10,6 +10,7 @@ export const BUCKET_LABELS: Record<Bucket, string> = { current: "Al día", d1_30
 const round2 = (n: number) => Math.round(n * 100) / 100;
 const MS_DAY = 86_400_000;
 
+/** Saldo pendiente: total menos lo pagado, nunca negativo y redondeado a centavos. */
 export const balanceOf = (total: number, paid: number): number => Math.max(0, round2(total - paid));
 
 /** Días de mora (0 si no ha vencido o no tiene vencimiento). Fechas AAAA-MM-DD. */
@@ -19,6 +20,7 @@ export function daysOverdue(dueDate: string | null, today: string): number {
   return Math.max(0, d);
 }
 
+/** Rango de antigüedad de una deuda según su mora: al día, 1–30, 31–60 días o más. */
 export function bucketOf(dueDate: string | null, today: string): Bucket {
   const d = daysOverdue(dueDate, today);
   if (d === 0) return "current";

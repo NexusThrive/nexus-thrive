@@ -54,6 +54,7 @@ function asWebsiteSignal(value: unknown): WebsiteSignal | null {
   };
 }
 
+/** Cuántos productos activos tiene el negocio en su catálogo. */
 export async function countCatalogItems(tenantId: string): Promise<number> {
   const row = await db.orm.public.Product.where({ tenantId, active: true }).aggregate((aggregate) => ({
     total: aggregate.count(),

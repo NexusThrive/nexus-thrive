@@ -27,6 +27,7 @@ export function documentCode(kind: DocumentKind, n: number): string {
   return `${PREFIX[kind]}-${String(n).padStart(6, "0")}`;
 }
 
+/** Comprueba que un texto sea un tipo de documento comercial conocido. */
 export function isDocumentKind(value: string): value is DocumentKind {
   return (DOCUMENT_KINDS as readonly string[]).includes(value);
 }
@@ -46,6 +47,7 @@ const NEXT: Record<DocumentKind, readonly DocumentKind[]> = {
   DEBIT_NOTE: [],
 };
 
+/** ¿Puede un documento de un tipo convertirse en otro (por ejemplo, de cotización a pedido; las notas crédito y débito no se convierten)? */
 export function canConvert(from: DocumentKind, to: DocumentKind): boolean {
   return NEXT[from].includes(to);
 }

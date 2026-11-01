@@ -1,3 +1,6 @@
+/**
+ * Operación de búsqueda de clientes del negocio; devuelve solo los datos mínimos para reconocer a la persona.
+ */
 import { z } from "zod";
 import { defineOperation, type OperationDefinition } from "../types";
 

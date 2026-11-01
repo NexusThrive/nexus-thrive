@@ -5,7 +5,7 @@ import { buildNotifications, type AppNotification } from "@/lib/dashboard/notifi
 import { createTenantDb } from "@/lib/tenant/db";
 import { activeModuleNames } from "@/lib/tenant/settings-db";
 
-import { createMembershipsDb } from "@/lib/business/memberships-repo";
+import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
 /**
  * Notificaciones de la campana de una persona en su negocio: cobros y gastos
  * de hoy, citas de hoy y membresías por vencer o vencidas, solo de los

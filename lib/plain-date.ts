@@ -4,7 +4,7 @@
  * Utilidad de Foundation, sin dependencias de dominio ni de `Temporal`: la usan
  * el gimnasio (membresías), construcción (planificador Lean) y quien necesite
  * «el día de hoy en Bogotá». Antes existían dos copias (en
- * `lib/business/memberships.ts` y en `lib/construction/lean-engine.ts`).
+ * `lib/industry/gym/memberships.ts` y en `lib/construction/lean-engine.ts`).
  */
 
 /** Zona horaria operativa. */
@@ -58,6 +58,13 @@ export function bogotaToday(instant?: unknown): PlainDate {
 export function bogotaDay(instant?: unknown): string {
   return formatPlainDate(bogotaToday(instant));
 }
+
+/**
+ * Día de hoy en Bogotá (o el del instante `now`, en milisegundos), como "YYYY-MM-DD". Es la fecha de negocio
+ * de Colombia que usan la numeración fiscal, los asientos contables y los informes. Equivale a `bogotaDay`
+ * con un número en lugar de un instante; antes vivía en `lib/tax/tax.ts` y obligaba a Business a importar de Finance.
+ */
+export const todayCO = (now: number = Date.now()): string => bogotaDay(new Date(now));
 
 /** "YYYY-MM-DD" */
 export function formatPlainDate(date: PlainDate): string {

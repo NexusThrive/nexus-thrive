@@ -19,6 +19,7 @@ const BY_VERTICAL: Record<string, ProductKindValue[]> = {
   events: ["TICKET", "SERVICE", "PRODUCT"],
 };
 
+/** Tipos de ítem que ofrece el catálogo según el rubro (por defecto producto y servicio). */
 export function kindsForVertical(vertical: string): ProductKindValue[] {
   return BY_VERTICAL[vertical] ?? ["PRODUCT", "SERVICE"];
 }
@@ -41,6 +42,9 @@ export type ProductDraft = {
   active: boolean;
 };
 
+/**
+ * Valida un ítem del catálogo: nombre, precio y costo, enteros no negativos para existencias, duración en días si es un plan, duración si es servicio o tour, y cupo. Devuelve los errores por campo.
+ */
 export function validateProduct(d: ProductDraft): { ok: true } | { ok: false; errors: Partial<Record<keyof ProductDraft, string>> } {
   const errors: Partial<Record<keyof ProductDraft, string>> = {};
   if (d.name.trim().length < 2) errors.name = "Escribe el nombre.";

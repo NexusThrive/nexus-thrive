@@ -1,3 +1,4 @@
+import { customerLimit } from "@/lib/tenant/customer-limit";
 import { syncCustomerParty } from "@/lib/parties/parties-db";
 import { db } from "@/prisma/db";
 import { withinLimit } from "@/lib/benefits/benefits";
@@ -58,18 +59,6 @@ type CustomerFields = {
   tags: string[];
   profile: Record<string, string | number>;
 };
-
-/**
- * Límite de clientes acordado para el negocio (código a medida) y cuántos
- * activos tiene. `limit` null = sin límite propio.
- */
-export async function customerLimit(tenantId: string): Promise<{ limit: number | null; used: number }> {
-  const [t, used] = await Promise.all([
-    db.orm.public.Tenant.where({ id: tenantId }).select("maxCustomers").first(),
-    db.orm.public.Customer.where({ tenantId, active: true }).aggregate((a) => ({ n: a.count() })),
-  ]);
-  return { limit: t?.maxCustomers ?? null, used: Number(used.n) };
-}
 
 /**
  * Crea un cliente (activo) o actualiza uno del negocio. Al crear respeta el

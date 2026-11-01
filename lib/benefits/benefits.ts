@@ -17,6 +17,7 @@ export type BenefitStatus = "active" | "inactive" | "expired" | "exhausted";
  */
 export type BenefitKind = "PROMO" | "PAID";
 
+/** Tipo de beneficio: «PAID» si lo es exactamente; cualquier otro valor se trata como promoción. */
 export function normalizeBenefitKind(raw: unknown): BenefitKind {
   return raw === "PAID" ? "PAID" : "PROMO";
 }

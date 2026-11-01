@@ -37,6 +37,7 @@ export function typeMonths(type: MembershipTypeValue): number {
   return MEMBERSHIP_TYPES.find((option) => option.value === type)?.months ?? 1;
 }
 
+/** Nombre para mostrar de un tipo de membresía. */
 export function typeLabel(type: MembershipTypeValue): string {
   return MEMBERSHIP_TYPES.find((option) => option.value === type)?.label ?? type;
 }

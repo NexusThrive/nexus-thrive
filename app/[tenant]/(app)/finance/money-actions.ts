@@ -20,9 +20,9 @@ import {
   voidPayment,
 } from "@/lib/business/finance-db";
 import { voidExpense } from "@/lib/business/money-service";
-import { isTeamMember } from "@/lib/business/team-db";
+import { isTeamMember } from "@/lib/tenant/team-db";
 import { parseMoney } from "@/lib/business/money";
-import { canHandleCash, canManage } from "@/lib/business/roles";
+import { canHandleCash, canManage } from "@/lib/auth/roles";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { getAppBaseUrl } from "@/lib/app-url";
 import { logTenantAction } from "@/lib/tenant/audit";

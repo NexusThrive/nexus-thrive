@@ -64,6 +64,9 @@ function toRow(t: NonNullable<Raw>, l: Awaited<ReturnType<typeof lookups>>): Tic
   };
 }
 
+/**
+ * Tickets de soporte, del más reciente al más antiguo, con el negocio y la persona asignada. Se puede acotar a un negocio.
+ */
 export async function listTickets(filter: { tenantId?: string } = {}): Promise<TicketRow[]> {
   let q = db.orm.public.SupportTicket.orderBy((t) => t.createdAt.desc());
   if (filter.tenantId) q = q.where({ tenantId: filter.tenantId });
@@ -71,6 +74,7 @@ export async function listTickets(filter: { tenantId?: string } = {}): Promise<T
   return rows.map((r) => toRow(r, l));
 }
 
+/** Un ticket con el mismo detalle de `listTickets`, o `null`. */
 export async function getTicket(id: string): Promise<TicketRow | null> {
   const [row, l] = await Promise.all([db.orm.public.SupportTicket.where({ id }).first(), lookups()]);
   return row ? toRow(row, l) : null;
@@ -78,6 +82,7 @@ export async function getTicket(id: string): Promise<TicketRow | null> {
 
 export type TicketMessageRow = { id: string; internal: boolean; body: string; authorName: string; createdAt: number };
 
+/** Mensajes de un ticket en orden cronológico, públicos e internos. */
 export async function listTicketMessages(ticketId: string): Promise<TicketMessageRow[]> {
   const rows = await db.orm.public.TicketMessage.where({ ticketId }).orderBy((m) => m.createdAt.asc()).all();
   return rows.map((m) => ({ id: m.id, internal: m.internal, body: m.body, authorName: m.authorName, createdAt: ms(m.createdAt)! }));
@@ -99,6 +104,7 @@ export async function createTicket(v: Extract<ReturnType<typeof validateTicket>,
   throw new Error("No se pudo numerar el ticket.");
 }
 
+/** Agrega un mensaje al ticket, público o nota interna, con quién lo escribió. */
 export async function addTicketMessage(ticketId: string, body: string, internal: boolean, author: { staffId: string; name: string | null; email: string }) {
   await db.orm.public.TicketMessage.create({ ticketId, body, internal, authorStaffId: author.staffId, authorName: author.name ?? author.email });
 }
@@ -109,6 +115,9 @@ export async function markFirstResponse(ticketId: string) {
   if (t && !t.firstResponseAt) await db.orm.public.SupportTicket.where({ id: ticketId }).update({ firstResponseAt: now(), ...(t.status === "NEW" ? { status: "OPEN" as const } : {}) });
 }
 
+/**
+ * Cambia el estado del ticket; guarda la solución si llega y marca la fecha de resolución o de cierre según el nuevo estado.
+ */
 export async function setTicketStatus(ticketId: string, status: TicketStatusValue, solution: string | null) {
   const stamp = now();
   await db.orm.public.SupportTicket.where({ id: ticketId }).update({
@@ -120,6 +129,7 @@ export async function setTicketStatus(ticketId: string, status: TicketStatusValu
   });
 }
 
+/** Cambia la persona asignada, la prioridad o la categoría de un ticket. */
 export async function updateTicketFields(ticketId: string, fields: { assigneeId?: string | null; priority?: TicketPriorityValue; category?: string; tenantId?: string | null }) {
   await db.orm.public.SupportTicket.where({ id: ticketId }).update(fields);
 }

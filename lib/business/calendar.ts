@@ -19,6 +19,7 @@ export function bogotaToMs(day: DayKey, time: string): number {
   return Date.parse(`${day}T${time.length === 5 ? time : "00:00"}:00-05:00`);
 }
 
+/** Suma `n` días a un día "YYYY-MM-DD" (calculado al mediodía UTC para no saltar por cambios de hora). */
 export function addDaysKey(day: DayKey, n: number): DayKey {
   return new Date(Date.parse(`${day}T12:00:00Z`) + n * DAY).toISOString().slice(0, 10);
 }
@@ -81,6 +82,9 @@ export function slotPosition(start: number, end: number, firstHour: number) {
   return { top, height: Math.max(20, endMin - top) };
 }
 
+/**
+ * Mensaje de recordatorio de cita para enviar al cliente: saludo con su primer nombre, servicio, fecha y hora en Bogotá, y el negocio.
+ */
 export function reminderText(b: { customer: string; service: string; start: number; business: string }) {
   const p = bogotaParts(b.start);
   const date = new Intl.DateTimeFormat("es-CO", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(new Date(`${p.day}T12:00:00Z`));

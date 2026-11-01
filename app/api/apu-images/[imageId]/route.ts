@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { readApuImageFor } from "@/lib/files/stored-files";
+import { staffCanViewAccounts } from "@/lib/ops/access";
 
 /**
  * Sirve la foto de un insumo guardada en la base (`ApuImage`). Solo para
@@ -17,7 +18,7 @@ export async function GET(
     return new Response("No autenticado.", { status: 401 });
   }
   // Inexistente o de un negocio ajeno: el mismo 404 (no se revela que existe).
-  const image = await readApuImageFor(userId, imageId);
+  const image = await readApuImageFor(userId, imageId, staffCanViewAccounts);
   if (!image) {
     return new Response("Imagen no encontrada.", { status: 404 });
   }

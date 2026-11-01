@@ -129,10 +129,12 @@ export function journalCsv(rows: readonly LedgerRow[]): string {
   return toCsv(["Fecha", "Comprobante", "Cuenta", "Nombre de la cuenta", "Documento tercero", "Tercero", "Centro de costo", "Descripción", "Débito", "Crédito"], [...rows].sort((a, b) => a.entryNumber - b.entryNumber).map((r) => [r.date, String(r.entryNumber), r.account, r.accountName, r.partyDoc ?? "", r.partyName ?? "", r.costCenter ?? "", r.description, money(r.debit), money(r.credit)]));
 }
 
+/** Balance de prueba como texto CSV (cuenta, nombre, débitos, créditos y saldos). */
 export function trialBalanceCsv(tb: TrialBalance): string {
   return toCsv(["Cuenta", "Nombre", "Débitos", "Créditos", "Saldo débito", "Saldo crédito"], [...tb.rows.map((r) => [r.account, r.name, money(r.debit), money(r.credit), money(r.balanceDebit), money(r.balanceCredit)]), ["", "TOTALES", money(tb.totalDebit), money(tb.totalCredit), money(tb.totalBalanceDebit), money(tb.totalBalanceCredit)]]);
 }
 
+/** Estado financiero (por secciones, con su total y las líneas de cierre) como texto CSV. */
 export function statementCsv(title: string, sections: { name: string; items: Section; total: number }[], footer: [string, number][]): string {
   const rows: string[][] = [];
   for (const s of sections) {

@@ -1,5 +1,8 @@
 "use client";
 
+/**
+ * Hook de cliente `useReducedMotion`: refleja la preferencia del sistema `prefers-reduced-motion` y reacciona si cambia.
+ */
 import { useSyncExternalStore } from "react";
 
 const REDUCE_QUERY = "(prefers-reduced-motion: reduce)";

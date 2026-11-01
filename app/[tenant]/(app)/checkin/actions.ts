@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { canHandleCash } from "@/lib/business/roles";
-import { checkIn, findMemberByScan, getMember, recordUnknownScan, searchMembers, type CheckInResult, type MemberCard, type Method } from "@/lib/business/gym-db";
+import { canHandleCash } from "@/lib/auth/roles";
+import { checkIn, findMemberByScan, getMember, recordUnknownScan, searchMembers, type CheckInResult, type MemberCard, type Method } from "@/lib/industry/gym/gym-db";
 import { allowAttempt, recordAttempt } from "@/lib/rate-limit";
 import { requireTenantContext } from "@/lib/tenant/context";
 

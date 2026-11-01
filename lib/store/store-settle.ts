@@ -17,6 +17,9 @@ export async function storeOrderLines(tx: MoneyTx, tenantId: string, intentId: s
   return { orderId: order.id, lines: lines.map((l) => ({ description: l.name, quantity: l.quantity, unitPrice: toNumber(l.unitPrice), productId: l.productId, taxRatePct: toNumber(l.taxRatePct) })) };
 }
 
+/**
+ * Marca un pedido de la tienda como pagado dentro de la transacción del cobro: descuenta el inventario de lo que lleva control (si falta, deja una revisión), lo vincula al documento y emite el evento `order.paid`. No hace nada si ya está pagado o cancelado.
+ */
 export async function settleStoreOrder(tx: MoneyTx, tenantId: string, orderId: string, documentId: string | null, userId: string | null): Promise<void> {
   const order = await tx.orm.public.StoreOrder.where({ tenantId, id: orderId }).first();
   if (!order || order.status === "PAID" || order.status === "CANCELED") return;

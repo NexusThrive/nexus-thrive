@@ -126,6 +126,9 @@ export function isValidWeatherCondition(
 /** Foto guardada en el sistema (ver app/api/apu-images). */
 const INTERNAL_PHOTO = /^\/api\/apu-images\/[0-9a-f-]{36}$/i;
 
+/**
+ * ¿Es una URL válida para la foto de una entrada de bitácora? Acepta las imágenes internas (`/api/apu-images/<id>`) o una dirección HTTPS.
+ */
 export function isValidPhotoUrl(raw: string): boolean {
   if (INTERNAL_PHOTO.test(raw)) return true;
   try {

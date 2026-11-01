@@ -10,8 +10,8 @@ import { inputClasses } from "@/components/atoms/input";
 import { QrCode } from "@/components/atoms/qr-code";
 import { useToast } from "@/components/molecules/toast";
 import { useConfirm } from "@/components/organisms/confirm-dialog";
-import { countdown, STATE_LABELS } from "@/lib/business/gym";
-import type { MemberStatus } from "@/lib/business/gym-db";
+import { countdown, STATE_LABELS } from "@/lib/industry/gym/gym";
+import type { MemberStatus } from "@/lib/industry/gym/gym-db";
 import { cn } from "@/lib/utils";
 import { accessCodeAction, linkNfcAction, type AccessActionResult } from "../access-actions";
 

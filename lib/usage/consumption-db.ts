@@ -1,5 +1,5 @@
-import { customerLimit } from "@/lib/business/customers-db";
-import { seatLimit } from "@/lib/business/team-db";
+import { customerLimit } from "@/lib/tenant/customer-limit";
+import { seatLimit } from "@/lib/tenant/team-db";
 import { buildConsumption, type ConsumptionRow } from "./consumption";
 import { usageSnapshot } from "./meters";
 

@@ -1,5 +1,9 @@
 "use client";
 
+/**
+ * Hook de cliente `useMinute`: la hora actual redondeada al minuto, que se actualiza sola al cambiar el minuto.
+ * Sirve para pintar «ahora» en la agenda sin llamar a `Date.now()` durante el render.
+ */
 import { useSyncExternalStore } from "react";
 
 const MINUTE = 60_000;

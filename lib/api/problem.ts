@@ -35,6 +35,9 @@ const TITLES: Record<ProblemCode, string> = {
   internal: "Error interno",
 };
 
+/**
+ * Respuesta de error en formato «problem details»: estado, código, título, detalle, id de petición y, si aplica, los errores por campo.
+ */
 export function problem(
   status: number,
   code: ProblemCode,

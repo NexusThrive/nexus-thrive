@@ -9,7 +9,7 @@ import MoneyList from "./_components/money-list";
 import type { MoneyItem } from "./_components/money-detail-sheet";
 import CashPanel from "./_components/cash-panel";
 import { cashHistory, listCashBoxes, sessionMovements } from "@/lib/business/finance-db";
-import { canManage } from "@/lib/business/roles";
+import { canManage } from "@/lib/auth/roles";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { EXPENSE_CATEGORIES, PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/finance";
 import { PageHeader } from "@/components/molecules/page-header";

@@ -19,6 +19,9 @@ export type AppNotification = {
 
 const cop = (n: number) => `$ ${Math.round(n).toLocaleString("es-CO")}`;
 
+/**
+ * Arma la lista de notificaciones a partir de cobros y gastos recientes, citas próximas y membresías por vencer o vencidas. Solo incluye lo de los módulos activos y devuelve cada una con su fecha y su ruta.
+ */
 export function buildNotifications(input: {
   movements: { id: string; type: "in" | "out"; title: string; subtitle: string; amount: number; at: string }[];
   bookings: { id: string; at: string; service: string; customer: string }[];

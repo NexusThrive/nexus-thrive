@@ -66,6 +66,9 @@ function intOrError(raw: string, label: string, errs: string[]): number | null {
   return n;
 }
 
+/**
+ * Interpreta una tabla de productos reconociendo encabezados alternativos. Exige las columnas «Nombre» y «Precio» y reporta los errores por fila.
+ */
 export function parseProducts(table: Table): ParsedRows<ProductRow> {
   const col = mapColumns(table.headers, PRODUCT_ALIASES);
   const missingColumns = [col.name < 0 ? "Nombre" : "", col.price < 0 ? "Precio" : ""].filter(Boolean);
@@ -171,6 +174,9 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 /** Solo letras y números en mayúscula: «1.020.304-050» → «1020304050». */
 export const documentKey = (raw: string | null | undefined): string | null => (raw ?? "").replace(/[^A-Za-z0-9]/g, "").toUpperCase() || null;
 
+/**
+ * Interpreta una tabla de clientes reconociendo encabezados alternativos. Exige la columna «Nombre» y reporta los errores por fila.
+ */
 export function parseCustomers(table: Table): ParsedRows<CustomerRow> {
   const col = mapColumns(table.headers, CUSTOMER_ALIASES);
   const missingColumns = col.name < 0 ? ["Nombre"] : [];

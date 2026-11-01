@@ -6,8 +6,8 @@
  * los valores; este módulo solo agrega la capa de presentación/validación.
  */
 
-import type { BusinessRole } from "@/lib/business/roles";
-import { can } from "@/lib/business/permissions";
+import type { BusinessRole } from "@/lib/auth/roles";
+import { can } from "@/lib/auth/permissions";
 
 export type ProjectStatusValue =
   | "DRAFT"
@@ -29,12 +29,14 @@ export const PROJECT_STATUSES: ReadonlyArray<{
   { value: "CANCELLED", label: "Cancelado" },
 ];
 
+/** Nombre para mostrar de un estado de proyecto. */
 export function projectStatusLabel(status: ProjectStatusValue): string {
   return (
     PROJECT_STATUSES.find((entry) => entry.value === status)?.label ?? status
   );
 }
 
+/** Comprueba que un texto sea un estado de proyecto válido. */
 export function isValidProjectStatus(
   value: string,
 ): value is ProjectStatusValue {
@@ -67,10 +69,12 @@ export const TERMINAL_PROJECT_STATUSES: ReadonlyArray<ProjectStatusValue> = [
   "CANCELLED",
 ];
 
+/** ¿El estado es terminal (el proyecto ya no cambia de estado)? */
 export function isTerminalProjectStatus(status: ProjectStatusValue): boolean {
   return TERMINAL_PROJECT_STATUSES.includes(status);
 }
 
+/** ¿Se permite pasar de un estado de proyecto a otro? */
 export function canTransitionProjectStatus(
   from: ProjectStatusValue,
   to: ProjectStatusValue,
@@ -152,6 +156,9 @@ export const PROJECT_TABS: ReadonlyArray<{
   { value: "informes", label: "Informes y exportación" },
 ];
 
+/**
+ * Pestaña del proyecto a partir del texto de la URL. Acepta los nombres anteriores («planificacion», «campo») y, si no lo reconoce, abre la ficha.
+ */
 export function parseProjectTab(value: string): ProjectTab {
   if (value === "planificacion" || value === "planificador") {
     return "planificador";

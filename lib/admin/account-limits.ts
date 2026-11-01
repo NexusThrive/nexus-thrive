@@ -4,6 +4,7 @@
  */
 export const MAX_LIMIT = 500;
 
+/** Correo recortado y en minúsculas, para comparar cuentas. */
 export const normalizeEmail = (email: string) => email.trim().toLowerCase();
 
 /** `null` = sin límite. Devuelve el texto del problema, o null si puede crear uno más. */

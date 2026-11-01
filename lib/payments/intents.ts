@@ -22,6 +22,9 @@ export function effectiveStatus(status: string, expiresAt: string | number, now:
   return s;
 }
 
+/**
+ * Valida un cobro en línea: valor entre $ 1.000 y $ 50.000.000, descripción de al menos 3 caracteres y vigencia de 1 hora a 30 días. Devuelve el mensaje de error o `null`.
+ */
 export function validateIntent(input: { amount: number; description: string; expiresInHours: number }): string | null {
   if (!(input.amount >= 1000)) return "El valor mínimo de un cobro es $ 1.000.";
   if (input.amount > 50_000_000) return "El valor máximo por enlace es $ 50.000.000.";

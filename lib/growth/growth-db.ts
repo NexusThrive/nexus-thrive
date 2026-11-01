@@ -7,6 +7,9 @@ import { DIRECT, combineRatings, isLowRating, newShortCode, originReport, saniti
 export type LinkRow = { id: string; code: string; name: string; path: string; utmSource: string; utmMedium: string; utmCampaign: string; spend: number; clicks: number; active: boolean };
 const toLink = (l: Record<string, unknown>): LinkRow => ({ id: String(l.id), code: String(l.code), name: String(l.name), path: String(l.path ?? ""), utmSource: String(l.utmSource), utmMedium: String(l.utmMedium), utmCampaign: String(l.utmCampaign), spend: toNumber(l.spend as never), clicks: Number(l.clicks), active: Boolean(l.active) });
 
+/**
+ * Crea un enlace de campaña con su código corto y sus parámetros UTM. Valida los datos y, si apunta a un producto, que exista en el negocio; reintenta si el código ya existe.
+ */
 export async function createLink(tenantId: string, input: { name: string; utmSource: string; utmMedium: string; utmCampaign: string; spend: number; path?: string }): Promise<{ ok: true; code: string } | { ok: false; message: string }> {
   const path = input.path ?? "";
   const problem = validateLink({ ...input, path });
@@ -27,10 +30,12 @@ export async function createLink(tenantId: string, input: { name: string; utmSou
   return { ok: false, message: "No se pudo generar un código libre. Inténtalo de nuevo." };
 }
 
+/** Enlaces de campaña del negocio, los 100 más recientes. */
 export async function listLinks(tenantId: string): Promise<LinkRow[]> {
   return (await db.orm.public.TrackedLink.where({ tenantId }).orderBy((l) => l.createdAt.desc()).limit(100).all()).map((l) => toLink(l as unknown as Record<string, unknown>));
 }
 
+/** Activa o desactiva un enlace de campaña. Devuelve `false` si no existe. */
 export async function setLinkActive(tenantId: string, id: string, active: boolean): Promise<boolean> {
   if (!(await db.orm.public.TrackedLink.where({ tenantId, id }).select("id").first())) return false;
   await db.orm.public.TrackedLink.where({ tenantId, id }).update({ active });
@@ -95,11 +100,13 @@ export async function createReview(siteSlug: string, input: { rating: number; co
 
 export type ReviewRow = { id: string; source: string; rating: number; comment: string | null; customerName: string | null; contact: string | null; status: string; createdAt: string };
 
+/** Reseñas del negocio, las 100 más recientes. */
 export async function listReviews(tenantId: string): Promise<ReviewRow[]> {
   const rows = await db.orm.public.Review.where({ tenantId }).orderBy((r) => r.createdAt.desc()).limit(100).all();
   return rows.map((r) => ({ id: r.id, source: r.source, rating: r.rating, comment: r.comment, customerName: r.customerName, contact: r.contact, status: r.status, createdAt: String(r.createdAt) }));
 }
 
+/** Marca una reseña como atendida con la fecha. Devuelve `false` si no existe. */
 export async function handleReview(tenantId: string, id: string): Promise<boolean> {
   if (!(await db.orm.public.Review.where({ tenantId, id }).select("id").first())) return false;
   await db.orm.public.Review.where({ tenantId, id }).update({ status: "HANDLED", handledAt: Temporal.Instant.fromEpochMilliseconds(Date.now()) });

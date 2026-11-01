@@ -18,6 +18,7 @@ export const providers = {
 
 export type SendResult = { delivery: "sent"; externalId: string | null } | { delivery: "manual" } | { delivery: "failed"; error: string };
 
+/** Envía un mensaje por WhatsApp Business. Sin proveedor configurado devuelve entrega «manual». */
 export async function sendWhatsapp(to: string, body: string): Promise<SendResult> {
   if (!providers.whatsapp()) return { delivery: "manual" };
   try {
@@ -34,6 +35,7 @@ export async function sendWhatsapp(to: string, body: string): Promise<SendResult
   }
 }
 
+/** Envía un correo por Resend. Sin proveedor configurado devuelve entrega «manual». */
 export async function sendEmail(to: string, subject: string, body: string): Promise<SendResult> {
   if (!providers.email()) return { delivery: "manual" };
   try {
@@ -59,6 +61,7 @@ export function verifyMetaSignature(raw: string, header: string | null): boolean
   return expected.length === got.length && timingSafeEqual(expected, got);
 }
 
+/** Comprueba, en tiempo constante, que el secreto de un correo entrante coincida con el configurado. */
 export function verifyInboundEmailSecret(header: string | null): boolean {
   const secret = process.env.INBOUND_EMAIL_SECRET;
   if (!secret || !header) return false;

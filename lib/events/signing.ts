@@ -8,10 +8,16 @@ import { createHmac, timingSafeEqual } from "node:crypto";
  */
 const mac = (secret: string, t: number, body: string) => createHmac("sha256", secret).update(`${t}.${body}`).digest("hex");
 
+/**
+ * Cabecera de firma de un webhook: la marca de tiempo y una firma HMAC por cada secreto vigente (permite rotar secretos sin cortar la entrega).
+ */
 export function signPayload(secrets: readonly string[], body: string, nowSeconds = Math.floor(Date.now() / 1000)): string {
   return [`t=${nowSeconds}`, ...secrets.map((s) => `v1=${mac(s, nowSeconds, body)}`)].join(",");
 }
 
+/**
+ * Verifica la firma recibida contra un secreto y comprueba que la marca de tiempo esté dentro de la tolerancia (5 minutos por defecto).
+ */
 export function verifySignature(secret: string, header: string, body: string, opts: { toleranceSeconds?: number; nowSeconds?: number } = {}): boolean {
   const { toleranceSeconds = 300, nowSeconds = Math.floor(Date.now() / 1000) } = opts;
   const parts = header.split(",").map((p) => p.trim().split("="));

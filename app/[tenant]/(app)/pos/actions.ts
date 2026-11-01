@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { can } from "@/lib/business/permissions";
+import { can } from "@/lib/auth/permissions";
 import { PAYMENT_METHODS } from "@/lib/finance";
 import { findByBarcode } from "@/lib/catalog/catalog-db";
 import { returnSale, saleForReturn, type ReturnInput, type SaleToReturn } from "@/lib/pos/returns-db";

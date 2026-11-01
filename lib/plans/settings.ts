@@ -121,16 +121,19 @@ export const loadPricingConfig = cache(async (): Promise<PricingConfig> => {
   };
 });
 
+/** Guarda la configuración de un plan (precio, descripción, características…). */
 export async function savePlan(p: PlanConfig) {
   const { key, ...rest } = p;
   await db.orm.public.PlanSetting.where({ key }).update(rest);
 }
 
+/** Guarda la configuración de un módulo (nombre, descripción, precio…). */
 export async function saveModule(m: ModuleConfig) {
   const { module, ...rest } = m;
   await db.orm.public.ModuleSetting.where({ module }).update(rest);
 }
 
+/** Guarda la configuración de un rubro (nombre, factor de precio, módulos de partida…). */
 export async function saveVertical(v: VerticalConfig) {
   const { vertical, ...rest } = v;
   await db.orm.public.VerticalSetting.where({ vertical }).update(rest);

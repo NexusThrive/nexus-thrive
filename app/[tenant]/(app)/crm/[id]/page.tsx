@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { customerProfileExtras } from "@/lib/business/customers-db";
 import { tenantWithModules } from "@/lib/tenant/membership";
 import { buildCustomer360, createTenantDb } from "@/lib/tenant/db";
-import { getCustomer360Memberships } from "@/lib/business/memberships-repo";
-import { getVerticalTerms } from "@/lib/vertical-terms";
+import { getCustomer360Memberships } from "@/lib/industry/gym/memberships-repo";
+import { getVerticalTerms, hasMemberAccess } from "@/lib/vertical-terms";
 import { bmi, profileFor } from "@/lib/business/customer-fields";
 import CustomerHeader from "./_components/customer-header";
 import MembershipHighlight from "./_components/membership-highlight";
@@ -21,7 +21,7 @@ import PaymentsTable from "./_components/payments-table";
 import MembershipsTable from "./_components/memberships-table";
 import NotesPanel from "./_components/notes-panel";
 import AccessCard from "./_components/access-card";
-import { memberStatus } from "@/lib/business/gym-db";
+import { memberStatus } from "@/lib/industry/gym/gym-db";
 import { requirePageContext } from "@/lib/tenant/context";
 
 /**
@@ -100,7 +100,7 @@ export default async function CustomerPage({
 
   const baseHref = `/${tenantSlug}/crm/${customer.id}`;
   const extra = await customerProfileExtras(tenantRecord.id, customer.id);
-  const isGym = tenantRecord.vertical === "gym" && showMemberships;
+  const isGym = hasMemberAccess(tenantRecord.vertical) && showMemberships;
   const access = isGym ? await memberStatus(tenantRecord.id, customer.id) : null;
 
   const def = profileFor(tenantRecord.vertical);
@@ -145,12 +145,7 @@ export default async function CustomerPage({
     Number(profile.weightKg) || undefined,
     Number(profile.heightCm) || undefined,
   );
-  const physicalTitle =
-    tenantRecord.vertical === "gym"
-      ? "Datos físicos y objetivo"
-      : def.fields.length
-        ? def.title
-        : "Datos adicionales";
+  const physicalTitle = terms.profileTitle ?? (def.fields.length ? def.title : "Datos adicionales");
 
   const emergencyRows: [string, string][] = [
     ["Contacto", typeof profile.emergencyName === "string" ? profile.emergencyName : ""],
