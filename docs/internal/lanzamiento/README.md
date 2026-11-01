@@ -129,3 +129,16 @@ node scripts/wiki-sync.mjs publish --remote https://github.com/NexusThrive/nexus
 | Mecanismo de publicación | Recomendado: la persona dueña ejecuta `gh` desde su entorno |
 | Publicación | **No autorizada** |
 | `pushurl` | `no_push` |
+
+## 8. Correcciones tras el primer CI de GitHub
+
+El primer CI (1 nov 2026) pasó en el PR 1 y falló en los PR 2 a 8 por dos pruebas de integración que yo había escrito y que dependían de mi entorno local, no del código:
+
+| Prueba | Causa | Corrección | Rama |
+|---|---|---|---|
+| `diagnostico-fechas-utc.integration` | Exigía el nombre de base `nexus_e<n>_test`; el CI usa `nexus_test` | Acepta ambos nombres (`/^nexus_(e\d+_)?test$/`); sigue rechazando cualquier otra base | PR 2 |
+| `puertos-integraciones.integration` | Cifra credenciales y necesitaba `WEBHOOK_ENCRYPTION_KEY`, que el CI no define | La fija en `beforeAll`, como sus pruebas hermanas | PR 3 |
+
+Las correcciones se añadieron como commits nuevos en las ramas 02 y 03 y se fusionaron hacia adelante (02→03, 03→04 … 07→08) con commits de merge: **no se reescribió historial ni se hizo force-push**. Por eso las ramas 03 a 08 ya no son idénticas a las copias locales `stack/*`. Lección: la verificación local debe reproducir el entorno del CI (base `nexus_test`, sin variables exportadas a mano).
+
+Vercel falló en #129 y #132 por un error de Turbopack con `next/font/google` ("queries have exactly one entry") al restaurar la caché de compilación; el mismo código compila en las demás ramas, así que parece transitorio. Se revisa tras los nuevos commits.
