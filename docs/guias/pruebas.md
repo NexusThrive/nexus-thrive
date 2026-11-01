@@ -81,11 +81,11 @@ falla. Ver [devops.md](devops.md#sql-de-producción).
 
 | Si cambias… | Escribe | Ejemplo a copiar |
 |---|---|---|
-| Quién puede hacer qué | Fila en la matriz de `permissions.test.ts` | `lib/business/permissions.test.ts` |
-| Un cálculo o una validación pura | Unitaria junto al archivo | `lib/business/museum.test.ts` |
-| Algo que mueve dinero, stock o recibos | Integración con concurrencia | `lib/business/money-service.integration.test.ts` |
-| Aislamiento entre negocios o membresías | Integración con dos negocios | `lib/tenant/db.integration.test.ts`, `lib/tenant/membership.integration.test.ts` |
-| Una página o acción nueva de un módulo | Nada a mano: las pruebas de arquitectura ya la revisan | `lib/tenant/page-authorization.test.ts` |
+| Quién puede hacer qué | Fila en la matriz de `permissions.test.ts` | `tests/unit/core/auth/permissions.test.ts` |
+| Un cálculo o una validación pura | Unitaria en `tests/unit/<área>/<módulo>/` | `tests/unit/industry/museum/…` |
+| Algo que mueve dinero, stock o recibos | Integración con concurrencia | `tests/integration/business/sales/money-service.integration.test.ts` |
+| Aislamiento entre negocios o membresías | Integración con dos negocios | `tests/integration/core/tenancy/…` |
+| Una página o acción nueva de un módulo | Nada a mano: las pruebas de arquitectura ya la revisan | `tests/architecture/page-authorization.test.ts` |
 | Un bug | Primero la prueba que falla con el bug, después el arreglo | — |
 
 ### Pruebas de arquitectura (ya existen; no las saltes)
@@ -95,10 +95,10 @@ falla, el mensaje dice qué falta.
 
 | Prueba | Regla |
 |---|---|
-| `lib/tenant/page-authorization.test.ts` | Toda `page.tsx` de `app/[tenant]` llama a `requirePageContext`/`requireTenantContext`, y pasa la ruta de su módulo. Toda `actions.ts` de un módulo pasa su ruta. Nadie redefine ni renombra el helper |
-| `lib/tenant/data-access.test.ts` | Ningún archivo de `app/` importa la base, usa el ORM ni abre `moneyTransaction`; la lista de deuda sigue vacía |
-| `lib/tenant/tenant-scope.test.ts` | Toda consulta de `lib/` a una tabla de negocio filtra por `tenantId` (salvo el panel CEO y excepciones con motivo) |
-| `lib/business/permissions.test.ts` | La matriz rol × permiso escrita a mano coincide con `permissions.ts` |
+| `tests/architecture/page-authorization.test.ts` | Toda `page.tsx` de `app/[tenant]` llama a `requirePageContext`/`requireTenantContext`, y pasa la ruta de su módulo. Toda `actions.ts` de un módulo pasa su ruta. Nadie redefine ni renombra el helper |
+| `tests/architecture/data-access.test.ts` | Ningún archivo de `app/` importa la base, usa el ORM ni abre `moneyTransaction`; la lista de deuda sigue vacía |
+| `tests/architecture/tenant-scope.test.ts` | Toda consulta de `lib/` a una tabla de negocio filtra por `tenantId` (salvo el panel CEO y excepciones con motivo) |
+| `tests/unit/core/auth/permissions.test.ts` | La matriz rol × permiso escrita a mano coincide con `permissions.ts` |
 | ESLint `no-restricted-imports` | `app/` no importa `@/prisma/db` ni `moneyTransaction` |
 
 ---
@@ -148,9 +148,8 @@ describe.skipIf(!TEST_URL)("mi flujo (integración)", () => {
 
 Reglas:
 
-1. **Nombre** `*.integration.test.ts` y **añádela a la lista de
-   `test-integration.sh`**. El script corre una lista explícita: una prueba que
-   no está ahí no corre en el CI.
+1. **Nombre** `*.integration.test.ts`, en `tests/integration/<área>/<módulo>/`. El
+   script corre por patrón: una prueba con ese nombre entra sola en el CI.
 2. Cada prueba crea su propio negocio con un sufijo único y lo borra al final
    con `deleteTenantCompletely`. Nunca dependas de datos de otra prueba.
 3. Para dinero, prueba también el caso concurrente: lanza el mismo cobro varias

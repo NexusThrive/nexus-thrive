@@ -21,7 +21,7 @@ export const Fallback: Story = {
 export const WithImage: Story = {
   render: (args) => (
     <Avatar {...args}>
-      <AvatarImage src="/favicon.ico" alt="Constructora" />
+      <AvatarImage src="/icons/apple-touch-icon.png" alt="Constructora" />
       <AvatarFallback>CT</AvatarFallback>
     </Avatar>
   ),

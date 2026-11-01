@@ -8,8 +8,9 @@ muestra una página que lo explica.
 
 | Pieza | Archivo |
 |---|---|
-| Manifiesto (`start_url` `/`, `standalone`, iconos 192/512/maskable) | `app/manifest.ts` |
-| Iconos (generados desde `app/icon.svg`) | `public/icons/` |
+| Manifiesto (`start_url` `/`, `standalone`, un solo icono: `app/icon.svg`) | `app/manifest.ts` |
+| Icono de la pestaña y de la app (SVG, sin fondo y sin `favicon.ico`) | `app/icon.svg`, declarado en `app/layout.tsx` |
+| Icono de iOS (iOS no admite SVG; es el único PNG que se usa) | `public/icons/apple-touch-icon.png` |
 | Service worker | `public/sw.js` (cabecera sin caché en `next.config.ts`) |
 | Página sin conexión | `public/offline.html` (HTML estático, sin Clerk ni JS de la app) |
 | Registro, instalación, aviso de versión | `components/providers/pwa.tsx` |

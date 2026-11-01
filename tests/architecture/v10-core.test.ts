@@ -55,7 +55,7 @@ describe("Etapa C · lib/core", () => {
 
   test("las pruebas de integración con nombre propio del script existen en su ruta nueva", () => {
     const script = readFileSync(join(ROOT, "test-integration.sh"), "utf8");
-    for (const r of ["lib/core/tenancy/db.archived-rejection.test.ts", "lib/core/tenancy/db.cache-invalidation.test.ts"]) {
+    for (const r of ["tests/integration/core/tenancy/db.archived-rejection.test.ts", "tests/integration/core/tenancy/db.cache-invalidation.test.ts"]) {
       expect(script, r).toContain(r);
       expect(existsSync(join(ROOT, r)), r).toBe(true);
     }

@@ -36,7 +36,7 @@ describe("test-integration.sh no puede perder pruebas en silencio", () => {
   // dos pruebas del importador de APU al mover construction; esta prueba exige que cada ruta escrita a mano exista.
   test("toda ruta explícita de pruebas del script existe", () => {
     const script = readFileSync(join(ROOT, "test-integration.sh"), "utf8");
-    const rutas = [...script.matchAll(/^\s+(lib\/\S+?\.test\.ts)\s*\\?\s*$/gm)].map((m) => m[1]);
+    const rutas = [...script.matchAll(/^\s+((?:lib|tests)\/\S+?\.test\.ts)\s*\\?\s*$/gm)].map((m) => m[1]);
     expect(rutas.length, "el script ya no lista rutas explícitas: revisa esta prueba").toBeGreaterThan(0);
     for (const r of rutas) expect(existsSync(join(ROOT, r)), r).toBe(true);
   });

@@ -15,7 +15,7 @@ const exists = (rel: string) => existsSync(join(ROOT, rel));
 const exceptions = JSON.parse(read("docs/architecture/exceptions.json")) as { exceptions: { regla: string; etapa: string }[] };
 
 describe("permisos, roles y equipo viven en Core", () => {
-  test.each(["lib/core/auth/permissions.ts", "lib/core/auth/roles.ts", "lib/core/auth/permissions.test.ts", "lib/core/tenancy/team-db.ts"])("existe %s", (file) => {
+  test.each(["lib/core/auth/permissions.ts", "lib/core/auth/roles.ts", "tests/unit/core/auth/permissions.test.ts", "lib/core/tenancy/team-db.ts"])("existe %s", (file) => {
     expect(exists(file)).toBe(true);
   });
 

@@ -28,7 +28,7 @@ fi
 # (roles del panel, catálogo de planes) y en paralelo se pisaban entre sí
 # (p. ej. uno borraba el rol "ops" que el otro estaba usando).
 #
-# Qué corre: TODA prueba `*.integration.test.ts` (en lib/ y en tests/integration/)
+# Qué corre: TODA prueba `*.integration.test.ts` (en tests/integration/)
 # más cuatro que no llevan «integration» en el nombre. Antes había una lista
 # escrita a mano y 34 pruebas quedaron fuera sin que nadie lo notara; con el
 # patrón, una prueba nueva entra sola.
@@ -37,11 +37,11 @@ fi
 # cliente, p. ej. el MASTER PACK, indicado con una variable de entorno que no
 # está en el repositorio). Se ejecutan a mano:
 #   MASTER_PACK_FILE=/ruta/al/archivo.xlsx pnpm exec vitest run \
-#     lib/industry/construction/apu-importer/master-pack-import.file.integration.test.ts
+#     tests/integration/industry/construction/apu-importer/master-pack-import.file.integration.test.ts
 pnpm exec vitest run --testTimeout=20000 --no-file-parallelism \
   --exclude '**/*.file.integration.test.ts' \
   '.integration.test.ts' \
-  lib/core/tenancy/db.archived-rejection.test.ts \
-  lib/core/tenancy/db.cache-invalidation.test.ts \
-  lib/industry/construction/apu-importer/price-behavior.test.ts \
-  lib/industry/construction/apu-importer/field-changes.test.ts
+  tests/integration/core/tenancy/db.archived-rejection.test.ts \
+  tests/integration/core/tenancy/db.cache-invalidation.test.ts \
+  tests/integration/industry/construction/apu-importer/price-behavior.test.ts \
+  tests/integration/industry/construction/apu-importer/field-changes.test.ts

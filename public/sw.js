@@ -10,12 +10,12 @@
  *  - Actualización: la versión nueva espera hasta que la persona pulsa
  *    "Actualizar" (mensaje SKIP_WAITING), para no recargar a media tarea.
  */
-const VERSION = "v1";
+const VERSION = "v2";
 const STATIC_CACHE = `nexus-static-${VERSION}`;
 const OFFLINE_URL = "/offline.html";
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(STATIC_CACHE).then((cache) => cache.addAll([OFFLINE_URL, "/icons/icon-192.png"])));
+  event.waitUntil(caches.open(STATIC_CACHE).then((cache) => cache.addAll([OFFLINE_URL])));
 });
 
 self.addEventListener("activate", (event) => {

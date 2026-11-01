@@ -17,7 +17,7 @@ Consultar la documentación pertinente según el tipo de tarea:
 - **Migraciones y planificación** → `references/migrations.md` (`db update`, `migration plan`, `MIGRATION.HASH_MISMATCH`, `MIGRATION.UNFILLED_PLACEHOLDER`, ref management).
 - **Wiring runtime (`db.ts`)** → `references/runtime.md` (`db.ts`, middleware, `DATABASE_URL`, `.env`, connection pool, transacciones, serverless).
 - **Depuración de errores** → `references/debug.md` (códigos estructurados: `MIGRATION.HASH_MISMATCH`, `RUNTIME.TEMPORAL_UNAVAILABLE`, `BUDGET.ROWS_EXCEEDED`).
-- **Pruebas y TDD** → `vitest.config.mts` + `lib/**/*.test.ts`; `pnpm test` y `pnpm test:integration` (requiere `TEST_DATABASE_URL`).
+- **Pruebas y TDD** → `vitest.config.mts` + `tests/**/*.test.ts` (espejo de `lib/`: `tests/unit/<área>/<módulo>`, `tests/integration/…`); `pnpm test` y `pnpm test:integration` (requiere `TEST_DATABASE_URL`).
 
 **Regla:** No escribir código ni emitir juicios sobre el comportamiento del sistema sin antes consultar la referencia correspondiente. Si la tarea no encaja en categorías anteriores, preguntar al usuario qué documentación consulta o qué objetivo persigue.
 

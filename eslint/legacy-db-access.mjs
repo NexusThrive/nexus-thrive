@@ -4,7 +4,7 @@
  * `lib/` (que reciben el contexto del negocio y no se olvidan del `tenantId`).
  *
  * La deuda quedó en cero (2026-10-23): ningún archivo de `app/` importa la
- * base. La lista se conserva vacía para que `lib/core/tenancy/data-access.test.ts`
+ * base. La lista se conserva vacía para que `tests/architecture/data-access.test.ts`
  * siga vigilando que no vuelva a crecer.
  */
 export const LEGACY_DB_ACCESS = [];

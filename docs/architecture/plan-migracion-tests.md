@@ -1,3 +1,5 @@
+> **EJECUTADO** (octubre 2026): las pruebas de `lib/` se movieron de una vez a `tests/unit|integration|architecture|fixtures`, espejo de `lib/<área>/<módulo>`; Vitest solo incluye `tests/`. Lo que sigue es el plan original (desfasado), conservado como historia.
+
 # Plan incremental: migrar las 151 pruebas a `tests/`
 
 Estado: **solo plan**. No se movió ninguna de las 151 pruebas. Lo único hecho: crear `tests/architecture/`, y que Vitest

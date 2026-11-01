@@ -33,7 +33,7 @@ describe("Etapa X · lib/experience", () => {
 
   test("lib/fonts.ts ya no existe y nav-types.ts es Core (core/capabilities), no Experience", () => {
     expect(existsSync(join(ROOT, "lib/fonts.ts"))).toBe(false);
-    expect(readdirSync(join(ROOT, "lib/experience/navigation")).sort()).toEqual(["quick-create.ts", "tenant-nav.test.ts", "tenant-nav.ts"]);
+    expect(readdirSync(join(ROOT, "lib/experience/navigation")).sort()).toEqual(["quick-create.ts", "tenant-nav.ts"]);
     expect(classify("lib/core/capabilities/nav-types.ts", layers)?.layer).toBe("core");
   });
 
