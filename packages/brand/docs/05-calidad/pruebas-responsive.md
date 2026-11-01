@@ -35,7 +35,8 @@ Las pruebas viven en [`e2e/responsive.spec.ts`](../../../../e2e/responsive.spec.
 | R2/R3 | Los controles de la barra superior no se superponen; objetivos táctiles ≥ 24 px (AA) y ≥ 44 px |
 | R3 | Navegación según el ancho (móvil < 768 px, lateral desde 768 px) y etiqueta visible en toda la navegación lateral |
 | R4 | Ningún texto por debajo de 11 px |
-| Adaptación | Hoja inferior bajo 768 px y modal centrado desde 768 px |
+| Adaptación | Hoja inferior bajo 768 px y modal centrado desde 768 px; detalle de la gráfica como hoja inferior (móvil) o panel lateral derecho (desde 768 px) |
+| Estados | Cuenta nueva (primeros pasos y actividad vacía) y precarga de la ruta dentro del shell |
 
 ## Hallazgos conocidos: `test.fail`
 
@@ -44,13 +45,15 @@ Los hallazgos de la auditoría que aún no se corrigen se marcan con `test.fail(
 | Marca | Hallazgo | Se resuelve en |
 |---|---|---|
 | `P1-1` | Importes recortados a 320 px | Paso 3 |
-| `P1-2` | Botones superpuestos a 320 y 360 px | Paso 3 |
+| `P1-2` | Barra superior superpuesta a 320 y 360 px (con la campana de producción, aunque el nombre del negocio sea corto) | Paso 3 |
+| `P1-3` | Importes con datos realistas recortados hasta 375 px | Paso 3 |
 | `P2-3` | Objetivos táctiles de 40–42 px | Paso 4 |
-| `P2-4` | Riel de tablet sin etiquetas y texto de 10 px | Paso 5 |
+| `P2-4` | Riel de tablet sin etiquetas y texto de 10 px (también los títulos de grupo de la barra expandida) | Paso 5 |
+| `P2-5` | Controles de contenido por debajo de 44 px (selectores de periodo, filtros, ayudas, enlaces) | Paso 4 |
 
 ## Alcance y límites
 
-- Corren sobre **historias** (`CustomizableDashboard`, `TenantShell`), no sobre la aplicación: la historia fiel del Inicio es el paso 2.
+- Corren sobre **historias**, no sobre la aplicación. La más fiel es `Páginas/Inicio/Dashboard fiel` (`ConDatos`, `CuentaNueva` y `Cargando`): `TenantShell` real y la composición de `page.tsx` con datos de muestra. Sus diferencias con producción están en [`historia-fiel-dashboard-2026-11`](../06-auditorias/historia-fiel-dashboard-2026-11/informe.md).
 - Solo **Chromium con emulación táctil**: no sustituyen la prueba en iPhone o iPad reales (zoom de Safari, gestos, teclado virtual).
 - No miden red lenta, contraste renderizado ni estados de carga y error (R5).
 - Los criterios **R2, R4 y R5 no se dan por cumplidos** hasta probarlos también en dispositivos.

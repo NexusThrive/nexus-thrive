@@ -58,6 +58,10 @@ const config: StorybookConfig = {
       // Acción de funciones: en Storybook responde sin servidor.
       "@/app/[tenant]/(app)/functions/actions": path.resolve(import.meta.dirname, "mocks/functions-actions.ts"),
       "@/app/[tenant]/(app)/purchases/actions": path.resolve(import.meta.dirname, "mocks/purchases-actions.ts"),
+      // Detalle de la gráfica del Inicio (import relativo de `income-chart-panel`): datos de muestra.
+      "../_actions/movements": path.resolve(import.meta.dirname, "mocks/movements-actions.ts"),
+      // Campana de notificaciones del negocio (import relativo de `tenant-notifications`): datos de muestra.
+      "../_actions/notifications": path.resolve(import.meta.dirname, "mocks/notifications-actions.ts"),
       "@": path.resolve(import.meta.dirname, ".."),
     };
     return viteConfig;

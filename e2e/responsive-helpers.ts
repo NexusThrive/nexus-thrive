@@ -9,29 +9,44 @@ export const medirDesborde = (page: Page) =>
     return { viewport: doc.clientWidth, scroll: doc.scrollWidth, desborda: doc.scrollWidth > doc.clientWidth + 1 };
   });
 
-/** Textos que no caben en su contenedor (recortados o fuera de su tarjeta). El desborde de página no los detecta. */
-export const medirTextoRecortado = (page: Page, contenedor = "[data-widget]") =>
+/**
+ * Textos que no caben en su contenedor. `recortados`: se cortan sin aviso (pérdida de información, p. ej. un importe).
+ * `truncados`: se acortan con puntos suspensivos (`truncate`; el texto completo sigue en el DOM). Se ignoran los que
+ * viven dentro de un contenedor con scroll horizontal propio (filas de chips, tablas). El desborde de página no los detecta.
+ */
+export const medirTexto = (page: Page, contenedor = "[data-widget]") =>
   page.evaluate((sel) => {
-    const out: { texto: string; derechaTexto: number; derechaContenedor: number }[] = [];
+    const recortados: { texto: string; derechaTexto: number; derechaContenedor: number }[] = [];
+    const truncados: string[] = [];
+    const enScroller = (el: Element, tope: Element) => {
+      for (let p = el.parentElement; p && p !== tope; p = p.parentElement) {
+        const o = getComputedStyle(p).overflowX;
+        if ((o === "auto" || o === "scroll") && p.scrollWidth > p.clientWidth + 1) return true;
+      }
+      return false;
+    };
     for (const el of document.querySelectorAll(`${sel} *`)) {
       if (![...el.childNodes].some((n) => n.nodeType === 3 && (n.textContent ?? "").trim())) continue;
       const caja = el.closest(sel);
-      if (!caja) continue;
+      if (!caja || enScroller(el, caja)) continue;
       const rango = document.createRange();
       rango.selectNodeContents(el);
       const t = rango.getBoundingClientRect();
       const c = caja.getBoundingClientRect();
-      if (t.width > 0 && (t.right > c.right + 0.5 || el.scrollWidth > el.clientWidth + 1)) {
-        out.push({ texto: (el.textContent ?? "").trim().slice(0, 30), derechaTexto: Math.round(t.right), derechaContenedor: Math.round(c.right) });
-      }
+      if (t.width <= 0) continue;
+      const texto = (el.textContent ?? "").trim().slice(0, 30);
+      if (el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).textOverflow === "ellipsis") truncados.push(texto);
+      else if (t.right > c.right + 0.5 || el.scrollWidth > el.clientWidth + 1) recortados.push({ texto, derechaTexto: Math.round(t.right), derechaContenedor: Math.round(c.right) });
     }
-    return out;
+    return { recortados, truncados };
   }, contenedor);
 
-/** Controles de la barra superior que se pisan entre sí. */
+/** Controles de la barra superior (el primer `header` de la página) que se pisan entre sí. */
 export const medirSolapes = (page: Page, contenedor = "header") =>
   page.evaluate((sel) => {
-    const cajas = [...document.querySelectorAll<HTMLElement>(`${sel} button, ${sel} a, ${sel} input`)]
+    const barra = document.querySelector(sel);
+    if (!barra) return [];
+    const cajas = [...barra.querySelectorAll<HTMLElement>("button, a, input")]
       .map((e) => ({ e, r: e.getBoundingClientRect() }))
       .filter(({ r }) => r.width > 0 && r.height > 0)
       .map(({ e, r }) => ({ nombre: (e.getAttribute("aria-label") ?? e.textContent ?? "").trim().slice(0, 30), l: r.left, r: r.right }));
