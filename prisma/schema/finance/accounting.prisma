@@ -1,0 +1,139 @@
+// use prisma-8
+
+/// Cuenta del plan único de cuentas (PUC) del negocio. Se siembra con la plantilla colombiana y se ajusta con el contador.
+///
+/// Campos:
+/// - `code`: Código numérico (1105, 110505…). Un código identifica UNA cuenta por negocio.
+/// - `type`: ASSET | LIABILITY | EQUITY | INCOME | EXPENSE | COST
+/// - `nature`: D (débito) | C (crédito): el lado en que normalmente aumenta.
+/// - `postable`: Solo las cuentas de movimiento (auxiliares) reciben asientos; las demás agrupan.
+model Account {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  code       String
+  name       String
+  type       String
+  nature     String
+  postable   Boolean  @default(true)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  @@unique([tenantId, code])
+  @@rls
+}
+
+/// Mes contable. Un mes cerrado no admite asientos nuevos ni cambios (se aplica en el motor contable).
+///
+/// Campos:
+/// - `status`: OPEN | CLOSED
+model AccountingPeriod {
+  id          String    @id @default(uuid())
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  year        Int
+  month       Int
+  status      String    @default("OPEN")
+  closedAt    DateTime?
+  closedById  String?
+  reopenedAt  DateTime?
+  note        String?
+  createdAt   DateTime  @default(now())
+
+  @@unique([tenantId, year, month])
+  @@rls
+}
+
+/// Regla que dice qué asiento genera cada hecho del negocio (venta, costo, compra, cobro…). Se pueden ver y desactivar.
+///
+/// Campos:
+/// - `event`: Hecho que la dispara: SALE | SALE_COST | CREDIT_NOTE | PURCHASE_RECEIVED |
+///   PAYMENT_RECEIVED | EXPENSE_PAID …
+/// - `lines`: [{ side: "D"|"C", account: "1105", amount:
+///   "total"|"subtotal"|"tax"|"cost"|"payment"|"withholding", label }]
+model AccountingRule {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  event     String
+  name      String
+  lines     Json
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([tenantId, event])
+  @@rls
+}
+
+/// Centro de costo o sucursal: dimensión analítica de cada asiento.
+///
+/// Campos:
+/// - `kind`: CENTER | BRANCH
+model CostCenter {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  code      String
+  name      String
+  kind      String   @default("CENTER")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([tenantId, code])
+  @@rls
+}
+
+/// Asiento contable de partida doble. El libro mayor es de solo agregar: un asiento NO se edita ni se borra; se corrige
+/// con otro asiento que lo reversa. Cada asiento encadena el sello (hash) del anterior para detectar cualquier alteración.
+///
+/// Campos:
+/// - `number`: Consecutivo por negocio.
+/// - `date`: Fecha contable AAAA-MM-DD (define el período).
+/// - `event`: Regla o hecho que lo generó (SALE, PAYMENT_RECEIVED, MANUAL, REVERSAL…).
+/// - `sourceType`: DOCUMENT | PAYMENT | STOCK | MANUAL: de qué sale, para trazarlo y reversarlo.
+/// - `reversalOfId`: Si este asiento reversa a otro.
+/// - `hash`: Sello: SHA-256 de (sello anterior + contenido). Cadena que hace evidente cualquier
+///   cambio.
+model JournalEntry {
+  id           String   @id @default(uuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  number       Int
+  date         String
+  description  String
+  event        String
+  sourceType   String
+  sourceId     String?
+  reversalOfId String?
+  hash         String
+  createdById  String?
+  createdAt    DateTime @default(now())
+  lines        JournalLine[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId, date])
+  @@index([tenantId, sourceType, sourceId])
+  @@rls
+}
+
+/// Línea de un asiento contable: cuenta y valor al débito o al crédito.
+///
+/// Campos:
+/// - `partyId`: Dimensiones analíticas: tercero y centro de costo de cada línea.
+model JournalLine {
+  id           String       @id @default(uuid())
+  tenantId     String
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  entryId      String
+  entry        JournalEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  accountCode  String
+  debit        Decimal      @default(0)
+  credit       Decimal      @default(0)
+  label        String?
+  partyId      String?
+  costCenterId String?
+
+  @@index([tenantId, accountCode])
+  @@index([entryId])
+  @@rls
+}

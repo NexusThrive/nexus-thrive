@@ -1,0 +1,321 @@
+// use prisma-8
+
+/// Etapa comercial de la cuenta de un negocio ante Nexus: alta, activa, cancelada o archivada.
+enum AccountStage {
+  ONBOARDING
+  ACTIVE
+  CANCELLED
+  ARCHIVED
+}
+
+/// Plan de NEXUS elegido en el onboarding (Thrive Essential / Elite / Signature).
+///
+/// Valores:
+/// - `ESSENTIAL`: Gratis: módulos base para conocer NEXUS.
+/// - `ELITE`: Módulos a la medida del negocio.
+/// - `SIGNATURE`: Todos los módulos del rubro con acompañamiento.
+enum TenantPlan {
+  ESSENTIAL
+  ELITE
+  SIGNATURE
+}
+
+/// Ciclo de facturación del plan.
+enum BillingCycle {
+  MONTHLY
+  ANNUAL
+}
+
+/// Perfil del negocio en el onboarding auto-servicio: persona natural vs empresa.
+///
+/// Valores:
+/// - `INDIVIDUAL`: Emprendedor / persona natural (perfil liviano: sin NIT obligatorio).
+/// - `COMPANY`: Empresa / negocio establecido (perfil completo: NIT, tamaño, dirección).
+enum TenantType {
+  INDIVIDUAL
+  COMPANY
+}
+
+/// Rubro del negocio. Es un perfil que define módulos y vocabulario de arranque, no un producto
+/// aparte.
+///
+/// Valores:
+/// - `general`: Perfil general: agencia, consultora, empresa B2B, emprendimiento o negocio mixto.
+///   No exige un rubro.
+enum Vertical {
+  gym
+  tourism_agency
+  hospitality
+  construction
+  carpentry
+  restaurant
+  retail
+  beauty
+  healthcare
+  mechanic
+  education
+  real_estate
+  hardware_store
+  nautical_transport
+  tour_guides
+  events
+  museum
+  general
+}
+
+/// Negocio u organización cliente de Nexus. Es el centro del sistema: casi todas las tablas cuelgan
+/// de él por tenantId. Reúne identidad, ubicación, plan y límites, y configuración.
+///
+/// Campos:
+/// - `onboardingCompleted`: Wizard de onboarding: false = el tenant es nuevo y debe configurarse.
+/// - `tenantType`: Perfil adaptativo (onboarding auto-servicio). Las reglas de validación viven en
+///   lib/onboarding/validation.ts; estos campos son la persistencia.
+/// - `legalName`: Razón social (solo COMPANY; el nombre comercial vive en `name`).
+/// - `taxId`: NIT/RUT (obligatorio en COMPANY, opcional en INDIVIDUAL).
+/// - `teamSize`: Tamaño del equipo: "SOLO" | "2-5" | "6-20" | "20+" (guardado como texto validado
+///   por la app; el enum rígido dificultaría agregar rangos).
+/// - `address`: Dirección física; "REMOTE" si el negocio no tiene local.
+/// - `latitude`: Coordenadas confirmadas con Google Places durante el onboarding (opcionales: si no
+///   se confirmó la ubicación, quedan en null).
+/// - `placeId`: `place_id` de Google Places, para refrescar/ubicar el local luego.
+/// - `city`: Identidad y ubicación (Paso 1 del onboarding).
+/// - `websiteUrl`: Ecosistema digital (Paso 3 del onboarding).
+/// - `plan`: Plan elegido en el onboarding. Aún no hay cobro: se guarda la elección y el precio que
+///   se le mostró (calculado en el servidor con lib/plans).
+/// - `planMonthlyUsdCents`: Precio mensual en centavos de USD (0 en Essential).
+/// - `customerTierId`: Tramo de clientes elegido (CustomerTierSetting.id) y módulos contratados con
+///   el plan. "Contratado" ≠ "habilitado" (TenantModule) ≠ "operativo" (ModuleSetting.status).
+/// - `maxUsers`: Límites acordados en un código a medida (null = los del plan).
+/// - `costingMethod`: Método de costeo del inventario. Hoy solo AVG (promedio ponderado); FIFO
+///   llegará después.
+/// - `einvoiceEnabled`: Genera el documento fiscal de cada venta para enviarlo a un proveedor
+///   tecnológico autorizado.
+/// - `accountingEnabled`: Contabiliza automáticamente cada venta, cobro, nota y compra con las
+///   reglas del plan de cuentas.
+/// - `businessModels`: Modelo comercial (contexto, no restricción): B2B | B2C | B2B2C. Vacío = sin
+///   definir.
+/// - `activity`: Qué hace el negocio, en sus palabras (contexto para recomendaciones).
+/// - `accountStage`: Operations Center: etapa comercial y responsable de cuenta (StaffMember.id).
+/// - `paymentMethods`: Métodos de pago aceptados (Paso 4 del onboarding; catálogo PaymentProvider).
+///   Nullable en DB: un tenant nuevo aún no los configuró; el código normaliza a [].
+/// - `suspendedReason`: Suspensión administrativa (Panel CEO): motivo obligatorio + timestamp. Se
+///   conserva aunque el tenant se reactive (historial de por qué se suspendió).
+/// - `settings`: Ajustes operativos del rubro (aforo del museo, franjas, horarios…).
+model Tenant {
+  id           String   @id @default(uuid())
+  name         String
+  slug         String   @unique
+  customDomain String?  @unique
+  vertical     Vertical
+  active       Boolean  @default(true)
+
+  onboardingCompleted Boolean @default(false)
+  tenantType TenantType @default(COMPANY)
+  legalName String?
+  taxId String?
+  teamSize String?
+  address String?
+  latitude  Float?
+  longitude Float?
+  placeId String?
+  city              String?
+  whatsappNumber    String?
+  websiteUrl        String?
+  instagramHandle   String?
+  googleBusinessUrl String?
+  plan                TenantPlan   @default(ESSENTIAL)
+  billingCycle        BillingCycle @default(MONTHLY)
+  planMonthlyUsdCents Int          @default(0)
+  planSelectedAt      DateTime?
+  customerTierId    String?
+  contractedModules String[]?
+  maxUsers          Int?
+  maxCustomers      Int?
+  costingMethod     String   @default("AVG")
+  einvoiceEnabled    Boolean  @default(false)
+  accountingEnabled  Boolean  @default(false)
+  businessModels    String[]?
+  activity          String?
+  accountStage     AccountStage @default(ACTIVE)
+  accountManagerId String?
+  paymentMethods    PaymentProvider[]?
+
+  suspendedReason String?
+  suspendedAt     DateTime?
+
+  settings          Json?
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+
+  users         User[]
+  customers     Customer[]
+  payments      Payment[]
+  expenses      Expense[]
+  memberships   Membership[]
+  modules       TenantModule[]
+  customerNotes CustomerNote[]
+  apuItems      ApuItem[]
+  apuActivities ApuActivity[]
+  apuImages     ApuImage[]
+  apuChapters   ApuChapter[]
+  apuImportRuns ApuImportRun[]
+  apuPriceHistory ApuItemPriceHistory[]
+  quotes        Quote[]
+  projectFollowUps ProjectFollowUp[]
+  budgetItemProgress BudgetItemProgress[]
+  projects      Project[]
+  projectBudgets ProjectBudget[]
+  budgetChapters BudgetChapter[]
+  budgetItems   BudgetItem[]
+  budgetItemResources BudgetItemResource[]
+  budgetBaselines   BudgetBaseline[]
+  projectPlans      ProjectPlan[]
+  lookaheadTasks    LookaheadTask[]
+  weeklyCommitments WeeklyCommitment[]
+  fieldLogs         FieldLog[]
+  presenceScans     PresenceScan[]
+  bookings           Booking[]
+  contacts           TenantContact[]
+  leads              Lead[]
+  apiKeys            ApiKey[]
+  apiRequestLogs     ApiRequestLog[]
+  idempotencyRecords IdempotencyRecord[]
+  outboxEvents       OutboxEvent[]
+  webhookEndpoints   WebhookEndpoint[]
+  webhookDeliveries  WebhookDelivery[]
+  usageCounters      UsageCounter[]
+  externalConnections ExternalConnection[]
+  providerEvents     ProviderEvent[]
+  parties            Party[]
+  partyRoles         PartyRole[]
+  productVariants    ProductVariant[]
+  productBarcodes    ProductBarcode[]
+  priceLists         PriceList[]
+  priceListItems     PriceListItem[]
+  warehouses         Warehouse[]
+  stockLevels        StockLevel[]
+  purchaseOrders     PurchaseOrder[]
+  purchaseOrderLines PurchaseOrderLine[]
+  supplierInvoices   SupplierInvoice[]
+  stockTransfers     StockTransfer[]
+  stockTransferLines StockTransferLine[]
+  stockCounts        StockCount[]
+  stockCountLines    StockCountLine[]
+  taxRates           TaxRate[]
+  posTerminals       PosTerminal[]
+  paymentIntents     PaymentIntent[]
+  fiscalDocuments    FiscalDocument[]
+  accounts           Account[]
+  accountingPeriods  AccountingPeriod[]
+  accountingRules    AccountingRule[]
+  costCenters        CostCenter[]
+  journalEntries     JournalEntry[]
+  presenceSnapshots  PresenceSnapshot[]
+  siteConfigs        SiteConfig[]
+  storeOrders        StoreOrder[]
+  googleListings     GoogleListing[]
+  trackedLinks       TrackedLink[]
+  contactLeads       ContactLead[]
+  reviews            Review[]
+  storeOrderLines    StoreOrderLine[]
+  journalLines       JournalLine[]
+  paymentRefunds     PaymentRefund[]
+  reconciliationRuns ReconciliationRun[]
+  supplierPayments   SupplierPayment[]
+  numberingResolutions NumberingResolution[]
+  supportTickets     SupportTicket[]
+  charges            Charge[]
+  benefitRedemptions BenefitRedemption[]
+  inboxConversations InboxConversation[]
+  satisfactionSurveys SatisfactionSurvey[]
+  attachments        Attachment[]
+  cashBoxes          CashBox[]
+  cashSessions       CashSession[]
+  cashMovements      CashMovement[]
+  products           Product[]
+  stockMovements     StockMovement[]
+  invoices           Invoice[]
+  invites            TenantInvite[]
+  attendances        Attendance[]
+  ticketSales        TicketSale[]
+  departures         Departure[]
+  tourBookings       TourBooking[]
+  presenceRequests   PresenceRequest[]
+  subscription       Subscription?
+
+  @@index([slug])
+  @@rls
+}
+
+/// Módulo (capacidad) habilitado en un negocio. Separa lo contratado de lo habilitado y de lo
+/// operativo.
+///
+/// Campos:
+/// - `moduleName`: Id de la capacidad (lib/capabilities/registry.ts). Texto validado en el servidor
+///   con `isModule`: agregar un módulo no necesita migración.
+model TenantModule {
+  id         String       @id @default(uuid())
+  tenantId   String
+  tenant     Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  moduleName String
+  active     Boolean      @default(true)
+  createdAt  DateTime     @default(now())
+  updatedAt  temporal.updatedAt()
+
+  @@unique([tenantId, moduleName])
+  @@index([tenantId])
+  @@rls
+}
+
+/// Contactos de un negocio para el equipo NEXUS (no son clientes del
+/// negocio): para qué sirve cada canal y cuándo contactarlo.
+///
+/// Campos:
+/// - `purpose`: Dueño, administrativo, técnico, comercial…
+model TenantContact {
+  id               String   @id @default(uuid())
+  tenantId         String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name             String
+  purpose          String
+  phone            String?
+  whatsapp         String?
+  email            String?
+  preferredChannel String?
+  hours            String?
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        temporal.updatedAt()
+
+  @@index([tenantId])
+  @@rls
+}
+
+/// Límite de negocios por persona, fijado desde el Operations Center (clave: correo en minúsculas). Sin fila = sin límite.
+model AccountLimit {
+  email             String   @id
+  maxOrganizations  Int
+  note              String?
+  updatedAt         temporal.updatedAt()
+  @@rls
+}
+
+/// Consumo medido por negocio, medidor y periodo (`YYYY-MM`). Base de los cupos
+/// (`limitQuantity` null = el predeterminado del medidor) y del cobro por uso.
+///
+/// Campos:
+/// - `meter`: api.requests | events.delivered | ai.tokens | messages.sent | automations.runs
+model UsageCounter {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  meter         String
+  period        String
+  quantity      Int      @default(0)
+  limitQuantity Int?
+  updatedAt     temporal.updatedAt()
+
+  @@unique([tenantId, meter, period])
+  @@index([tenantId, period])
+  @@rls
+}

@@ -1,5 +1,6 @@
 import { membershipTypeFor } from "@/lib/business/customer-fields";
-import { bogotaEndOfDay, bogotaStartOfDay, bogotaToday, computeMembershipStatus } from "@/lib/business/memberships";
+import { bogotaEndOfDay, bogotaStartOfDay, computeMembershipStatus } from "@/lib/business/memberships";
+import { bogotaToday } from "@/lib/plain-date";
 import { moneyTransaction, recordIncome } from "@/lib/business/money-service";
 
 type Plan = { id: string; name: string; price: number; durationDays: number };

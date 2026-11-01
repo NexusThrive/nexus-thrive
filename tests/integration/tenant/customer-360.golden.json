@@ -1,0 +1,945 @@
+{
+ "completo": {
+  "customer": {
+   "id": "<id1>",
+   "name": "Socio completo",
+   "email": null,
+   "phone": null,
+   "active": true,
+   "createdAt": "<ts>",
+   "updatedAt": "<ts>"
+  },
+  "payments": [
+   {
+    "id": "<id2>",
+    "amount": 30000,
+    "status": "PENDING",
+    "provider": "TRANSFER",
+    "providerRefId": null,
+    "description": "Pendiente",
+    "createdAt": "2026-05-01T15:00:00Z"
+   },
+   {
+    "id": "<id3>",
+    "amount": 50000,
+    "status": "APPROVED",
+    "provider": "NEQUI",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-04-01T15:00:00Z"
+   },
+   {
+    "id": "<id4>",
+    "amount": 100000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": "Mensualidad",
+    "createdAt": "2026-03-01T15:00:00Z"
+   }
+  ],
+  "paymentsTotal": 3,
+  "memberships": [
+   {
+    "id": "<id5>",
+    "type": "trimestral",
+    "status": "active",
+    "price": 200000,
+    "startDate": "2026-06-01T05:00:00Z",
+    "endDate": "2099-01-01T05:00:00Z",
+    "createdAt": "2026-06-01T05:00:00Z"
+   },
+   {
+    "id": "<id6>",
+    "type": "mensual",
+    "status": "expired",
+    "price": 80000,
+    "startDate": "2026-01-01T05:00:00Z",
+    "endDate": "2026-02-01T05:00:00Z",
+    "createdAt": "2026-01-01T05:00:00Z"
+   }
+  ],
+  "notes": [
+   {
+    "id": "<id7>",
+    "content": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "authorName": null,
+    "createdAt": "2026-07-01T12:00:00Z"
+   },
+   {
+    "id": "<id8>",
+    "content": "Primera nota",
+    "authorName": null,
+    "createdAt": "2026-03-15T12:00:00Z"
+   }
+  ],
+  "timeline": [
+   {
+    "id": "<id9>",
+    "type": "note",
+    "date": "2026-07-01T12:00:00Z",
+    "title": "Nota interna",
+    "description": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx…"
+   },
+   {
+    "id": "<id10>",
+    "type": "membership",
+    "date": "2026-06-01T05:00:00Z",
+    "title": "Membresía Trimestral",
+    "description": "01/06/2026 → 01/01/2099",
+    "status": "Activa"
+   },
+   {
+    "id": "<id11>",
+    "type": "payment",
+    "date": "2026-05-01T15:00:00Z",
+    "title": "Pago",
+    "description": "Transferencia · Pendiente",
+    "amount": 30000,
+    "status": "Pendiente"
+   },
+   {
+    "id": "<id12>",
+    "type": "payment",
+    "date": "2026-04-01T15:00:00Z",
+    "title": "Pago",
+    "description": "Nequi",
+    "amount": 50000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id13>",
+    "type": "note",
+    "date": "2026-03-15T12:00:00Z",
+    "title": "Nota interna",
+    "description": "Primera nota"
+   },
+   {
+    "id": "<id14>",
+    "type": "payment",
+    "date": "2026-03-01T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo · Mensualidad",
+    "amount": 100000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id15>",
+    "type": "membership",
+    "date": "2026-01-01T05:00:00Z",
+    "title": "Membresía Mensual",
+    "description": "01/01/2026 → 01/02/2026",
+    "status": "Vencida"
+   }
+  ],
+  "metrics": {
+   "ltv": 150000,
+   "approvedCount": 2,
+   "avgTicket": 75000,
+   "favoriteMethod": "NEQUI",
+   "lastActivityDate": "2026-07-01T12:00:00Z",
+   "accountStatus": "pendiente"
+  }
+ },
+ "vacio": {
+  "customer": {
+   "id": "<id16>",
+   "name": "Socio vacío",
+   "email": null,
+   "phone": null,
+   "active": true,
+   "createdAt": "<ts>",
+   "updatedAt": "<ts>"
+  },
+  "payments": [],
+  "paymentsTotal": 0,
+  "memberships": [],
+  "notes": [],
+  "timeline": [],
+  "metrics": {
+   "ltv": 0,
+   "approvedCount": 0,
+   "avgTicket": 0,
+   "favoriteMethod": null,
+   "lastActivityDate": null,
+   "accountStatus": "sin_actividad"
+  }
+ },
+ "soloNotas": {
+  "customer": {
+   "id": "<id17>",
+   "name": "Solo notas",
+   "email": null,
+   "phone": null,
+   "active": true,
+   "createdAt": "<ts>",
+   "updatedAt": "<ts>"
+  },
+  "payments": [],
+  "paymentsTotal": 0,
+  "memberships": [],
+  "notes": [
+   {
+    "id": "<id18>",
+    "content": "Una nota",
+    "authorName": null,
+    "createdAt": "2026-03-15T12:00:00Z"
+   }
+  ],
+  "timeline": [
+   {
+    "id": "<id19>",
+    "type": "note",
+    "date": "2026-03-15T12:00:00Z",
+    "title": "Nota interna",
+    "description": "Una nota"
+   }
+  ],
+  "metrics": {
+   "ltv": 0,
+   "approvedCount": 0,
+   "avgTicket": 0,
+   "favoriteMethod": null,
+   "lastActivityDate": "2026-03-15T12:00:00Z",
+   "accountStatus": "sin_datos"
+  }
+ },
+ "soloVencida": {
+  "customer": {
+   "id": "<id20>",
+   "name": "Solo membresía vencida",
+   "email": null,
+   "phone": null,
+   "active": true,
+   "createdAt": "<ts>",
+   "updatedAt": "<ts>"
+  },
+  "payments": [],
+  "paymentsTotal": 0,
+  "memberships": [
+   {
+    "id": "<id21>",
+    "type": "mensual",
+    "status": "expired",
+    "price": 80000,
+    "startDate": "2026-01-01T05:00:00Z",
+    "endDate": "2026-02-01T05:00:00Z",
+    "createdAt": "2026-01-01T05:00:00Z"
+   }
+  ],
+  "notes": [],
+  "timeline": [
+   {
+    "id": "<id22>",
+    "type": "membership",
+    "date": "2026-01-01T05:00:00Z",
+    "title": "Membresía Mensual",
+    "description": "01/01/2026 → 01/02/2026",
+    "status": "Vencida"
+   }
+  ],
+  "metrics": {
+   "ltv": 0,
+   "approvedCount": 0,
+   "avgTicket": 0,
+   "favoriteMethod": null,
+   "lastActivityDate": "2026-01-01T05:00:00Z",
+   "accountStatus": "vencido"
+  }
+ },
+ "soloVigente": {
+  "customer": {
+   "id": "<id23>",
+   "name": "Solo membresía vigente",
+   "email": null,
+   "phone": null,
+   "active": true,
+   "createdAt": "<ts>",
+   "updatedAt": "<ts>"
+  },
+  "payments": [],
+  "paymentsTotal": 0,
+  "memberships": [
+   {
+    "id": "<id24>",
+    "type": "anual",
+    "status": "active",
+    "price": 900000,
+    "startDate": "2026-06-01T05:00:00Z",
+    "endDate": "2099-01-01T05:00:00Z",
+    "createdAt": "2026-06-01T05:00:00Z"
+   }
+  ],
+  "notes": [],
+  "timeline": [
+   {
+    "id": "<id25>",
+    "type": "membership",
+    "date": "2026-06-01T05:00:00Z",
+    "title": "Membresía Anual",
+    "description": "01/06/2026 → 01/01/2099",
+    "status": "Activa"
+   }
+  ],
+  "metrics": {
+   "ltv": 0,
+   "approvedCount": 0,
+   "avgTicket": 0,
+   "favoriteMethod": null,
+   "lastActivityDate": "2026-06-01T05:00:00Z",
+   "accountStatus": "al_dia"
+  }
+ },
+ "soloPendiente": {
+  "customer": {
+   "id": "<id26>",
+   "name": "Solo pago pendiente",
+   "email": null,
+   "phone": null,
+   "active": true,
+   "createdAt": "<ts>",
+   "updatedAt": "<ts>"
+  },
+  "payments": [
+   {
+    "id": "<id27>",
+    "amount": 30000,
+    "status": "PENDING",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-05-01T15:00:00Z"
+   }
+  ],
+  "paymentsTotal": 1,
+  "memberships": [],
+  "notes": [],
+  "timeline": [
+   {
+    "id": "<id28>",
+    "type": "payment",
+    "date": "2026-05-01T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 30000,
+    "status": "Pendiente"
+   }
+  ],
+  "metrics": {
+   "ltv": 0,
+   "approvedCount": 0,
+   "avgTicket": 0,
+   "favoriteMethod": null,
+   "lastActivityDate": "2026-05-01T15:00:00Z",
+   "accountStatus": "pendiente"
+  }
+ },
+ "soloAprobado": {
+  "customer": {
+   "id": "<id29>",
+   "name": "Solo pago aprobado",
+   "email": null,
+   "phone": null,
+   "active": true,
+   "createdAt": "<ts>",
+   "updatedAt": "<ts>"
+  },
+  "payments": [
+   {
+    "id": "<id30>",
+    "amount": 70000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-05-01T15:00:00Z"
+   }
+  ],
+  "paymentsTotal": 1,
+  "memberships": [],
+  "notes": [],
+  "timeline": [
+   {
+    "id": "<id31>",
+    "type": "payment",
+    "date": "2026-05-01T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 70000,
+    "status": "Pagado"
+   }
+  ],
+  "metrics": {
+   "ltv": 70000,
+   "approvedCount": 1,
+   "avgTicket": 70000,
+   "favoriteMethod": "CASH",
+   "lastActivityDate": "2026-05-01T15:00:00Z",
+   "accountStatus": "al_dia"
+  }
+ },
+ "muchos": {
+  "customer": {
+   "id": "<id32>",
+   "name": "Muchos eventos",
+   "email": null,
+   "phone": null,
+   "active": true,
+   "createdAt": "<ts>",
+   "updatedAt": "<ts>"
+  },
+  "payments": [
+   {
+    "id": "<id33>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-25T15:00:00Z"
+   },
+   {
+    "id": "<id34>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-24T15:00:00Z"
+   },
+   {
+    "id": "<id35>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-23T15:00:00Z"
+   },
+   {
+    "id": "<id36>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-22T15:00:00Z"
+   },
+   {
+    "id": "<id37>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-21T15:00:00Z"
+   },
+   {
+    "id": "<id38>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-20T15:00:00Z"
+   },
+   {
+    "id": "<id39>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-19T15:00:00Z"
+   },
+   {
+    "id": "<id40>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-18T15:00:00Z"
+   },
+   {
+    "id": "<id41>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-17T15:00:00Z"
+   },
+   {
+    "id": "<id42>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-16T15:00:00Z"
+   },
+   {
+    "id": "<id43>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-15T15:00:00Z"
+   },
+   {
+    "id": "<id44>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-14T15:00:00Z"
+   },
+   {
+    "id": "<id45>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-13T15:00:00Z"
+   },
+   {
+    "id": "<id46>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-12T15:00:00Z"
+   },
+   {
+    "id": "<id47>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-11T15:00:00Z"
+   },
+   {
+    "id": "<id48>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-10T15:00:00Z"
+   },
+   {
+    "id": "<id49>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-09T15:00:00Z"
+   },
+   {
+    "id": "<id50>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-08T15:00:00Z"
+   },
+   {
+    "id": "<id51>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-07T15:00:00Z"
+   },
+   {
+    "id": "<id52>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-06T15:00:00Z"
+   },
+   {
+    "id": "<id53>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-05T15:00:00Z"
+   },
+   {
+    "id": "<id54>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-04T15:00:00Z"
+   },
+   {
+    "id": "<id55>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-03T15:00:00Z"
+   },
+   {
+    "id": "<id56>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-02T15:00:00Z"
+   },
+   {
+    "id": "<id57>",
+    "amount": 1000,
+    "status": "APPROVED",
+    "provider": "CASH",
+    "providerRefId": null,
+    "description": null,
+    "createdAt": "2026-02-01T15:00:00Z"
+   }
+  ],
+  "paymentsTotal": 25,
+  "memberships": [
+   {
+    "id": "<id58>",
+    "type": "mensual",
+    "status": "active",
+    "price": 10000,
+    "startDate": "2026-09-01T05:00:00Z",
+    "endDate": "2099-01-01T05:00:00Z",
+    "createdAt": "2026-09-01T05:00:00Z"
+   }
+  ],
+  "notes": [
+   {
+    "id": "<id59>",
+    "content": "nota 7",
+    "authorName": null,
+    "createdAt": "2026-08-08T12:00:00Z"
+   },
+   {
+    "id": "<id60>",
+    "content": "nota 6",
+    "authorName": null,
+    "createdAt": "2026-08-07T12:00:00Z"
+   },
+   {
+    "id": "<id61>",
+    "content": "nota 5",
+    "authorName": null,
+    "createdAt": "2026-08-06T12:00:00Z"
+   },
+   {
+    "id": "<id62>",
+    "content": "nota 4",
+    "authorName": null,
+    "createdAt": "2026-08-05T12:00:00Z"
+   },
+   {
+    "id": "<id63>",
+    "content": "nota 3",
+    "authorName": null,
+    "createdAt": "2026-08-04T12:00:00Z"
+   },
+   {
+    "id": "<id64>",
+    "content": "nota 2",
+    "authorName": null,
+    "createdAt": "2026-08-03T12:00:00Z"
+   },
+   {
+    "id": "<id65>",
+    "content": "nota 1",
+    "authorName": null,
+    "createdAt": "2026-08-02T12:00:00Z"
+   },
+   {
+    "id": "<id66>",
+    "content": "nota 0",
+    "authorName": null,
+    "createdAt": "2026-08-01T12:00:00Z"
+   }
+  ],
+  "timeline": [
+   {
+    "id": "<id67>",
+    "type": "membership",
+    "date": "2026-09-01T05:00:00Z",
+    "title": "Membresía Mensual",
+    "description": "01/09/2026 → 01/01/2099",
+    "status": "Activa"
+   },
+   {
+    "id": "<id68>",
+    "type": "note",
+    "date": "2026-08-08T12:00:00Z",
+    "title": "Nota interna",
+    "description": "nota 7"
+   },
+   {
+    "id": "<id69>",
+    "type": "note",
+    "date": "2026-08-07T12:00:00Z",
+    "title": "Nota interna",
+    "description": "nota 6"
+   },
+   {
+    "id": "<id70>",
+    "type": "note",
+    "date": "2026-08-06T12:00:00Z",
+    "title": "Nota interna",
+    "description": "nota 5"
+   },
+   {
+    "id": "<id71>",
+    "type": "note",
+    "date": "2026-08-05T12:00:00Z",
+    "title": "Nota interna",
+    "description": "nota 4"
+   },
+   {
+    "id": "<id72>",
+    "type": "note",
+    "date": "2026-08-04T12:00:00Z",
+    "title": "Nota interna",
+    "description": "nota 3"
+   },
+   {
+    "id": "<id73>",
+    "type": "note",
+    "date": "2026-08-03T12:00:00Z",
+    "title": "Nota interna",
+    "description": "nota 2"
+   },
+   {
+    "id": "<id74>",
+    "type": "note",
+    "date": "2026-08-02T12:00:00Z",
+    "title": "Nota interna",
+    "description": "nota 1"
+   },
+   {
+    "id": "<id75>",
+    "type": "note",
+    "date": "2026-08-01T12:00:00Z",
+    "title": "Nota interna",
+    "description": "nota 0"
+   },
+   {
+    "id": "<id76>",
+    "type": "payment",
+    "date": "2026-02-25T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id77>",
+    "type": "payment",
+    "date": "2026-02-24T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id78>",
+    "type": "payment",
+    "date": "2026-02-23T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id79>",
+    "type": "payment",
+    "date": "2026-02-22T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id80>",
+    "type": "payment",
+    "date": "2026-02-21T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id81>",
+    "type": "payment",
+    "date": "2026-02-20T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id82>",
+    "type": "payment",
+    "date": "2026-02-19T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id83>",
+    "type": "payment",
+    "date": "2026-02-18T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id84>",
+    "type": "payment",
+    "date": "2026-02-17T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id85>",
+    "type": "payment",
+    "date": "2026-02-16T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id86>",
+    "type": "payment",
+    "date": "2026-02-15T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id87>",
+    "type": "payment",
+    "date": "2026-02-14T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id88>",
+    "type": "payment",
+    "date": "2026-02-13T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id89>",
+    "type": "payment",
+    "date": "2026-02-12T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id90>",
+    "type": "payment",
+    "date": "2026-02-11T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id91>",
+    "type": "payment",
+    "date": "2026-02-10T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id92>",
+    "type": "payment",
+    "date": "2026-02-09T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id93>",
+    "type": "payment",
+    "date": "2026-02-08T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id94>",
+    "type": "payment",
+    "date": "2026-02-07T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id95>",
+    "type": "payment",
+    "date": "2026-02-06T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   },
+   {
+    "id": "<id96>",
+    "type": "payment",
+    "date": "2026-02-05T15:00:00Z",
+    "title": "Pago",
+    "description": "Efectivo",
+    "amount": 1000,
+    "status": "Pagado"
+   }
+  ],
+  "metrics": {
+   "ltv": 25000,
+   "approvedCount": 25,
+   "avgTicket": 1000,
+   "favoriteMethod": "CASH",
+   "lastActivityDate": "2026-09-01T05:00:00Z",
+   "accountStatus": "al_dia"
+  }
+ },
+ "otroNegocio": null
+}

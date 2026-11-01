@@ -1,0 +1,79 @@
+// use prisma-8
+
+/// Tipo de código de acceso: `PROMO` es un regalo (cortesía/promoción) y `PAID`
+/// es un acceso pagado que NEXUS emite tras confirmar el pago. Cambia el texto
+/// que ve la persona ("gratis" vs "cuenta activada"), no el canje.
+enum BenefitKind {
+  PROMO
+  PAID
+}
+
+/// Beneficio promocional canjeable. Es el destino de la tarjeta NFC/QR
+/// (`/c/{code}`): otorga un plan por N días sin costo (p. ej. 30 días de Elite).
+///
+/// Campos:
+/// - `code`: Código legible que viaja en la URL (único, en mayúsculas).
+/// - `plan`: Plan que se otorga al canjear.
+/// - `kind`: Regalo (promoción) o acceso pagado confirmado.
+/// - `durationDays`: Duración del beneficio en días (30 = un mes).
+/// - `maxUses`: Usos máximos; null = ilimitado.
+/// - `expiresAt`: Caducidad del código (opcional).
+/// - `priceUsdCents`: Contrato a medida (todo opcional; vacío = el plan normal y gratis): precio
+///   mensual acordado en centavos de USD. Con precio, el canje deja la suscripción ACTIVA con ese
+///   precio (Facturación) en vez de prueba gratis.
+/// - `modules`: Módulos exactos que activa (si está vacío, los del plan).
+/// - `maxUsers`: Límites de ese cliente (null = los del plan).
+/// - `createdById`: StaffMember.id que lo creó.
+model BenefitCode {
+  id           String          @id @default(uuid())
+  code         String          @unique
+  label        String
+  plan         TenantPlan      @default(ELITE)
+  kind         BenefitKind     @default(PROMO)
+  durationDays Int             @default(30)
+  maxUses      Int?
+  usedCount    Int             @default(0)
+  active       Boolean         @default(true)
+  expiresAt    DateTime?
+  notes        String?
+  priceUsdCents Int?
+  modules       String[]?
+  maxUsers      Int?
+  maxCustomers  Int?
+  createdById  String?
+  createdAt    DateTime        @default(now())
+  updatedAt    temporal.updatedAt()
+  redemptions  BenefitRedemption[]
+
+  @@index([active])
+  @@rls
+}
+
+/// Canje de un beneficio por un negocio. Un negocio no puede canjear el mismo
+/// código dos veces (`@@unique([codeId, tenantId])`).
+///
+/// Campos:
+/// - `kind`: Regalo o acceso pagado (se copia del código al momento del canje).
+/// - `priceUsdCents`: Precio mensual acordado al canjear (copia del código; null = gratis).
+model BenefitRedemption {
+  id           String      @id @default(uuid())
+  codeId       String
+  code         BenefitCode @relation(fields: [codeId], references: [id], onDelete: Cascade)
+  tenantId     String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenantName   String
+  plan         String
+  kind         BenefitKind @default(PROMO)
+  durationDays Int
+  priceUsdCents Int?
+  startsAt     DateTime
+  endsAt       DateTime
+  clerkUserId  String?
+  email        String?
+  createdAt    DateTime    @default(now())
+
+  @@unique([codeId, tenantId])
+  @@index([tenantId])
+  @@index([codeId])
+  @@rls
+}

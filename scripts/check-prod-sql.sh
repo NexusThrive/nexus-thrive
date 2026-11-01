@@ -19,7 +19,8 @@
 # ============================================================================
 set -euo pipefail
 
-CONTRACT="prisma/contract.prisma"
+# El contrato se divide por dominio en prisma/schema/ (antes: prisma/contract.prisma).
+CONTRACT="prisma/schema prisma/contract.prisma"
 SQL_DIR="docs/prod-sql"
 
 BASE="${1:-}"
@@ -43,8 +44,36 @@ changed_files() {
   git diff --name-only "$BASE"...HEAD -- "$@" 2>/dev/null || true
 }
 
-if [ -z "$(changed_files "$CONTRACT")" ]; then
+# shellcheck disable=SC2086 # CONTRACT es una lista de rutas a propósito
+if [ -z "$(changed_files $CONTRACT)" ]; then
   # No cambió el modelo de datos: no hace falta SQL.
+  exit 0
+fi
+
+# Mover modelos entre archivos del contrato, o cambiar solo su documentación, no
+# cambia la base. Se compara el contenido POR MODELO: para cada bloque
+# (model, enum…) se toman sus líneas sin blancos ni sangría y sin líneas
+# completas de comentario (`//` y `///`), y se ordenan. Si todos los bloques
+# tienen las mismas líneas en la base de comparación y en HEAD, solo cambió de
+# archivo o de documentación. Un campo, tipo, relación, índice o restricción
+# distinto, o un campo que pasa de un modelo a otro, sigue exigiendo SQL.
+schema_blocks() {
+  local ref="$1" f
+  # shellcheck disable=SC2086 # CONTRACT es una lista de rutas a propósito
+  for f in $(git ls-tree -r --name-only "$ref" -- $CONTRACT 2> /dev/null | grep '\.prisma$' || true); do
+    git show "$ref:$f"
+  done | awk '
+    { sub(/[[:space:]]+$/, ""); sub(/^[[:space:]]+/, "") }
+    /^$/ || /^\/\// { next }
+    # Comentario al final de la línea: solo se quita si el `//` queda fuera de comillas.
+    match($0, /[[:space:]]\/\/[[:space:]]/) { pre = substr($0, 1, RSTART - 1); if (gsub(/"/, "\"", pre) % 2 == 0) { $0 = pre; sub(/[[:space:]]+$/, "") } }
+    /^[A-Za-z_]+[[:space:]]+[A-Za-z0-9_]+[[:space:]]*\{/ { name = $1 "." $2; print name "|" $0; next }
+    /^\}$/ { name = ""; next }
+    { print name "|" $0 }
+  ' | LC_ALL=C sort
+}
+if [ "$(schema_blocks "$BASE" | sha256sum)" = "$(schema_blocks HEAD | sha256sum)" ]; then
+  echo "El contrato solo cambió de archivos o de documentación (mismo contenido por modelo): no hay cambio de tablas."
   exit 0
 fi
 
@@ -52,7 +81,7 @@ new_sql="$(changed_files "$SQL_DIR" | grep '\.sql$' || true)"
 
 if [ -z "$new_sql" ]; then
   cat >&2 <<EOF
-ERROR: cambió el modelo de datos ($CONTRACT) pero no hay ningún SQL nuevo en $SQL_DIR/.
+ERROR: cambió el modelo de datos (prisma/schema/) pero no hay ningún SQL nuevo en $SQL_DIR/.
 
 La app se despliega sola (Vercel toma main), pero el SQL de producción se
 corre a mano en Supabase. Sin ese SQL, la versión se cae en producción.

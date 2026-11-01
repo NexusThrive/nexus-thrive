@@ -1,0 +1,66 @@
+// use prisma-8
+
+/// Tipo de anotación en la bitácora de campo (FASE 4 — Tab 4).
+enum FieldNoteType {
+  ADVANCE
+  OBSERVATION
+  AUTHORIZATION
+  INCIDENT
+}
+
+/// Condición meteorológica registrada en una anotación de campo (FASE 4 — Tab 4).
+enum WeatherCondition {
+  SUNNY
+  CLOUDY
+  RAIN_LIGHT
+  RAIN_HEAVY
+}
+
+/// Bitácora de campo de un proyecto (FASE 4 — Tab 4). Un proyecto tiene
+/// como máximo una bitácora en esta fase (1:1 vía `projectId @unique`).
+model FieldLog {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  projectId String   @unique
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name      String   @default("Diario Oficial de Obra")
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+
+  entries FieldLogEntry[]
+
+  @@index([tenantId])
+  @@index([tenantId, projectId])
+  @@rls
+}
+
+/// Anotación del Diario Oficial de Obra (FASE 4 — Tab 4).
+///
+/// Campos:
+/// - `budgetItemId`: Partida del presupuesto a la que se refiere (opcional).
+model FieldLogEntry {
+  id          String           @id @default(uuid())
+  tenantId    String
+  tenant      Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  logId       String
+  log         FieldLog         @relation(fields: [logId], references: [id], onDelete: Cascade)
+  entryDate   DateTime
+  type        FieldNoteType    @default(ADVANCE)
+  title       String
+  description String
+  weather     WeatherCondition @default(SUNNY)
+  laborCount  Int              @default(0)
+  authorName  String
+  authorRole  String
+  photoUrls   String[]         @default([])
+  budgetItemId String?
+  budgetItem   BudgetItem? @relation(fields: [budgetItemId], references: [id], onDelete: SetNull)
+  createdAt   DateTime         @default(now())
+  updatedAt   temporal.updatedAt()
+
+  @@index([tenantId])
+  @@index([logId])
+  @@index([tenantId, entryDate])
+  @@rls
+}

@@ -1,6 +1,6 @@
 /**
  * Obras (proyectos) y su ciclo de vida.
- * Extraído de `lib/tenant/db.ts`; `createTenantDb` lo compone. Todo
+ * Extraído de `lib/tenant/db.ts`; `createConstructionDb` lo compone. Todo
  * acceso va acotado al `tenantId` recibido.
  */
 import {
@@ -22,9 +22,9 @@ import {
   type ProjectMetrics,
   type ProjectRow,
   type UpdateProjectInput,
-  escapeLike,
   serializeProjectHeader,
 } from "./shared";
+import { escapeLike } from "@/lib/sql-like";
 
 export function createProjectsDb(tenantId: string) {
   return {

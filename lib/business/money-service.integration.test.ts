@@ -4,10 +4,10 @@ import { createAdminDb } from "@/lib/admin/db";
 import { deleteTenantCompletely } from "@/lib/tenant/deletion";
 import { createCashBox, openCashSession } from "./finance-db";
 import { createInvoice } from "./invoices-db";
-import { createTenantDb } from "@/lib/tenant/db";
 import { recordCharge } from "./charge";
 import { moneyTransaction, payInvoice, recordIncome, recordIncomeNow, sellProduct, voidExpense, voidPayment } from "./money-service";
 
+import { createMembershipsDb } from "@/lib/business/memberships-repo";
 /**
  * DATA-01 (docs/nexus-architecture/technical-debt.md): el dinero pasa todo o
  * nada, y lo que se cobra una vez no se cobra dos veces aunque lleguen dos
@@ -175,12 +175,12 @@ describe.skipIf(!enabled)("servicio de dinero (integración)", () => {
       user,
     );
 
-    const tenantDb = createTenantDb(tenantId);
-    const detail = await tenantDb.memberships.get(membershipId);
+    const memberships = createMembershipsDb(tenantId);
+    const detail = await memberships.get(membershipId);
     expect(detail?.payments.map((p) => p.kind)).toEqual(["inicial", "renovacion"]);
 
     await voidPayment(tenantId, renewal.paymentId, "Cobro repetido", user);
-    const after = await tenantDb.memberships.get(membershipId);
+    const after = await memberships.get(membershipId);
     expect(after?.payments.find((p) => p.paymentId === renewal.paymentId)?.status).toBe("VOIDED");
   });
 

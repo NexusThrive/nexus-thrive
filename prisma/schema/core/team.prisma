@@ -1,0 +1,66 @@
+// use prisma-8
+
+/// Rol del equipo interno de NEXUS (Operations Center). Los permisos son
+/// claves controladas por `lib/ops/permissions.ts`; `system` = rol base que
+/// no se puede borrar (sí editar, salvo el de Propietario).
+model StaffRole {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  name        String
+  description String?
+  permissions String[]
+  system      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   temporal.updatedAt()
+
+  members StaffMember[]
+  invites StaffInvite[]
+  @@rls
+}
+
+/// Invitación al equipo de NEXUS: un enlace de un solo uso que ata una cuenta
+/// de Clerk concreta a la ficha del integrante. Evita depender de que la
+/// persona se registre con el mismo correo.
+///
+/// Campos:
+/// - `createdById`: Quién generó la invitación.
+/// - `expiresAt`: Vence (por defecto 7 días).
+/// - `usedAt`: Cuándo se usó (la cuenta quedó vinculada).
+model StaffInvite {
+  id          String    @id @default(uuid())
+  token       String    @unique
+  email       String
+  roleId      String
+  role        StaffRole @relation(fields: [roleId], references: [id])
+  createdById String?
+  expiresAt   DateTime
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   temporal.updatedAt()
+
+  @@index([email])
+  @@index([roleId])
+  @@rls
+}
+
+/// Integrante del equipo NEXUS. No pertenece a ningún negocio: su acceso al
+/// panel sale de su rol. Se invita por correo; `clerkUserId` se completa
+/// la primera vez que entra con ese correo.
+model StaffMember {
+  id          String    @id @default(uuid())
+  clerkUserId String?   @unique
+  email       String    @unique
+  name        String?
+  title       String?
+  roleId      String
+  role        StaffRole @relation(fields: [roleId], references: [id])
+  active      Boolean   @default(true)
+  invitedById String?
+  joinedAt    DateTime?
+  lastSeenAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   temporal.updatedAt()
+
+  @@index([roleId])
+  @@rls
+}

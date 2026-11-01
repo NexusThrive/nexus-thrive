@@ -1,6 +1,4 @@
-import type { createTenantDb } from "@/lib/tenant/db";
-
-type TenantDb = ReturnType<typeof createTenantDb>;
+import type { ConstructionDb } from "@/lib/construction/construction-db";
 
 /**
  * Crea (si faltan) los tres contenedores de una obra: presupuesto, plan Lean
@@ -9,10 +7,10 @@ type TenantDb = ReturnType<typeof createTenantDb>;
  * antiguas; nunca durante el render (un GET no debe escribir).
  */
 export async function ensureProjectContainers(
-  tenantDb: TenantDb,
+  construction: ConstructionDb,
   projectId: string,
 ): Promise<void> {
-  await tenantDb.budgets.getOrCreate(projectId);
-  await tenantDb.lean.getOrCreatePlan(projectId);
-  await tenantDb.fieldLog.getOrCreateLog(projectId);
+  await construction.budgets.getOrCreate(projectId);
+  await construction.lean.getOrCreatePlan(projectId);
+  await construction.fieldLog.getOrCreateLog(projectId);
 }

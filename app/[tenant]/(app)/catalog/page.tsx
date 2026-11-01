@@ -14,6 +14,7 @@ import { KpiCard } from "@/components/molecules/kpi-card";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { requirePageContext } from "@/lib/tenant/context";
 
+import { createConstructionDb } from "@/lib/construction/construction-db";
 const ITEMS_PAGE_SIZE = 10;
 const ACTIVITIES_PAGE_SIZE = 50;
 
@@ -60,11 +61,12 @@ export default async function CatalogPage({
   const pageCtx = await requirePageContext(tenantSlug, "/catalog");
   const tenantRecord = pageCtx.tenant;
   const tenantDb = createTenantDb(tenantRecord.id);
+  const construction = createConstructionDb(tenantRecord.id);
   const { userId } = await auth();
   const member = userId ? await tenantDb.users.findByClerkUserId(userId) : null;
   const canManageCatalog = canGovernBudget((member?.role ?? "STAFF") as TenantRole);
   const terms = getQuoteTerms(tenantRecord.vertical);
-  const overview = await tenantDb.apu.getOverview();
+  const overview = await construction.apu.getOverview();
 
   let activitiesSection: React.ReactNode = null;
   let itemsSection: React.ReactNode = null;
@@ -76,16 +78,16 @@ export default async function CatalogPage({
     const pageRaw = Number.parseInt(firstString(sp.aqpage), 10);
     const requestedPage = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
     const [catalog, items, chapters, p99] = await Promise.all([
-      tenantDb.apu.listActivities({
+      construction.apu.listActivities({
         q,
         chapterCode,
         kind,
         page: requestedPage,
         limit: ACTIVITIES_PAGE_SIZE,
       }),
-      tenantDb.apu.listAllItems(),
-      tenantDb.apu.listChapters(),
-      tenantDb.apu.getP99Thresholds(),
+      construction.apu.listAllItems(),
+      construction.apu.listChapters(),
+      construction.apu.getP99Thresholds(),
     ]);
     const totalPages = Math.max(1, Math.ceil(catalog.total / ACTIVITIES_PAGE_SIZE));
     activitiesSection = (
@@ -121,7 +123,7 @@ export default async function CatalogPage({
     const pageRaw = Number.parseInt(firstString(sp.ipage), 10);
     const requestedPage = Number.isFinite(pageRaw) && pageRaw > 0 ? pageRaw : 1;
 
-    const result = await tenantDb.apu.listItems({
+    const result = await construction.apu.listItems({
       q,
       category,
       active,

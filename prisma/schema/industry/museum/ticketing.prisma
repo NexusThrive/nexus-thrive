@@ -1,0 +1,33 @@
+// use prisma-8
+
+/// Venta de taquilla (museo): entradas por tipo para una fecha y franja.
+///
+/// Campos:
+/// - `slot`: Franja horaria "10:00".
+/// - `lines`: [{ productId, name, qty, unitPrice }]
+/// - `kind`: TAQUILLA | GRUPO | COLEGIO | GUIADA
+/// - `status`: PAID | RESERVED | VOID
+/// - `bookingId`: Cita en la agenda (visitas guiadas y colegios).
+model TicketSale {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  number      Int
+  visitDate   DateTime
+  slot        String
+  visitors    Int
+  lines       Json
+  total       Decimal
+  kind        String   @default("TAQUILLA")
+  groupName   String?
+  customerId  String?
+  paymentId   String?
+  status      String   @default("PAID")
+  bookingId   String?
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@unique([tenantId, number])
+  @@index([tenantId, visitDate])
+  @@rls
+}

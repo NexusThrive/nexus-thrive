@@ -6,10 +6,7 @@ import {
 import {
   db,
 } from "@/prisma/db";
-import {
-  formatDateShort,
-  toNumber,
-} from "@/lib/format";
+import { toNumber } from "@/lib/format";
 import {
   DEFAULT_MODULES_BY_VERTICAL,
   type VerticalValue,
@@ -20,31 +17,8 @@ import {
   type PaymentMethodValue,
   type PaymentStatusValue,
 } from "@/lib/finance";
-import {
-  EXPIRING_WINDOW_DAYS,
-  MEMBERSHIP_STATUSES,
-  computeMembershipStatus,
-  plusDays,
-  typeLabel,
-  type MembershipPaymentEntry,
-  type MembershipStatusValue,
-  type MembershipTypeValue,
-} from "@/lib/business/memberships";
-import { createCatalogDb } from "@/lib/construction/catalog";
-import { createQuotesDb } from "@/lib/construction/quotes";
-import { createProjectQuotesDb } from "@/lib/construction/project-quotes";
-import { createProgressDb } from "@/lib/construction/progress";
-import { createProjectsDb } from "@/lib/construction/projects";
-import { createProjectHeadersDb } from "@/lib/construction/project-headers";
-import { createBudgetsDb } from "@/lib/construction/budget";
-import { createPlanDb } from "@/lib/construction/plan";
-import { createFieldLogDb } from "@/lib/construction/field-log";
-import { createReportsDb } from "@/lib/construction/reports";
-import {
-  escapeLike,
-} from "@/lib/construction/shared";
-
-export type * from "@/lib/construction/shared";
+import { monthRangeBogota, resolveMonthYear } from "@/lib/bogota-month";
+import { escapeLike } from "@/lib/sql-like";
 
 
 export type CustomerSearchInput = {
@@ -130,54 +104,6 @@ export type RecentActivityRow = {
   date: string;
 };
 
-export type MembershipListInput = {
-  /** Texto libre contra nombre/teléfono/email del cliente. */
-  q?: string;
-  /** Estado DINÁMICO (calculado desde `endDate`), no el persistido. */
-  status?: MembershipStatusValue;
-  type?: MembershipTypeValue;
-  page?: number;
-  limit?: number;
-};
-
-/** Fila serializable de membresía (Decimal → number, Temporal → ISO). */
-export type MembershipRow = {
-  id: string;
-  customerId: string;
-  customerName: string;
-  customerPhone: string | null;
-  customerEmail: string | null;
-  type: MembershipTypeValue;
-  status: MembershipStatusValue;
-  price: number;
-  startDate: string;
-  endDate: string;
-  createdAt: string;
-  /** Congelada o cancelada (prima sobre el estado por fechas). */
-  hold: "frozen" | "cancelled" | null;
-};
-
-/** Congelada (ahora dentro del congelamiento) o cancelada. */
-function membershipHold(m: { frozenFrom?: unknown; frozenUntil?: unknown; cancelledAt?: unknown }): MembershipRow["hold"] {
-  if (m.cancelledAt) return "cancelled";
-  const now = Date.now();
-  if (m.frozenFrom && m.frozenUntil && now >= Date.parse(String(m.frozenFrom)) && now < Date.parse(String(m.frozenUntil))) return "frozen";
-  return null;
-}
-
-/** Detalle de membresía con su historial de cobros (de `Payment`). */
-export type MembershipDetail = MembershipRow & {
-  payments: MembershipPaymentEntry[];
-};
-
-export type MembershipMetrics = {
-  activeCount: number;
-  expiringCount: number;
-  expiredCount: number;
-  /** Suma de precios de membresías que vencen en el mes (Bogotá). */
-  renewalRevenueProjection: number;
-};
-
 /** Estado general de la cuenta del cliente (Ficha 360°). */
 export type CustomerAccountStatus =
   | "al_dia"
@@ -205,17 +131,6 @@ export type Customer360Payment = {
   provider: PaymentMethodValue;
   providerRefId: string | null;
   description: string | null;
-  createdAt: string;
-};
-
-/** Fila serializable de membresía (estado DINÁMICO desde `endDate`). */
-export type Customer360Membership = {
-  id: string;
-  type: MembershipTypeValue;
-  status: MembershipStatusValue;
-  price: number;
-  startDate: string;
-  endDate: string;
   createdAt: string;
 };
 
@@ -254,19 +169,128 @@ export type Customer360Metrics = {
   accountStatus: CustomerAccountStatus;
 };
 
-/** Todo lo que necesita la vista 360° (serializable, scoped al tenant). */
+/**
+ * Todo lo que necesita la vista 360° (serializable, scoped al tenant). Las
+ * membresías y demás datos de un rubro no van aquí: llegan como aportes
+ * (`Customer360Contribution`) y la pantalla los reúne.
+ */
 export type Customer360Details = {
   customer: Customer360Profile;
   /** Últimos 200 pagos, descendente por fecha. */
   payments: Customer360Payment[];
   paymentsTotal: number;
-  /** Últimas 100 membresías, descendente por inicio. */
-  memberships: Customer360Membership[];
   /** Últimas 100 notas, descendente por fecha. */
   notes: Customer360Note[];
   timeline: CustomerTimelineEvent[];
   metrics: Customer360Metrics;
 };
+
+/**
+ * Contrato de aportes a la ficha 360° (G1).
+ *
+ * Una capacidad o industria (hoy, el gimnasio con sus membresías) aporta a la
+ * ficha sin que Core la conozca: entrega sus eventos de línea de tiempo, su
+ * actividad más reciente y una señal para el estado de cuenta. La pantalla
+ * reúne los aportes y llama a `buildCustomer360`.
+ */
+export type Customer360Contribution = {
+  /** Eventos propios para la línea de tiempo unificada. */
+  events: CustomerTimelineEvent[];
+  /** Actividad propia más reciente (ISO) o `null`. */
+  lastActivityDate: string | null;
+  /** ¿El cliente tiene registros propios? (distingue «sin actividad»). */
+  hasRecords: boolean;
+  /**
+   * Señal para el estado de cuenta: `overdue` = algo vencido (la cuenta queda
+   * «vencido»), `current` = al día, `null` = sin señal.
+   */
+  accountSignal: "overdue" | "current" | null;
+};
+
+/** Datos de Core de la ficha 360°, antes de sumar los aportes. */
+export type Customer360Base = {
+  customer: Customer360Profile;
+  payments: Customer360Payment[];
+  paymentsTotal: number;
+  notes: Customer360Note[];
+  /** Eventos de pagos y de notas, ya con su título y descripción. */
+  paymentEvents: CustomerTimelineEvent[];
+  noteEvents: CustomerTimelineEvent[];
+  ltv: number;
+  approvedCount: number;
+  pendingCount: number;
+  favoriteMethod: PaymentMethodValue | null;
+  /** Actividad más reciente entre pagos y notas. */
+  lastActivityDate: string | null;
+};
+
+const CUSTOMER_TIMELINE_CAP = 30;
+
+/**
+ * Une la ficha de Core con los aportes de otras capacidades. Función pura.
+ *
+ * Reglas del estado de cuenta (nunca inventado):
+ * 1. sin pagos, notas ni registros de ningún aporte → sin actividad
+ * 2. algún aporte vencido → vencido
+ * 3. pagos pendientes → pendiente
+ * 4. algún aporte vigente o pagos aprobados → al día
+ * 5. (solo notas o pagos no aprobados) → sin datos
+ */
+export function buildCustomer360(
+  base: Customer360Base,
+  contributions: readonly Customer360Contribution[] = [],
+): Customer360Details {
+  let lastActivityDate = base.lastActivityDate;
+  for (const contribution of contributions) {
+    lastActivityDate = maxIso(lastActivityDate, contribution.lastActivityDate);
+  }
+
+  const hasRecords =
+    base.payments.length > 0 ||
+    base.notes.length > 0 ||
+    contributions.some((contribution) => contribution.hasRecords);
+
+  let accountStatus: CustomerAccountStatus;
+  if (!hasRecords) {
+    accountStatus = "sin_actividad";
+  } else if (contributions.some((contribution) => contribution.accountSignal === "overdue")) {
+    accountStatus = "vencido";
+  } else if (base.pendingCount > 0) {
+    accountStatus = "pendiente";
+  } else if (
+    contributions.some((contribution) => contribution.accountSignal !== null) ||
+    base.approvedCount > 0
+  ) {
+    accountStatus = "al_dia";
+  } else {
+    accountStatus = "sin_datos";
+  }
+
+  // Orden: pagos, aportes, notas (el desempate entre fechas iguales lo conserva).
+  const timeline = [
+    ...base.paymentEvents,
+    ...contributions.flatMap((contribution) => contribution.events),
+    ...base.noteEvents,
+  ]
+    .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+    .slice(0, CUSTOMER_TIMELINE_CAP);
+
+  return {
+    customer: base.customer,
+    payments: base.payments,
+    paymentsTotal: base.paymentsTotal,
+    notes: base.notes,
+    timeline,
+    metrics: {
+      ltv: base.ltv,
+      approvedCount: base.approvedCount,
+      avgTicket: base.approvedCount > 0 ? base.ltv / base.approvedCount : 0,
+      favoriteMethod: base.favoriteMethod,
+      lastActivityDate,
+      accountStatus,
+    },
+  };
+}
 
 /* ------------------------------------------------------------------ */
 
@@ -287,60 +311,6 @@ const PAYMENT_METHOD_VALUES: PaymentMethodValue[] = [
   "WOMPI",
   "TRANSFER",
 ];
-
-/**
- * Rango del mes en horario de Bogotá (UTC−5): inicio del mes y del
- * siguiente, como `Temporal.Instant` (codec obligatorio del driver).
- * Los registros se comparan con `>= start` y `< end`.
- */
-function monthRangeBogota(year: number, month: number): {
-  start: Temporal.Instant;
-  end: Temporal.Instant;
-} {
-  // 05:00 UTC del día 1 = 00:00 en Bogotá (UTC−5). JS normaliza el
-  // overflow: mes 12 → enero del año siguiente.
-  const start = Temporal.Instant.fromEpochMilliseconds(
-    Date.UTC(year, month - 1, 1, 5, 0, 0),
-  );
-  const end = Temporal.Instant.fromEpochMilliseconds(
-    Date.UTC(year, month, 1, 5, 0, 0),
-  );
-  return { start, end };
-}
-
-/** Valida y normaliza un mes/año; por defecto usa el mes actual (Bogotá). */
-function resolveMonthYear(month?: number, year?: number) {
-  const now = new Date();
-  // El día actual en Bogotá: DateTimeFormat con timeZone para no depender
-  // de la zona horaria del servidor.
-  const bogotaParts = new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/Bogota",
-    month: "numeric",
-    year: "numeric",
-  }).formatToParts(now);
-  const bogotaMonth = Number(
-    bogotaParts.find((part) => part.type === "month")?.value,
-  );
-  const bogotaYear = Number(
-    bogotaParts.find((part) => part.type === "year")?.value,
-  );
-
-  const resolvedMonth = month ?? bogotaMonth;
-  const resolvedYear = year ?? bogotaYear;
-
-  if (
-    !Number.isInteger(resolvedMonth) ||
-    resolvedMonth < 1 ||
-    resolvedMonth > 12
-  ) {
-    throw new Error("Mes inválido para las métricas financieras.");
-  }
-  if (!Number.isInteger(resolvedYear) || resolvedYear < 2000 || resolvedYear > 2100) {
-    throw new Error("Año inválido para las métricas financieras.");
-  }
-
-  return { month: resolvedMonth, year: resolvedYear };
-}
 
 /**
  * Notas de un cliente (serializadas, autor resuelto vía include).
@@ -367,6 +337,135 @@ async function listCustomerNotes(
     createdAt: String(row.createdAt),
   }));
 }
+
+/**
+ * Carga la base de la ficha 360° del cliente. Siempre scoped por `tenantId`:
+ * devuelve `null` si el cliente no pertenece a este negocio.
+ */
+async function load360Base(tenantId: string, customerId: string): Promise<Customer360Base | null> {
+  const customer = await db.orm.public.Customer
+    .select("id", "name", "email", "phone", "active", "createdAt", "updatedAt")
+    .where({ id: customerId, tenantId })
+    .first();
+  if (!customer) {
+    return null;
+  }
+
+  const PAYMENTS_CAP = 200;
+
+  const [payments, paymentsTotalAgg, approvedAgg, pendingCountAgg] = await Promise.all([
+    db.orm.public.Payment
+      .select("id", "amount", "status", "provider", "providerRefId", "description", "createdAt")
+      .where({ tenantId, customerId })
+      .orderBy((payment) => payment.createdAt.desc())
+      .limit(PAYMENTS_CAP)
+      .all(),
+    db.orm.public.Payment
+      .where({ tenantId, customerId })
+      .aggregate((aggregate) => ({ total: aggregate.count() })),
+    db.orm.public.Payment
+      .where({ tenantId, customerId })
+      .where((payment) => payment.status.eq("APPROVED"))
+      .aggregate((aggregate) => ({
+        total: aggregate.sum("amount"),
+        count: aggregate.count(),
+      })),
+    db.orm.public.Payment
+      .where({ tenantId, customerId })
+      .where((payment) => payment.status.eq("PENDING"))
+      .aggregate((aggregate) => ({ total: aggregate.count() })),
+  ]);
+
+  const notes = await listCustomerNotes(tenantId, customerId, 100);
+
+  const serializedPayments: Customer360Payment[] = payments.map((payment) => ({
+    id: payment.id,
+    amount: toNumber(payment.amount),
+    status: payment.status,
+    provider: payment.provider,
+    providerRefId: payment.providerRefId,
+    description: payment.description,
+    createdAt: String(payment.createdAt),
+  }));
+
+  // --- Métricas -------------------------------------------------------
+  const ltv = toNumber(approvedAgg.total);
+  const approvedCount = approvedAgg.count;
+
+  // Método más frecuente entre pagos aprobados (lista desc: ante empate,
+  // gana el más reciente).
+  const methodFrequency = new Map<PaymentMethodValue, number>();
+  for (const payment of payments) {
+    if (payment.status !== "APPROVED") {
+      continue;
+    }
+    methodFrequency.set(payment.provider, (methodFrequency.get(payment.provider) ?? 0) + 1);
+  }
+  let favoriteMethod: PaymentMethodValue | null = null;
+  let favoriteCount = 0;
+  for (const [method, count] of methodFrequency) {
+    if (count > favoriteCount) {
+      favoriteCount = count;
+      favoriteMethod = method;
+    }
+  }
+
+  // Última actividad entre pagos y notas (vienen desc: basta el primero).
+  let lastActivityDate: string | null = null;
+  if (payments.length > 0) {
+    lastActivityDate = String(payments[0].createdAt);
+  }
+  if (notes.length > 0) {
+    lastActivityDate = maxIso(lastActivityDate, notes[0].createdAt);
+  }
+
+  // --- Eventos del timeline de Core ----------------------------------
+  const paymentEvents = serializedPayments.map(
+    (payment): CustomerTimelineEvent => ({
+      id: `payment-${payment.id}`,
+      type: "payment",
+      date: payment.createdAt,
+      title: "Pago",
+      description: payment.description
+        ? `${paymentMethodLabel(payment.provider)} · ${payment.description}`
+        : paymentMethodLabel(payment.provider),
+      amount: payment.amount,
+      status: paymentStatusLabel(payment.status),
+    }),
+  );
+  const noteEvents = notes.map(
+    (note): CustomerTimelineEvent => ({
+      id: `note-${note.id}`,
+      type: "note",
+      date: note.createdAt,
+      title: note.authorName ? `Nota de ${note.authorName}` : "Nota interna",
+      description: note.content.length > 140 ? `${note.content.slice(0, 140)}…` : note.content,
+    }),
+  );
+
+  return {
+    customer: {
+      id: customer.id,
+      name: customer.name,
+      email: customer.email,
+      phone: customer.phone,
+      active: customer.active,
+      createdAt: String(customer.createdAt),
+      updatedAt: String(customer.updatedAt),
+    },
+    payments: serializedPayments,
+    paymentsTotal: paymentsTotalAgg.total,
+    notes,
+    paymentEvents,
+    noteEvents,
+    ltv,
+    approvedCount,
+    pendingCount: pendingCountAgg.total,
+    favoriteMethod,
+    lastActivityDate,
+  };
+}
+
 
 
 export function createTenantDb(tenantId: string) {
@@ -554,211 +653,24 @@ export function createTenantDb(tenantId: string) {
        * El LTV se calcula por agregación EXACTA (no depende del límite de
        * filas); los listados van acotados para no cargar historiales grandes.
        */
+      /**
+       * Datos de Core de la ficha 360° (cliente, pagos y notas), sin los aportes
+       * de ninguna capacidad ni rubro. Devuelve `null` si el cliente no existe o
+       * es de otro tenant. La pantalla suma los aportes con `buildCustomer360`.
+       */
+      get360Base: (customerId: string): Promise<Customer360Base | null> =>
+        load360Base(tenantId, customerId),
+
+      /**
+       * Ficha 360° completa: la base de Core más los aportes recibidos. Sin
+       * aportes es la ficha general (pagos y notas).
+       */
       get360Details: async (
         customerId: string,
+        contributions: readonly Customer360Contribution[] = [],
       ): Promise<Customer360Details | null> => {
-        const customer = await db.orm.public.Customer
-          .select("id", "name", "email", "phone", "active", "createdAt", "updatedAt")
-          .where({ id: customerId, tenantId })
-          .first();
-        if (!customer) {
-          return null;
-        }
-
-        const PAYMENTS_CAP = 200;
-        const MEMBERSHIPS_CAP = 100;
-        const TIMELINE_CAP = 30;
-
-        const [payments, paymentsTotalAgg, approvedAgg, pendingCountAgg, memberships] =
-          await Promise.all([
-            db.orm.public.Payment
-              .select("id", "amount", "status", "provider", "providerRefId", "description", "createdAt")
-              .where({ tenantId, customerId })
-              .orderBy((payment) => payment.createdAt.desc())
-              .limit(PAYMENTS_CAP)
-              .all(),
-            db.orm.public.Payment
-              .where({ tenantId, customerId })
-              .aggregate((aggregate) => ({ total: aggregate.count() })),
-            db.orm.public.Payment
-              .where({ tenantId, customerId })
-              .where((payment) => payment.status.eq("APPROVED"))
-              .aggregate((aggregate) => ({
-                total: aggregate.sum("amount"),
-                count: aggregate.count(),
-              })),
-            db.orm.public.Payment
-              .where({ tenantId, customerId })
-              .where((payment) => payment.status.eq("PENDING"))
-              .aggregate((aggregate) => ({ total: aggregate.count() })),
-            db.orm.public.Membership
-              .select("id", "type", "startDate", "endDate", "price", "createdAt")
-              .where({ tenantId, customerId })
-              .orderBy((membership) => membership.startDate.desc())
-              .limit(MEMBERSHIPS_CAP)
-              .all(),
-          ]);
-
-        const notes = await listCustomerNotes(tenantId, customerId, 100);
-
-        const serializedPayments: Customer360Payment[] = payments.map((payment) => ({
-          id: payment.id,
-          amount: toNumber(payment.amount),
-          status: payment.status,
-          provider: payment.provider,
-          providerRefId: payment.providerRefId,
-          description: payment.description,
-          createdAt: String(payment.createdAt),
-        }));
-
-        const serializedMemberships: Customer360Membership[] = memberships.map(
-          (membership) => ({
-            id: membership.id,
-            type: membership.type,
-            status: computeMembershipStatus(membership.endDate),
-            price: toNumber(membership.price),
-            startDate: String(membership.startDate),
-            endDate: String(membership.endDate),
-            createdAt: String(membership.createdAt),
-          }),
-        );
-
-        // --- Métricas -------------------------------------------------------
-        const ltv = toNumber(approvedAgg.total);
-        const approvedCount = approvedAgg.count;
-        const avgTicket = approvedCount > 0 ? ltv / approvedCount : 0;
-
-        // Método más frecuente entre pagos aprobados (lista desc: ante empate,
-        // gana el más reciente).
-        const methodFrequency = new Map<PaymentMethodValue, number>();
-        for (const payment of payments) {
-          if (payment.status !== "APPROVED") {
-            continue;
-          }
-          methodFrequency.set(
-            payment.provider,
-            (methodFrequency.get(payment.provider) ?? 0) + 1,
-          );
-        }
-        let favoriteMethod: PaymentMethodValue | null = null;
-        let favoriteCount = 0;
-        for (const [method, count] of methodFrequency) {
-          if (count > favoriteCount) {
-            favoriteCount = count;
-            favoriteMethod = method;
-          }
-        }
-
-        // Última actividad: pago, nota o membresía más reciente (real).
-        // Pagos y notas vienen desc: basta el primero; membresías se recorren.
-        let lastActivityDate: string | null = null;
-        if (payments.length > 0) {
-          lastActivityDate = String(payments[0].createdAt);
-        }
-        if (notes.length > 0) {
-          lastActivityDate = maxIso(lastActivityDate, notes[0].createdAt);
-        }
-        for (const membership of memberships) {
-          lastActivityDate = maxIso(lastActivityDate, String(membership.createdAt));
-        }
-
-        // Estado de cuenta basado en datos reales, nunca inventado:
-        // 1. sin pagos/membresías/notas → sin actividad
-        // 2. membresía más reciente vencida → vencido
-        // 3. pagos PENDING → pendiente
-        // 4. membresía activa o pagos aprobados → al día
-        // 5. (solo notas / pagos no aprobados) → sin datos
-        const latestByEnd = serializedMemberships.reduce<Customer360Membership | null>(
-          (latest, membership) =>
-            !latest || membership.endDate > latest.endDate ? membership : latest,
-          null,
-        );
-        let accountStatus: CustomerAccountStatus;
-        if (
-          payments.length === 0 &&
-          serializedMemberships.length === 0 &&
-          notes.length === 0
-        ) {
-          accountStatus = "sin_actividad";
-        } else if (latestByEnd && latestByEnd.status === "expired") {
-          accountStatus = "vencido";
-        } else if (pendingCountAgg.total > 0) {
-          accountStatus = "pendiente";
-        } else if (latestByEnd || approvedCount > 0) {
-          accountStatus = "al_dia";
-        } else {
-          accountStatus = "sin_datos";
-        }
-
-        // --- Timeline unificado ---------------------------------------------
-        const membershipStatusLabel = (status: MembershipStatusValue): string =>
-          MEMBERSHIP_STATUSES.find((option) => option.value === status)?.label ??
-          status;
-
-        const timeline: CustomerTimelineEvent[] = [
-          ...serializedPayments.map(
-            (payment): CustomerTimelineEvent => ({
-              id: `payment-${payment.id}`,
-              type: "payment",
-              date: payment.createdAt,
-              title: "Pago",
-              description: payment.description
-                ? `${paymentMethodLabel(payment.provider)} · ${payment.description}`
-                : paymentMethodLabel(payment.provider),
-              amount: payment.amount,
-              status: paymentStatusLabel(payment.status),
-            }),
-          ),
-          ...serializedMemberships.map(
-            (membership): CustomerTimelineEvent => ({
-              id: `membership-${membership.id}`,
-              type: "membership",
-              date: membership.createdAt,
-              title: `Membresía ${typeLabel(membership.type)}`,
-              description: `${formatDateShort(membership.startDate)} → ${formatDateShort(membership.endDate)}`,
-              status: membershipStatusLabel(membership.status),
-            }),
-          ),
-          ...notes.map(
-            (note): CustomerTimelineEvent => ({
-              id: `note-${note.id}`,
-              type: "note",
-              date: note.createdAt,
-              title: note.authorName ? `Nota de ${note.authorName}` : "Nota interna",
-              description:
-                note.content.length > 140
-                  ? `${note.content.slice(0, 140)}…`
-                  : note.content,
-            }),
-          ),
-        ]
-          .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
-          .slice(0, TIMELINE_CAP);
-
-        return {
-          customer: {
-            id: customer.id,
-            name: customer.name,
-            email: customer.email,
-            phone: customer.phone,
-            active: customer.active,
-            createdAt: String(customer.createdAt),
-            updatedAt: String(customer.updatedAt),
-          },
-          payments: serializedPayments,
-          paymentsTotal: paymentsTotalAgg.total,
-          memberships: serializedMemberships,
-          notes,
-          timeline,
-          metrics: {
-            ltv,
-            approvedCount,
-            avgTicket,
-            favoriteMethod,
-            lastActivityDate,
-            accountStatus,
-          },
-        };
+        const base = await load360Base(tenantId, customerId);
+        return base ? buildCustomer360(base, contributions) : null;
       },
     },
 
@@ -782,32 +694,6 @@ export function createTenantDb(tenantId: string) {
       listByCustomer: (customerId: string, limit = 100) =>
         listCustomerNotes(tenantId, customerId, limit),
     },
-
-    /* -------------------------------------------------------------- */
-    /* Módulo Construcción & APU — banco de insumos                    */
-    /* -------------------------------------------------------------- */
-
-    apu: createCatalogDb(tenantId),
-
-    /* -------------------------------------------------------------- */
-    /* Módulo Construcción & APU — presupuestos                        */
-    /* -------------------------------------------------------------- */
-
-    quotes: createQuotesDb(tenantId),
-    projectQuotes: createProjectQuotesDb(tenantId),
-    progress: createProgressDb(tenantId),
-
-    projects: createProjectsDb(tenantId),
-
-    projectHeaders: createProjectHeadersDb(tenantId),
-
-    budgets: createBudgetsDb(tenantId),
-
-    lean: createPlanDb(tenantId),
-
-    fieldLog: createFieldLogDb(tenantId),
-
-    reports: createReportsDb(tenantId),
 
     users: {
       list: () => db.orm.public.User.where({ tenantId }).all(),
@@ -1267,202 +1153,6 @@ export function createTenantDb(tenantId: string) {
         items.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
         return items.slice(0, safeLimit);
       },
-    },
-
-    memberships: {
-      /**
-       * Listado paginado de membresías del tenant, con datos del cliente
-       * (include) y estado dinámico calculado desde `endDate`.
-       *
-       * El filtro `status` se traduce a rangos sobre `endDate` (now /
-       * now+3d), así que se evalúa 100% en la base de datos.
-       * Aislamiento: `tenantId` siempre en el filtro base.
-       */
-      list: async ({
-        q,
-        status,
-        type,
-        page = 1,
-        limit = 10,
-      }: MembershipListInput): Promise<{ rows: MembershipRow[]; total: number }> => {
-        const text = (q ?? "").trim();
-        const pattern = `%${escapeLike(text)}%`;
-        const safePage = Math.max(1, Math.trunc(page));
-        const safeLimit = Math.min(100, Math.max(1, Math.trunc(limit)));
-
-        const now = Temporal.Instant.fromEpochMilliseconds(Date.now());
-        const windowEnd = plusDays(now, EXPIRING_WINDOW_DAYS);
-
-        let filtered = db.orm.public.Membership.where({ tenantId });
-        if (type) {
-          filtered = filtered.where((membership) => membership.type.eq(type));
-        }
-        if (status === "active") {
-          filtered = filtered.where((membership) => membership.endDate.gt(windowEnd));
-        } else if (status === "expiring") {
-          filtered = filtered.where((membership) =>
-            and(membership.endDate.gt(now), membership.endDate.lte(windowEnd)),
-          );
-        } else if (status === "expired") {
-          filtered = filtered.where((membership) => membership.endDate.lte(now));
-        }
-        if (text) {
-          filtered = filtered.where((membership) =>
-            membership.customer.some((customer) =>
-              or(
-                customer.name.ilike(pattern),
-                customer.phone.ilike(pattern),
-                customer.email.ilike(pattern),
-              ),
-            ),
-          );
-        }
-
-        const [rows, { total }] = await Promise.all([
-          filtered
-            .orderBy([
-              (membership) => membership.endDate.asc(),
-              (membership) => membership.id.asc(),
-            ])
-            .include("customer", (customer) =>
-              customer.select("name", "phone", "email"),
-            )
-            .limit(safeLimit)
-            .offset((safePage - 1) * safeLimit)
-            .all(),
-          filtered.aggregate((aggregate) => ({ total: aggregate.count() })),
-        ]);
-
-        return {
-          rows: rows.map((row) => ({
-            id: row.id,
-            customerId: row.customerId,
-            customerName: row.customer?.name ?? "Cliente eliminado",
-            customerPhone: row.customer?.phone ?? null,
-            customerEmail: row.customer?.email ?? null,
-            type: row.type,
-            status: computeMembershipStatus(row.endDate),
-            price: toNumber(row.price),
-            startDate: String(row.startDate),
-            endDate: String(row.endDate),
-            createdAt: String(row.createdAt),
-            hold: membershipHold(row),
-          })),
-          total,
-        };
-      },
-
-      /**
-       * Detalle de una membresía con su historial de cobros (de `Payment`).
-       * Devuelve `null` si no existe en este tenant.
-       */
-      get: async (id: string): Promise<MembershipDetail | null> => {
-        const membership = await db.orm.public.Membership
-          .where({ id, tenantId })
-          .include("customer", (customer) =>
-            customer.select("name", "phone", "email"),
-          )
-          .first();
-
-        if (!membership) {
-          return null;
-        }
-
-        // El historial sale de Payment, no del Json (DATA-02).
-        const charges = await db.orm.public.Payment
-          .where({ tenantId, membershipId: id })
-          .select("id", "description", "createdAt", "amount", "provider", "status", "receiptNumber")
-          .orderBy((p) => p.createdAt.asc())
-          .all();
-        const payments: MembershipPaymentEntry[] = charges.map((p) => ({
-          paymentId: p.id,
-          kind: /renovaci[oó]n/i.test(p.description ?? "") ? "renovacion" : "inicial",
-          date: String(p.createdAt),
-          amount: String(p.amount),
-          provider: p.provider,
-          status: p.status,
-          receiptNumber: p.receiptNumber ?? null,
-        }));
-
-        return {
-          id: membership.id,
-          customerId: membership.customerId,
-          customerName: membership.customer?.name ?? "Cliente eliminado",
-          customerPhone: membership.customer?.phone ?? null,
-          customerEmail: membership.customer?.email ?? null,
-          type: membership.type,
-          status: computeMembershipStatus(membership.endDate),
-          price: toNumber(membership.price),
-          startDate: String(membership.startDate),
-          endDate: String(membership.endDate),
-          createdAt: String(membership.createdAt),
-          hold: membershipHold(membership),
-          payments,
-        };
-      },
-
-      /**
-       * Métricas del módulo: conteos por estado dinámico (active / expiring
-       * / expired según `endDate` vs. ahora) y proyección de renovaciones =
-       * suma de precios de las membresías que vencen en el mes (Bogotá).
-       */
-      getMetrics: async (options?: {
-        month?: number;
-        year?: number;
-      }): Promise<MembershipMetrics> => {
-        const now = Temporal.Instant.fromEpochMilliseconds(Date.now());
-        const windowEnd = plusDays(now, EXPIRING_WINDOW_DAYS);
-
-        const { month, year } = resolveMonthYear(options?.month, options?.year);
-        const { start, end } = monthRangeBogota(year, month);
-
-        const [activeAgg, expiringAgg, expiredAgg, projectionAgg] =
-          await Promise.all([
-            db.orm.public.Membership
-              .where({ tenantId })
-              .where((membership) => membership.endDate.gt(windowEnd))
-              .aggregate((aggregate) => ({ total: aggregate.count() })),
-            db.orm.public.Membership
-              .where({ tenantId })
-              .where((membership) =>
-                and(membership.endDate.gt(now), membership.endDate.lte(windowEnd)),
-              )
-              .aggregate((aggregate) => ({ total: aggregate.count() })),
-            db.orm.public.Membership
-              .where({ tenantId })
-              .where((membership) => membership.endDate.lte(now))
-              .aggregate((aggregate) => ({ total: aggregate.count() })),
-            db.orm.public.Membership
-              .where({ tenantId })
-              .where((membership) =>
-                and(membership.endDate.gte(start), membership.endDate.lt(end)),
-              )
-              .aggregate((aggregate) => ({ total: aggregate.sum("price") })),
-          ]);
-
-        return {
-          activeCount: activeAgg.total,
-          expiringCount: expiringAgg.total,
-          expiredCount: expiredAgg.total,
-          renewalRevenueProjection: toNumber(projectionAgg.total),
-        };
-      },
-
-      create: (
-        data: Omit<
-          Parameters<typeof db.orm.public.Membership.create>[0],
-          "tenantId"
-        >,
-      ) =>
-        db.orm.public.Membership.create({
-          ...data,
-          tenantId,
-        }),
-
-      update: (id: string, data: Record<string, unknown>) =>
-        db.orm.public.Membership
-          .where({ id, tenantId })
-          .update(data),
     },
 
   };

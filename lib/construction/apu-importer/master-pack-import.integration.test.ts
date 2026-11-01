@@ -1,10 +1,10 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant/db";
 import { buildMasterPackPlan } from "./master-pack-plan";
 import { executeMasterPackImport } from "./master-pack-import";
 import { samplePack } from "./__fixtures__/sample-pack";
 
+import { createConstructionDb } from "@/lib/construction/construction-db";
 /**
  * Reglas de "no se pierde ningún dato" con un pack sintético (corre en CI).
  * Se salta sin TEST_DATABASE_URL.
@@ -135,8 +135,8 @@ describe.skipIf(!TEST_URL)("executeMasterPackImport (integración)", () => {
   });
 
   test("editar una actividad importada conserva sección, orden y precio de cada línea", async () => {
-    const tenantDb = createTenantDb(tenantId);
-    const detail = await tenantDb.apu.getActivity(legacyActivityId);
+    const construction = createConstructionDb(tenantId);
+    const detail = await construction.apu.getActivity(legacyActivityId);
     const percentLine = detail!.compositions.find((c) => c.lineUnit?.startsWith("%"))!;
     const costBefore = detail!.unitCost;
 
@@ -146,7 +146,7 @@ describe.skipIf(!TEST_URL)("executeMasterPackImport (integración)", () => {
       consumption: c.consumption,
       wastePercent: index === 0 ? "5" : c.wastePercent,
     }));
-    const updated = await tenantDb.apu.updateActivity(legacyActivityId, {
+    const updated = await construction.apu.updateActivity(legacyActivityId, {
       name: detail!.name,
       unit: detail!.unit,
       compositions: rows,
@@ -159,9 +159,9 @@ describe.skipIf(!TEST_URL)("executeMasterPackImport (integración)", () => {
   });
 
   test("cambiar el precio de un insumo se propaga a sus líneas y queda en el historial", async () => {
-    const tenantDb = createTenantDb(tenantId);
+    const construction = createConstructionDb(tenantId);
     const before = await db.orm.public.ApuItem.where({ id: legacyItemId }).first();
-    await tenantDb.apu.updateItem(legacyItemId, { unitPrice: "650" });
+    await construction.apu.updateItem(legacyItemId, { unitPrice: "650" });
     const lines = await db.orm.public.ApuActivityComposition.where({ itemId: legacyItemId, origin: "IMPORT" }).all();
     expect(lines.length).toBeGreaterThan(0);
     expect(lines.every((l) => String(l.lineUnitPrice) === "650")).toBe(true);

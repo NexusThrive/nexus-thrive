@@ -1,6 +1,6 @@
 /**
  * Presupuesto de obra: capítulos, partidas, recursos, AIU, bloqueo y línea base.
- * Extraído de `lib/tenant/db.ts`; `createTenantDb` lo compone. Todo
+ * Extraído de `lib/tenant/db.ts`; `createConstructionDb` lo compone. Todo
  * acceso va acotado al `tenantId` recibido.
  */
 import { categoryForSection } from "@/lib/construction/apu-importer/master-pack-plan";

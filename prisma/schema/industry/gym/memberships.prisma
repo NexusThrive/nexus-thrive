@@ -1,0 +1,70 @@
+// use prisma-8
+
+/// Periodicidad de una membresía.
+enum MembershipType {
+  mensual
+  trimestral
+  anual
+}
+
+/// Estado de una membresía según su vigencia.
+enum MembershipStatus {
+  active
+  expiring
+  expired
+}
+
+/// Membresía de un socio del gimnasio: tipo, vigencia y estado.
+///
+/// Campos:
+/// - `productId`: Plan del catálogo con el que se vendió.
+model Membership {
+  id         String           @id @default(uuid())
+  tenantId   String
+  tenant     Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId String
+  customer   Customer         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  type       MembershipType
+  startDate  DateTime
+  endDate    DateTime
+  status     MembershipStatus @default(active)
+  price      Decimal
+  charges    Payment[]
+  productId    String?
+  frozenFrom   DateTime?
+  frozenUntil  DateTime?
+  cancelledAt  DateTime?
+  cancelReason String?
+  createdAt  DateTime         @default(now())
+  updatedAt  temporal.updatedAt()
+
+  @@index([tenantId])
+  @@index([tenantId, endDate])
+  @@index([customerId])
+  @@rls
+}
+
+/// Entrada al gimnasio (o al sitio) con su resultado: permitida o negada y por qué.
+///
+/// Campos:
+/// - `customerId`: Socio identificado. Nulo cuando lo escaneado no corresponde a nadie (código o
+///   tarjeta desconocida): el intento queda registrado igual.
+/// - `scanned`: Lo que se escaneó, cuando no se pudo identificar al socio.
+/// - `method`: NFC | QR | MANUAL
+model Attendance {
+  id           String   @id @default(uuid())
+  tenantId     String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId   String?
+  membershipId String?
+  scanned      String?
+  method       String
+  allowed      Boolean
+  reason       String?
+  createdById  String?
+  at           DateTime @default(now())
+
+  @@index([tenantId, at])
+  @@index([customerId])
+  @@rls
+}

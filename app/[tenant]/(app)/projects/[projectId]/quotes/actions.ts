@@ -4,6 +4,10 @@ import { revalidatePath } from "next/cache";
 import { canGovernBudget, requireTenantContext } from "@/lib/tenant/context";
 import type { FollowUpTypeValue } from "@/lib/construction/project-quotes";
 
+import { createConstructionDb } from "@/lib/construction/construction-db";
+
+/** Capa de datos de construcción del negocio activo (Core no la conoce). */
+const construction = (context: { tenantId: string }) => createConstructionDb(context.tenantId);
 export type QuoteActionResult = { ok: true; message: string } | { ok: false; message: string };
 
 const FOLLOW_UP_TYPES: FollowUpTypeValue[] = ["NOTE", "CALL", "EMAIL", "MEETING", "VISIT"];
@@ -56,7 +60,7 @@ export async function emitQuoteAction(
     return { ok: false, message: "La fecha de validez no es válida." };
   }
   try {
-    const { version } = await context.tenantDb.projectQuotes.emit(
+    const { version } = await construction(context).projectQuotes.emit(
       projectId,
       { validUntil: validUntilRaw || null, showApuDetail: formData.get("showApuDetail") === "on" },
       expectedRevision,
@@ -83,7 +87,7 @@ export async function decideQuoteAction(
   }
   const note = String(formData.get("note") ?? "").trim().slice(0, 500);
   try {
-    const result = await context.tenantDb.projectQuotes.decide(quoteId, {
+    const result = await construction(context).projectQuotes.decide(quoteId, {
       decision,
       note,
       userId: context.userId,
@@ -119,7 +123,7 @@ export async function createFollowUpAction(
   if (note.length > 1000) return { ok: false, message: "El seguimiento admite hasta 1.000 caracteres." };
   if (scheduledFor && !ISO_DAY.test(scheduledFor)) return { ok: false, message: "La fecha no es válida." };
   try {
-    await context.tenantDb.projectQuotes.createFollowUp(projectId, {
+    await construction(context).projectQuotes.createFollowUp(projectId, {
       type,
       note,
       quoteId: quoteId || null,
@@ -140,7 +144,7 @@ export async function completeFollowUpAction(
 ): Promise<QuoteActionResult> {
   const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) return { ok: false, message: "No tienes acceso a este negocio." };
-  await context.tenantDb.projectQuotes.completeFollowUp(followUpId);
+  await construction(context).projectQuotes.completeFollowUp(followUpId);
   revalidateProject(tenantSlug, projectId);
   return { ok: true, message: "Seguimiento marcado como hecho." };
 }
@@ -152,7 +156,7 @@ export async function deleteFollowUpAction(
 ): Promise<QuoteActionResult> {
   const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) return { ok: false, message: "No tienes acceso a este negocio." };
-  await context.tenantDb.projectQuotes.deleteFollowUp(followUpId);
+  await construction(context).projectQuotes.deleteFollowUp(followUpId);
   revalidateProject(tenantSlug, projectId);
   return { ok: true, message: "Seguimiento eliminado." };
 }

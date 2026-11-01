@@ -1,0 +1,69 @@
+// use prisma-8
+
+/// Catálogo comercial editable desde el Operations Center (Planes y módulos).
+/// El onboarding y el servidor calculan precios con estas filas; los valores
+/// iniciales salen de `defaultPricingConfig()` (lib/plans/pricing.ts).
+///
+/// Campos:
+/// - `maxUsers`: Usuarios del negocio incluidos (null = sin límite).
+model PlanSetting {
+  key                String   @id
+  name               String
+  tagline            String
+  features           String[]
+  basePriceUsdCents  Int
+  moduleDiscountPct  Int
+  includesAllModules Boolean
+  chargesModules     Boolean
+  annualDiscountPct  Int
+  recommended        Boolean  @default(false)
+  active             Boolean  @default(true)
+  order              Int
+  maxUsers           Int?
+  updatedAt          temporal.updatedAt()
+  @@rls
+}
+
+/// Configuración global de cada módulo de la plataforma: etiqueta, precio, estado y si viene
+/// incluido. La edita el equipo de Nexus.
+///
+/// Campos:
+/// - `status`: READY | BETA | PLANNED (controlado por el código).
+model ModuleSetting {
+  module        String  @id
+  label         String
+  description   String
+  priceUsdCents Int
+  status        String
+  included      Boolean
+  order         Int
+  updatedAt     temporal.updatedAt()
+  @@rls
+}
+
+/// Configuración global de cada rubro: si se ofrece al registrarse, factor de precio, módulos y
+/// panel de inicio. La edita el equipo de Nexus.
+model VerticalSetting {
+  vertical          String   @id
+  label             String
+  signupEnabled     Boolean
+  priceFactorPct    Int
+  modules           String[]
+  recommended       String[]
+  dashboardTemplate String?
+  order             Int
+  updatedAt         temporal.updatedAt()
+  @@rls
+}
+
+/// Escalón de precio por cantidad de clientes que puede tener un negocio. Lo define el equipo de
+/// Nexus.
+model CustomerTierSetting {
+  id            String @id
+  label         String
+  maxCustomers  Int?
+  priceUsdCents Int
+  order         Int
+  updatedAt     temporal.updatedAt()
+  @@rls
+}

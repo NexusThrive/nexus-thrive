@@ -10,7 +10,7 @@ import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
 import { formatDateShort } from "@/lib/format";
 import { getLogSummaryStats, type FieldLogEntryData } from "@/lib/construction/field-log-engine";
-import type { FieldLogData } from "@/lib/tenant/db";
+import type { FieldLogData } from "@/lib/construction/shared";
 import type { ItemProgressRow } from "@/lib/construction/progress";
 import { createFieldLogEntryAction, deleteFieldLogEntryAction } from "../field-log/actions";
 import ProgressPanel from "./progress-panel";

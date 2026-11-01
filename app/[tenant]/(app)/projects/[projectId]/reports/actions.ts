@@ -2,8 +2,11 @@
 
 import { requireTenantContext } from "@/lib/tenant/context";
 import { auth } from "@clerk/nextjs/server";
-import { createTenantDb } from "@/lib/tenant/db";
 
+import { createConstructionDb } from "@/lib/construction/construction-db";
+
+/** Capa de datos de construcción del negocio activo (Core no la conoce). */
+const construction = (context: { tenantId: string }) => createConstructionDb(context.tenantId);
 export type ActionState = {
   status: "idle" | "ok" | "error";
   message?: string;
@@ -32,7 +35,6 @@ export type BomExportResult = {
 
 type TenantContext = {
   tenantId: string;
-  tenantDb: ReturnType<typeof createTenantDb>;
 };
 
 async function actionContext(
@@ -42,7 +44,7 @@ async function actionContext(
   if (!context) {
     return null;
   }
-  return { tenantId: context.tenantId, tenantDb: context.tenantDb };
+  return { tenantId: context.tenantId };
 }
 
 export async function getInformeCeroDataAction(
@@ -60,7 +62,7 @@ export async function getInformeCeroDataAction(
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
-    const data = await context.tenantDb.reports.getInformeCeroData(projectId);
+    const data = await construction(context).reports.getInformeCeroData(projectId);
     if (!data) {
       return { status: "error", message: "Proyecto no encontrado o sin acceso." };
     }
@@ -91,7 +93,7 @@ export async function getWeeklyReportDataAction(
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
-    const data = await context.tenantDb.reports.getWeeklyReportData(
+    const data = await construction(context).reports.getWeeklyReportData(
       projectId,
       weekNumber,
       year,
@@ -124,11 +126,11 @@ export async function exportBomCsvAction(
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
-    const resources = await context.tenantDb.reports.getBomExportData(projectId);
+    const resources = await construction(context).reports.getBomExportData(projectId);
     const { generateBomCsv } = await import("@/lib/construction/report-engine");
     const csv = generateBomCsv(resources);
 
-    const project = await context.tenantDb.projects.get(projectId);
+    const project = await construction(context).projects.get(projectId);
     const projectCode = project?.code ?? "PROYECTO";
     const filename = `BOM_${projectCode}_${new Date().toISOString().split("T")[0]}.csv`;
 

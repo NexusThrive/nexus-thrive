@@ -2,11 +2,11 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant/db";
 import { parseMasterPack } from "./master-pack";
 import { buildMasterPackPlan } from "./master-pack-plan";
 import { executeMasterPackImport } from "./master-pack-import";
 
+import { createConstructionDb } from "@/lib/construction/construction-db";
 /**
  * Importación real del pack (2.288 APU, 1.323 fotos) dos veces sobre una base
  * de prueba. Requiere TEST_DATABASE_URL y MASTER_PACK_FILE.
@@ -129,12 +129,12 @@ describe.skipIf(!FILE || !TEST_URL)("importación del pack completo (integració
     const target = candidates[0];
     const activity = await db.orm.public.ApuActivity.where({ tenantId, sourceKey: target.sourceKey }).first();
 
-    const tenantDb = createTenantDb(tenantId);
+    const construction = createConstructionDb(tenantId);
     const customer = await db.orm.public.Customer.create({ tenantId, name: "Cliente" });
-    const project = await tenantDb.projects.create({ customerId: customer.id, name: "Obra pack" });
-    await tenantDb.budgets.getOrCreate(project.id);
-    const chapter = await tenantDb.budgets.createChapter(project.id, { name: "Capítulo" });
-    const { id } = await tenantDb.budgets.importActivityFromCatalog(project.id, chapter.id, activity!.id);
+    const project = await construction.projects.create({ customerId: customer.id, name: "Obra pack" });
+    await construction.budgets.getOrCreate(project.id);
+    const chapter = await construction.budgets.createChapter(project.id, { name: "Capítulo" });
+    const { id } = await construction.budgets.importActivityFromCatalog(project.id, chapter.id, activity!.id);
 
     const item = await db.orm.public.BudgetItem.where({ id }).first();
     const referenceMicro = BigInt(Math.round(Number(target.referenceUnitPrice) * 1_000_000));

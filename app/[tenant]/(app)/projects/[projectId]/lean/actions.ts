@@ -9,6 +9,10 @@ import {
   validateUpdateCommitmentStatus,
 } from "./validators";
 
+import { createConstructionDb } from "@/lib/construction/construction-db";
+
+/** Capa de datos de construcción del negocio activo (Core no la conoce). */
+const construction = (context: { tenantId: string }) => createConstructionDb(context.tenantId);
 export type ActionState = {
   status: "idle" | "ok" | "error";
   message?: string;
@@ -31,7 +35,7 @@ export async function getOrCreateProjectPlanAction(
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
-    await context.tenantDb.lean.getOrCreatePlan(projectId);
+    await construction(context).lean.getOrCreatePlan(projectId);
     revalidatePath(`/${tenantSlug}/projects/${projectId}`);
     return { status: "ok" };
   } catch (error) {
@@ -70,7 +74,7 @@ export async function createLookaheadTaskAction(
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
-    await context.tenantDb.lean.createLookaheadTask(projectId, {
+    await construction(context).lean.createLookaheadTask(projectId, {
       code: values.code,
       description: values.description,
       weekNumber: values.weekNumber,
@@ -119,7 +123,7 @@ export async function createWeeklyCommitmentAction(
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
-    await context.tenantDb.lean.createCommitment(projectId, {
+    await construction(context).lean.createCommitment(projectId, {
       description: values.description,
       responsible: values.responsible,
       weekStartDate: values.weekStartDate,
@@ -164,7 +168,7 @@ export async function updateCommitmentStatusAction(
     if (!context) {
       return { status: "error", message: "No tienes acceso a este negocio." };
     }
-    await context.tenantDb.lean.updateCommitmentStatus(projectId, commitmentId, {
+    await construction(context).lean.updateCommitmentStatus(projectId, commitmentId, {
       status: values.status,
       failureCause: values.failureCause ?? null,
       failureNotes: values.failureNotes ?? null,

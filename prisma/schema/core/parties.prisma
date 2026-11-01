@@ -1,0 +1,58 @@
+// use prisma-8
+
+/// Tercero único: una persona o empresa del negocio, una sola vez, con los roles
+/// que cumple (cliente, proveedor, empleado, contacto). Los documentos
+/// comerciales, la cartera y la contabilidad cuelgan de aquí.
+///
+/// Campos:
+/// - `kind`: PERSON | COMPANY
+/// - `documentType`: CC | NIT | CE | PASAPORTE | TI | RC | NIT_EXTRANJERO (opcional: puede ser
+///   desconocido).
+/// - `documentNumber`: Solo letras y números, sin puntos ni guiones ni dígito de verificación.
+/// - `@@index([tenantId,`: Un documento identifica a UN tercero por negocio.
+model Party {
+  id             String   @id @default(uuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  kind           String   @default("PERSON")
+  documentType   String?
+  documentNumber String?
+  checkDigit     String?
+  legalName      String
+  tradeName      String?
+  email          String?
+  phone          String?
+  addressLine    String?
+  city           String?
+  countryCode    String   @default("CO")
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      temporal.updatedAt()
+  roles          PartyRole[]
+  customers      Customer[]
+  purchaseOrders PurchaseOrder[]
+  supplierInvoices SupplierInvoice[]
+
+  @@index([tenantId, legalName])
+  @@index([tenantId, documentNumber], unique: true, where: "\"documentNumber\" IS NOT NULL", name: "Party_tenantId_documentNumber_key")
+  @@rls
+}
+
+/// Rol que cumple un tercero dentro de un negocio (cliente, proveedor, empleado…). Un mismo tercero
+/// puede tener varios.
+///
+/// Campos:
+/// - `role`: CUSTOMER | SUPPLIER | EMPLOYEE | CONTACT
+model PartyRole {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  partyId   String
+  party     Party    @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  role      String
+  createdAt DateTime @default(now())
+
+  @@unique([partyId, role])
+  @@index([tenantId, role])
+  @@rls
+}

@@ -1,0 +1,56 @@
+// use prisma-8
+
+/// Orden de compra a un proveedor (tercero con rol SUPPLIER). Al recibir la mercancía
+/// entra al inventario con su costo por el servicio de inventario.
+///
+/// Campos:
+/// - `number`: Consecutivo por negocio (OC-0001).
+/// - `warehouseId`: Bodega a la que entra la mercancía.
+/// - `status`: DRAFT | ORDERED | PARTIAL | RECEIVED | CANCELED
+model PurchaseOrder {
+  id              String   @id @default(uuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  number          Int
+  supplierPartyId String
+  supplier        Party    @relation(fields: [supplierPartyId], references: [id], onDelete: Restrict)
+  warehouseId     String
+  warehouse       Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
+  status          String   @default("DRAFT")
+  expectedDate    String?
+  subtotal        Decimal  @default(0)
+  taxTotal        Decimal  @default(0)
+  total           Decimal  @default(0)
+  note            String?
+  createdById     String?
+  createdAt       DateTime @default(now())
+  updatedAt       temporal.updatedAt()
+  lines           PurchaseOrderLine[]
+  invoices        SupplierInvoice[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId, status])
+  @@rls
+}
+
+/// Línea de una orden de compra: producto, cantidad y costo pactado.
+///
+/// Campos:
+/// - `unitCost`: Costo por unidad SIN impuesto: es el que entra al costo promedio.
+model PurchaseOrderLine {
+  id               String   @id @default(uuid())
+  tenantId         String
+  tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orderId          String
+  order            PurchaseOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId        String
+  product          Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  variantId        String?
+  quantity         Int
+  receivedQuantity Int      @default(0)
+  unitCost         Decimal
+  taxRatePct       Decimal  @default(0)
+
+  @@index([orderId])
+  @@rls
+}

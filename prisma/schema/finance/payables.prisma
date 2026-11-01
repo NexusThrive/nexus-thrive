@@ -1,0 +1,51 @@
+// use prisma-8
+
+/// Factura que el proveedor entrega por una compra. Es el insumo de las cuentas por pagar (PR-14).
+///
+/// Campos:
+/// - `number`: Número que trae la factura del proveedor.
+/// - `status`: REGISTERED | PAID | VOID
+/// - `cufe`: CUFE de la factura electrónica, si la trae.
+/// - `paidTotal`: Lo ya pagado al proveedor (cartera por pagar). El saldo es total − paidTotal.
+model SupplierInvoice {
+  id              String   @id @default(uuid())
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplierPartyId String
+  supplier        Party    @relation(fields: [supplierPartyId], references: [id], onDelete: Restrict)
+  purchaseOrderId String?
+  purchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id], onDelete: SetNull)
+  number          String
+  issueDate       String
+  dueDate         String?
+  subtotal        Decimal
+  taxTotal        Decimal  @default(0)
+  total           Decimal
+  status          String   @default("REGISTERED")
+  cufe            String?
+  paidTotal       Decimal  @default(0)
+  payments        SupplierPayment[]
+  createdAt       DateTime @default(now())
+
+  @@unique([tenantId, supplierPartyId, number])
+  @@index([tenantId, dueDate])
+  @@rls
+}
+
+/// Pago (o abono) a una factura de proveedor. Baja el saldo de la cartera por pagar en la
+/// misma transacción que lo registra.
+model SupplierPayment {
+  id                String          @id @default(uuid())
+  tenantId          String
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplierInvoiceId String
+  supplierInvoice   SupplierInvoice @relation(fields: [supplierInvoiceId], references: [id], onDelete: Cascade)
+  amount            Decimal
+  method            String
+  note              String?
+  createdById       String?
+  createdAt         DateTime        @default(now())
+
+  @@index([tenantId, supplierInvoiceId])
+  @@rls
+}

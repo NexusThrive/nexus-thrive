@@ -4,7 +4,6 @@ import { readImageUpload } from "@/lib/image-upload";
 import { requireTenantContext } from "@/lib/tenant/context";
 import { revalidatePath } from "next/cache";
 import { importApuItems } from "@/lib/construction/catalog-import";
-import { createTenantDb } from "@/lib/tenant/db";
 import { createAuth, type NexusRole } from "@/lib/auth/authorization";
 import { getQuoteTerms, type QuoteTerms } from "@/lib/vertical-terms";
 import type { ApuItemCategoryValue } from "@/lib/construction/apu-engine";
@@ -20,6 +19,10 @@ import {
   type ApuItemFormValues,
 } from "./validators";
 
+import { createConstructionDb } from "@/lib/construction/construction-db";
+
+/** Capa de datos de construcción del negocio activo (Core no la conoce). */
+const construction = (context: { tenantId: string }) => createConstructionDb(context.tenantId);
 /* ------------------------------------------------------------------ */
 /* Tipos de estado (firma useActionState)                              */
 /* ------------------------------------------------------------------ */
@@ -58,14 +61,11 @@ const FORBIDDEN_FORM = {
   message: "No tienes permisos para esta acción (solo OWNER o SUPERADMIN).",
 } as const;
 
-type TenantDb = ReturnType<typeof createTenantDb>;
-
 /** DB del tenant + rol + vocabulario cotizaciones (mensajes adaptativos). */
 type TenantContext = {
   userId: string;
   tenantId: string;
   role: NexusRole;
-  tenantDb: TenantDb;
   terms: QuoteTerms;
 };
 
@@ -84,7 +84,6 @@ async function actionContext(
     userId: context.userId,
     tenantId: context.tenantId,
     role: context.role as NexusRole,
-    tenantDb: context.tenantDb,
     terms: getQuoteTerms(context.vertical),
   };
 }
@@ -139,7 +138,6 @@ export async function createApuItemAction(
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
-  const { tenantDb } = context;
   if (!authFor(context).canEditApuCatalog().ok) {
     return FORBIDDEN_FORM;
   }
@@ -155,8 +153,8 @@ export async function createApuItemAction(
 
   try {
     const imageId =
-      photo.status === "ok" ? await tenantDb.apu.storeImage(photo.data, photo.mimeType) : undefined;
-    await tenantDb.apu.createItem({
+      photo.status === "ok" ? await construction(context).apu.storeImage(photo.data, photo.mimeType) : undefined;
+    await construction(context).apu.createItem({
       imageId,
       code: validation.values.code || undefined,
       name: validation.values.name,
@@ -185,7 +183,6 @@ export async function updateApuItemAction(
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
-  const { tenantDb } = context;
   if (!authFor(context).canEditApuCatalog().ok) {
     return FORBIDDEN_FORM;
   }
@@ -205,10 +202,10 @@ export async function updateApuItemAction(
 
   try {
     if (photo.status === "ok") {
-      const imageId = await tenantDb.apu.storeImage(photo.data, photo.mimeType);
-      await tenantDb.apu.updateItem(itemId, { imageId });
+      const imageId = await construction(context).apu.storeImage(photo.data, photo.mimeType);
+      await construction(context).apu.updateItem(itemId, { imageId });
     }
-    await tenantDb.apu.updateItem(itemId, {
+    await construction(context).apu.updateItem(itemId, {
       code: validation.values.code || undefined,
       name: validation.values.name,
       unit: validation.values.unit,
@@ -239,7 +236,6 @@ export async function createApuActivityAction(
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
-  const { tenantDb } = context;
   if (!authFor(context).canEditApuCatalog().ok) {
     return FORBIDDEN_FORM;
   }
@@ -250,7 +246,7 @@ export async function createApuActivityAction(
   }
 
   try {
-    await tenantDb.apu.createActivity({
+    await construction(context).apu.createActivity({
       code: validation.values.code || undefined,
       name: validation.values.name,
       unit: validation.values.unit,
@@ -282,7 +278,6 @@ export async function updateApuActivityAction(
   if (!context) {
     return ACCESS_DENIED_FORM;
   }
-  const { tenantDb } = context;
   if (!authFor(context).canEditApuCatalog().ok) {
     return FORBIDDEN_FORM;
   }
@@ -297,7 +292,7 @@ export async function updateApuActivityAction(
   }
 
   try {
-    await tenantDb.apu.updateActivity(activityId, {
+    await construction(context).apu.updateActivity(activityId, {
       code: validation.values.code || undefined,
       name: validation.values.name,
       unit: validation.values.unit,
@@ -340,7 +335,7 @@ export async function archiveApuItemAction(
     return { status: "error", message: "Ítem no válido." };
   }
   try {
-    await context.tenantDb.apu.archiveItem(itemId);
+    await construction(context).apu.archiveItem(itemId);
   } catch (error) {
     return { status: "error", message: apuErrorMessage(error) };
   }
@@ -365,7 +360,7 @@ export async function restoreApuItemAction(
     return { status: "error", message: "Ítem no válido." };
   }
   try {
-    await context.tenantDb.apu.restoreItem(itemId);
+    await construction(context).apu.restoreItem(itemId);
   } catch (error) {
     return { status: "error", message: apuErrorMessage(error) };
   }
@@ -390,7 +385,7 @@ export async function deleteApuItemAction(
     return { status: "error", message: "Ítem no válido." };
   }
   try {
-    await context.tenantDb.apu.deleteItem(itemId);
+    await construction(context).apu.deleteItem(itemId);
   } catch (error) {
     return { status: "error", message: apuErrorMessage(error) };
   }
@@ -415,7 +410,7 @@ export async function archiveApuActivityAction(
     return { status: "error", message: "Actividad no válida." };
   }
   try {
-    await context.tenantDb.apu.archiveActivity(activityId);
+    await construction(context).apu.archiveActivity(activityId);
   } catch (error) {
     return { status: "error", message: apuErrorMessage(error) };
   }
@@ -440,7 +435,7 @@ export async function restoreApuActivityAction(
     return { status: "error", message: "Actividad no válida." };
   }
   try {
-    await context.tenantDb.apu.restoreActivity(activityId);
+    await construction(context).apu.restoreActivity(activityId);
   } catch (error) {
     return { status: "error", message: apuErrorMessage(error) };
   }
@@ -465,7 +460,7 @@ export async function deleteApuActivityAction(
     return { status: "error", message: "Actividad no válida." };
   }
   try {
-    await context.tenantDb.apu.deleteActivity(activityId);
+    await construction(context).apu.deleteActivity(activityId);
   } catch (error) {
     return { status: "error", message: apuErrorMessage(error) };
   }
@@ -492,7 +487,7 @@ export async function addCompositionAction(
   }
   const { activityId, itemId, consumption, wastePercent } = validation.values;
   try {
-    await context.tenantDb.apu.addComposition(activityId, {
+    await construction(context).apu.addComposition(activityId, {
       itemId,
       consumption,
       wastePercent,
@@ -522,7 +517,7 @@ export async function removeCompositionAction(
     return { status: "error", message: "Composición no válida." };
   }
   try {
-    await context.tenantDb.apu.removeComposition(activityId, itemId);
+    await construction(context).apu.removeComposition(activityId, itemId);
   } catch (error) {
     return { status: "error", message: apuErrorMessage(error) };
   }
@@ -539,8 +534,7 @@ export async function getActivityDetailAction(
   if (!context) {
     return null;
   }
-  const { tenantDb } = context;
-  return tenantDb.apu.getActivity(activityId);
+  return construction(context).apu.getActivity(activityId);
 }
 
 /** Umbrales p99 globales del catálogo (no por página). */
@@ -558,7 +552,7 @@ export async function getP99ThresholdsAction(
   if (!context) {
     return null;
   }
-  return context.tenantDb.apu.getP99Thresholds();
+  return construction(context).apu.getP99Thresholds();
 }
 
 /** Informe de salud del catálogo APU (solo lectura). */
@@ -576,7 +570,7 @@ export async function getCatalogHealthReportAction(
   if (!context) {
     return null;
   }
-  return context.tenantDb.apu.getCatalogHealthReport();
+  return construction(context).apu.getCatalogHealthReport();
 }
 
 /* ------------------------------------------------------------------ */

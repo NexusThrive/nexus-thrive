@@ -4,11 +4,7 @@ import { buildBudgetWorkbook } from "@/lib/construction/budget-export";
 import { tenantLetterhead } from "@/lib/tenant/membership";
 import { revalidatePath } from "next/cache";
 import { decimalToMicro } from "@/lib/construction/apu-engine";
-import type {
-  ApuActivityDetail,
-  ApuActivityRow,
-  ProjectBudgetData,
-} from "@/lib/tenant/db";
+import type { ApuActivityDetail, ApuActivityRow, ProjectBudgetData } from "@/lib/construction/shared";
 import {
   canGovernBudget,
   requireTenantContext,
@@ -26,6 +22,10 @@ import {
   type ChapterFormValues,
 } from "./validators";
 
+import { createConstructionDb } from "@/lib/construction/construction-db";
+
+/** Capa de datos de construcción del negocio activo (Core no la conoce). */
+const construction = (context: { tenantId: string }) => createConstructionDb(context.tenantId);
 /* ------------------------------------------------------------------ */
 /* Tipos de estado (firma useActionState)                              */
 /* ------------------------------------------------------------------ */
@@ -99,7 +99,7 @@ export async function getOrCreateProjectBudgetAction(
     return null;
   }
   try {
-    return await context.tenantDb.budgets.getOrCreate(projectId);
+    return await construction(context).budgets.getOrCreate(projectId);
   } catch {
     return null;
   }
@@ -133,7 +133,7 @@ export async function createChapterAction(
   }
 
   try {
-    await context.tenantDb.budgets.createChapter(projectId, validation.input);
+    await construction(context).budgets.createChapter(projectId, validation.input);
   } catch (error) {
     return {
       status: "error",
@@ -175,7 +175,7 @@ export async function updateChapterAction(
   }
 
   try {
-    await context.tenantDb.budgets.updateChapter(
+    await construction(context).budgets.updateChapter(
       projectId,
       chapterId,
       {
@@ -224,7 +224,7 @@ export async function createBudgetItemAction(
   }
 
   try {
-    await context.tenantDb.budgets.createItem(projectId, validation.input);
+    await construction(context).budgets.createItem(projectId, validation.input);
   } catch (error) {
     return {
       status: "error",
@@ -266,7 +266,7 @@ export async function updateBudgetItemAction(
   }
 
   try {
-    await context.tenantDb.budgets.updateItem(
+    await construction(context).budgets.updateItem(
       projectId,
       itemId,
       {
@@ -321,7 +321,7 @@ export async function updateAiuConfigAction(
   }
 
   try {
-    await context.tenantDb.budgets.updateAiu(projectId, validation.input);
+    await construction(context).budgets.updateAiu(projectId, validation.input);
   } catch (error) {
     return {
       status: "error",
@@ -358,7 +358,7 @@ export async function toggleBudgetLockAction(
     return { ok: false, message: "Desbloqueo requiere un motivo." };
   }
   try {
-    await context.tenantDb.budgets.setLocked(projectId, isLocked, undefined, reason?.trim(), context.userId);
+    await construction(context).budgets.setLocked(projectId, isLocked, undefined, reason?.trim(), context.userId);
   } catch (error) {
     return {
       ok: false,
@@ -390,7 +390,7 @@ export async function deleteChapterAction(
     return { ok: false, message: "No tienes acceso a este negocio." };
   }
   try {
-    await context.tenantDb.budgets.deleteChapter(projectId, chapterId);
+    await construction(context).budgets.deleteChapter(projectId, chapterId);
   } catch (error) {
     return {
       ok: false,
@@ -418,7 +418,7 @@ export async function deleteBudgetItemAction(
     return { ok: false, message: "No tienes acceso a este negocio." };
   }
   try {
-    await context.tenantDb.budgets.deleteItem(projectId, itemId);
+    await construction(context).budgets.deleteItem(projectId, itemId);
   } catch (error) {
     return {
       ok: false,
@@ -459,7 +459,7 @@ export async function approveBudgetBaselineAction(
     const member = await context.tenantDb.users.findByClerkUserId(
       context.userId,
     );
-    await context.tenantDb.budgets.approveBaseline(projectId, {
+    await construction(context).budgets.approveBaseline(projectId, {
       userId: context.userId,
       userName: member?.name?.trim() || member?.email || "Usuario",
       note,
@@ -498,7 +498,7 @@ export async function searchCatalogActivitiesAction(
   if (!context) {
     return null;
   }
-  const { rows } = await context.tenantDb.apu.listActivities({
+  const { rows } = await construction(context).apu.listActivities({
     q: query,
     unit: unit && unit.trim() !== "" ? unit.trim() : undefined,
     active: true,
@@ -516,7 +516,7 @@ export async function getCatalogActivityDetailAction(
   if (!context || !activityId) {
     return null;
   }
-  return context.tenantDb.apu.getActivity(activityId);
+  return construction(context).apu.getActivity(activityId);
 }
 
 /**
@@ -551,7 +551,7 @@ export async function importActivityFromCatalogAction(
   }
 
   try {
-    const { id } = await context.tenantDb.budgets.importActivityFromCatalog(
+    const { id } = await construction(context).budgets.importActivityFromCatalog(
       projectId,
       chapterId,
       activityId,
@@ -603,7 +603,7 @@ export async function updateResourceAction(
   }
 
   try {
-    const { revision } = await context.tenantDb.budgets.updateResource(
+    const { revision } = await construction(context).budgets.updateResource(
       projectId,
       resourceId,
       validation.input,
@@ -630,8 +630,8 @@ export async function exportBudgetXlsxAction(
   const context = await requireTenantContext(tenantSlug, "/projects");
   if (!context) return { ok: false, message: "No tienes acceso a este negocio." };
   const [project, budget] = await Promise.all([
-    context.tenantDb.projects.get(projectId),
-    context.tenantDb.budgets.get(projectId),
+    construction(context).projects.get(projectId),
+    construction(context).budgets.get(projectId),
   ]);
   if (!project || !budget) return { ok: false, message: "No se encontró el presupuesto de esta obra." };
   const tenant = await tenantLetterhead(context.tenantId);

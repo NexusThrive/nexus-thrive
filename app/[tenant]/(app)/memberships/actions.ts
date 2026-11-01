@@ -7,16 +7,14 @@ import { formatDateShort } from "@/lib/format";
 import { createMembershipWithCharge, renewMembershipWithCharge } from "@/lib/business/memberships-db";
 import { can } from "@/lib/business/permissions";
 import {
-  addMonths,
   bogotaEndOfDay,
   bogotaStartOfDay,
-  bogotaToday,
   computeMembershipStatus,
-  parsePlainDate,
   plainFromInstant,
   typeMonths,
   typeLabel,
 } from "@/lib/business/memberships";
+import { addMonths, bogotaToday, parsePlainDate } from "@/lib/plain-date";
 import {
   validateMembership,
   validateRenewal,
@@ -25,6 +23,7 @@ import {
   type RenewalFieldErrors,
 } from "./validators";
 
+import { createMembershipsDb } from "@/lib/business/memberships-repo";
 export type MembershipFormState = {
   status: "idle" | "error" | "ok";
   message?: string;
@@ -181,7 +180,7 @@ export async function renewMembershipAction(
 
   const { membershipId, provider, registerPayment } = validation.values;
 
-  const membership = await tenantDb.memberships.get(membershipId);
+  const membership = await createMembershipsDb(tenantDb.tenantId).get(membershipId);
   if (!membership) {
     return {
       status: "error",

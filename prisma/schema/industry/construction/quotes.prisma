@@ -1,0 +1,122 @@
+// use prisma-8
+
+/// Estado de un presupuesto/cotización de obra.
+///
+/// Valores:
+/// - `SUPERSEDED`: Reemplazada por una versión posterior de la misma obra.
+enum QuoteStatus {
+  DRAFT
+  SENT
+  APPROVED
+  REJECTED
+  SUPERSEDED
+}
+
+/// Tipo de seguimiento comercial de una obra (carpeta de cotizaciones).
+enum FollowUpType {
+  NOTE
+  CALL
+  EMAIL
+  MEETING
+  VISIT
+}
+
+/// Encabezado de un presupuesto/cotización de obra.
+///
+/// Campos:
+/// - `code`: Código de negocio: PRES-2026-001 (único dentro del tenant).
+/// - `projectId`: Obra de la que se emitió (null solo en cotizaciones anteriores a que la
+///   cotización naciera de la obra; ver la migración de cotizaciones antiguas).
+/// - `version`: Versión dentro de la obra (v1, v2…).
+/// - `budgetRevision`: Revisión del presupuesto congelada en esta versión.
+/// - `snapshot`: Foto completa del documento emitido (capítulos, partidas, totales, partes). Un
+///   cambio posterior del presupuesto no la altera.
+/// - `showApuDetail`: Si el documento para el cliente muestra el detalle APU de cada partida.
+model Quote {
+  id            String      @id @default(uuid())
+  tenantId      String
+  tenant        Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId    String?
+  customer      Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  title         String
+  code          String
+  status        QuoteStatus @default(DRAFT)
+  adminPercent  Decimal     @default(15)
+  imprevPercent Decimal     @default(5)
+  utilPercent   Decimal     @default(10)
+  taxPercent    Decimal     @default(19)
+  directCost    Decimal
+  totalAmount   Decimal
+  projectId     String?
+  project       Project?    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  version       Int?
+  budgetRevision Int?
+  snapshot      Json?
+  showApuDetail Boolean     @default(false)
+  validUntil    DateTime?
+  sentAt        DateTime?
+  decidedAt     DateTime?
+  decidedByName String?
+  decisionNote  String?
+  createdAt     DateTime    @default(now())
+  updatedAt     temporal.updatedAt()
+
+  items QuoteItem[]
+  followUps ProjectFollowUp[]
+
+  @@unique([tenantId, code])
+  @@unique([projectId, version])
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([customerId])
+  @@rls
+}
+
+/// Actividad dentro de un presupuesto. Congela nombre, unidad, cantidad y
+/// costos al momento de cotizar; opcionalmente guarda el snapshot del APU.
+///
+/// Campos:
+/// - `apuSnapshot`: Fotografía inmutable del APU utilizado (catálogo + composición + precios).
+model QuoteItem {
+  id          String       @id @default(uuid())
+  quoteId     String
+  quote       Quote        @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  activityId  String?
+  activity    ApuActivity? @relation(fields: [activityId], references: [id], onDelete: SetNull)
+  name        String
+  unit        String
+  quantity    Decimal
+  unitCost    Decimal
+  totalCost   Decimal
+  apuSnapshot Json?
+
+  @@index([quoteId])
+  @@index([activityId])
+  @@rls
+}
+
+/// Seguimiento comercial de una obra: llamada, correo, reunión, visita o nota,
+/// opcionalmente ligado a una versión de la cotización y con fecha prevista.
+///
+/// Campos:
+/// - `scheduledFor`: Fecha prevista (próximo contacto); null si es un registro de lo ocurrido.
+model ProjectFollowUp {
+  id           String       @id @default(uuid())
+  tenantId     String
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  projectId    String
+  project      Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  quoteId      String?
+  quote        Quote?       @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+  type         FollowUpType @default(NOTE)
+  note         String
+  scheduledFor DateTime?
+  completedAt  DateTime?
+  authorName   String
+  createdAt    DateTime     @default(now())
+  updatedAt    temporal.updatedAt()
+
+  @@index([tenantId, projectId])
+  @@index([projectId, createdAt])
+  @@rls
+}

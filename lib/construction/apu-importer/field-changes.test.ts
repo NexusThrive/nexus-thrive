@@ -1,8 +1,8 @@
 import { describe, test, beforeAll, expect } from "vitest";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant/db";
 import { analyzeFile, buildExecutionPlan, computeImportChangesFromPlan } from "@/lib/construction/apu-importer";
 
+import { createConstructionDb, type ConstructionDb } from "@/lib/construction/construction-db";
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const enabled = Boolean(TEST_URL);
 
@@ -11,7 +11,7 @@ function normalize(url: string | undefined): string {
 }
 
 describe.skipIf(!enabled)("apu-importer: field changes in preview", () => {
-  let tenantDb: ReturnType<typeof createTenantDb>;
+  let construction: ConstructionDb;
   let tenantId: string;
 
   beforeAll(async () => {
@@ -24,9 +24,9 @@ describe.skipIf(!enabled)("apu-importer: field changes in preview", () => {
       vertical: "construction",
     });
     tenantId = t.id;
-    tenantDb = createTenantDb(tenantId);
+    construction = createConstructionDb(tenantId);
     
-    await tenantDb.apu.createItem({
+    await construction.apu.createItem({
       name: "Cemento Original",
       unit: "BOL",
       category: "MATERIAL",
@@ -45,7 +45,7 @@ CEM-001,Cemento Modificado,BOL,MATERIAL,28000`;
     
     console.log("Plan items (name change):", JSON.stringify(plan.items, null, 2));
     
-    const existingItems = await tenantDb.apu.listItems({ limit: 100 });
+    const existingItems = await construction.apu.listItems({ limit: 100 });
     const { fieldChanges } = computeImportChangesFromPlan(existingItems.rows, plan);
     
     expect(fieldChanges).toHaveLength(1);
@@ -67,7 +67,7 @@ CEM-001,Cemento Original,KG,MATERIAL,28000`;
     
     console.log("Plan items (unit change):", JSON.stringify(plan.items, null, 2));
     
-    const existingItems = await tenantDb.apu.listItems({ limit: 100 });
+    const existingItems = await construction.apu.listItems({ limit: 100 });
     const { fieldChanges } = computeImportChangesFromPlan(existingItems.rows, plan);
     
     console.log("Field changes (unit):", JSON.stringify(fieldChanges, null, 2));
@@ -91,7 +91,7 @@ CEM-001,Cemento Original,BOL,EQUIPO,28000`;
     
     console.log("Plan items (category change):", JSON.stringify(plan.items, null, 2));
     
-    const existingItems = await tenantDb.apu.listItems({ limit: 100 });
+    const existingItems = await construction.apu.listItems({ limit: 100 });
     const { fieldChanges } = computeImportChangesFromPlan(existingItems.rows, plan);
     
     console.log("Field changes (category):", JSON.stringify(fieldChanges, null, 2));

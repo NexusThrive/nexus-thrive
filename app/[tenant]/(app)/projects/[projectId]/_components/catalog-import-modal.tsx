@@ -12,10 +12,7 @@ import {
   formatApuUnit,
 } from "@/lib/construction/apu-engine";
 import { formatCurrency, toNumber } from "@/lib/format";
-import type {
-  ApuActivityDetail,
-  ApuActivityRow,
-} from "@/lib/tenant/db";
+import type { ApuActivityDetail, ApuActivityRow } from "@/lib/construction/shared";
 import Modal from "@/components/organisms/modal";
 import {
   getCatalogActivityDetailAction,

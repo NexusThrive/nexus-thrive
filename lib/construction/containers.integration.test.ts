@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant/db";
 import { ensureProjectContainers } from "./containers";
 
+import { createConstructionDb, type ConstructionDb } from "@/lib/construction/construction-db";
 /** Integración: los contenedores de la obra se crean una sola vez. */
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const normalize = (url: string | undefined) => (url ?? "").replace(/\?.*$/, "");
@@ -10,7 +10,7 @@ const normalize = (url: string | undefined) => (url ?? "").replace(/\?.*$/, "");
 describe.skipIf(!TEST_URL)("ensureProjectContainers (integración)", () => {
   let tenantId = "";
   let projectId = "";
-  let tenantDb: ReturnType<typeof createTenantDb>;
+  let construction: ConstructionDb;
 
   beforeAll(async () => {
     if (normalize(process.env.DATABASE_URL) !== normalize(TEST_URL)) {
@@ -24,9 +24,9 @@ describe.skipIf(!TEST_URL)("ensureProjectContainers (integración)", () => {
         vertical: "construction",
       })
     ).id;
-    tenantDb = createTenantDb(tenantId);
+    construction = createConstructionDb(tenantId);
     const customer = await db.orm.public.Customer.create({ tenantId, name: "Cliente" });
-    projectId = (await tenantDb.projects.create({ customerId: customer.id, name: "Obra" })).id;
+    projectId = (await construction.projects.create({ customerId: customer.id, name: "Obra" })).id;
   });
 
   afterAll(async () => {
@@ -34,12 +34,12 @@ describe.skipIf(!TEST_URL)("ensureProjectContainers (integración)", () => {
   });
 
   test("crea presupuesto, plan y bitácora, y repetir no duplica", async () => {
-    expect(await tenantDb.budgets.get(projectId)).toBeNull();
-    await ensureProjectContainers(tenantDb, projectId);
-    await ensureProjectContainers(tenantDb, projectId);
-    expect(await tenantDb.budgets.get(projectId)).not.toBeNull();
-    expect(await tenantDb.lean.getPlan(projectId)).not.toBeNull();
-    expect(await tenantDb.fieldLog.getLog(projectId)).not.toBeNull();
+    expect(await construction.budgets.get(projectId)).toBeNull();
+    await ensureProjectContainers(construction, projectId);
+    await ensureProjectContainers(construction, projectId);
+    expect(await construction.budgets.get(projectId)).not.toBeNull();
+    expect(await construction.lean.getPlan(projectId)).not.toBeNull();
+    expect(await construction.fieldLog.getLog(projectId)).not.toBeNull();
     expect(await db.orm.public.ProjectBudget.where({ projectId }).all()).toHaveLength(1);
     expect(await db.orm.public.ProjectPlan.where({ projectId }).all()).toHaveLength(1);
     expect(await db.orm.public.FieldLog.where({ projectId }).all()).toHaveLength(1);

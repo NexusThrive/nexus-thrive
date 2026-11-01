@@ -32,11 +32,6 @@ import {
   type WeatherConditionValue,
 } from "@/lib/construction/field-log-engine";
 
-/** Escapa los comodines de LIKE para que la búsqueda sea literal. */
-export function escapeLike(input: string): string {
-  return input.replace(/[\\%_]/g, (char) => `\\${char}`);
-}
-
 /* Módulo Construcción & APU                                           */
 /* ------------------------------------------------------------------ */
 

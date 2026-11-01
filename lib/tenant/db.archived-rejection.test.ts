@@ -1,7 +1,7 @@
 import { describe, test, beforeAll, afterAll, expect } from "vitest";
 import { db } from "@/prisma/db";
-import { createTenantDb } from "@/lib/tenant/db";
 
+import { createConstructionDb, type ConstructionDb } from "@/lib/construction/construction-db";
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const enabled = Boolean(TEST_URL);
 
@@ -10,7 +10,7 @@ function normalize(url: string | undefined): string {
 }
 
 describe.skipIf(!enabled)("addComposition rejects archived items/activities", () => {
-  let tenantDb: ReturnType<typeof createTenantDb>;
+  let construction: ConstructionDb;
   let tenantId: string;
 
   beforeAll(async () => {
@@ -23,17 +23,17 @@ describe.skipIf(!enabled)("addComposition rejects archived items/activities", ()
       vertical: "construction",
     });
     tenantId = t.id;
-    tenantDb = createTenantDb(tenantId);
+    construction = createConstructionDb(tenantId);
   });
 
   test("addComposition rechaza actividad archivada", async () => {
-    const item = await tenantDb.apu.createItem({
+    const item = await construction.apu.createItem({
       name: "Item for Archived Activity",
       unit: "M2",
       category: "MATERIAL",
       unitPrice: "100.00",
     });
-    const act = await tenantDb.apu.createActivity({
+    const act = await construction.apu.createActivity({
       name: "Activity to Archive",
       unit: "M2",
       code: "ACT-ARCHIVE",
@@ -41,10 +41,10 @@ describe.skipIf(!enabled)("addComposition rejects archived items/activities", ()
     });
     if (!act) throw new Error("Failed to create activity");
     
-    await tenantDb.apu.archiveActivity(act.id);
+    await construction.apu.archiveActivity(act.id);
     
     await expect(
-      tenantDb.apu.addComposition(act.id, {
+      construction.apu.addComposition(act.id, {
         itemId: item.id,
         consumption: "1.0",
         wastePercent: "0",
@@ -53,13 +53,13 @@ describe.skipIf(!enabled)("addComposition rejects archived items/activities", ()
   });
 
   test("addComposition rechaza insumo archivado", async () => {
-    const item = await tenantDb.apu.createItem({
+    const item = await construction.apu.createItem({
       name: "Item to Archive",
       unit: "M2",
       category: "MATERIAL",
       unitPrice: "100.00",
     })
-    const act = await tenantDb.apu.createActivity({
+    const act = await construction.apu.createActivity({
       name: "Active Activity",
       unit: "M2",
       code: "ACT-ACTIVE",
@@ -67,10 +67,10 @@ describe.skipIf(!enabled)("addComposition rejects archived items/activities", ()
     });
     if (!act) throw new Error("Failed to create activity");
     
-    await tenantDb.apu.archiveItem(item.id);
+    await construction.apu.archiveItem(item.id);
     
     await expect(
-      tenantDb.apu.addComposition(act.id, {
+      construction.apu.addComposition(act.id, {
         itemId: item.id,
         consumption: "1.0",
         wastePercent: "0",
@@ -79,13 +79,13 @@ describe.skipIf(!enabled)("addComposition rejects archived items/activities", ()
   });
 
   test("addComposition funciona con ambos activos", async () => {
-    const item = await tenantDb.apu.createItem({
+    const item = await construction.apu.createItem({
       name: "Active Item",
       unit: "M2",
       category: "MATERIAL",
       unitPrice: "100.00",
     });
-    const act = await tenantDb.apu.createActivity({
+    const act = await construction.apu.createActivity({
       name: "Active Activity 2",
       unit: "M2",
       code: "ACT-ACTIVE-2",
@@ -93,7 +93,7 @@ describe.skipIf(!enabled)("addComposition rejects archived items/activities", ()
     });
     if (!act) throw new Error("Failed to create activity");
     
-    const result = await tenantDb.apu.addComposition(act.id, {
+    const result = await construction.apu.addComposition(act.id, {
       itemId: item.id,
       consumption: "1.0",
       wastePercent: "0",

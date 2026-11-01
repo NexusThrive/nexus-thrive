@@ -5,6 +5,7 @@ import { buildNotifications, type AppNotification } from "@/lib/dashboard/notifi
 import { createTenantDb } from "@/lib/tenant/db";
 import { activeModuleNames } from "@/lib/tenant/settings-db";
 
+import { createMembershipsDb } from "@/lib/business/memberships-repo";
 /**
  * Notificaciones de la campana de una persona en su negocio: cobros y gastos
  * de hoy, citas de hoy y membresías por vencer o vencidas, solo de los
@@ -36,7 +37,7 @@ export async function loadNotifications(tenantId: string, memberId: string): Pro
           .select("id", "customerId", "serviceName", "startDate", "status")
           .all()
       : Promise.resolve([]),
-    modules.memberships ? tenantDb.memberships.getMetrics() : Promise.resolve(null),
+    modules.memberships ? createMembershipsDb(tenantId).getMetrics() : Promise.resolve(null),
   ]);
 
   const customerIds = [...new Set(bookings.map((b) => b.customerId))];
