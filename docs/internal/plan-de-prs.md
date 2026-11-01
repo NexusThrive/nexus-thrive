@@ -8,7 +8,7 @@ Estado a 2026-10-31. La rama de trabajo tiene **101 commits y más de 1 200 arch
 
 | PR | Rama | Base | Commits | Archivos | Qué contiene |
 |---|---|---|---|---|---|
-| 1 | `stack/01-prisma-capas-e1` | `main` | 14 | 143 | Contrato Prisma dividido por dominio (sin cambiar tablas), reglas de capas (E0), guardián de SQL de producción, primeros movimientos (E1), integración por patrón, `pnpm verify` honesto |
+| 1 | `stack/01-prisma-capas-e1` | `main` | 15 | 144 | Contrato Prisma dividido por dominio (sin cambiar tablas), reglas de capas (E0), guardián de SQL de producción, primeros movimientos (E1), integración por patrón, `pnpm verify` honesto y una prueba contable que ya no depende de la hora real |
 | 2 | `stack/02-fechas-bogota` | PR 1 | 2 | 8 | **Cambio funcional independiente**: la fecha de un documento es el día de Bogotá, no el día UTC. Con su prueba, el SQL de diagnóstico de solo lectura y el hallazgo documentado |
 | 3 | `stack/03-reubicaciones-e2-e9` | PR 2 | 26 | 331 | E2 (permisos y equipo a Core, gimnasio y museo a `industry`), E3 (operaciones por dominio, eventos), E5 (puertos entre dominios), E7 (puertos de integraciones), E9 y V (rubros por receta) |
 | 4 | `stack/04-v10-m0-m2` | PR 3 | 6 | 127 | V10 M0–M2: verificador por áreas, raíz de composición en `lib/runtime`, sectores en Core |
@@ -32,7 +32,7 @@ Cada rama se verificó en un árbol de trabajo aislado con una base PostgreSQL d
 - **Revisión:** los PR 4–6 son movimientos (`git mv`) con cambios de import mecánicos; conviene verlos con `git diff -M` / «ocultar renombrados». Los informes de cada etapa están en [`historico/v10-y-etapas/`](historico/v10-y-etapas/).
 - **Datos:** ningún PR toca migraciones, el contrato Prisma compilado ni datos reales. El PR 2 no corrige fechas históricas.
 - **CI:** no se modificó ningún workflow. `scripts/check-prod-sql.sh` pasa en todas las ramas.
-- **Horario:** hasta el PR 1 incluido, la prueba `accounting/reports.integration` falla entre las 19:00 y las 24:00 de Bogotá (es el defecto que corrige el PR 2). El CI del PR 1 puede ponerse rojo en esa franja sin que haya un error nuevo.
+- **Horario:** la prueba `accounting/reports.integration` dependía de la hora real y fallaba entre las 19:00 y las 24:00 de Bogotá. El PR 1 la hace determinista (reloj fijo a las 12:00 de Bogotá durante la siembra), sin adelantar la corrección de fechas. Se comprobó a las 19:00 de Bogotá: la prueba antigua falla (`expected 2 to be 5`) y la nueva pasa; y el `pnpm verify` completo del PR 1 pasó a las 19:54 de Bogotá.
 
 ## Riesgos a mirar
 
@@ -50,7 +50,7 @@ Cada cuerpo termina con la línea de atribución de Claude Code.
 ### PR 1 · Prisma por dominio y reglas de capas (E0–E1)
 
 **Qué:** divide el contrato de datos en `prisma/schema/<dominio>/`, añade las reglas de dependencia entre capas (`scripts/check-layers.mjs`, `docs/architecture/layers.json`), hace que la integración corra por patrón y que `pnpm verify` no oculte fallos.
-**Sin cambios de comportamiento:** el contrato compilado es idéntico; no hay migraciones nuevas.
+**Sin cambios de comportamiento:** el contrato compilado es idéntico; no hay migraciones nuevas. La prueba `reports.integration` usa el reloj fijo (solo `Date`, solo durante la siembra) para no depender de la hora a la que corre el CI.
 **Probar:** `pnpm verify` con `TEST_DATABASE_URL` en una base desechable con `pg_trgm`.
 
 ### PR 2 · Fechas de documentos: día de Bogotá (cambio funcional)
