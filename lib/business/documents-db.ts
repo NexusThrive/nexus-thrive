@@ -4,6 +4,7 @@ import { postByRule } from "@/lib/accounting/ledger-db";
 import { enqueueFiscal } from "@/lib/einvoice/einvoice-db";
 import { allocateNumber, commitNumber, withholdingsFor } from "@/lib/tax/tax-db";
 import { todayCO } from "@/lib/tax/tax";
+import { bogotaDay } from "@/lib/plain-date";
 import {
   canConvert,
   DOCUMENT_LABELS,
@@ -113,9 +114,9 @@ export async function insertDocument(tx: Writer, tenantId: string, doc: NewDocum
   const accountingEvent = ({ SALE: "SALE", BILL: "SALE", RECEIPT: "SALE", CREDIT_NOTE: "CREDIT_NOTE", DEBIT_NOTE: "DEBIT_NOTE" } as Partial<Record<DocumentKind, string>>)[doc.kind];
   if (accountingEvent) {
     const customer = doc.customerId ? await tx.orm.public.Customer.where({ tenantId, id: doc.customerId }).select("partyId").first() : null;
-    await postByRule(tx, tenantId, accountingEvent, { total: totals.total, subtotal: Math.round((totals.subtotal - totals.discountTotal) * 100) / 100, tax: totals.taxTotal }, { date: String(issueDate).slice(0, 10), description: `${DOCUMENT_LABELS[doc.kind]} ${documentCode(doc.kind, number)}`, sourceType: "DOCUMENT", sourceId: created.id, partyId: customer?.partyId ?? null }, userId);
+    await postByRule(tx, tenantId, accountingEvent, { total: totals.total, subtotal: Math.round((totals.subtotal - totals.discountTotal) * 100) / 100, tax: totals.taxTotal }, { date: bogotaDay(issueDate), description: `${DOCUMENT_LABELS[doc.kind]} ${documentCode(doc.kind, number)}`, sourceType: "DOCUMENT", sourceId: created.id, partyId: customer?.partyId ?? null }, userId);
   }
-  await enqueueFiscal(tx, tenantId, { id: created.id, kind: doc.kind, number, prefix: allocation?.prefix || null, issueDate: String(issueDate).slice(0, 10), customerName: doc.customerName, customerDoc: doc.customerDoc ?? null, lines: createdLines, totals, relatedCode, notes: doc.notes ?? null });
+  await enqueueFiscal(tx, tenantId, { id: created.id, kind: doc.kind, number, prefix: allocation?.prefix || null, issueDate: bogotaDay(issueDate), customerName: doc.customerName, customerDoc: doc.customerDoc ?? null, lines: createdLines, totals, relatedCode, notes: doc.notes ?? null });
   return { id: created.id, number, total: totals.total };
 }
 
@@ -313,7 +314,7 @@ export async function documentView(tenantId: string, id: string): Promise<Docume
     kind: inv.kind as DocumentKind,
     code: documentCode(inv.kind as DocumentKind, inv.number),
     status: inv.status as DocumentView["status"],
-    issueDate: String(inv.issueDate).slice(0, 10),
+    issueDate: bogotaDay(inv.issueDate),
     dueDate: inv.dueDate ? String(inv.dueDate).slice(0, 10) : null,
     customer: { name: inv.customerName, doc: inv.customerDoc },
     issuer: { name: shop?.name ?? "", legalName: shop?.legalName ?? null, taxId: shop?.taxId ?? null, address: shop?.address ?? null, city: shop?.city ?? null, phone: shop?.whatsappNumber ?? null },
