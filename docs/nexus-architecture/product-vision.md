@@ -1,8 +1,8 @@
 # 12 · Visión de producto: el sistema operativo del negocio
 
-[← Índice](README.md) · Propuesta. Ordena hacia dónde va NEXUS y en qué orden
+[← Índice](../internal/historico/nexus-architecture/README.md) · Propuesta. Ordena hacia dónde va NEXUS y en qué orden
 construirlo, partiendo de lo que ya existe ([product-inventory.md](product-inventory.md)).
-La arquitectura que la soporta está en [target-architecture.md](target-architecture.md)
+La arquitectura que la soporta está en [target-architecture.md](../internal/historico/nexus-architecture/target-architecture.md)
 y la ruta de crecimiento técnico en [scaling-path.md](scaling-path.md).
 
 ## 1. La tesis
@@ -53,7 +53,7 @@ Estado: **Hoy** = funciona en el piloto · **Parcial** · **Falta**.
 Es lo que más pide el mercado y lo que más cuesta hacer bien. Recomendación:
 **no** construir la firma digital, el XML UBL ni la comunicación con la DIAN.
 Integrar un **proveedor tecnológico** autorizado detrás de un puerto
-(`EInvoicePort`, [target-architecture.md §3](target-architecture.md)), para
+(`EInvoicePort`, [target-architecture.md §3](../internal/historico/nexus-architecture/target-architecture.md)), para
 poder cambiar de proveedor sin tocar el resto.
 
 Lo que NEXUS sí guarda y controla:

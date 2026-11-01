@@ -13,7 +13,7 @@ import type { DocumentLineInput } from "./commercial-document";
 import { insertDocument, issueCreditNote, saleDocumentOfPayment } from "./documents-db";
 
 /**
- * Servicio de dinero (DATA-01 en docs/nexus-architecture/technical-debt.md y
+ * Servicio de dinero (DATA-01 en docs/internal/historico/nexus-architecture/technical-debt.md y
  * ADR-0006). Un cobro es varias escrituras —el pago, su recibo consecutivo, la
  * caja del turno, el estado del documento que se paga, el stock que se vende—
  * y tienen que pasar todas o ninguna:

@@ -1,7 +1,7 @@
 # Sincronización
 
 > **Retirado:** los comandos `nexus-eng knowledge …` y el Knowledge Hub dejaron de existir con el
-> [ADR 0013](../../ingenieria/adr/0013-subagentes-nativos-en-plugin.md). Este directorio queda como biblioteca de fuentes en
+> [ADR 0013](../../decisions/ingenieria/0013-subagentes-nativos-en-plugin.md). Este directorio queda como biblioteca de fuentes en
 > Markdown; las fuentes se registran a mano con procedencia.
 
 Aquí se registra, en formato legible, cada sincronización con adaptadores

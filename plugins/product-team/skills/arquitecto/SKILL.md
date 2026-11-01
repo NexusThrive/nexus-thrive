@@ -22,7 +22,7 @@ description: "Procedimiento y lista de comprobación del rol Software Architect.
 ## Salidas
 
 - docs/ingenieria/diseno/<id>.md
-- docs/ingenieria/adr/<id>.md
+- docs/decisions/ingenieria/<id>.md
 - análisis de impacto
 
 ## Criterios de finalización

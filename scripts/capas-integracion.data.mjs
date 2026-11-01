@@ -1,6 +1,6 @@
 // Superficie de integración de cada subcapa (API · MCP · Webhooks).
 // Fuente de datos de `scripts/capas-integracion.mjs`, que la escribe en el
-// README de cada subcapa. Reglas y estándares: .docs/integracion-api-mcp-webhooks.md
+// README de cada subcapa. Reglas y estándares: docs/wiki/07-integraciones/api-mcp-webhooks.md
 //
 //   api    recursos REST bajo /api/v1 (sustantivos en inglés, plural, estables)
 //   events eventos de dominio que sale por el outbox y los webhooks (`recurso.accion`, pasado)

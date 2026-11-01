@@ -3,7 +3,7 @@ import { isIP } from "node:net";
 
 /**
  * Guardia SSRF para las URLs que escribe un negocio (SEC-09 en
- * docs/nexus-architecture/security-audit.md). El servidor de NEXUS solo
+ * docs/internal/historico/nexus-architecture/security-audit.md). El servidor de NEXUS solo
  * consulta sitios públicos: nada de la red interna, del propio servidor ni de
  * los servicios de metadatos de la nube.
  *

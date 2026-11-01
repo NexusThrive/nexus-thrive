@@ -8,7 +8,7 @@ import { createConstructionDb, type ConstructionDb } from "@/lib/industry/constr
  *
  * NO tocan la base de desarrollo: se saltan salvo que exista
  * `TEST_DATABASE_URL`, y además exigen que `DATABASE_URL` apunte a esa misma
- * base (si no, fallan a propósito). Ver docs/construction/cierre-etapa-1.md
+ * base (si no, fallan a propósito). Ver docs/internal/historico/construction/cierre-etapa-1.md
  * para el procedimiento con una base aparte.
  */
 const TEST_URL = process.env.TEST_DATABASE_URL;

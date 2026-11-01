@@ -1,9 +1,9 @@
-// Progreso de la guía de capas (.docs/capas): cuenta las casillas de
+// Progreso de la guía de capas (docs/wiki/04-modulos/capas): cuenta las casillas de
 // "Funcionalidad" de cada subcapa (`- [x]` hecho, `- [ ]` pendiente).
 //
 //   node scripts/capas-progreso.mjs           imprime la tabla
-//   node scripts/capas-progreso.mjs --write   la escribe en .docs/README.md y
-//                                             .docs/capas/README.md, entre
+//   node scripts/capas-progreso.mjs --write   la escribe en docs/wiki/02-producto/guia-de-construccion.md y
+//                                             docs/wiki/04-modulos/capas/README.md, entre
 //                                             <!-- progreso:inicio --> y <!-- progreso:fin -->
 
 import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -11,7 +11,7 @@ import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(fileURLToPath(import.meta.url), "../..");
-const capasDir = join(root, ".docs/capas");
+const capasDir = join(root, "docs/wiki/04-modulos/capas");
 const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"];
 
 function countSubcapa(path) {
@@ -112,7 +112,7 @@ const END = "<!-- progreso:fin -->";
 
 if (process.argv.includes("--write")) {
   for (const [file, prefix] of [
-    [join(root, ".docs/README.md"), "capas/"],
+    [join(root, "docs/wiki/02-producto/guia-de-construccion.md"), "../04-modulos/capas/"],
     [join(capasDir, "README.md"), ""],
   ]) {
     const text = readFileSync(file, "utf8");

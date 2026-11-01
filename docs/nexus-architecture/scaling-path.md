@@ -1,7 +1,7 @@
 # 13 · Ruta de escalabilidad: del monolito modular a servicios
 
-[← Índice](README.md) · Propuesta. Complementa
-[ADR-0001](decisions/0001-monolito-modular.md): hoy **no** se parte en
+[← Índice](../internal/historico/nexus-architecture/README.md) · Propuesta. Complementa
+[ADR-0001](../decisions/arquitectura/0001-monolito-modular.md): hoy **no** se parte en
 microservicios. Este documento dice cómo preparar el código para poder hacerlo
 el día que haga falta, y qué señales indican que llegó ese día.
 

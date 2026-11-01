@@ -115,7 +115,7 @@ describe.skipIf(!enabled)("acceso del equipo de NEXUS (integración)", () => {
     expect(despues).toEqual({ ok: true });
   });
 
-  // SEC-01 (docs/nexus-architecture/security-audit.md): `_` y `%` son
+  // SEC-01 (docs/internal/historico/nexus-architecture/security-audit.md): `_` y `%` son
   // comodines de ILIKE. Un correo parecido no puede resolver la ficha ajena.
   test("un `_` en el correo no encuentra la ficha de otra persona", async () => {
     await makeMember("ana.perez@ejemplo.com");

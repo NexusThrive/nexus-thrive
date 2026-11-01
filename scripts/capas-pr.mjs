@@ -1,5 +1,5 @@
-// Genera, desde las casillas de .docs/capas marcadas `_(PR-NN)_`, la tabla y la
-// ficha de cada PR en .docs/hoja-de-ruta-implementacion.md (entre
+// Genera, desde las casillas de docs/wiki/04-modulos/capas marcadas `_(PR-NN)_`, la tabla y la
+// ficha de cada PR en docs/internal/historico/hoja-de-ruta-30-pr.md (entre
 // <!-- pr:inicio --> y <!-- pr:fin -->). Capas, niveles y etiquetas salen de
 // las casillas; lo demás, de scripts/capas-pr.data.mjs.
 //
@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url";
 import { HITOS, PRS } from "./capas-pr.data.mjs";
 
 const root = resolve(fileURLToPath(import.meta.url), "../..");
-const capasDir = join(root, ".docs/capas");
+const capasDir = join(root, "docs/wiki/04-modulos/capas");
 const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"];
 
 /** pr → [{ sub, nivel, texto, hecho }] */
@@ -90,7 +90,7 @@ function render() {
           ? [
               "- **Casillas que marca:**",
               ...[...groups].flatMap(([key, g]) => [
-                `  - [\`${key}\`](capas/${g.dir}/README.md)`,
+                `  - [\`${key}\`](../../wiki/04-modulos/capas/${g.dir}/README.md)`,
                 ...g.items.map((c) => `    - [${c.hecho ? "x" : " "}] ${c.texto}`),
               ]),
             ]
@@ -114,7 +114,7 @@ if (process.argv.includes("--labels")) {
   const by = casillas();
   for (const pr of PRS) console.log(`PR-${String(pr.n).padStart(2, "0")}: ${derive(pr, by.get(pr.n) ?? []).labels.join(",")}`);
 } else if (process.argv.includes("--write")) {
-  const file = join(root, ".docs/hoja-de-ruta-implementacion.md");
+  const file = join(root, "docs/internal/historico/hoja-de-ruta-30-pr.md");
   const text = readFileSync(file, "utf8");
   const i = text.indexOf(START);
   const j = text.indexOf(END);

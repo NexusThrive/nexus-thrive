@@ -16,7 +16,8 @@
     "release": "bash ./scripts/release.sh",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -o storybook-static",
-    "docs:progreso": "node scripts/capas-progreso.mjs --write"
+    "docs:progreso": "node scripts/capas-progreso.mjs --write",
+    "wiki:check": "node scripts/wiki-sync.mjs check"
   },
   "dependencies": {
     "@clerk/localizations": "^4.23.0",

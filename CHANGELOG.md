@@ -11,7 +11,7 @@ Todas las versiones de NEXUS THRIVE. El formato sigue
   el modelo ni el flujo.
 
 El proceso completo (ramas, despliegue, SQL, qué hacer si producción está
-rota) está en [`docs/VERSIONADO.md`](docs/VERSIONADO.md).
+rota) está en [`docs/wiki/09-desarrollo/versionado.md`](docs/wiki/09-desarrollo/versionado.md).
 
 ---
 
@@ -68,8 +68,8 @@ bandeja, satisfacción, salud, precios y catálogo, auditoría y Accesos.
 
 ### Documentación
 
-- `docs/clerk-produccion.md`: qué debe coincidir al cambiar de dominio.
-- `docs/prod-sql/00-ORDEN.md`: orden del SQL de producción.
+- `docs/wiki/08-operacion-y-despliegue/clerk-produccion.md`: qué debe coincidir al cambiar de dominio.
+- `docs/wiki/08-operacion-y-despliegue/prod-sql-orden.md`: orden del SQL de producción.
 - `.env.produccion`: variables de Vercel con valores sugeridos.
 
 [Unreleased]: https://github.com/NexusThrive/nexus-thrive/compare/v1.0.0...HEAD
@@ -127,7 +127,7 @@ bandeja, satisfacción, salud, precios y catálogo, auditoría y Accesos.
   **"Códigos desconocidos"**.
 - Freno a la fuerza bruta en la puerta: quien pasa de 120 escaneos por
   minuto recibe "Demasiados escaneos seguidos".
-- Guía del sistema de tarjetas: `docs/gym-acceso-nfc.md`.
+- Guía del sistema de tarjetas: `docs/wiki/04-modulos/gym-acceso-nfc.md`.
 
 ### Cambiado
 - Sin el aviso de "hydration mismatch" cuando un gestor de contraseñas

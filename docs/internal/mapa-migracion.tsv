@@ -1,0 +1,276 @@
+archivo	acción	destino	nota
+.docs/README.md	fusionar	docs/wiki/Home.md + 02-producto/	se reparte entre Home y Producto
+.docs/arquitectura-v2/A-checklist-maestro.md	archivar	docs/internal/historico/arquitectura-v2/	checklists y registro de la auditoría v2
+.docs/arquitectura-v2/B-core-y-compartidas.md	archivar	docs/internal/historico/arquitectura-v2/	checklists y registro de la auditoría v2
+.docs/arquitectura-v2/C-checklist-gym.md	archivar	docs/internal/historico/arquitectura-v2/	checklists y registro de la auditoría v2
+.docs/arquitectura-v2/D-checklist-restaurante.md	archivar	docs/internal/historico/arquitectura-v2/	checklists y registro de la auditoría v2
+.docs/arquitectura-v2/E-registro-inconsistencias.md	archivar	docs/internal/historico/arquitectura-v2/	checklists y registro de la auditoría v2
+.docs/arquitectura-v2/F-backlog-priorizado.md	archivar	docs/internal/historico/arquitectura-v2/	checklists y registro de la auditoría v2
+.docs/arquitectura-v2/G-decisiones-pendientes.md	archivar	docs/internal/historico/arquitectura-v2/	checklists y registro de la auditoría v2
+.docs/arquitectura-v2/README.md	archivar	docs/internal/historico/arquitectura-v2/	checklists y registro de la auditoría v2
+.docs/auditoria-arquitectura-unificada.md	archivar	docs/internal/historico/auditoria-arquitectura-unificada.md	informe fechado
+.docs/capas-estado-2026-10-25.md	archivar	docs/internal/historico/capas-estado-2026-10-25.md	informe fechado
+.docs/capas/I-Fundacion-Nucleo-e-Infraestructura/00-Nucleo-Transversal-y-Modelo-de-Tercero-Unico/README.md	mover	docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/00-Nucleo-Transversal-y-Modelo-de-Tercero-Unico/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/I-Fundacion-Nucleo-e-Infraestructura/01-Catalogo-Maestro-de-Productos-y-Servicios/README.md	mover	docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/01-Catalogo-Maestro-de-Productos-y-Servicios/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/I-Fundacion-Nucleo-e-Infraestructura/02-Autenticacion-Usuarios-e-Identidad-Unificada/README.md	mover	docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/02-Autenticacion-Usuarios-e-Identidad-Unificada/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/I-Fundacion-Nucleo-e-Infraestructura/03-Permisos-Granulares-y-Control-de-Acceso-RBAC-ABAC/README.md	mover	docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/03-Permisos-Granulares-y-Control-de-Acceso-RBAC-ABAC/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/I-Fundacion-Nucleo-e-Infraestructura/04-Multi-Tenancy-y-Aislamiento-de-Datos/README.md	mover	docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/04-Multi-Tenancy-y-Aislamiento-de-Datos/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/I-Fundacion-Nucleo-e-Infraestructura/05-Motor-de-Eventos-y-Webhooks/README.md	mover	docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/05-Motor-de-Eventos-y-Webhooks/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/I-Fundacion-Nucleo-e-Infraestructura/06-Auditoria-Trazabilidad-y-Bitacora/README.md	mover	docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/06-Auditoria-Trazabilidad-y-Bitacora/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/I-Fundacion-Nucleo-e-Infraestructura/07-Respaldo-Versionado-y-Recuperacion/README.md	mover	docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/07-Respaldo-Versionado-y-Recuperacion/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/I-Fundacion-Nucleo-e-Infraestructura/README.md	mover	docs/wiki/04-modulos/capas/I-Fundacion-Nucleo-e-Infraestructura/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/II-Visibilidad-Captacion-y-Presencia-Digital/00-Sitios-Web-Landing-Pages-y-Cms/README.md	mover	docs/wiki/04-modulos/capas/II-Visibilidad-Captacion-y-Presencia-Digital/00-Sitios-Web-Landing-Pages-y-Cms/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/II-Visibilidad-Captacion-y-Presencia-Digital/01-SEO-Tecnico-y-Posicionamiento-Local/README.md	mover	docs/wiki/04-modulos/capas/II-Visibilidad-Captacion-y-Presencia-Digital/01-SEO-Tecnico-y-Posicionamiento-Local/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/II-Visibilidad-Captacion-y-Presencia-Digital/02-Publicidad-Digital-y-Atribucion-Multicanal/README.md	mover	docs/wiki/04-modulos/capas/II-Visibilidad-Captacion-y-Presencia-Digital/02-Publicidad-Digital-y-Atribucion-Multicanal/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/II-Visibilidad-Captacion-y-Presencia-Digital/03-Formularios-Enlaces-Cortos-y-Codigos-Qr/README.md	mover	docs/wiki/04-modulos/capas/II-Visibilidad-Captacion-y-Presencia-Digital/03-Formularios-Enlaces-Cortos-y-Codigos-Qr/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/II-Visibilidad-Captacion-y-Presencia-Digital/04-Fidelizacion-Puntos-Cupones-y-Referidos/README.md	mover	docs/wiki/04-modulos/capas/II-Visibilidad-Captacion-y-Presencia-Digital/04-Fidelizacion-Puntos-Cupones-y-Referidos/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/II-Visibilidad-Captacion-y-Presencia-Digital/05-Email-y-Whatsapp-Marketing/README.md	mover	docs/wiki/04-modulos/capas/II-Visibilidad-Captacion-y-Presencia-Digital/05-Email-y-Whatsapp-Marketing/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/II-Visibilidad-Captacion-y-Presencia-Digital/06-Redes-Sociales-y-Contenido/README.md	mover	docs/wiki/04-modulos/capas/II-Visibilidad-Captacion-y-Presencia-Digital/06-Redes-Sociales-y-Contenido/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/II-Visibilidad-Captacion-y-Presencia-Digital/README.md	mover	docs/wiki/04-modulos/capas/II-Visibilidad-Captacion-y-Presencia-Digital/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/III-Atencion-y-Comunicacion/00-Bandeja-de-Entrada-Omnicanal/README.md	mover	docs/wiki/04-modulos/capas/III-Atencion-y-Comunicacion/00-Bandeja-de-Entrada-Omnicanal/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/III-Atencion-y-Comunicacion/01-Agentes-Conversacionales-e-Inteligencia-Artificial/README.md	mover	docs/wiki/04-modulos/capas/III-Atencion-y-Comunicacion/01-Agentes-Conversacionales-e-Inteligencia-Artificial/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/III-Atencion-y-Comunicacion/02-Helpdesk-Tickets-y-SLA/README.md	mover	docs/wiki/04-modulos/capas/III-Atencion-y-Comunicacion/02-Helpdesk-Tickets-y-SLA/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/III-Atencion-y-Comunicacion/03-Telefonia-Voip-e-Integracion-de-Llamadas/README.md	mover	docs/wiki/04-modulos/capas/III-Atencion-y-Comunicacion/03-Telefonia-Voip-e-Integracion-de-Llamadas/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/III-Atencion-y-Comunicacion/04-Encuestas-de-Satisfaccion-y-Reputacion/README.md	mover	docs/wiki/04-modulos/capas/III-Atencion-y-Comunicacion/04-Encuestas-de-Satisfaccion-y-Reputacion/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/III-Atencion-y-Comunicacion/README.md	mover	docs/wiki/04-modulos/capas/III-Atencion-y-Comunicacion/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/00-Perfil-Integral-del-Cliente-CRM-360/README.md	mover	docs/wiki/04-modulos/capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/00-Perfil-Integral-del-Cliente-CRM-360/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/01-Embudos-Comerciales-y-Oportunidades/README.md	mover	docs/wiki/04-modulos/capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/01-Embudos-Comerciales-y-Oportunidades/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/02-Cotizaciones-y-Propuestas-Comerciales/README.md	mover	docs/wiki/04-modulos/capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/02-Cotizaciones-y-Propuestas-Comerciales/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/03-Calificacion-y-Asignacion-de-Prospectos/README.md	mover	docs/wiki/04-modulos/capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/03-Calificacion-y-Asignacion-de-Prospectos/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/04-Metas-Comisiones-e-Incentivos-Comerciales/README.md	mover	docs/wiki/04-modulos/capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/04-Metas-Comisiones-e-Incentivos-Comerciales/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/README.md	mover	docs/wiki/04-modulos/capas/IV-Gestion-Comercial-y-Relacion-con-Clientes/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/00-Dashboards-y-Analitica-Operativa/README.md	mover	docs/wiki/04-modulos/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/00-Dashboards-y-Analitica-Operativa/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/01-Modelo-Semantico-y-Catalogo-de-Metricas/README.md	mover	docs/wiki/04-modulos/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/01-Modelo-Semantico-y-Catalogo-de-Metricas/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/02-Analitica-de-Clientes-y-Comportamiento-Comercial/README.md	mover	docs/wiki/04-modulos/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/02-Analitica-de-Clientes-y-Comportamiento-Comercial/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/03-Reportes-Automaticos-y-Resumenes-Ejecutivos/README.md	mover	docs/wiki/04-modulos/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/03-Reportes-Automaticos-y-Resumenes-Ejecutivos/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/04-Copiloto-de-Inteligencia-Artificial/README.md	mover	docs/wiki/04-modulos/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/04-Copiloto-de-Inteligencia-Artificial/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/05-Deteccion-de-Anomalias-y-Alertas-Tempranas/README.md	mover	docs/wiki/04-modulos/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/05-Deteccion-de-Anomalias-y-Alertas-Tempranas/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/README.md	mover	docs/wiki/04-modulos/capas/IX-Inteligencia-de-Negocio-Analitica-e-IA/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/README.md	mover	docs/wiki/04-modulos/capas/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md	mover	docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/00-Pasarelas-de-Pago-e-Integraciones-Financieras/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/V-Ventas-Digitales-Comercio-y-Pagos/01-Enlaces-y-Solicitudes-de-Cobro/README.md	mover	docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/01-Enlaces-y-Solicitudes-de-Cobro/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/V-Ventas-Digitales-Comercio-y-Pagos/02-Suscripciones-y-Cobros-Recurrentes/README.md	mover	docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/02-Suscripciones-y-Cobros-Recurrentes/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/V-Ventas-Digitales-Comercio-y-Pagos/03-Punto-de-Venta-Fisico-y-Movil-POS/README.md	mover	docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/03-Punto-de-Venta-Fisico-y-Movil-POS/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/V-Ventas-Digitales-Comercio-y-Pagos/04-Comercio-Electronico/README.md	mover	docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/04-Comercio-Electronico/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/V-Ventas-Digitales-Comercio-y-Pagos/05-Reservas-y-Control-de-Disponibilidad/README.md	mover	docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/05-Reservas-y-Control-de-Disponibilidad/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/V-Ventas-Digitales-Comercio-y-Pagos/06-Ventas-Pedidos-y-Entregas/README.md	mover	docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/06-Ventas-Pedidos-y-Entregas/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/V-Ventas-Digitales-Comercio-y-Pagos/07-Marketplace-y-Distribucion-Multicanal/README.md	mover	docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/07-Marketplace-y-Distribucion-Multicanal/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/V-Ventas-Digitales-Comercio-y-Pagos/README.md	mover	docs/wiki/04-modulos/capas/V-Ventas-Digitales-Comercio-y-Pagos/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VI-Operacion-Productividad-y-Logistica/00-Proyectos-Tareas-y-Seguimiento-de-Tiempos/README.md	mover	docs/wiki/04-modulos/capas/VI-Operacion-Productividad-y-Logistica/00-Proyectos-Tareas-y-Seguimiento-de-Tiempos/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VI-Operacion-Productividad-y-Logistica/01-Agenda-y-Sincronizacion-de-Calendarios/README.md	mover	docs/wiki/04-modulos/capas/VI-Operacion-Productividad-y-Logistica/01-Agenda-y-Sincronizacion-de-Calendarios/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VI-Operacion-Productividad-y-Logistica/02-Procedimientos-Operativos-y-Listas-de-Verificacion/README.md	mover	docs/wiki/04-modulos/capas/VI-Operacion-Productividad-y-Logistica/02-Procedimientos-Operativos-y-Listas-de-Verificacion/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VI-Operacion-Productividad-y-Logistica/03-Gestion-Documental-y-Firma-Electronica/README.md	mover	docs/wiki/04-modulos/capas/VI-Operacion-Productividad-y-Logistica/03-Gestion-Documental-y-Firma-Electronica/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VI-Operacion-Productividad-y-Logistica/04-Inventarios-Bodegas-y-Logistica/README.md	mover	docs/wiki/04-modulos/capas/VI-Operacion-Productividad-y-Logistica/04-Inventarios-Bodegas-y-Logistica/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VI-Operacion-Productividad-y-Logistica/05-Compras-y-Gestion-de-Proveedores/README.md	mover	docs/wiki/04-modulos/capas/VI-Operacion-Productividad-y-Logistica/05-Compras-y-Gestion-de-Proveedores/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VI-Operacion-Productividad-y-Logistica/06-Activos-Mantenimiento-e-Inspecciones/README.md	mover	docs/wiki/04-modulos/capas/VI-Operacion-Productividad-y-Logistica/06-Activos-Mantenimiento-e-Inspecciones/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VI-Operacion-Productividad-y-Logistica/07-Produccion-y-Planeacion/README.md	mover	docs/wiki/04-modulos/capas/VI-Operacion-Productividad-y-Logistica/07-Produccion-y-Planeacion/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VI-Operacion-Productividad-y-Logistica/08-Automatizaciones-y-Flujos-de-Trabajo/README.md	mover	docs/wiki/04-modulos/capas/VI-Operacion-Productividad-y-Logistica/08-Automatizaciones-y-Flujos-de-Trabajo/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VI-Operacion-Productividad-y-Logistica/README.md	mover	docs/wiki/04-modulos/capas/VI-Operacion-Productividad-y-Logistica/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/00-Caja-Menor-y-Arqueos/README.md	mover	docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/00-Caja-Menor-y-Arqueos/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/01-Vales-Anticipos-y-Legalizaciones/README.md	mover	docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/01-Vales-Anticipos-y-Legalizaciones/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/02-Cuentas-por-Cobrar-Cuentas-por-Pagar-y-Cartera/README.md	mover	docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/02-Cuentas-por-Cobrar-Cuentas-por-Pagar-y-Cartera/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/03-Documentos-Transaccionales-y-Reglas-Fiscales/README.md	mover	docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/03-Documentos-Transaccionales-y-Reglas-Fiscales/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md	mover	docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/04-Facturacion-Electronica-y-RADIAN/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md	mover	docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/05-Contabilidad-General-Puc-y-Estados-Financieros/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/06-Presupuestos-y-Centros-de-Costo/README.md	mover	docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/06-Presupuestos-y-Centros-de-Costo/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/07-Tesoreria-Bancos-y-Liquidez/README.md	mover	docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/07-Tesoreria-Bancos-y-Liquidez/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/README.md	mover	docs/wiki/04-modulos/capas/VII-Caja-Menor-Finanzas-Operativas-y-Contabilidad/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/00-Expediente-del-Empleado-y-Contratos/README.md	mover	docs/wiki/04-modulos/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/00-Expediente-del-Empleado-y-Contratos/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/01-Reclutamiento-y-Seleccion/README.md	mover	docs/wiki/04-modulos/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/01-Reclutamiento-y-Seleccion/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/02-Asistencia-Horarios-y-Turnos/README.md	mover	docs/wiki/04-modulos/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/02-Asistencia-Horarios-y-Turnos/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/03-Nomina-Electronica-y-Prestaciones-Sociales/README.md	mover	docs/wiki/04-modulos/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/03-Nomina-Electronica-y-Prestaciones-Sociales/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/04-Portal-del-Empleado-y-Autogestion/README.md	mover	docs/wiki/04-modulos/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/04-Portal-del-Empleado-y-Autogestion/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/05-Formacion-Induccion-y-Certificaciones/README.md	mover	docs/wiki/04-modulos/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/05-Formacion-Induccion-y-Certificaciones/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/06-Comunicacion-Interna-del-Equipo/README.md	mover	docs/wiki/04-modulos/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/06-Comunicacion-Interna-del-Equipo/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/07-Evaluacion-de-Desempeno-y-Compensacion-Laboral/README.md	mover	docs/wiki/04-modulos/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/07-Evaluacion-de-Desempeno-y-Compensacion-Laboral/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/README.md	mover	docs/wiki/04-modulos/capas/VIII-Talento-Humano-y-Administracion-del-Equipo/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/00-Planes-Suscripciones-y-Control-de-Consumo/README.md	mover	docs/wiki/04-modulos/capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/00-Planes-Suscripciones-y-Control-de-Consumo/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/01-White-Label-Dominios-e-Identidad-Visual/README.md	mover	docs/wiki/04-modulos/capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/01-White-Label-Dominios-e-Identidad-Visual/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/02-API-Webhooks-y-Marketplace-de-Modulos/README.md	mover	docs/wiki/04-modulos/capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/02-API-Webhooks-y-Marketplace-de-Modulos/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/03-Cumplimiento-Legal-Privacidad-y-Seguridad/README.md	mover	docs/wiki/04-modulos/capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/03-Cumplimiento-Legal-Privacidad-y-Seguridad/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/04-Centro-de-Ayuda-y-Onboarding/README.md	mover	docs/wiki/04-modulos/capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/04-Centro-de-Ayuda-y-Onboarding/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/README.md	mover	docs/wiki/04-modulos/capas/X-Plataforma-SaaS-Gobernanza-y-Escalabilidad/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/00-CONTAINER.md	mover	docs/wiki/04-modulos/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/00-CONTAINER.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/01-Tab1-Ficha-y-Cliente/I-Cliente-y-Receptor.md	mover	docs/wiki/04-modulos/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/01-Tab1-Ficha-y-Cliente/I-Cliente-y-Receptor.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/01-Tab1-Ficha-y-Cliente/README.md	mover	docs/wiki/04-modulos/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/01-Tab1-Ficha-y-Cliente/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/02-Tab2-Presupuestador/README.md	mover	docs/wiki/04-modulos/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/02-Tab2-Presupuestador/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/03-Tab3-Planificador-Lean/README.md	mover	docs/wiki/04-modulos/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/03-Tab3-Planificador-Lean/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/04-Tab4-Bitacora-y-Campo/README.md	mover	docs/wiki/04-modulos/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/04-Tab4-Bitacora-y-Campo/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/05-Tab5-Informes-y-Exportacion/README.md	mover	docs/wiki/04-modulos/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/05-Tab5-Informes-y-Exportacion/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/README.md	mover	docs/wiki/04-modulos/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/_BRIEF-TEMPLATE.md	mover	docs/wiki/04-modulos/capas/XI-Especializacion-por-Vertical/00-Construccion-Presupuesto-y-Control-de-Obra/_BRIEF-TEMPLATE.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/capas/XI-Especializacion-por-Vertical/README.md	mover	docs/wiki/04-modulos/capas/XI-Especializacion-por-Vertical/README.md	capas de implementación (vigentes, 11 capas / 70 subcapas)
+.docs/distribucion-por-rubro.md	mover	docs/wiki/02-producto/distribucion-por-rubro.md	visión de producto
+.docs/ejecucion-nocturna.md	archivar	docs/internal/historico/ejecucion-nocturna.md	informe fechado
+.docs/fuentes/DesordenadoCapas.md	archivar	docs/internal/fuentes/	material de origen (280 KB), no es wiki
+.docs/fuentes/EstructuraCapasImplementacion.md	archivar	docs/internal/fuentes/	material de origen (280 KB), no es wiki
+.docs/hoja-de-ruta-implementacion.md	archivar	docs/internal/historico/hoja-de-ruta-30-pr.md	plan de 30 PR (24-oct) superado por V10
+.docs/integracion-api-mcp-webhooks.md	mover	docs/wiki/07-integraciones/api-mcp-webhooks.md	regla transversal
+.docs/mapa-de-capacidades.md	mover	docs/wiki/02-producto/mapa-de-capacidades.md	visión de producto
+.docs/sql/README.md	mover	docs/wiki/05-datos-y-base-de-datos/borradores-sql.md	los .sql se archivan junto a ella
+.docs/vision-negocio-conectado.md	mover	docs/wiki/02-producto/vision-negocio-conectado.md	visión de producto
+.github/pull_request_template.md	conservar		plantilla de PR
+AGENTS.md	conservar		raíz (puerta de entrada / agentes)
+CHANGELOG.md	conservar		raíz (puerta de entrada / agentes)
+CLAUDE.md	conservar		raíz (puerta de entrada / agentes)
+CONTRIBUTING.md	conservar		raíz (puerta de entrada / agentes)
+DESIGN.md	diferido		marca y diseño: no se mueve (decisión del usuario)
+IDEAS-E-IMPLEMENTACIONES-IMPORTANTES.md	revisar	docs/wiki/02-producto/ideas-y-backlog.md	clasificar vigente/obsoleto antes de trasladar
+PRODUCT.md	diferido		marca y diseño: no se mueve (decisión del usuario)
+README.md	conservar		raíz (puerta de entrada / agentes)
+REDISENO-NEXUS.md	diferido		marca y diseño: no se mueve (decisión del usuario)
+components/docs/accesibilidad.mdx	diferido		documentación de Storybook (diseño)
+components/docs/capas.mdx	diferido		documentación de Storybook (diseño)
+components/docs/colores.mdx	diferido		documentación de Storybook (diseño)
+components/docs/espacio.mdx	diferido		documentación de Storybook (diseño)
+components/docs/introduccion.mdx	diferido		documentación de Storybook (diseño)
+components/docs/inventario.mdx	diferido		documentación de Storybook (diseño)
+components/docs/movimiento.mdx	diferido		documentación de Storybook (diseño)
+components/docs/patrones.mdx	diferido		documentación de Storybook (diseño)
+components/docs/tipografia.mdx	diferido		documentación de Storybook (diseño)
+docs/PENDIENTES.md	revisar	docs/wiki/02-producto/hoja-de-ruta.md	lista viva: se fusiona con la hoja de ruta
+docs/SIGUIENTE-PASO.md	revisar	docs/wiki/02-producto/hoja-de-ruta.md	lista viva: se fusiona con la hoja de ruta
+docs/V1-PROGRESO.md	archivar	docs/internal/historico/V1-PROGRESO.md	histórico
+docs/VERSIONADO.md	mover	docs/wiki/09-desarrollo/versionado.md	
+docs/architecture/E0-reglas-de-capas.md	mover	docs/wiki/03-arquitectura/E0-reglas-de-capas.md	vigente
+docs/architecture/E1-resultados.md	archivar	docs/internal/historico/v10-y-etapas/E1	informe de etapa o auditoría fechada
+docs/architecture/E2-resultados.md	archivar	docs/internal/historico/v10-y-etapas/E2	informe de etapa o auditoría fechada
+docs/architecture/E3-resultados.md	archivar	docs/internal/historico/v10-y-etapas/E3	informe de etapa o auditoría fechada
+docs/architecture/E5-resultados.md	archivar	docs/internal/historico/v10-y-etapas/E5	informe de etapa o auditoría fechada
+docs/architecture/E7-resultados.md	archivar	docs/internal/historico/v10-y-etapas/E7	informe de etapa o auditoría fechada
+docs/architecture/E9-V-resultados.md	archivar	docs/internal/historico/v10-y-etapas/E9	informe de etapa o auditoría fechada
+docs/architecture/NEXUS-V2-ARQUITECTURA-ETAPA-A.md	archivar	docs/internal/historico/v10-y-etapas/NEXUS-V2-	informe de etapa o auditoría fechada
+docs/architecture/NEXUS-V2-ESQUEMA-PRISMA-AUDITORIA.md	archivar	docs/internal/historico/v10-y-etapas/NEXUS-V2-	informe de etapa o auditoría fechada
+docs/architecture/V10-M0-M2-resultados.md	archivar	docs/internal/historico/v10-y-etapas/V10-	informe de etapa o auditoría fechada
+docs/architecture/V10-M3-resultados.md	archivar	docs/internal/historico/v10-y-etapas/V10-	informe de etapa o auditoría fechada
+docs/architecture/V10-M4-resultados.md	archivar	docs/internal/historico/v10-y-etapas/V10-	informe de etapa o auditoría fechada
+docs/architecture/V10-M5-diseno.md	archivar	docs/internal/historico/v10-y-etapas/V10-	informe de etapa o auditoría fechada
+docs/architecture/V10-M5-resultados.md	archivar	docs/internal/historico/v10-y-etapas/V10-	informe de etapa o auditoría fechada
+docs/architecture/V10-arquitectura-fisica.md	archivar	docs/internal/historico/v10-y-etapas/V10-	informe de etapa o auditoría fechada
+docs/architecture/V10-arquitectura-objetivo.md	mover	docs/wiki/03-arquitectura/arquitectura-objetivo.md	vigente
+docs/architecture/V10-cierre-resultados.md	archivar	docs/internal/historico/v10-y-etapas/V10-	informe de etapa o auditoría fechada
+docs/architecture/V10-decisiones.md	mover	docs/decisions/V10-decisiones.md	decisiones D-V10-*
+docs/architecture/V10-plan-de-cierre.md	archivar	docs/internal/historico/v10-y-etapas/V10-	informe de etapa o auditoría fechada
+docs/architecture/V10-revision-post-M0-M2.md	archivar	docs/internal/historico/v10-y-etapas/V10-	informe de etapa o auditoría fechada
+docs/architecture/auditoria-e1-core-industry.md	archivar	docs/internal/historico/v10-y-etapas/auditoria-	informe de etapa o auditoría fechada
+docs/architecture/auditoria-pruebas-integracion.md	archivar	docs/internal/historico/v10-y-etapas/auditoria-	informe de etapa o auditoría fechada
+docs/architecture/borrado-de-un-negocio.md	mover	docs/wiki/05-datos-y-base-de-datos/borrado-de-un-negocio.md	vigente
+docs/architecture/dinero-y-decimales.md	mover	docs/wiki/05-datos-y-base-de-datos/dinero-y-decimales.md	vigente
+docs/architecture/documentacion-de-modulos.md	mover	docs/wiki/04-modulos/documentacion-de-modulos.md	vigente
+docs/architecture/guia-implementacion-lib.md	mover	docs/wiki/03-arquitectura/guia-implementacion-lib.md	vigente
+docs/architecture/hallazgo-fechas-utc-en-asientos.md	archivar	docs/internal/historico/v10-y-etapas/hallazgo-	informe de etapa o auditoría fechada
+docs/architecture/hoja-de-ruta.md	mover	docs/wiki/02-producto/hoja-de-ruta.md	vigente; absorbe SIGUIENTE-PASO
+docs/architecture/plan-migracion-tests.md	archivar	docs/internal/historico/v10-y-etapas/plan-migracion	informe de etapa o auditoría fechada
+docs/architecture/reglas-dependencias.md	mover	docs/wiki/03-arquitectura/reglas-dependencias.md	vigente
+docs/brand/brand-book.md	diferido		marca y diseño
+docs/brand/guia-de-tono.md	diferido		marca y diseño
+docs/clerk-produccion.md	mover	docs/wiki/08-operacion-y-despliegue/clerk-produccion.md	
+docs/construction/auditoria-etapa-0.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/cierre-etapa-1.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/clon-limpio-head-evidencia.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/convencion-semanas-lean.md	revisar	docs/wiki/10-pruebas-y-calidad/	posible contenido vigente
+docs/construction/esquema-reproduccion.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/estado-real-etapa3.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/evidencia-clon-limpio-migrate.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/evidencias-etapa2-paso0.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/evidencias-etapa3-a-h.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/evidencias-etapa3-completas.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/evidencias-etapa3-consolidado.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/evidencias-etapa3-ini.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/import-csv-evidencia.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/medicion-listactivities.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/parada-final-etapa3.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/prisma8-queries.md	revisar	docs/wiki/10-pruebas-y-calidad/	posible contenido vigente
+docs/construction/prisma8-replay.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/tabla-permisos-catalogo.md	revisar	docs/wiki/10-pruebas-y-calidad/	posible contenido vigente
+docs/construction/test-integration.md	revisar	docs/wiki/10-pruebas-y-calidad/	posible contenido vigente
+docs/construction/verificacion-1-pnpm-verify.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/verificacion-2-clon-limpio.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/construction/verificacion-3-mediciones.md	archivar	docs/internal/historico/construction/	evidencias de las etapas 0–3
+docs/design/accessibility.md	diferido		marca y diseño
+docs/design/auditoria-2026-10.md	diferido		marca y diseño
+docs/design/auditoria-ux-2026-10.md	diferido		marca y diseño
+docs/design/interaction-patterns.md	diferido		marca y diseño
+docs/design/movimiento.md	diferido		marca y diseño
+docs/design/pwa.md	diferido		marca y diseño
+docs/design/quality-checklist.md	diferido		marca y diseño
+docs/diagrams/README.md	mover	docs/wiki/03-arquitectura/diagramas.md	los .mmd se incrustan como Mermaid
+docs/guias/README.md	eliminar		lo reemplaza el índice de la wiki
+docs/guias/devops.md	mover	docs/wiki/08-operacion-y-despliegue/devops.md	
+docs/guias/n8n-en-casa.md	mover	docs/wiki/07-integraciones/n8n-en-casa.md	
+docs/guias/nueva-funcionalidad.md	mover	docs/wiki/09-desarrollo/nueva-funcionalidad.md	
+docs/guias/pruebas.md	mover	docs/wiki/10-pruebas-y-calidad/pruebas.md	
+docs/gym-acceso-nfc.md	mover	docs/wiki/04-modulos/gym-acceso-nfc.md	
+docs/ingenieria/adr/0001-nucleo-local-python.md	mover	docs/decisions/	ADR del equipo de ingeniería
+docs/ingenieria/adr/0002-fuente-unica-de-verdad.md	mover	docs/decisions/	ADR del equipo de ingeniería
+docs/ingenieria/adr/0003-persistencia-local-primero.md	mover	docs/decisions/	ADR del equipo de ingeniería
+docs/ingenieria/adr/0004-adaptadores-generados.md	mover	docs/decisions/	ADR del equipo de ingeniería
+docs/ingenieria/adr/0005-puente-http-n8n.md	mover	docs/decisions/	ADR del equipo de ingeniería
+docs/ingenieria/adr/0006-integraciones-no-disponibles.md	mover	docs/decisions/	ADR del equipo de ingeniería
+docs/ingenieria/adr/0007-reconstruccion-product-team.md	mover	docs/decisions/	ADR del equipo de ingeniería
+docs/ingenieria/adr/0008-herramientas-externas-adopcion-selectiva.md	mover	docs/decisions/	ADR del equipo de ingeniería
+docs/ingenieria/adr/0009-graphify-vs-codebase-memory.md	mover	docs/decisions/	ADR del equipo de ingeniería
+docs/ingenieria/adr/0010-dos-equipos-y-loops-compartidos.md	mover	docs/decisions/	ADR del equipo de ingeniería
+docs/ingenieria/adr/0011-rechazo-openhands.md	mover	docs/decisions/	ADR del equipo de ingeniería
+docs/ingenieria/adr/0012-agente-steward.md	mover	docs/decisions/	ADR del equipo de ingeniería
+docs/ingenieria/adr/0013-subagentes-nativos-en-plugin.md	mover	docs/decisions/	ADR del equipo de ingeniería
+docs/ingenieria/adr/README.md	mover	docs/decisions/	ADR del equipo de ingeniería
+docs/ingenieria/archivo/motor-python/README.md	eliminar		motor Python retirado (ADR 0013); queda en git
+docs/ingenieria/archivo/motor-python/agents.md	eliminar		motor Python retirado (ADR 0013); queda en git
+docs/ingenieria/archivo/motor-python/automation.md	eliminar		motor Python retirado (ADR 0013); queda en git
+docs/ingenieria/archivo/motor-python/cross-client.md	eliminar		motor Python retirado (ADR 0013); queda en git
+docs/ingenieria/archivo/motor-python/knowledge-hub.md	eliminar		motor Python retirado (ADR 0013); queda en git
+docs/ingenieria/archivo/motor-python/loops.md	eliminar		motor Python retirado (ADR 0013); queda en git
+docs/ingenieria/archivo/motor-python/operations.md	eliminar		motor Python retirado (ADR 0013); queda en git
+docs/ingenieria/archivo/motor-python/overview.md	eliminar		motor Python retirado (ADR 0013); queda en git
+docs/ingenieria/archivo/motor-python/security.md	eliminar		motor Python retirado (ADR 0013); queda en git
+docs/ingenieria/arquitectura/decisions.md	mover	docs/wiki/09-desarrollo/equipo-ingenieria/	los archivos de máquina (registro.json, PAUSA) no se mueven
+docs/ingenieria/arquitectura/overview.md	mover	docs/wiki/09-desarrollo/equipo-ingenieria/	los archivos de máquina (registro.json, PAUSA) no se mueven
+docs/ingenieria/qa/README.md	mover	docs/wiki/09-desarrollo/equipo-ingenieria/	los archivos de máquina (registro.json, PAUSA) no se mueven
+docs/ingenieria/seguridad/README.md	mover	docs/wiki/09-desarrollo/equipo-ingenieria/	los archivos de máquina (registro.json, PAUSA) no se mueven
+docs/ingenieria/sprints/README.md	mover	docs/wiki/09-desarrollo/equipo-ingenieria/	los archivos de máquina (registro.json, PAUSA) no se mueven
+docs/ingenieria/steward/criterios.md	mover	docs/wiki/09-desarrollo/equipo-ingenieria/	los archivos de máquina (registro.json, PAUSA) no se mueven
+docs/knowledge/README.md	mover	docs/wiki/09-desarrollo/conocimiento/	Graphify/NotebookLM
+docs/knowledge/catalog/README.md	mover	docs/wiki/09-desarrollo/conocimiento/	Graphify/NotebookLM
+docs/knowledge/policies/README.md	mover	docs/wiki/09-desarrollo/conocimiento/	Graphify/NotebookLM
+docs/knowledge/research/README.md	mover	docs/wiki/09-desarrollo/conocimiento/	Graphify/NotebookLM
+docs/knowledge/sources/README.md	mover	docs/wiki/09-desarrollo/conocimiento/	Graphify/NotebookLM
+docs/knowledge/synchronization/README.md	mover	docs/wiki/09-desarrollo/conocimiento/	Graphify/NotebookLM
+docs/marketing/estrategia-contenidos.md	diferido		adyacente a marca; decidir con el sistema de diseño
+docs/marketing/growth-experimentos.md	diferido		adyacente a marca; decidir con el sistema de diseño
+docs/marketing/medicion.md	diferido		adyacente a marca; decidir con el sistema de diseño
+docs/marketing/seo-tecnico.md	diferido		adyacente a marca; decidir con el sistema de diseño
+docs/marketing/ventas.md	diferido		adyacente a marca; decidir con el sistema de diseño
+docs/nexus-architecture/README.md	archivar	docs/internal/historico/nexus-architecture/	auditoría del 22–23 oct
+docs/nexus-architecture/current-architecture.md	fusionar	docs/wiki/03-arquitectura/	pre-V10: se reescribe contra el código actual
+docs/nexus-architecture/decisions/0001-monolito-modular.md	mover	docs/decisions/	ADR 0001–0006 (se renumeran)
+docs/nexus-architecture/decisions/0002-identidad-y-membresias.md	mover	docs/decisions/	ADR 0001–0006 (se renumeran)
+docs/nexus-architecture/decisions/0003-registro-de-capacidades.md	mover	docs/decisions/	ADR 0001–0006 (se renumeran)
+docs/nexus-architecture/decisions/0004-aislamiento-en-aplicacion.md	mover	docs/decisions/	ADR 0001–0006 (se renumeran)
+docs/nexus-architecture/decisions/0005-esquema-de-produccion.md	mover	docs/decisions/	ADR 0001–0006 (se renumeran)
+docs/nexus-architecture/decisions/0006-servicio-de-dinero.md	mover	docs/decisions/	ADR 0001–0006 (se renumeran)
+docs/nexus-architecture/decisions/README.md	mover	docs/decisions/	ADR 0001–0006 (se renumeran)
+docs/nexus-architecture/domain-and-data-model.md	fusionar	docs/wiki/03-arquitectura/	pre-V10: se reescribe contra el código actual
+docs/nexus-architecture/modules-and-dependencies.md	fusionar	docs/wiki/03-arquitectura/	pre-V10: se reescribe contra el código actual
+docs/nexus-architecture/onboarding-and-ux.md	revisar	docs/wiki/02-producto/	verificar vigencia
+docs/nexus-architecture/product-inventory.md	revisar	docs/wiki/02-producto/	verificar vigencia
+docs/nexus-architecture/product-vision.md	revisar	docs/wiki/02-producto/	verificar vigencia
+docs/nexus-architecture/propuesta-bloque-b-3-a-7.md	archivar	docs/internal/historico/nexus-architecture/	auditoría del 22–23 oct
+docs/nexus-architecture/remediation-log.md	archivar	docs/internal/historico/nexus-architecture/	auditoría del 22–23 oct
+docs/nexus-architecture/roadmap.md	revisar	docs/wiki/02-producto/	verificar vigencia
+docs/nexus-architecture/scaling-path.md	revisar	docs/wiki/02-producto/	verificar vigencia
+docs/nexus-architecture/security-audit.md	archivar	docs/internal/historico/nexus-architecture/	auditoría del 22–23 oct
+docs/nexus-architecture/target-architecture.md	fusionar	docs/wiki/03-arquitectura/	pre-V10: se reescribe contra el código actual
+docs/nexus-architecture/technical-debt.md	archivar	docs/internal/historico/nexus-architecture/	auditoría del 22–23 oct
+docs/nexus-architecture/user-journey.md	revisar	docs/wiki/02-producto/	verificar vigencia
+docs/nexus-architecture/validation-log.md	archivar	docs/internal/historico/nexus-architecture/	auditoría del 22–23 oct
+docs/prod-sql/00-ORDEN.md	mover	docs/wiki/08-operacion-y-despliegue/prod-sql/	los .sql no se mueven (los lee check-prod-sql)
+docs/prod-sql/AUTOMATIZACION.md	mover	docs/wiki/08-operacion-y-despliegue/prod-sql/	los .sql no se mueven (los lee check-prod-sql)
+docs/product/README.md	mover	docs/wiki/02-producto/	contexto de dominio
+docs/product/contexto-dominio.md	mover	docs/wiki/02-producto/	contexto de dominio
+docs/product/plan.md	mover	docs/wiki/02-producto/	contexto de dominio
+docs/superpowers/plans/2026-10-29-prettymodal-desktop.md	archivar	docs/internal/historico/superpowers/	plan y diseño fechados
+docs/superpowers/specs/2026-10-29-prettymodal-desktop-design.md	archivar	docs/internal/historico/superpowers/	plan y diseño fechados
+packages/brand/PROMPT.md	diferido		marca
+packages/brand/README.md	diferido		marca
+prisma/schema/README.md	conservar		junto al esquema; la wiki lo enlaza

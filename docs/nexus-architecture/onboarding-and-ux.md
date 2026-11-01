@@ -1,17 +1,19 @@
 # 09 · Onboarding y experiencia objetivo
 
-[← Índice](README.md) · **Propuesta.** El flujo actual está en
+> **Pendiente de validación (revisión del 31 oct 2026).** Cita 4 rutas del código y 2 ya no existen: el contenido se escribió antes de V10. No lo tomes como vigente sin comprobarlo en el código. Veredicto y siguiente paso: [revisión de documentos pendientes](../internal/revision-documentos-pendientes.md).
+
+[← Índice](../internal/historico/nexus-architecture/README.md) · **Propuesta.** El flujo actual está en
 [user-journey.md](user-journey.md#3-onboarding-real).
 
 ## 1. Problemas del flujo actual que motivan la propuesta
 
 | Problema | Evidencia |
 |---|---|
-| El onboarding elige módulos por receta, pero el rubro "turismo" lleva a un 404 y "restaurante" a un placeholder | [ARCH-02](technical-debt.md#arch-02) |
+| El onboarding elige módulos por receta, pero el rubro "turismo" lleva a un 404 y "restaurante" a un placeholder | [ARCH-02](../internal/historico/nexus-architecture/technical-debt.md#arch-02) |
 | Tras crear el negocio el dashboard aparece vacío, sin pasos guiados (solo accesos rápidos) | `app/[tenant]/(app)/page.tsx` |
-| Los negocios creados por el equipo NEXUS no tienen un dueño invitado | [SEC-02](security-audit.md#sec-02) |
+| Los negocios creados por el equipo NEXUS no tienen un dueño invitado | [SEC-02](../internal/historico/nexus-architecture/security-audit.md#sec-02) |
 | "Sin acceso" no ofrece salida; equipo NEXUS y dueños comparten la misma puerta de entrada con lógica por correo | `app/[tenant]/layout.tsx:100`, `/auth/callback` |
-| Dos wizards conviven | [ARCH-03](technical-debt.md#arch-03) |
+| Dos wizards conviven | [ARCH-03](../internal/historico/nexus-architecture/technical-debt.md#arch-03) |
 
 ## 2. Flujo propuesto
 
@@ -40,7 +42,7 @@ Reglas:
   con mapa) se pide cuando una capacidad la necesita (p. ej. al emitir la primera
   cuenta de cobro), no al principio.
 - **Solo capacidades operativas**: un preset nunca activa una capacidad sin
-  pantalla; la prueba de [ARCH-02](technical-debt.md#arch-02) lo garantiza.
+  pantalla; la prueba de [ARCH-02](../internal/historico/nexus-architecture/technical-debt.md#arch-02) lo garantiza.
 - **Checklist derivado del registro**: cada capacidad declara sus "primeros pasos"
   y cuándo están cumplidos (consulta barata). Se guarda `configuredAt` por
   capacidad.
@@ -69,7 +71,7 @@ Estados de cada capacidad en Ajustes → Módulos: *incluida en tu plan*,
 ## 5. Equipo NEXUS
 
 Separar la entrada del equipo (`/admin`) por enlace de invitación y no por
-coincidencia de correo ([SEC-01](security-audit.md#sec-01)), y permitir que un
+coincidencia de correo ([SEC-01](../internal/historico/nexus-architecture/security-audit.md#sec-01)), y permitir que un
 integrante tenga también su negocio como decisión explícita
 (`IDEAS-E-IMPLEMENTACIONES-IMPORTANTES.md` §2).
 

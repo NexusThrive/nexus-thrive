@@ -1,5 +1,7 @@
 # Tabla de permisos — acciones del catálogo APU
 
+> **NO VÁLIDA como referencia de permisos (contrastada el 31 oct 2026).** Las columnas de rol de esta tabla **contradicen la matriz real** (`BUSINESS_PERMISSIONS` en `lib/core/auth/permissions.ts`). Úsala solo como inventario de acciones; para saber quién puede qué, consulta la matriz y el contraste de abajo. Pendiente de reescribir (ver [revisión](../internal/revision-documentos-pendientes.md)).
+
 Basado en: `lib/authorization.ts` (`canEditApuCatalog`, `canManageApuCatalogDestructive`), `lib/tenant-context.ts` (`requireTenantContext`), `app/[tenant]/(app)/quotes/actions.ts` (cadena D7: sesión → tenant → rol → pertenencia → validación → transacción → resultado tipado → revalidatePath).
 
 | Acción | Sesión | Tenant | Rol (via lib/authorization) | Pertenencia (member) | Validación | Resultado tipado | Revalida | Notas |
@@ -22,3 +24,14 @@ Basado en: `lib/authorization.ts` (`canEditApuCatalog`, `canManageApuCatalogDest
 **Notas**:
 - `requireTenantContext` extrae `userId, tenantId, role, tenantDb` tras validar sesión + pertenencia al tenant.
 - D7 aplicado: sesión → tenant → rol → pertenencia → validación → transacción → resultado tipado → revalidatePath.
+
+## Contraste con la matriz real (31 oct 2026)
+
+`canEditApuCatalog` consulta `apu.edit` y `canManageApuCatalogDestructive` consulta `apu.destroy` (`lib/core/auth/authorization.ts`, que llama a `can()` de `lib/core/auth/permissions.ts`). Las acciones de este catálogo viven hoy en `app/[tenant]/(app)/catalog/actions.ts`.
+
+| Permiso | Roles reales (matriz) | Lo que dice la tabla de arriba | ¿Coincide? |
+|---|---|---|---|
+| `apu.edit` | SUPERADMIN, OWNER, ADMIN, STAFF | OWNER, SUPERADMIN, STAFF | **No**: falta ADMIN |
+| `apu.destroy` | SUPERADMIN, OWNER, ADMIN | OWNER, SUPERADMIN | **No**: falta ADMIN |
+
+Las columnas de sesión, tenant, validación y revalidación no se contrastaron fila por fila.

@@ -1,5 +1,5 @@
 /**
- * ARCH-04 (docs/nexus-architecture/technical-debt.md): las pantallas y acciones
+ * ARCH-04 (docs/internal/historico/nexus-architecture/technical-debt.md): las pantallas y acciones
  * de `app/` no consultan la base directo; lo hacen por los repositorios de
  * `lib/` (que reciben el contexto del negocio y no se olvidan del `tenantId`).
  *

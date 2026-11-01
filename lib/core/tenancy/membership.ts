@@ -7,7 +7,7 @@ import { acceptInvitesFor } from "@/lib/core/tenancy/team-db";
  * Se entra con una membresía activa o aceptando una invitación pendiente al
  * correo **verificado** de la sesión. Nunca se crea un dueño por llegar
  * primero a un negocio sin miembros (SEC-02 en
- * docs/nexus-architecture/security-audit.md): el dueño de un negocio creado
+ * docs/internal/historico/nexus-architecture/security-audit.md): el dueño de un negocio creado
  * desde el panel entra con la invitación OWNER que deja `createTenant`.
  */
 export async function resolveTenantMembership(input: {

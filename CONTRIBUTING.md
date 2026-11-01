@@ -3,9 +3,9 @@
 NEXUS es un monorepo de Next.js. El repositorio está en GitHub y **todo se
 propone y se fusiona allí** mediante pull requests.
 
-- Guías de trabajo: [docs/guias/README.md](docs/guias/README.md)
-- Ramas, CI, SQL de producción y despliegue: [docs/guias/devops.md](docs/guias/devops.md)
-- Cómo agregar una funcionalidad: [docs/guias/nueva-funcionalidad.md](docs/guias/nueva-funcionalidad.md)
+- Guías de trabajo: [wiki de desarrollo](docs/wiki/09-desarrollo/README.md)
+- Ramas, CI, SQL de producción y despliegue: [docs/wiki/08-operacion-y-despliegue/devops.md](docs/wiki/08-operacion-y-despliegue/devops.md)
+- Cómo agregar una funcionalidad: [docs/wiki/09-desarrollo/nueva-funcionalidad.md](docs/wiki/09-desarrollo/nueva-funcionalidad.md)
 
 ---
 
@@ -34,7 +34,7 @@ pnpm test:integration      # requiere Postgres local (TEST_DATABASE_URL)
 
 `pnpm verify` encadena tipos, unitarias, integración y build; es lo que corre el
 CI. Si cambias el contrato de datos (`prisma/schema/`, un archivo por dominio), revisa
-[devops.md §4](docs/guias/devops.md#sql-de-producción): el SQL de producción se
+[devops.md §4](docs/wiki/08-operacion-y-despliegue/devops.md#sql-de-producción): el SQL de producción se
 corre **antes** del merge.
 
 ## 4. Abrir el pull request
@@ -67,4 +67,4 @@ git branch -d fix/mi-cambio
 | Un PR, una cosa | Revisión y reversión simples |
 | Los secretos no entran al repo: `.env` local, valores reales solo en Vercel | El historial no se borra de verdad |
 | Si un secreto llega a Git: rotarlo primero, limpiar después | Limpiar sin rotar no sirve |
-| Los tags se crean en GitHub | Ver [VERSIONADO.md](docs/VERSIONADO.md) |
+| Los tags se crean en GitHub | Ver [VERSIONADO.md](docs/wiki/09-desarrollo/versionado.md) |

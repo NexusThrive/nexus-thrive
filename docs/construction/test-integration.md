@@ -1,5 +1,7 @@
 # Pruebas de integración — `pnpm test:integration`
 
+> **Pendiente de validación (revisión del 31 oct 2026).** Cita 1 rutas del código y 1 ya no existen: el contenido se escribió antes de V10. No lo tomes como vigente sin comprobarlo en el código. Veredicto y siguiente paso: [revisión de documentos pendientes](../internal/revision-documentos-pendientes.md).
+
 ## Propósito
 
 Ejecutar las pruebas que requieren una base de datos real (capa de datos `tenant-db.ts`)
