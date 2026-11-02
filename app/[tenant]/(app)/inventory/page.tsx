@@ -6,7 +6,6 @@ import { canManage } from "@/lib/core/auth/roles";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { customerOptions } from "@/lib/business/customers/customers-db";
 import CatalogView from "./_components/catalog-view";
-import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 /** Catálogo e inventario: lo que vende el negocio (productos, servicios, planes, entradas o tours según su rubro). */
 export default async function InventoryPage({ params, searchParams }: { params: Promise<{ tenant: string }>; searchParams: Promise<{ nuevo?: string }> }) {
@@ -21,7 +20,7 @@ export default async function InventoryPage({ params, searchParams }: { params: 
   ]);
   return (
     <div className="grid gap-5">
-      <PageHeader eyebrow={routeCategory("/inventory")} title="Catálogo" description={`${kinds.map((k) => KIND_LABELS[k].many).join(", ")}: precios, inventario y ventas.`} />
+      <PageHeader title="Catálogo" description={`${kinds.map((k) => KIND_LABELS[k].many).join(", ")}: precios, inventario y ventas.`} />
       <CatalogView slug={tenant} products={products} kinds={kinds} customers={customers} canManage={canManage(ctx.role)} initialNew={nuevo === "1"} />
     </div>
   );

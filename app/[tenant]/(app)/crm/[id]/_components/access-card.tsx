@@ -111,7 +111,7 @@ export default function AccessCard({ slug, customerId, code, nfcUid, status }: {
                   <RefreshCw aria-hidden="true" className="size-3.5" /> Nuevo
                 </button>
               </div>
-              <p className="text-[12px] text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 El QR es como una tarjeta: personal. Si se pierde o alguien lo fotografía, genera
                 uno nuevo con <b>Nuevo</b> y el anterior deja de servir.
               </p>
@@ -124,7 +124,7 @@ export default function AccessCard({ slug, customerId, code, nfcUid, status }: {
         )}
 
         <div className="grid gap-2 border-t border-border pt-3">
-          <p className="flex items-center gap-2 text-[13px]">
+          <p className="flex items-center gap-2 text-ui">
             <Nfc aria-hidden="true" className="size-4 text-muted-foreground" />
             {nfcUid ? <>Tarjeta <b className="font-mono">{nfcUid}</b></> : "Sin tarjeta NFC"}
             <button type="button" onClick={() => setEditingNfc((v) => !v)} className="ml-auto text-xs font-medium text-accent-text hover:underline">
@@ -133,8 +133,8 @@ export default function AccessCard({ slug, customerId, code, nfcUid, status }: {
           </p>
           {editingNfc ? (
             <div className="grid gap-2">
-              <input value={uid} onChange={(e) => setUid(e.target.value)} placeholder="Número de serie de la etiqueta (p. ej. 04A1B2C3D4E5)" aria-label="Código de la tarjeta NFC" className={inputClasses} />
-              <p className="text-[12px] text-muted-foreground">
+              <input value={uid} onChange={(e) => setUid(e.target.value)} placeholder="Número de serie de la etiqueta" aria-label="Código de la tarjeta NFC" className={inputClasses} />
+              <p className="text-xs text-muted-foreground">
                 Es el <b>número de serie del chip</b> de la etiqueta NFC (no una URL ni un código de
                 NEXUS). Léelo con una app de NFC del teléfono (TagInfo, NFC Tools) y pégalo aquí; o
                 usa <b>&quot;Leer con este teléfono&quot;</b> si tu navegador puede (Chrome con

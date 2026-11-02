@@ -44,7 +44,7 @@ export default function PurchasesView({ slug, orders, suppliers, products, wareh
         <>
           <div className="flex flex-wrap items-center gap-2">
             <SegmentedControl ariaLabel="Estado de las órdenes" size="sm" value={filter} onChange={setFilter} options={[{ value: "open", label: "Por recibir", count: open.length }, { value: "received", label: "Recibidas" }, { value: "all", label: "Todas" }]} />
-            <span className="text-[13px] text-muted-foreground">Por recibir {formatCurrency(open.reduce((s, o) => s + o.total, 0))}</span>
+            <span className="text-ui text-muted-foreground">Por recibir {formatCurrency(open.reduce((s, o) => s + o.total, 0))}</span>
           </div>
           {list.length ? (
             <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
@@ -52,7 +52,7 @@ export default function PurchasesView({ slug, orders, suppliers, products, wareh
                 <li key={o.id}>
                   <button type="button" onClick={() => setOpenId(o.id)} className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 text-left hover:bg-surface-muted">
                     <span className="grid min-w-0">
-                      <b className="truncate text-[13.5px] font-medium">{o.supplierName}</b>
+                      <b className="truncate text-ui font-medium">{o.supplierName}</b>
                       <small className="truncate text-xs text-muted-foreground">
                         <span className="font-mono">{o.code}</span> · {o.lineCount} {o.lineCount === 1 ? "producto" : "productos"}
                         {isOpen(o.status) && o.pendingUnits > 0 ? ` · faltan ${o.pendingUnits} u.` : ""}
@@ -60,7 +60,7 @@ export default function PurchasesView({ slug, orders, suppliers, products, wareh
                       </small>
                     </span>
                     <span className="grid justify-items-end gap-1">
-                      <b className="font-mono text-[13.5px] tabular-nums">{formatCurrency(o.total)}</b>
+                      <b className="font-mono text-ui tabular-nums">{formatCurrency(o.total)}</b>
                       <Badge tone={TONES[o.status]}>{STATUS_LABELS[o.status]}</Badge>
                     </span>
                   </button>

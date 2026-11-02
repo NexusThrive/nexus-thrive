@@ -43,7 +43,7 @@ export default function PettyCashCard({
         <span>Ingresos {formatCurrency(income)}</span>
       </div>
       {cash ? (
-        <Link href={cash.href} className="flex items-center justify-between gap-3 rounded-md bg-surface-muted px-3 py-2.5 text-[13px] transition-colors hover:bg-border/60">
+        <Link href={cash.href} className="flex items-center justify-between gap-3 rounded-md bg-surface-muted px-3 py-2.5 text-ui transition-colors hover:bg-border/60">
           <span>
             <b className="block font-medium">{cash.box ?? "Caja menor"}</b>
             <small className="text-xs text-muted-foreground">{cash.amount != null ? "Turno abierto · efectivo esperado" : cash.box ? "Cerrada · ábrela para empezar el día" : "Aún no la has creado"}</small>
@@ -54,7 +54,7 @@ export default function PettyCashCard({
       <div className="mt-1 border-t border-border pt-3">
         <p className="mb-2 text-xs text-muted-foreground">Cobros de {monthLabel} por medio</p>
         {methods.length ? (
-          <ul className="grid gap-1.5 text-[13px]">
+          <ul className="grid gap-1.5 text-ui">
             {methods.map((m) => (
               <li key={m.method} className="flex justify-between gap-3">
                 <span className="text-muted-foreground">{paymentMethodLabel(m.method)}</span>
@@ -63,7 +63,7 @@ export default function PettyCashCard({
             ))}
           </ul>
         ) : (
-          <p className="text-[13px] text-muted-foreground">Aún no hay cobros este mes.</p>
+          <p className="text-ui text-muted-foreground">Aún no hay cobros este mes.</p>
         )}
       </div>
     </section>

@@ -18,7 +18,7 @@ export default async function TicketPage({ params }: { params: Promise<{ id: str
   if (!ticket) notFound();
   return (
     <div className="grid gap-5">
-      <Link href="/admin/soporte" className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground">
+      <Link href="/admin/soporte" className="inline-flex items-center gap-1.5 text-ui text-muted-foreground hover:text-foreground">
         <ArrowLeft aria-hidden="true" className="size-3.5" /> Soporte
       </Link>
       <PageHeader

@@ -33,6 +33,7 @@ import {
 import { inputClasses, labelClasses } from "@/components/atoms/input";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { Select } from "@/components/atoms/select";
+import { DateInput } from "@/components/molecules/date-input";
 
 /** Partida del presupuesto para enlazar tareas y compromisos (opcional). */
 export type BudgetItemOption = { id: string; label: string };
@@ -120,27 +121,26 @@ function LookaheadTaskForm({
       <input type="hidden" name="weekNumber" value={week} />
       <label htmlFor="la-code" className="block">
         <span className={labelClasses}>Código</span>
-        <input id="la-code" name="code" required maxLength={20} placeholder="T-01" className={inputClass} />
+        <input id="la-code" name="code" required maxLength={20} placeholder="Código" className={inputClass} />
         <FieldError state={state} field="code" />
       </label>
       <label htmlFor="la-responsible" className="block">
         <span className={labelClasses}>Responsable</span>
-        <input id="la-responsible" name="responsible" required maxLength={80} placeholder="Maestro de obra" className={inputClass} />
+        <input id="la-responsible" name="responsible" required maxLength={80} placeholder="Responsable" className={inputClass} />
         <FieldError state={state} field="responsible" />
       </label>
       <label htmlFor="la-description" className="block md:col-span-2">
         <span className={labelClasses}>Descripción</span>
-        <input id="la-description" name="description" required maxLength={200} placeholder="Fundir placa de entrepiso nivel 2" className={inputClass} />
+        <input id="la-description" name="description" required maxLength={200} placeholder="Describe la tarea" className={inputClass} />
         <FieldError state={state} field="description" />
       </label>
       <label htmlFor="la-start" className="block">
         <span className={labelClasses}>
           Inicio {week >= 1 && week <= WINDOW_WEEKS ? `(semana W${week})` : "(fuera de la ventana de 6 semanas)"}
         </span>
-        <input
+        <DateInput
           id="la-start"
           name="startDate"
-          type="date"
           required
           value={startDate}
           onChange={(event) => setStartDate(event.target.value)}
@@ -150,7 +150,7 @@ function LookaheadTaskForm({
       </label>
       <label htmlFor="la-end" className="block">
         <span className={labelClasses}>Fin</span>
-        <input id="la-end" name="endDate" type="date" required defaultValue={windowStart} className={inputClass} />
+        <DateInput id="la-end" name="endDate" required defaultValue={windowStart} className={inputClass} />
         <FieldError state={state} field="endDate" />
       </label>
       <BudgetItemField id="la-item" items={items} />
@@ -205,7 +205,7 @@ function CommitmentForm({
     <form action={action} className="grid gap-3 border-b border-border p-4 md:grid-cols-2">
       <label htmlFor="wc-description" className="block md:col-span-2">
         <span className={labelClasses}>Compromiso</span>
-        <input id="wc-description" name="description" required maxLength={200} placeholder="Terminar mampostería del eje A" className={inputClass} />
+        <input id="wc-description" name="description" required maxLength={200} placeholder="Describe la tarea" className={inputClass} />
         <FieldError state={state} field="description" />
       </label>
       <label htmlFor="wc-responsible" className="block">
@@ -215,7 +215,7 @@ function CommitmentForm({
       </label>
       <label htmlFor="wc-week" className="block">
         <span className={labelClasses}>Semana (lunes)</span>
-        <input id="wc-week" name="weekStartDate" type="date" required defaultValue={weekStart} className={inputClass} />
+        <DateInput id="wc-week" name="weekStartDate" required defaultValue={weekStart} className={inputClass} />
         <FieldError state={state} field="weekStartDate" />
       </label>
       <BudgetItemField id="wc-item" items={items} />

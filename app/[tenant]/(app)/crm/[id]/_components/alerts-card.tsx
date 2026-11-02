@@ -19,7 +19,7 @@ export default function AlertsCard({ alerts }: { alerts: SummaryAlert[] }) {
           {alerts.map((alert, index) => (
             <li
               key={`${alert.tone}-${index}`}
-              className="flex items-start gap-2.5 text-[13.5px] text-foreground"
+              className="flex items-start gap-2.5 text-ui text-foreground"
             >
               <StatusDot tone={alert.tone} className="mt-1.5" />
               <span>{alert.text}</span>
@@ -27,7 +27,7 @@ export default function AlertsCard({ alerts }: { alerts: SummaryAlert[] }) {
           ))}
         </ul>
       ) : (
-        <p className="text-[13px] text-muted-foreground">
+        <p className="text-ui text-muted-foreground">
           Sin alertas. La cuenta está en orden.
         </p>
       )}

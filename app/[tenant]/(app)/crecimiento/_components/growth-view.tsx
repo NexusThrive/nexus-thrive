@@ -13,6 +13,7 @@ import { Field } from "@/components/molecules/field";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
+import { AdaptiveTable } from "@/components/organisms/adaptive-table";
 import { createLinkAction, handleReviewAction, toggleLinkAction, type GrowthResult } from "@/app/[tenant]/(app)/crecimiento/actions";
 import { googleReviewUrl } from "@/lib/business/growth/growth";
 import type { LinkRow, ReviewRow } from "@/lib/business/growth/growth-db";
@@ -52,16 +53,16 @@ export default function GrowthView({ slug, baseUrl, siteSlug, siteEnabled, links
       {tab === "links" ? (
         <div className="grid gap-3">
           <button type="button" onClick={() => setCreating(true)} className={buttonVariants({ className: "justify-self-end" })}><Plus aria-hidden="true" className="size-4" /> Nuevo enlace</button>
-          {links.length === 0 ? <EmptyState title="Aún no tienes enlaces de campaña" description="Crea un enlace corto por cada campaña (Instagram, correo, volantes con QR). Cada uno marca de dónde llegó el cliente y cuenta los clics." /> : (
+          {links.length === 0 ? <EmptyState title="Aún no tienes enlaces de campaña" description="Crea un enlace corto por cada campaña (Instagram, correo, volantes con QR). Cada uno marca de dónde llegó el cliente y cuenta los clics." action={<button type="button" onClick={() => setCreating(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo enlace</button>} /> : (
             <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
               {links.map((l) => (
                 <li key={l.id} className="grid gap-1 px-4 py-3">
                   <div className="flex flex-wrap items-center gap-2">
-                    <b className="text-[13.5px] font-medium">{l.name}</b>
+                    <b className="text-ui font-medium">{l.name}</b>
                     <Badge variant={l.active ? "success" : "secondary"}>{l.active ? "Activo" : "Apagado"}</Badge>
-                    <span className="ml-auto font-mono text-[13px] tabular-nums">{l.clicks} clics · {formatCurrency(l.spend)}</span>
+                    <span className="ml-auto font-mono text-ui tabular-nums">{l.clicks} clics · {formatCurrency(l.spend)}</span>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 text-[12.5px] text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                     <span className="font-mono">{baseUrl}/l/{l.code}</span>
                     <span>· {l.utmSource} / {l.utmMedium} / {l.utmCampaign}</span>
                     <span className="ml-auto flex gap-2">
@@ -79,26 +80,21 @@ export default function GrowthView({ slug, baseUrl, siteSlug, siteEnabled, links
       {tab === "report" ? (
         report.rows.length === 0 ? <EmptyState title="Todavía no hay datos" description="Cuando lleguen contactos o ventas por tu sitio, verás aquí de qué campaña vino cada uno y cuánto costó." /> : (
           <div className="grid gap-3">
-            <p className="text-[13px] text-muted-foreground">Últimos 90 días · inversión {formatCurrency(report.totals.spend)} · {report.totals.leads} contactos · {report.totals.orders} ventas pagadas por {formatCurrency(report.totals.revenue)}</p>
-            <div role="region" aria-label="Inversión contra resultados por origen" tabIndex={0} className="overflow-x-auto rounded-lg border border-border bg-surface focus-visible:outline-2 focus-visible:outline-accent">
-              <table className="w-full min-w-[720px] text-[13px]">
-                <caption className="sr-only">Inversión, contactos y ventas por origen</caption>
-                <thead className="bg-surface-muted text-left text-xs text-muted-foreground"><tr><th scope="col" className="px-3 py-2 font-medium">Origen</th><th scope="col" className="px-3 py-2 text-right font-medium">Inversión</th><th scope="col" className="px-3 py-2 text-right font-medium">Clics</th><th scope="col" className="px-3 py-2 text-right font-medium">Contactos</th><th scope="col" className="px-3 py-2 text-right font-medium">Costo por contacto</th><th scope="col" className="px-3 py-2 text-right font-medium">Ventas</th><th scope="col" className="px-3 py-2 text-right font-medium">Retorno</th></tr></thead>
-                <tbody className="divide-y divide-border">
-                  {report.rows.map((r) => (
-                    <tr key={r.label}>
-                      <th scope="row" className="px-3 py-2 text-left font-medium">{r.label}</th>
-                      <td className="px-3 py-2 text-right font-mono tabular-nums">{r.spend ? formatCurrency(r.spend) : "—"}</td>
-                      <td className="px-3 py-2 text-right font-mono tabular-nums">{r.clicks || "—"}</td>
-                      <td className="px-3 py-2 text-right font-mono tabular-nums">{r.leads}</td>
-                      <td className="px-3 py-2 text-right font-mono tabular-nums">{r.costPerLead === null ? "—" : formatCurrency(r.costPerLead)}</td>
-                      <td className="px-3 py-2 text-right font-mono tabular-nums">{r.orders} · {formatCurrency(r.revenue)}</td>
-                      <td className="px-3 py-2 text-right font-mono tabular-nums">{r.roas === null ? "—" : `${r.roas.toLocaleString("es-CO")}×`}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <p className="text-ui text-muted-foreground">Últimos 90 días · inversión {formatCurrency(report.totals.spend)} · {report.totals.leads} contactos · {report.totals.orders} ventas pagadas por {formatCurrency(report.totals.revenue)}</p>
+            <AdaptiveTable
+              caption="Inversión, contactos y ventas por origen"
+              rows={report.rows}
+              getRowId={(r) => r.label}
+              columns={[
+                { key: "label", header: "Origen", role: "primary", cell: (r) => r.label },
+                { key: "spend", header: "Inversión", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{r.spend ? formatCurrency(r.spend) : "—"}</span> },
+                { key: "clicks", header: "Clics", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{r.clicks || "—"}</span> },
+                { key: "leads", header: "Contactos", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{r.leads}</span> },
+                { key: "cpl", header: "Costo por contacto", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{r.costPerLead === null ? "—" : formatCurrency(r.costPerLead)}</span> },
+                { key: "orders", header: "Ventas", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{r.orders} · {formatCurrency(r.revenue)}</span> },
+                { key: "roas", header: "Retorno", role: "figure", cell: (r) => <span className="font-mono">{r.roas === null ? "—" : `${r.roas.toLocaleString("es-CO")}×`}</span> },
+              ]}
+            />
           </div>
         )
       ) : null}
@@ -108,8 +104,8 @@ export default function GrowthView({ slug, baseUrl, siteSlug, siteEnabled, links
           <section aria-labelledby="rv-share" className="grid gap-3 rounded-lg border border-border bg-surface p-4 sm:grid-cols-[1fr_auto]">
             <div className="grid gap-2">
               <h2 id="rv-share" className="font-display text-[15px] font-semibold">Pide reseñas</h2>
-              {reputation ? <p className="flex items-center gap-2 text-[14px]"><Star aria-hidden="true" className="size-4 fill-accent text-accent" /><b>{reputation.average.toFixed(1)}</b><span className="text-muted-foreground">entre {reputation.count} reseñas (internas y de Google)</span></p> : <p className="text-[13px] text-muted-foreground">Aún no tienes reseñas.</p>}
-              <p className="text-[13px] text-muted-foreground">Comparte este enlace por WhatsApp o imprime el QR: 4–5 estrellas invitan a dejarla también en Google; 1–2 llegan como alerta privada.</p>
+              {reputation ? <p className="flex items-center gap-2 text-sm"><Star aria-hidden="true" className="size-4 fill-accent text-accent" /><b>{reputation.average.toFixed(1)}</b><span className="text-muted-foreground">entre {reputation.count} reseñas (internas y de Google)</span></p> : <p className="text-ui text-muted-foreground">Aún no tienes reseñas.</p>}
+              <p className="text-ui text-muted-foreground">Comparte este enlace por WhatsApp o imprime el QR: 4–5 estrellas invitan a dejarla también en Google; 1–2 llegan como alerta privada.</p>
               <div className="flex flex-wrap gap-2">
                 <button type="button" onClick={() => copy(reviewUrl, "Enlace de reseña")} className={buttonVariants({ variant: "outline", size: "sm" })}><Copy aria-hidden="true" className="size-3.5" /> Copiar enlace de reseña</button>
                 {googlePlaceId ? <button type="button" onClick={() => copy(googleReviewUrl(googlePlaceId), "Enlace a Google Reviews")} className={buttonVariants({ variant: "outline", size: "sm" })}><Copy aria-hidden="true" className="size-3.5" /> Copiar enlace a Google Reviews</button> : <small className="text-xs text-muted-foreground">Conecta tu ficha de Google para ofrecer también el enlace a Google Reviews.</small>}
@@ -121,10 +117,10 @@ export default function GrowthView({ slug, baseUrl, siteSlug, siteEnabled, links
           {reviews.length === 0 ? <EmptyState title="Sin reseñas todavía" description="Comparte el enlace de reseña con tus clientes." /> : (
             <ul className="grid gap-2">
               {reviews.map((r) => (
-                <li key={r.id} className="grid gap-1 rounded-lg border border-border bg-surface p-3 text-[13.5px]">
+                <li key={r.id} className="grid gap-1 rounded-lg border border-border bg-surface p-3 text-ui">
                   <div className="flex flex-wrap items-center gap-2"><Stars n={r.rating} /><b>{r.customerName ?? "Cliente"}</b>{r.status === "ALERTED" ? <Badge variant="destructive">Por atender</Badge> : null}<span className="ml-auto text-xs text-muted-foreground">{r.createdAt.slice(0, 10)}</span></div>
                   {r.comment ? <p>{r.comment}</p> : null}
-                  {r.contact ? <p className="text-[12.5px] text-muted-foreground">Contacto: {r.contact}</p> : null}
+                  {r.contact ? <p className="text-xs text-muted-foreground">Contacto: {r.contact}</p> : null}
                   {r.status === "ALERTED" ? <button type="button" aria-label={`Marcar como atendida la reseña de ${r.customerName ?? "cliente"}`} onClick={() => run(() => handleReviewAction(slug, r.id))} className={buttonVariants({ variant: "outline", size: "sm", className: "justify-self-start" })}>Marcar como atendida</button> : null}
                 </li>
               ))}
@@ -138,7 +134,7 @@ export default function GrowthView({ slug, baseUrl, siteSlug, siteEnabled, links
         onSuccess={({ message }) => { if (message) toast(message, "success"); router.refresh(); }}>
         {({ fieldErrors }) => (
           <div className="grid gap-3">
-            <Field label="Nombre de la campaña" required error={fieldErrors.name}>{(c) => <input {...c} name="name" autoComplete="off" className={inputClasses} placeholder="Instagram · lanzamiento de octubre" />}</Field>
+            <Field label="Nombre de la campaña" required error={fieldErrors.name}>{(c) => <input {...c} name="name" autoComplete="off" className={inputClasses} placeholder="Nombre de la campaña" />}</Field>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Origen" required hint="instagram, google, correo…">{(c) => <input {...c} name="source" autoComplete="off" className={inputClasses} placeholder="instagram" />}</Field>
               <Field label="Medio" required hint="social, cpc, correo…">{(c) => <input {...c} name="medium" autoComplete="off" className={inputClasses} placeholder="social" />}</Field>

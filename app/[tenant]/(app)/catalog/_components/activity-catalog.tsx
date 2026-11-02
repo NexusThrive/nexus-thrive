@@ -309,7 +309,7 @@ function ActivityForm({
       />
 
       {state.status === "error" && state.message ? (
-        <p className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger">
+        <p className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-ui text-danger">
           {state.message}
         </p>
       ) : null}
@@ -322,7 +322,7 @@ function ActivityForm({
           <input
             name="code"
             defaultValue={defaults.code}
-            placeholder="EJ: ACT-001"
+            placeholder="Código"
             className={inputClass}
           />
           {fieldError(state.errors, "code") ? (
@@ -358,7 +358,7 @@ function ActivityForm({
         <input
           name="name"
           defaultValue={defaults.name}
-          placeholder="Ej: Muro en bloque No. 4"
+          placeholder="Nombre"
           className={inputClass}
         />
         {fieldError(state.errors, "name") ? (
@@ -612,10 +612,10 @@ function CompositionEditorDetail({
                             ({formatApuUnit(composition.lineUnit || composition.itemUnit)})
                           </span>
                           {composition.origin === "MANUAL" && (
-                            <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">manual</span>
+                            <span className="rounded-full bg-muted px-1.5 py-0.5 text-2xs font-medium text-muted-foreground">manual</span>
                           )}
                           {isConsumptionOutlier && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber/10 px-1.5 py-0.5 text-[10px] font-medium text-amber" title={`Consumo > p99 (${itemP99}) para insumos en ${composition.itemUnit}`}>
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber/10 px-1.5 py-0.5 text-2xs font-medium text-amber" title={`Consumo > p99 (${itemP99}) para insumos en ${composition.itemUnit}`}>
                               <AlertTriangle aria-hidden="true" className="h-2.5 w-2.5" />
                               Revisar
                             </span>

@@ -234,9 +234,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
               value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder={
-                tenantType === "COMPANY"
-                  ? "Ej: Gimnasio Carlos"
-                  : "Ej: Ana Diseñadora"
+                "Nombre del negocio"
               }
               aria-invalid={Boolean(errors.name)}
               className={[
@@ -301,7 +299,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                 type="text"
                 value={legalName}
                 onChange={(event) => setLegalName(event.target.value)}
-                placeholder="Ej: Gimnasio Carlos S.A.S."
+                placeholder="Razón social"
                 aria-invalid={Boolean(errors.legalName)}
                 className={[
                   "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
@@ -333,9 +331,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
               type="text"
               value={taxId}
               onChange={(event) => setTaxId(event.target.value)}
-              placeholder={
-                tenantType === "COMPANY" ? "Ej: 901123456" : "Ej: 1036654321"
-              }
+              placeholder="Número de documento"
               aria-invalid={Boolean(errors.taxId)}
               className={[
                 "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
@@ -411,7 +407,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                 type="text"
                 value={address}
                 onChange={(event) => setAddress(event.target.value)}
-                placeholder="Ej: Cra 15 # 82-52, Bogotá"
+                placeholder="Dirección"
                 aria-invalid={Boolean(errors.address)}
                 className={[
                   "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
@@ -443,7 +439,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                 type="text"
                 value={slug}
                 onChange={(event) => setSlug(event.target.value)}
-                placeholder="gimnasio-carlos"
+                placeholder="mi-negocio"
                 aria-invalid={Boolean(errors.slug)}
                 className="h-10 w-full rounded-l-lg bg-transparent px-3 text-sm text-foreground focus:outline-none"
               />
@@ -547,7 +543,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
           {state.status === "error" && state.message ? (
             <p
               role="alert"
-              className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
+              className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-ui text-danger"
             >
               {state.message}
             </p>

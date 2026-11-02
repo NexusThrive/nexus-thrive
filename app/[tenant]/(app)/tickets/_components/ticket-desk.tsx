@@ -183,7 +183,7 @@ function SellSheet({ slug, day, load, types, customers, onClose }: { slug: strin
 
         {isGroup ? (
           <div className="grid gap-3 sm:grid-cols-2">
-            <Field label={kind === "COLEGIO" ? "Colegio y curso" : "Nombre del grupo"}>{(c) => <input {...c} value={group} onChange={(e) => setGroup(e.target.value)} placeholder={kind === "COLEGIO" ? "Colegio San José · 5°B" : "Familia Pérez"} className={inputClasses} />}</Field>
+            <Field label={kind === "COLEGIO" ? "Colegio y curso" : "Nombre del grupo"}>{(c) => <input {...c} value={group} onChange={(e) => setGroup(e.target.value)} placeholder="Nombre del cliente o grupo" className={inputClasses} />}</Field>
             <Field label="Responsable" hint={kind === "GUIADA" || kind === "COLEGIO" ? "Queda agendada a su nombre." : undefined}>
               {(c) => (
                 <Select {...c} value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
@@ -285,7 +285,7 @@ function SaleSheet({ slug, sale, canSell, canManage, onClose }: { slug: string; 
 
         {sale.status === "RESERVED" && canSell ? (
           <section className="grid gap-3 rounded-md bg-surface-muted p-3.5">
-            <h3 className="text-[13px] font-semibold">Cobrar la reserva</h3>
+            <h3 className="text-ui font-semibold">Cobrar la reserva</h3>
             <Select aria-label="Medio de pago" value={method} onChange={(e) => setMethod(e.target.value)}>
               {PAYMENT_METHODS.map((m) => (
                 <option key={m.value} value={m.value}>
@@ -301,8 +301,8 @@ function SaleSheet({ slug, sale, canSell, canManage, onClose }: { slug: string; 
 
         {sale.status !== "VOID" && canManage ? (
           <section className="grid gap-3 border-t border-border pt-4">
-            <h3 className="text-[13px] font-semibold">Anular</h3>
-            <input aria-label="Motivo de la anulación" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Motivo: error en la venta, el grupo canceló…" className={inputClasses} />
+            <h3 className="text-ui font-semibold">Anular</h3>
+            <input aria-label="Motivo de la anulación" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Motivo" className={inputClasses} />
             <button type="button" disabled={pending || reason.trim().length < 3} onClick={async () => { const ok = await confirm({ title: "¿Anular la venta?", description: "El cupo queda libre y el cobro se anula. Queda en la bitácora con el motivo.", confirmLabel: "Anular venta" }); if (ok) run(() => voidTicketsAction(slug, sale.id, reason)); }} className={buttonVariants({ size: "sm", variant: "danger" })}>
               Anular venta
             </button>

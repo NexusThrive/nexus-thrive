@@ -95,15 +95,15 @@ export default function CountSheet({ slug, id, onClose }: { slug: string; id: st
         {error ? (
           <Alert tone="danger">{error}</Alert>
         ) : !count ? (
-          <p role="status" className="text-[13px] text-muted-foreground">Cargando el conteo…</p>
+          <p role="status" className="text-ui text-muted-foreground">Cargando el conteo…</p>
         ) : (
           <div className="grid gap-4">
             <div className="flex flex-wrap items-center gap-2">
               <Badge tone={TONES[count.status]}>{COUNT_LABELS[count.status]}</Badge>
-              {summary.withDifference ? <span className="text-[13px] text-muted-foreground">{summary.withDifference} con diferencia · sobran {summary.surplus} · faltan {summary.shortage}</span> : null}
+              {summary.withDifference ? <span className="text-ui text-muted-foreground">{summary.withDifference} con diferencia · sobran {summary.surplus} · faltan {summary.shortage}</span> : null}
             </div>
             <div role="region" aria-label={`Productos del conteo ${count.code}`} tabIndex={0} className="overflow-x-auto rounded-lg border border-border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
-              <table className="w-full min-w-[420px] text-[13px]">
+              <table className="w-full min-w-[420px] text-ui">
                 <caption className="sr-only">Lo esperado y lo contado por producto</caption>
                 <thead className="bg-surface-muted text-left text-xs text-muted-foreground">
                   <tr>
@@ -137,10 +137,10 @@ export default function CountSheet({ slug, id, onClose }: { slug: string; id: st
             </div>
             {open ? (
               <Field label="Motivo de las diferencias" hint={summary.withDifference ? "Obligatorio: queda en el kardex de cada producto." : "Solo hace falta si hay diferencias."}>
-                {(c) => <textarea {...c} rows={2} value={note} onChange={(e) => setNote(e.target.value)} className={textareaClasses} placeholder="Conteo de fin de mes; merma por vencimiento" />}
+                {(c) => <textarea {...c} rows={2} value={note} onChange={(e) => setNote(e.target.value)} className={textareaClasses} placeholder="Motivo del conteo" />}
               </Field>
             ) : count.note ? (
-              <p className="text-[13px] text-muted-foreground">Motivo: {count.note}</p>
+              <p className="text-ui text-muted-foreground">Motivo: {count.note}</p>
             ) : null}
           </div>
         )}

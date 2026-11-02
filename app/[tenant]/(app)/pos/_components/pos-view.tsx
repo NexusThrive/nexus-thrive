@@ -81,7 +81,7 @@ function NoTurn({ slug, canManage, terminals }: { slug: string; canManage: boole
           router.refresh();
         }}
       >
-        {({ fieldErrors }) => <Field label="Nombre" required error={fieldErrors.name}>{(c) => <input {...c} name="name" autoComplete="off" className={inputClasses} placeholder="Mostrador 1" />}</Field>}
+        {({ fieldErrors }) => <Field label="Nombre" required error={fieldErrors.name}>{(c) => <input {...c} name="name" autoComplete="off" className={inputClasses} placeholder="Nombre de la caja" />}</Field>}
       </FormDialog>
     </section>
   );
@@ -130,7 +130,7 @@ function Sale({ slug, turn, products }: { slug: string; turn: { sessionId: strin
 
   return (
     <div className="grid gap-4">
-      <div className="flex flex-wrap items-center gap-2 text-[13px]">
+      <div className="flex flex-wrap items-center gap-2 text-ui">
         <span className="rounded-md bg-surface-muted px-2.5 py-1 font-medium">{turn.terminalName}</span>
         <span className="text-muted-foreground">Turno con {formatCurrency(turn.openingAmount)} de apertura</span>
         <button type="button" onClick={() => setReturning(true)} className={buttonVariants({ variant: "outline", size: "sm", className: "ml-auto" })}>Devolución</button>
@@ -169,8 +169,8 @@ function Sale({ slug, turn, products }: { slug: string; turn: { sessionId: strin
             {shown.map((p) => (
               <li key={p.id}>
                 <button type="button" onClick={() => add(p.id)} disabled={p.stock !== null && p.stock <= 0} className="grid min-h-[72px] w-full content-between rounded-md border border-border bg-surface p-3 text-left hover:border-border-input disabled:opacity-50">
-                  <span className="text-[13px] font-medium leading-snug">{p.name}</span>
-                  <span className="font-mono text-[12px] text-muted-foreground">{formatCurrency(p.price)}{p.stock !== null ? ` · ${p.stock} u.` : ""}</span>
+                  <span className="text-ui font-medium leading-snug">{p.name}</span>
+                  <span className="font-mono text-xs text-muted-foreground">{formatCurrency(p.price)}{p.stock !== null ? ` · ${p.stock} u.` : ""}</span>
                 </button>
               </li>
             ))}
@@ -178,12 +178,12 @@ function Sale({ slug, turn, products }: { slug: string; turn: { sessionId: strin
         </section>
 
         <section aria-label="Venta" className="grid content-start gap-3 rounded-lg border border-border bg-surface p-4">
-          {lines.length === 0 ? <p className="text-[13px] text-muted-foreground">Toca un producto para agregarlo.</p> : (
+          {lines.length === 0 ? <p className="text-ui text-muted-foreground">Toca un producto para agregarlo.</p> : (
             <ul className="grid gap-2">
               {lines.map((l) => {
                 const p = byId.get(l.productId)!;
                 return (
-                  <li key={l.productId} className="grid gap-1 border-b border-border pb-2 text-[13px]">
+                  <li key={l.productId} className="grid gap-1 border-b border-border pb-2 text-ui">
                     <div className="flex items-center gap-2">
                       <span className="min-w-0 flex-1 truncate font-medium">{p.name}</span>
                       <button type="button" aria-label={`Menos ${p.name}`} onClick={() => patch(l.productId, { quantity: l.quantity - 1 })} className={buttonVariants({ variant: "outline", size: "icon" })}><Minus aria-hidden="true" className="size-3.5" /></button>
@@ -200,7 +200,7 @@ function Sale({ slug, turn, products }: { slug: string; turn: { sessionId: strin
               })}
             </ul>
           )}
-          <dl className="grid gap-1 text-[13px]">
+          <dl className="grid gap-1 text-ui">
             <div className="flex justify-between"><dt>Subtotal</dt><dd className="font-mono tabular-nums">{formatCurrency(totals.subtotal - totals.discountTotal)}</dd></div>
             <div className="flex justify-between"><dt>Impuestos</dt><dd className="font-mono tabular-nums">{formatCurrency(totals.taxTotal)}</dd></div>
             <div className="flex items-center justify-between gap-2">
@@ -220,7 +220,7 @@ function Sale({ slug, turn, products }: { slug: string; turn: { sessionId: strin
             ))}
             <button type="button" onClick={() => setPays((ps) => [...ps, { method: "NEQUI", amount: "" }])} className={buttonVariants({ variant: "ghost", size: "sm", className: "justify-self-start" })}>Agregar otro pago</button>
             {"error" in settled && lines.length > 0 && payNums.some((x) => x.amount > 0) ? <p className="text-xs text-muted-foreground">{settled.error}</p> : null}
-            {!("error" in settled) && settled.change > 0 ? <p className="text-[13px] font-medium">Cambio: {formatCurrency(settled.change)}</p> : null}
+            {!("error" in settled) && settled.change > 0 ? <p className="text-ui font-medium">Cambio: {formatCurrency(settled.change)}</p> : null}
           </div>
           {error ? <Alert tone="danger">{error}</Alert> : null}
           <button type="button" disabled={pending || lines.length === 0 || "error" in settled} onClick={charge} className={buttonVariants({ size: "lg" })}>

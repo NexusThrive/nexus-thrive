@@ -6,7 +6,12 @@ import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import { TenantShell } from "@/components/templates/tenant-shell";
 import { VerticalTermsProvider } from "./vertical-terms-context";
 import TenantNotifications from "./_components/tenant-notifications";
+import { TrialIndicator, TrialNote } from "@/components/organisms/trial-indicator";
+import { loadTrialIndicator } from "@/lib/experience/onboarding/trial";
+import { loadFirstSteps } from "@/lib/experience/onboarding/first-steps";
+import { FirstStepsIndicator } from "@/components/organisms/first-steps-indicator";
 import ThemeSync from "./_components/theme-sync";
+import { HelpCenter } from "@/components/organisms/help-center";
 import { cookies } from "next/headers";
 import { auth } from "@clerk/nextjs/server";
 import { createTenantDb } from "@/lib/core/tenancy/db";
@@ -58,11 +63,18 @@ export default async function AppLayout({
     ? await Promise.all([memberTheme(tenantRecord.id, userId), businessesOfMember(userId), createTenantDb(tenantRecord.id).users.findByClerkUserId(userId)])
     : [null, [], null];
 
+  // Prueba de autoservicio o acceso temporal: sus días restantes van en la barra superior.
+  const trial = await loadTrialIndicator(tenantRecord.id);
+
+  // Primeros pasos: el círculo de la barra superior (desaparece cuando están todos hechos).
+  const terms = getVerticalTerms(tenantRecord.vertical);
+  const firstSteps = await loadFirstSteps({ tenantId: tenantRecord.id, slug: tenantRecord.slug, activeModules, customerWord: terms.customer.toLowerCase() });
+
   // La intro de la N solo sale al entrar a la app tras iniciar sesión (una vez por sesión).
   const showSplash = !(await cookies()).has(SPLASH_COOKIE);
 
   return (
-    <VerticalTermsProvider terms={getVerticalTerms(tenantRecord.vertical)}>
+    <VerticalTermsProvider terms={terms}>
       {showSplash ? <AppEntrySplash /> : null}
       <TenantShell
         tenantSlug={tenantRecord.slug}
@@ -72,10 +84,32 @@ export default async function AppLayout({
         role={me?.role}
         businesses={businesses}
         onSwitchBusiness={rememberBusinessAction}
-        topbarActions={<TenantNotifications tenantSlug={tenantRecord.slug} />}
+        accountExtra={
+          trial ? (
+            <TrialNote daysLeft={trial.daysLeft} endsAt={trial.endsAt} level={trial.level} planName={trial.planName} planHref={`/${tenantRecord.slug}/settings`} />
+          ) : null
+        }
+        topbarActions={
+          <>
+            <FirstStepsIndicator steps={firstSteps} />
+            {trial ? (
+              <span className="max-md:hidden">
+                <TrialIndicator
+                  daysLeft={trial.daysLeft}
+                  endsAt={trial.endsAt}
+                  planName={trial.planName}
+                  level={trial.level}
+                  planHref={`/${tenantRecord.slug}/settings`}
+                />
+              </span>
+            ) : null}
+            <TenantNotifications tenantSlug={tenantRecord.slug} />
+          </>
+        }
       >
         <ThemeSync tenantSlug={tenantRecord.slug} saved={savedTheme} />
         {children}
+        <HelpCenter tenantSlug={tenantRecord.slug} businessName={tenantRecord.name} activeModules={activeModules} />
       </TenantShell>
     </VerticalTermsProvider>
   );

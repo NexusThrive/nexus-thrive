@@ -20,8 +20,8 @@ export function DeleteBusinessControl({ tenantId, tenantName }: { tenantId: stri
 
   return (
     <>
-      <p className="text-[13px] font-medium text-foreground">Zona de peligro</p>
-      <p className="mt-1 text-[12.5px] text-muted-foreground">
+      <p className="text-ui font-medium text-foreground">Zona de peligro</p>
+      <p className="mt-1 text-xs text-muted-foreground">
         Borrar el negocio y todo lo que tiene dentro (clientes, membresías, dinero, asistencia,
         proyectos, tickets). No se puede deshacer.
       </p>

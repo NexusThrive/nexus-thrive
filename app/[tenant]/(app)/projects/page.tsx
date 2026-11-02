@@ -119,6 +119,7 @@ export default async function ProjectsPage({
           rows={result.rows}
           total={result.total}
           page={safePage}
+          emptyAction={!status && !q ? <NewProjectModal tenantSlug={tenantSlug} customers={customerOptions} /> : undefined}
         />
       </div>
     </div>

@@ -15,6 +15,7 @@ import {
 } from "../progress/actions";
 import { inputClasses, labelClasses } from "@/components/atoms/input";
 import { Select } from "@/components/atoms/select";
+import { DateInput } from "@/components/molecules/date-input";
 
 const inputClass =
   inputClasses;
@@ -95,11 +96,11 @@ export default function ProgressPanel({
             </label>
             <label htmlFor="progress-date" className="block">
               <span className={labelClasses}>Fecha de corte</span>
-              <input id="progress-date" name="cutoffDate" type="date" required defaultValue={bogotaTodayIso()} max={bogotaTodayIso()} className={inputClass} />
+              <DateInput id="progress-date" name="cutoffDate" required defaultValue={bogotaTodayIso()} max={bogotaTodayIso()} className={inputClass} />
             </label>
             <label htmlFor="progress-qty" className="block">
               <span className={labelClasses}>Cantidad ejecutada</span>
-              <input id="progress-qty" name="executedQuantity" inputMode="decimal" required placeholder="12.5" className={inputClass} />
+              <input id="progress-qty" name="executedQuantity" inputMode="decimal" required placeholder="0" className={inputClass} />
             </label>
             <label htmlFor="progress-note" className="block">
               <span className={labelClasses}>Nota (opcional)</span>

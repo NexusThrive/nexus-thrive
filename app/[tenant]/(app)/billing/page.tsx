@@ -6,7 +6,6 @@ import { canHandleCash, canManage } from "@/lib/core/auth/roles";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { customerOptions } from "@/lib/business/customers/customers-db";
 import BillingList from "./_components/billing-list";
-import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 import { bogotaDay } from "@/lib/foundation/dates/plain-date";
 
 /** Facturación V1: cuentas de cobro y recibos numerados (la factura electrónica DIAN llega con un proveedor). */
@@ -22,7 +21,7 @@ export default async function BillingPage({ params, searchParams }: { params: Pr
   ]);
   return (
     <div className="grid gap-5">
-      <PageHeader eyebrow={routeCategory("/billing")} title="Facturación" description="Cuentas de cobro y recibos numerados. Al marcarlos como pagados se registra el cobro con su recibo." />
+      <PageHeader title="Facturación" description="Cuentas de cobro y recibos numerados. Al marcarlos como pagados se registra el cobro con su recibo." />
       <BillingList
         slug={tenant}
         rows={rows}

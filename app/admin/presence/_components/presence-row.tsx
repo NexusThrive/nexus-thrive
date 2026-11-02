@@ -48,7 +48,7 @@ export default function PresenceRow({ row }: { row: PresenceOverviewRow }) {
           <ProgressBar value={row.score / 100} tone={meta.bar} className="h-2" label="Presencia" />
           <ul className="grid gap-2 sm:grid-cols-2">
             {row.checks.map((check) => (
-              <li key={check.key} className="flex items-center gap-2 text-[12.5px]">
+              <li key={check.key} className="flex items-center gap-2 text-xs">
                 <StatusDot tone={check.done ? "success" : "muted"} />
                 <span className={cn("truncate", check.done ? "text-foreground" : "text-muted-foreground")}>{check.label}</span>
                 <span className="ml-auto shrink-0 tabular-nums text-muted-foreground">

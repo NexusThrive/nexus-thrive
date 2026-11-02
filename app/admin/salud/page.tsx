@@ -53,9 +53,9 @@ export default async function SaludPage() {
                 <div className="grid gap-2 border-t border-border px-4 py-3 sm:grid-cols-5">
                   {r.factors.map((f) => (
                     <div key={f.key} className="grid gap-1 rounded-md bg-surface-muted p-2.5">
-                      <span className="flex items-baseline justify-between gap-2 text-[12.5px] font-semibold">
+                      <span className="flex items-baseline justify-between gap-2 text-xs font-semibold">
                         {f.label}
-                        <span className="font-mono text-[11px] tabular-nums">
+                        <span className="font-mono text-2xs tabular-nums">
                           {f.points}/{f.max}
                         </span>
                       </span>
@@ -66,7 +66,7 @@ export default async function SaludPage() {
                       {f.action ? <small className="text-xs font-medium">→ {f.action}</small> : null}
                     </div>
                   ))}
-                  <Link href={`/admin/negocios/${r.id}`} className="text-[13px] font-medium text-accent-text hover:underline sm:col-span-5">
+                  <Link href={`/admin/negocios/${r.id}`} className="text-ui font-medium text-accent-text hover:underline sm:col-span-5">
                     Abrir ficha 360° →
                   </Link>
                 </div>

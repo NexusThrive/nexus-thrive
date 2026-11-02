@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/molecules/empty-state";
 import { Field } from "@/components/molecules/field";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
+import { AdaptiveTable } from "@/components/organisms/adaptive-table";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import ReportsPanel from "./reports-panel";
 import { Switch } from "@/components/atoms/switch";
@@ -61,24 +62,24 @@ export default function AccountingView({ slug, accounts, rules, centers, periods
       {tab === "entries" ? (
         <div className="grid gap-3">
           <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-surface p-4">
-            <label className="flex items-center gap-2 text-[13px]">
+            <label className="flex items-center gap-2 text-ui">
               <Switch checked={auto} onCheckedChange={(v) => run(() => setEnabledAction(slug, v))} aria-label="Contabilizar automáticamente" />
               Contabilizar automáticamente ventas, cobros, notas y compras
             </label>
             <button type="button" onClick={() => run(() => verifyLedgerAction(slug))} className={buttonVariants({ variant: "outline", size: "sm", className: "ml-auto" })}>Verificar integridad del libro</button>
           </div>
-          <p className="text-[12.5px] text-muted-foreground">El libro solo se agrega: un asiento no se edita ni se borra, se corrige con otro que lo reversa. Cada asiento lleva el sello del anterior para detectar cualquier cambio.</p>
+          <p className="text-xs text-muted-foreground">El libro solo se agrega: un asiento no se edita ni se borra, se corrige con otro que lo reversa. Cada asiento lleva el sello del anterior para detectar cualquier cambio.</p>
           {entries.length === 0 ? <EmptyState title="Aún no hay asientos" description={auto ? "El próximo hecho (venta, cobro, nota o compra) dejará su asiento aquí." : "Activa la contabilización automática para que cada hecho deje su asiento."} /> : (
             <ul className="grid gap-2">
               {entries.map((e) => (
                 <li key={e.id} className="rounded-lg border border-border bg-surface p-3">
-                  <div className="flex flex-wrap items-center gap-2 text-[13px]">
+                  <div className="flex flex-wrap items-center gap-2 text-ui">
                     <b className="font-mono">N.º {e.number}</b>
                     <span className="text-muted-foreground">{e.date}</span>
                     <span className="min-w-0 flex-1 truncate">{e.description}</span>
                     {e.event === "REVERSAL" ? <Badge variant="destructive">Reverso</Badge> : e.reversed ? <Badge variant="secondary">Reversado</Badge> : null}
                   </div>
-                  <table className="mt-2 w-full text-[12.5px]">
+                  <table className="mt-2 w-full text-xs">
                     <caption className="sr-only">Líneas del asiento {e.number}</caption>
                     <thead className="text-left text-xs text-muted-foreground"><tr><th scope="col" className="py-1 font-medium">Cuenta</th><th scope="col" className="py-1 text-right font-medium">Débito</th><th scope="col" className="py-1 text-right font-medium">Crédito</th></tr></thead>
                     <tbody>
@@ -105,23 +106,29 @@ export default function AccountingView({ slug, accounts, rules, centers, periods
               <input aria-label="Buscar cuenta" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por código o nombre" className={`${inputClasses} max-w-xs`} />
               <button type="button" onClick={() => setDialog("account")} className={buttonVariants({ className: "ml-auto" })}><Plus aria-hidden="true" className="size-4" /> Nueva cuenta</button>
             </div>
-            <div role="region" aria-label="Cuentas" tabIndex={0} className="overflow-x-auto rounded-lg border border-border bg-surface focus-visible:outline-2 focus-visible:outline-accent">
-              <table className="w-full min-w-[640px] text-[13px]">
-                <caption className="sr-only">Plan de cuentas</caption>
-                <thead className="bg-surface-muted text-left text-xs text-muted-foreground"><tr><th scope="col" className="px-3 py-2 font-medium">Código</th><th scope="col" className="px-3 py-2 font-medium">Nombre</th><th scope="col" className="px-3 py-2 font-medium">Clase</th><th scope="col" className="px-3 py-2 font-medium">Naturaleza</th><th scope="col" className="px-3 py-2"><span className="sr-only">Acciones</span></th></tr></thead>
-                <tbody className="divide-y divide-border">
-                  {shown.map((a) => (
-                    <tr key={a.id} className={a.active ? "" : "opacity-55"}>
-                      <th scope="row" className="px-3 py-1.5 text-left font-mono font-normal" style={{ paddingLeft: `${12 + Math.max(0, a.code.length - 1) * 4}px` }}>{a.code}</th>
-                      <td className={`px-3 py-1.5 ${a.postable ? "" : "font-semibold"}`}>{a.name}{!a.postable ? <Badge variant="outline" className="ml-2">Agrupa</Badge> : null}</td>
-                      <td className="px-3 py-1.5">{TYPE_LABELS[a.type]}</td>
-                      <td className="px-3 py-1.5">{a.nature === "D" ? "Débito" : "Crédito"}</td>
-                      <td className="px-3 py-1.5 text-right">{a.postable ? <button type="button" aria-label={`${a.active ? "Desactivar" : "Activar"} la cuenta ${a.code}`} onClick={() => run(() => toggleAccountAction(slug, a.id, !a.active))} className={buttonVariants({ variant: "ghost", size: "sm" })}>{a.active ? "Desactivar" : "Activar"}</button> : null}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <AdaptiveTable<AccountRow>
+              caption="Plan de cuentas"
+              rows={shown}
+              getRowId={(a) => a.id}
+              rowClassName={(a) => (a.active ? undefined : "opacity-55")}
+              columns={[
+                { key: "code", header: "Código", role: "primary", cell: (a) => <span className="font-mono font-normal" style={{ paddingLeft: `${Math.max(0, a.code.length - 1) * 4}px` }}>{a.code}</span> },
+                { key: "name", header: "Nombre", role: "secondary", cell: (a) => <span className={a.postable ? "" : "font-semibold"}>{a.name}{!a.postable ? <Badge variant="outline" className="ml-2">Agrupa</Badge> : null}</span> },
+                { key: "type", header: "Clase", role: "detail", cell: (a) => TYPE_LABELS[a.type] },
+                { key: "nature", header: "Naturaleza", role: "detail", cell: (a) => (a.nature === "D" ? "Débito" : "Crédito") },
+                {
+                  key: "actions",
+                  header: "Acciones",
+                  role: "action",
+                  cell: (a) =>
+                    a.postable ? (
+                      <button type="button" aria-label={`${a.active ? "Desactivar" : "Activar"} la cuenta ${a.code}`} onClick={() => run(() => toggleAccountAction(slug, a.id, !a.active))} className={buttonVariants({ variant: "ghost", size: "sm" })}>
+                        {a.active ? "Desactivar" : "Activar"}
+                      </button>
+                    ) : null,
+                },
+              ]}
+            />
             <p className="text-xs text-muted-foreground">Plantilla de uso común: confírmala con tu contador. Desactivar una cuenta la oculta de los asientos nuevos; no toca lo ya contabilizado.</p>
           </div>
         )
@@ -132,11 +139,11 @@ export default function AccountingView({ slug, accounts, rules, centers, periods
           {rules.map((r) => (
             <li key={r.id} className="grid gap-2 rounded-lg border border-border bg-surface p-4">
               <div className="flex items-center gap-2">
-                <b className="text-[14px]">{r.name}</b>
+                <b className="text-sm">{r.name}</b>
                 <Badge variant={r.active ? "success" : "secondary"}>{r.active ? "Activa" : "Desactivada"}</Badge>
                 <button type="button" aria-label={`${r.active ? "Desactivar" : "Activar"} la regla ${r.name}`} onClick={() => run(() => toggleRuleAction(slug, r.id, !r.active))} className={buttonVariants({ variant: "ghost", size: "sm", className: "ml-auto" })}>{r.active ? "Desactivar" : "Activar"}</button>
               </div>
-              <ul className="grid gap-1 text-[13px]">
+              <ul className="grid gap-1 text-ui">
                 {r.lines.map((l, i) => (
                   <li key={i} className="flex gap-3">
                     <span className={`w-14 font-mono font-semibold ${l.side === "D" ? "" : "text-muted-foreground"}`}>{l.side === "D" ? "Débito" : "Crédito"}</span>
@@ -156,7 +163,7 @@ export default function AccountingView({ slug, accounts, rules, centers, periods
           {centers.length === 0 ? <EmptyState title="Sin centros de costo" description="Crea centros de costo o sucursales para separar en qué parte del negocio se gasta y se vende." /> : (
             <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
               {centers.map((c) => (
-                <li key={c.id} className="flex items-center gap-3 px-4 py-3 text-[13.5px]">
+                <li key={c.id} className="flex items-center gap-3 px-4 py-3 text-ui">
                   <span className="w-20 font-mono">{c.code}</span>
                   <b className="font-medium">{c.name}</b>
                   <Badge variant="outline">{c.kind === "BRANCH" ? "Sucursal" : "Centro de costo"}</Badge>
@@ -170,10 +177,10 @@ export default function AccountingView({ slug, accounts, rules, centers, periods
 
       {tab === "periods" ? (
         <div className="grid gap-3">
-          <p className="text-[13px] text-muted-foreground">Un mes cerrado no admite asientos nuevos ni cambios. Los cierres van en orden y solo se cierra un mes que ya terminó; reabrir exige un motivo y lo hace el dueño.</p>
+          <p className="text-ui text-muted-foreground">Un mes cerrado no admite asientos nuevos ni cambios. Los cierres van en orden y solo se cierra un mes que ya terminó; reabrir exige un motivo y lo hace el dueño.</p>
           <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
             {months.map((m) => (
-              <li key={`${m.year}-${m.month}`} className="flex items-center gap-3 px-4 py-2.5 text-[13.5px]">
+              <li key={`${m.year}-${m.month}`} className="flex items-center gap-3 px-4 py-2.5 text-ui">
                 <span className="capitalize">{periodLabel(m.year, m.month)}</span>
                 <Badge variant={m.status === "CLOSED" ? "secondary" : "success"}>{m.status === "CLOSED" ? "Cerrado" : m.current ? "En curso" : "Abierto"}</Badge>
                 {m.status === "OPEN" && !m.current ? <button type="button" aria-label={`Cerrar ${periodLabel(m.year, m.month)}`} onClick={() => run(() => closePeriodAction(slug, m.year, m.month))} className={buttonVariants({ variant: "outline", size: "sm", className: "ml-auto" })}>Cerrar mes</button> : null}
@@ -190,7 +197,7 @@ export default function AccountingView({ slug, accounts, rules, centers, periods
         {({ fieldErrors }) => (
           <div className="grid gap-3">
             <Field label="Código" required error={fieldErrors.code}>{(c) => <input {...c} name="code" inputMode="numeric" autoComplete="off" className={inputClasses} placeholder="110505" />}</Field>
-            <Field label="Nombre" required>{(c) => <input {...c} name="name" autoComplete="off" maxLength={120} className={inputClasses} placeholder="Caja general" />}</Field>
+            <Field label="Nombre" required>{(c) => <input {...c} name="name" autoComplete="off" maxLength={120} className={inputClasses} placeholder="Nombre de la cuenta" />}</Field>
           </div>
         )}
       </FormDialog>
@@ -201,7 +208,7 @@ export default function AccountingView({ slug, accounts, rules, centers, periods
         {({ fieldErrors }) => (
           <div className="grid gap-3">
             <Field label="Código" required error={fieldErrors.code}>{(c) => <input {...c} name="code" autoComplete="off" className={inputClasses} placeholder="ADM" />}</Field>
-            <Field label="Nombre" required>{(c) => <input {...c} name="name" autoComplete="off" maxLength={80} className={inputClasses} placeholder="Administración" />}</Field>
+            <Field label="Nombre" required>{(c) => <input {...c} name="name" autoComplete="off" maxLength={80} className={inputClasses} placeholder="Nombre del centro" />}</Field>
             <Field label="Tipo" required>{(c) => <Select {...c} name="kind" defaultValue="CENTER"><option value="CENTER">Centro de costo</option><option value="BRANCH">Sucursal</option></Select>}</Field>
           </div>
         )}
@@ -210,7 +217,7 @@ export default function AccountingView({ slug, accounts, rules, centers, periods
       <FormDialog open={reopen !== null} onOpenChange={(o) => !o && setReopen(null)} title="Reabrir mes" description={reopen ? `${periodLabel(reopen.year, reopen.month)} volverá a admitir cambios. Queda registrado quién y por qué.` : undefined} submitLabel="Reabrir mes" pendingLabel="Reabriendo…" destructive
         onSubmit={async (d) => { if (!reopen) return { ok: false, message: "No hay mes seleccionado." }; const r = await reopenPeriodAction(slug, reopen.year, reopen.month, String(d.get("reason") ?? "")); return r.ok ? { ok: true, message: r.message } : { ok: false, message: r.message, fieldErrors: { reason: r.message } }; }}
         onSuccess={({ message }) => { if (message) toast(message, "success"); router.refresh(); }}>
-        {({ fieldErrors }) => <Field label="Motivo" required error={fieldErrors.reason}>{(c) => <input {...c} name="reason" autoComplete="off" maxLength={200} className={inputClasses} placeholder="Ajuste de una factura de septiembre" />}</Field>}
+        {({ fieldErrors }) => <Field label="Motivo" required error={fieldErrors.reason}>{(c) => <input {...c} name="reason" autoComplete="off" maxLength={200} className={inputClasses} placeholder="Descripción del asiento" />}</Field>}
       </FormDialog>
     </div>
   );

@@ -1,9 +1,10 @@
 import type { Customer360Payment } from "@/lib/core/tenancy/db";
 import { formatCurrency, formatDateTime } from "@/lib/foundation/format";
 import { paymentMethodLabel } from "@/lib/foundation/kernel/payment-vocabulary";
+import { AdaptiveTable } from "@/components/organisms/adaptive-table";
 import { PaymentStatusPill } from "./status-pills";
 
-/** Pestaña Pagos: historial limitado a los más recientes (acotado). */
+/** Pestaña de cobros: historial limitado a los más recientes (acotado). */
 export default function PaymentsTable({
   payments,
   total,
@@ -14,7 +15,7 @@ export default function PaymentsTable({
   if (payments.length === 0) {
     return (
       <div className="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-        Este cliente todavía no tiene pagos registrados.
+        Este cliente todavía no tiene cobros registrados.
       </div>
     );
   }
@@ -23,63 +24,23 @@ export default function PaymentsTable({
 
   return (
     <div className="rounded-lg border border-border bg-card">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-border text-sm">
-          <thead className="bg-muted text-left text-xs font-semibold text-muted-foreground">
-            <tr>
-              <th scope="col" className="px-4 py-3">
-                Fecha
-              </th>
-              <th scope="col" className="px-4 py-3">
-                Monto
-              </th>
-              <th scope="col" className="px-4 py-3">
-                Método
-              </th>
-              <th scope="col" className="px-4 py-3">
-                Estado
-              </th>
-              <th scope="col" className="px-4 py-3">
-                Referencia
-              </th>
-              <th scope="col" className="px-4 py-3">
-                Descripción
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {payments.map((payment) => (
-              <tr key={payment.id} className="hover:bg-muted">
-                <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
-                  {formatDateTime(payment.createdAt)}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 font-semibold text-foreground">
-                  {formatCurrency(payment.amount)}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
-                  {paymentMethodLabel(payment.provider)}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3">
-                  <PaymentStatusPill status={payment.status} />
-                </td>
-                <td className="max-w-[10rem] truncate px-4 py-3 text-muted-foreground">
-                  {payment.providerRefId || (
-                    <span className="text-muted-foreground/50">—</span>
-                  )}
-                </td>
-                <td className="max-w-[16rem] truncate px-4 py-3 text-muted-foreground">
-                  {payment.description || (
-                    <span className="text-muted-foreground/50">—</span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <AdaptiveTable
+        className="rounded-none border-0"
+        caption="Cobros del cliente"
+        rows={payments}
+        getRowId={(p) => p.id}
+        columns={[
+          { key: "date", header: "Fecha", role: "secondary", cell: (p) => <span className="text-muted-foreground">{formatDateTime(p.createdAt)}</span> },
+          { key: "amount", header: "Monto", role: "figure", align: "right", cell: (p) => <span className="font-semibold text-foreground">{formatCurrency(p.amount)}</span> },
+          { key: "method", header: "Método", role: "primary", cell: (p) => paymentMethodLabel(p.provider) },
+          { key: "status", header: "Estado", role: "status", cell: (p) => <PaymentStatusPill status={p.status} /> },
+          { key: "ref", header: "Referencia", role: "detail", cell: (p) => p.providerRefId || <span className="text-muted-foreground/50">—</span> },
+          { key: "desc", header: "Descripción", role: "detail", cell: (p) => p.description || <span className="text-muted-foreground/50">—</span> },
+        ]}
+      />
       {truncated ? (
         <p className="border-t border-border/70 px-4 py-2.5 text-xs text-muted-foreground">
-          Mostrando los {payments.length} pagos más recientes de {total}.
+          Mostrando los {payments.length} cobros más recientes de {total}.
         </p>
       ) : null}
     </div>

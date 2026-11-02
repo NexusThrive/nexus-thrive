@@ -149,7 +149,7 @@ export default function AgendaCalendar({
       {view === "month" ? (
         <>
           <div className="overflow-hidden rounded-lg border border-border bg-surface">
-            <div className="grid grid-cols-7 border-b border-border bg-surface-muted text-center font-mono text-[10.5px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+            <div className="grid grid-cols-7 border-b border-border bg-surface-muted text-center font-mono text-2xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
               {WEEKDAYS.map((d) => (
                 <span key={d} className="py-2">
                   {d}
@@ -187,11 +187,11 @@ export default function AgendaCalendar({
                             e.stopPropagation();
                             go("day", day);
                           }}
-                          className={cn("grid size-6 place-items-center rounded-full font-mono text-[12px] tabular-nums hover:bg-border", isToday && "bg-ink font-bold text-[#F7F6F3]")}
+                          className={cn("grid size-6 place-items-center rounded-full font-mono text-xs tabular-nums hover:bg-border", isToday && "bg-ink font-bold text-[#F7F6F3]")}
                         >
                           {Number(day.slice(8))}
                         </button>
-                        {liveCount(day) ? <span className="font-mono text-[10.5px] text-muted-foreground md:hidden">{liveCount(day)}</span> : null}
+                        {liveCount(day) ? <span className="font-mono text-2xs text-muted-foreground md:hidden">{liveCount(day)}</span> : null}
                         <Plus aria-hidden="true" className="hidden size-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 md:block" />
                       </span>
                       <ul className="mt-1 hidden gap-0.5 md:grid">
@@ -203,7 +203,7 @@ export default function AgendaCalendar({
                                 e.stopPropagation();
                                 setOpen(b);
                               }}
-                              className={cn("block w-full truncate rounded px-1 py-0.5 text-left text-[11px] hover:bg-surface", b.status === "CANCELLED" && "text-muted-foreground line-through")}
+                              className={cn("block w-full truncate rounded px-1 py-0.5 text-left text-2xs hover:bg-surface", b.status === "CANCELLED" && "text-muted-foreground line-through")}
                             >
                               <span className="font-mono">{hhmm(b.start)}</span> {b.serviceName}
                             </button>
@@ -217,7 +217,7 @@ export default function AgendaCalendar({
                                 e.stopPropagation();
                                 go("day", day);
                               }}
-                              className="px-1 text-[11px] font-medium text-accent-text"
+                              className="px-1 text-2xs font-medium text-accent-text"
                             >
                               +{list.length - 3} más
                             </button>
@@ -240,7 +240,7 @@ export default function AgendaCalendar({
           {/* Celular: el día elegido con sus citas. */}
           <section className="grid gap-2 md:hidden">
             <div className="flex items-center justify-between gap-2">
-              <h3 className="text-[14px] font-semibold first-letter:uppercase">{label(selected, { weekday: "long", day: "numeric", month: "long" })}</h3>
+              <h3 className="text-sm font-semibold first-letter:uppercase">{label(selected, { weekday: "long", day: "numeric", month: "long" })}</h3>
               <button type="button" onClick={() => openCreate(selected)} className={buttonVariants({ size: "sm" })}>
                 <Plus aria-hidden="true" className="size-3.5" /> Agendar este día
               </button>
@@ -249,16 +249,16 @@ export default function AgendaCalendar({
               {(byDay.get(selected) ?? []).map((b) => (
                 <li key={b.id}>
                   <button type="button" onClick={() => setOpen(b)} className="flex w-full items-center gap-3 rounded-lg border border-border bg-surface px-3 py-2.5 text-left">
-                    <span className="font-mono text-[13px] tabular-nums">{hhmm(b.start)}</span>
+                    <span className="font-mono text-ui tabular-nums">{hhmm(b.start)}</span>
                     <span className="min-w-0 flex-1">
-                      <b className={cn("block truncate text-[13.5px] font-medium", b.status === "CANCELLED" && "line-through")}>{b.serviceName}</b>
+                      <b className={cn("block truncate text-ui font-medium", b.status === "CANCELLED" && "line-through")}>{b.serviceName}</b>
                       <small className="block truncate text-xs text-muted-foreground">{b.customerName}</small>
                     </span>
-                    <small className="text-[11px] text-muted-foreground">{STATUS[b.status].label}</small>
+                    <small className="text-2xs text-muted-foreground">{STATUS[b.status].label}</small>
                   </button>
                 </li>
               ))}
-              {!(byDay.get(selected) ?? []).length ? <li className="py-4 text-center text-[13px] text-muted-foreground">Día libre.</li> : null}
+              {!(byDay.get(selected) ?? []).length ? <li className="py-4 text-center text-ui text-muted-foreground">Día libre.</li> : null}
             </ul>
           </section>
         </>
@@ -267,15 +267,15 @@ export default function AgendaCalendar({
           <div className={cn("grid", view === "week" ? "min-w-[760px] grid-cols-[52px_repeat(7,minmax(0,1fr))]" : "grid-cols-[52px_minmax(0,1fr)]")}>
             <span className="border-b border-border" />
             {days.map((d) => (
-              <button key={d} type="button" onClick={() => go("day", d)} className={cn("border-b border-l border-border py-2 text-center text-[12px]", d === today && "bg-accent-subtle/60 font-semibold")}>
-                <span className="block font-mono text-[10.5px] uppercase text-muted-foreground">{label(d, { weekday: "short" })}</span>
+              <button key={d} type="button" onClick={() => go("day", d)} className={cn("border-b border-l border-border py-2 text-center text-xs", d === today && "bg-accent-subtle/60 font-semibold")}>
+                <span className="block font-mono text-2xs uppercase text-muted-foreground">{label(d, { weekday: "short" })}</span>
                 <span className="font-display text-[16px] font-bold">{Number(d.slice(8))}</span>
-                <span className="block text-[10.5px] text-muted-foreground">{liveCount(d) ? `${liveCount(d)} ${liveCount(d) === 1 ? "cita" : "citas"}` : "libre"}</span>
+                <span className="block text-2xs text-muted-foreground">{liveCount(d) ? `${liveCount(d)} ${liveCount(d) === 1 ? "cita" : "citas"}` : "libre"}</span>
               </button>
             ))}
             <div className="relative" style={{ height: hours.length * HOUR_PX }}>
               {hours.map((h) => (
-                <span key={h} className="absolute right-1.5 -translate-y-1/2 font-mono text-[10.5px] text-muted-foreground" style={{ top: (h - FIRST_HOUR) * HOUR_PX }}>
+                <span key={h} className="absolute right-1.5 -translate-y-1/2 font-mono text-2xs text-muted-foreground" style={{ top: (h - FIRST_HOUR) * HOUR_PX }}>
                   {h > FIRST_HOUR ? `${String(h).padStart(2, "0")}:00` : ""}
                 </span>
               ))}

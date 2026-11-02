@@ -26,7 +26,7 @@ export default function Simulator({ config }: { config: PricingConfig }) {
     <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
       <section className="grid content-start gap-4 rounded-lg border border-border bg-surface p-[18px]">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="grid gap-1.5 text-[13px] font-medium">
+          <label className="grid gap-1.5 text-ui font-medium">
             Rubro
             <Select value={vertical} onChange={(e) => { setVertical(e.target.value as VerticalValue); setSelected([]); }}>
               {verticals.map((v) => (
@@ -37,7 +37,7 @@ export default function Simulator({ config }: { config: PricingConfig }) {
               ))}
             </Select>
           </label>
-          <label className="grid gap-1.5 text-[13px] font-medium">
+          <label className="grid gap-1.5 text-ui font-medium">
             Clientes
             <Select value={tierId} onChange={(e) => setTierId(e.target.value)}>
               {[...config.tiers].sort((a, b) => a.order - b.order).map((t) => (
@@ -53,7 +53,7 @@ export default function Simulator({ config }: { config: PricingConfig }) {
           <SegmentedControl ariaLabel="Ciclo" value={billing} onChange={setBilling} options={[{ value: "MONTHLY", label: "Mensual" }, { value: "ANNUAL", label: "Anual" }]} />
         </div>
         <div>
-          <p className="mb-2 text-[13px] font-medium">Módulos que se ofrecen en este rubro</p>
+          <p className="mb-2 text-ui font-medium">Módulos que se ofrecen en este rubro</p>
           <ChipRow className="flex-wrap">
             {offered.map((m) => (
               <Chip key={m.module} selected={q.modules.includes(m.module)} onClick={() => setSelected((s) => (s.includes(m.module) ? s.filter((x) => x !== m.module) : [...s, m.module]))}>
@@ -65,12 +65,12 @@ export default function Simulator({ config }: { config: PricingConfig }) {
         </div>
       </section>
       <section className="grid content-start gap-3 rounded-lg bg-ink p-[18px] text-[#F7F6F3]">
-        <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-[#A1A1A8]">Lo que pagaría</p>
+        <p className="font-mono text-2xs uppercase tracking-[0.16em] text-[#A1A1A8]">Lo que pagaría</p>
         <p className="flex items-baseline gap-1.5">
           <Odometer value={(q.monthlyCents / 100).toFixed(q.monthlyCents % 100 ? 2 : 0)} prefix="$" className="font-display text-[40px] font-bold leading-none" />
-          <span className="text-[13px] text-[#A1A1A8]">USD/mes{billing === "ANNUAL" ? ` · ${formatUsdCents(q.yearlyCents)} al año` : ""}</span>
+          <span className="text-ui text-[#A1A1A8]">USD/mes{billing === "ANNUAL" ? ` · ${formatUsdCents(q.yearlyCents)} al año` : ""}</span>
         </p>
-        <ul className="grid gap-1.5 border-t border-[#2A2A2E] pt-3 text-[13px]">
+        <ul className="grid gap-1.5 border-t border-[#2A2A2E] pt-3 text-ui">
           {q.lines.map((l) => (
             <li key={l.label} className={cn("flex justify-between gap-3", l.kind === "tier" && "text-[#D4AF37]")}>
               <span>{l.label}</span>

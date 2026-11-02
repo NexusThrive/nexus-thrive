@@ -49,7 +49,7 @@ export default function TicketDetail({ ticket, messages, staff, me, canReply, ca
             <p className="text-xs text-muted-foreground">
               {ticket.requesterName ?? "Cliente"} · {ticket.channel} · {formatDateTime(new Date(ticket.createdAt))}
             </p>
-            <p className="mt-1 whitespace-pre-wrap text-[13.5px]">{ticket.description}</p>
+            <p className="mt-1 whitespace-pre-wrap text-ui">{ticket.description}</p>
           </li>
           {messages.map((m) => (
             <li key={m.id} className={cn("rounded-md border p-3", m.internal ? "border-dashed border-accent/60 bg-accent-subtle/40" : "border-border bg-surface")}>
@@ -57,7 +57,7 @@ export default function TicketDetail({ ticket, messages, staff, me, canReply, ca
                 {m.internal ? <Lock aria-hidden="true" className="size-3" /> : null}
                 {m.internal ? "Nota interna" : "Respuesta"} · {m.authorName} · {formatDateTime(new Date(m.createdAt))}
               </p>
-              <p className="mt-1 whitespace-pre-wrap text-[13.5px]">{m.body}</p>
+              <p className="mt-1 whitespace-pre-wrap text-ui">{m.body}</p>
             </li>
           ))}
         </ol>
@@ -83,12 +83,12 @@ export default function TicketDetail({ ticket, messages, staff, me, canReply, ca
               <SlaBadge t={ticket} />
             </div>
             {canReply && isOpenStatus(ticket.status) ? (
-              <label className="grid gap-1.5 text-[13px] font-medium">
+              <label className="grid gap-1.5 text-ui font-medium">
                 Solución <small className="font-normal text-muted-foreground">Obligatoria para resolver.</small>
                 <textarea rows={3} value={solution} onChange={(e) => setSolution(e.target.value)} className={textareaClasses} placeholder="Qué se hizo para solucionarlo." />
               </label>
             ) : ticket.solution ? (
-              <p className="rounded-md bg-success-subtle p-3 text-[13px]">
+              <p className="rounded-md bg-success-subtle p-3 text-ui">
                 <b className="block text-xs font-semibold">Solución</b>
                 {ticket.solution}
               </p>
@@ -106,7 +106,7 @@ export default function TicketDetail({ ticket, messages, staff, me, canReply, ca
         </Panel>
 
         <Panel title="Detalles">
-          <div className="grid gap-3 p-[18px] text-[13px]">
+          <div className="grid gap-3 p-[18px] text-ui">
             <label className="grid gap-1.5 font-medium">
               Responsable
               <Select

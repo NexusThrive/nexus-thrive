@@ -53,15 +53,15 @@ export default function BusinessContextCard({ slug, canManage, initial }: { slug
           )}
         </Field>
         <Field label="Qué hace tu negocio" optional hint={`En tus palabras, hasta ${MAX_ACTIVITY} caracteres.`}>
-          {(c) => <input {...c} value={activity} maxLength={MAX_ACTIVITY} disabled={!canManage || pending} onChange={(e) => setActivity(e.target.value)} className={inputClasses} placeholder="Agencia de marketing para pymes" />}
+          {(c) => <input {...c} value={activity} maxLength={MAX_ACTIVITY} disabled={!canManage || pending} onChange={(e) => setActivity(e.target.value)} className={inputClasses} placeholder="Describe en una frase a qué se dedica tu negocio" />}
         </Field>
       </div>
 
       <fieldset className="mt-4" disabled={!canManage || pending}>
-        <legend className="text-[13px] font-medium">A quién le vendes <span className="font-normal text-muted-foreground">(puedes elegir varios)</span></legend>
+        <legend className="text-ui font-medium">A quién le vendes <span className="font-normal text-muted-foreground">(puedes elegir varios)</span></legend>
         <div className="mt-2 flex flex-wrap gap-2">
           {BUSINESS_MODELS.map((m) => (
-            <label key={m.value} className="flex cursor-pointer items-center gap-2 rounded-md border border-border-input bg-surface px-3 py-2 text-[13px] has-[:checked]:border-foreground has-[:checked]:bg-surface-muted has-[:disabled]:cursor-not-allowed">
+            <label key={m.value} className="flex cursor-pointer items-center gap-2 rounded-md border border-border-input bg-surface px-3 py-2 text-ui has-[:checked]:border-foreground has-[:checked]:bg-surface-muted has-[:disabled]:cursor-not-allowed">
               <input type="checkbox" checked={models.includes(m.value)} onChange={() => toggle(m.value)} className="size-4 accent-[var(--foreground)]" />
               <span>
                 {m.label}

@@ -7,6 +7,7 @@ import { prefsInitScript, themeInitScript } from "@/lib/foundation/init-scripts"
 import { MotionProvider } from "@/components/providers/motion-provider";
 import { PreferencesProvider } from "@/components/providers/preferences";
 import { PwaProvider } from "@/components/providers/pwa";
+import { KeyboardInset } from "@/components/providers/keyboard-inset";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -28,6 +29,8 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: dark)", color: "#000000" },
   ],
   viewportFit: "cover",
+  // Android: el teclado achica la página en vez de taparla (en iOS lo cubre `KeyboardInset`).
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({
@@ -49,6 +52,7 @@ export default function RootLayout({
         <ClerkProvider localization={clerkLocalization} appearance={clerkProviderAppearance}>
           <PreferencesProvider>
             <MotionProvider />
+            <KeyboardInset />
             <PwaProvider>{children}</PwaProvider>
           </PreferencesProvider>
         </ClerkProvider>

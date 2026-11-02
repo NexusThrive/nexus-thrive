@@ -11,6 +11,7 @@ import { Field } from "@/components/molecules/field";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
+import { AdaptiveTable } from "@/components/organisms/adaptive-table";
 import { paySupplierAction, receivePaymentAction } from "@/app/[tenant]/(app)/cartera/actions";
 import { formatCurrency } from "@/lib/foundation/format";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
@@ -50,13 +51,13 @@ function Panel({ slug, side, cartera }: { slug: string; side: Side; cartera: Car
   return (
     <div className="grid gap-4">
       <section aria-label={`Antigüedad de la cartera ${word.total.toLowerCase()}`} className="grid gap-3 rounded-lg border border-border bg-surface p-4">
-        <p className="text-[13px] text-muted-foreground">{word.total}</p>
+        <p className="text-ui text-muted-foreground">{word.total}</p>
         <p className="font-mono text-2xl font-semibold tabular-nums">{formatCurrency(cartera.aging.total)}</p>
         <ul className="grid grid-cols-2 gap-2 sm:grid-cols-5">
           {BUCKETS.map((b) => (
             <li key={b} className="rounded-md bg-surface-muted px-3 py-2">
               <span className="block text-xs text-muted-foreground">{BUCKET_LABELS[b]}</span>
-              <b className="font-mono text-[13px] tabular-nums">{formatCurrency(cartera.aging.buckets[b].amount)}</b>
+              <b className="font-mono text-ui tabular-nums">{formatCurrency(cartera.aging.buckets[b].amount)}</b>
             </li>
           ))}
         </ul>
@@ -65,40 +66,38 @@ function Panel({ slug, side, cartera }: { slug: string; side: Side; cartera: Car
       {cartera.rows.length === 0 ? (
         <EmptyState title={side === "in" ? "Nadie te debe" : "No debes nada"} description={side === "in" ? "Las cuentas de cobro emitidas con saldo aparecerán aquí." : "Las facturas de proveedor registradas con saldo aparecerán aquí."} />
       ) : (
-        <div role="region" aria-label={`Cuentas ${word.total.toLowerCase()}`} tabIndex={0} className="overflow-x-auto rounded-lg border border-border bg-surface focus-visible:outline-2 focus-visible:outline-accent">
-          <table className="w-full min-w-[760px] text-[13px]">
-            <caption className="sr-only">Cuentas {word.total.toLowerCase()} con su saldo y vencimiento</caption>
-            <thead className="bg-surface-muted text-left text-xs text-muted-foreground">
-              <tr>
-                <th scope="col" className="px-3 py-2 font-medium">{word.party}</th>
-                <th scope="col" className="px-3 py-2 font-medium">Documento</th>
-                <th scope="col" className="px-3 py-2 font-medium">Vence</th>
-                <th scope="col" className="px-3 py-2 text-right font-medium">Total</th>
-                <th scope="col" className="px-3 py-2 text-right font-medium">Saldo</th>
-                <th scope="col" className="px-3 py-2"><span className="sr-only">Acciones</span></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {cartera.rows.map((r) => (
-                <tr key={r.id}>
-                  <th scope="row" className="px-3 py-2 text-left font-medium">{r.party}</th>
-                  <td className="px-3 py-2 font-mono">{r.number}</td>
-                  <td className="px-3 py-2">
-                    {r.dueDate ?? "Sin fecha"}
-                    {r.daysOverdue > 0 ? <Badge variant={r.daysOverdue > 60 ? "destructive" : "warning"} className="ml-2">{r.daysOverdue} días de mora</Badge> : null}
-                  </td>
-                  <td className="px-3 py-2 text-right font-mono tabular-nums">{formatCurrency(r.total)}</td>
-                  <td className="px-3 py-2 text-right font-mono font-semibold tabular-nums">{formatCurrency(r.balance)}</td>
-                  <td className="px-3 py-2 text-right">
-                    <button type="button" onClick={() => setPaying(r)} aria-label={`${word.action} · ${r.party} ${r.number}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
-                      {word.action}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <AdaptiveTable
+          caption={`Cuentas ${word.total.toLowerCase()} con su saldo y vencimiento`}
+          rows={cartera.rows}
+          getRowId={(r) => r.id}
+          columns={[
+            { key: "party", header: word.party, role: "primary", cell: (r) => r.party },
+            { key: "number", header: "Documento", role: "secondary", cell: (r) => <span className="font-mono">{r.number}</span> },
+            {
+              key: "due",
+              header: "Vence",
+              role: "detail",
+              cell: (r) => (
+                <>
+                  {r.dueDate ?? "Sin fecha"}
+                  {r.daysOverdue > 0 ? <Badge variant={r.daysOverdue > 60 ? "destructive" : "warning"} className="ml-2">{r.daysOverdue} días de mora</Badge> : null}
+                </>
+              ),
+            },
+            { key: "total", header: "Total", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{formatCurrency(r.total)}</span> },
+            { key: "balance", header: "Saldo", role: "figure", cell: (r) => <span className="font-mono font-semibold">{formatCurrency(r.balance)}</span> },
+            {
+              key: "actions",
+              header: "Acciones",
+              role: "action",
+              cell: (r) => (
+                <button type="button" onClick={() => setPaying(r)} aria-label={`${word.action} · ${r.party} ${r.number}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                  {word.action}
+                </button>
+              ),
+            },
+          ]}
+        />
       )}
 
       <FormDialog
@@ -134,7 +133,7 @@ function Panel({ slug, side, cartera }: { slug: string; side: Side; cartera: Car
                 </Select>
               )}
             </Field>
-            {side === "out" ? <Field label="Nota" optional>{(c) => <input {...c} name="note" autoComplete="off" maxLength={200} className={inputClasses} placeholder="Transferencia Bancolombia" />}</Field> : null}
+            {side === "out" ? <Field label="Nota" optional>{(c) => <input {...c} name="note" autoComplete="off" maxLength={200} className={inputClasses} placeholder="Medio de pago" />}</Field> : null}
           </div>
         )}
       </FormDialog>

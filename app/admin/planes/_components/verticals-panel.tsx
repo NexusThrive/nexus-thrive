@@ -60,13 +60,13 @@ function VerticalEditor({ v, modules, canPrice, canStructure, onClose }: { v: Ve
         </div>
         <label htmlFor="v-signup" className="flex items-center justify-between gap-3 rounded-md bg-surface-muted p-3">
           <span>
-            <b className="block text-[13.5px] font-medium">Aparece en el registro</b>
+            <b className="block text-ui font-medium">Aparece en el registro</b>
             <small className="text-xs text-muted-foreground">Si se apaga, nadie nuevo puede elegir este rubro.</small>
           </span>
           <Switch id="v-signup" checked={d.signupEnabled} disabled={!canStructure} onCheckedChange={(on) => setD({ ...d, signupEnabled: on })} />
         </label>
         <div>
-          <p className="mb-1 text-[13px] font-medium">Módulos permitidos</p>
+          <p className="mb-1 text-ui font-medium">Módulos permitidos</p>
           <p className="mb-2 text-xs text-muted-foreground">Lo que no esté aquí no se ofrece ni se puede activar en este rubro. El Inicio siempre está.</p>
           <ChipRow className="flex-wrap">
             {selectable.map((m) => (
@@ -78,7 +78,7 @@ function VerticalEditor({ v, modules, canPrice, canStructure, onClose }: { v: Ve
           </ChipRow>
         </div>
         <div>
-          <p className="mb-1 text-[13px] font-medium">Recomendados</p>
+          <p className="mb-1 text-ui font-medium">Recomendados</p>
           <p className="mb-2 text-xs text-muted-foreground">Vienen marcados en el plan Elite.</p>
           <ChipRow className="flex-wrap">
             {selectable
@@ -112,7 +112,7 @@ export default function VerticalsPanel({ verticals, modules, canPrice, canStruct
                 <Badge tone={v.signupEnabled ? "success" : "muted"}>{v.signupEnabled ? "En el registro" : "Oculto"}</Badge>
               </div>
               <p className="font-mono text-xs text-muted-foreground">Factor {v.priceFactorPct} % · {v.modules.length - 1} módulos</p>
-              <p className="line-clamp-2 text-[12.5px] text-muted-foreground">{v.modules.filter((m) => m !== "dashboard").map(label).join(" · ")}</p>
+              <p className="line-clamp-2 text-xs text-muted-foreground">{v.modules.filter((m) => m !== "dashboard").map(label).join(" · ")}</p>
               <button type="button" onClick={() => setEditing(v)} className={buttonVariants({ variant: "outline", size: "sm", className: "mt-auto justify-self-start" })}>
                 <Pencil aria-hidden="true" className="size-3.5" /> Configurar
               </button>

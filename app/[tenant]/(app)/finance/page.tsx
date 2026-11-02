@@ -17,7 +17,6 @@ import { UrlSegmentedControl } from "@/components/molecules/url-segmented-contro
 import { BalanceCard } from "@/components/organisms/balance-card";
 import { MovementsList } from "@/components/organisms/movements-list";
 import PettyCashCard from "./_components/petty-cash-card";
-import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 const PAGE_SIZE = 10;
 
@@ -168,7 +167,6 @@ export default async function FinancePage({
   return (
     <div className="grid gap-6" suppressHydrationWarning>
       <PageHeader
-        eyebrow={routeCategory("/finance")}
         title="Finanzas"
         description={<>Cobros, gastos y caja menor de{" "}
           <span className="font-medium text-foreground/80">{tenantRecord.name}</span>.</>}
@@ -248,6 +246,7 @@ export default async function FinancePage({
             totalPages={paymentTotalPages}
             pageParam="ppage"
             totalLabel={`${paymentResult.total} ${paymentResult.total === 1 ? "cobro" : "cobros"}`}
+            emptyAction={pq ? undefined : { label: "Registrar pago", quick: "payment" }}
             empty={pq ? { title: `Sin coincidencias para «${pq}»`, description: "Prueba con otro término o limpia los filtros." } : { title: "Aún no hay cobros", description: "Registra tu primer cobro con «Registrar pago»." }}
           />
         </section>
@@ -267,6 +266,7 @@ export default async function FinancePage({
             totalPages={expenseTotalPages}
             pageParam="gpage"
             totalLabel={`${expenseResult.total} ${expenseResult.total === 1 ? "gasto" : "gastos"}`}
+            emptyAction={gq ? undefined : { label: "Registrar gasto", quick: "expense" }}
             empty={gq ? { title: `Sin coincidencias para «${gq}»`, description: "Prueba con otro término." } : { title: "Aún no hay gastos", description: "Registra tus gastos con su soporte para saber en qué se va el dinero." }}
           />
         </section>

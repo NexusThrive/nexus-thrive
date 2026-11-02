@@ -32,15 +32,15 @@ export default function OrdersView({ slug, orders }: { slug: string; orders: Ord
             <div className="flex flex-wrap items-center gap-2">
               <b className="font-mono">{o.code}</b>
               <Badge variant={STATUS[o.status as keyof typeof STATUS]?.tone ?? "secondary"}>{STATUS[o.status as keyof typeof STATUS]?.label ?? o.status}</Badge>
-              <span className="text-[13px] text-muted-foreground">{o.createdAt.slice(0, 16).replace("T", " ")}</span>
+              <span className="text-ui text-muted-foreground">{o.createdAt.slice(0, 16).replace("T", " ")}</span>
               <b className="ml-auto font-mono tabular-nums">{formatCurrency(o.total)}</b>
             </div>
-            <p className="text-[13.5px]"><b>{o.customerName}</b> · <a href={`https://wa.me/${o.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">{o.phone}</a>{o.email ? ` · ${o.email}` : ""}</p>
-            {o.address || o.city ? <p className="text-[13px] text-muted-foreground">Entrega: {[o.address, o.city].filter(Boolean).join(", ")}</p> : null}
-            <ul className="text-[13px]">
+            <p className="text-ui"><b>{o.customerName}</b> · <a href={`https://wa.me/${o.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">{o.phone}</a>{o.email ? ` · ${o.email}` : ""}</p>
+            {o.address || o.city ? <p className="text-ui text-muted-foreground">Entrega: {[o.address, o.city].filter(Boolean).join(", ")}</p> : null}
+            <ul className="text-ui">
               {o.lines.map((l) => <li key={l.name}>{l.quantity} × {l.name} <span className="text-muted-foreground">({formatCurrency(l.unitPrice)})</span></li>)}
             </ul>
-            {o.notes ? <p className="text-[13px] text-muted-foreground">Nota: {o.notes}</p> : null}
+            {o.notes ? <p className="text-ui text-muted-foreground">Nota: {o.notes}</p> : null}
             {o.review ? <Alert tone="warning">{o.review}</Alert> : null}
             {o.status === "PENDING_PAYMENT" || o.status === "ABANDONED" ? (
               <div className="flex gap-2">

@@ -10,7 +10,6 @@ import { UrlSegmentedControl } from "@/components/molecules/url-segmented-contro
 import { CustomizableDashboard, DashboardMenu, type DashboardWidget } from "@/components/organisms/customizable-dashboard";
 import QuickActions from "@/components/organisms/quick-actions";
 import RecentActivity from "@/components/organisms/recent-activity";
-import { WelcomeChecklist, type WelcomeStep } from "@/components/organisms/welcome-checklist";
 import { TenantShell } from "@/components/templates/tenant-shell";
 import { isModule, sortModules } from "@/lib/core/capabilities/modules";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
@@ -131,22 +130,11 @@ function Pagina({ estado, escala = 1 }: { estado: Estado; escala?: number }) {
     expiry: { href: `${BASE}/memberships`, label: "Ver membresías" },
     pending: { href: `${BASE}/cartera`, label: "Ver la cartera" },
   };
-  const customerWord = terms.customer.toLowerCase();
-  const welcomeSteps: WelcomeStep[] = [
-    { id: "customer", icon: "customer", done: activeCustomers > 0, title: `Registra tu primer ${customerWord}`, description: "Agrega a tus contactos para llevar su historial, sus cobros y su seguimiento.", cta: `Nuevo ${customerWord}`, href: `${BASE}/crm` },
-    { id: "payment", icon: "payment", done: completo, title: "Registra tu primer cobro", description: "Cobra y genera el comprobante para que tus ingresos queden al día.", cta: "Registrar pago", href: `${BASE}/finance?nuevo=pago` },
-    { id: "expense", icon: "expense", done: completo, title: "Agrega tus gastos", description: "Anota los egresos de caja para conocer tu balance real.", cta: "Registrar gasto", href: `${BASE}/finance?nuevo=gasto` },
-    { id: "catalog", icon: "catalog", done: completo, title: "Arma tu catálogo", description: "Define lo que vendes: precios, inventario y planes, para cobrar en un toque.", cta: "Agregar al catálogo", href: `${BASE}/inventory?nuevo=1` },
-  ];
-  const showWelcome = welcomeSteps.some((step) => !step.done);
-
   const widgets: DashboardWidget[] = [
-    ...(showWelcome ? [{ id: "welcome", label: "Primeros pasos", node: <WelcomeChecklist scope={`${TENANT}-fiel-${estado}`} name="Camila" steps={welcomeSteps} /> }] : []),
-    { id: "presence", label: "Presencia en línea", node: <PresenceSummary presence={PRESENCIA(estado)} href={`${BASE}/presence`} /> },
     { id: "kpi-income", label: "Ingresos", span: 3, half: true, node: (
       <KpiCard index={0} label="Ingresos" value={current.income} format="cop" icon={TrendingUp} delta={deltaFor(current.income, previous.income)}
         hint={`${countLabel(current.count, "cobro registrado", "cobros registrados", "Sin cobros")} · ${incomeVs.note}`}
-        info="Suma de los pagos aprobados del periodo. La variación compara con el periodo anterior del mismo largo."
+        info="Suma de los cobros confirmados del periodo. La variación compara con el periodo anterior del mismo largo."
         action={{ label: "Ver cobros" }} trend={incomeTrend} href={`${BASE}/finance`} />
     ) },
     { id: "kpi-expenses", label: "Gastos", span: 3, half: true, node: (
@@ -169,13 +157,6 @@ function Pagina({ estado, escala = 1 }: { estado: Estado; escala?: number }) {
             action={{ label: "Ver cartera" }} href={`${BASE}/cartera`} />
         ) }]
       : []),
-    { id: "kpi-customers", label: "Clientes activos", span: 3, half: true, node: (
-      <KpiCard index={4} label={`${terms.customers} activos`} value={activeCustomers} icon={Users}
-        delta={growth.added > 0 ? <Delta value={growth.added} format="count" /> : undefined}
-        hint={activeCustomers > 0 ? (growth.added > 0 ? "nuevos en el periodo" : "en tu cartera") : `Sin ${terms.customers.toLowerCase()} aún`}
-        info={`${terms.customers} con registro activo hoy. La variación cuenta los nuevos del periodo.`}
-        action={{ label: `Ver ${terms.customers.toLowerCase()}` }} trend={growth.series} href={`${BASE}/crm`} />
-    ) },
     { id: "chart", label: "Ingresos y gastos", span: 8, node: (
       <div className="h-full overflow-hidden rounded-lg border border-border bg-surface">
         <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-border px-[18px] py-4">
@@ -195,7 +176,16 @@ function Pagina({ estado, escala = 1 }: { estado: Estado; escala?: number }) {
         </div>
       </div>
     ) },
+    { id: "kpi-customers", label: "Clientes activos", span: 4, node: (
+      <KpiCard index={4} label={`${terms.customers} activos`} value={activeCustomers} icon={Users}
+        delta={growth.added > 0 ? <Delta value={growth.added} format="count" /> : undefined}
+        hint={activeCustomers > 0 ? (growth.added > 0 ? "nuevos en el periodo" : "en tu cartera") : `Sin ${terms.customers.toLowerCase()} aún`}
+        info={`${terms.customers} con registro activo hoy. La variación cuenta los nuevos del periodo.`}
+        action={{ label: `Ver ${terms.customers.toLowerCase()}` }} trend={growth.series} href={`${BASE}/crm`} />
+    ) },
+    { id: "activity", label: "Actividad reciente", span: 8, node: <RecentActivity items={activityItems} filters={activityFilters} registry={activityRegistry} /> },
     { id: "quick-actions", label: "Accesos rápidos", span: 4, node: <QuickActions tenantSlug={TENANT} actions={quickActions} /> },
+    { id: "presence", label: "Presencia en línea", node: <PresenceSummary presence={PRESENCIA(estado)} href={`${BASE}/presence`} /> },
     ...(has("memberships")
       ? [
           { id: "mem-active", label: "Membresías activas", span: 3 as const, half: true, node: <StatTile index={0} label="Activas" value={completo ? 128 : 0} tone="success" note="con acceso hoy" /> },
@@ -204,7 +194,6 @@ function Pagina({ estado, escala = 1 }: { estado: Estado; escala?: number }) {
           { id: "mem-renewals", label: "Renovaciones del mes", span: 3 as const, half: true, node: <StatTile index={3} label="Renovaciones" value={formatCurrency(completo ? 2_340_000 * escala : 0)} tone="neutral" note="este mes" /> },
         ]
       : []),
-    { id: "activity", label: "Actividad reciente", node: <RecentActivity items={activityItems} filters={activityFilters} registry={activityRegistry} /> },
   ];
 
   return (
@@ -228,7 +217,7 @@ function Pagina({ estado, escala = 1 }: { estado: Estado; escala?: number }) {
           <PageHeader
             eyebrow="Domingo, 25 de octubre"
             title={<RevealText parts={["Buenas tardes, ", { text: "Camila", gold: true }]} />}
-            description={`Así va Simplapp Gym esta semana. ${countLabel(current.count, "cobro registrado", "cobros registrados", "Sin cobros registrados")}. ${updatedLabel(NOW)}.`}
+            description={`Así va Simplapp Gym esta semana. ${countLabel(current.count, "cobro registrado", "cobros registrados", "Sin cobros registrados")}. ${updatedLabel(NOW)}`}
             actions={
               <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
                 <UrlSegmentedControl param="p" ariaLabel="Periodo" value="7d" defaultValue="7d"

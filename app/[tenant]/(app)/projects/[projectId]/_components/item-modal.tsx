@@ -129,7 +129,7 @@ export default function ItemModal({
               id="item-description"
               name="description"
               defaultValue={defaults.description}
-              placeholder="Ej. Excavación manual en material común"
+              placeholder="Descripción"
               aria-invalid={Boolean(errors.description)}
               className={FIELD_CLASS(Boolean(errors.description))}
             />
@@ -151,7 +151,7 @@ export default function ItemModal({
               id="item-code"
               name="code"
               defaultValue={defaults.code}
-              placeholder="Ej. 1.1"
+              placeholder="Código"
               aria-invalid={Boolean(errors.code)}
               className={FIELD_CLASS(Boolean(errors.code))}
             />
@@ -174,7 +174,7 @@ export default function ItemModal({
               name="unit"
               list="apu-units"
               defaultValue={defaults.unit}
-              placeholder="Ej. M3"
+              placeholder="Unidad"
               aria-invalid={Boolean(errors.unit)}
               className={FIELD_CLASS(Boolean(errors.unit))}
             />
@@ -202,7 +202,7 @@ export default function ItemModal({
               name="quantity"
               inputMode="decimal"
               defaultValue={defaults.quantity}
-              placeholder="Ej. 12.5"
+              placeholder="0"
               aria-invalid={Boolean(errors.quantity)}
               className={FIELD_CLASS(Boolean(errors.quantity))}
             />
@@ -226,7 +226,7 @@ export default function ItemModal({
               name="unitCost"
               inputMode="decimal"
               defaultValue={defaults.unitCost}
-              placeholder="COP, ej. 28500"
+              placeholder="Precio en COP"
               aria-invalid={Boolean(errors.unitCost)}
               className={FIELD_CLASS(Boolean(errors.unitCost))}
             />
@@ -246,7 +246,7 @@ export default function ItemModal({
         {state.status === "error" && state.message ? (
           <p
             role="alert"
-            className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
+            className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-ui text-danger"
           >
             {state.message}
           </p>

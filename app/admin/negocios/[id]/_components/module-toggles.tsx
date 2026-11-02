@@ -38,7 +38,7 @@ export default function ModuleToggles({ tenantId, modules, canEdit }: { tenantId
         const rows = visible.filter((m) => CAPABILITIES.find((c) => c.id === m.module)?.category === category);
         return rows.length ? (
           <div key={category}>
-            <h3 className="border-y border-border bg-surface-muted/60 px-[18px] py-1.5 text-[12px] font-semibold first:border-t-0">{category}</h3>
+            <h3 className="border-y border-border bg-surface-muted/60 px-[18px] py-1.5 text-xs font-semibold first:border-t-0">{category}</h3>
             <ul className="divide-y divide-border">
         {rows.map((m) => {
           const Icon = MODULE_ICONS[m.module];
@@ -48,7 +48,7 @@ export default function ModuleToggles({ tenantId, modules, canEdit }: { tenantId
             <li key={m.module} className="flex items-center gap-3 px-[18px] py-3">
               <Icon aria-hidden="true" className={cn("size-4 shrink-0", m.enabled ? "text-accent-text" : "text-muted-foreground")} />
               <label htmlFor={id} className="min-w-0 flex-1">
-                <b className="block text-[13.5px] font-medium">{m.label}</b>
+                <b className="block text-ui font-medium">{m.label}</b>
                 <span className="mt-1 flex flex-wrap gap-1">
                   <Badge tone={m.contracted ? "neutral" : "muted"}>{m.contracted ? "Contratado" : "No contratado"}</Badge>
                   <Badge tone={STATE[m.state].tone}>{STATE[m.state].label}</Badge>

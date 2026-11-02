@@ -9,9 +9,11 @@ import { inputClasses } from "@/components/atoms/input";
 import { Select } from "@/components/atoms/select";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { Field } from "@/components/molecules/field";
+import { AdaptiveTable } from "@/components/organisms/adaptive-table";
 import { reportAction } from "@/app/[tenant]/(app)/contabilidad/actions";
 import type { ReportResult } from "@/lib/domains/finance/accounting/reports-db";
 import { formatCurrency } from "@/lib/foundation/format";
+import { DateInput } from "@/components/molecules/date-input";
 
 const LABELS = { trial: "Balance de prueba", income: "Estado de resultados", balance: "Balance general", journal: "Libro diario", ledger: "Libro mayor (una cuenta)", auxiliary: "Auxiliar por tercero (una cuenta)" } as const;
 type Kind = keyof typeof LABELS;
@@ -42,8 +44,8 @@ export default function ReportsPanel({ slug, today }: { slug: string; today: str
         <h2 id="rep-title" className="font-display text-[15px] font-semibold">Informes para tu contador</h2>
         <div className="grid gap-3 sm:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <Field label="Informe" required>{(c) => <Select {...c} value={kind} onChange={(e) => { setKind(e.target.value as Kind); setResult(null); }}>{(Object.keys(LABELS) as Kind[]).map((k) => <option key={k} value={k}>{LABELS[k]}</option>)}</Select>}</Field>
-          <Field label="Desde" required>{(c) => <input {...c} type="date" value={from} onChange={(e) => setFrom(e.target.value)} className={inputClasses} />}</Field>
-          <Field label="Hasta" required>{(c) => <input {...c} type="date" value={to} onChange={(e) => setTo(e.target.value)} className={inputClasses} />}</Field>
+          <Field label="Desde" required>{(c) => <DateInput {...c} value={from} onChange={(e) => setFrom(e.target.value)} className={inputClasses} />}</Field>
+          <Field label="Hasta" required>{(c) => <DateInput {...c} value={to} onChange={(e) => setTo(e.target.value)} className={inputClasses} />}</Field>
           {needsAccount ? <Field label="Cuenta" required>{(c) => <input {...c} inputMode="numeric" value={account} onChange={(e) => setAccount(e.target.value)} className={inputClasses} placeholder="1305" />}</Field> : null}
         </div>
         {error ? <Alert tone="danger">{error}</Alert> : null}
@@ -57,29 +59,26 @@ export default function ReportsPanel({ slug, today }: { slug: string; today: str
   );
 }
 
-function Table({ caption, head, children }: { caption: string; head: string[]; children: React.ReactNode }) {
-  return (
-    <div role="region" aria-label={caption} tabIndex={0} className="overflow-x-auto rounded-lg border border-border bg-surface focus-visible:outline-2 focus-visible:outline-accent">
-      <table className="w-full min-w-[560px] text-[13px]">
-        <caption className="sr-only">{caption}</caption>
-        <thead className="bg-surface-muted text-left text-xs text-muted-foreground"><tr>{head.map((h, i) => <th key={h} scope="col" className={`px-3 py-2 font-medium ${i >= head.length - 2 && head.length > 3 ? "text-right" : ""}`}>{h}</th>)}</tr></thead>
-        <tbody className="divide-y divide-border">{children}</tbody>
-      </table>
-    </div>
-  );
-}
-
 function Result({ r }: { r: ReportResult }) {
   if (r.kind === "trial") {
     const d = r.data;
     return (
       <div className="grid gap-3">
-        {d.balanced ? <p role="status" className="flex items-center gap-2 text-[13px]"><Badge variant="success">Cuadra</Badge> El balance de prueba cuadra: débitos y créditos son iguales.</p> : <Alert tone="danger">El balance de prueba NO cuadra: revisa el libro.</Alert>}
+        {d.balanced ? <p role="status" className="flex items-center gap-2 text-ui"><Badge variant="success">Cuadra</Badge> El balance de prueba cuadra: débitos y créditos son iguales.</p> : <Alert tone="danger">El balance de prueba NO cuadra: revisa el libro.</Alert>}
         {d.rows.length === 0 ? <EmptyState title="Sin movimientos" description="No hay asientos en ese rango de fechas." /> : (
-          <Table caption="Balance de prueba" head={["Cuenta", "Débitos", "Créditos", "Saldo débito", "Saldo crédito"]}>
-            {d.rows.map((x) => <tr key={x.account}><th scope="row" className="px-3 py-1.5 text-left font-normal"><span className="font-mono">{x.account}</span> {x.name}</th><td className="px-3 py-1.5 text-right font-mono tabular-nums">{money(x.debit)}</td><td className="px-3 py-1.5 text-right font-mono tabular-nums">{money(x.credit)}</td><td className="px-3 py-1.5 text-right font-mono tabular-nums">{money(x.balanceDebit)}</td><td className="px-3 py-1.5 text-right font-mono tabular-nums">{money(x.balanceCredit)}</td></tr>)}
-            <tr className="bg-surface-muted font-semibold"><th scope="row" className="px-3 py-1.5 text-left">Totales</th><td className="px-3 py-1.5 text-right font-mono tabular-nums">{formatCurrency(d.totalDebit)}</td><td className="px-3 py-1.5 text-right font-mono tabular-nums">{formatCurrency(d.totalCredit)}</td><td className="px-3 py-1.5 text-right font-mono tabular-nums">{formatCurrency(d.totalBalanceDebit)}</td><td className="px-3 py-1.5 text-right font-mono tabular-nums">{formatCurrency(d.totalBalanceCredit)}</td></tr>
-          </Table>
+          <AdaptiveTable
+            caption="Balance de prueba"
+            rows={d.rows}
+            getRowId={(x) => x.account}
+            columns={[
+              { key: "account", header: "Cuenta", role: "primary", cell: (x) => <><span className="font-mono">{x.account}</span> {x.name}</> },
+              { key: "debit", header: "Débitos", role: "detail", align: "right", cell: (x) => <span className="font-mono tabular-nums">{money(x.debit)}</span> },
+              { key: "credit", header: "Créditos", role: "detail", align: "right", cell: (x) => <span className="font-mono tabular-nums">{money(x.credit)}</span> },
+              { key: "balanceDebit", header: "Saldo débito", role: "detail", align: "right", cell: (x) => <span className="font-mono tabular-nums">{money(x.balanceDebit)}</span> },
+              { key: "balanceCredit", header: "Saldo crédito", role: "detail", align: "right", cell: (x) => <span className="font-mono tabular-nums">{money(x.balanceCredit)}</span> },
+            ]}
+            footer={{ label: "Totales", cells: { debit: formatCurrency(d.totalDebit), credit: formatCurrency(d.totalCredit), balanceDebit: formatCurrency(d.totalBalanceDebit), balanceCredit: formatCurrency(d.totalBalanceCredit) } }}
+          />
         )}
       </div>
     );
@@ -89,7 +88,7 @@ function Result({ r }: { r: ReportResult }) {
       ? [{ n: "Ingresos", items: r.data.income, t: r.data.totalIncome }, { n: "Costos", items: r.data.cost, t: r.data.totalCost }, { n: "Gastos", items: r.data.expenses, t: r.data.totalExpenses }]
       : [{ n: "Activo", items: r.data.assets, t: r.data.totalAssets }, { n: "Pasivo", items: r.data.liabilities, t: r.data.totalLiabilities }, { n: "Patrimonio", items: r.data.equity, t: r.data.totalEquity - r.data.netResult }];
     return (
-      <section aria-label={r.kind === "income" ? "Estado de resultados" : "Balance general"} className="grid gap-3 rounded-lg border border-border bg-surface p-4 text-[13.5px]">
+      <section aria-label={r.kind === "income" ? "Estado de resultados" : "Balance general"} className="grid gap-3 rounded-lg border border-border bg-surface p-4 text-ui">
         {blocks.map((b) => (
           <div key={b.n} className="grid gap-1">
             <h3 className="font-semibold">{b.n}</h3>
@@ -107,21 +106,46 @@ function Result({ r }: { r: ReportResult }) {
   }
   if (r.kind === "journal") {
     return r.data.length === 0 ? <EmptyState title="Sin movimientos" description="No hay asientos en ese rango de fechas." /> : (
-      <Table caption="Libro diario" head={["Asiento", "Cuenta", "Débito", "Crédito"]}>
-        {r.data.flatMap((g) => g.lines.map((l, i) => <tr key={`${g.number}-${i}`}><th scope="row" className="px-3 py-1.5 text-left font-normal">{i === 0 ? <><b className="font-mono">N.º {g.number}</b> <span className="text-muted-foreground">{g.date} · {g.description}</span></> : null}</th><td className="px-3 py-1.5"><span className="font-mono">{l.account}</span> {l.name}</td><td className="px-3 py-1.5 text-right font-mono tabular-nums">{money(l.debit)}</td><td className="px-3 py-1.5 text-right font-mono tabular-nums">{money(l.credit)}</td></tr>))}
-      </Table>
+      <AdaptiveTable
+        caption="Libro diario"
+        rows={r.data.flatMap((g) => g.lines.map((l, i) => ({ id: `${g.number}-${i}`, g, l })))}
+        getRowId={(x) => x.id}
+        columns={[
+          { key: "entry", header: "Asiento", role: "secondary", cell: (x) => <><b className="font-mono">N.º {x.g.number}</b> <span className="text-muted-foreground">{x.g.date} · {x.g.description}</span></> },
+          { key: "account", header: "Cuenta", role: "primary", cell: (x) => <><span className="font-mono">{x.l.account}</span> {x.l.name}</> },
+          { key: "debit", header: "Débito", role: "detail", align: "right", cell: (x) => <span className="font-mono tabular-nums">{money(x.l.debit)}</span> },
+          { key: "credit", header: "Crédito", role: "detail", align: "right", cell: (x) => <span className="font-mono tabular-nums">{money(x.l.credit)}</span> },
+        ]}
+      />
     );
   }
   if (r.kind === "ledger") {
     return r.data.lines.length === 0 ? <EmptyState title="Sin movimientos" description={`La cuenta ${r.account} no tiene movimientos en ese rango.`} /> : (
-      <Table caption={`Libro mayor de la cuenta ${r.account}`} head={["Asiento", "Descripción", "Débito", "Crédito", "Saldo"]}>
-        {r.data.lines.map((l, i) => <tr key={i}><th scope="row" className="px-3 py-1.5 text-left font-normal"><span className="font-mono">N.º {l.entryNumber}</span> <span className="text-muted-foreground">{l.date}</span></th><td className="px-3 py-1.5">{l.description}</td><td className="px-3 py-1.5 text-right font-mono tabular-nums">{money(l.debit)}</td><td className="px-3 py-1.5 text-right font-mono tabular-nums">{money(l.credit)}</td><td className="px-3 py-1.5 text-right font-mono tabular-nums">{formatCurrency(l.balance)}</td></tr>)}
-      </Table>
+      <AdaptiveTable
+        caption={`Libro mayor de la cuenta ${r.account}`}
+        rows={r.data.lines.map((l, i) => ({ ...l, id: String(i) }))}
+        getRowId={(l) => l.id}
+        columns={[
+          { key: "entry", header: "Asiento", role: "primary", cell: (l) => <><span className="font-mono">N.º {l.entryNumber}</span> <span className="text-muted-foreground">{l.date}</span></> },
+          { key: "description", header: "Descripción", role: "secondary", cell: (l) => l.description },
+          { key: "debit", header: "Débito", role: "detail", align: "right", cell: (l) => <span className="font-mono tabular-nums">{money(l.debit)}</span> },
+          { key: "credit", header: "Crédito", role: "detail", align: "right", cell: (l) => <span className="font-mono tabular-nums">{money(l.credit)}</span> },
+          { key: "balance", header: "Saldo", role: "figure", cell: (l) => <span className="font-mono">{formatCurrency(l.balance)}</span> },
+        ]}
+      />
     );
   }
   return r.data.length === 0 ? <EmptyState title="Sin movimientos" description={`La cuenta ${r.account} no tiene movimientos en ese rango.`} /> : (
-    <Table caption={`Auxiliar por tercero de la cuenta ${r.account}`} head={["Tercero", "Débitos", "Créditos", "Saldo"]}>
-      {r.data.map((a) => <tr key={a.party}><th scope="row" className="px-3 py-1.5 text-left font-normal">{a.party}{a.doc ? <small className="ml-2 font-mono text-muted-foreground">{a.doc}</small> : null}</th><td className="px-3 py-1.5 text-right font-mono tabular-nums">{money(a.debit)}</td><td className="px-3 py-1.5 text-right font-mono tabular-nums">{money(a.credit)}</td><td className="px-3 py-1.5 text-right font-mono tabular-nums">{formatCurrency(a.balance)}</td></tr>)}
-    </Table>
+    <AdaptiveTable
+      caption={`Auxiliar por tercero de la cuenta ${r.account}`}
+      rows={r.data}
+      getRowId={(a) => a.party}
+      columns={[
+        { key: "party", header: "Tercero", role: "primary", cell: (a) => <>{a.party}{a.doc ? <small className="ml-2 font-mono text-muted-foreground">{a.doc}</small> : null}</> },
+        { key: "debit", header: "Débitos", role: "detail", align: "right", cell: (a) => <span className="font-mono tabular-nums">{money(a.debit)}</span> },
+        { key: "credit", header: "Créditos", role: "detail", align: "right", cell: (a) => <span className="font-mono tabular-nums">{money(a.credit)}</span> },
+        { key: "balance", header: "Saldo", role: "figure", cell: (a) => <span className="font-mono">{formatCurrency(a.balance)}</span> },
+      ]}
+    />
   );
 }

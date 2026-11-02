@@ -51,7 +51,7 @@ export default function TransferSheet({ slug, warehouses, products, overview, on
       description="Mueve mercancía entre bodegas. El valor del inventario se conserva."
       footer={
         <>
-          <span className="mr-auto self-center text-[13px] text-muted-foreground" role="status">
+          <span className="mr-auto self-center text-ui text-muted-foreground" role="status">
             {problem ?? "Listo para trasladar"}
           </span>
           <button type="button" onClick={onClose} disabled={pending} className={buttonVariants({ variant: "outline" })}>
@@ -89,7 +89,7 @@ export default function TransferSheet({ slug, warehouses, products, overview, on
           </Field>
         </div>
         <section className="grid gap-2">
-          <h3 className="text-[13px] font-semibold">Productos</h3>
+          <h3 className="text-ui font-semibold">Productos</h3>
           {lines.map((l, i) => (
             <div key={l.key} className="grid grid-cols-[minmax(0,1fr)_auto] gap-2 rounded-md border border-border p-2.5 sm:grid-cols-[minmax(0,2fr)_110px_auto] sm:items-end">
               <label className="grid gap-1 text-xs font-medium max-sm:col-span-2">
@@ -118,7 +118,7 @@ export default function TransferSheet({ slug, warehouses, products, overview, on
           </button>
         </section>
         <Field label="Nota" optional>
-          {(c) => <textarea {...c} rows={2} value={note} onChange={(e) => setNote(e.target.value)} className={textareaClasses} placeholder="Reposición de la sede norte" />}
+          {(c) => <textarea {...c} rows={2} value={note} onChange={(e) => setNote(e.target.value)} className={textareaClasses} placeholder="Motivo del traslado" />}
         </Field>
       </div>
     </ResponsiveSheet>

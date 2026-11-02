@@ -28,7 +28,7 @@ export default function WarehousesView({ slug, warehouses }: { slug: string; war
         {warehouses.map((w) => (
           <li key={w.id} className="flex items-center justify-between gap-3 px-4 py-3">
             <span className="grid min-w-0">
-              <b className="truncate text-[13.5px] font-medium">{w.name}</b>
+              <b className="truncate text-ui font-medium">{w.name}</b>
               {w.code ? <small className="font-mono text-xs text-muted-foreground">{w.code}</small> : null}
             </span>
             {w.isDefault ? <Badge variant="outline">Principal</Badge> : null}
@@ -56,10 +56,10 @@ export default function WarehousesView({ slug, warehouses }: { slug: string; war
         {({ fieldErrors }) => (
           <div className="grid gap-3">
             <Field label="Nombre" required error={fieldErrors.name}>
-              {(c) => <input {...c} name="name" autoComplete="off" className={inputClasses} placeholder="Sede Norte" />}
+              {(c) => <input {...c} name="name" autoComplete="off" className={inputClasses} placeholder="Nombre de la bodega" />}
             </Field>
             <Field label="Código" optional>
-              {(c) => <input {...c} name="code" autoComplete="off" maxLength={20} className={inputClasses} placeholder="NOR" />}
+              {(c) => <input {...c} name="code" autoComplete="off" maxLength={20} className={inputClasses} placeholder="Código" />}
             </Field>
           </div>
         )}

@@ -2,6 +2,7 @@ import type { Customer360Membership } from "@/lib/industry/gym/memberships";
 import { formatCurrency, formatDateShort } from "@/lib/foundation/format";
 import { typeLabel } from "@/lib/industry/gym/memberships";
 import type { VerticalTerms } from "@/lib/core/sectors/terms";
+import { AdaptiveTable } from "@/components/organisms/adaptive-table";
 import { MembershipStatusPill } from "./status-pills";
 
 /**
@@ -27,50 +28,19 @@ export default function MembershipsTable({
 
   return (
     <div className="rounded-lg border border-border bg-card">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-border text-sm">
-          <thead className="bg-muted text-left text-xs font-semibold text-muted-foreground">
-            <tr>
-              <th scope="col" className="px-4 py-3">
-                Plan
-              </th>
-              <th scope="col" className="px-4 py-3">
-                Inicio
-              </th>
-              <th scope="col" className="px-4 py-3">
-                Vencimiento
-              </th>
-              <th scope="col" className="px-4 py-3">
-                Estado
-              </th>
-              <th scope="col" className="px-4 py-3">
-                Precio
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {memberships.map((membership) => (
-              <tr key={membership.id} className="hover:bg-muted">
-                <td className="whitespace-nowrap px-4 py-3 font-medium text-foreground">
-                  {typeLabel(membership.type)}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
-                  {formatDateShort(membership.startDate)}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
-                  {formatDateShort(membership.endDate)}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3">
-                  <MembershipStatusPill status={membership.status} />
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 font-semibold text-foreground">
-                  {formatCurrency(membership.price)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <AdaptiveTable
+        className="rounded-none border-0"
+        caption={`${terms.items} del ${terms.customer.toLowerCase()}`}
+        rows={memberships}
+        getRowId={(m) => m.id}
+        columns={[
+          { key: "plan", header: "Plan", role: "primary", cell: (m) => typeLabel(m.type) },
+          { key: "start", header: "Inicio", role: "detail", cell: (m) => <span className="text-muted-foreground">{formatDateShort(m.startDate)}</span> },
+          { key: "end", header: "Vencimiento", role: "detail", cell: (m) => <span className="text-muted-foreground">{formatDateShort(m.endDate)}</span> },
+          { key: "status", header: "Estado", role: "status", cell: (m) => <MembershipStatusPill status={m.status} /> },
+          { key: "price", header: "Precio", role: "figure", cell: (m) => <span className="font-semibold text-foreground">{formatCurrency(m.price)}</span> },
+        ]}
+      />
     </div>
   );
 }

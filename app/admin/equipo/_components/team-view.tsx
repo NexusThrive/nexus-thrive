@@ -149,7 +149,7 @@ export default function TeamView({
                       value={m.roleId}
                       disabled={pending}
                       onChange={(e) => run(() => changeStaffRoleAction(m.id, e.target.value), "Rol actualizado")}
-                      className="h-8 w-auto flex-1 text-[13px]"
+                      className="h-8 w-auto flex-1 text-ui"
                     >
                       {roles.map((r) => (
                         <option key={r.id} value={r.id}>
@@ -202,10 +202,10 @@ export default function TeamView({
                 ) : null}
                 {inviteLink?.email === m.email ? (
                   <div className="grid gap-1.5 rounded-md border border-border bg-surface-muted p-2.5">
-                    <p className="text-[12px] text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       Mándale este enlace (WhatsApp o correo). Sirve una vez y ata su cuenta al panel:
                     </p>
-                    <code className="block break-all font-mono text-[11px]">{inviteLink.url}</code>
+                    <code className="block break-all font-mono text-2xs">{inviteLink.url}</code>
                     <div className="flex flex-wrap gap-2">
                       <button
                         type="button"
@@ -241,7 +241,7 @@ export default function TeamView({
                 <b className="min-w-0 flex-1 truncate font-display text-[15px] font-semibold">{r.name}</b>
                 {r.system ? <Badge tone="neutral">Base</Badge> : <Badge variant="gold">Personalizado</Badge>}
               </div>
-              <p className="text-[13px] text-muted-foreground">{r.description ?? "Sin descripción."}</p>
+              <p className="text-ui text-muted-foreground">{r.description ?? "Sin descripción."}</p>
               <p className="font-mono text-xs text-muted-foreground">
                 {r.permissions.length} permisos · {r.members} {r.members === 1 ? "integrante" : "integrantes"}
               </p>
@@ -259,7 +259,7 @@ export default function TeamView({
           ))}
           {can("team.permissions") ? (
             <li>
-              <button type="button" onClick={() => setRoleEditing("new")} className="grid h-full min-h-32 w-full place-items-center rounded-lg border border-dashed border-border-strong text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground">
+              <button type="button" onClick={() => setRoleEditing("new")} className="grid h-full min-h-32 w-full place-items-center rounded-lg border border-dashed border-border-strong text-ui font-medium text-muted-foreground transition-colors hover:text-foreground">
                 <span className="flex items-center gap-2">
                   <Plus aria-hidden="true" className="size-4" /> Crear rol personalizado
                 </span>

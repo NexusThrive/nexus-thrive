@@ -44,7 +44,7 @@ export default async function BenefitPage({
       <article className="w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-white text-ink shadow-xl">
         <header className="grid justify-items-center gap-2 border-b border-black/5 bg-paper px-6 py-6 text-center">
           <Wordmark size={18} />
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="font-mono text-2xs uppercase tracking-[0.18em] text-muted-foreground">
             {paid ? "Código de acceso" : "Tarjeta de beneficio"}
           </p>
         </header>
@@ -85,7 +85,7 @@ export default async function BenefitPage({
           />
         )}
 
-        <footer className="flex items-center justify-center gap-2 border-t border-black/5 bg-paper px-6 py-3 text-[11px] text-muted-foreground">
+        <footer className="flex items-center justify-center gap-2 border-t border-black/5 bg-paper px-6 py-3 text-2xs text-muted-foreground">
           Hecho con <Wordmark size={12} />
         </footer>
       </article>
@@ -151,7 +151,7 @@ async function ActiveBenefit({
                 : "Crear cuenta y reclamar"}
         </button>
       </form>
-      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+      <p className="font-mono text-2xs uppercase tracking-[0.16em] text-muted-foreground">
         Código {code}
       </p>
     </div>

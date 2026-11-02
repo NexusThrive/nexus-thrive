@@ -71,7 +71,7 @@ export default function LeadDetail({
         {LEAD_STAGES.filter((s) => s.value !== "LOST").map((s, i) => {
           const done = lead.stage !== "LOST" && i <= stageIndex;
           return (
-            <li key={s.value} className={cn("min-w-[84px] flex-1 border-t-2 pt-1.5 text-[11px]", done ? "border-accent text-foreground" : "border-border text-muted-foreground", s.value === lead.stage && "font-semibold")}>
+            <li key={s.value} className={cn("min-w-[84px] flex-1 border-t-2 pt-1.5 text-2xs", done ? "border-accent text-foreground" : "border-border text-muted-foreground", s.value === lead.stage && "font-semibold")}>
               {s.short}
             </li>
           );
@@ -89,7 +89,7 @@ export default function LeadDetail({
             ) : null
           }
         >
-          <dl className="grid gap-3 p-[18px] text-[13.5px]">
+          <dl className="grid gap-3 p-[18px] text-ui">
             <div className="flex flex-wrap gap-1.5">
               <Badge tone={lead.stage === "WON" ? "success" : lead.stage === "LOST" ? "muted" : "warning"}>{stageMeta(lead.stage).label}</Badge>
               {lead.valueUsdCents ? <Badge variant="gold">{formatUsdCents(lead.valueUsdCents)}/mes</Badge> : null}
@@ -137,7 +137,7 @@ export default function LeadDetail({
                 </a>
               ) : null}
             </div>
-            {lead.notes ? <p className="whitespace-pre-wrap rounded-md bg-surface-muted p-3 text-[13px]">{lead.notes}</p> : null}
+            {lead.notes ? <p className="whitespace-pre-wrap rounded-md bg-surface-muted p-3 text-ui">{lead.notes}</p> : null}
             {canAssign ? (
               <button
                 type="button"
@@ -177,7 +177,7 @@ export default function LeadDetail({
                 <p className="text-xs text-muted-foreground">
                   {a.kind === "stage" ? "Etapa" : (LEAD_ACTIVITY_KINDS.find((k) => k.value === a.kind)?.label ?? a.kind)} · {a.staffName ?? "Equipo"} · {formatDateTime(a.createdAt)}
                 </p>
-                <p className="whitespace-pre-wrap text-[13.5px]">{a.body}</p>
+                <p className="whitespace-pre-wrap text-ui">{a.body}</p>
               </li>
             ))}
             {activity.length === 0 ? <li className="text-sm text-muted-foreground">Sin actividad todavía.</li> : null}

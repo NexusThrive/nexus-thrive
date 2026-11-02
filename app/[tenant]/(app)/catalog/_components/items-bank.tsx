@@ -96,7 +96,7 @@ function ItemForm({
       {itemId ? <input type="hidden" name="itemId" value={itemId} /> : null}
 
       {state.status === "error" && state.message ? (
-        <p className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger">
+        <p className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-ui text-danger">
           {state.message}
         </p>
       ) : null}
@@ -109,7 +109,7 @@ function ItemForm({
           <input
             name="code"
             defaultValue={defaults.code}
-            placeholder="EJ: CEM-02"
+            placeholder="Código"
             className={inputClass}
           />
           {fieldError(state.errors, "code") ? (
@@ -149,7 +149,7 @@ function ItemForm({
         <input
           name="name"
           defaultValue={defaults.name}
-          placeholder="Ej: Cemento gris 50 kg"
+          placeholder="Nombre del insumo"
           className={inputClass}
         />
         {fieldError(state.errors, "name") ? (
@@ -189,7 +189,7 @@ function ItemForm({
           <MoneyInput
             name="unitPrice"
             defaultValue={parseMoney(String(defaults.unitPrice ?? ""))}
-            placeholder="35.000"
+            placeholder="0"
             className={inputClass}
           />
           {fieldError(state.errors, "unitPrice") ? (
@@ -297,7 +297,7 @@ function ImportForm({
       <input type="hidden" name="importText" value={text} />
 
       {state.status === "error" && state.message ? (
-        <p className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger">
+        <p className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-ui text-danger">
           {state.message}
         </p>
       ) : null}
@@ -448,7 +448,7 @@ function RowActions({
         </form>
       </div>
       {errorMessage ? (
-        <span className="max-w-[16rem] text-right text-[10px] leading-tight text-destructive">
+        <span className="max-w-[16rem] text-right text-2xs leading-tight text-destructive">
           {errorMessage}
         </span>
       ) : null}

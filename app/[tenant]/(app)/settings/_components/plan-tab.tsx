@@ -49,12 +49,12 @@ export default function PlanTab({ info }: { info: PlanInfo }) {
     <div className="grid gap-3.5">
       <section className="relative isolate overflow-hidden rounded-lg bg-black p-[22px] text-[#F7F6F3]">
         <i aria-hidden="true" className="absolute -right-[30px] -top-10 -z-10 h-[260px] w-[150px] -skew-x-[24deg] bg-gradient-to-b from-[rgba(212,175,55,.32)] to-transparent" />
-        <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-[#A1A1A8]">Tu plan</p>
+        <p className="font-mono text-2xs font-semibold uppercase tracking-[0.18em] text-[#A1A1A8]">Tu plan</p>
         <p className="mt-1 font-display text-[28px] font-bold leading-tight">
           Thrive <span className="text-[#D4AF37]">{current.name}</span>
         </p>
-        <p className="mt-1 text-[13px] text-[#A1A1A8]">{current.tagline}</p>
-        <p className="mt-4 inline-flex items-center gap-1.5 rounded-sm border border-[rgba(212,175,55,.35)] bg-[rgba(212,175,55,.12)] px-2.5 py-1 text-[12px] font-medium text-[#D4AF37]">
+        <p className="mt-1 text-ui text-[#A1A1A8]">{current.tagline}</p>
+        <p className="mt-4 inline-flex items-center gap-1.5 rounded-sm border border-[rgba(212,175,55,.35)] bg-[rgba(212,175,55,.12)] px-2.5 py-1 text-xs font-medium text-[#D4AF37]">
           <Sparkles aria-hidden="true" className="size-3.5" /> {accessLabel}
         </p>
         <p className="mt-3 text-xs text-[#A1A1A8]">{accessDetail}</p>
@@ -68,7 +68,7 @@ export default function PlanTab({ info }: { info: PlanInfo }) {
           {info.activeModules.map((m) => {
             const Icon = MODULE_ICONS[m];
             return (
-              <li key={m} className="inline-flex items-center gap-1.5 rounded-sm border border-border bg-surface-muted px-2.5 py-1 text-[12.5px] font-medium">
+              <li key={m} className="inline-flex items-center gap-1.5 rounded-sm border border-border bg-surface-muted px-2.5 py-1 text-xs font-medium">
                 <Icon aria-hidden="true" className="size-3.5 text-accent-text" />
                 {MODULE_LABELS[m]}
               </li>
@@ -83,7 +83,7 @@ export default function PlanTab({ info }: { info: PlanInfo }) {
         </h2>
         <ul className="grid gap-2 p-[18px] sm:grid-cols-2">
           {current.features.map((feature) => (
-            <li key={feature} className="flex gap-1.5 text-[12.5px] text-foreground/80">
+            <li key={feature} className="flex gap-1.5 text-xs text-foreground/80">
               <Check aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-accent-text" />
               {feature}
             </li>

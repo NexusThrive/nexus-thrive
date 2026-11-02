@@ -25,6 +25,7 @@ import { fieldClasses, inputClasses, labelClasses } from "@/components/atoms/inp
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { Select } from "@/components/atoms/select";
+import { DateInput } from "@/components/molecules/date-input";
 
 const FOLLOW_UP_TYPES: { value: FollowUpTypeValue; label: string; icon: typeof Phone }[] = [
   { value: "CALL", label: "Llamada", icon: Phone },
@@ -125,7 +126,7 @@ export default function ProjectQuotesWorkspace({
             <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
               <label htmlFor="quote-valid-until" className="block sm:w-48">
                 <span className={labelClasses}>Válida hasta</span>
-                <input id="quote-valid-until" name="validUntil" type="date" className={inputClass} />
+                <DateInput id="quote-valid-until" name="validUntil" className={inputClass} />
               </label>
               <label htmlFor="quote-show-apu" className="flex items-center gap-2 text-sm text-muted-foreground sm:pb-2.5">
                 <input id="quote-show-apu" name="showApuDetail" type="checkbox" className="h-4 w-4 rounded border-border" />
@@ -240,7 +241,7 @@ export default function ProjectQuotesWorkspace({
                           id={`decision-note-${quote.id}`}
                           name="note"
                           maxLength={500}
-                          placeholder={deciding.decision === "APPROVE" ? "Ej. Firmada en reunión del 10/11" : "Ej. Pide bajar el valor de acabados"}
+                          placeholder="Nota de la decisión"
                           className={inputClass}
                         />
                       </label>
@@ -327,7 +328,7 @@ function FollowUpsPanel({
           </label>
           <label htmlFor="follow-up-date" className="block">
             <span className={labelClasses}>Programar para</span>
-            <input id="follow-up-date" name="scheduledFor" type="date" className={inputClass} />
+            <DateInput id="follow-up-date" name="scheduledFor" className={inputClass} />
           </label>
         </div>
         {quotes.length > 0 ? (
@@ -353,7 +354,7 @@ function FollowUpsPanel({
             maxLength={1000}
             rows={3}
             className={cn(fieldClasses, "py-2 w-full")}
-            placeholder="Ej. Llamar para resolver dudas sobre la cimentación"
+            placeholder="Describe el seguimiento"
           />
         </label>
         <p className="text-xs text-muted-foreground">

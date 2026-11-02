@@ -6,7 +6,7 @@ import { createTenantDb } from "@/lib/core/tenancy/db";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import { formatCurrency, formatRelativeTime } from "@/lib/foundation/format";
 import type { RecentActivityItem } from "@/lib/experience/dashboard/types";
-import { greetingFor, percentChange } from "@/lib/experience/dashboard/index";
+import { greetingFor, greetingName, percentChange } from "@/lib/experience/dashboard/index";
 import { GRANULARITIES, HISTORY_DAYS, bogotaDayKey, chartBuckets, runningBalance, type FinanceSeries, type Granularity } from "@/lib/foundation/kernel/finance-series";
 import { sortModules, isModule } from "@/lib/core/capabilities/modules";
 import { quickCreateActions } from "@/lib/experience/navigation/quick-create";
@@ -18,6 +18,7 @@ import { paymentMethodLabel } from "@/lib/foundation/kernel/payment-vocabulary";
 import { Delta } from "@/components/atoms/delta";
 import { RevealText } from "@/components/atoms/reveal-text";
 import { KpiCard } from "@/components/molecules/kpi-card";
+import { can } from "@/lib/core/auth/permissions";
 import { PageHeader } from "@/components/molecules/page-header";
 import QuickActions from "@/components/organisms/quick-actions";
 import type { ChartPoint } from "@/components/organisms/income-chart";
@@ -26,10 +27,12 @@ import { UrlSegmentedControl } from "@/components/molecules/url-segmented-contro
 import { PullToRefresh } from "@/components/molecules/pull-to-refresh";
 import RecentActivity from "@/components/organisms/recent-activity";
 import { CustomizableDashboard, DashboardMenu, type DashboardWidget } from "@/components/organisms/customizable-dashboard";
-import { WelcomeChecklist, type WelcomeStep } from "@/components/organisms/welcome-checklist";
-import { listProducts } from "@/lib/business/catalog/products-db";
 import { loadPresence } from "@/lib/business/presence/load";
 import PresenceSummary from "./_components/presence-summary";
+import ClockCard from "./_components/clock-card";
+import { ModuleSuggestions } from "@/components/organisms/module-suggestions";
+import { loadPricingConfig } from "@/lib/core/entitlements/settings";
+import { suggestedModules } from "@/lib/core/entitlements/pricing";
 import { StatTile } from "@/components/molecules/stat-tile";
 import { requirePageContext } from "@/lib/core/tenancy/context";
 
@@ -89,11 +92,12 @@ export default async function TenantDashboard({
   // refleja al instante); el nombre del equipo (Ajustes → Equipo) es el
   // fallback, y el usuario del correo el último recurso.
   const clerkUser = await currentUser();
-  const greetingName =
-    clerkUser?.firstName?.trim() ||
-    localUser?.name?.trim().split(/\s+/)[0] ||
-    localUser?.email?.split("@")[0] ||
-    "Hola";
+  const greetingLabel = greetingName({
+    accountFirstName: clerkUser?.firstName,
+    accountUsername: clerkUser?.username,
+    teamName: localUser?.name,
+    email: clerkUser?.primaryEmailAddress?.emailAddress ?? localUser?.email,
+  });
 
   const rawDate = new Intl.DateTimeFormat("es-CO", {
     timeZone: "America/Bogota",
@@ -126,10 +130,6 @@ export default async function TenantDashboard({
     moduleOn("crm") ? tenantDb.customers.recent(5) : [],
     moduleOn("memberships") ? memberships.list({ status: "expiring", limit: 5 }).then((r) => r.rows) : [],
   ]);
-  const hasCatalog =
-    tenantRecord.modules.some((m) => m.active && m.moduleName === "inventory")
-      ? (await listProducts(tenantRecord.id, { limit: 1 })).length > 0
-      : true;
   const { current, previous } = series;
   const activeCustomers = growth.series.at(-1) ?? 0;
   const incomeTrend = period === "hoy" && series.hours ? series.hours.map((h) => h.income) : series.days.map((d) => d.income);
@@ -227,45 +227,11 @@ export default async function TenantDashboard({
     pending: { href: `${base}/cartera`, label: "Ver la cartera" },
   };
 
-  // Primeros pasos: solo de los módulos activos; los marca hecho lo que ya hay
-  // en los datos (las últimas 20 operaciones bastan para detectar el primer
-  // cobro y el primer gasto de una cuenta nueva).
-  const customerWord = terms.customer.toLowerCase();
-  const welcomeSteps: WelcomeStep[] = [
-    has("crm") && {
-      id: "customer", icon: "customer", done: activeCustomers > 0,
-      title: `Registra tu primer ${customerWord}`,
-      description: `Agrega a tus contactos para llevar su historial, sus cobros y su seguimiento.`,
-      cta: `Nuevo ${customerWord}`, href: `${base}/crm`,
-    },
-    has("finance") && {
-      id: "payment", icon: "payment", done: recentActivity.some((a) => a.type === "payment"),
-      title: "Registra tu primer cobro",
-      description: "Cobra y genera el comprobante para que tus ingresos queden al día.",
-      cta: "Registrar pago", href: `${base}/finance?nuevo=pago`,
-    },
-    has("finance") && {
-      id: "expense", icon: "expense", done: recentActivity.some((a) => a.type === "expense"),
-      title: "Agrega tus gastos",
-      description: "Anota los egresos de caja para conocer tu balance real.",
-      cta: "Registrar gasto", href: `${base}/finance?nuevo=gasto`,
-    },
-    has("inventory") && {
-      id: "catalog", icon: "catalog", done: hasCatalog,
-      title: "Arma tu catálogo",
-      description: "Define lo que vendes: precios, inventario y planes, para cobrar en un toque.",
-      cta: "Agregar al catálogo", href: `${base}/inventory?nuevo=1`,
-    },
-  ].filter((step): step is WelcomeStep => Boolean(step));
-  const showWelcome = welcomeSteps.length >= 2 && welcomeSteps.some((step) => !step.done);
+  // Módulos de la receta del rubro que el negocio aún no tiene encendidos (se sugieren en un bloque del inicio).
+  const activeNames = new Set(tenantRecord.modules.filter((m) => m.active).map((m) => m.moduleName));
+  const suggestions = suggestedModules(await loadPricingConfig(), tenantRecord.vertical).map((m) => m.module).filter((id) => !activeNames.has(id));
 
   const widgets: DashboardWidget[] = [
-    ...(showWelcome
-      ? [{ id: "welcome", label: "Primeros pasos", node: <WelcomeChecklist scope={tenantSlug} name={greetingName} steps={welcomeSteps} /> }]
-      : []),
-    { id: "presence", label: "Presencia en línea", node: (
-      <PresenceSummary presence={presence} href={`${base}/presence`} />
-    ) },
     { id: "kpi-income", label: "Ingresos", span: 3, half: true, node: (
       <KpiCard
         index={0}
@@ -275,7 +241,7 @@ export default async function TenantDashboard({
         icon={TrendingUp}
         delta={deltaFor(current.income, previous.income)}
         hint={`${countLabel(current.count, "cobro registrado", "cobros registrados", "Sin cobros")} · ${incomeVs.note}`}
-        info="Suma de los pagos aprobados del periodo. La variación compara con el periodo anterior del mismo largo."
+        info="Suma de los cobros confirmados del periodo. La variación compara con el periodo anterior del mismo largo."
         action={{ label: "Ver cobros" }}
         trend={incomeTrend}
         href={has("finance") ? `${base}/finance` : undefined}
@@ -330,20 +296,6 @@ export default async function TenantDashboard({
           />
         ) }]
       : []),
-    { id: "kpi-customers", label: "Clientes activos", span: 3, half: true, node: (
-      <KpiCard
-        index={4}
-        label={`${terms.customers} activos`}
-        value={activeCustomers}
-        icon={Users}
-        delta={growth.added > 0 ? <Delta value={growth.added} format="count" /> : undefined}
-        hint={activeCustomers > 0 ? (growth.added > 0 ? "nuevos en el periodo" : "en tu cartera") : `Sin ${terms.customers.toLowerCase()} aún`}
-        info={`${terms.customers} con registro activo hoy. La variación cuenta los nuevos del periodo.`}
-        action={{ label: `Ver ${terms.customers.toLowerCase()}` }}
-        trend={growth.series}
-        href={has("crm") ? `${base}/crm` : undefined}
-      />
-    ) },
     { id: "chart", label: "Ingresos y gastos", node: (
       <div className="h-full overflow-hidden rounded-lg border border-border bg-surface">
           <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-border px-[18px] py-4">
@@ -383,7 +335,29 @@ export default async function TenantDashboard({
           </div>
       </div>
     ), span: 8 },
+    { id: "kpi-customers", label: "Clientes activos", span: 4, node: (
+      <KpiCard
+        index={4}
+        label={`${terms.customers} activos`}
+        value={activeCustomers}
+        icon={Users}
+        delta={growth.added > 0 ? <Delta value={growth.added} format="count" /> : undefined}
+        hint={activeCustomers > 0 ? (growth.added > 0 ? "nuevos en el periodo" : "en tu cartera") : `Sin ${terms.customers.toLowerCase()} aún`}
+        info={`${terms.customers} con registro activo hoy. La variación cuenta los nuevos del periodo.`}
+        action={{ label: `Ver ${terms.customers.toLowerCase()}` }}
+        trend={growth.series}
+        href={has("crm") ? `${base}/crm` : undefined}
+      />
+    ) },
+    { id: "activity", label: "Actividad reciente", span: 8, node: <RecentActivity items={activityItems} filters={activityFilters} registry={activityRegistry} /> },
     { id: "quick-actions", label: "Accesos rápidos", span: 4, node: <QuickActions tenantSlug={tenantRecord.slug} actions={quickActions} /> },
+    ...(suggestions.length > 0
+      ? [{ id: "module-suggestions", label: "Módulos sugeridos", span: 8 as const, node: <ModuleSuggestions suggestedIds={suggestions} activeModules={tenantRecord.modules.filter((m) => m.active).map((m) => m.moduleName)} functionsHref={`${base}/functions`} /> }]
+      : []),
+    { id: "clock", label: "Hora y país", span: 4, node: <ClockCard city={tenantRecord.city} /> },
+    { id: "presence", label: "Presencia en línea", node: (
+      <PresenceSummary presence={presence} href={`${base}/presence`} />
+    ) },
     ...(has("memberships")
       ? [
           { id: "mem-active", label: "Membresías activas", span: 3 as const, half: true, node: <StatTile index={0} label="Activas" value={membershipMetrics.activeCount} tone="success" note="Con más de 3 días de vigencia" href={`${base}/memberships`} className="h-full" /> },
@@ -392,31 +366,38 @@ export default async function TenantDashboard({
           { id: "mem-renewals", label: "Renovaciones del mes", span: 3 as const, half: true, node: <StatTile index={3} label="Renovaciones" value={formatCurrency(membershipMetrics.renewalRevenueProjection)} note="Valor por cobrar este mes" href={`${base}/memberships`} className="h-full" /> },
         ]
       : []),
-    { id: "activity", label: "Actividad reciente", node: <RecentActivity items={activityItems} filters={activityFilters} registry={activityRegistry} /> },
   ];
+
+  // El dinero solo lo ve quien lo maneja (P5, D3, DR-46): un rol «sin dinero» (p. ej. Asesor) no recibe los indicadores
+  // financieros ni la gráfica, ni sus datos en la página. Con rol desconocido se conserva el comportamiento anterior.
+  const role = localUser?.role;
+  const seesMoney = role == null || can(role, "money.handle");
+  const MONEY_WIDGETS = new Set(["kpi-income", "kpi-expenses", "kpi-balance", "kpi-pending", "chart"]);
+  const visibleWidgets = seesMoney ? widgets : widgets.filter((w) => !MONEY_WIDGETS.has(w.id));
 
   return (
     <PullToRefresh>
       <CustomizableDashboard
         scope={tenantSlug}
-        widgets={widgets}
+        widgets={visibleWidgets}
         charts={{
-          entries: CHART_CATALOG.filter((entry) => has(entry.needs)),
+          entries: CHART_CATALOG.filter((entry) => has(entry.needs) && (seesMoney || entry.needs !== "finance")),
           subtitle: periodText.charAt(0).toUpperCase() + periodText.slice(1),
           data: {
-            points: chartPoints(series, period, "dia", firstDay).map(({ label, full, income, expenses }) => ({ label, full, income, expenses })),
-            methods: monthMetrics.byMethod.map((m) => ({ label: paymentMethodLabel(m.method), total: m.total })),
+            points: seesMoney ? chartPoints(series, period, "dia", firstDay).map(({ label, full, income, expenses }) => ({ label, full, income, expenses })) : [],
+            methods: seesMoney ? monthMetrics.byMethod.map((m) => ({ label: paymentMethodLabel(m.method), total: m.total })) : [],
             customers: growth.series,
-            income: current.income,
-            expenses: current.expenses,
-            balance: current.balance,
+            income: seesMoney ? current.income : 0,
+            expenses: seesMoney ? current.expenses : 0,
+            balance: seesMoney ? current.balance : 0,
           },
         }}
         header={
       <PageHeader
         eyebrow={formattedDate}
-        title={<RevealText parts={[`${greetingFor()}, `, { text: greetingName, gold: true }]} />}
-        description={`Así va ${tenantRecord.name} ${periodText}. ${countLabel(current.count, "cobro registrado", "cobros registrados", "Sin cobros registrados")}. ${updatedLabel()}.`}
+        title={<RevealText parts={[`${greetingFor()}, `, { text: greetingLabel, gold: true }]} />}
+        descriptionClassName="max-sm:hidden"
+        description={`Así va ${tenantRecord.name} ${periodText}. ${countLabel(current.count, "cobro registrado", "cobros registrados", "Sin cobros registrados")}. ${updatedLabel()}`}
         actions={
           <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
             <UrlSegmentedControl

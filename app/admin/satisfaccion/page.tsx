@@ -41,7 +41,7 @@ export default async function SatisfaccionPage() {
         <Panel title="Distribución">
           <ul className="grid gap-2 p-[18px]">
             {dist.map((d) => (
-              <li key={d.n} className="grid grid-cols-[88px_minmax(0,1fr)_32px] items-center gap-3 text-[13px]">
+              <li key={d.n} className="grid grid-cols-[88px_minmax(0,1fr)_32px] items-center gap-3 text-ui">
                 <span>
                   {d.n} · {SCORE_LABELS[d.n]}
                 </span>
@@ -56,13 +56,13 @@ export default async function SatisfaccionPage() {
         <Panel title="Por agente">
           <ul className="divide-y divide-border">
             {agents.map((a) => (
-              <li key={a.name} className="flex items-center gap-3 px-[18px] py-2.5 text-[13px]">
+              <li key={a.name} className="flex items-center gap-3 px-[18px] py-2.5 text-ui">
                 <span className="min-w-0 flex-1 truncate font-medium">{a.name}</span>
                 <span className="font-mono text-xs text-muted-foreground">{a.count} resp.</span>
                 <Badge tone={(a.csat ?? 0) >= 80 ? "success" : (a.csat ?? 0) >= 60 ? "warning" : "danger"}>CSAT {a.csat} %</Badge>
               </li>
             ))}
-            {agents.length === 0 ? <li className="px-[18px] py-4 text-[13px] text-muted-foreground">Sin respuestas todavía.</li> : null}
+            {agents.length === 0 ? <li className="px-[18px] py-4 text-ui text-muted-foreground">Sin respuestas todavía.</li> : null}
           </ul>
         </Panel>
       </div>
@@ -71,13 +71,13 @@ export default async function SatisfaccionPage() {
           {surveys.slice(0, 30).map((s) => (
             <li key={s.id} className="grid gap-1 px-[18px] py-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
               <span className="min-w-0">
-                <Link href={`/admin/soporte/${s.ticketId}`} className="block truncate text-[13.5px] font-medium hover:underline">
+                <Link href={`/admin/soporte/${s.ticketId}`} className="block truncate text-ui font-medium hover:underline">
                   <span className="font-mono text-xs text-muted-foreground">{s.code}</span> {s.subject}
                 </Link>
                 <small className="block truncate text-xs text-muted-foreground">
                   {s.tenantName ?? "Sin negocio"} · {s.assigneeName ?? "sin asignar"} · {s.answeredAt ? `respondida ${formatDateTime(new Date(s.answeredAt))}` : "sin responder"}
                 </small>
-                {s.comment ? <p className="mt-1 text-[13px] italic">“{s.comment}”</p> : null}
+                {s.comment ? <p className="mt-1 text-ui italic">“{s.comment}”</p> : null}
               </span>
               {s.score != null ? <Badge tone={s.score >= 4 ? "success" : s.score === 3 ? "warning" : "danger"}>{s.score}/5 · {SCORE_LABELS[s.score]}</Badge> : <Badge tone="muted">Pendiente</Badge>}
             </li>

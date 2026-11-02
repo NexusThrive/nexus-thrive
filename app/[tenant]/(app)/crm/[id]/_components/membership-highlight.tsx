@@ -44,7 +44,7 @@ export default function MembershipHighlight({
         <div className="min-w-0">
           <CardTitle>{terms.item} destacada</CardTitle>
           {membership ? (
-            <p className="mt-0.5 text-[13px] text-muted-foreground">
+            <p className="mt-0.5 text-ui text-muted-foreground">
               {typeLabel(membership.type)}
             </p>
           ) : null}
@@ -81,7 +81,7 @@ export default function MembershipHighlight({
             </div>
           </div>
 
-          <dl className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-[13.5px]">
+          <dl className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-ui">
             <div className="grid gap-0.5">
               <dt className="text-xs text-muted-foreground">Inicio</dt>
               <dd className="font-medium text-foreground">
@@ -98,14 +98,14 @@ export default function MembershipHighlight({
 
           <Link
             href={historyHref}
-            className="inline-flex items-center gap-1 text-[13px] font-medium text-accent-text hover:underline"
+            className="inline-flex items-center gap-1 text-ui font-medium text-accent-text hover:underline"
           >
             Ver historial de {terms.items.toLowerCase()}
             <ArrowRight aria-hidden="true" className="size-3.5" />
           </Link>
         </>
       ) : (
-        <p className="text-[13.5px] text-muted-foreground">
+        <p className="text-ui text-muted-foreground">
           Sin {terms.item.toLowerCase()} registrada.{" "}
           <Link
             href={historyHref}

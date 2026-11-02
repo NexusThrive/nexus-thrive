@@ -16,6 +16,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { labelClasses } from "@/components/atoms/input";
 import { Select } from "@/components/atoms/select";
+import { DateInput } from "@/components/molecules/date-input";
 
 export type MembershipCustomerOption = {
   id: string;
@@ -194,9 +195,8 @@ function MembershipForm({
               >
                 Inicio <span className="text-destructive">*</span>
               </label>
-              <input
+              <DateInput
                 id="membership-start"
-                type="date"
                 value={startDate}
                 onChange={(event) => setStartDate(event.target.value)}
                 aria-invalid={Boolean(errors.startDate)}
@@ -285,7 +285,7 @@ function MembershipForm({
           {state.status === "error" && state.message ? (
             <p
               role="alert"
-              className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
+              className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-ui text-danger"
             >
               {state.message}
             </p>

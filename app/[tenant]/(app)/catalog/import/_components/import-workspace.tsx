@@ -199,7 +199,7 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
           {parseError && (
             <p
               role="alert"
-              className="flex items-center gap-2 rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
+              className="flex items-center gap-2 rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-ui text-danger"
             >
               <AlertTriangle aria-hidden="true" className="h-4 w-4 shrink-0" />
               {parseError}
@@ -269,7 +269,7 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
           {parseError && (
             <p
               role="alert"
-              className="flex items-center gap-2 rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
+              className="flex items-center gap-2 rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-ui text-danger"
             >
               <AlertTriangle aria-hidden="true" className="h-4 w-4 shrink-0" />
               {parseError}
@@ -312,7 +312,7 @@ export default function ImportWorkspace({ tenantSlug }: { tenantSlug: string }) 
           {executeError && (
             <p
               role="alert"
-              className="flex items-center gap-2 rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
+              className="flex items-center gap-2 rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-ui text-danger"
             >
               <AlertTriangle aria-hidden="true" className="h-4 w-4 shrink-0" />
               {executeError}

@@ -68,10 +68,10 @@ export default function ReturnDialog({ slug, open, onClose }: { slug: string; op
           </div>
           {sale ? (
             <>
-              <p className="text-[13px] text-muted-foreground">Venta N.º {sale.number} · {formatCurrency(sale.total)}</p>
+              <p className="text-ui text-muted-foreground">Venta N.º {sale.number} · {formatCurrency(sale.total)}</p>
               <ul className="grid gap-2">
                 {sale.lines.map((l) => (
-                  <li key={l.productId} className="flex items-center gap-2 text-[13px]">
+                  <li key={l.productId} className="flex items-center gap-2 text-ui">
                     <span className="min-w-0 flex-1 truncate">{l.description}<small className="block text-xs text-muted-foreground">Vendidas {l.sold} · devueltas {l.returned} · por devolver {l.remaining}</small></span>
                     <input aria-label={`Devolver de ${l.description}`} inputMode="numeric" disabled={l.remaining === 0} value={qty[l.productId] ?? ""} onChange={(e) => setQty((q) => ({ ...q, [l.productId]: e.target.value }))} className={`${inputClasses} h-8 w-16 px-2`} />
                   </li>

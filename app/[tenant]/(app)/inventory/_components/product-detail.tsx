@@ -91,7 +91,7 @@ export default function ProductDetail({ slug, product, customers, canManage, onE
 
         {mode ? (
           <section className="grid gap-3 rounded-md bg-surface-muted p-3.5">
-            <h3 className="text-[13px] font-semibold">{mode === "sell" ? "Registrar venta" : STOCK_KIND_LABELS[mode as StockKind]}</h3>
+            <h3 className="text-ui font-semibold">{mode === "sell" ? "Registrar venta" : STOCK_KIND_LABELS[mode as StockKind]}</h3>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Field label={mode === "ADJUST" ? "Cantidad contada" : "Cantidad"}>
                 {(c) => <input {...c} inputMode="numeric" value={qty} onChange={(e) => setQty(e.target.value.replace(/\D/g, ""))} className={inputClasses} />}
@@ -128,7 +128,7 @@ export default function ProductDetail({ slug, product, customers, canManage, onE
                 </Field>
               ) : null}
             </div>
-            {mode === "sell" ? <p className="text-[13px]">Total: <b className="font-mono tabular-nums">{formatCurrency(product.price * (Number(qty) || 0))}</b></p> : null}
+            {mode === "sell" ? <p className="text-ui">Total: <b className="font-mono tabular-nums">{formatCurrency(product.price * (Number(qty) || 0))}</b></p> : null}
             <div className="flex gap-2">
               <button type="button" onClick={() => setMode(null)} className={buttonVariants({ size: "sm", variant: "ghost" })}>
                 Cancelar
@@ -140,14 +140,14 @@ export default function ProductDetail({ slug, product, customers, canManage, onE
           </section>
         ) : null}
 
-        {product.description ? <p className="text-[13.5px] text-muted-foreground">{product.description}</p> : null}
+        {product.description ? <p className="text-ui text-muted-foreground">{product.description}</p> : null}
 
         {product.trackStock ? (
           <section className="grid gap-2">
-            <h3 className="text-[13px] font-semibold">Movimientos de inventario</h3>
+            <h3 className="text-ui font-semibold">Movimientos de inventario</h3>
             <ul className="divide-y divide-border rounded-md border border-border">
               {history.map((h) => (
-                <li key={h.id} className="flex items-center gap-3 px-3 py-2 text-[13px]">
+                <li key={h.id} className="flex items-center gap-3 px-3 py-2 text-ui">
                   <span className="min-w-0 flex-1">
                     <b className="font-medium">{STOCK_KIND_LABELS[h.kind]}</b>
                     <small className="block truncate text-xs text-muted-foreground">
@@ -158,7 +158,7 @@ export default function ProductDetail({ slug, product, customers, canManage, onE
                   <span className="font-mono tabular-nums">{h.kind === "IN" || (h.kind === "ADJUST" && h.quantity > 0) ? "+" : h.kind === "ADJUST" && h.quantity === 0 ? "" : "−"}{Math.abs(h.quantity)}</span>
                 </li>
               ))}
-              {history.length === 0 ? <li className="px-3 py-3 text-[13px] text-muted-foreground">Sin movimientos.</li> : null}
+              {history.length === 0 ? <li className="px-3 py-3 text-ui text-muted-foreground">Sin movimientos.</li> : null}
             </ul>
           </section>
         ) : null}

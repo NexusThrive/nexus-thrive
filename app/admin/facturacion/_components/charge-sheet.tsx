@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { confirmChargeAction, markNoticeAction, recordPaymentAction, refundChargeAction, suspendForNonPaymentAction, voidChargeAction } from "../actions";
 import { useBilling } from "./use-billing";
 import { Select } from "@/components/atoms/select";
+import { DateInput } from "@/components/molecules/date-input";
 
 export type BillingPerms = { record: boolean; refund: boolean; suspend: boolean; pricing: boolean };
 
@@ -78,7 +79,7 @@ export default function ChargeSheet({ charge, onClose, perms, today }: { charge:
 
         {/* Cobranza: aviso y suspensión. */}
         {pendingCharge && (charge.dunning.stage === "notice_needed" || charge.dunning.stage === "suspend_eligible" || charge.dunning.stage === "notice_running") ? (
-          <div className="grid gap-2 rounded-md border border-danger/40 bg-danger-subtle p-3 text-[13px]">
+          <div className="grid gap-2 rounded-md border border-danger/40 bg-danger-subtle p-3 text-ui">
             <p className="flex items-start gap-2">
               <AlertTriangle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-danger" />
               {charge.dunning.stage === "notice_needed"
@@ -112,12 +113,12 @@ export default function ChargeSheet({ charge, onClose, perms, today }: { charge:
 
         {/* Comprobantes */}
         <section className="grid gap-2">
-          <h3 className="text-[13px] font-semibold">Comprobantes</h3>
+          <h3 className="text-ui font-semibold">Comprobantes</h3>
           {charge.evidence.length ? (
             <ul className="grid gap-1.5">
               {charge.evidence.map((e) => (
                 <li key={e.id}>
-                  <a href={`/admin/facturacion/comprobantes/${e.id}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-md border border-border px-3 py-2 text-[13px] hover:bg-surface-muted">
+                  <a href={`/admin/facturacion/comprobantes/${e.id}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-md border border-border px-3 py-2 text-ui hover:bg-surface-muted">
                     <FileText aria-hidden="true" className="size-4 text-accent-text" />
                     <span className="min-w-0 flex-1 truncate">{e.fileName}</span>
                     <small className="text-xs text-muted-foreground">{kb(e.byteSize)}</small>
@@ -126,14 +127,14 @@ export default function ChargeSheet({ charge, onClose, perms, today }: { charge:
               ))}
             </ul>
           ) : (
-            <p className="text-[13px] text-muted-foreground">Sin comprobante. Sin comprobante no se puede confirmar el pago.</p>
+            <p className="text-ui text-muted-foreground">Sin comprobante. Sin comprobante no se puede confirmar el pago.</p>
           )}
         </section>
 
         {/* Registrar pago */}
         {pendingCharge && perms.record ? (
           <section className="grid gap-3 rounded-md bg-surface-muted p-3.5">
-            <h3 className="text-[13px] font-semibold">{recorded ? "Datos del pago" : "Registrar pago"}</h3>
+            <h3 className="text-ui font-semibold">{recorded ? "Datos del pago" : "Registrar pago"}</h3>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <Field label="Método" required>
                 {(c) => (
@@ -146,13 +147,13 @@ export default function ChargeSheet({ charge, onClose, perms, today }: { charge:
                 )}
               </Field>
               <Field label="Fecha del pago" required>
-                {(c) => <input {...c} type="date" value={paidDate} onChange={(e) => setPaidDate(e.target.value)} className={inputClasses} />}
+                {(c) => <DateInput {...c} value={paidDate} onChange={(e) => setPaidDate(e.target.value)} className={inputClasses} />}
               </Field>
               <Field label="Referencia">{(c) => <input {...c} value={reference} onChange={(e) => setReference(e.target.value)} className={inputClasses} placeholder="N.º de transacción" />}</Field>
             </div>
             <Field label="Comprobante" required={!charge.evidence.length} hint="PDF, JPG, PNG o WEBP · máx. 8 MB. Queda guardado en NEXUS.">
               {(c) => (
-                <label htmlFor={c.id} className={cn("flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-border-input bg-surface px-3 py-3 text-[13px] hover:border-border-input-hover", files.length && "border-solid")}>
+                <label htmlFor={c.id} className={cn("flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-border-input bg-surface px-3 py-3 text-ui hover:border-border-input-hover", files.length && "border-solid")}>
                   <Paperclip aria-hidden="true" className="size-4 text-muted-foreground" />
                   <span className="min-w-0 flex-1 truncate">{files.length ? files.map((f) => f.name).join(", ") : "Elegir archivo…"}</span>
                   <input id={c.id} aria-describedby={c["aria-describedby"]} type="file" multiple accept={EVIDENCE_TYPES.join(",")} className="sr-only" onChange={(e) => setFiles([...(e.target.files ?? [])])} />
@@ -174,7 +175,7 @@ export default function ChargeSheet({ charge, onClose, perms, today }: { charge:
         ) : null}
 
         {charge.status === "PAID" ? (
-          <dl className="grid gap-1.5 text-[13px]">
+          <dl className="grid gap-1.5 text-ui">
             {[
               ["Método", [charge.method, charge.reference].filter(Boolean).join(" · ")],
               ["Pagado el", charge.paidDate],
@@ -187,8 +188,8 @@ export default function ChargeSheet({ charge, onClose, perms, today }: { charge:
             ))}
           </dl>
         ) : null}
-        {charge.voidReason ? <p className="text-[13px] text-muted-foreground">Anulado: {charge.voidReason}</p> : null}
-        {charge.refundReason ? <p className="text-[13px] text-muted-foreground">Reembolsado: {charge.refundReason}</p> : null}
+        {charge.voidReason ? <p className="text-ui text-muted-foreground">Anulado: {charge.voidReason}</p> : null}
+        {charge.refundReason ? <p className="text-ui text-muted-foreground">Reembolsado: {charge.refundReason}</p> : null}
 
         {/* Anular / reembolsar con motivo */}
         {(pendingCharge && perms.record) || (charge.status === "PAID" && perms.refund) ? (

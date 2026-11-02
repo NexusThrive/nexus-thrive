@@ -17,9 +17,9 @@ export default async function ReceiptPage({ params }: { params: Promise<{ tenant
       <style>{"@page { size: 80mm auto; margin: 4mm; } @media print { body { background: #fff; } }"}</style>
       <div className="flex gap-2 print:hidden">
         <PrintButton label="Imprimir tiquete" />
-        <a href={`/${tenant}/pos/receipt/${id}/escpos`} className="inline-flex items-center rounded-md border border-border px-3 text-[13px] font-medium">Descargar ESC/POS</a>
+        <a href={`/${tenant}/pos/receipt/${id}/escpos`} className="inline-flex items-center rounded-md border border-border px-3 text-ui font-medium">Descargar ESC/POS</a>
       </div>
-      <pre aria-label="Tiquete" className="w-[80mm] max-w-full overflow-x-auto bg-white p-3 font-mono text-[11px] leading-snug text-black">{receiptLines(data, 42).join("\n")}</pre>
+      <pre aria-label="Tiquete" className="w-[80mm] max-w-full overflow-x-auto bg-white p-3 font-mono text-2xs leading-snug text-black">{receiptLines(data, 42).join("\n")}</pre>
     </div>
   );
 }

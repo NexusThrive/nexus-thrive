@@ -48,7 +48,7 @@ export default function BookingDetail({ slug, booking, business, onEdit, onClose
           {booking.reminderSent ? <Badge tone="neutral">Recordatorio enviado</Badge> : null}
           {booking.partySize > 1 ? <Badge tone="neutral">{booking.partySize} personas</Badge> : null}
         </div>
-        <dl className="grid gap-2 text-[13.5px]">
+        <dl className="grid gap-2 text-ui">
           {[
             ["Cliente", booking.customerName],
             ["Atiende", booking.staffName ?? "Sin asignar"],

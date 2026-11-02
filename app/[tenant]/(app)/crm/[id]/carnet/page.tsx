@@ -28,19 +28,19 @@ export default async function CarnetPage({ params }: { params: Promise<{ tenant:
         style={{ height: "54mm" }}
       >
         <div className="grid content-between self-stretch">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-black/60">{tenant.name}</p>
+          <p className="text-2xs font-semibold uppercase tracking-[0.14em] text-black/60">{tenant.name}</p>
           {customer.photoId ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={`/api/files/${customer.photoId}`} alt="" className="size-[22mm] rounded-md object-cover" />
           ) : null}
           <div>
-            <p className="text-[13px] font-bold leading-tight">{customer.name}</p>
-            {customer.documentId ? <p className="text-[10px] text-black/60">Doc. {customer.documentId}</p> : null}
+            <p className="text-ui font-bold leading-tight">{customer.name}</p>
+            {customer.documentId ? <p className="text-2xs text-black/60">Doc. {customer.documentId}</p> : null}
           </div>
         </div>
         <div className="grid justify-items-end gap-1">
           <QrCode value={code} size={120} label={`QR de acceso de ${customer.name}`} className="rounded-none" />
-          <p className="font-mono text-[11px] font-semibold tracking-[0.2em]">{code}</p>
+          <p className="font-mono text-2xs font-semibold tracking-[0.2em]">{code}</p>
         </div>
       </article>
       <p className="max-w-sm text-center text-xs text-muted-foreground print:hidden">Muéstralo en la entrada o guárdalo en el celular. Si se pierde, genera un QR nuevo desde la ficha: el anterior deja de funcionar.</p>

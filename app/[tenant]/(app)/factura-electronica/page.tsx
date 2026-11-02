@@ -1,23 +1,22 @@
 import { notFound } from "next/navigation";
-import { Alert } from "@/components/molecules/alert";
+import { PermissionNotice } from "@/components/molecules/permission-notice";
 import { PageHeader } from "@/components/molecules/page-header";
 import { can } from "@/lib/core/auth/permissions";
 import { fiscalSettings, listFiscal } from "@/lib/integrations/einvoice/einvoice-db";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import FiscalView from "./_components/fiscal-view";
-import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 /** Factura electrónica: cada venta deja su documento fiscal en cola y se entrega a un proveedor tecnológico por un puerto. */
 export default async function FiscalPage({ params }: { params: Promise<{ tenant: string }> }) {
   const { tenant } = await params;
   const ctx = await requireTenantContext(tenant, "/factura-electronica");
   if (!ctx) notFound();
-  const header = <PageHeader eyebrow={routeCategory("/factura-electronica")} title="Factura electrónica" description="Documentos fiscales de tus ventas, notas y compras a no obligados, con su estado." />;
+  const header = <PageHeader title="Factura electrónica" description="Documentos fiscales de tus ventas, notas y compras a no obligados, con su estado." />;
   if (!can(ctx.role, "business.manage")) {
     return (
       <div className="grid gap-5">
         {header}
-        <Alert tone="info">Solo el dueño o administración maneja la factura electrónica.</Alert>
+        <PermissionNotice permission="business.manage" action="manejar la factura electrónica" />
       </div>
     );
   }

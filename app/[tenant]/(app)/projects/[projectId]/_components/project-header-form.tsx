@@ -130,7 +130,7 @@ export default function ProjectHeaderForm({
           name="clientTaxName"
           value={val("clientTaxName")}
           error={errors.clientTaxName}
-          placeholder="Ej. Constructora Andina S.A.S."
+          placeholder="Nombre de la empresa"
         />
         <Field
           id="header-legalRepName"
@@ -174,7 +174,7 @@ export default function ProjectHeaderForm({
           type="email"
           value={val("clientBillingEmail")}
           error={errors.clientBillingEmail}
-          placeholder="facturacion@cliente.com"
+          placeholder="correo@ejemplo.com"
         />
       </Section>
 
@@ -299,7 +299,7 @@ export default function ProjectHeaderForm({
       {state.status === "error" && state.message ? (
         <p
           role="alert"
-          className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
+          className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-ui text-danger"
         >
           {state.message}
         </p>

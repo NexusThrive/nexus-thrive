@@ -30,11 +30,11 @@ export default function DangerTab({ slug, canManage }: { slug: string; canManage
     <div className="grid gap-4">
       <section className="rounded-lg border border-rose-200 bg-surface p-5">
         <h2 className="font-display text-[15px] font-semibold text-rose-800">Eliminar este negocio</h2>
-        <p className="mt-1.5 text-[13px] text-muted-foreground">
+        <p className="mt-1.5 text-ui text-muted-foreground">
           Se borra el negocio y todo lo que tiene dentro: clientes, membresías, dinero (caja, pagos,
           facturas), asistencia, agenda, proyectos, tickets y tu equipo. No se puede deshacer.
         </p>
-        <p className="mt-1.5 text-[13px] text-muted-foreground">
+        <p className="mt-1.5 text-ui text-muted-foreground">
           Las cuentas de tu equipo quedan libres: pueden entrar de nuevo y crear otro negocio.
         </p>
         <button

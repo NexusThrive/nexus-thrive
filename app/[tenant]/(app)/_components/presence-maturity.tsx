@@ -16,7 +16,7 @@ export default function PresenceMaturity({ maturity, slug }: { maturity: Maturit
       <ul className="grid gap-2.5">
         {maturity.dimensions.map((d) => (
           <li key={d.key} className="grid gap-1">
-            <div className="flex items-center justify-between gap-3 text-[13.5px]"><span className="font-medium">{d.label}</span><span className="font-mono tabular-nums">{d.score}</span></div>
+            <div className="flex items-center justify-between gap-3 text-ui"><span className="font-medium">{d.label}</span><span className="font-mono tabular-nums">{d.score}</span></div>
             <div role="progressbar" aria-label={d.label} aria-valuenow={d.score} aria-valuemin={0} aria-valuemax={100} className="h-1.5 overflow-hidden rounded-full bg-border"><div style={{ width: `${d.score}%` }} className="h-full bg-accent" /></div>
             <p className="text-xs text-muted-foreground">{d.detail}</p>
           </li>
@@ -24,17 +24,17 @@ export default function PresenceMaturity({ maturity, slug }: { maturity: Maturit
       </ul>
       {maturity.signals.length ? (
         <div className="grid gap-2">
-          <h3 className="text-[13px] font-semibold">Qué hacer ahora</h3>
+          <h3 className="text-ui font-semibold">Qué hacer ahora</h3>
           <ul className="grid gap-2">
             {maturity.signals.map((s) => (
-              <li key={s.key} className="flex flex-wrap items-center gap-2 rounded-md border border-border px-3 py-2 text-[13.5px]">
+              <li key={s.key} className="flex flex-wrap items-center gap-2 rounded-md border border-border px-3 py-2 text-ui">
                 <span>{s.message}</span>
                 <Link href={`/${slug}${s.action.href}`} className="ml-auto font-medium underline underline-offset-2">{s.action.label}</Link>
               </li>
             ))}
           </ul>
         </div>
-      ) : <p className="text-[13px] text-muted-foreground">Usas NEXUS en todas sus áreas. Sigue así.</p>}
+      ) : <p className="text-ui text-muted-foreground">Usas NEXUS en todas sus áreas. Sigue así.</p>}
     </section>
   );
 }

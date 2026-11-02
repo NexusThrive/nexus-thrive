@@ -259,7 +259,7 @@ function Stat({
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className="mt-1 text-lg font-semibold tabular-nums">{value}</p>
       {hint ? (
-        <p className="mt-0.5 text-[11px] text-muted-foreground">{hint}</p>
+        <p className="mt-0.5 text-2xs text-muted-foreground">{hint}</p>
       ) : null}
     </div>
   );

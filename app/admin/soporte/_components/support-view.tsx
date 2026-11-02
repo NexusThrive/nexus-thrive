@@ -98,7 +98,7 @@ export default function SupportView({ tickets, tenants, staff, me, canReply }: {
                   <span className="flex min-w-0 items-center gap-2">
                     <span aria-label={`Prioridad ${priorityMeta(t.priority).label}`} className={cn("size-2 shrink-0 rounded-full", PRIORITY_DOT[t.priority])} />
                     <span className="font-mono text-[11.5px] text-muted-foreground">{t.code}</span>
-                    <b className="truncate text-[14px] font-medium">{t.subject}</b>
+                    <b className="truncate text-sm font-medium">{t.subject}</b>
                   </span>
                   <small className="truncate text-xs text-muted-foreground">
                     {t.tenantName ?? "Sin negocio"} · {t.category} · {t.channel} · {t.assigneeName ?? <span className="text-danger">sin asignar</span>}

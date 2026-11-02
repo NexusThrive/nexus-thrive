@@ -50,7 +50,7 @@ export default function SurveyForm({ token }: { token: string }) {
         <p className="h-4 text-center text-xs text-muted-foreground">{score ? SCORE_LABELS[score] : ""}</p>
       </fieldset>
       <fieldset className="grid gap-2">
-        <legend className="mb-2 text-[13.5px] font-medium">¿Qué tan probable es que recomiendes NEXUS? (opcional)</legend>
+        <legend className="mb-2 text-ui font-medium">¿Qué tan probable es que recomiendes NEXUS? (opcional)</legend>
         <div className="grid grid-cols-11 gap-1">
           {Array.from({ length: 11 }, (_, n) => (
             <button key={n} type="button" aria-pressed={nps === String(n)} onClick={() => setNps(nps === String(n) ? "" : String(n))} className={cn("rounded-md border py-1.5 font-mono text-xs", nps === String(n) ? "border-foreground bg-foreground text-background" : "border-border-input")}>
@@ -59,7 +59,7 @@ export default function SurveyForm({ token }: { token: string }) {
           ))}
         </div>
       </fieldset>
-      <label className="grid gap-1.5 text-[13.5px] font-medium">
+      <label className="grid gap-1.5 text-ui font-medium">
         ¿Algo que quieras contarnos? (opcional)
         <textarea rows={3} value={comment} onChange={(e) => setComment(e.target.value)} className={textareaClasses} />
       </label>

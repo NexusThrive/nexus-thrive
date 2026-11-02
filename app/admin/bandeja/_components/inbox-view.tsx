@@ -118,13 +118,13 @@ export default function InboxView({
                     <Icon aria-label={CH[c.channel].label} className={cn("mt-0.5 size-4 shrink-0", c.channel === "WHATSAPP" ? "text-success" : "text-accent-text")} />
                     <span className="grid min-w-0 flex-1 gap-0.5">
                       <span className="flex items-baseline gap-2">
-                        <b className={cn("min-w-0 flex-1 truncate text-[13.5px]", c.unread ? "font-semibold" : "font-medium")}>{c.contactName ?? c.contactHandle}</b>
-                        <small className="shrink-0 font-mono text-[11px] text-muted-foreground">{since(c.lastMessageAt, now)}</small>
+                        <b className={cn("min-w-0 flex-1 truncate text-ui", c.unread ? "font-semibold" : "font-medium")}>{c.contactName ?? c.contactHandle}</b>
+                        <small className="shrink-0 font-mono text-2xs text-muted-foreground">{since(c.lastMessageAt, now)}</small>
                       </span>
                       <small className="truncate text-xs text-muted-foreground">{c.tenantName ?? "Sin negocio"}{c.subject ? ` · ${c.subject}` : ""}</small>
                       <small className={cn("truncate text-xs", c.unread ? "text-foreground" : "text-muted-foreground")}>{c.preview}</small>
                     </span>
-                    {c.unread ? <span className="mt-1 grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1.5 font-mono text-[10.5px] font-bold text-ink">{c.unread}</span> : null}
+                    {c.unread ? <span className="mt-1 grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1.5 font-mono text-2xs font-bold text-ink">{c.unread}</span> : null}
                   </button>
                 </li>
               );
@@ -161,10 +161,10 @@ export default function InboxView({
               ) : null}
             </header>
 
-            <div className="grid gap-2 border-b border-border bg-surface-muted/50 px-4 py-2.5 text-[12.5px] sm:grid-cols-3">
+            <div className="grid gap-2 border-b border-border bg-surface-muted/50 px-4 py-2.5 text-xs sm:grid-cols-3">
               <label className="grid gap-1">
                 Negocio
-                <Select disabled={!canReply || pending} value={active.tenantId ?? ""} onChange={(e) => run(() => updateConversationAction(active.id, { tenantId: e.target.value || null }))} className="h-8 text-[12.5px]">
+                <Select disabled={!canReply || pending} value={active.tenantId ?? ""} onChange={(e) => run(() => updateConversationAction(active.id, { tenantId: e.target.value || null }))} className="h-8 text-xs">
                   <option value="">Sin negocio</option>
                   {tenants.map((t) => (
                     <option key={t.id} value={t.id}>
@@ -175,7 +175,7 @@ export default function InboxView({
               </label>
               <label className="grid gap-1">
                 Responsable
-                <Select disabled={!canReply || pending} value={active.assigneeId ?? ""} onChange={(e) => run(() => updateConversationAction(active.id, { assigneeId: e.target.value || null }))} className="h-8 text-[12.5px]">
+                <Select disabled={!canReply || pending} value={active.assigneeId ?? ""} onChange={(e) => run(() => updateConversationAction(active.id, { assigneeId: e.target.value || null }))} className="h-8 text-xs">
                   <option value="">Sin asignar</option>
                   {staff.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -187,7 +187,7 @@ export default function InboxView({
               </label>
               <label className="grid gap-1">
                 Estado
-                <Select disabled={!canReply || pending} value={active.status} onChange={(e) => run(() => updateConversationAction(active.id, { status: e.target.value }))} className="h-8 text-[12.5px]">
+                <Select disabled={!canReply || pending} value={active.status} onChange={(e) => run(() => updateConversationAction(active.id, { status: e.target.value }))} className="h-8 text-xs">
                   <option value="OPEN">Abierta</option>
                   <option value="PENDING">Esperando respuesta</option>
                   <option value="CLOSED">Cerrada</option>
@@ -200,14 +200,14 @@ export default function InboxView({
                 <li
                   key={m.id}
                   className={cn(
-                    "max-w-[85%] rounded-lg px-3 py-2 text-[13.5px]",
+                    "max-w-[85%] rounded-lg px-3 py-2 text-ui",
                     m.direction === "IN" && "self-start bg-surface-muted",
                     m.direction === "OUT" && "self-end bg-ink text-[#F7F6F3]",
                     m.direction === "NOTE" && "self-center border border-dashed border-accent/60 bg-accent-subtle/40",
                   )}
                 >
                   <p className="whitespace-pre-wrap">{m.body}</p>
-                  <small className={cn("mt-1 flex items-center gap-1 text-[11px]", m.direction === "OUT" ? "text-[#A1A1A8]" : "text-muted-foreground")}>
+                  <small className={cn("mt-1 flex items-center gap-1 text-2xs", m.direction === "OUT" ? "text-[#A1A1A8]" : "text-muted-foreground")}>
                     {m.direction === "NOTE" ? <Lock aria-hidden="true" className="size-3" /> : null}
                     {m.authorName ? `${m.authorName} · ` : ""}
                     {formatDateTime(new Date(m.createdAt))}

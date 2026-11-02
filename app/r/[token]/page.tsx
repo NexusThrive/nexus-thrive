@@ -42,12 +42,12 @@ export default async function ReceiptPage({ params }: { params: Promise<{ token:
           <i aria-hidden="true" className="mx-auto mb-1 h-[3px] w-10 rounded-full bg-accent" />
           <p className="font-display text-lg font-bold">{tenant?.legalName || tenant?.name}</p>
           <p className="text-xs text-muted-foreground">{[tenant?.taxId ? `NIT ${tenant.taxId}` : null, tenant?.city].filter(Boolean).join(" · ")}</p>
-          <span className="mx-auto mt-1 inline-block rounded-full border border-border px-2 py-[2px] text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          <span className="mx-auto mt-1 inline-block rounded-full border border-border px-2 py-[2px] text-2xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             Comprobante de pago
           </span>
         </header>
         <div className="grid gap-1 px-6 py-6 text-center">
-          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">{voided ? "Pago anulado" : "Total pagado"}</p>
+          <p className="font-mono text-2xs uppercase tracking-[0.14em] text-muted-foreground">{voided ? "Pago anulado" : "Total pagado"}</p>
           <p className={`font-display text-[40px] font-bold tabular-nums ${voided ? "text-muted-foreground line-through" : ""}`}>{total}</p>
           {voided ? <p className="text-sm text-danger">Este recibo fue anulado{p.voidReason ? `: ${p.voidReason}` : ""}.</p> : null}
         </div>
@@ -63,10 +63,10 @@ export default async function ReceiptPage({ params }: { params: Promise<{ token:
           <div className="grid justify-items-center gap-2 border-t border-dashed border-border px-6 py-5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={qr} alt="QR para verificar el recibo" width={132} height={132} className="size-[132px] rounded-lg border border-border bg-white p-1.5" />
-            <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Escanea para verificar</p>
+            <p className="font-mono text-2xs uppercase tracking-[0.14em] text-muted-foreground">Escanea para verificar</p>
           </div>
         ) : null}
-        <footer className="flex items-center justify-center gap-2 border-t border-border bg-surface-muted px-6 py-3 text-[11px] text-muted-foreground">
+        <footer className="flex items-center justify-center gap-2 border-t border-border bg-surface-muted px-6 py-3 text-2xs text-muted-foreground">
           Generado con <Wordmark size={12} />
         </footer>
       </article>

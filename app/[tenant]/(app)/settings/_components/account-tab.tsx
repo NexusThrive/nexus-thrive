@@ -53,7 +53,7 @@ export default function AccountTab({ slug, me }: { slug: string; me: MyAccount }
         {({ fieldErrors }) => (
           <div className="grid gap-3">
             <Field label="Nombre" required error={fieldErrors.name}>{(c) => <input {...c} name="name" defaultValue={values.name} autoComplete="name" className={inputClasses} />}</Field>
-            <Field label="Cargo" optional>{(c) => <input {...c} name="title" defaultValue={values.title} className={inputClasses} placeholder="Administradora" />}</Field>
+            <Field label="Cargo" optional>{(c) => <input {...c} name="title" defaultValue={values.title} className={inputClasses} placeholder="Tu cargo" />}</Field>
             <Field label="Teléfono" optional>{(c) => <PhoneInput id={c.id} value={phone} onChange={setPhone} />}</Field>
           </div>
         )}

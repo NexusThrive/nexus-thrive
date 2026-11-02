@@ -323,13 +323,13 @@ export function ScanPaymentSheet({
           <div ref={photoWrapRef} className="mx-auto w-full max-w-xs">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img ref={photoRef} src={photoUrl} alt="Comprobante fotografiado" className="aspect-[3/4] w-full rounded-lg border border-border bg-surface-muted object-contain" />
-            <p className="mt-1 text-center text-[12.5px] text-muted-foreground">
+            <p className="mt-1 text-center text-xs text-muted-foreground">
               {detected.length ? detected.join(" · ") : "No se leyó el monto; escríbelo abajo."}
             </p>
           </div>
           <div>
             <AmountDisplay value={amount} />
-            <p className="mt-0.5 text-center text-[12.5px] text-muted-foreground">Confirma o corrige el monto</p>
+            <p className="mt-0.5 text-center text-xs text-muted-foreground">Confirma o corrige el monto</p>
           </div>
           <Keypad onKey={press} />
           <Field label="Cliente">
@@ -346,7 +346,7 @@ export function ScanPaymentSheet({
             )}
           </Field>
           <div>
-            <p className="mb-2 text-[13px] font-medium">Medio de pago</p>
+            <p className="mb-2 text-ui font-medium">Medio de pago</p>
             <ChipRow role="group" aria-label="Medio de pago">
               {PAYMENT_METHODS.map((m) => (
                 <Chip key={m.value} selected={m.value === method} onClick={() => setMethod(m.value)}>
@@ -357,7 +357,7 @@ export function ScanPaymentSheet({
           </div>
           <Field label="Concepto" hint="Opcional. Sale en el comprobante.">
             {(control) => (
-              <input {...control} value={description} onChange={(event) => setDescription(event.target.value)} maxLength={300} placeholder="Ej. Mensualidad octubre" className={inputClasses} />
+              <input {...control} value={description} onChange={(event) => setDescription(event.target.value)} maxLength={300} placeholder="Concepto del pago" className={inputClasses} />
             )}
           </Field>
           {error ? <Alert tone="danger">{error}</Alert> : null}

@@ -15,6 +15,7 @@ import { formatCurrency } from "@/lib/foundation/format";
 import type { PartyRow } from "@/lib/core/parties/parties-db";
 import { orderTotals } from "@/lib/business/purchasing/purchases";
 import { createOrderAction } from "@/app/[tenant]/(app)/purchases/actions";
+import { DateInput } from "@/components/molecules/date-input";
 
 export type ProductOption = { id: string; name: string; cost: number | null; stock: number };
 export type WarehouseOption = { id: string; name: string; isDefault: boolean };
@@ -96,7 +97,7 @@ export default function OrderSheet({ slug, suppliers, products, warehouses, toda
               )}
             </Field>
             <Field label="Fecha esperada" optional>
-              {(c) => <input {...c} type="date" min={today} value={expectedDate} onChange={(e) => setExpectedDate(e.target.value)} className={inputClasses} />}
+              {(c) => <DateInput {...c} min={today} value={expectedDate} onChange={(e) => setExpectedDate(e.target.value)} className={inputClasses} />}
             </Field>
             {warehouses.length > 1 ? (
               <Field label="Bodega de destino" className="sm:col-span-2">
@@ -114,7 +115,7 @@ export default function OrderSheet({ slug, suppliers, products, warehouses, toda
           </div>
 
           <section className="grid gap-2">
-            <h3 className="text-[13px] font-semibold">Productos</h3>
+            <h3 className="text-ui font-semibold">Productos</h3>
             {lines.map((l, i) => (
               <div key={l.key} className="grid grid-cols-[minmax(0,1fr)_auto] gap-2 rounded-md border border-border p-2.5 sm:grid-cols-[minmax(0,2fr)_80px_150px_90px_auto] sm:items-end">
                 <label className="grid gap-1 text-xs font-medium max-sm:col-span-2">

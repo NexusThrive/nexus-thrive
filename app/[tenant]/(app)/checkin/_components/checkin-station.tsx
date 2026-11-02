@@ -156,7 +156,7 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
           </p>
         </div>
         {!support.nfc ? (
-          <p className="rounded-md border border-dashed border-border bg-surface-muted px-3 py-2 text-[12px] text-muted-foreground">
+          <p className="rounded-md border border-dashed border-border bg-surface-muted px-3 py-2 text-xs text-muted-foreground">
             Leer la tarjeta NFC con el teléfono solo funciona en <b>Chrome con Android</b>. Aquí usa
             el <b>QR</b> (cámara) o escribe el número de serie de la tarjeta a mano.
           </p>

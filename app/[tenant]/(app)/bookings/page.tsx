@@ -7,7 +7,6 @@ import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import { activeTeam, bookingsBetween, customerPhoneOptions, customersByIds } from "@/lib/business/scheduling/bookings-db";
 import AgendaCalendar from "./_agenda/agenda-calendar";
 import type { AgendaBooking } from "./_agenda/types";
-import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 import { bogotaDay } from "@/lib/foundation/dates/plain-date";
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -64,7 +63,7 @@ export default async function BookingsPage({ params, searchParams }: { params: P
   const terms = getVerticalTerms(tenantRow?.vertical ?? ctx.vertical);
   return (
     <div className="grid gap-5">
-      <PageHeader eyebrow={routeCategory("/bookings")} title={terms.bookings} description="Toca un día o una hora para agendar. Los colores muestran qué días están llenos." />
+      <PageHeader title={terms.bookings} description="Toca un día o una hora para agendar. Los colores muestran qué días están llenos." />
       <AgendaCalendar
         slug={tenant}
         business={tenantRow?.name ?? ""}

@@ -22,17 +22,17 @@ export default function TiersPanel({ tiers, canPrice }: { tiers: CustomerTier[];
 
   return (
     <section className="grid gap-3 rounded-lg border border-border bg-surface p-[18px]">
-      <p className="text-[13px] text-muted-foreground">El negocio elige su tramo en el registro y se suma a su plan. El último tramo no tiene límite.</p>
+      <p className="text-ui text-muted-foreground">El negocio elige su tramo en el registro y se suma a su plan. El último tramo no tiene límite.</p>
       <ol className="grid gap-2.5">
         {rows.map((t, i) => {
           const last = i === rows.length - 1;
           return (
             <li key={t.id} className="grid grid-cols-1 items-end gap-2.5 rounded-md border border-border p-3 sm:grid-cols-[minmax(0,1.4fr)_150px_150px_auto]">
-              <label className="grid gap-1.5 text-[12.5px] font-medium">
+              <label className="grid gap-1.5 text-xs font-medium">
                 Nombre del tramo
                 <input disabled={!canPrice} value={t.label} onChange={(e) => set(i, { label: e.target.value })} className={inputClasses} />
               </label>
-              <label className="grid gap-1.5 text-[12.5px] font-medium">
+              <label className="grid gap-1.5 text-xs font-medium">
                 Máximo de clientes
                 <input
                   type="number"
@@ -44,7 +44,7 @@ export default function TiersPanel({ tiers, canPrice }: { tiers: CustomerTier[];
                   className={cn(inputClasses, "font-mono")}
                 />
               </label>
-              <label className="grid gap-1.5 text-[12.5px] font-medium">
+              <label className="grid gap-1.5 text-xs font-medium">
                 Precio / mes
                 <UsdInput value={t.priceUsdCents} disabled={!canPrice} onChange={(v) => set(i, { priceUsdCents: v })} />
               </label>

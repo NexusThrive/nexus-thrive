@@ -13,6 +13,7 @@ import { bogotaDayKey } from "@/lib/foundation/kernel/finance-series";
 import { formatDateShort } from "@/lib/foundation/format";
 import { cancelMembershipAction, freezeMembershipAction, unfreezeMembershipAction, type AccessActionResult } from "../../crm/[id]/access-actions";
 import type { MembershipViewRow } from "./membership-table";
+import { DateInput } from "@/components/molecules/date-input";
 
 /** Congelar (corre el vencimiento), reactivar o cancelar con motivo. */
 export default function MembershipHoldSheet({ tenantSlug, membership, onClose }: { tenantSlug: string; membership: MembershipViewRow; onClose: () => void }) {
@@ -42,18 +43,18 @@ export default function MembershipHoldSheet({ tenantSlug, membership, onClose }:
           <p className="text-sm text-muted-foreground">Esta membresía está cancelada. Para que vuelva, crea una membresía nueva.</p>
         ) : membership.hold === "frozen" ? (
           <section className="grid gap-3">
-            <h3 className="text-[13px] font-semibold">Está congelada</h3>
-            <p className="text-[13px] text-muted-foreground">Al reactivarla, los días que no se usaron del congelamiento se descuentan del vencimiento.</p>
+            <h3 className="text-ui font-semibold">Está congelada</h3>
+            <p className="text-ui text-muted-foreground">Al reactivarla, los días que no se usaron del congelamiento se descuentan del vencimiento.</p>
             <button type="button" disabled={pending} onClick={() => run(() => unfreezeMembershipAction(tenantSlug, membership.id))} className={buttonVariants({ size: "sm" })}>
               Reactivar ahora
             </button>
           </section>
         ) : (
           <section className="grid gap-3">
-            <h3 className="text-[13px] font-semibold">Congelar</h3>
-            <p className="text-[13px] text-muted-foreground">Viaje, lesión o incapacidad: mientras está congelada no puede entrar y el vencimiento se corre los mismos días.</p>
+            <h3 className="text-ui font-semibold">Congelar</h3>
+            <p className="text-ui text-muted-foreground">Viaje, lesión o incapacidad: mientras está congelada no puede entrar y el vencimiento se corre los mismos días.</p>
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Desde">{(c) => <input {...c} type="date" value={from} onChange={(e) => setFrom(e.target.value)} className={inputClasses} />}</Field>
+              <Field label="Desde">{(c) => <DateInput {...c} value={from} onChange={(e) => setFrom(e.target.value)} className={inputClasses} />}</Field>
               <Field label="Días" hint={`De 1 a ${MAX_FREEZE_DAYS}`}>{(c) => <input {...c} inputMode="numeric" value={days} onChange={(e) => setDays(e.target.value.replace(/\D/g, ""))} className={inputClasses} />}</Field>
             </div>
             <button type="button" disabled={pending || !(n >= 1 && n <= MAX_FREEZE_DAYS)} onClick={() => run(() => freezeMembershipAction(tenantSlug, membership.id, from, n))} className={buttonVariants({ size: "sm" })}>
@@ -64,9 +65,9 @@ export default function MembershipHoldSheet({ tenantSlug, membership, onClose }:
 
         {membership.hold !== "cancelled" ? (
           <section className="grid gap-3 border-t border-border pt-5">
-            <h3 className="text-[13px] font-semibold">Cancelar</h3>
+            <h3 className="text-ui font-semibold">Cancelar</h3>
             <Field label="Motivo" hint="Queda en el historial. Solo el dueño o administración pueden cancelar.">
-              {(c) => <input {...c} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Se mudó, retiro voluntario…" className={inputClasses} />}
+              {(c) => <input {...c} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Motivo" className={inputClasses} />}
             </Field>
             <button
               type="button"

@@ -13,6 +13,7 @@ import { formatCurrency } from "@/lib/foundation/format";
 import { saveBookingAction } from "../agenda-actions";
 import type { AgendaBooking, AgendaOption, AgendaService } from "./types";
 import { Select } from "@/components/atoms/select";
+import { DateInput } from "@/components/molecules/date-input";
 
 /** Datos de la cita al tocar un día u hora del calendario (o al editarla). */
 export default function BookingSheet({ slug, day, time, booking, customers, services, staff, onClose }: { slug: string; day: string; time: string; booking: AgendaBooking | null; customers: AgendaOption[]; services: AgendaService[]; staff: AgendaOption[]; onClose: () => void }) {
@@ -117,10 +118,10 @@ export default function BookingSheet({ slug, day, time, booking, customers, serv
         </Field>
         {!v.productId ? (
           <Field label="¿Qué servicio?" required className="sm:col-span-2">
-            {(c) => <input {...c} value={v.serviceName} onChange={(e) => set("serviceName", e.target.value)} className={inputClasses} placeholder="Valoración inicial" />}
+            {(c) => <input {...c} value={v.serviceName} onChange={(e) => set("serviceName", e.target.value)} className={inputClasses} placeholder="Motivo de la cita" />}
           </Field>
         ) : null}
-        <Field label="Día">{(c) => <input {...c} type="date" value={v.day} onChange={(e) => set("day", e.target.value)} className={inputClasses} />}</Field>
+        <Field label="Día">{(c) => <DateInput {...c} value={v.day} onChange={(e) => set("day", e.target.value)} className={inputClasses} />}</Field>
         <Field label="Hora" error={err("time")}>{(c) => <input {...c} type="time" step={900} value={v.time} onChange={(e) => set("time", e.target.value)} className={inputClasses} />}</Field>
         <Field label="Duración (minutos)" error={err("durationMinutes")}>
           {(c) => <input {...c} inputMode="numeric" value={v.duration} onChange={(e) => set("duration", Number(e.target.value.replace(/\D/g, "")) || 0)} className={inputClasses} />}
@@ -155,7 +156,7 @@ export default function BookingSheet({ slug, day, time, booking, customers, serv
         <Field label="Notas" className="sm:col-span-2">
           {(c) => <textarea {...c} rows={2} value={v.notes} onChange={(e) => set("notes", e.target.value)} className={textareaClasses} />}
         </Field>
-        {error && error.field ? <p className="text-[13px] text-danger sm:col-span-2">{error.message}</p> : null}
+        {error && error.field ? <p className="text-ui text-danger sm:col-span-2">{error.message}</p> : null}
       </div>
     </ResponsiveSheet>
   );

@@ -34,7 +34,7 @@ export default function InfoCard({
       </CardHeader>
       {children}
       {visible.length ? (
-        <dl className="grid gap-x-4 gap-y-2.5 text-[13.5px] sm:grid-cols-2">
+        <dl className="grid gap-x-4 gap-y-2.5 text-ui sm:grid-cols-2">
           {visible.map(([label, value]) => (
             <div key={label} className="grid gap-0.5">
               <dt className="text-xs text-muted-foreground">{label}</dt>
@@ -45,7 +45,7 @@ export default function InfoCard({
           ))}
         </dl>
       ) : emptyText ? (
-        <p className="text-[13px] text-muted-foreground">{emptyText}</p>
+        <p className="text-ui text-muted-foreground">{emptyText}</p>
       ) : null}
       {footer}
     </Card>
