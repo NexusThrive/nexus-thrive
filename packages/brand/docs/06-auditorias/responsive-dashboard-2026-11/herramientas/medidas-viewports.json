@@ -1,0 +1,3416 @@
+{
+ "inicio": {
+  "320": {
+   "vw": 320,
+   "scrollW": 320,
+   "bodyScrollW": 320,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Opciones del inicio",
+     "w": 40,
+     "h": 40,
+     "x": 264,
+     "y": 119
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "360": {
+   "vw": 360,
+   "scrollW": 360,
+   "bodyScrollW": 360,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Opciones del inicio",
+     "w": 40,
+     "h": 40,
+     "x": 304,
+     "y": 119
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "375": {
+   "vw": 375,
+   "scrollW": 375,
+   "bodyScrollW": 375,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Opciones del inicio",
+     "w": 40,
+     "h": 40,
+     "x": 319,
+     "y": 63
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "412": {
+   "vw": 412,
+   "scrollW": 412,
+   "bodyScrollW": 412,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Opciones del inicio",
+     "w": 40,
+     "h": 40,
+     "x": 356,
+     "y": 63
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "768": {
+   "vw": 768,
+   "scrollW": 768,
+   "bodyScrollW": 768,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Opciones del inicio",
+     "w": 40,
+     "h": 40,
+     "x": 712,
+     "y": 74
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "834": {
+   "vw": 834,
+   "scrollW": 834,
+   "bodyScrollW": 834,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Opciones del inicio",
+     "w": 40,
+     "h": 40,
+     "x": 778,
+     "y": 74
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "1024": {
+   "vw": 1024,
+   "scrollW": 1024,
+   "bodyScrollW": 1024,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Opciones del inicio",
+     "w": 40,
+     "h": 40,
+     "x": 968,
+     "y": 74
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "1280": {
+   "vw": 1280,
+   "scrollW": 1280,
+   "bodyScrollW": 1280,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Opciones del inicio",
+     "w": 40,
+     "h": 40,
+     "x": 1224,
+     "y": 74
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  }
+ },
+ "inicioGraficos": {
+  "320": {
+   "vw": 320,
+   "scrollW": 320,
+   "bodyScrollW": 320,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Opciones del inicio",
+     "w": 40,
+     "h": 40,
+     "x": 264,
+     "y": 119
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "360": {
+   "vw": 360,
+   "scrollW": 360,
+   "bodyScrollW": 360,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Opciones del inicio",
+     "w": 40,
+     "h": 40,
+     "x": 304,
+     "y": 119
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "375": {
+   "vw": 375,
+   "scrollW": 375,
+   "bodyScrollW": 375,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Opciones del inicio",
+     "w": 40,
+     "h": 40,
+     "x": 319,
+     "y": 63
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "412": {
+   "vw": 412,
+   "scrollW": 412,
+   "bodyScrollW": 412,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Opciones del inicio",
+     "w": 40,
+     "h": 40,
+     "x": 356,
+     "y": 63
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "768": {
+   "vw": 768,
+   "scrollW": 768,
+   "bodyScrollW": 768,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Opciones del inicio",
+     "w": 40,
+     "h": 40,
+     "x": 712,
+     "y": 74
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "834": {
+   "vw": 834,
+   "scrollW": 834,
+   "bodyScrollW": 834,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Opciones del inicio",
+     "w": 40,
+     "h": 40,
+     "x": 778,
+     "y": 74
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "1024": {
+   "vw": 1024,
+   "scrollW": 1024,
+   "bodyScrollW": 1024,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Opciones del inicio",
+     "w": 40,
+     "h": 40,
+     "x": 968,
+     "y": 74
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "1280": {
+   "vw": 1280,
+   "scrollW": 1280,
+   "bodyScrollW": 1280,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Opciones del inicio",
+     "w": 40,
+     "h": 40,
+     "x": 1224,
+     "y": 74
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  }
+ },
+ "shell": {
+  "320": {
+   "vw": 320,
+   "scrollW": 320,
+   "bodyScrollW": 320,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Constructora Andina: inicio",
+     "w": 222,
+     "h": 60,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Buscar",
+     "w": 40,
+     "h": 40,
+     "x": 218,
+     "y": 10
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Cambiar a modo oscuro",
+     "w": 40,
+     "h": 40,
+     "x": 226,
+     "y": 10
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Inicio",
+     "w": 61,
+     "h": 54,
+     "x": 8,
+     "y": 580
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Clientes",
+     "w": 61,
+     "h": 54,
+     "x": 69,
+     "y": 580
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Crear",
+     "w": 56,
+     "h": 56,
+     "x": 132,
+     "y": 572
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Obras",
+     "w": 61,
+     "h": 54,
+     "x": 190,
+     "y": 580
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Más",
+     "w": 61,
+     "h": 54,
+     "x": 251,
+     "y": 580
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "360": {
+   "vw": 360,
+   "scrollW": 360,
+   "bodyScrollW": 360,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Constructora Andina: inicio",
+     "w": 222,
+     "h": 60,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Buscar",
+     "w": 40,
+     "h": 40,
+     "x": 234,
+     "y": 10
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Cambiar a modo oscuro",
+     "w": 40,
+     "h": 40,
+     "x": 266,
+     "y": 10
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Inicio",
+     "w": 69,
+     "h": 54,
+     "x": 8,
+     "y": 680
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Clientes",
+     "w": 69,
+     "h": 54,
+     "x": 77,
+     "y": 680
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Crear",
+     "w": 56,
+     "h": 56,
+     "x": 152,
+     "y": 672
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Obras",
+     "w": 69,
+     "h": 54,
+     "x": 214,
+     "y": 680
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Más",
+     "w": 69,
+     "h": 54,
+     "x": 283,
+     "y": 680
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "375": {
+   "vw": 375,
+   "scrollW": 375,
+   "bodyScrollW": 375,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Constructora Andina: inicio",
+     "w": 222,
+     "h": 60,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Buscar",
+     "w": 40,
+     "h": 40,
+     "x": 234,
+     "y": 10
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Cambiar a modo oscuro",
+     "w": 40,
+     "h": 40,
+     "x": 281,
+     "y": 10
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Inicio",
+     "w": 72,
+     "h": 54,
+     "x": 8,
+     "y": 752
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Clientes",
+     "w": 72,
+     "h": 54,
+     "x": 80,
+     "y": 752
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Crear",
+     "w": 56,
+     "h": 56,
+     "x": 159,
+     "y": 744
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Obras",
+     "w": 72,
+     "h": 54,
+     "x": 223,
+     "y": 752
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Más",
+     "w": 72,
+     "h": 54,
+     "x": 295,
+     "y": 752
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "412": {
+   "vw": 412,
+   "scrollW": 412,
+   "bodyScrollW": 412,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Constructora Andina: inicio",
+     "w": 222,
+     "h": 60,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Buscar",
+     "w": 40,
+     "h": 40,
+     "x": 270,
+     "y": 10
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Cambiar a modo oscuro",
+     "w": 40,
+     "h": 40,
+     "x": 318,
+     "y": 10
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Inicio",
+     "w": 79,
+     "h": 54,
+     "x": 8,
+     "y": 855
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Clientes",
+     "w": 79,
+     "h": 54,
+     "x": 87,
+     "y": 855
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Crear",
+     "w": 56,
+     "h": 56,
+     "x": 178,
+     "y": 847
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Obras",
+     "w": 79,
+     "h": 54,
+     "x": 246,
+     "y": 855
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Más",
+     "w": 79,
+     "h": 54,
+     "x": 325,
+     "y": 855
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "768": {
+   "vw": 768,
+   "scrollW": 768,
+   "bodyScrollW": 768,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Inicio",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 84
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Clientes",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 151
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Obras",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 218
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Cotizaciones",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 262
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Catálogo APU",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 306
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Compras y gastos",
+     "w": 51,
+     "h": 56,
+     "x": 12,
+     "y": 373
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Gastos",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 431
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Finanzas",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 498
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Funciones",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 882
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Importar y exportar",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 926
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Configuración",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 970
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Constructora Andina: inicio",
+     "w": 76,
+     "h": 72,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Constructora Andina",
+     "w": 215,
+     "h": 40,
+     "x": 100,
+     "y": 16
+    },
+    {
+     "tag": "input",
+     "role": "combobox",
+     "t": "Buscar clientes, pagos, gastos o accione",
+     "w": 166,
+     "h": 40,
+     "x": 340,
+     "y": 16
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Crear",
+     "w": 98,
+     "h": 40,
+     "x": 522,
+     "y": 16
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Cambiar a modo oscuro",
+     "w": 40,
+     "h": 40,
+     "x": 645,
+     "y": 16
+    }
+   ],
+   "minFont": 10,
+   "inputs": [
+    {
+     "t": "Buscar clientes, pagos, gastos o accione",
+     "fs": 13
+    }
+   ]
+  },
+  "834": {
+   "vw": 834,
+   "scrollW": 834,
+   "bodyScrollW": 834,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Inicio",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 84
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Clientes",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 151
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Obras",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 218
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Cotizaciones",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 262
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Catálogo APU",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 306
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Compras y gastos",
+     "w": 51,
+     "h": 56,
+     "x": 12,
+     "y": 373
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Gastos",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 431
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Finanzas",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 498
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Funciones",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 1052
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Importar y exportar",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 1096
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Configuración",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 1140
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Constructora Andina: inicio",
+     "w": 76,
+     "h": 72,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Constructora Andina",
+     "w": 215,
+     "h": 40,
+     "x": 100,
+     "y": 16
+    },
+    {
+     "tag": "input",
+     "role": "combobox",
+     "t": "Buscar clientes, pagos, gastos o accione",
+     "w": 232,
+     "h": 40,
+     "x": 340,
+     "y": 16
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Crear",
+     "w": 98,
+     "h": 40,
+     "x": 588,
+     "y": 16
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Cambiar a modo oscuro",
+     "w": 40,
+     "h": 40,
+     "x": 711,
+     "y": 16
+    }
+   ],
+   "minFont": 10,
+   "inputs": [
+    {
+     "t": "Buscar clientes, pagos, gastos o accione",
+     "fs": 13
+    }
+   ]
+  },
+  "1024": {
+   "vw": 1024,
+   "scrollW": 1024,
+   "bodyScrollW": 1024,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Inicio",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 84
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Clientes",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 151
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Obras",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 218
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Cotizaciones",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 262
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Catálogo APU",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 306
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Compras y gastos",
+     "w": 51,
+     "h": 56,
+     "x": 12,
+     "y": 373
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Gastos",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 431
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Finanzas",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 498
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Funciones",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 626
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Importar y exportar",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 670
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Configuración",
+     "w": 51,
+     "h": 42,
+     "x": 12,
+     "y": 714
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Constructora Andina: inicio",
+     "w": 76,
+     "h": 72,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Constructora Andina",
+     "w": 215,
+     "h": 40,
+     "x": 100,
+     "y": 16
+    },
+    {
+     "tag": "input",
+     "role": "combobox",
+     "t": "Buscar clientes, pagos, gastos o accione",
+     "w": 380,
+     "h": 40,
+     "x": 340,
+     "y": 16
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Crear",
+     "w": 98,
+     "h": 40,
+     "x": 778,
+     "y": 16
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Cambiar a modo oscuro",
+     "w": 40,
+     "h": 40,
+     "x": 901,
+     "y": 16
+    }
+   ],
+   "minFont": 10,
+   "inputs": [
+    {
+     "t": "Buscar clientes, pagos, gastos o accione",
+     "fs": 13
+    }
+   ]
+  },
+  "1280": {
+   "vw": 1280,
+   "scrollW": 1280,
+   "bodyScrollW": 1280,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Inicio",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 118
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Clientes",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 196
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Obras",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 274
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Cotizaciones",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 318
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Catálogo APU",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 362
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Compras y gastos",
+     "w": 219,
+     "h": 34,
+     "x": 14,
+     "y": 406
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Gastos",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 442
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Finanzas",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 520
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Funciones",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 614
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Importar y exportar",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 658
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Configuración",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 702
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Contraer barra lateral",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 746
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Constructora Andina: inicio",
+     "w": 248,
+     "h": 72,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Constructora Andina",
+     "w": 215,
+     "h": 40,
+     "x": 280,
+     "y": 16
+    },
+    {
+     "tag": "input",
+     "role": "combobox",
+     "t": "Buscar clientes, pagos, gastos o accione",
+     "w": 380,
+     "h": 40,
+     "x": 520,
+     "y": 16
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Crear",
+     "w": 98,
+     "h": 40,
+     "x": 1026,
+     "y": 16
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Cambiar a modo oscuro",
+     "w": 40,
+     "h": 40,
+     "x": 1149,
+     "y": 16
+    }
+   ],
+   "minFont": 10,
+   "inputs": [
+    {
+     "t": "Buscar clientes, pagos, gastos o accione",
+     "fs": 13
+    }
+   ]
+  }
+ },
+ "panel": {
+  "320": {
+   "vw": 320,
+   "scrollW": 320,
+   "bodyScrollW": 483,
+   "overflowPage": false,
+   "overflowEls": [
+    {
+     "tag": "header",
+     "cls": "mb-5 flex flex-wrap items-end justify-between gap-4",
+     "right": 483,
+     "w": 211,
+     "t": "Domingo, 25 de octubreBuenas tardes, Cam"
+    },
+    {
+     "tag": "div",
+     "cls": "nx-rise min-w-0",
+     "right": 483,
+     "w": 211,
+     "t": "Domingo, 25 de octubreBuenas tardes, Cam"
+    },
+    {
+     "tag": "div",
+     "cls": "mb-1.5 flex items-center gap-2 text-[11px] font-semibold upp",
+     "right": 483,
+     "w": 211,
+     "t": "Domingo, 25 de octubre"
+    },
+    {
+     "tag": "h1",
+     "cls": "font-display text-[clamp(24px,4.4vw,34px)] font-bold leading",
+     "right": 483,
+     "w": 211,
+     "t": "Buenas tardes, Camila"
+    },
+    {
+     "tag": "p",
+     "cls": "mt-1.5 max-w-[62ch] text-muted-foreground",
+     "right": 483,
+     "w": 211,
+     "t": "Así va Simplapp Gym en los últimos 7 día"
+    },
+    {
+     "tag": "section",
+     "cls": "grid grid-cols-4 gap-3.5",
+     "right": 483,
+     "w": 211,
+     "t": "Métricas del negocio"
+    },
+    {
+     "tag": "div",
+     "cls": "group/kpi nx-rise nx-spot relative flex h-full flex-col gap-",
+     "right": 370,
+     "w": 42,
+     "t": "Socios activos128+9nuevos"
+    },
+    {
+     "tag": "div",
+     "cls": "flex items-center justify-between gap-3 text-[12.5px] text-m",
+     "right": 353,
+     "w": 8,
+     "t": "Socios activos"
+    },
+    {
+     "tag": "svg",
+     "cls": "[object SVGAnimatedString]",
+     "right": 373,
+     "w": 16,
+     "t": "svg"
+    },
+    {
+     "tag": "path",
+     "cls": "[object SVGAnimatedString]",
+     "right": 368,
+     "w": 9,
+     "t": "path"
+    },
+    {
+     "tag": "path",
+     "cls": "[object SVGAnimatedString]",
+     "right": 370,
+     "w": 2,
+     "t": "path"
+    },
+    {
+     "tag": "path",
+     "cls": "[object SVGAnimatedString]",
+     "right": 372,
+     "w": 2,
+     "t": "path"
+    }
+   ],
+   "overflowCount": 228,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Simplapp Gym: inicio",
+     "w": 175,
+     "h": 60,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Buscar",
+     "w": 40,
+     "h": 40,
+     "x": 187,
+     "y": 10
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Cambiar a modo oscuro",
+     "w": 40,
+     "h": 40,
+     "x": 226,
+     "y": 10
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Nuevo socioRegistra a tu cliente",
+     "w": 71,
+     "h": 62,
+     "x": 411,
+     "y": 710
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Registrar pagoCobra y genera el comproba",
+     "w": 71,
+     "h": 62,
+     "x": 411,
+     "y": 772
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Registrar gastoMantén tu balance al día",
+     "w": 71,
+     "h": 62,
+     "x": 411,
+     "y": 834
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Nueva reservaAgenda una clase",
+     "w": 71,
+     "h": 62,
+     "x": 411,
+     "y": 896
+    },
+    {
+     "tag": "button",
+     "role": "switch",
+     "t": "BUTTON",
+     "w": 42,
+     "h": 24,
+     "x": 355,
+     "y": 1820
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "360": {
+   "vw": 360,
+   "scrollW": 360,
+   "bodyScrollW": 483,
+   "overflowPage": false,
+   "overflowEls": [
+    {
+     "tag": "header",
+     "cls": "mb-5 flex flex-wrap items-end justify-between gap-4",
+     "right": 483,
+     "w": 211,
+     "t": "Domingo, 25 de octubreBuenas tardes, Cam"
+    },
+    {
+     "tag": "div",
+     "cls": "nx-rise min-w-0",
+     "right": 483,
+     "w": 211,
+     "t": "Domingo, 25 de octubreBuenas tardes, Cam"
+    },
+    {
+     "tag": "div",
+     "cls": "mb-1.5 flex items-center gap-2 text-[11px] font-semibold upp",
+     "right": 483,
+     "w": 211,
+     "t": "Domingo, 25 de octubre"
+    },
+    {
+     "tag": "h1",
+     "cls": "font-display text-[clamp(24px,4.4vw,34px)] font-bold leading",
+     "right": 483,
+     "w": 211,
+     "t": "Buenas tardes, Camila"
+    },
+    {
+     "tag": "p",
+     "cls": "mt-1.5 max-w-[62ch] text-muted-foreground",
+     "right": 483,
+     "w": 211,
+     "t": "Así va Simplapp Gym en los últimos 7 día"
+    },
+    {
+     "tag": "section",
+     "cls": "grid grid-cols-4 gap-3.5",
+     "right": 483,
+     "w": 211,
+     "t": "Métricas del negocio"
+    },
+    {
+     "tag": "div",
+     "cls": "group/kpi nx-rise nx-spot relative flex h-full flex-col gap-",
+     "right": 370,
+     "w": 42,
+     "t": "Socios activos128+9nuevos"
+    },
+    {
+     "tag": "svg",
+     "cls": "[object SVGAnimatedString]",
+     "right": 373,
+     "w": 16,
+     "t": "svg"
+    },
+    {
+     "tag": "path",
+     "cls": "[object SVGAnimatedString]",
+     "right": 368,
+     "w": 9,
+     "t": "path"
+    },
+    {
+     "tag": "path",
+     "cls": "[object SVGAnimatedString]",
+     "right": 370,
+     "w": 2,
+     "t": "path"
+    },
+    {
+     "tag": "path",
+     "cls": "[object SVGAnimatedString]",
+     "right": 372,
+     "w": 2,
+     "t": "path"
+    },
+    {
+     "tag": "circle",
+     "cls": "[object SVGAnimatedString]",
+     "right": 366,
+     "w": 5,
+     "t": "circle"
+    }
+   ],
+   "overflowCount": 197,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Simplapp Gym: inicio",
+     "w": 175,
+     "h": 60,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Buscar",
+     "w": 40,
+     "h": 40,
+     "x": 218,
+     "y": 10
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Cambiar a modo oscuro",
+     "w": 40,
+     "h": 40,
+     "x": 266,
+     "y": 10
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Nuevo socioRegistra a tu cliente",
+     "w": 71,
+     "h": 62,
+     "x": 411,
+     "y": 710
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Registrar pagoCobra y genera el comproba",
+     "w": 71,
+     "h": 62,
+     "x": 411,
+     "y": 772
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Registrar gastoMantén tu balance al día",
+     "w": 71,
+     "h": 62,
+     "x": 411,
+     "y": 834
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Nueva reservaAgenda una clase",
+     "w": 71,
+     "h": 62,
+     "x": 411,
+     "y": 896
+    },
+    {
+     "tag": "button",
+     "role": "switch",
+     "t": "BUTTON",
+     "w": 42,
+     "h": 24,
+     "x": 355,
+     "y": 1820
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "375": {
+   "vw": 375,
+   "scrollW": 375,
+   "bodyScrollW": 483,
+   "overflowPage": false,
+   "overflowEls": [
+    {
+     "tag": "header",
+     "cls": "mb-5 flex flex-wrap items-end justify-between gap-4",
+     "right": 483,
+     "w": 211,
+     "t": "Domingo, 25 de octubreBuenas tardes, Cam"
+    },
+    {
+     "tag": "div",
+     "cls": "nx-rise min-w-0",
+     "right": 483,
+     "w": 211,
+     "t": "Domingo, 25 de octubreBuenas tardes, Cam"
+    },
+    {
+     "tag": "div",
+     "cls": "mb-1.5 flex items-center gap-2 text-[11px] font-semibold upp",
+     "right": 483,
+     "w": 211,
+     "t": "Domingo, 25 de octubre"
+    },
+    {
+     "tag": "h1",
+     "cls": "font-display text-[clamp(24px,4.4vw,34px)] font-bold leading",
+     "right": 483,
+     "w": 211,
+     "t": "Buenas tardes, Camila"
+    },
+    {
+     "tag": "p",
+     "cls": "mt-1.5 max-w-[62ch] text-muted-foreground",
+     "right": 483,
+     "w": 211,
+     "t": "Así va Simplapp Gym en los últimos 7 día"
+    },
+    {
+     "tag": "section",
+     "cls": "grid grid-cols-4 gap-3.5",
+     "right": 483,
+     "w": 211,
+     "t": "Métricas del negocio"
+    },
+    {
+     "tag": "div",
+     "cls": "group/kpi nx-rise nx-spot relative flex h-full flex-col gap-",
+     "right": 427,
+     "w": 42,
+     "t": "Gastos$ 1.100.000caja menor y fijos"
+    },
+    {
+     "tag": "div",
+     "cls": "flex items-center justify-between gap-3 text-[12.5px] text-m",
+     "right": 410,
+     "w": 8,
+     "t": "Gastos"
+    },
+    {
+     "tag": "svg",
+     "cls": "[object SVGAnimatedString]",
+     "right": 429,
+     "w": 16,
+     "t": "svg"
+    },
+    {
+     "tag": "circle",
+     "cls": "[object SVGAnimatedString]",
+     "right": 428,
+     "w": 13,
+     "t": "circle"
+    },
+    {
+     "tag": "p",
+     "cls": "mt-1.5 origin-left whitespace-nowrap font-display font-semib",
+     "right": 410,
+     "w": 8,
+     "t": "$ 1.100.000"
+    },
+    {
+     "tag": "span",
+     "cls": "",
+     "right": 525,
+     "w": 124,
+     "t": "$ 1.100.000"
+    }
+   ],
+   "overflowCount": 169,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Simplapp Gym: inicio",
+     "w": 175,
+     "h": 60,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Buscar",
+     "w": 40,
+     "h": 40,
+     "x": 233,
+     "y": 10
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Cambiar a modo oscuro",
+     "w": 40,
+     "h": 40,
+     "x": 281,
+     "y": 10
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Nuevo socioRegistra a tu cliente",
+     "w": 71,
+     "h": 62,
+     "x": 411,
+     "y": 710
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Registrar pagoCobra y genera el comproba",
+     "w": 71,
+     "h": 62,
+     "x": 411,
+     "y": 772
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Registrar gastoMantén tu balance al día",
+     "w": 71,
+     "h": 62,
+     "x": 411,
+     "y": 834
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Nueva reservaAgenda una clase",
+     "w": 71,
+     "h": 62,
+     "x": 411,
+     "y": 896
+    },
+    {
+     "tag": "button",
+     "role": "switch",
+     "t": "BUTTON",
+     "w": 42,
+     "h": 24,
+     "x": 355,
+     "y": 1820
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "412": {
+   "vw": 412,
+   "scrollW": 412,
+   "bodyScrollW": 483,
+   "overflowPage": false,
+   "overflowEls": [
+    {
+     "tag": "header",
+     "cls": "mb-5 flex flex-wrap items-end justify-between gap-4",
+     "right": 483,
+     "w": 211,
+     "t": "Domingo, 25 de octubreBuenas tardes, Cam"
+    },
+    {
+     "tag": "div",
+     "cls": "nx-rise min-w-0",
+     "right": 483,
+     "w": 211,
+     "t": "Domingo, 25 de octubreBuenas tardes, Cam"
+    },
+    {
+     "tag": "div",
+     "cls": "mb-1.5 flex items-center gap-2 text-[11px] font-semibold upp",
+     "right": 483,
+     "w": 211,
+     "t": "Domingo, 25 de octubre"
+    },
+    {
+     "tag": "h1",
+     "cls": "font-display text-[clamp(24px,4.4vw,34px)] font-bold leading",
+     "right": 483,
+     "w": 211,
+     "t": "Buenas tardes, Camila"
+    },
+    {
+     "tag": "p",
+     "cls": "mt-1.5 max-w-[62ch] text-muted-foreground",
+     "right": 483,
+     "w": 211,
+     "t": "Así va Simplapp Gym en los últimos 7 día"
+    },
+    {
+     "tag": "section",
+     "cls": "grid grid-cols-4 gap-3.5",
+     "right": 483,
+     "w": 211,
+     "t": "Métricas del negocio"
+    },
+    {
+     "tag": "div",
+     "cls": "group/kpi nx-rise nx-spot relative flex h-full flex-col gap-",
+     "right": 427,
+     "w": 42,
+     "t": "Gastos$ 1.100.000caja menor y fijos"
+    },
+    {
+     "tag": "svg",
+     "cls": "[object SVGAnimatedString]",
+     "right": 429,
+     "w": 16,
+     "t": "svg"
+    },
+    {
+     "tag": "circle",
+     "cls": "[object SVGAnimatedString]",
+     "right": 428,
+     "w": 13,
+     "t": "circle"
+    },
+    {
+     "tag": "span",
+     "cls": "",
+     "right": 525,
+     "w": 124,
+     "t": "$ 1.100.000"
+    },
+    {
+     "tag": "span",
+     "cls": "",
+     "right": 439,
+     "w": 38,
+     "t": "caja menor y fijos"
+    },
+    {
+     "tag": "div",
+     "cls": "group/kpi nx-rise nx-spot relative flex h-full flex-col gap-",
+     "right": 483,
+     "w": 42,
+     "t": "Balance$ 3.710.000ingresos menos gastos"
+    }
+   ],
+   "overflowCount": 138,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Simplapp Gym: inicio",
+     "w": 175,
+     "h": 60,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Buscar",
+     "w": 40,
+     "h": 40,
+     "x": 270,
+     "y": 10
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Cambiar a modo oscuro",
+     "w": 40,
+     "h": 40,
+     "x": 318,
+     "y": 10
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Nuevo socioRegistra a tu cliente",
+     "w": 71,
+     "h": 62,
+     "x": 411,
+     "y": 710
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Registrar pagoCobra y genera el comproba",
+     "w": 71,
+     "h": 62,
+     "x": 411,
+     "y": 772
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Registrar gastoMantén tu balance al día",
+     "w": 71,
+     "h": 62,
+     "x": 411,
+     "y": 834
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Nueva reservaAgenda una clase",
+     "w": 71,
+     "h": 62,
+     "x": 411,
+     "y": 896
+    },
+    {
+     "tag": "button",
+     "role": "switch",
+     "t": "BUTTON",
+     "w": 42,
+     "h": 24,
+     "x": 355,
+     "y": 1820
+    }
+   ],
+   "minFont": 11,
+   "inputs": []
+  },
+  "768": {
+   "vw": 768,
+   "scrollW": 768,
+   "bodyScrollW": 768,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Simplapp Gym: inicio",
+     "w": 248,
+     "h": 72,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Simplapp Gym",
+     "w": 176,
+     "h": 40,
+     "x": 272,
+     "y": 16
+    },
+    {
+     "tag": "input",
+     "role": "combobox",
+     "t": "Buscar clientes, pagos, gastos o accione",
+     "w": 139,
+     "h": 40,
+     "x": 473,
+     "y": 16
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Cambiar a modo oscuro",
+     "w": 40,
+     "h": 40,
+     "x": 645,
+     "y": 16
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Inicio",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 84
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Socios",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 150
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Clases",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 194
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Taquilla",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 238
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Membresías",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 282
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Control de acceso",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 326
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Catálogo",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 392
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Existencias",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 436
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Ventas y cobros",
+     "w": 223,
+     "h": 34,
+     "x": 12,
+     "y": 502
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Facturación",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 538
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Punto de venta",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 582
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Cobros en línea",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 626
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Compras y gastos",
+     "w": 223,
+     "h": 34,
+     "x": 12,
+     "y": 692
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Gastos",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 728
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Compras",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 772
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Finanzas",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 838
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Cartera",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 882
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Contabilidad",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 926
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Impuestos y numeración",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 970
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Mi sitio web",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1036
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Pedidos de la tienda",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1080
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Ficha de Google",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1124
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Campañas y reseñas",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1168
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "WhatsApp",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1234
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Funciones",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 882
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Importar y exportar",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 926
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Configuración",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 970
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Nuevo socioRegistra a tu cliente",
+     "w": 168,
+     "h": 62,
+     "x": 575,
+     "y": 575
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Registrar pagoCobra y genera el comproba",
+     "w": 168,
+     "h": 62,
+     "x": 575,
+     "y": 637
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Registrar gastoMantén tu balance al día",
+     "w": 168,
+     "h": 62,
+     "x": 575,
+     "y": 699
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Nueva reservaAgenda una clase",
+     "w": 168,
+     "h": 62,
+     "x": 575,
+     "y": 761
+    },
+    {
+     "tag": "button",
+     "role": "switch",
+     "t": "BUTTON",
+     "w": 42,
+     "h": 24,
+     "x": 683,
+     "y": 1459
+    }
+   ],
+   "minFont": 10,
+   "inputs": [
+    {
+     "t": "Buscar clientes, pagos, gastos o accione",
+     "fs": 13
+    }
+   ]
+  },
+  "834": {
+   "vw": 834,
+   "scrollW": 834,
+   "bodyScrollW": 834,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Simplapp Gym: inicio",
+     "w": 248,
+     "h": 72,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Simplapp Gym",
+     "w": 176,
+     "h": 40,
+     "x": 272,
+     "y": 16
+    },
+    {
+     "tag": "input",
+     "role": "combobox",
+     "t": "Buscar clientes, pagos, gastos o accione",
+     "w": 205,
+     "h": 40,
+     "x": 473,
+     "y": 16
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Cambiar a modo oscuro",
+     "w": 40,
+     "h": 40,
+     "x": 711,
+     "y": 16
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Inicio",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 84
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Socios",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 150
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Clases",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 194
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Taquilla",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 238
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Membresías",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 282
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Control de acceso",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 326
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Catálogo",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 392
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Existencias",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 436
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Ventas y cobros",
+     "w": 223,
+     "h": 34,
+     "x": 12,
+     "y": 502
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Facturación",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 538
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Punto de venta",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 582
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Cobros en línea",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 626
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Compras y gastos",
+     "w": 223,
+     "h": 34,
+     "x": 12,
+     "y": 692
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Gastos",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 728
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Compras",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 772
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Finanzas",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 838
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Cartera",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 882
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Contabilidad",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 926
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Impuestos y numeración",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 970
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Mi sitio web",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1036
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Pedidos de la tienda",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1080
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Ficha de Google",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1124
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Campañas y reseñas",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1168
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "WhatsApp",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1234
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Funciones",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1052
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Importar y exportar",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1096
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Configuración",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1140
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Nuevo socioRegistra a tu cliente",
+     "w": 192,
+     "h": 62,
+     "x": 617,
+     "y": 536
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Registrar pagoCobra y genera el comproba",
+     "w": 192,
+     "h": 62,
+     "x": 617,
+     "y": 598
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Registrar gastoMantén tu balance al día",
+     "w": 192,
+     "h": 62,
+     "x": 617,
+     "y": 660
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Nueva reservaAgenda una clase",
+     "w": 192,
+     "h": 62,
+     "x": 617,
+     "y": 722
+    },
+    {
+     "tag": "button",
+     "role": "switch",
+     "t": "BUTTON",
+     "w": 42,
+     "h": 24,
+     "x": 749,
+     "y": 1420
+    }
+   ],
+   "minFont": 10,
+   "inputs": [
+    {
+     "t": "Buscar clientes, pagos, gastos o accione",
+     "fs": 13
+    }
+   ]
+  },
+  "1024": {
+   "vw": 1024,
+   "scrollW": 1024,
+   "bodyScrollW": 1024,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Simplapp Gym: inicio",
+     "w": 248,
+     "h": 72,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Simplapp Gym",
+     "w": 176,
+     "h": 40,
+     "x": 272,
+     "y": 16
+    },
+    {
+     "tag": "input",
+     "role": "combobox",
+     "t": "Buscar clientes, pagos, gastos o accione",
+     "w": 380,
+     "h": 40,
+     "x": 473,
+     "y": 16
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Cambiar a modo oscuro",
+     "w": 40,
+     "h": 40,
+     "x": 901,
+     "y": 16
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Inicio",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 84
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Socios",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 150
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Clases",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 194
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Taquilla",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 238
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Membresías",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 282
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Control de acceso",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 326
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Catálogo",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 392
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Existencias",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 436
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Ventas y cobros",
+     "w": 223,
+     "h": 34,
+     "x": 12,
+     "y": 502
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Facturación",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 538
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Punto de venta",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 582
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Cobros en línea",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 626
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Compras y gastos",
+     "w": 223,
+     "h": 34,
+     "x": 12,
+     "y": 692
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Gastos",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 728
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Compras",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 772
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Finanzas",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 838
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Cartera",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 882
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Contabilidad",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 926
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Impuestos y numeración",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 970
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Mi sitio web",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1036
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Pedidos de la tienda",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1080
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Ficha de Google",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1124
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Campañas y reseñas",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1168
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "WhatsApp",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 1234
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Funciones",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 626
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Importar y exportar",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 670
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Configuración",
+     "w": 223,
+     "h": 42,
+     "x": 12,
+     "y": 714
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Nuevo socioRegistra a tu cliente",
+     "w": 262,
+     "h": 62,
+     "x": 737,
+     "y": 520
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Registrar pagoCobra y genera el comproba",
+     "w": 262,
+     "h": 62,
+     "x": 737,
+     "y": 582
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Registrar gastoMantén tu balance al día",
+     "w": 262,
+     "h": 62,
+     "x": 737,
+     "y": 644
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Nueva reservaAgenda una clase",
+     "w": 262,
+     "h": 62,
+     "x": 737,
+     "y": 706
+    },
+    {
+     "tag": "button",
+     "role": "switch",
+     "t": "BUTTON",
+     "w": 42,
+     "h": 24,
+     "x": 939,
+     "y": 1368
+    }
+   ],
+   "minFont": 10,
+   "inputs": [
+    {
+     "t": "Buscar clientes, pagos, gastos o accione",
+     "fs": 13
+    }
+   ]
+  },
+  "1280": {
+   "vw": 1280,
+   "scrollW": 1280,
+   "bodyScrollW": 1280,
+   "overflowPage": false,
+   "overflowEls": [],
+   "overflowCount": 0,
+   "hscrollers": 0,
+   "targets": [
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Simplapp Gym: inicio",
+     "w": 248,
+     "h": 72,
+     "x": 0,
+     "y": 0
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Simplapp Gym",
+     "w": 176,
+     "h": 40,
+     "x": 280,
+     "y": 16
+    },
+    {
+     "tag": "input",
+     "role": "combobox",
+     "t": "Buscar clientes, pagos, gastos o accione",
+     "w": 380,
+     "h": 40,
+     "x": 481,
+     "y": 16
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Cambiar a modo oscuro",
+     "w": 40,
+     "h": 40,
+     "x": 1149,
+     "y": 16
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Inicio",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 118
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Socios",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 196
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Clases",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 240
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Taquilla",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 284
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Membresías",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 328
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Control de acceso",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 372
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Catálogo",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 450
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Existencias",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 494
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Ventas y cobros",
+     "w": 219,
+     "h": 34,
+     "x": 14,
+     "y": 538
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Facturación",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 574
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Punto de venta",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 618
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Cobros en línea",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 662
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Compras y gastos",
+     "w": 219,
+     "h": 34,
+     "x": 14,
+     "y": 706
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Gastos",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 742
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Compras",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 786
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Finanzas",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 864
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Cartera",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 908
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Contabilidad",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 952
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Impuestos y numeración",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 996
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Mi sitio web",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 1074
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Pedidos de la tienda",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 1118
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Ficha de Google",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 1162
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Campañas y reseñas",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 1206
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "WhatsApp",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 1284
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Funciones",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 614
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Importar y exportar",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 658
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Configuración",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 702
+    },
+    {
+     "tag": "button",
+     "role": "",
+     "t": "Contraer barra lateral",
+     "w": 219,
+     "h": 42,
+     "x": 14,
+     "y": 746
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Nuevo socioRegistra a tu cliente",
+     "w": 357,
+     "h": 62,
+     "x": 898,
+     "y": 498
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Registrar pagoCobra y genera el comproba",
+     "w": 357,
+     "h": 62,
+     "x": 898,
+     "y": 560
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Registrar gastoMantén tu balance al día",
+     "w": 357,
+     "h": 62,
+     "x": 898,
+     "y": 622
+    },
+    {
+     "tag": "a",
+     "role": "",
+     "t": "Nueva reservaAgenda una clase",
+     "w": 357,
+     "h": 62,
+     "x": 898,
+     "y": 684
+    },
+    {
+     "tag": "button",
+     "role": "switch",
+     "t": "BUTTON",
+     "w": 42,
+     "h": 24,
+     "x": 1195,
+     "y": 1346
+    }
+   ],
+   "minFont": 10,
+   "inputs": [
+    {
+     "t": "Buscar clientes, pagos, gastos o accione",
+     "fs": 13
+    }
+   ]
+  }
+ }
+}
